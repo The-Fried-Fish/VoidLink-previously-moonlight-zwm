@@ -33,12 +33,6 @@
 #### A Reddit post introducing this fork:
 https://www.reddit.com/r/cloudygamer/comments/1f322q3/made_a_fork_of_moonlightios_with_many_deviations/
 
- <br>
-
-# 注意事项 Notice
-### 发布基于本Fork的修改版本，请务必申明来源。<br>
-### Please acknowledge the source when releasing modified versions based on this fork. <br>
-
 <br>
 
 # 开发者B站号. Developer on Bilibili
@@ -49,10 +43,15 @@ https://b23.tv/A0F9v7n
 
  <br>
 
-# 添加键盘命令 Add Keyboard Command
-![image](https://github.com/user-attachments/assets/0ea0f91c-574d-4408-9c92-d5a3e229807a)
+# 添加屏显控件 Custom On Screen Widgets
 <br>Read this instruction:
 [How.to.add.keyboard.command.for.moonlight-iOS](https://b23.tv/fgdRJk8)
+
+ <br>
+
+# 注意事项 Notice
+### 发布基于本Fork的修改版本，请务必申明来源。<br>
+### Please acknowledge the source when releasing modified versions based on this fork. <br>
 
 <br>
 
