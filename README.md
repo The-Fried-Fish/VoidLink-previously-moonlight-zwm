@@ -2,27 +2,27 @@
 ### 代码提交在`noWaterMark`分支。
 ### For latest coding commits, go to branch `noWaterMark`.
 
-  <br>
+<br>
+
 
 # 安装 Installation
 
-### Available on App Store, just search "moonlight zwm"
-### https://apps.apple.com/us/app/moonlight-zwm/id6590630545
-### Feel free to install & rate the app ~
-### 中国大陆用户如果不便将apple id切到外区， 不妨先加入TestFlight. 等我搞定icp备案号才能上架国区App Store.
-### 功能更新会先上TestFlight， 再视情况更新App Store版本
-
-<br>
-
 # 至Github通过TestFlight安装的用户 
 # To Github users who installed the app via TestFlight:
-
 ### https://testflight.apple.com/join/1JDEKywe
 ### Testflight用户数量已于2024年12月达到10000人上限。因此我将定期将部分用户从testflight计划中移除。如果你发现自己被移除了， app在90天有效期结束前依然可以使用。如果你需要更新， 通过以上链接重新加入testflight即可。
 ### Number of users has already reached TestFlight limit (10000 users) in Dec. 2024. I will regularly remove some users from the TestFlight program. If you find yourself removed from TestFlight, the app will still be available until the 90-day build validity period expired. If you need an update, just join the testflight again by the link above.
 
 ### 如果觉得这个fork好用， 请记得点星。
 ### Give it a star if you find this version helpful.
+
+<br>
+
+### 旧版可在App Store下载（无法更新），切换外区apple id, 搜索 "moonlight zwm"
+### Older version available on App Store (unable to update), just search "moonlight zwm"
+### https://apps.apple.com/us/app/moonlight-zwm/id6590630545
+### Feel free to install & rate the app ~
+
 
  <br>
 
@@ -45,7 +45,7 @@ https://b23.tv/A0F9v7n
 
 # 添加屏显控件 Custom On Screen Widgets
 <br>Read this instruction:
-[How.to.add.keyboard.command.for.moonlight-iOS](https://b23.tv/fgdRJk8)
+[Custom On Screen Widget Commands for moonlight-iOS](https://b23.tv/fgdRJk8)
 
  <br>
 
