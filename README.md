@@ -28,8 +28,8 @@
 
 # 概述 Overview
 
-#### 这是首个实现iOS多点触控透传的Fork. 目前已经严重偏离原版moonlight-iOS (具体看release页面)。 我已经对一项项拆分修改过的功能提交PR， 再合并到官方代码仓库没有兴趣了  <br>
-#### This fork is the first one to implement native multi-touch. It has developed with `too many deviations` from the original version (see the release page for details). I am not interested in splitting the modified features to create pull request to the official repository one by one.
+#### 这是首个实现iOS多点触控透传的Fork. 目前已经严重偏离原版moonlight-iOS (具体看release页面)。  <br>
+#### This fork is the first one to implement native multi-touch. It has developed with `too many deviations` from the original version (see the release page for details).
 #### A Reddit post introducing this fork:
 https://www.reddit.com/r/cloudygamer/comments/1f322q3/made_a_fork_of_moonlightios_with_many_deviations/
 
