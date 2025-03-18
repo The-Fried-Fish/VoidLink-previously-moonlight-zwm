@@ -55,7 +55,7 @@ https://b23.tv/A0F9v7n
 
 <br>
 
-# 贡献者 Contributors:
+# 贡献者 Contributors
 [@TrueZhuangJia](https://github.com/TrueZhuangJia) - Maintainer & main developer </br>
 [@King0fSpace](https://github.com/King0fSpace) - Customization of legacy on-screen controller buttons </br>
 [@xzzpig](https://github.com/xzzpig) - Wake-on-LAN optimization, external display & stage manager support, 3 physical mouse mode </br>
