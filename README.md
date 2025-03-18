@@ -55,7 +55,9 @@ https://b23.tv/A0F9v7n
 
 <br>
 
-# 特别感谢 Special Thanks to:
-https://github.com/King0fSpace/moonlight-ios-CustomOSC
-<br>On screen control customization of my version originated from this repo (with much more improvements)
-
+# 贡献者 Contributors:
+[@TrueZhuangJia](https://github.com/TrueZhuangJia) - Maintainer & main developer </br>
+[@King0fSpace](https://github.com/King0fSpace) - Customization of legacy on-screen controller buttons </br>
+[@xzzpig](https://github.com/xzzpig) - Wake-on-LAN optimization, external display & stage manager support, 3 physical mouse mode </br>
+[@Acaki](https://github.com/Acaki) - YUV 444 implementation </br>
+[@Qian23333](https://github.com/Qian23333) - Action script for ipa building
