@@ -47,12 +47,6 @@ https://b23.tv/A0F9v7n
 <br>Read this instruction:
 [Custom On Screen Widget Commands for moonlight-iOS](https://b23.tv/fgdRJk8)
 
- <br>
-
-# 注意事项 Notice
-### 发布基于本Fork的修改版本，请务必申明来源。<br>
-### Please acknowledge the source when releasing modified versions based on this fork. <br>
-
 <br>
 
 # 贡献者 Contributors
