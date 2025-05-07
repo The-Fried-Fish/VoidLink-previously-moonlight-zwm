@@ -12,6 +12,7 @@
 #import "StreamManager.h"
 #import "CryptoManager.h"
 #import "HttpManager.h"
+#import "Plot.h"
 #import "Utils.h"
 
 #import "StreamView.h"
@@ -103,7 +104,7 @@
     
     // Initializing the renderer must be done on the main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        VideoDecoderRenderer* renderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height useFramePacing:self->_config.useFramePacing];
+        VideoDecoderRenderer* renderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height];
         self->_connection = [[Connection alloc] initWithConfig:self->_config renderer:renderer connectionCallbacks:self->_callbacks];
         NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
         [opQueue addOperation:self->_connection];
@@ -155,7 +156,7 @@
     video_stats_t stats;
     
     // NSLog(@"overlayLevel: %d", overlayLevel);
-    
+
     if (!_connection) {
         return nil;
     }
@@ -182,22 +183,41 @@
                                 (float)stats.totalHostProcessingLatency / stats.framesWithHostProcessingLatency / 10.f];
     }
     else {
-        hostProcessingString = @"";
+        // If all frames are duplicates this can happen, but let's avoid having the whole stats area change height
+        hostProcessingString = @"Host processing latency min/max/avg: -/-/- ms\n";
     }
     
     float interval = stats.endTime - stats.startTime;
     if(overlayLevel == 2) return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\nNetwork dropped frames: %.2f%%\nAverage network latency: %@%@",
+    float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
+    float fps = (stats.totalFrames - stats.networkDroppedFrames - (stats.frameDropMetrics.total / scalePlotMetrics)) / interval;
+
+    double avgVideoMbps = [_connection getBwTracker].averageMbps;
+    double peakVideoMbps = [_connection getBwTracker].peakMbps;
+
+    return [NSString stringWithFormat:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+            "Bitrate: %.1f Mbps, Peak: %.1f, Renderer: %@\n"
+            "%@"
+            "Frames buffered: %.1f\n"
+            "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
+            "Average network latency: %@\n"
+            "Decode time: %.2f/%.2f/%.2f ms",
             _config.width,
             _config.height,
-            stats.totalFrames / interval,
+            fps,
             [_connection getActiveCodecName],
-            stats.networkDroppedFrames / interval,
+            avgVideoMbps, peakVideoMbps, (stats.renderingBackend == RENDER_METAL) ? @"Metal" : @"AVSampleBuffer",
+            hostProcessingString,
+            stats.frameQueueMetrics.avg,
+            (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
+            stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
             latencyString,
             hostProcessingString];
     else return [LocalizationHelper localizedStringForKey:@"FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@",
                  stats.totalFrames / interval,
                  stats.networkDroppedFrames / interval,
                  latencyString];
+            stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
 }
 
 @end

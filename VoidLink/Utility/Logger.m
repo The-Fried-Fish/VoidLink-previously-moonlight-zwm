@@ -8,31 +8,19 @@
 
 #import "Logger.h"
 
+#if defined(NDEBUG)
 static LogLevel LoggerLogLevel = LOG_I;
-
-void LogTagv(LogLevel level, NSString* tag, NSString* fmt, va_list args);
-
-void Log(LogLevel level, NSString* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    LogTagv(level, NULL, fmt, args);
-    va_end(args);
-}
-
-void LogTag(LogLevel level, NSString* tag, NSString* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    LogTagv(level, tag, fmt, args);
-    va_end(args);
-}
+#else
+static LogLevel LoggerLogLevel = LOG_D;
+#endif
 
 void LogTagv(LogLevel level, NSString* tag, NSString* fmt, va_list args) {
     NSString* levelPrefix = @"";
-    
+
     if (level < LoggerLogLevel) {
         return;
     }
-    
+
     switch(level) {
         case LOG_D:
             levelPrefix = PRFX_DEBUG;
@@ -58,4 +46,11 @@ void LogTagv(LogLevel level, NSString* tag, NSString* fmt, va_list args) {
         prefixedString = [NSString stringWithFormat:@"%@ %@", levelPrefix, fmt];
     }
     NSLogv(prefixedString, args);
+}
+
+void LogTag(LogLevel level, NSString* tag, NSString* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    LogTagv(level, tag, fmt, args);
+    va_end(args);
 }

@@ -34,7 +34,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 @implementation StreamView {
     UIView* streamFrameTopLayerView;
     TemporarySettings* settings;
-    
+
     OnScreenControls* onScreenControls;
     
     KeyboardInputField* keyInputField;
@@ -43,7 +43,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     float streamAspectRatio;
 
 
-    
+
     // iOS 13.4 mouse support
     NSInteger lastMouseButtonMask;
     float lastMouseX;
@@ -56,7 +56,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     double accumulatedMouseDeltaY;
     
     int localMousePointerMode;
-    
+
     UIResponder* touchHandler;
     
     id<UserInteractionDelegate> interactionDelegate;
@@ -72,7 +72,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #endif
     CGFloat HeightViewLiftedTo;
     UILabel* keyboardToggleTip;
-    
+
     UIKeyModifierFlags comboKeyModifierFlags;
 }
 
@@ -87,9 +87,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     self->interactionDelegate = interactionDelegate;
     self->streamAspectRatio = (float)streamConfig.width / (float)streamConfig.height;
     self.streamAspectRatio = self->streamAspectRatio;
-    
+
     settings = [[[DataManager alloc] init] getSettings];
-    
+
     localMousePointerMode = streamConfig.localMousePointerMode;
     
     keysDown = [[NSMutableSet alloc] init];
@@ -114,18 +114,18 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleTip.layer.cornerRadius = 10;
     keyboardToggleTip.clipsToBounds = true;
     NSLog(@"setup streamView %f", CACurrentMediaTime());
-    
+
     // if(settings.touchMode.intValue == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
     // else [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
-    
+
     // [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
-    
+
 #if TARGET_OS_TV
     // tvOS requires RelativeTouchHandler to manage Apple Remote input
     self->touchHandler = [[RelativeTouchHandler alloc] initWithView:self];
 #else
     // iOS uses touch Mode depending on user preference
-        
+
     switch (settings.touchMode.intValue) {
         case NativeTouch:
             keyboardToggleRecognizer.immediateTriggering = false;
@@ -142,11 +142,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self];
             keyboardToggleRecognizer.immediateTriggering = true; //triggers signal in touchesBegan callback stage
             break;
-            
+
         default:
             break;
     }
-    
+
     // we'll render on-screen controls on the toplayer too:
     onScreenControls = [[OnScreenControls alloc] initWithView:self->streamFrameTopLayerView controllerSup:controllerSupport streamConfig:streamConfig];  // don't delete, this is mandatory
     /*
@@ -155,15 +155,15 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         RelativeTouchHandler* relativeTouchHandler = (RelativeTouchHandler*) touchHandler;
         onScreenControls.mouseRightClickTapRecognizer = relativeTouchHandler.mouseRightClickTapRecognizer;
     } */
-    
+
     OnScreenControlsLevel level = (OnScreenControlsLevel)[settings.onscreenControls integerValue];
     if (settings.touchMode.intValue != RelativeTouch && settings.touchMode.intValue != NativeTouch ) {
         Log(LOG_I, @"On-screen controls disabled in non-relative touch mode");
         [onScreenControls setLevel:OnScreenControlsLevelOff];
-        
+
         //pass touchesCaptureByOnScreenButtons Set to the native touchhandler, this NSSet is init witihin onscreencontrols class, don't do it again in native touch handler class
         [OnScreenControls.touchAddrsCapturedByOnScreenControls removeAllObjects]; // reset the attribute to nil
-        
+
         /*
         if(settings.touchMode.intValue == NativeTouch){
             NativeTouchHandler* nativeTouchHandler = (NativeTouchHandler* )touchHandler;
@@ -302,7 +302,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             UIBarButtonItem *altBarButton = [self createButtonWithImageNamed:@"AltIcon.png" backgroundColor:[UIColor blackColor] target:self action:@selector(toolbarButtonClicked:) keyCode:0x12 isToggleable:YES];
             UIBarButtonItem *deleteBarButton = [self createButtonWithImageNamed:@"DeleteIcon.png" backgroundColor:[UIColor blackColor] target:self action:@selector(toolbarButtonClicked:) keyCode:0x2E isToggleable:NO];
             UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-            
+
             [customToolbarView setItems:[NSArray arrayWithObjects:doneBarButton, windowsBarButton, escapeBarButton, tabBarButton, shiftBarButton, controlBarButton, altBarButton, deleteBarButton, flexibleSpace, nil]];
             keyInputField.inputAccessoryView = customToolbarView;
         }
@@ -311,7 +311,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [keyInputField addTarget:self action:@selector(onKeyboardPressed:) forControlEvents:UIControlEventEditingChanged];
         // Undo causes issues for our state management, so turn it off
         [keyInputField.undoManager disableUndoRegistration];
-        
+
         //[keyboardToggleTip removeFromSuperview];
     }
 }
@@ -384,13 +384,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void) reloadOnScreenControlsWith:(ControllerSupport*)controllerSupport
                          andConfig:(StreamConfiguration*)streamConfig {
-    
+
     // we'll render on-screen controllers on the toplayer too.
     onScreenControls = [[OnScreenControls alloc] initWithView:self->streamFrameTopLayerView controllerSup:controllerSupport streamConfig:streamConfig];
     /*
     // pass mouseRightClickTapRecognizer to onScreenControls obj here:
     if([self isOscEnabled]){
-        
+
         RelativeTouchHandler* relativeTouchHandler = (RelativeTouchHandler *)touchHandler;
         onScreenControls.mouseRightClickTapRecognizer = relativeTouchHandler.mouseRightClickTapRecognizer;
     } */
@@ -417,16 +417,16 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void) reloadOnScreenWidgetViews{
-    
+
     // NSLog(@"reload on screen keyboard buttons here");
 
     // remove all keyboard widget views first
     [self clearOnScreenKeyboardButtons];
-    
+
     // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
-    
+
     if(![self isOnScreenButtonEnabled]) return;
-    
+
     OSCProfilesManager* profilesManager = [OSCProfilesManager sharedManager: self.bounds];
     OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
 
@@ -629,7 +629,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             }
         }
     }
-    
+
 #endif
     if ([self handleMouseButtonEvent:BUTTON_ACTION_PRESS
                           forTouches:touches
@@ -709,8 +709,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (BOOL)handleMouseButtonEvent:(int)buttonAction forTouches:(NSSet *)touches withEvent:(UIEvent *)event {
-    
-    
+
+
     // NSLog(@"mouse click time: %f", CACurrentMediaTime()*1000);
 #if !TARGET_OS_TV
     if (@available(iOS 13.4, *)) {
@@ -774,12 +774,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 #if !TARGET_OS_TV
-    
+
     if (settings.touchMode.intValue == NativeTouchOnly) {
         [touchHandler touchesMoved:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
-    
+
     for (UITouch* touch in touches) {
         if (touch.type == UITouchTypePencil) {
             if ([self sendStylusEvent:touch]) return;
@@ -805,7 +805,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         }
 #endif
     }
-    
+
     hasUserInteracted = YES;
     
     if(self->settings.touchMode.intValue == NativeTouch || self->settings.touchMode.intValue == RelativeTouch){
@@ -883,7 +883,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [touchHandler touchesEnded:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
-    
+
     if (@available(iOS 13.4, *)){ //now only pencil events are restricted
         for (UITouch* touch in touches) {
             if (touch.type == UITouchTypePencil) {

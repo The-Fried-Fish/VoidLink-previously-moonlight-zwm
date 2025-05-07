@@ -374,7 +374,7 @@
 		FB290E2619B37A4E004C83CF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = YES;
+				BuildIndependentTargetsInParallel = NO;
 				LastUpgradeCheck = 1510;
 				ORGANIZATIONNAME = "Moonlight Stream";
 				TargetAttributes = {

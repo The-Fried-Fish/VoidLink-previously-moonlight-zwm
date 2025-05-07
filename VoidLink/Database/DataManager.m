@@ -82,6 +82,7 @@
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
                   useFramePacing:(BOOL)useFramePacing
+                  frameQueueSize:(NSInteger)frameQueueSize
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
                // absoluteTouchMode:(BOOL)absoluteTouchMode
@@ -93,6 +94,12 @@
              externalDisplayMode:(NSInteger)externalDisplayMode
                        localMousePointerMode:(NSInteger)localMousePointerMode{
     
+               absoluteTouchMode:(BOOL)absoluteTouchMode
+                    statsOverlay:(BOOL)statsOverlay
+                    enableGraphs:(BOOL)enableGraphs
+                    graphOpacity:(NSInteger)graphOpacity
+                renderingBackend:(NSInteger)renderingBackend
+{
     [_managedObjectContext performBlockAndWait:^{
         Settings* settingsToSave = [self retrieveSettings];
         settingsToSave.framerate = [NSNumber numberWithInteger:framerate];
@@ -121,7 +128,7 @@
         settingsToSave.playAudioOnPC = audioOnPC;
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
-        settingsToSave.useFramePacing = useFramePacing;
+        settingsToSave.frameQueueSize = [NSNumber numberWithInteger:frameQueueSize];
         settingsToSave.enableHdr = enableHdr;
         settingsToSave.btMouseSupport = btMouseSupport;
         // settingsToSave.absoluteTouchMode = absoluteTouchMode;
@@ -132,6 +139,11 @@
         settingsToSave.resolutionSelected = [NSNumber numberWithInteger:resolutionSelected];
         settingsToSave.externalDisplayMode = [NSNumber numberWithInteger:externalDisplayMode];
         settingsToSave.localMousePointerMode = [NSNumber numberWithInteger:localMousePointerMode];
+        settingsToSave.absoluteTouchMode = absoluteTouchMode;
+        settingsToSave.statsOverlay = statsOverlay;
+        settingsToSave.enableGraphs = enableGraphs;
+        settingsToSave.graphOpacity = [NSNumber numberWithInteger:graphOpacity];
+        settingsToSave.renderingBackend = [NSNumber numberWithInteger:renderingBackend];
         [self saveData];
     }];
 }

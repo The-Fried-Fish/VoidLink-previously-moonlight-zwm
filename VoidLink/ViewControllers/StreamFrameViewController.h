@@ -10,6 +10,9 @@
 //
 
 #import "Connection.h"
+#import "FloatBuffer.h"
+#import "ImGuiRenderer.h"
+#import "MetalViewController.h"
 #import "StreamConfiguration.h"
 #import "StreamView.h"
 #import "LayoutOnScreenControlsViewController.h"
@@ -28,6 +31,8 @@
 @property (nonatomic) StreamConfiguration* streamConfig;
 @property (nonatomic, assign) MainFrameViewController *mainFrameViewcontroller;
 
+@property (nonatomic, strong) MetalViewController *metalViewController;
+@property (nonatomic, strong) ImGuiRenderer *imguiView;
 
 -(void)updatePreferredDisplayMode:(BOOL)streamActive;
 -(void)reConfigStreamViewRealtime;
