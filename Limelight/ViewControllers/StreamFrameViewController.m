@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Moonlight Stream. All rights reserved.
 //
 
+#import <AVKit/AVKit.h>
 #import "StreamFrameViewController.h"
 #import "MainFrameViewController.h"
 #import "VideoDecoderRenderer.h"
@@ -65,16 +66,106 @@
      */
     UIWindow *_deviceWindow;
     dispatch_block_t _delayedRemoveExtScreen;
+    VideoDecoderRenderer *_videoRenderer;
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
     CustomEdgeSlideGestureRecognizer *_slideToCmdToolRecognizer;
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
 #endif
+    
+}
+
+- (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+    _streamView.hidden = YES;
+}
+
+- (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+}
+
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController failedToStartPictureInPictureWithError:(NSError *)error {
+    Log(LOG_E, @"PiP Failed to Start: %@", error);
+    _streamView.hidden = NO;
+}
+
+- (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+}
+
+- (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+    _streamView.hidden = NO;
+    [self returnToMainFrame];
+}
+
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
+    _streamView.hidden = NO;
+    completionHandler(YES);
+}
+
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
+           didTransitionToRenderSize:(CMVideoDimensions)newRenderSize API_AVAILABLE(ios(15.0)){
+    Log(LOG_I, @"PiP transitioned to size: %d x %d", newRenderSize.width, newRenderSize.height);
+ }
+
+// Indicate that playback is never paused for a live stream
+- (BOOL)pictureInPictureControllerIsPlaybackPaused:(AVPictureInPictureController *)pictureInPictureController API_AVAILABLE(ios(14.0)) {
+    return NO;
+}
+
+// Return an indefinite time range for a live stream
+- (CMTimeRange)pictureInPictureControllerTimeRangeForPlayback:(AVPictureInPictureController *)pictureInPictureController API_AVAILABLE(ios(14.0)) {
+    return CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity);
+}
+
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController setPlaying:(BOOL)playing API_AVAILABLE(ios(14.0)) {
+}
+
+// Live streams typically can't skip, so just call the completion handler.
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController skipByInterval:(CMTime)skipInterval completionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(14.0)) {
+    if (completionHandler) {
+        completionHandler();
+    }
 }
 
 - (bool)isOscLayoutToolEnabled{
     return (_settings.touchMode.intValue == RELATIVE_TOUCH || _settings.touchMode.intValue == REGULAR_NATIVE_TOUCH || _settings.touchMode.intValue == ABSOLUTE_TOUCH) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+}
+
+- (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {    // Ensure we have the renderer and its layer
+    Log(LOG_I, @"Setting up PiP controller...");
+    
+    if (!videoRenderer || !videoRenderer.displayLayer) {
+        Log(LOG_E, @"PiP setup failed: Video renderer or display layer not ready.");
+        return;
+    }
+
+    AVSampleBufferDisplayLayer *streamLayer = videoRenderer.displayLayer;
+    
+    if ([AVPictureInPictureController isPictureInPictureSupported]) {
+        self.pipContentSource = [[AVPictureInPictureControllerContentSource alloc] initWithSampleBufferDisplayLayer:streamLayer playbackDelegate:self];
+        self.pipController = [[AVPictureInPictureController alloc] initWithContentSource:self.pipContentSource];
+
+        if (self.pipController) {
+            self.pipController.delegate = self;
+            if (@available(iOS 15.0, *)) {
+                // Let the system know it can potentially start PiP automatically (useful if system controls were visible)
+                self.pipController.canStartPictureInPictureAutomaticallyFromInline = YES;
+            }
+            Log(LOG_I, @"PiP controller created successfully.");
+        } else {
+            Log(LOG_E, @"Failed to create PiP controller.");
+        }
+    } else {
+        Log(LOG_E, @"PiP not supported on this device.");
+    }
+}
+
+- (void)cleanupPiPController {
+    if (self.pipController) {
+        self.pipController.delegate = nil;
+        self.pipController = nil;
+        self.pipContentSource = nil;
+        Log(LOG_I, @"PiP controller cleaned up.");
+    }
 }
 
 - (void)configOscLayoutTool{
@@ -514,6 +605,7 @@
 - (void) returnToMainFrame {
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
+    [self cleanupPiPController];
     
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
@@ -607,6 +699,17 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
+    if (self.pipController && !self.pipController.isPictureInPictureActive) {
+        VideoDecoderRenderer *renderer = self.streamMan.videoRenderer;
+        // Check the view's window property here
+        if (renderer && renderer.displayLayer && self.view.window && self.pipController.isPictureInPicturePossible) {
+            Log(LOG_I, @"Starting Picture in Picture");
+            [self.pipController startPictureInPicture];
+        } else {
+            Log(LOG_I, @"Skipping PiP start: Renderer/Layer/Window not ready OR PiP not possible.");
+        }
+    }
+
     if (_inactivityTimer != nil) {
         [_inactivityTimer invalidate];
     }
@@ -648,6 +751,11 @@
         _inactivityTimer = nil;
     }
     
+    // Don't terminate if pip is active
+    if (self.pipController && self.pipController.isPictureInPictureActive) {
+        Log(LOG_I, @"PIP is active, not terminating stream");
+        return;
+    }
     [self returnToMainFrame];
 }
 
@@ -925,8 +1033,17 @@
 }
 
 - (void) videoContentShown {
-    [_spinner stopAnimating];
-    [self.view setBackgroundColor:[UIColor blackColor]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_spinner stopAnimating];
+        [self.view setBackgroundColor:[UIColor blackColor]];
+
+        if (self->_streamMan && self->_streamMan.videoRenderer) {
+            Log(LOG_I, @"Setting up PiP with renderer: %p", self->_streamMan.videoRenderer);
+            [self setupPiPControllerWithRenderer:self->_streamMan.videoRenderer]; // Pass renderer directly
+        } else {
+            Log(LOG_I, @"No renderer available for PiP setup");
+        }
+    });
 }
 
 - (void)didReceiveMemoryWarning

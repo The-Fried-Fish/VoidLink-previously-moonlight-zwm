@@ -14,6 +14,8 @@
 
 @interface VideoDecoderRenderer : NSObject
 
+@property (nonatomic, strong, readonly) AVSampleBufferDisplayLayer *displayLayer;
+
 - (id)initWithView:(UIView*)view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio useFramePacing:(BOOL)useFramePacing;
 
 - (void)setupWithVideoFormat:(int)videoFormat width:(int)videoWidth height:(int)videoHeight frameRate:(int)frameRate;
