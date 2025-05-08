@@ -2347,6 +2347,30 @@
         }
       }
     },
+    "SwL-8I-Nm3.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; SwL-8I-Nm3.segmentTitles[0] = \"No\"; ObjectID = \"SwL-8I-Nm3\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No"
+          }
+        }
+      }
+    },
+    "SwL-8I-Nm3.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; SwL-8I-Nm3.segmentTitles[1] = \"Yes\"; ObjectID = \"SwL-8I-Nm3\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yes"
+          }
+        }
+      }
+    },
     "t9f-V8-GCm.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Citrix X1 Mouse Support                                                               \"; ObjectID = \"t9f-V8-GCm\";",
       "extractionState" : "extracted_with_value",
@@ -2643,6 +2667,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "优化游戏设置"
+          }
+        }
+      }
+    },
+    "wSk-tt-r7Z.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"wSk-tt-r7Z\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable PiP"
           }
         }
       }

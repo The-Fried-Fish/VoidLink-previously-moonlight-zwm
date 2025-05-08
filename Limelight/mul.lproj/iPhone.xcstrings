@@ -919,6 +919,30 @@
         }
       }
     },
+    "dcP-yB-6Un.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; dcP-yB-6Un.segmentTitles[0] = \"No\"; ObjectID = \"dcP-yB-6Un\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No"
+          }
+        }
+      }
+    },
+    "dcP-yB-6Un.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; dcP-yB-6Un.segmentTitles[1] = \"Yes\"; ObjectID = \"dcP-yB-6Un\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yes"
+          }
+        }
+      }
+    },
     "Dfl-gL-00M.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Tap Exclusion Area Size for Custom OSC: 200%                      \"; ObjectID = \"Dfl-gL-00M\";",
       "extractionState" : "extracted_with_value",
@@ -975,6 +999,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Mouse Pointer Velocity: 100%                                                    "
+          }
+        }
+      }
+    },
+    "ELc-8r-KSB.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"ELc-8r-KSB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable PiP"
           }
         }
       }

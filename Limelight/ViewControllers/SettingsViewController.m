@@ -465,6 +465,7 @@ BOOL isCustomResolution(CGSize res) {
     }
     
     [self.yuv444Selector setSelectedSegmentIndex:currentSettings.enableYUV444 ? 1 : 0];
+    [self.pipSelector setSelectedSegmentIndex:currentSettings.enablePIP ? 1 : 0];
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
     [self.btMouseSelector setSelectedSegmentIndex:currentSettings.btMouseSupport ? 1 : 0];
     [self.optimizeSettingsSelector setSelectedSegmentIndex:currentSettings.optimizeGames ? 1 : 0];
@@ -1076,6 +1077,7 @@ BOOL isCustomResolution(CGSize res) {
     BOOL audioOnPC = [self.audioOnPCSelector selectedSegmentIndex] == 1;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = [self.yuv444Selector selectedSegmentIndex] == 1;
+    BOOL enablePIP = [self.pipSelector selectedSegmentIndex] == 1;
     BOOL btMouseSupport = [self.btMouseSelector selectedSegmentIndex] == 1;
     BOOL useFramePacing = [self.framePacingSelector selectedSegmentIndex] == 1;
     // BOOL absoluteTouchMode = [self.touchModeSelector selectedSegmentIndex] == 1;
@@ -1111,6 +1113,7 @@ BOOL isCustomResolution(CGSize res) {
                            audioOnPC:audioOnPC
                       preferredCodec:preferredCodec
                            enableYUV444:enableYUV444
+                           enablePIP:enablePIP
                       useFramePacing:useFramePacing
                            enableHdr:enableHdr
                       btMouseSupport:btMouseSupport

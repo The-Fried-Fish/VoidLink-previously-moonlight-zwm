@@ -67,6 +67,7 @@
     UIWindow *_deviceWindow;
     dispatch_block_t _delayedRemoveExtScreen;
     VideoDecoderRenderer *_videoRenderer;
+    BOOL _isRestoringFromPiP;
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
     CustomEdgeSlideGestureRecognizer *_slideToCmdToolRecognizer;
@@ -93,10 +94,14 @@
 
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = NO;
-    [self returnToMainFrame];
+    if (!_isRestoringFromPiP) {
+        [self returnToMainFrame];
+    }
+    _isRestoringFromPiP = NO;
 }
 
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
+    _isRestoringFromPiP = YES;
     _streamView.hidden = NO;
     completionHandler(YES);
 }
@@ -146,10 +151,6 @@
 
         if (self.pipController) {
             self.pipController.delegate = self;
-            if (@available(iOS 15.0, *)) {
-                // Let the system know it can potentially start PiP automatically (useful if system controls were visible)
-                self.pipController.canStartPictureInPictureAutomaticallyFromInline = YES;
-            }
             Log(LOG_I, @"PiP controller created successfully.");
         } else {
             Log(LOG_E, @"Failed to create PiP controller.");
@@ -382,6 +383,8 @@
     
     _streamView = [[StreamView alloc] initWithFrame:self.view.frame];
     
+    _isRestoringFromPiP = NO;
+    
     /*
      _settings.externalDisplayMode.intValue:
      0 - stage manager
@@ -605,7 +608,10 @@
 - (void) returnToMainFrame {
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
-    [self cleanupPiPController];
+    
+    if (_settings.enablePIP) {
+        [self cleanupPiPController];
+    }
     
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
@@ -699,7 +705,7 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
-    if (self.pipController && !self.pipController.isPictureInPictureActive) {
+    if (_settings.enablePIP && self.pipController && !self.pipController.isPictureInPictureActive) {
         VideoDecoderRenderer *renderer = self.streamMan.videoRenderer;
         // Check the view's window property here
         if (renderer && renderer.displayLayer && self.view.window && self.pipController.isPictureInPicturePossible) {
@@ -744,18 +750,17 @@
 
 // This fires when the home button is pressed
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    Log(LOG_I, @"Terminating stream immediately for backgrounding");
-
     if (_inactivityTimer != nil) {
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
     
     // Don't terminate if pip is active
-    if (self.pipController && self.pipController.isPictureInPictureActive) {
+    if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
         Log(LOG_I, @"PIP is active, not terminating stream");
         return;
     }
+    Log(LOG_I, @"Terminating stream immediately for backgrounding");
     [self returnToMainFrame];
 }
 
@@ -1037,11 +1042,13 @@
         [_spinner stopAnimating];
         [self.view setBackgroundColor:[UIColor blackColor]];
 
-        if (self->_streamMan && self->_streamMan.videoRenderer) {
-            Log(LOG_I, @"Setting up PiP with renderer: %p", self->_streamMan.videoRenderer);
-            [self setupPiPControllerWithRenderer:self->_streamMan.videoRenderer]; // Pass renderer directly
-        } else {
-            Log(LOG_I, @"No renderer available for PiP setup");
+        if (_settings.enablePIP) {
+            if (self->_streamMan && self->_streamMan.videoRenderer) {
+                Log(LOG_I, @"Setting up PiP with renderer: %p", self->_streamMan.videoRenderer);
+                [self setupPiPControllerWithRenderer:self->_streamMan.videoRenderer];
+            } else {
+                Log(LOG_I, @"No renderer available for PiP setup");
+            }
         }
     });
 }
