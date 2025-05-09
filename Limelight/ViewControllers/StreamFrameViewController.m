@@ -11,6 +11,7 @@
 #import "MainFrameViewController.h"
 #import "VideoDecoderRenderer.h"
 #import "StreamManager.h"
+#import "SceneDelegate.h"
 #import "ControllerSupport.h"
 #import "DataManager.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
@@ -302,7 +303,7 @@
     _deviceWindow = self.view.window;
 
     if (UIScreen.screens.count > 1 && [self isAirPlayEnabled]) {
-        [self prepExtScreen:UIScreen.screens.lastObject];
+        [SceneDelegate setExternalDisplayRenderView:self->_streamVideoRenderView];
     }
     else {
         /*
@@ -620,6 +621,7 @@
 - (void) returnToMainFrame {
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
+    [SceneDelegate clearExternalDisplayRenderView];
     
     if (_settings.enablePIP) {
         [self cleanupPiPController];
@@ -636,24 +638,42 @@
 // External Screen connected
 - (void)extScreenDidConnect:(NSNotification *)notification {
     Log(LOG_I, @"External Screen Connected");
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self prepExtScreen:notification.object];
-    });
+    if ([self isAirPlayEnabled] && [notification.object isKindOfClass:[UIScreen class]]) {
+        UIScreen *extScreen = (UIScreen *)notification.object;
+        if (_streamVideoRenderView) {
+             // Remove from current superview before passing it
+             [_streamVideoRenderView removeFromSuperview];
+             [SceneDelegate setExternalDisplayRenderView:_streamVideoRenderView];
+             NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+             [nc postNotificationName:@"ScreenChanged" object:self];
+        } else {
+             Log(LOG_W, @"_streamVideoRenderView is nil when external screen connected.");
+        }
+    }
 }
 
 // External Screen disconnected
 - (void)extScreenDidDisconnect:(NSNotification *)notification {
     Log(LOG_I, @"External Screen Disconnected");
-    if(UIScreen.screens.count < 2)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^{
-        [self removeExtScreen];
-        });
+    if(UIScreen.screens.count < 2) {
+        [SceneDelegate clearExternalDisplayRenderView];
+        // Add the render view back to the local StreamView if AirPlay was active
+        if ([self isAirPlayEnabled]) {
+            if (_streamVideoRenderView && _streamView) {
+                [_streamView insertSubview:_streamVideoRenderView atIndex:0];
+                [self handleViewResize]; // Adjust frames as needed
+            }
+        }
+        NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+        [nc postNotificationName:@"ScreenChanged" object:self]; // Your existing notification
     }
 }
 
 - (BOOL) isAirPlaying{
-    return _extWindow != nil && _extWindow.hidden == NO;
+    if (_settings.externalDisplayMode.intValue == 1 && _streamVideoRenderView) {
+        return _streamVideoRenderView.hidden;
+    }
+    return NO;
 }
 
 - (BOOL) isAirPlayEnabled{
@@ -663,43 +683,10 @@
 - (void) reloadAirPlayConfig{
     if (UIScreen.screens.count == 1){return;}
     if (![self isAirPlaying] && [self isAirPlayEnabled]){
-        [self prepExtScreen:UIScreen.screens.lastObject];
+        [SceneDelegate setExternalDisplayRenderView:_streamVideoRenderView];
     }else if ([self isAirPlaying] && ![self isAirPlayEnabled]){
-        [self removeExtScreen];
+        [SceneDelegate clearExternalDisplayRenderView];
     }
-}
-
-// Prepare Screen
-- (void)prepExtScreen:(UIScreen*)extScreen {
-    Log(LOG_I, @"Preparing External Screen");
-    if(![self isAirPlayEnabled]){
-        return;
-    }
-    CGRect frame = extScreen.bounds;
-    extScreen.overscanCompensation = UIScreenOverscanCompensationNone;
-    if(_extWindow==nil){
-        _extWindow = [[UIWindow alloc] initWithFrame:frame];
-    }
-    _extWindow.screen = extScreen;
-    _streamVideoRenderView.bounds = frame;
-    _streamVideoRenderView.frame = frame;
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc postNotificationName:@"ScreenChanged" object:self];
-    [_extWindow addSubview:_streamVideoRenderView];
-    _extWindow.hidden = NO;
-}
-
-- (void)removeExtScreen {
-    Log(LOG_I, @"Removing External Screen");
-    _extWindow.hidden = YES;
-    [self handleViewResize];
-    /*
-     _settings.externalDisplayMode.intValue:
-     0 - stage manager
-     1 - airplay
-     2 - disabled
-     */
-    if(_settings.externalDisplayMode.intValue != 2) [_streamView insertSubview:_streamVideoRenderView atIndex:0];
 }
 
 - (void) handleViewResize{

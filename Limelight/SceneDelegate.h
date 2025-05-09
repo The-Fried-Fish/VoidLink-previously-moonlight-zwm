@@ -4,5 +4,9 @@
 
 @property (strong, nonatomic) UIWindow * window;
 
++ (void)setExternalDisplayRenderView:(UIView *)renderView;
++ (void)clearExternalDisplayRenderView;
+- (void)updatePreferredDisplayMode:(BOOL)streamActive withRenderView:(UIView *)renderView;
+
 @end
 

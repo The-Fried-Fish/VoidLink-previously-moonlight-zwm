@@ -60,6 +60,15 @@
 	<dict>
 		<key>UISceneConfigurations</key>
 		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<array>
+				<dict>
+					<key>UISceneDelegateClassName</key>
+					<string>SceneDelegate</string>
+					<key>UISceneConfigurationName</key>
+					<string>External Display Configuration</string>
+				</dict>
+			</array>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
@@ -71,7 +80,7 @@
 			</array>
 		</dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
+		<true/>
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>

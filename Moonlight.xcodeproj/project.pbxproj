@@ -547,8 +547,8 @@
 		FB290CF919B2C406004C83CF /* Moonlight */ = {
 			isa = PBXGroup;
 			children = (
-				975337EE2DCCC60C005FC427 /* SceneDelegate.m */,
 				975337ED2DCCC5F4005FC427 /* SceneDelegate.h */,
+				975337EE2DCCC60C005FC427 /* SceneDelegate.m */,
 				84D8EB932C5146AD00FC10A9 /* Moonlight-Bridging-Header.h */,
 				84FD0B492C312C0B006B5BE5 /* Localization */,
 				8454AC682C31907F00F0A302 /* iPad.storyboard */,
