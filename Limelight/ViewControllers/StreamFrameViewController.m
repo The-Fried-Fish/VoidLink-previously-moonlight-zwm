@@ -136,6 +136,9 @@
 }
 
 - (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {    // Ensure we have the renderer and its layer
+    if (self.pipController) {
+        return;
+    }
     Log(LOG_I, @"Setting up PiP controller...");
     
     if (!videoRenderer || !videoRenderer.displayLayer) {
@@ -146,8 +149,14 @@
     AVSampleBufferDisplayLayer *streamLayer = videoRenderer.displayLayer;
     
     if ([AVPictureInPictureController isPictureInPictureSupported]) {
-        self.pipContentSource = [[AVPictureInPictureControllerContentSource alloc] initWithSampleBufferDisplayLayer:streamLayer playbackDelegate:self];
-        self.pipController = [[AVPictureInPictureController alloc] initWithContentSource:self.pipContentSource];
+        if (@available(iOS 15.0, *)) {
+            self.pipContentSource = [[AVPictureInPictureControllerContentSource alloc] initWithSampleBufferDisplayLayer:streamLayer playbackDelegate:self];
+            self.pipController = [[AVPictureInPictureController alloc] initWithContentSource:self.pipContentSource];
+            self.pipController.canStartPictureInPictureAutomaticallyFromInline = YES;
+        } else {
+            Log(LOG_E, @"PiP not fully supported on this device.");
+            return;
+        }
 
         if (self.pipController) {
             self.pipController.delegate = self;
@@ -164,7 +173,10 @@
     if (self.pipController) {
         self.pipController.delegate = nil;
         self.pipController = nil;
-        self.pipContentSource = nil;
+        if (@available(iOS 15.0, *)) {
+            self.pipContentSource = nil;
+        }
+
         Log(LOG_I, @"PiP controller cleaned up.");
     }
 }
@@ -705,19 +717,9 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
-    if (_settings.enablePIP && self.pipController && !self.pipController.isPictureInPictureActive) {
-        VideoDecoderRenderer *renderer = self.streamMan.videoRenderer;
-        // Check the view's window property here
-        if (renderer && renderer.displayLayer && self.view.window && self.pipController.isPictureInPicturePossible) {
-            Log(LOG_I, @"Starting Picture in Picture");
-            [self.pipController startPictureInPicture];
-        } else {
-            Log(LOG_I, @"Skipping PiP start: Renderer/Layer/Window not ready OR PiP not possible.");
-        }
-    }
-
     if (_inactivityTimer != nil) {
         [_inactivityTimer invalidate];
+        _inactivityTimer = nil;
     }
     
 #if !TARGET_OS_TV
@@ -746,6 +748,9 @@
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
+    if (self.pipController && self.pipController.isPictureInPictureActive) {
+        [self.pipController stopPictureInPicture];
+    }
 }
 
 // This fires when the home button is pressed
@@ -760,8 +765,16 @@
         Log(LOG_I, @"PIP is active, not terminating stream");
         return;
     }
-    Log(LOG_I, @"Terminating stream immediately for backgrounding");
-    [self returnToMainFrame];
+    
+#if !TARGET_OS_TV
+    // Terminate the stream if the app is inactive for 60 seconds
+    Log(LOG_I, @"Starting inactivity termination timer");
+    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:60
+                                                      target:self
+                                                    selector:@selector(inactiveTimerExpired:)
+                                                    userInfo:nil
+                                                     repeats:NO];
+#endif
 }
 
 - (void)expandSettingsView{
@@ -1042,12 +1055,14 @@
         [_spinner stopAnimating];
         [self.view setBackgroundColor:[UIColor blackColor]];
 
-        if (_settings.enablePIP) {
-            if (self->_streamMan && self->_streamMan.videoRenderer) {
-                Log(LOG_I, @"Setting up PiP with renderer: %p", self->_streamMan.videoRenderer);
-                [self setupPiPControllerWithRenderer:self->_streamMan.videoRenderer];
-            } else {
-                Log(LOG_I, @"No renderer available for PiP setup");
+        if (@available(iOS 15.0, *)) {
+            if (_settings.enablePIP) {
+                if (self->_streamMan && self->_streamMan.videoRenderer) {
+                    Log(LOG_I, @"Setting up PiP with renderer: %p", self->_streamMan.videoRenderer);
+                    [self setupPiPControllerWithRenderer:self->_streamMan.videoRenderer];
+                } else {
+                    Log(LOG_I, @"No renderer available for PiP setup");
+                }
             }
         }
     });
