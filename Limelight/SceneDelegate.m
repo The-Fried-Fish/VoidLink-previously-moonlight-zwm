@@ -38,7 +38,6 @@ static UIWindow *_externalSceneWindow = nil;
             [_externalSceneWindow.rootViewController.view addSubview:_sharedStreamVideoRenderView];
             Log(LOG_I, @"SceneDelegate: External display scene connected.");
         }
-        _externalSceneWindow.hidden = NO;
     }
 }
 
@@ -52,6 +51,7 @@ static UIWindow *_externalSceneWindow = nil;
             [_sharedStreamVideoRenderView removeFromSuperview];
             _sharedStreamVideoRenderView.frame = _externalSceneWindow.bounds; // Set frame for external window
             [_externalSceneWindow.rootViewController.view addSubview:_sharedStreamVideoRenderView];
+            _externalSceneWindow.hidden = NO;
             Log(LOG_I, @"SceneDelegate: Added render view to external window's root view.");
         });
     } else {

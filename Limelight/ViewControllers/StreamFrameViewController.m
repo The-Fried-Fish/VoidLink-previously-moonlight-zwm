@@ -302,7 +302,8 @@
     
     _deviceWindow = self.view.window;
 
-    if (UIScreen.screens.count > 1 && [self isAirPlayEnabled]) {
+    UIScreen *currentScreen = self.view.window.windowScene.screen;
+    if (UIScreen.screens.count > 1 && [self isAirPlayEnabled] && currentScreen == UIScreen.mainScreen) {
         [SceneDelegate setExternalDisplayRenderView:self->_streamVideoRenderView];
     }
     else {
