@@ -1097,8 +1097,8 @@ static NSMutableSet* hostList;
 
 - (bool)isIPhonePortrait{
     bool isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    CGFloat screenHeightInPoints = CGRectGetHeight(self.view.bounds);
+    CGFloat screenWidthInPoints = CGRectGetWidth(self.view.bounds);
     bool isPortrait = screenHeightInPoints > screenWidthInPoints;
     return isIPhone && isPortrait;
    // return isPortrait;
@@ -1169,8 +1169,8 @@ static NSMutableSet* hostList;
     
     //recordedScreenWidth = CGRectGetWidth([[UIScreen mainScreen] bounds]);
     hostScrollView = [[ComputerScrollView alloc] init];
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
+    CGFloat screenWidthInPoints = CGRectGetWidth(self.view.bounds);
+    CGFloat screenHeightInPoints = CGRectGetHeight(self.view.bounds);
 
     // deal with scroll host view reload after device orientation change here:
     bool isLandscape = screenWidthInPoints > screenHeightInPoints;
@@ -1219,8 +1219,8 @@ static NSMutableSet* hostList;
 
 -(void)reloadScrollHostView{
     [hostScrollView removeFromSuperview]; // mandatory for scroll view refresh after orientation change and clicking "select new host"
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
+    CGFloat screenWidthInPoints = CGRectGetWidth(self.view.bounds);
+    CGFloat screenHeightInPoints = CGRectGetHeight(self.view.bounds);
 
     // deal with scroll host view reload after device orientation change here:
     bool isLandscape = screenWidthInPoints > screenHeightInPoints;
@@ -1274,9 +1274,9 @@ static NSMutableSet* hostList;
     CGFloat screenScale = window.screen.scale;
     CGFloat appWindowWidth = CGRectGetWidth(window.frame) * screenScale;
     CGFloat appWindowHeight = CGRectGetHeight(window.frame) * screenScale;
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
-    
+    CGFloat screenWidthInPoints = CGRectGetWidth(self.view.bounds);
+    CGFloat screenHeightInPoints = CGRectGetHeight(self.view.bounds);
+
     if(currentSettings.externalDisplayMode.intValue == 1 && UIScreen.screens.count > 1){
         CGRect bounds = [UIScreen.screens.lastObject bounds];
         screenScale = [UIScreen.screens.lastObject scale];
