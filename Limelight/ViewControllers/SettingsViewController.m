@@ -228,7 +228,7 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)updateResolutionTable{
-    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+    UIWindow *window = self.view.window;
     CGFloat screenScale = window.screen.scale;
     CGFloat safeAreaWidth = (window.frame.size.width - window.safeAreaInsets.left - window.safeAreaInsets.right) * screenScale;
     CGFloat appWindowWidth = window.frame.size.width * screenScale;
