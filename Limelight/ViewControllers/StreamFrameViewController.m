@@ -705,6 +705,15 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
+    if (_settings.enablePIP && self.pipController && !self.pipController.isPictureInPictureActive && self.pipController.isPictureInPicturePossible) {
+        VideoDecoderRenderer *renderer = self.streamMan.videoRenderer;
+        if (renderer && renderer.displayLayer && self.view.window) {
+            Log(LOG_I, @"Starting Picture in Picture");
+            [self.pipController startPictureInPicture];
+        } else {
+            Log(LOG_I, @"Skipping PiP start: Renderer/Layer/Window not ready OR PiP not possible.");
+        }
+    }
     if (_inactivityTimer != nil) {
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
