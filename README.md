@@ -28,8 +28,8 @@
 
 # 概述 Overview
 
-#### 这是首个实现iOS多点触控透传的Fork. 目前已经严重偏离原版moonlight-iOS (具体看release页面)。  <br>
-#### This fork is the first one to implement native multi-touch. It has developed with `too many deviations` from the original version (see the release page for details).
+#### 这是首个实现iOS多点触控透传的Fork。  <br>
+#### This fork is the first one to implement native multi-touch.
 #### A Reddit post introducing this fork:
 https://www.reddit.com/r/cloudygamer/comments/1f322q3/made_a_fork_of_moonlightios_with_many_deviations/
 
@@ -49,9 +49,11 @@ https://b23.tv/A0F9v7n
 
 <br>
 
-# 贡献者 Contributors
+# 贡献者 Contributors (按进入/合入本项目时间顺序排序, listed in the order of joining/merging with the project)
 [@TrueZhuangJia](https://github.com/TrueZhuangJia) - Maintainer & main developer </br>
 [@King0fSpace](https://github.com/King0fSpace) - Customization of legacy on-screen controller buttons </br>
 [@xzzpig](https://github.com/xzzpig) - Wake-on-LAN optimization, external display & stage manager support, 3 physical mouse mode </br>
 [@Acaki](https://github.com/Acaki) - YUV 444 implementation (based on works already done on moonlight-common-c) </br>
 [@Qian23333](https://github.com/Qian23333) - Action script for ipa building
+[@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) - Product design for ongoing UI refactoring </br>
+
