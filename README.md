@@ -1,3 +1,4 @@
+
 # 代码 Coding
 ### 代码提交在`noWaterMark`分支。
 ### For latest coding commits, go to branch `noWaterMark`.
@@ -49,11 +50,11 @@ https://b23.tv/A0F9v7n
 
 <br>
 
-# 贡献者 Contributors (按进入/合入本项目时间顺序排序, listed in the order of joining/merging with the project)
+# 贡献者 Contributors
 [@TrueZhuangJia](https://github.com/TrueZhuangJia) - Maintainer & main developer </br>
+[@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) - Product design for ongoing UI refactoring </br>
 [@King0fSpace](https://github.com/King0fSpace) - Customization of legacy on-screen controller buttons </br>
 [@xzzpig](https://github.com/xzzpig) - Wake-on-LAN optimization, external display & stage manager support, 3 physical mouse mode </br>
 [@Acaki](https://github.com/Acaki) - YUV 444 implementation (based on works already done on moonlight-common-c) </br>
 [@Qian23333](https://github.com/Qian23333) - Action script for ipa building </br>
-[@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) - Product design for ongoing UI refactoring </br>
 
