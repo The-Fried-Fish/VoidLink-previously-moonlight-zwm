@@ -1,0 +1,45 @@
+name: Build IPAs
+
+on:
+  push:
+    branches: [ "noWaterMark" ]
+
+jobs:
+  build:
+    name: Build IPAs
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout submodules
+        run: "git submodule update --init --recursive"
+
+      - name: Build FullScreen Version
+        run: |
+          plutil -replace UIRequiresFullScreen -bool true Limelight/Limelight-Info.plist
+          xcodebuild -verbose -scheme Moonlight-ZWM -sdk iphoneos -configuration AppStoreDistribution archive -archivePath $PWD/build/MoonlightFullScreen.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
+          mkdir -p ./build/IPA_FullScreen && mkdir -p ./build/IPA_FullScreen/Payload
+          cp -r ./build/MoonlightFullScreen.xcarchive/Products/Applications/Moonlight-ZWM.app ./build/IPA_FullScreen/Payload/Moonlight-ZWM.app
+          cd ./build/IPA_FullScreen && zip -r ../../build/Moonlight-ZWM_FullScreen.ipa ./Payload/* && cd ../..
+      
+      - name: Upload FullScreen IPA to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Moonlight-ZWM_FullScreen.ipa
+          path: build/Moonlight-ZWM_FullScreen.ipa
+
+      - name: Build StageManager Version
+        run: |
+          plutil -replace UIRequiresFullScreen -bool false Limelight/Limelight-Info.plist
+          xcodebuild -verbose -scheme Moonlight-ZWM -sdk iphoneos -configuration AppStoreDistribution archive -archivePath $PWD/build/MoonlightStageManager.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
+          mkdir -p ./build/IPA_StageManager && mkdir -p ./build/IPA_StageManager/Payload
+          cp -r ./build/MoonlightStageManager.xcarchive/Products/Applications/Moonlight-ZWM.app ./build/IPA_StageManager/Payload/Moonlight-ZWM.app
+          cd ./build/IPA_StageManager && zip -r ../../build/Moonlight-ZWM_StageManager.ipa ./Payload/* && cd ../..
+      
+      - name: Upload StageManager IPA to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Moonlight-ZWM_StageManager.ipa
+          path: build/Moonlight-ZWM_StageManager.ipa
