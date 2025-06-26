@@ -17,13 +17,6 @@
 ### 如果觉得这个fork好用， 请记得点星。
 ### Give it a star if you find this version helpful.
 
-<br>
-
-### 旧版可在App Store下载（无法更新），切换外区apple id, 搜索 "moonlight zwm"
-### Older version available on App Store (unable to update), just search "moonlight zwm"
-### https://apps.apple.com/us/app/moonlight-zwm/id6590630545
-### Feel free to install & rate the app ~
-
 
  <br>
 
