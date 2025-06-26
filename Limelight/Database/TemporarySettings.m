@@ -92,6 +92,7 @@
     self.statsOverlayLevel = settings.statsOverlayLevel;
     self.statsOverlayEnabled = settings.statsOverlayEnabled;
     self.keyboardToggleFingers = settings.keyboardToggleFingers;
+    self.motionMode = settings.motionMode;
     self.oscLayoutToolFingers = settings.oscLayoutToolFingers;
     self.slideToSettingsScreenEdge = settings.slideToSettingsScreenEdge;
     self.slideToSettingsDistance = settings.slideToSettingsDistance;

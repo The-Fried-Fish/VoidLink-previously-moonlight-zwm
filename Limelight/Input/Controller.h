@@ -11,6 +11,10 @@
 @import GameController;
 @import CoreHaptics;
 
+#if !TARGET_OS_TV
+    @import CoreMotion;
+#endif
+
 @interface Controller : NSObject
 
 typedef struct {
@@ -42,6 +46,12 @@ typedef struct {
 @property (nonatomic)                   GCAcceleration lastAccelSample;
 @property (nonatomic)                   NSTimer* _Nullable gyroTimer;
 @property (nonatomic)                   GCRotationRate lastGyroSample;
+
+#if !TARGET_OS_TV
+@property (nonatomic)                   CMMotionManager * _Nullable motionManager;
+@property (nonatomic)                   CMAcceleration lastDeviceAccelSample;
+@property (nonatomic)                   CMRotationRate lastDeviceGyroSample;
+#endif
 
 @property (nonatomic)                   NSTimer* _Nullable batteryTimer;
 @property (nonatomic)                   GCDeviceBatteryState lastBatteryState;

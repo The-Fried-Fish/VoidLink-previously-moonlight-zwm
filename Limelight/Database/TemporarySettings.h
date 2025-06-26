@@ -28,6 +28,7 @@
 @property (nonatomic, retain) NSNumber * oscLayoutToolFingers;
 @property (nonatomic, retain) NSNumber * slideToSettingsScreenEdge;
 @property (nonatomic, retain) NSNumber * slideToSettingsDistance;
+@property (nonatomic, retain) NSNumber * motionMode;
 @property (nonatomic, retain) NSNumber * oscTapExlusionAreaSize;
 @property (nonatomic, retain) NSNumber * touchPointerVelocityFactor;
 @property (nonatomic, retain) NSNumber * mousePointerVelocityFactor;

@@ -421,6 +421,42 @@
         }
       }
     },
+    "6Lj-ss-Tj8.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 6Lj-ss-Tj8.segmentTitles[0] = \"Auto\"; ObjectID = \"6Lj-ss-Tj8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto"
+          }
+        }
+      }
+    },
+    "6Lj-ss-Tj8.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 6Lj-ss-Tj8.segmentTitles[1] = \"Device Motion\"; ObjectID = \"6Lj-ss-Tj8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Device Motion"
+          }
+        }
+      }
+    },
+    "6Lj-ss-Tj8.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 6Lj-ss-Tj8.segmentTitles[2] = \"Controller Motion\"; ObjectID = \"6Lj-ss-Tj8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller Motion"
+          }
+        }
+      }
+    },
     "8GA-Js-kQN.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; 8GA-Js-kQN.segmentTitles[0] = \"No\"; ObjectID = \"8GA-Js-kQN\";",
       "extractionState" : "extracted_with_value",
@@ -735,6 +771,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Touch Pointer Velocity: 100%                                                     "
+          }
+        }
+      }
+    },
+    "c8T-vY-LOX.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Player 1 Motion Mode\"; ObjectID = \"c8T-vY-LOX\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Player 1 Motion Mode"
           }
         }
       }

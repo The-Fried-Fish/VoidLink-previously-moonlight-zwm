@@ -13,6 +13,9 @@
 #import "OnScreenButtonState.h"
 #import "OSCProfilesManager.h"
 #import "DataManager.h"
+#if !TARGET_OS_TV
+    #import <CoreMotion/CoreMotion.h>
+#endif
 
 #define UPDATE_BUTTON(x, y) (buttonFlags = \
 (y) ? (buttonFlags | (x)) : (buttonFlags & ~(x)))

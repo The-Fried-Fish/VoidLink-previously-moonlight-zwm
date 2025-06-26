@@ -19,6 +19,7 @@
                            width:(NSInteger)width
                      audioConfig:(NSInteger)audioConfig
                 onscreenControls:(NSInteger)onscreenControls
+                      motionMode:(NSInteger)motionMode
            keyboardToggleFingers:(NSInteger)keyboardToggleFingers
             oscLayoutToolFingers:(NSInteger)oscLayoutToolFingers
        slideToSettingsScreenEdge:(NSInteger)slideToSettingsScreenEdge
