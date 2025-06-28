@@ -477,6 +477,8 @@ BOOL isCustomResolution(CGSize res) {
     [self.resolutionSelector addTarget:self action:@selector(newResolutionChosen) forControlEvents:UIControlEventValueChanged];
     [self.framerateSelector setSelectedSegmentIndex:framerate];
     [self.framerateSelector addTarget:self action:@selector(updateBitrate) forControlEvents:UIControlEventValueChanged];
+    NSInteger motionMode = [currentSettings.motionMode integerValue];
+    [self.motionModeSelector setSelectedSegmentIndex:motionMode];
     [self.bitrateSlider setMinimumValue:0];
     [self.bitrateSlider setMaximumValue:(sizeof(bitrateTable) / sizeof(*bitrateTable)) - 1];
     [self.bitrateSlider setValue:[self getSliderValueForBitrate:_bitrate] animated:YES];
@@ -1054,6 +1056,7 @@ BOOL isCustomResolution(CGSize res) {
     NSInteger height = [self getChosenStreamHeight];
     NSInteger width = [self getChosenStreamWidth];
     NSInteger onscreenControls = [self.onscreenControlSelector selectedSegmentIndex];
+    NSInteger motionMode = [self.motionModeSelector selectedSegmentIndex];
     NSInteger keyboardToggleFingers = (uint16_t)self.keyboardToggleFingerNumSlider.value;
     NSInteger oscLayoutToolFingers = (uint16_t)self->oscLayoutFingers;
     // NSLog(@"saveSettings keyboardToggleFingers  %d", (uint16_t)keyboardToggleFingers);
@@ -1093,6 +1096,7 @@ BOOL isCustomResolution(CGSize res) {
                                width:width
                          audioConfig:2 // Stereo
                     onscreenControls:onscreenControls
+                          motionMode:motionMode
                keyboardToggleFingers:keyboardToggleFingers
                 oscLayoutToolFingers:oscLayoutToolFingers
            slideToSettingsScreenEdge:slideToSettingsScreenEdge

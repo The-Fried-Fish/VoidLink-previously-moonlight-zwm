@@ -84,6 +84,7 @@
     self.multiController = settings.multiController;
     self.swapABXYButtons = settings.swapABXYButtons;
     self.onscreenControls = settings.onscreenControls;
+    self.motionMode = settings.motionMode;
     self.reverseMouseWheelDirection = settings.reverseMouseWheelDirection;
     self.largerStickLR1 = settings.largerStickLR1;
     self.btMouseSupport = settings.btMouseSupport;

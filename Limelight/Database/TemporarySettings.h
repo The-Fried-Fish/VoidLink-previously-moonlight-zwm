@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSNumber * width;
 @property (nonatomic, retain) NSNumber * audioConfig;
 @property (nonatomic, retain) NSNumber * onscreenControls;
+@property (nonatomic, retain) NSNumber * motionMode;
 @property (nonatomic, retain) NSNumber * keyboardToggleFingers;
 @property (nonatomic, retain) NSNumber * oscLayoutToolFingers;
 @property (nonatomic, retain) NSNumber * slideToSettingsScreenEdge;

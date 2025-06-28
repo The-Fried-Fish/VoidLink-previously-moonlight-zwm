@@ -58,6 +58,7 @@
                            width:(NSInteger)width
                      audioConfig:(NSInteger)audioConfig
                 onscreenControls:(NSInteger)onscreenControls
+                      motionMode:(NSInteger)motionMode
            keyboardToggleFingers:(NSInteger)keyboardToggleFingers
             oscLayoutToolFingers:(NSInteger)oscLayoutToolFingers
        slideToSettingsScreenEdge:(NSInteger)slideToSettingsScreenEdge
@@ -96,6 +97,7 @@
         settingsToSave.width = [NSNumber numberWithInteger:width];
         settingsToSave.audioConfig = [NSNumber numberWithInteger:audioConfig];
         settingsToSave.onscreenControls = [NSNumber numberWithInteger:onscreenControls];
+        settingsToSave.motionMode = [NSNumber numberWithInteger:motionMode];
         settingsToSave.keyboardToggleFingers = [NSNumber numberWithInteger:(uint16_t)keyboardToggleFingers];
         settingsToSave.oscLayoutToolFingers = [NSNumber numberWithInteger:(uint16_t)oscLayoutToolFingers];
         settingsToSave.slideToSettingsScreenEdge = [NSNumber numberWithInteger:(uint32_t)slideToSettingsScreenEdge];

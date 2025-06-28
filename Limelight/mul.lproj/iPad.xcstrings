@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "0bl-Hh-8ot.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Player 1 Motion Mode\"; ObjectID = \"0bl-Hh-8ot\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Player 1 Motion Mode"
+          }
+        }
+      }
+    },
     "2Bp-XZ-cCw.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Larger Sticks & L1/R1 Buttons\"; ObjectID = \"2Bp-XZ-cCw\";",
       "extractionState" : "extracted_with_value",
@@ -2613,6 +2625,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启用"
+          }
+        }
+      }
+    },
+    "WQX-ct-rnt.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; WQX-ct-rnt.segmentTitles[0] = \"Auto\"; ObjectID = \"WQX-ct-rnt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto"
+          }
+        }
+      }
+    },
+    "WQX-ct-rnt.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; WQX-ct-rnt.segmentTitles[1] = \"Device Motion\"; ObjectID = \"WQX-ct-rnt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Device Motion"
+          }
+        }
+      }
+    },
+    "WQX-ct-rnt.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; WQX-ct-rnt.segmentTitles[2] = \"Controller Motion\"; ObjectID = \"WQX-ct-rnt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller Motion"
           }
         }
       }

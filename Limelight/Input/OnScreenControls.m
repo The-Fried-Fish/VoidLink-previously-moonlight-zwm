@@ -10,6 +10,9 @@
 #import "CustomTapGestureRecognizer.h"
 #import "Controller.h"
 #include "Limelight.h"
+#if !TARGET_OS_TV
+    #import <CoreMotion/CoreMotion.h>
+#endif
 #import "OnScreenButtonState.h"
 #import "OSCProfilesManager.h"
 #import "DataManager.h"
