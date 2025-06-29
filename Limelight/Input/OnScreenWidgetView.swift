@@ -87,6 +87,11 @@ import UIKit
     private var mousePointerMoved: Bool
     private var twoTouchesDetected: Bool
     
+    private var trackballVelocity: CGPoint = .zero
+    private var trackballDecelerationTimer: Timer?
+    private let trackballDecelerationRate: CGFloat = 0.90
+    private let trackballVelocityThreshold: CGFloat = 0.1
+    
     private var storedCenter: CGPoint = .zero // location from persisted data
     private var minimumBorderAlpha: CGFloat = 0.19
     private var defaultBorderColor: CGColor = UIColor(white: 0.2, alpha: 0.3).cgColor
@@ -678,6 +683,34 @@ import UIKit
         }
     }
     
+    //mousepad-trackball behavior========================================================
+    private func startTrackballMomentum() {
+        stopTrackballMomentum()
+
+        trackballDecelerationTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+
+            LiSendMouseMoveEvent(
+                Int16(truncatingIfNeeded: Int(self.trackballVelocity.x)),
+                Int16(truncatingIfNeeded: Int(self.trackballVelocity.y))
+            )
+
+            self.trackballVelocity.x *= self.trackballDecelerationRate
+            self.trackballVelocity.y *= self.trackballDecelerationRate
+
+            if abs(self.trackballVelocity.x) < self.trackballVelocityThreshold &&
+               abs(self.trackballVelocity.y) < self.trackballVelocityThreshold {
+                self.stopTrackballMomentum()
+            }
+        }
+    }
+
+    private func stopTrackballMomentum() {
+        trackballDecelerationTimer?.invalidate()
+        trackballDecelerationTimer = nil
+    }
+
+    
     //==== wholeButtonPress visual effect=============================================
     private func buttonDownVisualEffect() {
         // setupBorderLayer()
@@ -819,6 +852,10 @@ import UIKit
         super.touchesBegan(touches, with: event)
         self.isMultipleTouchEnabled = self.keyString == "MOUSEPAD" // only enable multi-touch in mousePad mode
 
+        if !OnScreenWidgetView.editMode && self.keyString == "TRACKBALL" {
+            stopTrackballMomentum()
+        }
+        
         if touches.count == 1 { // to make sure touchBegan location captured properly, don't use event.alltouches.count here
             let currentTime = CACurrentMediaTime()
             touchTapTimeInterval = currentTime - touchTapTimeStamp
@@ -979,6 +1016,13 @@ import UIKit
             case "MOUSEPAD":
                 LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(deltaX * 1.7 * sensitivityFactor)), Int16(truncatingIfNeeded: Int(deltaY * 1.7 * sensitivityFactor)))
                 break
+            case "TRACKBALL":
+                let dx = deltaX * 1.7 * sensitivityFactor
+                let dy = deltaY * 1.7 * sensitivityFactor
+                LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(dx)), Int16(truncatingIfNeeded: Int(dy)))
+                self.trackballVelocity = CGPoint(x: dx, y: dy)
+                stopTrackballMomentum()
+                break
             case "LSPAD":
                 self.sendLeftStickTouchPadEvent(inputX: offSetX * sensitivityFactor, inputY: offSetY*sensitivityFactor)
                 updateStickIndicator()
@@ -1015,6 +1059,10 @@ import UIKit
                 quickDoubleTapDetected = false
             }
             mousePointerMoved = false // reset this flag
+        }
+        
+        if !OnScreenWidgetView.editMode && self.keyString == "TRACKBALL" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
+            self.startTrackballMomentum()
         }
         
         if !OnScreenWidgetView.editMode && self.keyString == "MOUSEPAD" && twoTouchesDetected && touches.count == allCapturedTouchesCount { // need to enable multi-touch first
