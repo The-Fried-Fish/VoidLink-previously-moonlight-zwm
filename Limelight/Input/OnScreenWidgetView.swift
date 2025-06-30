@@ -850,8 +850,8 @@ import UIKit
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = true
         super.touchesBegan(touches, with: event)
-        self.isMultipleTouchEnabled = self.keyString == "MOUSEPAD" // only enable multi-touch in mousePad mode
-
+        self.isMultipleTouchEnabled = ["MOUSEPAD", "TRACKBALL"].contains(self.keyString) // only enable multi-touch in mousePad and trackball mode
+        
         if !OnScreenWidgetView.editMode && self.keyString == "TRACKBALL" {
             stopTrackballMomentum()
         }
