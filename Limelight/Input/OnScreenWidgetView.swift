@@ -1050,23 +1050,40 @@ import UIKit
         
         let allCapturedTouchesCount = event?.allTouches?.filter({ $0.view == self }).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         
-        // deal with MOUSPAD first
-        if !OnScreenWidgetView.editMode && self.keyString == "MOUSEPAD" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
-            if !mousePointerMoved && !quickDoubleTapDetected {self.sendLongMouseLeftButtonClickEvent()} // deal with single tap(click)
-            if quickDoubleTapDetected { //deal with quick double tap
-                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT) //must release the button anyway, because the button is likely being held down since the long click turned into a dragging event.
-                if !mousePointerMoved {self.sendShortMouseLeftButtonClickEvent()}
+        // Handle left-click (tap and double-tap) for MOUSEPAD and TRACKBALL
+        if !OnScreenWidgetView.editMode &&
+            (self.keyString == "MOUSEPAD" || self.keyString == "TRACKBALL") &&
+            allCapturedTouchesCount == 1 && !twoTouchesDetected {
+
+            if !mousePointerMoved && !quickDoubleTapDetected {
+                self.sendLongMouseLeftButtonClickEvent()
+            }
+
+            if quickDoubleTapDetected {
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+                if !mousePointerMoved {
+                    self.sendShortMouseLeftButtonClickEvent()
+                }
                 quickDoubleTapDetected = false
             }
-            mousePointerMoved = false // reset this flag
+
+            mousePointerMoved = false
         }
-        
-        if !OnScreenWidgetView.editMode && self.keyString == "TRACKBALL" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
+
+        // Start momentum if using TRACKBALL
+        if !OnScreenWidgetView.editMode &&
+            self.keyString == "TRACKBALL" &&
+            allCapturedTouchesCount == 1 &&
+            !twoTouchesDetected {
             self.startTrackballMomentum()
         }
-        
-        if !OnScreenWidgetView.editMode && self.keyString == "MOUSEPAD" && twoTouchesDetected && touches.count == allCapturedTouchesCount { // need to enable multi-touch first
-            // touches.count == allCapturedTouchesCount means allfingers are lifting
+
+        // Handle right-click for MOUSEPAD and TRACKBALL on two-finger tap
+        if !OnScreenWidgetView.editMode &&
+            (self.keyString == "MOUSEPAD" || self.keyString == "TRACKBALL") &&
+            twoTouchesDetected &&
+            touches.count == allCapturedTouchesCount {
+            
             self.sendMouseRightButtonClickEvent()
             twoTouchesDetected = false
         }
