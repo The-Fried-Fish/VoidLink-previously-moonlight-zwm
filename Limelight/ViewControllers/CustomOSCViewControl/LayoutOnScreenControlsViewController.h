@@ -40,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UISlider *widgetSizeSlider;
 @property (strong, nonatomic) IBOutlet UISlider *widgetHeightSlider;
 @property (strong, nonatomic) IBOutlet UISlider *widgetAlphaSlider;
-@property (strong, nonatomic) IBOutlet UISlider *sensitivityFactorSlider;
+@property (strong, nonatomic) IBOutlet UISlider *sensitivityFactorXSlider;
+@property (strong, nonatomic) IBOutlet UISlider *sensitivityFactorYSlider;
 @property (strong, nonatomic) IBOutlet UISlider *stickIndicatorOffsetSlider;
 @property (strong, nonatomic) IBOutlet UISlider *widgetBorderWidthSlider;
 

@@ -33,7 +33,8 @@
     UILabel *widgetHeightSliderLabel;
     UILabel *widgetAlphaSliderLabel;
     UILabel *widgetBorderWidthSliderLabel;
-    UILabel *sensitivitySliderLabel;
+    UILabel *sensitivityFactorXSliderLabel;
+    UILabel *sensitivityFactorYSliderLabel;
     UILabel *stickIndicatorOffsetSliderLabel;
     UILabel *stickIndicatorOffsetExplain;
 }
@@ -92,7 +93,8 @@
             widgetView.widthFactor = buttonState.widthFactor;
             widgetView.heightFactor = buttonState.heightFactor;
             widgetView.borderWidth = buttonState.borderWidth;
-            widgetView.sensitivityFactor = buttonState.sensitivityFactor;
+            widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
+            widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             // widgetView.backgroundAlpha = buttonState.backgroundAlpha;
             // Add the widgetView to the view controller's view
@@ -119,7 +121,8 @@
     widgetHeightSliderLabel = [[UILabel alloc] init];
     widgetAlphaSliderLabel = [[UILabel alloc] init];
     widgetBorderWidthSliderLabel = [[UILabel alloc] init];
-    sensitivitySliderLabel = [[UILabel alloc] init];
+    sensitivityFactorXSliderLabel = [[UILabel alloc] init];
+    sensitivityFactorYSliderLabel = [[UILabel alloc] init];
     stickIndicatorOffsetSliderLabel = [[UILabel alloc] init];
     stickIndicatorOffsetExplain = [[UILabel alloc] init];
 
@@ -431,13 +434,20 @@
     NSSet *nonVectorStickPads = [NSSet setWithObjects:@"LSPAD", @"RSPAD", nil];
 
     
-    bool showSensitivityFactorSlider = [stickAndMouseTouchpads containsObject:self->selectedWidgetView.keyString];
+    bool showSensitivityFactorXSlider = [stickAndMouseTouchpads containsObject:self->selectedWidgetView.keyString];
+    bool showSensitivityFactorYSlider = [stickAndMouseTouchpads containsObject:self->selectedWidgetView.keyString];
     bool showStickIndicatorOffsetSlider = [nonVectorStickPads containsObject:self->selectedWidgetView.keyString];
-    self.sensitivityFactorSlider.hidden = self->sensitivitySliderLabel.hidden = !showSensitivityFactorSlider;
+    self.sensitivityFactorXSlider.hidden = self->sensitivityFactorXSliderLabel.hidden = !showSensitivityFactorXSlider;
+    self.sensitivityFactorYSlider.hidden = self->sensitivityFactorYSliderLabel.hidden = !showSensitivityFactorYSlider;
+
     self.stickIndicatorOffsetSlider.hidden = self->stickIndicatorOffsetExplain.hidden = self->stickIndicatorOffsetSliderLabel.hidden = !showStickIndicatorOffsetSlider;
-    if(showSensitivityFactorSlider){
-        [self.sensitivityFactorSlider setValue:self->selectedWidgetView.sensitivityFactor];
-        [sensitivitySliderLabel setText:[LocalizationHelper localizedStringForKey:@"Sensitivity: %.2f", self->selectedWidgetView.sensitivityFactor]];
+    if(showSensitivityFactorXSlider){
+        [self.sensitivityFactorXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
+        [sensitivityFactorXSliderLabel setText:[LocalizationHelper localizedStringForKey:@"Sensitivity-X: %.2f", self->selectedWidgetView.sensitivityFactorX]];
+    }
+    if(showSensitivityFactorYSlider){
+        [self.sensitivityFactorYSlider setValue:self->selectedWidgetView.sensitivityFactorY];
+        [sensitivityFactorYSliderLabel setText:[LocalizationHelper localizedStringForKey:@"Sensitivity-Y: %.2f", self->selectedWidgetView.sensitivityFactorY]];
     }
     if(showStickIndicatorOffsetSlider){
         // illustrating the indicator offset,
@@ -462,8 +472,10 @@
     self->stickIndicatorOffsetExplain.hidden = true;
     self->stickIndicatorOffsetSliderLabel.hidden = true;
     self.stickIndicatorOffsetSlider.hidden = true;
-    self->sensitivitySliderLabel.hidden = true;
-    self.sensitivityFactorSlider.hidden = true;
+    self->sensitivityFactorXSliderLabel.hidden = true;
+    self->sensitivityFactorYSliderLabel.hidden = true;
+    self.sensitivityFactorXSlider.hidden = true;
+    self.sensitivityFactorYSlider.hidden = true;
     
     self->controllerLayerSelected = true;
     self->selectedControllerLayer = controllerLayer;
@@ -527,9 +539,15 @@
     return;
 }
 
-- (void)sensitivitySliderMoved{
-    [sensitivitySliderLabel setText:[LocalizationHelper localizedStringForKey:@"Sensitivity: %.2f", self.sensitivityFactorSlider.value]];
-    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.sensitivityFactor = self.sensitivityFactorSlider.value;
+- (void)sensitivityFactorXSliderMoved{
+    [sensitivityFactorXSliderLabel setText:[LocalizationHelper localizedStringForKey:@"Sensitivity-X: %.2f", self.sensitivityFactorXSlider.value]];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.sensitivityFactorX = self.sensitivityFactorXSlider.value;
+    return;
+}
+
+- (void)sensitivityFactorYSliderMoved{
+    [sensitivityFactorYSliderLabel setText:[LocalizationHelper localizedStringForKey:@"Sensitivity-Y: %.2f", self.sensitivityFactorYSlider.value]];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.sensitivityFactorY = self.sensitivityFactorYSlider.value;
     return;
 }
 
@@ -647,26 +665,56 @@
 
     
     
-    // sensitivity slider
-    self.sensitivityFactorSlider.hidden = YES;
-    self.sensitivityFactorSlider.frame = CGRectMake(sliderXPosition, self.sensitivityFactorSlider.frame.origin.y, self.sensitivityFactorSlider.frame.size.width, self.sensitivityFactorSlider.frame.size.height);
-    [self.sensitivityFactorSlider addTarget:self action:@selector(sensitivitySliderMoved) forControlEvents:(UIControlEventValueChanged)];
-    sensitivitySliderLabel.text = [LocalizationHelper localizedStringForKey:@"Sensitivity"];
-    sensitivitySliderLabel.font = [UIFont systemFontOfSize:18];
-    sensitivitySliderLabel.textColor = [UIColor whiteColor];
-    sensitivitySliderLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
-    sensitivitySliderLabel.translatesAutoresizingMaskIntoConstraints = NO; // Disable autoresizing mask for Auto Layout
+    // sensitivity X slider
+    self.sensitivityFactorXSlider.hidden = YES;
+    self.sensitivityFactorXSlider.frame = CGRectMake(sliderXPosition, self.sensitivityFactorXSlider.frame.origin.y, self.sensitivityFactorXSlider.frame.size.width, self.sensitivityFactorXSlider.frame.size.height);
+    [self.sensitivityFactorXSlider addTarget:self action:@selector(sensitivityFactorXSliderMoved) forControlEvents:(UIControlEventValueChanged)];
+    sensitivityFactorXSliderLabel.text = [LocalizationHelper localizedStringForKey:@"Sensitivity-X"];
+    sensitivityFactorXSliderLabel.font = [UIFont systemFontOfSize:18];
+    sensitivityFactorXSliderLabel.textColor = [UIColor whiteColor];
+    sensitivityFactorXSliderLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    sensitivityFactorXSliderLabel.translatesAutoresizingMaskIntoConstraints = NO; // Disable autoresizing mask for Auto Layout
     // Add slider and label to the view
-    [self.view addSubview:sensitivitySliderLabel];
+    [self.view addSubview:sensitivityFactorXSliderLabel];
     // Use Auto Layout to position the label relative to the slider
     [NSLayoutConstraint activateConstraints:@[
         // Position the label to the left of the slider
-        [sensitivitySliderLabel.trailingAnchor constraintEqualToAnchor:self.sensitivityFactorSlider.leadingAnchor constant:-10],
+        [sensitivityFactorXSliderLabel.trailingAnchor constraintEqualToAnchor:self.sensitivityFactorXSlider.leadingAnchor constant:-10],
         // Align vertically with the slider
-        [sensitivitySliderLabel.centerYAnchor constraintEqualToAnchor:self.sensitivityFactorSlider.centerYAnchor]
+        [sensitivityFactorXSliderLabel.centerYAnchor constraintEqualToAnchor:self.sensitivityFactorXSlider.centerYAnchor]
     ]];
-    sensitivitySliderLabel.hidden = self.sensitivityFactorSlider.hidden;
+    sensitivityFactorXSliderLabel.hidden = self.sensitivityFactorXSlider.hidden;
     
+    // sensitivity Y slider
+    self.sensitivityFactorYSlider.hidden = YES;
+    self.sensitivityFactorYSlider.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.sensitivityFactorYSlider];
+
+    [NSLayoutConstraint activateConstraints:@[
+        // Place Y slider to the right of X slider
+        [self.sensitivityFactorYSlider.leadingAnchor constraintEqualToAnchor:self.sensitivityFactorXSlider.trailingAnchor constant:162],
+        [self.sensitivityFactorYSlider.centerYAnchor constraintEqualToAnchor:self.sensitivityFactorXSlider.centerYAnchor],
+        // Match width/height with X slider
+        [self.sensitivityFactorYSlider.widthAnchor constraintEqualToAnchor:self.sensitivityFactorXSlider.widthAnchor],
+        [self.sensitivityFactorYSlider.heightAnchor constraintEqualToAnchor:self.sensitivityFactorXSlider.heightAnchor],
+    ]];
+
+    [self.sensitivityFactorYSlider addTarget:self action:@selector(sensitivityFactorYSliderMoved) forControlEvents:(UIControlEventValueChanged)];
+    sensitivityFactorYSliderLabel.text = [LocalizationHelper localizedStringForKey:@"Sensitivity-Y"];
+    sensitivityFactorYSliderLabel.font = [UIFont systemFontOfSize:18];
+    sensitivityFactorYSliderLabel.textColor = [UIColor whiteColor];
+    sensitivityFactorYSliderLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    sensitivityFactorYSliderLabel.translatesAutoresizingMaskIntoConstraints = NO; // Disable autoresizing mask for Auto Layout
+    // Add slider and label to the view
+    [self.view addSubview:sensitivityFactorYSliderLabel];
+    // Use Auto Layout to position the label relative to the slider
+    [NSLayoutConstraint activateConstraints:@[
+        // Position the label to the left of the slider
+        [sensitivityFactorYSliderLabel.trailingAnchor constraintEqualToAnchor:self.sensitivityFactorYSlider.leadingAnchor constant:-10],
+        // Align vertically with the slider
+        [sensitivityFactorYSliderLabel.centerYAnchor constraintEqualToAnchor:self.sensitivityFactorYSlider.centerYAnchor]
+    ]];
+    sensitivityFactorYSliderLabel.hidden = self.sensitivityFactorYSlider.hidden;
     
     // stick indicator offset slider
     self.stickIndicatorOffsetSlider.hidden = YES;

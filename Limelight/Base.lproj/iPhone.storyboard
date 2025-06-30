@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -656,6 +656,7 @@ ICAgICAgICAgICAgIA
                         <outlet property="largerStickLR1Selector" destination="XbO-CV-orB" id="7vF-xY-n4F"/>
                         <outlet property="liftStreamViewForKeyboardSelector" destination="pQE-vU-Nr7" id="avO-LL-zes"/>
                         <outlet property="localMousePointerModeSelector" destination="F96-Um-Q6t" id="Q9r-Wa-ths"/>
+                        <outlet property="motionModeSelector" destination="6Lj-ss-Tj8" id="RLW-3I-hvl"/>
                         <outlet property="mousePointerVelocityFactorSlider" destination="cS3-8R-rEd" id="pcU-fp-Fzg"/>
                         <outlet property="mousePointerVelocityFactorUILabel" destination="ecG-dC-PT1" id="MCr-m1-WHm"/>
                         <outlet property="multiControllerSelector" destination="OCT-oL-Dqb" id="bLT-gB-FcH"/>
@@ -683,7 +684,6 @@ ICAgICAgICAgICAgIA
                         <outlet property="touchPointerVelocityFactorUILabel" destination="c6f-bJ-Vji" id="uVM-o6-JPk"/>
                         <outlet property="unlockDisplayOrientationSelector" destination="R9O-Tw-UD4" id="0ak-pc-eva"/>
                         <outlet property="yuv444Selector" destination="vwT-tg-RfT" id="69G-bN-kJF"/>
-                        <outlet property="motionModeSelector" destination="6Lj-ss-Tj8" id="RLW-3I-hvl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RWc-Km-KG5" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -940,14 +940,20 @@ ICAgICAgICAgICAgIA
                                 <color key="textColor" red="0.95132106540000005" green="0.97490358349999995" blue="0.99987185000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="120" minValue="0.0" maxValue="350" id="OaL-Ph-J4n" userLabel="Slider">
-                                <rect key="frame" x="39" y="222" width="472" height="31"/>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="8" id="QXI-Ex-JNV" userLabel="Slider">
+                                <rect key="frame" x="38" y="187" width="159" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="secondaryLabelColor"/>
                                 <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </slider>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="8" id="QXI-Ex-JNV" userLabel="Slider">
-                                <rect key="frame" x="38" y="187" width="473" height="31"/>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="8" id="Jc9-4f-eoh" userLabel="Slider">
+                                <rect key="frame" x="349" y="187" width="164" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="secondaryLabelColor"/>
+                                <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </slider>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="120" minValue="0.0" maxValue="350" id="OaL-Ph-J4n" userLabel="Slider">
+                                <rect key="frame" x="41" y="225" width="472" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="secondaryLabelColor"/>
                                 <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -967,7 +973,8 @@ ICAgICAgICAgICAgIA
                         <outlet property="chevronImageView" destination="76O-3K-aa8" id="yGv-fM-Ohf"/>
                         <outlet property="chevronView" destination="Zll-IP-PFt" id="MGR-C0-h57"/>
                         <outlet property="currentProfileLabel" destination="yJC-bq-EOU" id="6Sn-El-zPG"/>
-                        <outlet property="sensitivityFactorSlider" destination="QXI-Ex-JNV" id="cH9-Ir-LIZ"/>
+                        <outlet property="sensitivityFactorXSlider" destination="QXI-Ex-JNV" id="cH9-Ir-LIZ"/>
+                        <outlet property="sensitivityFactorYSlider" destination="Jc9-4f-eoh" id="cpJ-8y-fPK"/>
                         <outlet property="stickIndicatorOffsetSlider" destination="OaL-Ph-J4n" id="uF3-7W-mdG"/>
                         <outlet property="toolbarRootView" destination="Jnu-63-bcf" id="Y17-e2-18R"/>
                         <outlet property="toolbarStackView" destination="4he-pe-kYB" id="eVm-jM-dcv"/>
@@ -1057,13 +1064,13 @@ ICAgICAgICAgICAgIA
         <image name="SquaresArrowUp" width="40" height="40"/>
         <image name="Trash" width="40" height="40"/>
         <systemColor name="secondaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

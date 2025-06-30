@@ -298,7 +298,8 @@ static NSMutableSet *OnScreenWidgetViews;
         buttonState.heightFactor = widgetView.heightFactor;
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.borderWidth = widgetView.borderWidth;
-        buttonState.sensitivityFactor = widgetView.sensitivityFactor;
+        buttonState.sensitivityFactorX = widgetView.sensitivityFactorX;
+        buttonState.sensitivityFactorY = widgetView.sensitivityFactorY;
         buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
         
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];

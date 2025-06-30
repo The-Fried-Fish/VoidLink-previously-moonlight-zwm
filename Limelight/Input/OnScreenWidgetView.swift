@@ -47,8 +47,8 @@ import UIKit
     @objc public var offSetY: CGFloat
 
     // this is for all stick pads and mouse Pad
-    @objc public var sensitivityFactor: CGFloat = 1.0
-
+    @objc public var sensitivityFactorX: CGFloat = 1.0
+    @objc public var sensitivityFactorY: CGFloat = 1.0
     
     // for LSVPAD, RSVPAD, LSPAD, RSPAD
     private let crossMarkColor: CGColor = UIColor(white: 1, alpha: 0.70).cgColor
@@ -128,7 +128,8 @@ import UIKit
         self.touchLockedForMoveEvent = UITouch()
         self.twoTouchesDetected = false
         self.stickIndicatorOffset = 95
-        self.sensitivityFactor = 1.0
+        self.sensitivityFactorX = 1.0
+        self.sensitivityFactorY = 1.0
         super.init(frame: .zero)
         
         upIndicator = createLrudDirectionLayer()
@@ -432,8 +433,8 @@ import UIKit
         CATransaction.setDisableActions(true)
         self.stickBallLayer.removeAllAnimations()
         if !OnScreenWidgetView.editMode {
-            let realOffsetX = touchInputToStickBallCoord(input: offSetX*sensitivityFactor)
-            let realOffsetY = touchInputToStickBallCoord(input: offSetY*sensitivityFactor)
+            let realOffsetX = touchInputToStickBallCoord(input: offSetX*sensitivityFactorX)
+            let realOffsetY = touchInputToStickBallCoord(input: offSetY*sensitivityFactorY)
             self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame) + realOffsetX, CGRectGetMidY(self.crossMarkLayer.frame) + realOffsetY)
             if fabs(realOffsetX) == stickBallMaxOffset || fabs(realOffsetY) == stickBallMaxOffset {
                 handleStickBallReachingBorder()
@@ -1014,25 +1015,25 @@ import UIKit
             
             switch self.keyString{
             case "MOUSEPAD":
-                LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(deltaX * 1.7 * sensitivityFactor)), Int16(truncatingIfNeeded: Int(deltaY * 1.7 * sensitivityFactor)))
+                LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(deltaX * 1.7 * sensitivityFactorX)), Int16(truncatingIfNeeded: Int(deltaY * 1.7 * sensitivityFactorY)))
                 break
             case "TRACKBALL":
-                let dx = deltaX * 1.7 * sensitivityFactor
-                let dy = deltaY * 1.7 * sensitivityFactor
+                let dx = deltaX * 1.7 * sensitivityFactorX
+                let dy = deltaY * 1.7 * sensitivityFactorY
                 LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(dx)), Int16(truncatingIfNeeded: Int(dy)))
                 self.trackballVelocity = CGPoint(x: dx, y: dy)
                 stopTrackballMomentum()
                 break
             case "LSPAD":
-                self.sendLeftStickTouchPadEvent(inputX: offSetX * sensitivityFactor, inputY: offSetY*sensitivityFactor)
+                self.sendLeftStickTouchPadEvent(inputX: offSetX * sensitivityFactorX, inputY: offSetY*sensitivityFactorY)
                 updateStickIndicator()
             case "RSPAD":
-                self.sendRightStickTouchPadEvent(inputX: offSetX * sensitivityFactor, inputY: offSetY * sensitivityFactor);
+                self.sendRightStickTouchPadEvent(inputX: offSetX * sensitivityFactorX, inputY: offSetY * sensitivityFactorY);
                 updateStickIndicator()
             case "LSVPAD":
-                self.sendLeftStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactor, inputY: deltaY*1.5167*sensitivityFactor)
+                self.sendLeftStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactorX, inputY: deltaY*1.5167*sensitivityFactorY)
             case "RSVPAD":
-                self.sendRightStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactor, inputY: deltaY*1.5167*sensitivityFactor);
+                self.sendRightStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactorX, inputY: deltaY*1.5167*sensitivityFactorY);
             case "DPAD", "WASDPAD", "ARROWPAD":
                 handleLrudTouchMove()
             default:

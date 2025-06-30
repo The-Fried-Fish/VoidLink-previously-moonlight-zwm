@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -924,7 +924,7 @@ ICAgICAgICAgICAgICA
                                 <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </slider>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="8" id="FRZ-xP-x2r">
-                                <rect key="frame" x="205" y="192" width="591" height="31"/>
+                                <rect key="frame" x="205" y="192" width="204" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="secondaryLabelColor"/>
                                 <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -950,6 +950,12 @@ ICAgICAgICAgICAgICA
                                 <color key="backgroundColor" systemColor="secondaryLabelColor"/>
                                 <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </slider>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="8" id="6sy-Nd-y5h">
+                                <rect key="frame" x="592" y="192" width="204" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="secondaryLabelColor"/>
+                                <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -964,7 +970,8 @@ ICAgICAgICAgICAgICA
                         <outlet property="chevronImageView" destination="iVZ-Fd-dY7" id="403-Nj-wRx"/>
                         <outlet property="chevronView" destination="hKp-ds-86I" id="Og9-aT-zNH"/>
                         <outlet property="currentProfileLabel" destination="cRV-Xw-CVi" id="Zrb-zn-ptp"/>
-                        <outlet property="sensitivityFactorSlider" destination="FRZ-xP-x2r" id="Vah-oh-eMp"/>
+                        <outlet property="sensitivityFactorXSlider" destination="FRZ-xP-x2r" id="Vah-oh-eMp"/>
+                        <outlet property="sensitivityFactorYSlider" destination="6sy-Nd-y5h" id="DPV-d1-7Uw"/>
                         <outlet property="stickIndicatorOffsetSlider" destination="oc7-kh-RVH" id="f5k-n0-7DM"/>
                         <outlet property="toolbarRootView" destination="fZU-G0-fgM" id="txP-M2-GKi"/>
                         <outlet property="toolbarStackView" destination="YLK-IE-ajS" id="j4o-Kp-7Z8"/>
