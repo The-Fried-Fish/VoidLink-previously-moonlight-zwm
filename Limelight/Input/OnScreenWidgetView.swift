@@ -82,6 +82,7 @@ import UIKit
     
     // first touch location within the button or pad view (self)
     @objc public var touchBeganLocation: CGPoint = .zero
+    private var firstTouchMoved = false
     
     // for mousePad
     private var mousePointerMoved: Bool
@@ -850,6 +851,7 @@ import UIKit
     // Touch event handling
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = true
+        self.firstTouchMoved = false
         super.touchesBegan(touches, with: event)
         self.isMultipleTouchEnabled = self.keyString == "MOUSEPAD" // only enable multi-touch in mousePad mode
 
@@ -1003,42 +1005,51 @@ import UIKit
         }
     }
     
+
     private func handleTouchPadMoveEvent (_ touches: Set<UITouch>, with event: UIEvent?){
-        if touches.count == 1{ // don't use event.alltouches.count here, it will counts all touches
-            self.mousePointerMoved = true
-            let currentTouchLocation: CGPoint = (touches.first?.location(in: self))!
-            self.deltaX = currentTouchLocation.x - self.latestTouchLocation.x
-            self.deltaY = currentTouchLocation.y - self.latestTouchLocation.y
-            self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
-            self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
+        guard let touch = touches.first else { return }
+
+        let currentTouchLocation = touch.location(in: self)
+
+        if !firstTouchMoved {
+            // First move event
             self.latestTouchLocation = currentTouchLocation
-            
-            switch self.keyString{
-            case "MOUSEPAD":
-                LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(deltaX * 1.7 * sensitivityFactorX)), Int16(truncatingIfNeeded: Int(deltaY * 1.7 * sensitivityFactorY)))
-                break
-            case "TRACKBALL":
-                let dx = deltaX * 1.7 * sensitivityFactorX
-                let dy = deltaY * 1.7 * sensitivityFactorY
-                LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(dx)), Int16(truncatingIfNeeded: Int(dy)))
-                self.trackballVelocity = CGPoint(x: dx, y: dy)
-                stopTrackballMomentum()
-                break
-            case "LSPAD":
-                self.sendLeftStickTouchPadEvent(inputX: offSetX * sensitivityFactorX, inputY: offSetY*sensitivityFactorY)
-                updateStickIndicator()
-            case "RSPAD":
-                self.sendRightStickTouchPadEvent(inputX: offSetX * sensitivityFactorX, inputY: offSetY * sensitivityFactorY);
-                updateStickIndicator()
-            case "LSVPAD":
-                self.sendLeftStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactorX, inputY: deltaY*1.5167*sensitivityFactorY)
-            case "RSVPAD":
-                self.sendRightStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactorX, inputY: deltaY*1.5167*sensitivityFactorY);
-            case "DPAD", "WASDPAD", "ARROWPAD":
-                handleLrudTouchMove()
-            default:
-                break
-            }
+            self.firstTouchMoved = true
+        }
+
+        self.mousePointerMoved = true
+        self.deltaX = currentTouchLocation.x - self.latestTouchLocation.x
+        self.deltaY = currentTouchLocation.y - self.latestTouchLocation.y
+        self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
+        self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
+        self.latestTouchLocation = currentTouchLocation
+        
+        switch self.keyString{
+        case "MOUSEPAD":
+            LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(deltaX * 1.7 * sensitivityFactorX)), Int16(truncatingIfNeeded: Int(deltaY * 1.7 * sensitivityFactorY)))
+            break
+        case "TRACKBALL":
+            let dx = deltaX * 1.7 * sensitivityFactorX
+            let dy = deltaY * 1.7 * sensitivityFactorY
+            LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(dx)), Int16(truncatingIfNeeded: Int(dy)))
+            self.trackballVelocity = CGPoint(x: dx, y: dy)
+            stopTrackballMomentum()
+            break
+        case "LSPAD":
+            self.sendLeftStickTouchPadEvent(inputX: offSetX * sensitivityFactorX, inputY: offSetY*sensitivityFactorY)
+            updateStickIndicator()
+        case "RSPAD":
+            self.sendRightStickTouchPadEvent(inputX: offSetX * sensitivityFactorX, inputY: offSetY * sensitivityFactorY);
+            updateStickIndicator()
+        case "LSVPAD":
+            self.sendLeftStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactorX, inputY: deltaY*1.5167*sensitivityFactorY)
+        case "RSVPAD":
+            self.sendRightStickTouchPadEvent(inputX: deltaX*1.5167*sensitivityFactorX, inputY: deltaY*1.5167*sensitivityFactorY);
+        case "DPAD", "WASDPAD", "ARROWPAD":
+            handleLrudTouchMove()
+        default:
+            break
+        
 
         }
     }
