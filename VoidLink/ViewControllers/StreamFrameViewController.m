@@ -217,7 +217,6 @@
 
 -(void)automaticallyStartSendingBuiltinGyroEvents{
     [_controllerSupport updateConfig:self.streamConfig delegate:self];// reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
-    [_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig streamFrameTopLayerView:self.view]; //reinitiate setupStreamView process.
 }
 
 
