@@ -310,20 +310,6 @@ BOOL isCustomResolution(CGSize res) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SettingsViewClosedNotification" object:self]; // notify other view that settings view just closed
 }
 
-/*
-- (void)addExitButtonOnTop{
-    UIButton *exitButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [exitButton setTitle:@"Exit" forState:UIControlStateNormal];
-    [exitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal]; // Set font color
-    exitButton.backgroundColor = [UIColor clearColor]; // Set background color
-    exitButton.titleLabel.font = [UIFont boldSystemFontOfSize:16.0]; // Set font size and style
-    exitButton.layer.cornerRadius = 8.0; // Optional: Round corners if desired
-    exitButton.clipsToBounds = YES; // Ensure rounded corners are applied properly
-    [exitButton addTarget:self action:@selector(exitButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:exitButton];
-    exitButton.frame = CGRectMake(0, 20, 200, 50); // Adjust Y and height as needed
-}*/
-
 - (SettingsMenuMode)getSettingsMenuMode{
     return currentSettingsMenuMode;
 }
@@ -584,65 +570,6 @@ BOOL isCustomResolution(CGSize res) {
     [experimentalSection setExpanded:YES];
 }
 
-
-- (void)layoutWidgetes {
-    
-    // [self.view addSubview:self.navigationBar];
-    
-    self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
-    
-    // 可选：确保 scrollView 开启垂直滚动
-    self.scrollView.alwaysBounceVertical = YES;
-    
-    UIStackView* parentStackTmp = [[UIStackView alloc] init];
-    parentStackTmp.axis = UILayoutConstraintAxisVertical;
-    parentStackTmp.spacing = 13;
-    parentStackTmp.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.scrollView addSubview:parentStackTmp];
-    [NSLayoutConstraint activateConstraints:@[
-        [parentStackTmp.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: [self getStandardNavBarHeight] + 300],
-        [parentStackTmp.bottomAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.bottomAnchor constant:-20],
-        [parentStackTmp.leadingAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.leadingAnchor constant: 14],
-        [parentStackTmp.trailingAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.trailingAnchor constant: -15],
-        [parentStackTmp.widthAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.widthAnchor]
-    ]];
-    
-    
-    [parentStackTmp addArrangedSubview:self.resolutionStack];
-    // self.resolutionStack.hidden = YES;
-    [parentStackTmp addArrangedSubview:self.fpsStack];
-    // self.fpsStack.hidden = YES;
-    [parentStackTmp addArrangedSubview:self.bitrateStack];
-    // self.bitrateStack.hidden = YES;
-    [parentStackTmp addArrangedSubview:self.touchModeStack];
-    // [parentStackTmp addArrangedSubview:self.asyncTouchStack];
-    [parentStackTmp addArrangedSubview:self.pointerVelocityDividerStack];
-    [parentStackTmp addArrangedSubview:self.pointerVelocityFactorStack];
-    [parentStackTmp addArrangedSubview:self.touchMoveEventIntervalStack];
-    [parentStackTmp addArrangedSubview:self.mousePointerVelocityStack];
-    [parentStackTmp addArrangedSubview:self.onScreenWidgetStack];
-    [parentStackTmp addArrangedSubview:self.softKeyboardGestureStack];
-    [parentStackTmp addArrangedSubview:self.liftStreamViewForKeyboardStack];
-    [parentStackTmp addArrangedSubview:self.softKeyboardToolbarStack];
-    [parentStackTmp addArrangedSubview:self.slideToSettingsScreenEdgeStack];
-    [parentStackTmp addArrangedSubview:self.slideToToolboxScreenEdgeStack];
-    [parentStackTmp addArrangedSubview:self.slideToSettingsDistanceStack];
-    [parentStackTmp addArrangedSubview:self.optimizeGamesStack];
-    [parentStackTmp addArrangedSubview:self.multiControllerStack];
-    [parentStackTmp addArrangedSubview:self.swapAbaxyStack];
-    [parentStackTmp addArrangedSubview:self.audioOnPcStack];
-    [parentStackTmp addArrangedSubview:self.codecStack];
-    [parentStackTmp addArrangedSubview:self.yuv444Stack];
-    [parentStackTmp addArrangedSubview:self.HdrStack];
-    [parentStackTmp addArrangedSubview:self.framepacingStack];
-    [parentStackTmp addArrangedSubview:self.reverseMouseWheelDirectionStack];
-    [parentStackTmp addArrangedSubview:self.citrixX1MouseStack];
-    [parentStackTmp addArrangedSubview:self.statsOverlayStack];
-    [parentStackTmp addArrangedSubview:self.unlockDisplayOrientationStack];
-    [parentStackTmp addArrangedSubview:self.externalDisplayModeStack];
-    [parentStackTmp addArrangedSubview:self.localMousePointerModeStack];
-    [parentStackTmp removeFromSuperview];
-}
 
 - (void)handleAutoScroll:(CGPoint)location{
     bool scrollDown = location.y > self.view.bounds.size.height - 100;
@@ -1185,17 +1112,12 @@ BOOL isCustomResolution(CGSize res) {
 
     _settingStackDict = [[NSMutableDictionary alloc] init];
 
-    // return;
-    BOOL isIPad = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad);
-    if(true){
-        //[self layoutWidgetes]; // layout for ipad tmply
-        // [self.view ]
-        for(UIView* view in self.view.subviews){
-            [view removeFromSuperview];
-        }
-        [self initParentStack];
-        [self layoutSections];
+ 
+    for(UIView* view in self.view.subviews){
+        [view removeFromSuperview];
     }
+    [self initParentStack];
+    [self layoutSections];
 
 
     // [self swi];
@@ -1222,19 +1144,6 @@ BOOL isCustomResolution(CGSize res) {
     currentSettingsMenuMode = currentSettings.settingsMenuMode.intValue;
     [self loadFavoriteSettingStackIdentifiers];
     if(currentSettings.settingsMenuMode.intValue == FavoriteSettings) [self switchToFavoriteSettings];
-    /*
-    switch (currentSettingsMenuMode) {
-        case FavoriteSettings:
-            [self switchToFavoriteSettings];
-            break;
-        case AllSettings:
-            //[self switchToAllSettings];
-            break;
-        default:
-            break;
-    }
-    */
-
 
     // Ensure we pick a bitrate that falls exactly onto a slider notch
     _bitrate = bitrateTable[[self getSliderValueForBitrate:[currentSettings.bitrate intValue]]];
@@ -1470,22 +1379,6 @@ BOOL isCustomResolution(CGSize res) {
 - (void)slideToSettingsScreenEdgeChanged{
     if([self.slideToSettingsScreenEdgeSelector selectedSegmentIndex] == 0) [self.slideToToolboxScreenEdgeSelector setSelectedSegmentIndex:1];
     else [self.slideToToolboxScreenEdgeSelector setSelectedSegmentIndex:0];
-}
-
-
-- (void)updateTouchModeLabel{
-    NSString* labelText;
-    switch([self.touchModeSelector selectedSegmentIndex]){
-        case RelativeTouch:
-            labelText = [LocalizationHelper localizedStringForKey:@"Touch Mode - Double Tap to Drag, OSC Available"];break;
-        case NativeTouch:
-            labelText = [LocalizationHelper localizedStringForKey:@"Touch Mode - With OSC & Mouse Support"];break;
-        case NativeTouchOnly:
-            labelText = [LocalizationHelper localizedStringForKey:@"Touch Mode - No OSC & Mouse Support"];break;
-        case AbsoluteTouch:
-            labelText = [LocalizationHelper localizedStringForKey:@"Touch Mode - For MacOS Direct Touch"];break;
-    }
-    [self.touchModeLabel setText:labelText];
 }
 
 - (void)showCustomOswTip {
@@ -1862,12 +1755,6 @@ BOOL isCustomResolution(CGSize res) {
     NSInteger height = [self getChosenStreamHeight];
     
     [self findDynamicLabelFromStack:_resolutionStack].text = [NSString stringWithFormat:@"%ld × %ld", (long)width, (long)height];
-    /*
-    [self.resolutionDisplayLabel sizeToFit];
-    self.resolutionDisplayLabel.textAlignment = NSTextAlignmentCenter;
-    self.resolutionDisplayLabel.adjustsFontSizeToFitWidth = YES;
-    self.resolutionDisplayLabel.textColor = [ThemeManager appPrimaryColor];
-    self.resolutionDisplayLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightMedium]; */
 }
 
 - (void) touchMoveEventIntervalSliderMoved:(UISlider* )sender{
