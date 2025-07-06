@@ -6,8 +6,8 @@
 //  Copyright © 2019 Moonlight Game Streaming Project. All rights reserved.
 //
 
-#include "Controller.h"
+#include "VoidController.h"
 
-@implementation Controller
+@implementation VoidController
 
 @end

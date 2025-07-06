@@ -11,7 +11,7 @@
 
 #import "OnScreenControls.h"
 #import "CustomTapGestureRecognizer.h"
-#import "Controller.h"
+#import "VoidController.h"
 #include "Limelight.h"
 #if !TARGET_OS_TV
     #import <CoreMotion/CoreMotion.h>
@@ -70,7 +70,7 @@ static NSSet *validPositionButtonNames;
     BOOL _visible;
     
     ControllerSupport *_controllerSupport;
-    Controller *_controller;
+    VoidController *_controller;
     NSMutableArray* _deadTouches;
     BOOL _swapABXY;
     BOOL _largerStickLR1;

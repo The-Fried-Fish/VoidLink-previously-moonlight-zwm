@@ -57,6 +57,7 @@
     StreamView *_streamView;
     UIScrollView *_scrollView;
     BOOL _userIsInteracting;
+    bool viewJustLoaded;
     CGSize _keyboardSize;
     UIWindow *_extWindow;
     UIView *_streamVideoRenderView;
@@ -195,7 +196,10 @@
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
     [self.mainFrameViewcontroller reloadStreamConfig]; // reload streamconfig
     
-    [_controllerSupport updateConfig:self.streamConfig delegate:self];// reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
+    NSLog(@"viewJustloaded: %d", viewJustLoaded);
+    if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
+    else viewJustLoaded = false;
+    // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
     [_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig streamFrameTopLayerView:self.view]; //reinitiate setupStreamView process.
         // we got self.view passed to streamView class as the topLayerView, will be useful in many cases
     [self->_streamView reloadOnScreenControlsRealtimeWith:(ControllerSupport*)_controllerSupport
@@ -214,11 +218,6 @@
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
-
--(void)automaticallyStartSendingBuiltinGyroEvents{
-    [_controllerSupport updateConfig:self.streamConfig delegate:self];// reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
-}
-
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -347,6 +346,7 @@
 
 - (void)viewDidLoad
 {
+    viewJustLoaded = true;
     [super viewDidLoad];
         
     [self.navigationController setNavigationBarHidden:YES animated:YES];

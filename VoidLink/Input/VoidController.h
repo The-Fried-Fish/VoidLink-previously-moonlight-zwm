@@ -14,7 +14,7 @@
     @import CoreMotion;
 #endif
 
-@interface Controller : NSObject
+@interface VoidController : NSObject
 
 typedef struct {
     float lastX;
@@ -64,11 +64,13 @@ typedef NS_ENUM(NSInteger, ControllerDeviceBatteryState) {
 @property (nonatomic)                   float lastBatteryLevel;
 
 @property (nonatomic)                   BOOL reportedArrival;
-@property (nonatomic)                   Controller* _Nullable mergedWithController;
+@property (nonatomic)                   VoidController* _Nullable mergedWithController;
 
 @property(nonatomic, strong) NSMutableSet* _Nullable motionTypes;
 @property(nonatomic, assign) uint16_t reportRateHz;
 @property(nonatomic, assign) uint16_t controllerNumber;
+@property(nonatomic, assign) BOOL hasAccelerometer;
+@property(nonatomic, assign) BOOL hasGyroscope;
 
 
 @end

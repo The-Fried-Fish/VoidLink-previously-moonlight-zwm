@@ -49,7 +49,7 @@
 		988FCD41293B091B003050E2 /* KeyboardInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = 988FCD40293B091B003050E2 /* KeyboardInputField.m */; };
 		9890CF6B203B7EE1006C4B06 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9890CF6A203B7EE1006C4B06 /* libxml2.tbd */; };
 		9896219723D15C7000211983 /* X1Kit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9896219623D15C7000211983 /* X1Kit.swift */; };
-		9897B6A1221260EF00966419 /* Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = 9897B6A0221260EF00966419 /* Controller.m */; };
+		9897B6A1221260EF00966419 /* VoidController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9897B6A0221260EF00966419 /* VoidController.m */; };
 		98CFB82F1CAD481B0048EF74 /* libmoonlight-common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AB2E841CAD46840089BB98 /* libmoonlight-common.a */; };
 		98D5856D1C0EA79600F6CC00 /* TemporaryHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */; };
 		98D585701C0ED0E800F6CC00 /* TemporarySettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */; };
@@ -208,8 +208,8 @@
 		988FCD40293B091B003050E2 /* KeyboardInputField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyboardInputField.m; sourceTree = "<group>"; };
 		9890CF6A203B7EE1006C4B06 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		9896219623D15C7000211983 /* X1Kit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = X1Kit.swift; path = X1Kit/Sources/X1Kit/X1Kit.swift; sourceTree = "<group>"; };
-		9897B6A0221260EF00966419 /* Controller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Controller.m; sourceTree = "<group>"; };
-		9897B6A32212610800966419 /* Controller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
+		9897B6A0221260EF00966419 /* VoidController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VoidController.m; sourceTree = "<group>"; };
+		9897B6A32212610800966419 /* VoidController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VoidController.h; sourceTree = "<group>"; };
 		98AB2E7F1CAD46830089BB98 /* moonlight-common.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "moonlight-common.xcodeproj"; path = "moonlight-common/moonlight-common.xcodeproj"; sourceTree = "<group>"; };
 		98B9CE6C27B2144B00B473C4 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS15.2.sdk/System/Library/Frameworks/AVKit.framework; sourceTree = DEVELOPER_DIR; };
 		98D5856B1C0EA79600F6CC00 /* TemporaryHost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TemporaryHost.h; path = Database/TemporaryHost.h; sourceTree = "<group>"; };
@@ -559,8 +559,8 @@
 				FB4678EC1A50C40900377732 /* OnScreenControls.m */,
 				FB1A674B2131E65900507771 /* KeyboardSupport.h */,
 				FB1A674C2131E65900507771 /* KeyboardSupport.m */,
-				9897B6A0221260EF00966419 /* Controller.m */,
-				9897B6A32212610800966419 /* Controller.h */,
+				9897B6A0221260EF00966419 /* VoidController.m */,
+				9897B6A32212610800966419 /* VoidController.h */,
 				9827E7A22514366900F25707 /* HapticContext.m */,
 				9827E7A7251436EA00F25707 /* HapticContext.h */,
 				840751B12BF49B5A0096B657 /* CustomTapGestureRecognizer.h */,
@@ -874,7 +874,7 @@
 				847D2FDB2DDA015F00937A62 /* MenuSectionView.m in Sources */,
 				FB53E1431BE5DC4400CD6ECE /* IdManager.m in Sources */,
 				189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */,
-				9897B6A1221260EF00966419 /* Controller.m in Sources */,
+				9897B6A1221260EF00966419 /* VoidController.m in Sources */,
 				84351B112C29ACCB00A77989 /* OSCProfilesManager.m in Sources */,
 				FB89462919F646E200339C8A /* mkcert.c in Sources */,
 				FB9AFD281A7C84ED00872C98 /* HttpResponse.m in Sources */,
@@ -1135,7 +1135,7 @@
 					"$(PROJECT_DIR)/libs/FFmpeg/lib/iOS-Sim",
 				);
 				MARKETING_VERSION = 0.0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.voidlink.tf.debug7.iOS;
+				PRODUCT_BUNDLE_IDENTIFIER = com.voidlink.tf.debug10.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
