@@ -71,6 +71,7 @@
     UIView* menuSeparator;
     UIView* snapshot;
     SettingsViewController* settingsViewController;
+    StreamFrameViewController* streamFrameViewController;
     id navBarAppearanceStandard;
 
 #if TARGET_OS_TV
@@ -1117,45 +1118,19 @@ static NSMutableSet* hostList;
     if(self.settingsExpandedInStreamView) [revealController buttonsInStreaming];
     else [revealController buttonsNotInStreaming];
     
-    //[settingsViewController.resolutionSelector setEnabled:!self.settingsExpandedInStreamView];
-    //settingsViewController.resolutionStack.hidden = self.settingsExpandedInStreamView;
+    [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
+    
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.resolutionStack];
-    //settingsViewController.fpsStack.hidden = self.settingsExpandedInStreamView;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.fpsStack];
-
     [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
-    //settingsViewController.bitrateStack.hidden = self.settingsExpandedInStreamView;
-    //settingsViewController.optimizeGamesStack.hidden = self.settingsExpandedInStreamView;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.optimizeGamesStack];
-
-    //settingsViewController.audioOnPcStack.hidden = self.settingsExpandedInStreamView;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
-    
-    //settingsViewController.codecStack.hidden = self.settingsExpandedInStreamView;
-    //[settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.codecStack];
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];
-
-    
-    // settingsViewController.yuv444Stack.hidden = self.settingsExpandedInStreamView;
-    // [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.yuv444Stack];
     [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
-
-
-    //settingsViewController.HdrStack.hidden = self.settingsExpandedInStreamView;
-    // [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.HdrStack];
     [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView];
-
-
-    //settingsViewController.framepacingStack.hidden = self.settingsExpandedInStreamView;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
-
-    //settingsViewController.citrixX1MouseStack.hidden = self.settingsExpandedInStreamView;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
-
-    //settingsViewController.externalDisplayModeStack.hidden = self.settingsExpandedInStreamView;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
-
-    // [settingsViewController.unlockDisplayOrientationSelector setEnabled:!self.settingsExpandedInStreamView && [self isFullScreenRequired]];//need "requires fullscreen" enabled in the app bunddle to make runtime orientation limitation woring
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
@@ -1182,9 +1157,9 @@ static NSMutableSet* hostList;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.destinationViewController isKindOfClass:[StreamFrameViewController class]]) {
-        StreamFrameViewController* streamFrame = segue.destinationViewController;
-        streamFrame.mainFrameViewcontroller = self;
-        streamFrame.streamConfig = _streamConfig;
+        streamFrameViewController = segue.destinationViewController;
+        streamFrameViewController.mainFrameViewcontroller = self;
+        streamFrameViewController.streamConfig = _streamConfig;
     }
 }
 
@@ -1451,7 +1426,8 @@ static NSMutableSet* hostList;
 }
 
 - (void)viewDidLoad{
-    [ThemeManager setUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+    [ThemeManager setUserInterfaceStyle:UIScreen.mainScreen.traitCollection.userInterfaceStyle];
+
     [super viewDidLoad];
     //[OrientationHelper updateOrientationToLandscape];
     // self.navigationController.delegate = self;

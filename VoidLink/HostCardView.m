@@ -481,6 +481,7 @@ static const float REFRESH_CYCLE = 2.0f;
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    /*
     [super traitCollectionDidChange:previousTraitCollection];
     
     if (@available(iOS 13.0, *)) {
@@ -489,7 +490,7 @@ static const float REFRESH_CYCLE = 2.0f;
         }
     } else {
         [self updateTheme:UIUserInterfaceStyleDark];
-    }
+    }*/
 }
 
 

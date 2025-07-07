@@ -31,5 +31,6 @@
 
 -(void)updatePreferredDisplayMode:(BOOL)streamActive;
 -(void)reConfigStreamViewRealtime;
+- (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 
 @end

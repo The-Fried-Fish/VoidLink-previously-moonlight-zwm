@@ -525,6 +525,12 @@
     [self->_streamView reloadOnScreenWidgetViews]; //update keyboard buttons here
 }
 
+- (void)setUserInteractionEnabledForStreamView:(bool)enabled{
+    _streamView.userInteractionEnabled = enabled;
+    for(UIView* view in self.view.subviews){
+        if([view isKindOfClass:[OnScreenWidgetView class]]) view.userInteractionEnabled = enabled;
+    }
+}
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return _streamView;
@@ -736,7 +742,7 @@
 #if !TARGET_OS_TV
     // Terminate the stream if the app is inactive for 60 seconds
     Log(LOG_I, @"Starting inactivity termination timer");
-    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:60
+    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:1800
                                                       target:self
                                                     selector:@selector(inactiveTimerExpired:)
                                                     userInfo:nil
@@ -763,7 +769,7 @@
 
 // This fires when the home button is pressed
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    /*
+    
     Log(LOG_I, @"Terminating stream immediately for backgrounding");
 
     if (_inactivityTimer != nil) {
@@ -771,8 +777,7 @@
         _inactivityTimer = nil;
     }
     
-    [self returnToMainFrame];
-     */
+    // [self returnToMainFrame];
 }
 
 - (void)expandSettingsView{

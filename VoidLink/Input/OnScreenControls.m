@@ -223,7 +223,7 @@ static float L3_Y;
     
     _originalControllerLayerOpacityDict = [[NSMutableDictionary alloc] init];
     // we have to retrieve largerStickLR1 setting direct from the database, since streamConfig is invalid in LayoutOnScreenControls
-    DataManager* dataMan = [[DataManager alloc] init];
+    // DataManager* dataMan = [[DataManager alloc] init];
     _largerStickLR1 = true;
     _oscTapExlusionAreaSizeFactor = 1.05;
         

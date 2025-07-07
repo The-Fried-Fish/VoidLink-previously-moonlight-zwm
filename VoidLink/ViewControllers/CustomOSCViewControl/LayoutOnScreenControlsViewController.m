@@ -1115,7 +1115,7 @@
     OnScreenWidgetView* widget = (OnScreenWidgetView* )sender;
     [self.layoutOSC updateGuidelinesForOnScreenWidget:widget];
     [self.view bringSubviewToFront:widget];
-    trashCanButton.tintColor = [self layerOverlapWithTrashcanButton:widget.layer] ? [UIColor redColor] : trashCanStoryBoardColor;
+    trashCanButton.tintColor = [self layerIsOverlappingWithTrashcanButton:widget.layer] ? [UIColor redColor] : trashCanStoryBoardColor;
     self.undoButton.alpha = 1.0;
 }
 
@@ -1166,8 +1166,7 @@
 
     // -------- for OSC buttons
     [self.layoutOSC touchesMoved:touches withEvent:event];
-    if ([self.layoutOSC isLayer:self.layoutOSC.layerBeingDragged
-                        hoveringOverButton:trashCanButton]) { // check if user is dragging around a button and hovering it over the trash can button
+    if ([self layerIsOverlappingWithTrashcanButton:self.layoutOSC.layerBeingDragged]) { // check if user is dragging around a button and hovering it over the trash can button
         trashCanButton.tintColor = [UIColor redColor];
     }
     else trashCanButton.tintColor = trashCanStoryBoardColor;
@@ -1184,7 +1183,7 @@
     return ret;
 }
 
-- (bool)layerOverlapWithTrashcanButton:(CALayer* )layer{
+- (bool)layerIsOverlappingWithTrashcanButton:(CALayer* )layer{
     CALayer *commonLayer = self.view.layer; // 假设它们在同一个 superview 下
 
     CGRect rect1 = [layer convertRect:layer.bounds toLayer:commonLayer];
@@ -1202,7 +1201,7 @@
     if(selectedWidgetView) [self.view insertSubview:selectedWidgetView belowSubview:_widgetPanelStack];
 
     
-    if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerOverlapWithTrashcanButton:selectedWidgetView.layer]){
+    if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
         [self->selectedWidgetView removeFromSuperview];
         [self.OnScreenWidgetViews removeObject:self->selectedWidgetView];
         [selectedWidgetView.stickBallLayer removeFromSuperlayer];
@@ -1213,7 +1212,7 @@
     
     //removing OSC buttons
     if (!isToolbarHidden && self.layoutOSC.layerBeingDragged != nil &&
-        [self.layoutOSC isLayer:self.layoutOSC.layerBeingDragged hoveringOverButton:trashCanButton]) { // check if user wants to throw OSC button into the trash can
+        [self layerIsOverlappingWithTrashcanButton:self.layoutOSC.layerBeingDragged]) { // check if user wants to throw OSC button into the trash can
         // here we're going to delete something
         
         self.layoutOSC.layerBeingDragged.hidden = YES;
