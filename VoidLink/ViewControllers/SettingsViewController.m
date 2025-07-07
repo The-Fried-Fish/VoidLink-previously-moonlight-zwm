@@ -788,12 +788,11 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     if(currentSettingsMenuMode == FavoriteSettings){
-        if(!capturedStack) return;
-        
         switch (gesture.state) {
             case UIGestureRecognizerStateBegan:
                 // 创建快照视图
                 [self findCapturedStackByTouchLocation:locationInParentStack];
+                if(capturedStack == nil) return;
 
                 snapshot = [capturedStack snapshotViewAfterScreenUpdates:YES];
                 //snapshot.center = capturedStack.center;
@@ -805,6 +804,7 @@ BOOL isCustomResolution(CGSize res) {
                 break;
                 
             case UIGestureRecognizerStateChanged:
+                if(capturedStack == nil) return;
                 snapshot.center = locationInParentStack;
                 // NSLog(@"coordY in rootView: %f", locationInRootView.y);
                 [self handleAutoScroll:locationInRootView];
@@ -814,6 +814,7 @@ BOOL isCustomResolution(CGSize res) {
                 break;
             case UIGestureRecognizerStateCancelled:
             case UIGestureRecognizerStateEnded:
+                if(capturedStack == nil) return;
                 // 更新快照视图位置
                 [self stopAutoScroll];
                 [snapshot removeFromSuperview];
@@ -900,7 +901,7 @@ BOOL isCustomResolution(CGSize res) {
     [stack addSubview:button];
     [NSLayoutConstraint activateConstraints:@[
         [button.trailingAnchor constraintEqualToAnchor:stack.trailingAnchor constant:-4],
-        [button.bottomAnchor constraintEqualToAnchor:        stack.arrangedSubviews[0].bottomAnchor constant:0],
+        [button.bottomAnchor constraintEqualToAnchor:stack.arrangedSubviews[0].bottomAnchor constant:0],
     ]];
 }
 

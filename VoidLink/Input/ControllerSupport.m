@@ -639,10 +639,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     }
 }
 
--(BOOL) reportControllerArrival:(VoidController*) limeController
+-(BOOL) reportControllerArrival:(VoidController*) voidController
 {
     // Only report arrival once
-    if (limeController.reportedArrival) {
+    if (voidController.reportedArrival) {
         return YES;
     }
     
@@ -650,7 +650,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     uint16_t capabilities = 0;
     uint32_t supportedButtonFlags = 0;
     
-    GCController *controller = limeController.gamepad;
+    GCController *controller = voidController.gamepad;
     if (controller) {
         // This is a physical controller with a corresponding GCController object
         
@@ -793,10 +793,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     }
     
     // Begin polling for battery status
-    [self initializeControllerBattery:limeController];
+    [self initializeControllerBattery:voidController];
     
     // Remember that we've reported arrival already
-    limeController.reportedArrival = YES;
+    voidController.reportedArrival = YES;
     return YES;
 }
 
@@ -884,89 +884,89 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             }
             
             controller.extendedGamepad.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element) {
-                VoidController* limeController = [self->_voidControllers objectForKey:[NSNumber numberWithInteger:gamepad.controller.playerIndex]];
+                VoidController* voidController = [self->_voidControllers objectForKey:[NSNumber numberWithInteger:gamepad.controller.playerIndex]];
                 short leftStickX, leftStickY;
                 short rightStickX, rightStickY;
                 unsigned char leftTrigger, rightTrigger;
                 
                 if (self->_swapABXYButtons) {
-                    UPDATE_BUTTON_FLAG(limeController, B_FLAG, gamepad.buttonA.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, A_FLAG, gamepad.buttonB.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, Y_FLAG, gamepad.buttonX.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, X_FLAG, gamepad.buttonY.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, B_FLAG, gamepad.buttonA.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, A_FLAG, gamepad.buttonB.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, Y_FLAG, gamepad.buttonX.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, X_FLAG, gamepad.buttonY.pressed);
                 }
                 else {
-                    UPDATE_BUTTON_FLAG(limeController, A_FLAG, gamepad.buttonA.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, B_FLAG, gamepad.buttonB.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, X_FLAG, gamepad.buttonX.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, Y_FLAG, gamepad.buttonY.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, A_FLAG, gamepad.buttonA.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, B_FLAG, gamepad.buttonB.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, X_FLAG, gamepad.buttonX.pressed);
+                    UPDATE_BUTTON_FLAG(voidController, Y_FLAG, gamepad.buttonY.pressed);
                 }
                 
-                UPDATE_BUTTON_FLAG(limeController, UP_FLAG, gamepad.dpad.up.pressed);
-                UPDATE_BUTTON_FLAG(limeController, DOWN_FLAG, gamepad.dpad.down.pressed);
-                UPDATE_BUTTON_FLAG(limeController, LEFT_FLAG, gamepad.dpad.left.pressed);
-                UPDATE_BUTTON_FLAG(limeController, RIGHT_FLAG, gamepad.dpad.right.pressed);
+                UPDATE_BUTTON_FLAG(voidController, UP_FLAG, gamepad.dpad.up.pressed);
+                UPDATE_BUTTON_FLAG(voidController, DOWN_FLAG, gamepad.dpad.down.pressed);
+                UPDATE_BUTTON_FLAG(voidController, LEFT_FLAG, gamepad.dpad.left.pressed);
+                UPDATE_BUTTON_FLAG(voidController, RIGHT_FLAG, gamepad.dpad.right.pressed);
                 
-                UPDATE_BUTTON_FLAG(limeController, LB_FLAG, gamepad.leftShoulder.pressed);
-                UPDATE_BUTTON_FLAG(limeController, RB_FLAG, gamepad.rightShoulder.pressed);
+                UPDATE_BUTTON_FLAG(voidController, LB_FLAG, gamepad.leftShoulder.pressed);
+                UPDATE_BUTTON_FLAG(voidController, RB_FLAG, gamepad.rightShoulder.pressed);
                 
                 // Yay, iOS 12.1 now supports analog stick buttons
                 if (@available(iOS 12.1, tvOS 12.1, *)) {
                     if (gamepad.leftThumbstickButton != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, LS_CLK_FLAG, gamepad.leftThumbstickButton.pressed);
+                        UPDATE_BUTTON_FLAG(voidController, LS_CLK_FLAG, gamepad.leftThumbstickButton.pressed);
                     }
                     if (gamepad.rightThumbstickButton != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, RS_CLK_FLAG, gamepad.rightThumbstickButton.pressed);
+                        UPDATE_BUTTON_FLAG(voidController, RS_CLK_FLAG, gamepad.rightThumbstickButton.pressed);
                     }
                 }
                 
                 if (@available(iOS 13.0, tvOS 13.0, *)) {
                     // Options button is optional (only present on Xbox One S and PS4 gamepads)
                     if (gamepad.buttonOptions != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, BACK_FLAG, gamepad.buttonOptions.pressed);
+                        UPDATE_BUTTON_FLAG(voidController, BACK_FLAG, gamepad.buttonOptions.pressed);
 
                         // For older MFi gamepads, the menu button will already be handled by
                         // the controllerPausedHandler.
-                        UPDATE_BUTTON_FLAG(limeController, PLAY_FLAG, gamepad.buttonMenu.pressed);
+                        UPDATE_BUTTON_FLAG(voidController, PLAY_FLAG, gamepad.buttonMenu.pressed);
                     }
                 }
                 
                 if (@available(iOS 14.0, tvOS 14.0, *)) {
                     // Home/Guide button is optional (only present on Xbox One S and PS4 gamepads)
                     if (gamepad.buttonHome != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, SPECIAL_FLAG, gamepad.buttonHome.pressed);
+                        UPDATE_BUTTON_FLAG(voidController, SPECIAL_FLAG, gamepad.buttonHome.pressed);
                     }
                     
                     // Xbox One/Series controllers
                     if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleOne]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE1_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleOne].pressed);
+                        UPDATE_BUTTON_FLAG(voidController, PADDLE1_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleOne].pressed);
                     }
                     if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleTwo]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE2_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleTwo].pressed);
+                        UPDATE_BUTTON_FLAG(voidController, PADDLE2_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleTwo].pressed);
                     }
                     if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleThree]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE3_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleThree].pressed);
+                        UPDATE_BUTTON_FLAG(voidController, PADDLE3_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleThree].pressed);
                     }
                     if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleFour]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE4_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleFour].pressed);
+                        UPDATE_BUTTON_FLAG(voidController, PADDLE4_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleFour].pressed);
                     }
                     if (@available(iOS 15.0, tvOS 15.0, *)) {
                         if (gamepad.controller.physicalInputProfile.buttons[GCInputButtonShare]) {
-                            UPDATE_BUTTON_FLAG(limeController, MISC_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputButtonShare].pressed);
+                            UPDATE_BUTTON_FLAG(voidController, MISC_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputButtonShare].pressed);
                         }
                     }
                     
                     // DualShock/DualSense controllers
                     if (gamepad.controller.physicalInputProfile.buttons[GCInputDualShockTouchpadButton]) {
-                        UPDATE_BUTTON_FLAG(limeController, TOUCHPAD_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputDualShockTouchpadButton].pressed);
+                        UPDATE_BUTTON_FLAG(voidController, TOUCHPAD_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputDualShockTouchpadButton].pressed);
                     }
                     if (gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadOne]) {
-                        [self handleControllerTouchpad:limeController
+                        [self handleControllerTouchpad:voidController
                                                  touch:gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadOne]
                                                  index:0];
                     }
                     if (gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadTwo]) {
-                        [self handleControllerTouchpad:limeController
+                        [self handleControllerTouchpad:voidController
                                                  touch:gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadTwo]
                                                  index:1];
                     }
@@ -981,10 +981,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 leftTrigger = gamepad.leftTrigger.value * 0xFF;
                 rightTrigger = gamepad.rightTrigger.value * 0xFF;
                 
-                [self updateLeftStick:limeController x:leftStickX y:leftStickY];
-                [self updateRightStick:limeController x:rightStickX y:rightStickY];
-                [self updateTriggers:limeController left:leftTrigger right:rightTrigger];
-                [self updateFinished:limeController];
+                [self updateLeftStick:voidController x:leftStickX y:leftStickY];
+                [self updateRightStick:voidController x:rightStickX y:rightStickY];
+                [self updateTriggers:voidController left:leftTrigger right:rightTrigger];
+                [self updateFinished:voidController];
             };
         }
     } else {
@@ -1203,7 +1203,6 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     if(!newGCControllerArrival){
         VoidController* voidController = [_voidControllers objectForKey:@(controller.playerIndex)];
         if(!voidController) {
-            NSLog(@"blablabla6666666");
             voidController = [[VoidController alloc] init];
         }
         [self updateVoidController:voidController withGCController:controller];
@@ -1222,10 +1221,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             [_activeGCControllers addObject:controller];
             controller.playerIndex = i;
             voidController.playerIndex = i;
-            
             [self updateVoidController:voidController withGCController:controller];
             
-            // if(![_controllers.allValues containsObject:limeController])
             [_voidControllers setObject:voidController forKey:[NSNumber numberWithInteger:controller.playerIndex]];
             
             Log(LOG_I, @"Assigning controller index: %d", i);
@@ -1363,7 +1360,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 [_voidControllers removeAllObjects];
                 [self assignControllers];
                 //if(_voidControllers.count == 0) [self assignControllers];
-                if(_voidControllers.count == 0) [self updateTimerStateForController:_oscController];
+                if(_voidControllers.count == 0 || ![self externalControllersHaveGyro]) [self updateTimerStateForController:_oscController];
                 else for(VoidController* controller in _voidControllers.allValues) [self updateTimerStateForController:controller];
                 // to be filled
                 break;
@@ -1435,7 +1432,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             
             // Re-evaluate the on-screen control mode
             //[self updateAutoOnScreenControlMode];
-            if(self->_gyroMode == GyroModeAuto || self->_gyroMode == AlwaysController){
+            if((self->_gyroMode == GyroModeAuto && [self externalControllersHaveGyro]) || self->_gyroMode == AlwaysController){
                 [self stopTimerForController:self->_oscController];
                 [self updateTimerStateForController:voidController];
             }
@@ -1489,7 +1486,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             
             [self->_voidControllers removeObjectForKey:@(controller.playerIndex)];
             
-            if(self->_voidControllers.allValues.count == 0 && self->_gyroMode == GyroModeAuto) [self updateTimerStateForController:self->_oscController];
+            if((self->_voidControllers.allValues.count == 0 || ![self externalControllersHaveGyro]) && self->_gyroMode == GyroModeAuto) [self updateTimerStateForController:self->_oscController];
             
             // Notify the delegate
             [self->_delegate gamepadPresenceChanged];
@@ -1562,6 +1559,13 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     return self;
 }
 
+-(bool)externalControllersHaveGyro{
+    for(VoidController* voidController in _voidControllers.allValues){
+        if(voidController.hasGyroscope || voidController.hasAccelerometer) return true;
+    }
+    return false;
+}
+
 -(void)connectionEstablished{
     [self updateTimerStateForController:self->_oscController];
     [self setButtonFlag:self->_oscController flags:A_FLAG];
@@ -1575,17 +1579,25 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)),
                        dispatch_get_main_queue(), ^{
             self->_gyroMode = self->_streamConfig.gyroMode;
-            if(self->_gyroMode == AlwaysController){
-                [self stopTimerForAllControllers];
-                for(VoidController* voidController in self->_voidControllers.allValues) [self updateTimerStateForController:voidController];
-            }
-            if(self->_gyroMode == GyroModeAuto){
-                if(self->_voidControllers.count == 0) [self assignControllers];
-                if(self->_voidControllers.count == 0) nil;
-                else{
+            
+            switch (self->_gyroMode) {
+                case AlwaysController:
                     [self stopTimerForAllControllers];
                     for(VoidController* voidController in self->_voidControllers.allValues) [self updateTimerStateForController:voidController];
-                }
+                    break;
+                case GyroModeAuto:
+                    if(self->_voidControllers.count == 0) [self assignControllers];
+                    if(self->_voidControllers.count == 0 || ![self externalControllersHaveGyro]) nil;
+                    else{
+                        [self stopTimerForAllControllers];
+                        for(VoidController* voidController in self->_voidControllers.allValues) [self updateTimerStateForController:voidController];
+                    }
+                    break;
+                case GyroModeOff:
+                    [self stopTimerForAllControllers];
+                    break;
+                default:
+                    break;
             }
         });
     });
