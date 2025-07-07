@@ -68,6 +68,7 @@
     NSArray* _sortedAppList;
     NSCache* _boxArtCache;
     bool _background;
+    bool _enteredAppView;
     UIView* menuSeparator;
     UIView* snapshot;
     SettingsViewController* settingsViewController;
@@ -321,6 +322,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)switchToHostView {
+    _enteredAppView = false;
 #if TARGET_OS_TV
     // Remove the menu button intercept to allow the app to exit
     // when at the host selection view.
@@ -359,6 +361,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)switchToAppView{
+    _enteredAppView = true;
     //_appManager = [[AppAssetManager alloc] initWithCallback:self];
     [self.collectionView setCollectionViewLayout:self.collectionViewLayout];
     [self.collectionView reloadData]; //for new scroll host view reloading mechanism
@@ -391,7 +394,7 @@ static NSMutableSet* hostList;
     _selectedHost = host;
     if (host.state == StateOnline && host.pairState == PairStatePaired && host.appList.count > 0) {
         [self closeSettingViewAnimated:NO];
-        [self switchToAppView];
+        // [self switchToAppView];
         [self updateAppsForHost:_selectedHost];
         [self prepareToStreamApp:_sortedAppList.firstObject];
         [self performSegueWithIdentifier:@"createStreamFrame" sender:nil];
@@ -1763,7 +1766,7 @@ static NSMutableSet* hostList;
 
     [self.view addSubview:self.collectionView];
     [self initHostCollection];
-    [self switchToHostView];
+    if(!_enteredAppView) [self switchToHostView];
     
     [self retrieveSavedHosts];
     
