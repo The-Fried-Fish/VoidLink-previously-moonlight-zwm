@@ -20,13 +20,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "异步多点触控"
+            "value" : "異步多點觸控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "异步多点触控"
+            "value" : "異步多點觸控"
           }
         }
       }
@@ -62,13 +62,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "被窗口捕获"
+            "value" : "被視窗捕獲"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "被窗口捕获"
+            "value" : "被視窗捕獲"
           }
         }
       }
@@ -92,13 +92,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏(绝对坐标)"
+            "value" : "隱藏(絕對座標)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏(绝对坐标)"
+            "value" : "隱藏(絕對座標)"
           }
         }
       }
@@ -122,13 +122,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可见(绝对坐标)"
+            "value" : "可見(絕對座標)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可见(绝对坐标)"
+            "value" : "可見(絕對座標)"
           }
         }
       }
@@ -152,13 +152,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外接显示模式"
+            "value" : "外接螢幕模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外接显示模式"
+            "value" : "外接螢幕模式"
           }
         }
       }
@@ -182,13 +182,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Citrix X1 鼠标"
+            "value" : "Citrix X1 滑鼠"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Citrix X1 鼠标"
+            "value" : "Citrix X1 滑鼠"
           }
         }
       }
@@ -205,20 +205,20 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "视频编解码"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "视频编解码"
+            "state" : "translated",
+            "value" : "視訊編解碼"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "视频编解码"
+            "state" : "translated",
+            "value" : "視訊編解碼"
           }
         }
       }
@@ -242,13 +242,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺仪"
+            "value" : "陀螺儀"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺仪"
+            "value" : "陀螺儀"
           }
         }
       }
@@ -308,13 +308,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放主机端声音"
+            "value" : "播放主機端聲音"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放主机端声音"
+            "value" : "播放主機端聲音"
           }
         }
       }
@@ -338,13 +338,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺仪灵敏度"
+            "value" : "陀螺儀靈敏度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺仪灵敏度"
+            "value" : "陀螺儀靈敏度"
           }
         }
       }
@@ -368,13 +368,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         }
       }
@@ -398,13 +398,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动"
+            "value" : "自動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动"
+            "value" : "自動"
           }
         }
       }
@@ -428,13 +428,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "内置"
+            "value" : "內建"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "内置"
+            "value" : "內建"
           }
         }
       }
@@ -458,13 +458,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手柄"
+            "value" : "手把"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手柄"
+            "value" : "手把"
           }
         }
       }
@@ -542,13 +542,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动"
+            "value" : "自動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动"
+            "value" : "自動"
           }
         }
       }
@@ -572,13 +572,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "串流帧率"
+            "value" : "串流幀率"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "串流帧率"
+            "value" : "串流幀率"
           }
         }
       }
@@ -602,13 +602,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用屏显控件与外设"
+            "value" : "啟用螢幕小工具與外設"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用屏显控件与外设"
+            "value" : "啟用螢幕小工具與外設"
           }
         }
       }
@@ -631,14 +631,14 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示本地软键盘工具栏"
+            "state" : "needs_review",
+            "value" : "顯示本地軟鍵盤工具列"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示本地软键盘工具栏"
+            "state" : "needs_review",
+            "value" : "顯示本地軟鍵盤工具列"
           }
         }
       }
@@ -662,13 +662,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         }
       }
@@ -692,13 +692,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "启用"
+            "value" : "啟用"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "启用"
+            "value" : "啟用"
           }
         }
       }
@@ -722,13 +722,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控板"
+            "value" : "觸控板"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控板"
+            "value" : "觸控板"
           }
         }
       }
@@ -752,13 +752,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "多点触控"
+            "value" : "多點觸控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "多点触控"
+            "value" : "多點觸控"
           }
         }
       }
@@ -782,13 +782,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "单点鼠标"
+            "value" : "單點滑鼠"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "单点鼠标"
+            "value" : "單點滑鼠"
           }
         }
       }
@@ -812,13 +812,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "导出所有"
+            "value" : "匯出所有"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "导出所有"
+            "value" : "匯出所有"
           }
         }
       }
@@ -842,13 +842,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鼠标按下"
+            "value" : "滑鼠按下"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鼠标按下"
+            "value" : "滑鼠按下"
           }
         }
       }
@@ -920,13 +920,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安全区域"
+            "value" : "安全區域"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安全区域"
+            "value" : "安全區域"
           }
         }
       }
@@ -950,13 +950,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全屏/窗口"
+            "value" : "全螢幕/視窗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全屏/窗口"
+            "value" : "全螢幕/視窗"
           }
         }
       }
@@ -980,13 +980,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义"
+            "value" : "自訂"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义"
+            "value" : "自訂"
           }
         }
       }
@@ -1010,13 +1010,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导入"
+            "value" : "匯入"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导入"
+            "value" : "匯入"
           }
         }
       }
@@ -1070,13 +1070,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "优化游戏设置"
+            "value" : "最佳化遊戲設定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "优化游戏设置"
+            "value" : "最佳化遊戲設定"
           }
         }
       }
@@ -1100,13 +1100,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "交换A/B键、X/Y键位置"
+            "value" : "交換A/B鍵、X/Y鍵位置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "交换A/B键、X/Y键位置"
+            "value" : "交換A/B鍵、X/Y鍵位置"
           }
         }
       }
@@ -1130,13 +1130,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         }
       }
@@ -1160,13 +1160,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用"
+            "value" : "啟用"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用"
+            "value" : "啟用"
           }
         }
       }
@@ -1202,13 +1202,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "触点灵敏度"
+            "value" : "觸點靈敏度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "触点灵敏度"
+            "value" : "觸點靈敏度"
           }
         }
       }
@@ -1232,13 +1232,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除"
+            "value" : "刪除"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除"
+            "value" : "刪除"
           }
         }
       }
@@ -1292,13 +1292,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控移动事件间隔"
+            "value" : "觸控移動事件間隔"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控移动事件间隔"
+            "value" : "觸控移動事件間隔"
           }
         }
       }
@@ -1322,13 +1322,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "物理鼠标滚轮方向"
+            "value" : "實體滑鼠滾輪方向"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "物理鼠标滚轮方向"
+            "value" : "實體滑鼠滾輪方向"
           }
         }
       }
@@ -1352,13 +1352,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "悬浮"
+            "value" : "懸浮"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "悬浮"
+            "value" : "懸浮"
           }
         }
       }
@@ -1382,13 +1382,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左键"
+            "value" : "左鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左键"
+            "value" : "左鍵"
           }
         }
       }
@@ -1412,13 +1412,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "中键"
+            "value" : "中鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "中键"
+            "value" : "中鍵"
           }
         }
       }
@@ -1442,13 +1442,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右键"
+            "value" : "右鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右键"
+            "value" : "右鍵"
           }
         }
       }
@@ -1472,13 +1472,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "90°转屏"
+            "value" : "90°旋轉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "90°转屏"
+            "value" : "90°旋轉"
           }
         }
       }
@@ -1502,13 +1502,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义分辨率"
+            "value" : "自訂解析度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义分辨率"
+            "value" : "自訂解析度"
           }
         }
       }
@@ -1544,13 +1544,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开设置菜单"
+            "value" : "串流中開啟設定選單"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开设置菜单"
+            "value" : "串流中開啟設定選單"
           }
         }
       }
@@ -1574,13 +1574,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "兩聲道"
+            "value" : "雙聲道"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "兩聲道"
+            "value" : "雙聲道"
           }
         }
       }
@@ -1597,19 +1597,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "5.1声道"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "5.1聲道"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "5.1聲道"
           }
         }
@@ -1627,19 +1627,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7.1声道"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7.1聲道"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7.1聲道"
           }
         }
@@ -1664,13 +1664,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3指轻按"
+            "value" : "3指輕按"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3指轻按"
+            "value" : "3指輕按"
           }
         }
       }
@@ -1694,13 +1694,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "4指轻按"
+            "value" : "4指輕按"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "4指轻按"
+            "value" : "4指輕按"
           }
         }
       }
@@ -1724,13 +1724,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "5指轻按"
+            "value" : "5指輕按"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "5指轻按"
+            "value" : "5指輕按"
           }
         }
       }
@@ -1784,13 +1784,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         }
       }
@@ -1814,13 +1814,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用"
+            "value" : "啟用"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用"
+            "value" : "啟用"
           }
         }
       }
@@ -1874,13 +1874,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "允许"
+            "value" : "允許"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "允许"
+            "value" : "允許"
           }
         }
       }
@@ -1904,13 +1904,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "屏显控件"
+            "value" : "螢幕小工具"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "屏显控件"
+            "value" : "螢幕小工具"
           }
         }
       }
@@ -1934,13 +1934,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "串流码率"
+            "value" : "串流位元速率"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "串流码率"
+            "value" : "串流位元速率"
           }
         }
       }
@@ -1964,13 +1964,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左边缘滑动"
+            "value" : "從左側邊緣滑動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左边缘滑动"
+            "value" : "從左側邊緣滑動"
           }
         }
       }
@@ -1994,13 +1994,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右边缘滑动"
+            "value" : "從右側邊緣滑動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右边缘滑动"
+            "value" : "從右側邊緣滑動"
           }
         }
       }
@@ -2024,13 +2024,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         }
       }
@@ -2054,13 +2054,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用"
+            "value" : "啟用"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用"
+            "value" : "啟用"
           }
         }
       }
@@ -2096,13 +2096,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "設定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "設定"
           }
         }
       }
@@ -2126,13 +2126,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与系统一致"
+            "value" : "與系統一致"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与系统一致"
+            "value" : "與系統一致"
           }
         }
       }
@@ -2156,13 +2156,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "反转"
+            "value" : "反轉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "反转"
+            "value" : "反轉"
           }
         }
       }
@@ -2181,6 +2181,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "触控模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "觸控模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控模式"
           }
         }
       }
@@ -2204,13 +2216,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "打开软键盘"
+            "value" : "開啟軟鍵盤"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "打开软键盘"
+            "state" : "translated",
+            "value" : "開啟軟鍵盤"
           }
         }
       }
@@ -2233,14 +2245,14 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "关闭"
+            "state" : "translated",
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "关闭"
+            "state" : "translated",
+            "value" : "關閉"
           }
         }
       }
@@ -2264,13 +2276,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "精简"
+            "value" : "精簡"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "精简"
+            "value" : "精簡"
           }
         }
       }
@@ -2336,13 +2348,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "低延迟"
+            "value" : "低延遲"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "低延迟"
+            "value" : "低延遲"
           }
         }
       }
@@ -2366,13 +2378,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最高流畅度"
+            "value" : "最高流暢度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最高流畅度"
+            "value" : "最高流暢度"
           }
         }
       }
@@ -2396,13 +2408,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "鼠标指针灵敏度"
+            "value" : "滑鼠靈敏度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "鼠标指针灵敏度"
+            "value" : "滑鼠靈敏度"
           }
         }
       }
@@ -2426,13 +2438,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "复制"
+            "value" : "複製"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "复制"
+            "value" : "複製"
           }
         }
       }
@@ -2468,13 +2480,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "手势滑动触发距离"
+            "value" : "手勢滑動觸發距離"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "手势滑动触发距离"
+            "value" : "手勢滑動觸發距離"
           }
         }
       }
@@ -2510,13 +2522,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "串流分辨率"
+            "value" : "串流解析度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "串流分辨率"
+            "value" : "串流解析度"
           }
         }
       }
@@ -2540,13 +2552,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "屏显控件布局"
+            "value" : "螢幕小工具佈局"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "屏显控件布局"
+            "value" : "螢幕小工具佈局"
           }
         }
       }
@@ -2570,13 +2582,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "软键盘工具栏"
+            "value" : "軟鍵盤工具列"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "软键盘工具栏"
+            "value" : "軟鍵盤工具列"
           }
         }
       }
@@ -2600,13 +2612,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "灵敏度分割位置"
+            "value" : "靈敏度分割位置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "灵敏度分割位置"
+            "value" : "靈敏度分割位置"
           }
         }
       }
@@ -2630,13 +2642,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "關閉"
           }
         }
       }
@@ -2660,13 +2672,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "简单"
+            "value" : "簡單"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "简单"
+            "value" : "簡單"
           }
         }
       }
@@ -2720,13 +2732,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义"
+            "value" : "自訂"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义"
+            "value" : "自訂"
           }
         }
       }
@@ -2749,14 +2761,14 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "唤醒本地软键盘时, 抬升串流视图"
+            "state" : "needs_review",
+            "value" : "喚醒本地軟鍵盤時，抬升串流畫面"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "唤醒本地软键盘时, 抬升串流视图"
+            "state" : "needs_review",
+            "value" : "喚醒本地軟鍵盤時，抬升串流畫面"
           }
         }
       }
@@ -2792,13 +2804,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性能数据叠加"
+            "value" : "效能資料圖層"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性能数据叠加"
+            "value" : "效能資料圖層"
           }
         }
       }
@@ -2822,13 +2834,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "多手柄模式"
+            "value" : "多手把模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "多手柄模式"
+            "value" : "多手把模式"
           }
         }
       }
@@ -2864,13 +2876,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地鼠标指针"
+            "value" : "本地滑鼠指標"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地鼠标指针"
+            "value" : "本地滑鼠指標"
           }
         }
       }
@@ -2918,13 +2930,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "台前调度"
+            "value" : "幕前調度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "台前调度"
+            "value" : "幕前調度"
           }
         }
       }
@@ -2948,13 +2960,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隔空播放"
+            "value" : "螢幕鏡像輸出"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隔空播放"
+            "value" : "螢幕鏡像輸出"
           }
         }
       }
@@ -2978,13 +2990,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "轻按任意控件加载配置 (各控件独立)"
+            "value" : "輕按任意小工具載入設定（各小工具獨立）"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "轻按任意控件加载配置 (各控件独立)"
+            "value" : "輕按任意小工具載入設定（各小工具獨立）"
           }
         }
       }
@@ -3008,13 +3020,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左边缘滑动"
+            "value" : "從左側邊緣滑動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左边缘滑动"
+            "value" : "從左側邊緣滑動"
           }
         }
       }
@@ -3038,13 +3050,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右边缘滑动"
+            "value" : "從右側邊緣滑動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右边缘滑动"
+            "value" : "從右側邊緣滑動"
           }
         }
       }
@@ -3068,13 +3080,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开工具箱"
+            "value" : "串流中開啟工具箱"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开工具箱"
+            "value" : "串流中開啟工具箱"
           }
         }
       }
@@ -3110,13 +3122,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "帧步进控制"
+            "value" : "影格步進控制"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "帧步进控制"
+            "value" : "影格步進控制"
           }
         }
       }

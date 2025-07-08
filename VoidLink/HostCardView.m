@@ -56,7 +56,7 @@ static const float REFRESH_CYCLE = 2.0f;
     if (self) {
         buttonLabelFontSize = 15*_sizeFactor;
         longPressFired = false;
-        computerIconMonitorCenterYOffset = -3.3*_sizeFactor;
+        computerIconMonitorCenterYOffset = -4.3523*_sizeFactor;
         iconAndButtonSpacing = 37*_sizeFactor;
         buttonHeight = 39*_sizeFactor;
         defaultBlue = [ThemeManager appPrimaryColor];
