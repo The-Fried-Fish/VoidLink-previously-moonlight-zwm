@@ -824,6 +824,10 @@ static NSMutableSet* hostList;
     // Probe for supported channel configurations
     int physicalOutputChannels = (int)[AVAudioSession sharedInstance].maximumOutputNumberOfChannels;
     Log(LOG_I, @"Audio device supports %d channels", physicalOutputChannels);
+    if (@available(iOS 18.0, tvOS 18.0, *)) {
+        physicalOutputChannels = 8;
+        Log(LOG_I, @"System-provided spatial audio available, pretending device has %d channels", physicalOutputChannels);
+    }
     
     int numberOfChannels = MIN([streamSettings.audioConfig intValue], physicalOutputChannels);
     Log(LOG_I, @"Selected number of audio channels %d", numberOfChannels);
@@ -1134,6 +1138,7 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
+    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {

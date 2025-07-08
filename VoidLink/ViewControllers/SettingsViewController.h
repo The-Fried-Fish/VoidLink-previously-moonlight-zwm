@@ -103,6 +103,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *gyroSensitivityStack;
 @property (strong, nonatomic) IBOutlet UISlider *gyroSensitivitySlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *audioConfigStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *audioConfigSelector;
+
 
 
 #pragma clang diagnostic push

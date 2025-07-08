@@ -1453,6 +1453,96 @@
         }
       }
     },
+    "hfR-K8-Ti4.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; hfR-K8-Ti4.segmentTitles[0] = \"Stereo\"; ObjectID = \"hfR-K8-Ti4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Stereo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双声道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兩聲道"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兩聲道"
+          }
+        }
+      }
+    },
+    "hfR-K8-Ti4.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; hfR-K8-Ti4.segmentTitles[1] = \"5.1-channel\"; ObjectID = \"hfR-K8-Ti4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "5.1-channel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5.1声道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5.1聲道"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5.1聲道"
+          }
+        }
+      }
+    },
+    "hfR-K8-Ti4.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; hfR-K8-Ti4.segmentTitles[2] = \"7.1-channel\"; ObjectID = \"hfR-K8-Ti4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "7.1-channel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7.1声道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7.1聲道"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7.1聲道"
+          }
+        }
+      }
+    },
     "hn6-X9-TaI.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Mouse Pointer Velocity\"; ObjectID = \"hn6-X9-TaI\";",
       "extractionState" : "extracted_with_value",
@@ -2073,6 +2163,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手柄"
+          }
+        }
+      }
+    },
+    "qeW-hW-tSL.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Audio Configuration\"; ObjectID = \"qeW-hW-tSL\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Audio Configuration"
           }
         }
       }

@@ -1243,6 +1243,36 @@
         }
       }
     },
+    "eOT-gu-uEu.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Audio Configuration\"; ObjectID = \"eOT-gu-uEu\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Audio Configuration"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "声道配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聲道設定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聲道設定"
+          }
+        }
+      }
+    },
     "FJv-HJ-UYJ.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Touch Move Event Interval\"; ObjectID = \"FJv-HJ-UYJ\";",
       "extractionState" : "extracted_with_value",
@@ -1521,6 +1551,96 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "串流中打开设置菜单"
+          }
+        }
+      }
+    },
+    "iZL-dA-jk9.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[0] = \"Stereo\"; ObjectID = \"iZL-dA-jk9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Stereo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双声道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兩聲道"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兩聲道"
+          }
+        }
+      }
+    },
+    "iZL-dA-jk9.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[1] = \"5.1‑channel\"; ObjectID = \"iZL-dA-jk9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "5.1‑channel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5.1声道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5.1聲道"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5.1聲道"
+          }
+        }
+      }
+    },
+    "iZL-dA-jk9.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[2] = \"7.1‑channel\"; ObjectID = \"iZL-dA-jk9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "7.1‑channel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7.1声道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7.1聲道"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7.1聲道"
           }
         }
       }

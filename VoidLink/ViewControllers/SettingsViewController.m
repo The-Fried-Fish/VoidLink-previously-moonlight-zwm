@@ -538,6 +538,7 @@ BOOL isCustomResolution(CGSize res) {
     }
     
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
     [audioSection setExpanded:YES];
 
@@ -1273,6 +1274,23 @@ BOOL isCustomResolution(CGSize res) {
     [self.bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
     [self updateBitrateText];
     [self updateResolutionDisplayLabel];
+    if (@available(iOS 18.0, tvOS 18.0, *)) {}else{
+        [self.audioConfigSelector removeSegmentAtIndex:1 animated:false];
+        [self.audioConfigSelector removeSegmentAtIndex:1 animated:false]; // segment 2 goes away when you remove index 2
+        [self.audioConfigSelector setTitle:[LocalizationHelper localizedStringForKey:@"Stereo (surround sound available for iOS18+)"] forSegmentAtIndex:0];
+        [self.audioConfigSelector setEnabled:NO];
+    }
+    switch ([currentSettings.audioConfig integerValue]) {
+        case 2:
+            [self.audioConfigSelector setSelectedSegmentIndex:0];
+            break;
+        case 6:
+            [self.audioConfigSelector setSelectedSegmentIndex:1];
+            break;
+        case 8:
+            [self.audioConfigSelector setSelectedSegmentIndex:2];
+            break;
+    }
 
     // Unlock Display Orientation setting
     // bool unlockDisplayOrientationSelectorEnabled = [self isFullScreenRequired];//need "requires fullscreen" enabled in the app bunddle to make runtime orientation limitation woring
@@ -1884,7 +1902,7 @@ BOOL isCustomResolution(CGSize res) {
                 selector.selectedSegmentTintColor = [ThemeManager appSecondaryColor];
             } else {
                 // Fallback on earlier versions
-            }            
+            }
         }
         [self updateThemeForSelectors:subview];
     }
@@ -1916,6 +1934,7 @@ BOOL isCustomResolution(CGSize res) {
     NSInteger framerate = [self getChosenFrameRate];
     NSInteger height = [self getChosenStreamHeight];
     NSInteger width = [self getChosenStreamWidth];
+    NSInteger audioConfig = [@[@2, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
     NSInteger keyboardToggleFingers = self.softKeyboardGestureSelector.selectedSegmentIndex == 3 ? 20 : self.softKeyboardGestureSelector.selectedSegmentIndex+3;
     NSInteger oscLayoutToolFingers = (uint16_t)self->oswLayoutFingers;
@@ -1955,7 +1974,7 @@ BOOL isCustomResolution(CGSize res) {
                            framerate:framerate
                               height:height
                                width:width
-                         audioConfig:2 // Stereo
+                         audioConfig:audioConfig
                     onscreenControls:onscreenControls
                             gyroMode:gyroMode
                keyboardToggleFingers:keyboardToggleFingers
