@@ -23,7 +23,7 @@
 @implementation SettingsViewController {
     NSInteger _bitrate;
     NSInteger _lastSelectedResolutionIndex;
-    bool justEnteredSettingsViewDoNotOpenOscLayoutTool;
+    bool justEnteredSettingsView;
     uint16_t oswLayoutFingers;
     CustomEdgeSlideGestureRecognizer *slideToCloseSettingsViewRecognizer;
     NSMutableDictionary *_settingStackDict;
@@ -1132,7 +1132,7 @@ BOOL isCustomResolution(CGSize res) {
     slideToCloseSettingsViewRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:slideToCloseSettingsViewRecognizer];
 
-    justEnteredSettingsViewDoNotOpenOscLayoutTool = true;
+    justEnteredSettingsView = true;
 
     // Always run settings in dark mode because we want the light fonts
     if (@available(iOS 13.0, tvOS 13.0, *)) {
@@ -1375,6 +1375,8 @@ BOOL isCustomResolution(CGSize res) {
 
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
+    
+    justEnteredSettingsView = false;
 }
 
 - (void)slideToSettingsScreenEdgeChanged{
@@ -1415,7 +1417,7 @@ BOOL isCustomResolution(CGSize res) {
              [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
          }
                                                          
-        [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers];
+        [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
         //markmark
         [self handleOswGestureChange];
                                                      }];
@@ -1440,11 +1442,12 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)handleOswGestureChange{
-    if(oswLayoutFingers == self.softKeyboardGestureSelector.selectedSegmentIndex + 3 && oswLayoutFingers < 6){
+    if(justEnteredSettingsView) return;
+    if([self isCustomOswEnabled] && oswLayoutFingers == self.softKeyboardGestureSelector.selectedSegmentIndex + 3 && oswLayoutFingers < 6){
         [_softKeyboardGestureSelector setSelectedSegmentIndex:_softKeyboardGestureSelector.selectedSegmentIndex-1];
     }
     for (NSInteger i = 0; i < _softKeyboardGestureSelector.numberOfSegments; i++) {
-        [_softKeyboardGestureSelector setEnabled:![self isCustomOswEnabled] ?  true : i+3 != oswLayoutFingers forSegmentAtIndex:i]; // 或 NO 来禁用
+        [_softKeyboardGestureSelector setEnabled:![self isCustomOswEnabled] ? true : i+3 != oswLayoutFingers forSegmentAtIndex:i]; // 或 NO 来禁用
     }
 }
 
@@ -1462,19 +1465,18 @@ BOOL isCustomResolution(CGSize res) {
     }
     
     bool customOscEnabled = [self isCustomOswEnabled];
+    NSLog(@"customOscEnabled %d", customOscEnabled);
     UILabel* oswDynamicLabel = [self findDynamicLabelFromStack:self.onScreenWidgetStack];
-        NSString* labelText = [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers];
+    NSString* labelText = customOscEnabled ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
     oswDynamicLabel.text = [NSString stringWithFormat:@"  %@  ", labelText];
     oswDynamicLabel.hidden = !customOscEnabled;
+    NSLog(@"oswDynamicLabel.hidden %d", oswDynamicLabel.hidden);
     [self handleOswGestureChange];
-    if(customOscEnabled && !justEnteredSettingsViewDoNotOpenOscLayoutTool) {
+    if(customOscEnabled && !justEnteredSettingsView) {
         // [self.keyboardToggleFingerNumSlider setValue:3.0];
         // [self keyboardToggleFingerNumSliderMoved];
-        //markmark
-        [self showCustomOswTip];
-        justEnteredSettingsViewDoNotOpenOscLayoutTool = false;
+      [self showCustomOswTip];
     }
-    justEnteredSettingsViewDoNotOpenOscLayoutTool = false;
 }
 
 - (void)invokeOscLayout{
@@ -1569,7 +1571,7 @@ BOOL isCustomResolution(CGSize res) {
     [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.mousePointerVelocityStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.swapAbaxyStack];
-
+    [self handleOswGestureChange];
 
     [touchControlSection updateViewForFoldState];
 }
@@ -1590,6 +1592,7 @@ BOOL isCustomResolution(CGSize res) {
     //self.onScreenWidgetStack.hidden = !sender.isOn;
     [self setHidden:!sender.isOn forStack:_onScreenWidgetStack];
     [self setHidden:!sender.isOn forStack:_swapAbaxyStack];
+    [self handleOswGestureChange];
     //self.swapAbaxyStack.hidden = !sender.isOn;
     [touchControlSection updateViewForFoldState];
 }
