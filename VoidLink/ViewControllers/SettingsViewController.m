@@ -1293,8 +1293,7 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     // Unlock Display Orientation setting
-    // bool unlockDisplayOrientationSelectorEnabled = [self isFullScreenRequired];//need "requires fullscreen" enabled in the app bunddle to make runtime orientation limitation woring
-    bool unlockDisplayOrientationSelectorEnabled = true;
+    bool unlockDisplayOrientationSelectorEnabled = [self isFullScreenRequired] || [self isIPhone];//need "requires fullscreen" enabled in the app bunddle to make runtime orientation limitation working
     if(unlockDisplayOrientationSelectorEnabled) [self.unlockDisplayOrientationSelector setSelectedSegmentIndex:currentSettings.unlockDisplayOrientation ? 1 : 0];
     else [self.unlockDisplayOrientationSelector setSelectedSegmentIndex:1]; // can't lock screen orientation in this mode = Display Orientation always unlocked
     [self.unlockDisplayOrientationSelector setEnabled:unlockDisplayOrientationSelectorEnabled];
@@ -1444,8 +1443,6 @@ BOOL isCustomResolution(CGSize res) {
     [alertController addAction:okAction];
     [self presentViewController:alertController animated:YES completion:nil];
 }
-
-
 
 - (bool)isOswEnabled{
     return [self isNotNativeTouchOnly] && self.onScreenWidgetSelector.selectedSegmentIndex != OnScreenControlsLevelOff;

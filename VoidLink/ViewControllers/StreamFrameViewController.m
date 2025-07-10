@@ -670,6 +670,10 @@
     }
 }
 
+- (bool)shallDisableGyroHotSwitch{
+    return _controllerSupport.shallDisableGyroHotSwitch;
+}
+
 - (BOOL) isAirPlaying{
     return _extWindow != nil && _extWindow.hidden == NO;
 }
@@ -1156,8 +1160,7 @@
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
-    if ([_controllerSupport getConnectedGamepadCount] > 0 &&
-        [_streamView getCurrentOscState] == OnScreenControlsLevelOff &&
+    if ( [_streamView getCurrentOscState] == OnScreenControlsLevelOff &&
         _userIsInteracting == NO) {
         // Autohide the home bar when a gamepad is connected
         // and the on-screen controls are disabled. We can't

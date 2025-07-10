@@ -32,5 +32,6 @@
 -(void)updatePreferredDisplayMode:(BOOL)streamActive;
 -(void)reConfigStreamViewRealtime;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
+- (bool)shallDisableGyroHotSwitch;
 
 @end

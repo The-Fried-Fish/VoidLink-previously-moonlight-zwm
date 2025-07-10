@@ -25,6 +25,13 @@
 
 static const double MOUSE_SPEED_DIVISOR = 1.25;
 
+@interface ControllerSupport()
+
+@property (assign,nonatomic) bool shallDisableGyroHotSwitch;
+
+@end
+
+
 @implementation ControllerSupport {
     id _controllerConnectObserver;
     id _controllerDisconnectObserver;
@@ -768,17 +775,31 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             if (controller.battery) {
                 capabilities |= LI_CCAP_BATTERY_STATE;
             }
+            
+            bool controllerLacksGyro = (capabilities & LI_CCAP_GYRO) == 0;
+            if ((_gyroMode == AlwaysDevice) || (_gyroMode == GyroModeAuto && controllerLacksGyro))
+            {
+                type = LI_CTYPE_PS;
+                capabilities |= LI_CCAP_GYRO | LI_CCAP_ACCEL;
+            }
+        }
+    }
+    else {
+        // This is a virtual controller corresponding to our OSC
+
+        if (_streamConfig.gyroMode != GyroModeOff) {
+            type = LI_CTYPE_PS;
+            capabilities = LI_CCAP_GYRO | LI_CCAP_ACCEL;
         }
         else {
-            // This is a virtual controller corresponding to our OSC
-
-            // TODO: Support various layouts and button labels on the OSC
             type = LI_CTYPE_XBOX;
             capabilities = 0;
-            supportedButtonFlags =
-                PLAY_FLAG | BACK_FLAG | UP_FLAG | DOWN_FLAG | LEFT_FLAG | RIGHT_FLAG |
-                LB_FLAG | RB_FLAG | LS_CLK_FLAG | RS_CLK_FLAG | A_FLAG | B_FLAG | X_FLAG | Y_FLAG;
         }
+
+        // Set the standard supported buttons for the virtual controller.
+        supportedButtonFlags =
+            PLAY_FLAG | BACK_FLAG | UP_FLAG | DOWN_FLAG | LEFT_FLAG | RIGHT_FLAG |
+            LB_FLAG | RB_FLAG | LS_CLK_FLAG | RS_CLK_FLAG | A_FLAG | B_FLAG | X_FLAG | Y_FLAG;
     }
 
     // Report the new controller to the host
@@ -1165,9 +1186,11 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
         voidController.reportRateHz = 120;
     }
     if (@available(iOS 14.0, *)) {
-        if(voidController.gamepad.motion.hasRotationRate) [voidController.motionTypes addObject:@(LI_MOTION_TYPE_GYRO)];
-        voidController.hasGyroscope = YES;
-        voidController.reportRateHz = 120;
+        if(voidController.gamepad.motion.hasRotationRate) {
+            [voidController.motionTypes addObject:@(LI_MOTION_TYPE_GYRO)];
+            voidController.hasGyroscope = YES;
+            voidController.reportRateHz = 120;
+        }
     }
 
     // If this is player 0, it shares state with the OSC
@@ -1193,7 +1216,6 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     // Prepare controller haptics for use
     [self initializeControllerHaptics:voidController];
 }
-
 
 -(VoidController* )assignController:(GCController*)controller {
     NSLog(@"run assignController");
@@ -1318,9 +1340,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     _oscController.playerIndex = 0;
 
     DataManager* dataMan = [[DataManager alloc] init];
-    //_oscEnabled = (OnScreenControlsLevel)[[dataMan getSettings].onscreenControls integerValue] != OnScreenControlsLevelOff;
     TemporarySettings* currentSettings = [dataMan getSettings];
-    _oscEnabled = true;
+    _oscEnabled = _oscEnabled || (OnScreenControlsLevel)[currentSettings.onscreenControls integerValue] != OnScreenControlsLevelOff || streamConfig.gyroMode != GyroModeOff;
     _gyroSensitivity = currentSettings.gyroSensitivity.floatValue;
 }
 
@@ -1349,46 +1370,17 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     Log(LOG_I, @"Number of supported controllers connected: %d", [ControllerSupport getGamepadCount]);
     Log(LOG_I, @"Multi-controller: %d", _multiController);
     
-    
-    if (@available(iOS 14.0, tvOS 14.0, *)) {
-        switch(_gyroMode){
-            case GyroModeOff:
-                [self stopTimerForAllControllers];
-                break;
-            case GyroModeAuto:
-                [self stopTimerForAllControllers];
-                [_voidControllers removeAllObjects];
-                [self assignControllers];
-                //if(_voidControllers.count == 0) [self assignControllers];
-                if(_voidControllers.count == 0 || ![self externalControllersHaveGyro]) [self updateTimerStateForController:_oscController];
-                else for(VoidController* controller in _voidControllers.allValues) [self updateTimerStateForController:controller];
-                // to be filled
-                break;
-            case AlwaysDevice:
-                //[self stopTimerForController:_oscController];
-                for(VoidController* controller in _voidControllers.allValues){
-                    [self stopTimerForController:controller];
-                }
-                [self updateTimerStateForController:_oscController];
-                break;
-            case AlwaysController:
-                [self stopTimerForAllControllers];
-                for(VoidController* controller in _voidControllers.allValues) [self updateTimerStateForController:controller];
-                break;
-        }
-    }
-
-
+    [self applyGyroModeSetting];
     
     [self assignControllers];
-
-
     
     NSLog(@"controllerNumbers: %d", _controllerNumbers);
 
     for(VoidController* controller in _voidControllers.allValues){
         NSLog(@"controller obj in dict: %@", controller);
     }
+    
+    [self updateFinished:_oscController];
 }
 
 -(id)initWithConfig:(StreamConfiguration*)streamConfig delegate:(id<ControllerSupportDelegate>)delegate
@@ -1402,7 +1394,6 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     _voidControllers = [[NSMutableDictionary alloc] init];
     _activeGCControllers = [[NSMutableSet alloc] init];
     _controllerNumbers = 0;
-    
     
     _captureMouse = (streamConfig.localMousePointerMode == 0);
     if (@available(iOS 14.0, tvOS 14.0, *)) {
@@ -1553,8 +1544,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
     [self assignControllers];
     
-    //[self updateConfig:streamConfig delegate:delegate];
-
+    _shallDisableGyroHotSwitch = streamConfig.gyroMode == GyroModeOff && _voidControllers.allValues.count == 0;
+    NSLog(@"shallDisableGyroHotSwitch %d", _shallDisableGyroHotSwitch);
     
     return self;
 }
@@ -1566,40 +1557,24 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     return false;
 }
 
--(void)connectionEstablished{
-    [self updateTimerStateForController:self->_oscController];
-    [self setButtonFlag:self->_oscController flags:A_FLAG];
-    [self updateFinished:self->_oscController];
-    [self clearButtonFlag:self->_oscController flags:A_FLAG];
-    [self updateFinished:self->_oscController];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)),
+
+-(void)connectionEstablished {
+    for (VoidController* voidController in _voidControllers.allValues) {
+        [self updateFinished:voidController];
+    }
+
+    if (_oscEnabled) {
+        [self setButtonFlag:self->_oscController flags:A_FLAG];
+        [self updateFinished:self->_oscController];
+        [self clearButtonFlag:self->_oscController flags:A_FLAG];
+        [self updateFinished:self->_oscController];
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC)),
                    dispatch_get_main_queue(), ^{
-        [self updateTimerStateForController:self->_oscController];
+        self->_gyroMode = self->_streamConfig.gyroMode;
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)),
-                       dispatch_get_main_queue(), ^{
-            self->_gyroMode = self->_streamConfig.gyroMode;
-            
-            switch (self->_gyroMode) {
-                case AlwaysController:
-                    [self stopTimerForAllControllers];
-                    for(VoidController* voidController in self->_voidControllers.allValues) [self updateTimerStateForController:voidController];
-                    break;
-                case GyroModeAuto:
-                    if(self->_voidControllers.count == 0) [self assignControllers];
-                    if(self->_voidControllers.count == 0 || ![self externalControllersHaveGyro]) nil;
-                    else{
-                        [self stopTimerForAllControllers];
-                        for(VoidController* voidController in self->_voidControllers.allValues) [self updateTimerStateForController:voidController];
-                    }
-                    break;
-                case GyroModeOff:
-                    [self stopTimerForAllControllers];
-                    break;
-                default:
-                    break;
-            }
-        });
+        [self applyGyroModeSetting];
     });
 }
 
@@ -1617,6 +1592,42 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
         }
     }
 }
+
+- (void)applyGyroModeSetting {
+    // Stop all timers to ensure a clean slate before applying the new setting.
+    [self stopTimerForAllControllers];
+
+    switch(_gyroMode) {
+        case AlwaysController:
+            // Activate timers only for physical controllers.
+            for (VoidController* voidController in _voidControllers.allValues) {
+                [self updateTimerStateForController:voidController];
+            }
+            break;
+
+        case GyroModeAuto:
+            // Prefer physical controller gyros if they exist.
+            if ([self externalControllersHaveGyro]) {
+                for (VoidController* voidController in _voidControllers.allValues) {
+                    [self updateTimerStateForController:voidController];
+                }
+            } else {
+                // Otherwise, fall back to the device gyro.
+                [self updateTimerStateForController:self->_oscController];
+            }
+            break;
+
+        case AlwaysDevice:
+            // Always start the device gyro in this mode.
+            [self updateTimerStateForController:self->_oscController];
+            break;
+            
+        case GyroModeOff:
+            // Do nothing, all timers are already stopped.
+            break;
+    }
+}
+
 
 -(void) cleanup
 {

@@ -21,6 +21,8 @@
 
 @interface ControllerSupport : NSObject
 
+@property (readonly) bool shallDisableGyroHotSwitch;
+
 -(id) initWithConfig:(StreamConfiguration*)streamConfig delegate:(id<ControllerSupportDelegate>)delegate;
 -(void) connectionEstablished;
 
