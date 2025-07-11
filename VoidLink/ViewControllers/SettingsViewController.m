@@ -149,7 +149,7 @@ static const int bitrateTable[] = {
     500000,
 };
 
-const int RESOLUTION_TABLE_SIZE = 7;
+const int RESOLUTION_TABLE_SIZE = 6;
 const int RESOLUTION_TABLE_CUSTOM_INDEX = RESOLUTION_TABLE_SIZE - 1;
 CGSize resolutionTable[RESOLUTION_TABLE_SIZE];
 
@@ -1171,11 +1171,10 @@ BOOL isCustomResolution(CGSize res) {
 
     resolutionTable[0] = CGSizeMake(1280, 720);
     resolutionTable[1] = CGSizeMake(1920, 1080);
-    resolutionTable[2] = CGSizeMake(2560, 1440);
-    resolutionTable[3] = CGSizeMake(3840, 2160);
-    resolutionTable[4] = CGSizeMake(safeAreaWidth, fullScreenHeight);
-    resolutionTable[5] = CGSizeMake(fullScreenWidth, fullScreenHeight);
-    resolutionTable[6] = CGSizeMake([currentSettings.width integerValue], [currentSettings.height integerValue]); // custom initial value
+    resolutionTable[2] = CGSizeMake(3840, 2160);
+    resolutionTable[3] = CGSizeMake(safeAreaWidth, fullScreenHeight);
+    resolutionTable[4] = CGSizeMake(fullScreenWidth, fullScreenHeight);
+    resolutionTable[5] = CGSizeMake([currentSettings.width integerValue], [currentSettings.height integerValue]); // custom initial value
     [self updateResolutionTable];
 
     // Don't populate the custom entry unless we have a custom resolution
@@ -1193,11 +1192,8 @@ BOOL isCustomResolution(CGSize res) {
         case 60:
             framerate = 1;
             break;
-        case 90:
-            framerate = 2;
-            break;
         case 120:
-            framerate = 3;
+            framerate = 2;
             break;
     }
 
@@ -1840,8 +1836,6 @@ BOOL isCustomResolution(CGSize res) {
         case 1:
             return 60;
         case 2:
-            return 90;
-        case 3:
             return 120;
         default:
             abort();

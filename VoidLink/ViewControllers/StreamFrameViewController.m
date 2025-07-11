@@ -411,7 +411,7 @@
     if(_settings.externalDisplayMode.intValue == 2) _streamVideoRenderView = _streamView;
     else {
         //NSLog(@"renderView separated from streamView");
-        _streamVideoRenderView = (StreamView*)[[UIView alloc] initWithFrame:self.view.frame];
+        _streamVideoRenderView = [[StreamView alloc] initWithFrame:self.view.frame];
         _streamVideoRenderView.bounds = _streamView.bounds;
         _streamVideoRenderView.userInteractionEnabled = false; // this will prevent renderView from intrecepting touchEvents which shall be interacting with streamView
     }
@@ -457,7 +457,6 @@
     // This is added to the _overlayView when displayed
 #endif
 
-    _streamView = [[StreamView alloc] initWithFrame:self.view.frame];
 #if TARGET_OS_TV
     // we need to tell the other remote handler in RelativeTouchHandler to wait for our double-select
     RelativeTouchHandler *touchHandler = (RelativeTouchHandler *)[_streamView touchHandler];
