@@ -82,20 +82,16 @@
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
                   useFramePacing:(BOOL)useFramePacing
-                  frameQueueSize:(NSInteger)frameQueueSize
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
-               // absoluteTouchMode:(BOOL)absoluteTouchMode
                        touchMode:(NSInteger)touchMode
                statsOverlayLevel:(NSInteger)statsOverlayLevel
                     statsOverlayEnabled:(BOOL)statsOverlayEnabled
                    unlockDisplayOrientation:(BOOL)unlockDisplayOrientation
               resolutionSelected:(NSInteger)resolutionSelected
              externalDisplayMode:(NSInteger)externalDisplayMode
-                       localMousePointerMode:(NSInteger)localMousePointerMode{
-    
-               absoluteTouchMode:(BOOL)absoluteTouchMode
-                    statsOverlay:(BOOL)statsOverlay
+           localMousePointerMode:(NSInteger)localMousePointerMode
+                  frameQueueSize:(NSInteger)frameQueueSize
                     enableGraphs:(BOOL)enableGraphs
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
@@ -128,7 +124,6 @@
         settingsToSave.playAudioOnPC = audioOnPC;
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
-        settingsToSave.frameQueueSize = [NSNumber numberWithInteger:frameQueueSize];
         settingsToSave.enableHdr = enableHdr;
         settingsToSave.btMouseSupport = btMouseSupport;
         // settingsToSave.absoluteTouchMode = absoluteTouchMode;
@@ -139,8 +134,8 @@
         settingsToSave.resolutionSelected = [NSNumber numberWithInteger:resolutionSelected];
         settingsToSave.externalDisplayMode = [NSNumber numberWithInteger:externalDisplayMode];
         settingsToSave.localMousePointerMode = [NSNumber numberWithInteger:localMousePointerMode];
-        settingsToSave.absoluteTouchMode = absoluteTouchMode;
-        settingsToSave.statsOverlay = statsOverlay;
+
+        settingsToSave.frameQueueSize = [NSNumber numberWithInteger:frameQueueSize];
         settingsToSave.enableGraphs = enableGraphs;
         settingsToSave.graphOpacity = [NSNumber numberWithInteger:graphOpacity];
         settingsToSave.renderingBackend = [NSNumber numberWithInteger:renderingBackend];

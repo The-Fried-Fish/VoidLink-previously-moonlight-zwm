@@ -54,8 +54,9 @@
         <attribute name="showKeyboardToolbar" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="slideToSettingsDistance" optional="YES" attributeType="Float" defaultValueString="0.25" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="slideToSettingsScreenEdge" optional="YES" attributeType="Integer 32" defaultValueString="2" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="statsOverlayEnabled" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="statsOverlayLevel" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="renderingBackend" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="statsOverlay" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="swapABXYButtons" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="touchMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="touchMoveEventInterval" optional="YES" attributeType="Integer 16" defaultValueString="320" usesScalarValueType="NO" syncable="YES"/>

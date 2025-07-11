@@ -37,6 +37,8 @@
     CGFloat _currentRefreshRate;
     MenuSectionView *touchControlSection;
     NSMutableSet* hiddenStacks;
+    NSInteger _frameQueueSize;
+    NSInteger _graphOpacity;
 }
 
 @dynamic overrideUserInterfaceStyle;
@@ -147,7 +149,7 @@ static const int bitrateTable[] = {
     500000,
 };
 
-const int RESOLUTION_TABLE_SIZE = 6;
+const int RESOLUTION_TABLE_SIZE = 7;
 const int RESOLUTION_TABLE_CUSTOM_INDEX = RESOLUTION_TABLE_SIZE - 1;
 CGSize resolutionTable[RESOLUTION_TABLE_SIZE];
 
@@ -1149,6 +1151,8 @@ BOOL isCustomResolution(CGSize res) {
 
     // Ensure we pick a bitrate that falls exactly onto a slider notch
     _bitrate = bitrateTable[[self getSliderValueForBitrate:[currentSettings.bitrate intValue]]];
+    _frameQueueSize = [currentSettings.frameQueueSize intValue];
+    _graphOpacity = [currentSettings.graphOpacity intValue];
 
     // Get the size of the screen with and without safe area insets
     UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
@@ -1162,10 +1166,11 @@ BOOL isCustomResolution(CGSize res) {
 
     resolutionTable[0] = CGSizeMake(1280, 720);
     resolutionTable[1] = CGSizeMake(1920, 1080);
-    resolutionTable[2] = CGSizeMake(3840, 2160);
-    resolutionTable[3] = CGSizeMake(safeAreaWidth, fullScreenHeight);
-    resolutionTable[4] = CGSizeMake(fullScreenWidth, fullScreenHeight);
-    resolutionTable[5] = CGSizeMake([currentSettings.width integerValue], [currentSettings.height integerValue]); // custom initial value
+    resolutionTable[2] = CGSizeMake(2560, 1440);
+    resolutionTable[3] = CGSizeMake(3840, 2160);
+    resolutionTable[4] = CGSizeMake(safeAreaWidth, fullScreenHeight);
+    resolutionTable[5] = CGSizeMake(fullScreenWidth, fullScreenHeight);
+    resolutionTable[6] = CGSizeMake([currentSettings.width integerValue], [currentSettings.height integerValue]); // custom initial value
     [self updateResolutionTable];
 
     // Don't populate the custom entry unless we have a custom resolution
@@ -1183,8 +1188,11 @@ BOOL isCustomResolution(CGSize res) {
         case 60:
             framerate = 1;
             break;
-        case 120:
+        case 90:
             framerate = 2;
+            break;
+        case 120:
+            framerate = 3;
             break;
     }
 
@@ -1246,6 +1254,10 @@ BOOL isCustomResolution(CGSize res) {
 
     [self.yuv444Switch setOn:currentSettings.enableYUV444];
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
+    
+    NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
+    [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
+
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
     [self.framePacingSelector setSelectedSegmentIndex:currentSettings.useFramePacing ? 1 : 0];
@@ -1274,6 +1286,21 @@ BOOL isCustomResolution(CGSize res) {
     [self.bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
     [self updateBitrateText];
     [self updateResolutionDisplayLabel];
+    
+    [self.frameQueueSizeSlider setMinimumValue:1];
+    [self.frameQueueSizeSlider setMaximumValue:5];
+    [self.frameQueueSizeSlider setValue:_frameQueueSize];
+    [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved) forControlEvents:UIControlEventValueChanged];
+    [self updateFrameQueueSizeText];
+
+    [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged) forControlEvents:UIControlEventValueChanged];
+    [self enableGraphsChanged];
+    [self.graphOpacityStepper setMinimumValue:0];
+    [self.graphOpacityStepper setMaximumValue:100];
+    [self.graphOpacityStepper setValue:_graphOpacity];
+    [self.graphOpacityStepper addTarget:self action:@selector(graphOpacityStepperMoved) forControlEvents:UIControlEventValueChanged];
+    [self updateGraphOpacityText];
+
     if (@available(iOS 18.0, tvOS 18.0, *)) {}else{
         [self.audioConfigSelector removeSegmentAtIndex:1 animated:false];
         [self.audioConfigSelector removeSegmentAtIndex:1 animated:false]; // segment 2 goes away when you remove index 2
@@ -1808,6 +1835,8 @@ BOOL isCustomResolution(CGSize res) {
         case 1:
             return 60;
         case 2:
+            return 90;
+        case 3:
             return 120;
         default:
             abort();
@@ -1926,25 +1955,50 @@ BOOL isCustomResolution(CGSize res) {
     }
 }
 
+- (void) frameQueueSizeSliderMoved {
+    assert(self.frameQueueSizeSlider.value >= 0 && self.frameQueueSizeSlider.value <= 5);
+    _frameQueueSize = (int)self.frameQueueSizeSlider.value;
+    [self updateFrameQueueSizeText];
+}
+
+- (void) updateFrameQueueSizeText {
+    [self.frameQueueSizeLabel setText:[NSString stringWithFormat:@"Frames to buffer: %ld", _frameQueueSize ]];
+}
+
+- (void) enableGraphsChanged {
+    [self.graphOpacityStepper setEnabled:[self.enableGraphsSwitch isOn]];
+}
+
+- (void) graphOpacityStepperMoved {
+    assert(self.graphOpacityStepper.value >= 0 && self.graphOpacityStepper.value <= 100);
+    _graphOpacity = (int)self.graphOpacityStepper.value;
+    [self updateGraphOpacityText];
+}
+
+- (void) updateGraphOpacityText {
+    [self.enableGraphsLabel setText:[NSString stringWithFormat:@"Performance Graphs - Opacity: %ld%%", _graphOpacity ]];
+}
+
 - (void) saveSettings {
     DataManager* dataMan = [[DataManager alloc] init];
     NSInteger framerate = [self getChosenFrameRate];
     NSInteger height = [self getChosenStreamHeight];
     NSInteger width = [self getChosenStreamWidth];
     NSInteger audioConfig = [@[@2, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
+    NSInteger renderingBackend = [self.renderingBackendSelector selectedSegmentIndex];
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
     NSInteger keyboardToggleFingers = self.softKeyboardGestureSelector.selectedSegmentIndex == 3 ? 20 : self.softKeyboardGestureSelector.selectedSegmentIndex+3;
     NSInteger oscLayoutToolFingers = (uint16_t)self->oswLayoutFingers;
-
+    
     CGFloat slideToSettingsDistance = self.slideToMenuDistanceSlider.value;
     uint32_t slideToSettingsScreenEdge = [self getScreenEdgeFromSelector];
     CGFloat pointerVelocityModeDivider = (CGFloat)(uint8_t)self.pointerVelocityModeDividerSlider.value/100;
     CGFloat touchPointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.touchPointerVelocityFactorSlider.value]/100;
     CGFloat mousePointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.mousePointerVelocityFactorSlider.value]/100;
     CGFloat gyroSensitivity = (CGFloat)(uint16_t)self.gyroSensitivitySlider.value/100;
-
+    
     uint16_t touchMoveEventInterval = (uint16_t)self.touchMoveEventIntervalSlider.value;
-
+    
     BOOL reverseMouseWheelDirection = [self.reverseMouseWheelDirectionSelector selectedSegmentIndex] == 1;
     NSInteger asyncNativeTouchPriority = 1;
     //BOOL liftStreamViewForKeyboard = [self.liftStreamViewForKeyboardSelector selectedSegmentIndex] == 1;
@@ -1964,6 +2018,7 @@ BOOL isCustomResolution(CGSize res) {
     BOOL statsOverlayEnabled = statsOverlayLevel != 0;
     BOOL enableHdr = self.hdrSwitch.isOn;
     BOOL unlockDisplayOrientation = [self.unlockDisplayOrientationSelector selectedSegmentIndex] == 1;
+    BOOL enableGraphs = self.enableGraphsSwitch.isOn;
     NSInteger resolutionSelected = [self.resolutionSelector selectedSegmentIndex];
     NSInteger externalDisplayMode = [self.externalDisplayModeSelector selectedSegmentIndex];
     NSInteger localMousePointerMode = [self.localMousePointerModeSelector selectedSegmentIndex];
@@ -2002,7 +2057,11 @@ BOOL isCustomResolution(CGSize res) {
             unlockDisplayOrientation:unlockDisplayOrientation
                   resolutionSelected:resolutionSelected
                  externalDisplayMode:externalDisplayMode
-               localMousePointerMode:localMousePointerMode];
+               localMousePointerMode:localMousePointerMode
+                      frameQueueSize:_frameQueueSize
+                        enableGraphs:enableGraphs
+                        graphOpacity:_graphOpacity
+                    renderingBackend:renderingBackend];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -152,11 +152,9 @@
     return TRUE;
 }
 
-- (NSString*) getStatsOverlayText: (uint16_t) overlayLevel {
+- (NSString*) getStatsOverlayText {
     video_stats_t stats;
     
-    // NSLog(@"overlayLevel: %d", overlayLevel);
-
     if (!_connection) {
         return nil;
     }
@@ -168,16 +166,15 @@
     uint32_t rtt, variance;
     NSString* latencyString;
     if (LiGetEstimatedRttInfo(&rtt, &variance)) {
-        latencyString = [LocalizationHelper localizedStringForKey:@"%u ms (variance: %u ms)", rtt, variance];
+        latencyString = [NSString stringWithFormat:@"%u ms (variance: %u ms)", rtt, variance];
     }
     else {
         latencyString = @"N/A";
     }
     
     NSString* hostProcessingString;
-    // overlayLevel 2: detailed
     if (stats.framesWithHostProcessingLatency != 0) {
-        hostProcessingString = [LocalizationHelper localizedStringForKey:@"\nHost processing latency min/max/avg: %.1f/%.1f/%.1f ms",
+        hostProcessingString = [NSString stringWithFormat:@"Host processing latency min/max/avg: %.1f/%.1f/%.1f ms\n",
                                 stats.minHostProcessingLatency / 10.f,
                                 stats.maxHostProcessingLatency / 10.f,
                                 (float)stats.totalHostProcessingLatency / stats.framesWithHostProcessingLatency / 10.f];
@@ -188,13 +185,12 @@
     }
     
     float interval = stats.endTime - stats.startTime;
-    if(overlayLevel == 2) return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\nNetwork dropped frames: %.2f%%\nAverage network latency: %@%@",
     float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
     float fps = (stats.totalFrames - stats.networkDroppedFrames - (stats.frameDropMetrics.total / scalePlotMetrics)) / interval;
-
+    
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
-
+    
     return [NSString stringWithFormat:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
             "Bitrate: %.1f Mbps, Peak: %.1f, Renderer: %@\n"
             "%@"
@@ -212,11 +208,6 @@
             (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
             stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
             latencyString,
-            hostProcessingString];
-    else return [LocalizationHelper localizedStringForKey:@"FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@",
-                 stats.totalFrames / interval,
-                 stats.networkDroppedFrames / interval,
-                 latencyString];
             stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
 }
 

@@ -106,6 +106,14 @@
 @property (strong, nonatomic) IBOutlet UIStackView *audioConfigStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioConfigSelector;
 
+@property (strong, nonatomic) IBOutlet UILabel *frameQueueSizeLabel;
+@property (strong, nonatomic) IBOutlet UISlider *frameQueueSizeSlider;
+
+@property (strong, nonatomic) IBOutlet UILabel *enableGraphsLabel;
+@property (strong, nonatomic) IBOutlet UISwitch *enableGraphsSwitch;
+@property (strong, nonatomic) IBOutlet UIStepper *graphOpacityStepper;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
+
 
 
 #pragma clang diagnostic push

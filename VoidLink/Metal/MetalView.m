@@ -1,3 +1,12 @@
+//
+//  MetalView.m
+//  VoidLink
+//
+//  Created by Mason Chen on 2025/7/11.
+//  Copyright © 2025 Moonlight Game Streaming Project. All rights reserved.
+//
+
+
 // This is based on the following Apple example:
 // https://developer.apple.com/documentation/metal/achieving-smooth-frame-rates-with-a-metal-display-link?language=objc
 // https://developer.apple.com/wwdc23/10123/

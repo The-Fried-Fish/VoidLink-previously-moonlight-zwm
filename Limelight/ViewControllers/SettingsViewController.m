@@ -1128,7 +1128,6 @@ BOOL isCustomResolution(CGSize res) {
     NSInteger touchMode = [self.touchModeSelector selectedSegmentIndex];
     NSInteger statsOverlayLevel = [self.statsOverlaySelector selectedSegmentIndex];
     BOOL statsOverlayEnabled = statsOverlayLevel != 0;
-    BOOL statsOverlay = [self.statsOverlaySelector selectedSegmentIndex] == 1;
     BOOL enableGraphs = [self.enableGraphsSelector selectedSegmentIndex] == 1;
     BOOL enableHdr = [self.hdrSelector selectedSegmentIndex] == 1;
     BOOL unlockDisplayOrientation = [self.unlockDisplayOrientationSelector selectedSegmentIndex] == 1;
@@ -1172,7 +1171,6 @@ BOOL isCustomResolution(CGSize res) {
                   resolutionSelected:resolutionSelected
                  externalDisplayMode:externalDisplayMode
                            localMousePointerMode:localMousePointerMode];
-                        statsOverlay:statsOverlay
                         enableGraphs:enableGraphs
                         graphOpacity:_graphOpacity
                     renderingBackend:renderingBackend];
