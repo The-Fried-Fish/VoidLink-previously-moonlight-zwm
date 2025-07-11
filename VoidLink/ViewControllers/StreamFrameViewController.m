@@ -81,13 +81,10 @@
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
-    UISwipeGestureRecognizer *_topSwipeRecognizer;
-    UISwipeGestureRecognizer *_topSwipeUpRecognizer;
 #else
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
-    UITapGestureRecognizer *_remoteDoubleSelectRecognizer;
 #endif
 }
 
@@ -306,14 +303,6 @@
     Log(LOG_I, @"Play/Pause button pressed -- backing out of stream");
     [self returnToMainFrame];
 }
-- (void)remoteSelectButtonDoublePressed:(id)sender {
-    Log(LOG_I, @"Select button double-tapped -- toggling stats");
-    if (!self->_statsUpdateTimer) {
-        [self showStats];
-    } else {
-        [self hideStats];
-    }
-}
 #endif
 
 - (void)popFirstLaunchTip {
@@ -411,7 +400,7 @@
     if(_settings.externalDisplayMode.intValue == 2) _streamVideoRenderView = _streamView;
     else {
         //NSLog(@"renderView separated from streamView");
-        _streamVideoRenderView = [[StreamView alloc] initWithFrame:self.view.frame];
+        _streamVideoRenderView = (StreamView*)[[UIView alloc] initWithFrame:self.view.frame];
         _streamVideoRenderView.bounds = _streamView.bounds;
         _streamVideoRenderView.userInteractionEnabled = false; // this will prevent renderView from intrecepting touchEvents which shall be interacting with streamView
     }
@@ -421,7 +410,7 @@
     if([self isFirstLaunch]) [self popFirstLaunchTip];
     
 #if TARGET_OS_TV
-    if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer || !_remoteDoubleSelectRecognizer) {
+    if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer) {
         _menuTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(controllerPauseButtonPressed:)];
         _menuTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
 
@@ -432,36 +421,15 @@
         _menuDoubleTapGestureRecognizer.numberOfTapsRequired = 2;
         [_menuTapGestureRecognizer requireGestureRecognizerToFail:_menuDoubleTapGestureRecognizer];
         _menuDoubleTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
-
-        _remoteDoubleSelectRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(remoteSelectButtonDoublePressed:)];
-        _remoteDoubleSelectRecognizer.numberOfTapsRequired = 2;
-        _remoteDoubleSelectRecognizer.allowedPressTypes = @[@(UIPressTypeSelect)];
     }
     
     [self.view addGestureRecognizer:_menuTapGestureRecognizer];
     [self.view addGestureRecognizer:_menuDoubleTapGestureRecognizer];
     [self.view addGestureRecognizer:_playPauseTapGestureRecognizer];
-    [self.view addGestureRecognizer:_remoteDoubleSelectRecognizer];
 
 #else
-    _topSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(topSwiped)];
-    _topSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
-    _topSwipeRecognizer.numberOfTouchesRequired = 2;
-    _topSwipeRecognizer.enabled = TRUE;
-    [self.view addGestureRecognizer:_topSwipeRecognizer];
-
-    _topSwipeUpRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(topSwipedUp)];
-    _topSwipeUpRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-    _topSwipeUpRecognizer.numberOfTouchesRequired = 2;
-    _topSwipeUpRecognizer.enabled = FALSE;
-    // This is added to the _overlayView when displayed
-#endif
-
-#if TARGET_OS_TV
-    // we need to tell the other remote handler in RelativeTouchHandler to wait for our double-select
-    RelativeTouchHandler *touchHandler = (RelativeTouchHandler *)[_streamView touchHandler];
-    UIGestureRecognizer *remotePressRecognizer = [touchHandler remotePressRecognizer];
-    [remotePressRecognizer requireGestureRecognizerToFail:_remoteDoubleSelectRecognizer];
+    //[self configSwipeGestures]; // swipe & exit gesture configured here
+    //[self configOscLayoutTool]; //_oscLayoutTapRecoginizer will be added or removed to the view here
 #endif
     
     _tipLabel = [[UILabel alloc] init];
@@ -671,8 +639,6 @@
 #else
         [_overlayView setFont:[UIFont systemFontOfSize:12 weight:UIFontWeightMedium]];
 
-        _topSwipeUpRecognizer.enabled = TRUE;
-        [_overlayView addGestureRecognizer:_topSwipeUpRecognizer];
 #endif
         int opacity = MAX([_settings.graphOpacity intValue], 60);
         [_overlayView setAlpha:(float)opacity / 100.0];
@@ -703,11 +669,6 @@
     
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
-
-#if !TARGET_OS_TV
-    _topSwipeRecognizer.enabled = FALSE;
-    _topSwipeUpRecognizer.enabled = FALSE;
-#endif
 
     [self.navigationController popToRootViewControllerAnimated:YES];
     
@@ -867,58 +828,6 @@
     [self returnToMainFrame];
 }
 
-- (void)topSwiped {
-    Log(LOG_I, @"User swiped/cicked down for stats");
-    [self showStats];
-
-#if !TARGET_OS_TV
-    _topSwipeRecognizer.enabled = FALSE;
-    _topSwipeUpRecognizer.enabled = TRUE;
-#endif
-}
-
-- (void)showStats {
-    if (self->_statsUpdateTimer == nil) {
-        self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
-                                                                   target:self
-                                                                 selector:@selector(updateStatsOverlay)
-                                                                 userInfo:nil
-                                                                  repeats:YES];
-        [self->_statsUpdateTimer fire];
-
-        if (_settings.enableGraphs) {
-            [self.imguiView start];
-            [self.imguiView show];
-        }
-    }
-}
-
-- (void)topSwipedUp {
-    Log(LOG_I, @"User swiped up to hide stats");
-    [self hideStats];
-
-#if !TARGET_OS_TV
-    _topSwipeRecognizer.enabled = TRUE;
-    _topSwipeUpRecognizer.enabled = FALSE;
-#endif
-}
-
-- (void)hideStats {
-    if (self->_statsUpdateTimer != nil) {
-        [_statsUpdateTimer invalidate];
-        _statsUpdateTimer = nil;
-    }
-
-    if (_overlayView != nil) {
-        [_overlayView setHidden:YES];
-    }
-
-    if (_settings.enableGraphs) {
-        [self.imguiView hide];
-        [self.imguiView stop];
-    }
-}
-
 - (void) connectionStarted {
     Log(LOG_I, @"Connection started");
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -933,7 +842,6 @@
         [self->_controllerSupport connectionEstablished];
         
         if (self->_settings.statsOverlayEnabled) {
-            [self topSwiped];
             self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
                                                                        target:self
                                                                      selector:@selector(updateStatsOverlay)

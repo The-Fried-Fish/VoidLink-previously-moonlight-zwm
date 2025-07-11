@@ -26,7 +26,7 @@
 #include <mach/mach_time.h>
 
 // Define for extra logging related to frame pacing
-#define DISPLAYLINK_VERBOSE
+//#define DISPLAYLINK_VERBOSE
 
 // Private libavformat API for writing the AV1 Codec Configuration Box
 extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
