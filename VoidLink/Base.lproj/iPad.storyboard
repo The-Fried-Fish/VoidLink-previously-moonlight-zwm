@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -870,6 +870,84 @@
                                     <constraint firstAttribute="width" constant="380" id="pkz-ek-bOk"/>
                                 </constraints>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackend Stack">
+                                <rect key="frame" x="20" y="1166" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rendering Backend" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v8l-hf-kiR" userLabel="Rendering Backend">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="53H-ST-OtY" userLabel="Rendering Backend Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Metal"/>
+                                            <segment title="AVSampleBuffer"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="50i-OF-DWd"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="MML-c1-D5j" userLabel="frameQueueSize Stack">
+                                <rect key="frame" x="292" y="1087" width="380" height="89.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Frames to Buffer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ce3-FM-vIh">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="1" maxValue="5" minimumValueImage="1.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="oZa-8Y-icz" userLabel="Frame Queue Size Selector">
+                                        <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
+                                    </slider>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection." lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ylu-hT-Cuz" userLabel="Frame Queue Size Caption">
+                                        <rect key="frame" x="0.0" y="60.5" width="380" height="29"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <color key="textColor" systemColor="secondarySystemGroupedBackgroundColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="K66-qD-1fF"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="H1O-Hi-8rG" userLabel="performanceGraphs Stack">
+                                <rect key="frame" x="292" y="1611" width="380" height="186.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Performance Graphs - Opacity: 50%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ccm-n2-PXi" userLabel="Performance Graphs">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Z9-RB-w4i" userLabel="performanceGraphSwitch">
+                                        <rect key="frame" x="0.0" y="40.5" width="382" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="rBW-bO-yXO"/>
+                                        </constraints>
+                                    </switch>
+                                    <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" maximumValue="100" stepValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="9VJ-Gj-nWG">
+                                        <rect key="frame" x="0.0" y="91.5" width="380" height="32"/>
+                                    </stepper>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dK2-1g-PUQ" userLabel="Performance Graphs Caption">
+                                        <rect key="frame" x="0.0" y="143.5" width="380" height="43"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <string key="text">Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.</string>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <color key="textColor" systemColor="secondarySystemGroupedBackgroundColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="3hg-AM-9mr"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -888,14 +966,19 @@
                         <outlet property="codecSelector" destination="aFy-0w-YPe" id="DlU-0l-gwz"/>
                         <outlet property="codecStack" destination="gWg-BF-yDI" id="GGc-JQ-N8y"/>
                         <outlet property="customResolutionSwitch" destination="E5w-kK-dOo" id="hrt-v2-8dY"/>
+                        <outlet property="enableGraphsSwitch" destination="3Z9-RB-w4i" id="0yT-M0-sr5"/>
                         <outlet property="enableOswForNativeTouchSwitch" destination="Zmq-Kv-Nmp" id="f6j-0V-ldT"/>
                         <outlet property="enableOswSwitchStack" destination="SkS-ft-peB" id="n3M-EK-U74"/>
                         <outlet property="externalDisplayModeSelector" destination="VWB-YB-Ptj" id="0ak-pc-evb"/>
                         <outlet property="externalDisplayModeStack" destination="YBu-VX-wpN" id="72y-R6-fF7"/>
                         <outlet property="fpsStack" destination="TuR-H8-e2H" id="zGQ-gR-P1i"/>
                         <outlet property="framePacingSelector" destination="OOg-A3-DdM" id="XJL-lk-f5K"/>
+                        <outlet property="frameQueueSizeLabel" destination="Ce3-FM-vIh" id="90D-Tq-OGd"/>
+                        <outlet property="frameQueueSizeSlider" destination="oZa-8Y-icz" id="Jo1-Fx-UMw"/>
+                        <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="uFG-Ch-nsK"/>
                         <outlet property="framepacingStack" destination="9C2-td-rMV" id="5wc-qn-fo5"/>
                         <outlet property="framerateSelector" destination="8hF-kb-2uV" id="dfT-hb-csE"/>
+                        <outlet property="graphOpacityStepper" destination="9VJ-Gj-nWG" id="plg-Q6-54j"/>
                         <outlet property="gyroModeSelector" destination="aa5-3y-I4d" id="FsX-kH-h7w"/>
                         <outlet property="gyroModeStack" destination="kAD-mK-aP8" id="GvL-Yx-S2t"/>
                         <outlet property="gyroSensitivitySlider" destination="3Ge-IB-PBj" id="Pdg-ke-KG3"/>
@@ -916,9 +999,12 @@
                         <outlet property="onscreenControllerLabel" destination="LGV-5y-piG" id="GsV-fS-lX9"/>
                         <outlet property="optimizeGamesStack" destination="TvS-69-vcF" id="pm1-0c-dCR"/>
                         <outlet property="optimizeGamesSwitch" destination="Sui-Ig-YxN" id="Lxu-si-ugy"/>
+                        <outlet property="performanceGraphStack" destination="H1O-Hi-8rG" id="AcS-Va-yZs"/>
                         <outlet property="pointerVelocityDividerStack" destination="b1U-nD-gYE" id="ep1-K3-rKj"/>
                         <outlet property="pointerVelocityFactorStack" destination="vdk-mK-ztu" id="Cik-Rh-pGS"/>
                         <outlet property="pointerVelocityModeDividerSlider" destination="AcZ-2i-GI4" id="dGf-ZU-w3S"/>
+                        <outlet property="renderingBackendSelector" destination="53H-ST-OtY" id="jhu-Pw-Phg"/>
+                        <outlet property="renderingBackendStack" destination="6hG-dw-YSr" id="qqz-lA-EOE"/>
                         <outlet property="resolutionSelector" destination="ckc-Dm-8ex" id="rl6-rx-wd3"/>
                         <outlet property="resolutionStack" destination="zpX-lo-MLA" id="9Hu-I9-hjH"/>
                         <outlet property="reverseMouseWheelDirectionSelector" destination="mTM-NL-CcF" id="EYZ-Qg-OLu"/>
@@ -1583,6 +1669,8 @@
         </scene>
     </scenes>
     <resources>
+        <image name="1.square" catalog="system" width="128" height="114"/>
+        <image name="5.square" catalog="system" width="128" height="114"/>
         <image name="ChevronCompactUp" width="35" height="10"/>
         <image name="arrow.left.square.fill" catalog="system" width="128" height="114"/>
         <image name="arrow.uturn.backward" width="19.06089973449707" height="18.594499588012695"/>
@@ -1594,6 +1682,9 @@
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="secondarySystemGroupedBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

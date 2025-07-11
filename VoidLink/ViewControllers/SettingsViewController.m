@@ -484,6 +484,9 @@ BOOL isCustomResolution(CGSize res) {
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.HdrStack ofId:@"HdrStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
 
@@ -556,6 +559,8 @@ BOOL isCustomResolution(CGSize res) {
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
+
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     

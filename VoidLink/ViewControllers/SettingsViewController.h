@@ -56,6 +56,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *unlockDisplayOrientationStack;
 @property (strong, nonatomic) IBOutlet UIStackView *externalDisplayModeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *localMousePointerModeStack;
+@property (strong, nonatomic) IBOutlet UIStackView *renderingBackendStack;
+@property (strong, nonatomic) IBOutlet UIStackView *frameQueueSizeStack;
+@property (strong, nonatomic) IBOutlet UIStackView *performanceGraphStack;
 
 @property (strong, nonatomic) IBOutlet UILabel *bitrateLabel;
 @property (strong, nonatomic) IBOutlet UISlider *bitrateSlider;

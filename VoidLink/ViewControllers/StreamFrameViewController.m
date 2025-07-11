@@ -15,6 +15,10 @@
 #import "StreamManager.h"
 #import "ControllerSupport.h"
 #import "DataManager.h"
+#import "PaddedLabel.h"
+#import "ImGuiRenderer.h"
+#import "RelativeTouchHandler.h"
+#import "MetalVideoRenderer.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "CustomTapGestureRecognizer.h"
 #import "LocalizationHelper.h"
@@ -46,10 +50,10 @@
     TemporarySettings *_settings;
     NSTimer *_inactivityTimer;
     NSTimer *_statsUpdateTimer;
+    PaddedLabel *_overlayView;
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
-    UITextView *_overlayView;
     UILabel *_stageLabel;
     UILabel *_tipLabel;
     UIActivityIndicatorView *_spinner;
@@ -58,6 +62,9 @@
     BOOL _userIsInteracting;
     bool viewJustLoaded;
     CGSize _keyboardSize;
+    PlotMetrics _decodeMetrics;
+    PlotMetrics _frameDropMetrics;
+    PlotMetrics _frameQueueMetrics;
     UIWindow *_extWindow;
     UIView *_streamVideoRenderView;
     /*
@@ -74,6 +81,13 @@
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
+    UISwipeGestureRecognizer *_topSwipeRecognizer;
+    UISwipeGestureRecognizer *_topSwipeUpRecognizer;
+#else
+    UITapGestureRecognizer *_menuTapGestureRecognizer;
+    UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
+    UITapGestureRecognizer *_playPauseTapGestureRecognizer;
+    UITapGestureRecognizer *_remoteDoubleSelectRecognizer;
 #endif
 }
 
@@ -292,6 +306,14 @@
     Log(LOG_I, @"Play/Pause button pressed -- backing out of stream");
     [self returnToMainFrame];
 }
+- (void)remoteSelectButtonDoublePressed:(id)sender {
+    Log(LOG_I, @"Select button double-tapped -- toggling stats");
+    if (!self->_statsUpdateTimer) {
+        [self showStats];
+    } else {
+        [self hideStats];
+    }
+}
 #endif
 
 - (void)popFirstLaunchTip {
@@ -399,7 +421,7 @@
     if([self isFirstLaunch]) [self popFirstLaunchTip];
     
 #if TARGET_OS_TV
-    if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer) {
+    if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer || !_remoteDoubleSelectRecognizer) {
         _menuTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(controllerPauseButtonPressed:)];
         _menuTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
 
@@ -410,15 +432,37 @@
         _menuDoubleTapGestureRecognizer.numberOfTapsRequired = 2;
         [_menuTapGestureRecognizer requireGestureRecognizerToFail:_menuDoubleTapGestureRecognizer];
         _menuDoubleTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+
+        _remoteDoubleSelectRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(remoteSelectButtonDoublePressed:)];
+        _remoteDoubleSelectRecognizer.numberOfTapsRequired = 2;
+        _remoteDoubleSelectRecognizer.allowedPressTypes = @[@(UIPressTypeSelect)];
     }
     
     [self.view addGestureRecognizer:_menuTapGestureRecognizer];
     [self.view addGestureRecognizer:_menuDoubleTapGestureRecognizer];
     [self.view addGestureRecognizer:_playPauseTapGestureRecognizer];
+    [self.view addGestureRecognizer:_remoteDoubleSelectRecognizer];
 
 #else
-    //[self configSwipeGestures]; // swipe & exit gesture configured here
-    //[self configOscLayoutTool]; //_oscLayoutTapRecoginizer will be added or removed to the view here
+    _topSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(topSwiped)];
+    _topSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+    _topSwipeRecognizer.numberOfTouchesRequired = 2;
+    _topSwipeRecognizer.enabled = TRUE;
+    [self.view addGestureRecognizer:_topSwipeRecognizer];
+
+    _topSwipeUpRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(topSwipedUp)];
+    _topSwipeUpRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+    _topSwipeUpRecognizer.numberOfTouchesRequired = 2;
+    _topSwipeUpRecognizer.enabled = FALSE;
+    // This is added to the _overlayView when displayed
+#endif
+
+    _streamView = [[StreamView alloc] initWithFrame:self.view.frame];
+#if TARGET_OS_TV
+    // we need to tell the other remote handler in RelativeTouchHandler to wait for our double-select
+    RelativeTouchHandler *touchHandler = (RelativeTouchHandler *)[_streamView touchHandler];
+    UIGestureRecognizer *remotePressRecognizer = [touchHandler remotePressRecognizer];
+    [remotePressRecognizer requireGestureRecognizerToFail:_remoteDoubleSelectRecognizer];
 #endif
     
     _tipLabel = [[UILabel alloc] init];
@@ -479,6 +523,26 @@
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];
     [self.view addSubview:_tipLabel];
+
+    if ([_settings.renderingBackend intValue] == RENDER_METAL) {
+        // Metal view for video
+        // TODO: refactor the way things access observeFloat for stats
+        self.metalViewController = [[MetalViewController alloc] initWithFrame:self.view.bounds
+                                                                    framerate:[self->_settings.framerate floatValue]
+                                                                    enableHdr:self->_settings.enableHdr
+                                                               metricsHandler:self.imguiView.metricsHandler];
+        [self.view addSubview:self.metalViewController.view];
+        [self.view bringSubviewToFront:self.metalViewController.view];
+    }
+
+    // Make a MetalKit view for ImGui
+    self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
+                                                streamFps:[_settings.framerate intValue]
+                                             enableGraphs:_settings.enableGraphs
+                                             graphOpacity:[_settings.graphOpacity intValue]];
+    [self.view addSubview:self.imguiView.mtkView];
+    [self.view bringSubviewToFront:self.imguiView.mtkView];
+
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
@@ -589,13 +653,12 @@
 
 - (void)updateOverlayText:(NSString*)text {
     if (_overlayView == nil) {
-        _overlayView = [[UITextView alloc] init];
-#if !TARGET_OS_TV
-        [_overlayView setEditable:NO];
-#endif
-        [_overlayView setUserInteractionEnabled:NO];
-        [_overlayView setSelectable:NO];
-        [_overlayView setScrollEnabled:NO];
+        _overlayView = [[PaddedLabel alloc] initWithFrame:CGRectZero];
+        [_overlayView setTextInsets:UIEdgeInsetsMake(10, 15, 10, 15)];
+        [_overlayView setUserInteractionEnabled:YES];
+        [_overlayView setNumberOfLines:100];
+        [_overlayView.layer setCornerRadius:12];
+        [_overlayView.layer setMasksToBounds:YES];
         
         // HACK: If not using stats overlay, center the text
         if (_statsUpdateTimer == nil) {
@@ -605,17 +668,15 @@
         [_overlayView setTextColor:[UIColor lightGrayColor]];
         [_overlayView setBackgroundColor:[UIColor blackColor]];
 #if TARGET_OS_TV
-        [_overlayView setFont:[UIFont systemFontOfSize:24]];
+        [_overlayView setFont:[UIFont systemFontOfSize:24 weight:UIFontWeightMedium]];
 #else
-        if (@available(iOS 13.0, *)) {
-            [_overlayView setFont:[UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular]];
-        } else {
-            [_overlayView setFont:[UIFont systemFontOfSize:12]];// Fallback on earlier versions
-        }
-        //[_overlayView setFont:[UIFont fontWithName:@"Menlo" size:12]];
+        [_overlayView setFont:[UIFont systemFontOfSize:12 weight:UIFontWeightMedium]];
 
+        _topSwipeUpRecognizer.enabled = TRUE;
+        [_overlayView addGestureRecognizer:_topSwipeUpRecognizer];
 #endif
-        [_overlayView setAlpha:0.5];
+        int opacity = MAX([_settings.graphOpacity intValue], 60);
+        [_overlayView setAlpha:(float)opacity / 100.0];
         [self.view addSubview:_overlayView];
     }
     
@@ -629,7 +690,7 @@
                                            _overlayView.frame.size.height)];
         [_overlayView setText:text];
         [_overlayView sizeToFit];
-        [_overlayView setCenter:CGPointMake(self.view.frame.size.width / 2, _overlayView.frame.size.height / 2)];
+        [_overlayView setCenter:CGPointMake(self.view.frame.size.width / 2, (12 + (_overlayView.frame.size.height / 2)))];
         [_overlayView setHidden:NO];
     }
     else {
@@ -643,7 +704,12 @@
     
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
-    
+
+#if !TARGET_OS_TV
+    _topSwipeRecognizer.enabled = FALSE;
+    _topSwipeUpRecognizer.enabled = FALSE;
+#endif
+
     [self.navigationController popToRootViewControllerAnimated:YES];
     
     _extWindow = nil;
@@ -802,6 +868,58 @@
     [self returnToMainFrame];
 }
 
+- (void)topSwiped {
+    Log(LOG_I, @"User swiped/cicked down for stats");
+    [self showStats];
+
+#if !TARGET_OS_TV
+    _topSwipeRecognizer.enabled = FALSE;
+    _topSwipeUpRecognizer.enabled = TRUE;
+#endif
+}
+
+- (void)showStats {
+    if (self->_statsUpdateTimer == nil) {
+        self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                                                   target:self
+                                                                 selector:@selector(updateStatsOverlay)
+                                                                 userInfo:nil
+                                                                  repeats:YES];
+        [self->_statsUpdateTimer fire];
+
+        if (_settings.enableGraphs) {
+            [self.imguiView start];
+            [self.imguiView show];
+        }
+    }
+}
+
+- (void)topSwipedUp {
+    Log(LOG_I, @"User swiped up to hide stats");
+    [self hideStats];
+
+#if !TARGET_OS_TV
+    _topSwipeRecognizer.enabled = TRUE;
+    _topSwipeUpRecognizer.enabled = FALSE;
+#endif
+}
+
+- (void)hideStats {
+    if (self->_statsUpdateTimer != nil) {
+        [_statsUpdateTimer invalidate];
+        _statsUpdateTimer = nil;
+    }
+
+    if (_overlayView != nil) {
+        [_overlayView setHidden:YES];
+    }
+
+    if (_settings.enableGraphs) {
+        [self.imguiView hide];
+        [self.imguiView stop];
+    }
+}
+
 - (void) connectionStarted {
     Log(LOG_I, @"Connection started");
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -816,6 +934,7 @@
         [self->_controllerSupport connectionEstablished];
         
         if (self->_settings.statsOverlayEnabled) {
+            [self topSwiped];
             self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
                                                                        target:self
                                                                      selector:@selector(updateStatsOverlay)
@@ -1025,7 +1144,7 @@
     if (@available(tvOS 11.2, *)) {
         UIWindow* window = [[[UIApplication sharedApplication] delegate] window];
         AVDisplayManager* displayManager = [window avDisplayManager];
-        
+
         // This logic comes from Kodi and MrMC
         if (streamActive) {
             int dynamicRange;
@@ -1036,7 +1155,7 @@
             else {
                 dynamicRange = 0; // SDR
             }
-            
+
             AVDisplayCriteria* displayCriteria = [[AVDisplayCriteria alloc] initWithRefreshRate:[_settings.framerate floatValue]
                                                                               videoDynamicRange:dynamicRange];
             displayManager.preferredDisplayCriteria = displayCriteria;
@@ -1059,6 +1178,14 @@
 - (void) videoContentShown {
     [_spinner stopAnimating];
     [self.view setBackgroundColor:[UIColor blackColor]];
+}
+
+- (void) observeFloat:(int)plotId value:(CFTimeInterval)value {
+    [self.imguiView observeFloat:plotId value:value];
+}
+
+- (void) observeFloatReturnMetrics:(int)plotId value:(CFTimeInterval)value plotMetrics:(PlotMetrics *)plotMetrics {
+    return [self.imguiView observeFloatReturnMetrics:plotId value:value plotMetrics:plotMetrics];
 }
 
 - (void)didReceiveMemoryWarning

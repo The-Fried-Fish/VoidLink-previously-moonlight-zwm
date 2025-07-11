@@ -349,6 +349,30 @@
         }
       }
     },
+    "53H-ST-OtY.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Metal\"; ObjectID = \"53H-ST-OtY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Metal"
+          }
+        }
+      }
+    },
+    "53H-ST-OtY.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"AVSampleBuffer\"; ObjectID = \"53H-ST-OtY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "AVSampleBuffer"
+          }
+        }
+      }
+    },
     "aa5-3y-I4d.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; aa5-3y-I4d.segmentTitles[0] = \"Off\"; ObjectID = \"aa5-3y-I4d\";",
       "extractionState" : "extracted_with_value",
@@ -853,6 +877,30 @@
         }
       }
     },
+    "ccm-n2-PXi.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs - Opacity: 50%\"; ObjectID = \"ccm-n2-PXi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance Graphs - Opacity: 50%"
+          }
+        }
+      }
+    },
+    "Ce3-FM-vIh.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Frames to Buffer\"; ObjectID = \"Ce3-FM-vIh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Frames to Buffer"
+          }
+        }
+      }
+    },
     "ckc-Dm-8ex.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; ckc-Dm-8ex.segmentTitles[0] = \"360p\"; ObjectID = \"ckc-Dm-8ex\";",
       "extractionState" : "extracted_with_value",
@@ -1077,6 +1125,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最佳化遊戲設定"
+          }
+        }
+      }
+    },
+    "dK2-1g-PUQ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.\"; ObjectID = \"dK2-1g-PUQ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats."
           }
         }
       }
@@ -2899,6 +2959,18 @@
         }
       }
     },
+    "v8l-hf-kiR.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Rendering Backend\"; ObjectID = \"v8l-hf-kiR\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Rendering Backend"
+          }
+        }
+      }
+    },
     "vJs-pg-hHe.text" : {
       "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"vJs-pg-hHe\";",
       "extractionState" : "extracted_with_value",
@@ -2997,6 +3069,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "輕按任意小工具載入設定（各小工具獨立）"
+          }
+        }
+      }
+    },
+    "Ylu-hT-Cuz.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection.\"; ObjectID = \"Ylu-hT-Cuz\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection."
           }
         }
       }
