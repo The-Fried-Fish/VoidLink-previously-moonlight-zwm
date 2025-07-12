@@ -230,7 +230,7 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)updateResolutionTable{
-    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+    UIWindow *window = self.view.window;
     CGFloat screenScale = window.screen.scale;
     CGFloat safeAreaWidth = (window.frame.size.width - window.safeAreaInsets.left - window.safeAreaInsets.right) * screenScale;
     CGFloat appWindowWidth = window.frame.size.width * screenScale;
@@ -467,6 +467,7 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     [self.yuv444Selector setSelectedSegmentIndex:currentSettings.enableYUV444 ? 1 : 0];
+    [self.pipSelector setSelectedSegmentIndex:currentSettings.enablePIP ? 1 : 0];
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
     NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
     [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
@@ -1122,6 +1123,7 @@ BOOL isCustomResolution(CGSize res) {
     BOOL audioOnPC = [self.audioOnPCSelector selectedSegmentIndex] == 1;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = [self.yuv444Selector selectedSegmentIndex] == 1;
+    BOOL enablePIP = [self.pipSelector selectedSegmentIndex] == 1;
     BOOL btMouseSupport = [self.btMouseSelector selectedSegmentIndex] == 1;
     BOOL useFramePacing = [self.framePacingSelector selectedSegmentIndex] == 1;
     // BOOL absoluteTouchMode = [self.touchModeSelector selectedSegmentIndex] == 1;
@@ -1160,6 +1162,7 @@ BOOL isCustomResolution(CGSize res) {
                            audioOnPC:audioOnPC
                       preferredCodec:preferredCodec
                            enableYUV444:enableYUV444
+                           enablePIP:enablePIP
                       useFramePacing:useFramePacing
                       frameQueueSize:_frameQueueSize
                            enableHdr:enableHdr

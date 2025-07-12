@@ -46,6 +46,7 @@
     CODEC_PREF_AV1,
 } preferredCodec;
 @property (nonatomic) BOOL enableYUV444;
+@property (nonatomic) BOOL enablePIP;
 @property (nonatomic) BOOL reverseMouseWheelDirection;
 @property (nonatomic, retain) NSNumber * asyncNativeTouchPriority;
 @property (nonatomic) BOOL useFramePacing;

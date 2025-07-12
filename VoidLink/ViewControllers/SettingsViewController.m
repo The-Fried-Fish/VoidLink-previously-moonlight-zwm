@@ -255,7 +255,7 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)updateResolutionTable{
-    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+    UIWindow *window = self.view.window;
     CGFloat screenScale = window.screen.scale;
     CGFloat safeAreaWidth = (window.frame.size.width - window.safeAreaInsets.left - window.safeAreaInsets.right) * screenScale;
     CGFloat appWindowWidth = window.frame.size.width * screenScale;
@@ -484,9 +484,10 @@ BOOL isCustomResolution(CGSize res) {
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.HdrStack ofId:@"HdrStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    
+
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
 
@@ -1254,8 +1255,9 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     [self.yuv444Switch setOn:currentSettings.enableYUV444];
+    [self.pipSwitch setOn:currentSettings.enablePIP];
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
-    
+
     NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
     [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
 
@@ -1287,7 +1289,7 @@ BOOL isCustomResolution(CGSize res) {
     [self.bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
     [self updateBitrateText];
     [self updateResolutionDisplayLabel];
-    
+
     [self.frameQueueSizeSlider setMinimumValue:1];
     [self.frameQueueSizeSlider setMaximumValue:5];
     [self.frameQueueSizeSlider setValue:_frameQueueSize];
@@ -1988,16 +1990,16 @@ BOOL isCustomResolution(CGSize res) {
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
     NSInteger keyboardToggleFingers = self.softKeyboardGestureSelector.selectedSegmentIndex == 3 ? 20 : self.softKeyboardGestureSelector.selectedSegmentIndex+3;
     NSInteger oscLayoutToolFingers = (uint16_t)self->oswLayoutFingers;
-    
+
     CGFloat slideToSettingsDistance = self.slideToMenuDistanceSlider.value;
     uint32_t slideToSettingsScreenEdge = [self getScreenEdgeFromSelector];
     CGFloat pointerVelocityModeDivider = (CGFloat)(uint8_t)self.pointerVelocityModeDividerSlider.value/100;
     CGFloat touchPointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.touchPointerVelocityFactorSlider.value]/100;
     CGFloat mousePointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.mousePointerVelocityFactorSlider.value]/100;
     CGFloat gyroSensitivity = (CGFloat)(uint16_t)self.gyroSensitivitySlider.value/100;
-    
+
     uint16_t touchMoveEventInterval = (uint16_t)self.touchMoveEventIntervalSlider.value;
-    
+
     BOOL reverseMouseWheelDirection = [self.reverseMouseWheelDirectionSelector selectedSegmentIndex] == 1;
     NSInteger asyncNativeTouchPriority = 1;
     //BOOL liftStreamViewForKeyboard = [self.liftStreamViewForKeyboardSelector selectedSegmentIndex] == 1;
@@ -2010,6 +2012,7 @@ BOOL isCustomResolution(CGSize res) {
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
+    BOOL enablePIP = self.pipSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
     BOOL useFramePacing = [self.framePacingSelector selectedSegmentIndex] == 1;
     NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector.selectedSegmentIndex : NativeTouchOnly;
@@ -2047,6 +2050,7 @@ BOOL isCustomResolution(CGSize res) {
                            audioOnPC:audioOnPC
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
+                           enablePIP:enablePIP
                       useFramePacing:useFramePacing
                            enableHdr:enableHdr
                       btMouseSupport:btMouseSupport

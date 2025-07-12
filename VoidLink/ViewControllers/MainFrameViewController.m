@@ -75,6 +75,8 @@
     StreamFrameViewController* streamFrameViewController;
     id navBarAppearanceStandard;
 
+    NSTimer *_foregroundHostUpdateTimer;
+
 #if TARGET_OS_TV
     UITapGestureRecognizer* _menuRecognizer;
 #endif
@@ -1497,20 +1499,6 @@ static NSMutableSet* hostList;
     
     _boxArtCache = [[NSCache alloc] init];
 
-    //recordedScreenWidth = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
-
-    // deal with scroll host view reload after device orientation change here:
-    bool isLandscape = screenWidthInPoints > screenHeightInPoints;
-    CGFloat realViewFrameWidth = self.view.frame.size.width > self.view.frame.size.height ? self.view.frame.size.width : self.view.frame.size.height;
-    CGFloat realViewFrameHeight = self.view.frame.size.width < self.view.frame.size.height ? self.view.frame.size.width : self.view.frame.size.height;
-    if(!isLandscape) {
-        CGFloat tmpLength = realViewFrameWidth;
-        realViewFrameWidth = realViewFrameHeight;
-        realViewFrameHeight = tmpLength;
-    }
-
 
     self.collectionView.delaysContentTouches = NO;
     self.collectionView.allowsMultipleSelection = NO;
@@ -1527,7 +1515,6 @@ static NSMutableSet* hostList;
     // [self.view addSubview:hostScrollView];
 
     // if ([hostList count] == 1) [self hostClicked:[hostList anyObject] view:nil]; // auto click for single host
-
 
     //if([SettingsViewController isLandscapeNow] != _streamConfig.width > _streamConfig.height)
     //[self simulateSettingsButtonPress]; //force expand setting view if orientation changed since last quit from app.
@@ -1638,10 +1625,13 @@ static NSMutableSet* hostList;
 {
     if (!_background) {
         // This will kick off box art caching
-        [self updateHosts];
+
+
+        _foregroundHostUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:5 repeats:YES block:^(NSTimer *timer) {
+           [self updateHosts];
+        }];
         
-        // Reset state first so we can rediscover hosts that were deleted before
-        [_discMan resetDiscoveryState];
+
         [_discMan startDiscovery];
         
         // This will refresh the applist when a paired host is selected
@@ -1743,7 +1733,12 @@ static NSMutableSet* hostList;
 }
 
 
-
+- (void)viewWillDisappear:(BOOL)animated{
+    NSLog(@"willDisappear");
+    [super viewWillDisappear:animated];
+    [_foregroundHostUpdateTimer invalidate];
+    _foregroundHostUpdateTimer = nil;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -1862,13 +1857,13 @@ static NSMutableSet* hostList;
 }
 
 - (void)updateHosts {
-    Log(LOG_I, @"Updating hosts...");
+    Log(LOG_I, @"Updating hosts %f", CACurrentMediaTime());
     @synchronized (hostList) {
         // Sort the host list in alphabetical order
         NSArray* sortedHostList = [[hostList allObjects] sortedArrayUsingSelector:@selector(compareName:)];
         for (TemporaryHost* comp in sortedHostList) {
-            if(comp.state == StateOnline || comp.pairState == PairStatePaired) [self.hostCollectionVC addHost:comp];
             
+if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
 
             // new host card test
             // if([comp.name isEqualToString: @"ASRockPC"]) {
@@ -1903,6 +1898,9 @@ static NSMutableSet* hostList;
     
     // Update the title in case we now have a PC
     [self updateTitle];
+
+    // Reset state first so we can rediscover hosts that were deleted before
+    [_discMan resetDiscoveryState];
 }
 
 // This function forces immediate decoding of the UIImage, rather

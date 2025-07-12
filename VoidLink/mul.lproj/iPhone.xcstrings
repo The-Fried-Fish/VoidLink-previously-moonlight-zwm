@@ -211,6 +211,36 @@
         }
       }
     },
+    "4Ul-P6-eUk.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"4Ul-P6-eUk\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable PiP"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画中画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用子母畫面"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用子母畫面"
+          }
+        }
+      }
+    },
     "5JB-m0-nUF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"YUV 4:4:4\"; ObjectID = \"5JB-m0-nUF\";",
       "extractionState" : "extracted_with_value",

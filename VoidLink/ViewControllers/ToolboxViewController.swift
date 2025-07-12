@@ -12,6 +12,7 @@ import UIKit
     @objc optional func openWidgetLayoutTool()
     @objc optional func switchWidgetProfile()
     @objc optional func bringUpSoftKeyboard()
+    @objc optional func enterPip()
 }
 
 
@@ -27,11 +28,12 @@ import UIKit
     private let viewBackgroundColor = UIColor(white: 0.2, alpha: 0.8);
     private let highlightColor = UIColor(white: 0.39, alpha: 0.8);
     private let titleLabel = UILabel()
-    @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard"]
+    @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip"]
     private let specialEntryAliasDic : [String:String] = [
         "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch among on-screen widget profiles ]"),
         "widgetLayoutTool":SwiftLocalizationHelper.localizedString(forKey: "[ Open on-screen widget tool ]"),
-        "bringUpSoftKeyboard":SwiftLocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]")
+        "bringUpSoftKeyboard":SwiftLocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
+        "enterPip":SwiftLocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]")
     ]
     
     private var viewPinned: Bool = false
@@ -374,6 +376,8 @@ import UIKit
             specialEntryDelegate?.switchWidgetProfile?()
         case "bringUpSoftKeyboard":
             specialEntryDelegate?.bringUpSoftKeyboard?()
+        case "enterPip":
+            specialEntryDelegate?.enterPip?()
         default: break
         }
     }

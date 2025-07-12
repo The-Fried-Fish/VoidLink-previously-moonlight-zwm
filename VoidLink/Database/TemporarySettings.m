@@ -41,6 +41,7 @@
     assert([self.audioConfig intValue] != 0);
     self.preferredCodec = (typeof(self.preferredCodec))[[NSUserDefaults standardUserDefaults] integerForKey:@"preferredCodec"];
     self.enableYUV444 = [[NSUserDefaults standardUserDefaults] boolForKey:@"enableYUV444"];
+    self.enablePIP = [[NSUserDefaults standardUserDefaults] boolForKey:@"enablePIP"];
     self.frameQueueSize = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"frameQueueSize"]];
     self.playAudioOnPC = [[NSUserDefaults standardUserDefaults] boolForKey:@"audioOnPC"];
     self.enableHdr = [[NSUserDefaults standardUserDefaults] boolForKey:@"enableHdr"];
@@ -85,6 +86,7 @@
     self.audioConfig = settings.audioConfig;
     self.preferredCodec = settings.preferredCodec;
     self.enableYUV444 = settings.enableYUV444;
+    self.enablePIP = settings.enablePIP;
     self.frameQueueSize = settings.frameQueueSize;
     self.playAudioOnPC = settings.playAudioOnPC;
     self.enableHdr = settings.enableHdr;

@@ -81,9 +81,11 @@
                        audioOnPC:(BOOL)audioOnPC
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
+                       enablePIP:(BOOL)enablePIP
                   useFramePacing:(BOOL)useFramePacing
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
+               // absoluteTouchMode:(BOOL)absoluteTouchMode
                        touchMode:(NSInteger)touchMode
                statsOverlayLevel:(NSInteger)statsOverlayLevel
                     statsOverlayEnabled:(BOOL)statsOverlayEnabled
@@ -124,6 +126,7 @@
         settingsToSave.playAudioOnPC = audioOnPC;
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
+        settingsToSave.enablePIP = enablePIP;
         settingsToSave.enableHdr = enableHdr;
         settingsToSave.btMouseSupport = btMouseSupport;
         // settingsToSave.absoluteTouchMode = absoluteTouchMode;

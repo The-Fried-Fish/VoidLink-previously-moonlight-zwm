@@ -43,6 +43,36 @@
         }
       }
     },
+    "3rP-dh-TJi.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"3rP-dh-TJi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable PiP"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画中画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用子母畫面"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用子母畫面"
+          }
+        }
+      }
+    },
     "4FU-iP-c6T.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; 4FU-iP-c6T.segmentTitles[0] = \"Captured\"; ObjectID = \"4FU-iP-c6T\";",
       "extractionState" : "extracted_with_value",

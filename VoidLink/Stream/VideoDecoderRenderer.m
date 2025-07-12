@@ -58,10 +58,12 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 - (void)reinitializeDisplayLayer
 {
-    CALayer *oldLayer = _displayLayer;
-
-    _displayLayer = [[AVSampleBufferDisplayLayer alloc] init];
-    _displayLayer.backgroundColor = [UIColor blackColor].CGColor;
+    if (_displayLayer == nil) {
+        _displayLayer = [[AVSampleBufferDisplayLayer alloc] init];
+        _displayLayer.backgroundColor = [UIColor blackColor].CGColor;
+        _displayLayer.videoGravity = AVLayerVideoGravityResize;
+        [_view.layer addSublayer:_displayLayer];
+    }
 
     // Ensure the AVSampleBufferDisplayLayer is sized to preserve the aspect ratio
     // of the video stream. We used to use AVLayerVideoGravityResizeAspect, but that
@@ -74,26 +76,20 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     } else {
         videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / _streamAspectRatio);
     }
+
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
     _displayLayer.position = CGPointMake(CGRectGetMidX(_view.bounds), CGRectGetMidY(_view.bounds));
     _displayLayer.bounds = CGRectMake(0, 0, videoSize.width, videoSize.height);
-    _displayLayer.videoGravity = AVLayerVideoGravityResize;
+    [CATransaction commit];
 
     // Hide the layer until we get an IDR frame. This ensures we
     // can see the loading progress label as the stream is starting.
     _displayLayer.hidden = YES;
-
-    if (oldLayer != nil) {
-        // Switch out the old display layer with the new one
-        [_view.layer replaceSublayer:oldLayer with:_displayLayer];
-    }
-    else {
-        [_view.layer addSublayer:_displayLayer];
-    }
-
-    if (_formatDesc != nil) {
-        CFRelease(_formatDesc);
-        _formatDesc = nil;
-    }
+    
+    if (formatDesc != nil) {
+        CFRelease(formatDesc);
+        formatDesc = nil;
 
     if (_formatDescImageBuffer != nil) {
         CFRelease(_formatDescImageBuffer);
@@ -729,7 +725,22 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         free(data);
         return DR_NEED_IDR;
     }
+    
+    // Check for previous decoder errors before doing anything
+    if (_displayLayer.status == AVQueuedSampleBufferRenderingStatusFailed) {
+        Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
 
+        [self->_displayLayer flushAndRemoveImage];
+
+        // Recreate the display layer. We are already on the main thread,
+        // so this is safe to do right here.
+        [self reinitializeDisplayLayer];
+        
+        // Request an IDR frame to initialize the new decoder
+        free(data);
+        return DR_NEED_IDR;
+    }
+    
     // Now we're decoding actual frame data here
     CMBlockBufferRef frameBlockBuffer;
     CMBlockBufferRef dataBlockBuffer;

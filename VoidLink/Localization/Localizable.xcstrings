@@ -214,6 +214,29 @@
         }
       }
     },
+    "[ Enter picture-in-picture mode ]" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 进入画中画模式 ]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 进入画中画模式 ]"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 进入画中画模式 ]"
+          }
+        }
+      }
+    },
     "[ Open on-screen widget tool ]" : {
       "extractionState" : "manual",
       "localizations" : {

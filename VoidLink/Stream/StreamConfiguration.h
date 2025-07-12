@@ -20,6 +20,7 @@
 @property NSString* rtspSessionUrl;
 @property int serverCodecModeSupport;
 @property BOOL enableYUV444;
+@property BOOL enablePIP;
 @property int width;
 @property int height;
 @property int frameRate;

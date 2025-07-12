@@ -30,6 +30,7 @@
     UIView* _renderView;
     id<ConnectionCallbacks> _callbacks;
     Connection* _connection;
+    VideoDecoderRenderer* _videoRenderer;
 }
 
 - (id) initWithConfig:(StreamConfiguration*)config renderView:(UIView*)view connectionCallbacks:(id<ConnectionCallbacks>)callbacks {
@@ -104,8 +105,9 @@
     
     // Initializing the renderer must be done on the main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        VideoDecoderRenderer* renderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height];
-        self->_connection = [[Connection alloc] initWithConfig:self->_config renderer:renderer connectionCallbacks:self->_callbacks];
+        self->_videoRenderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height];
+
+        self->_connection = [[Connection alloc] initWithConfig:self->_config renderer:self->_videoRenderer connectionCallbacks:self->_callbacks];
         NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
         [opQueue addOperation:self->_connection];
     });
@@ -154,7 +156,7 @@
 
 - (NSString*) getStatsOverlayText {
     video_stats_t stats;
-    
+
     if (!_connection) {
         return nil;
     }
@@ -187,10 +189,10 @@
     float interval = stats.endTime - stats.startTime;
     float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
     float fps = (stats.totalFrames - stats.networkDroppedFrames - (stats.frameDropMetrics.total / scalePlotMetrics)) / interval;
-    
+
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
-    
+
     return [NSString stringWithFormat:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
             "Bitrate: %.1f Mbps, Peak: %.1f, Renderer: %@\n"
             "%@"

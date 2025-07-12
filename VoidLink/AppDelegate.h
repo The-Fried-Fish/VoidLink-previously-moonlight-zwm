@@ -10,7 +10,6 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) NSString *pcUuidToLoad;
 @property (strong, nonatomic) void (^shortcutCompletionHandler)(BOOL);
 
@@ -21,5 +20,6 @@
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
 - (NSURL*) getStoreURL;
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options API_AVAILABLE(ios(13.0));
 
 @end

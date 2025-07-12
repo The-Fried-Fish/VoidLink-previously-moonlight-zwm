@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -870,6 +870,27 @@
                                     <constraint firstAttribute="width" constant="380" id="pkz-ek-bOk"/>
                                 </constraints>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="12a-Wi-LlL" userLabel="pipStack">
+                                <rect key="frame" x="382" y="1899" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable PiP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3rP-dh-TJi" userLabel="pipLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="ir2-ut-mD3"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-Z9-IYM" userLabel="pipSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="ADb-7C-hgx"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackend Stack">
                                 <rect key="frame" x="20" y="1166" width="380" height="56.5"/>
                                 <subviews>
@@ -953,7 +974,7 @@
                     </view>
                     <size key="freeformSize" width="682" height="2500"/>
                     <connections>
-                        <outlet property="HdrStack" destination="dH7-Sy-EdJ" id="lVV-l0-VBW"/>
+                        <outlet property="HdrStack" destination="dH7-Sy-EdJ" id="cJm-bj-Aqo"/>
                         <outlet property="audioConfigSelector" destination="iZL-dA-jk9" id="Yja-os-o6g"/>
                         <outlet property="audioConfigStack" destination="qnG-5F-2YY" id="kFX-VK-vuK"/>
                         <outlet property="audioOnPcStack" destination="Bbr-Wj-Z75" id="c2K-3R-whg"/>
@@ -1000,6 +1021,8 @@
                         <outlet property="optimizeGamesStack" destination="TvS-69-vcF" id="pm1-0c-dCR"/>
                         <outlet property="optimizeGamesSwitch" destination="Sui-Ig-YxN" id="Lxu-si-ugy"/>
                         <outlet property="performanceGraphStack" destination="H1O-Hi-8rG" id="AcS-Va-yZs"/>
+                        <outlet property="pipStack" destination="12a-Wi-LlL" id="eTJ-0h-hRB"/>
+                        <outlet property="pipSwitch" destination="VTC-Z9-IYM" id="gzC-rU-DoP"/>
                         <outlet property="pointerVelocityDividerStack" destination="b1U-nD-gYE" id="ep1-K3-rKj"/>
                         <outlet property="pointerVelocityFactorStack" destination="vdk-mK-ztu" id="Cik-Rh-pGS"/>
                         <outlet property="pointerVelocityModeDividerSlider" destination="AcZ-2i-GI4" id="dGf-ZU-w3S"/>

@@ -9,4 +9,3 @@
 - (void)updatePreferredDisplayMode:(BOOL)streamActive withRenderView:(UIView *)renderView;
 
 @end
-
