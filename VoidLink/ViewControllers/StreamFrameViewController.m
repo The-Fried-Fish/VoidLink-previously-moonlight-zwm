@@ -95,6 +95,10 @@
 
 - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = YES;
+    if (self.imguiView) {
+        self.imguiView.mtkView.hidden = YES;
+        Log(LOG_I, @"Hiding ImGui view for PiP start.");
+    }
 }
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
@@ -110,15 +114,23 @@
 
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = NO;
+    if (self.imguiView) {
+        self.imguiView.mtkView.hidden = NO;
+        Log(LOG_I, @"Showing ImGui view after PiP stop.");
+    }
+    
     if (!_isRestoringFromPiP) {
         [self returnToMainFrame];
     }
-    _isRestoringFromPiP = NO;
 }
 
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
     _isRestoringFromPiP = YES;
     _streamView.hidden = NO;
+    if (self.imguiView) {
+        self.imguiView.mtkView.hidden = NO;
+        Log(LOG_I, @"Showing ImGui view for PiP restore.");
+    }
     completionHandler(YES);
 }
 
@@ -342,6 +354,13 @@
                                                              selector:@selector(updateStatsOverlay)
                                                              userInfo:nil
                                                               repeats:_settings.statsOverlayEnabled];
+    
+    if (self.metalViewController && self.metalViewController.view.superview) {
+        [self.view bringSubviewToFront:self.metalViewController.view];
+    }
+    if (self.imguiView && self.imguiView.mtkView.superview) {
+        [self.view bringSubviewToFront:self.imguiView.mtkView];
+    }
     
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
@@ -909,19 +928,23 @@
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    // Stop the background timer, since we're foregrounded again
+    // Stop the background timer
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
+    
+    // Check if we were in PiP
     if (self.pipController && self.pipController.isPictureInPictureActive) {
         [self.pipController stopPictureInPicture];
     }
     
-    //self.pipController = nil;
-    //[self setupPiPControllerWithRenderer:self->_streamMan.videoRenderer];
-    //self->_streamMan.videoRenderer.
+    if (_isRestoringFromPiP) {
+        [self->_streamMan.videoRenderer resetFramePacing];
+    }
+    
+    _isRestoringFromPiP = NO;
 }
 
 // This fires when the home button is pressed
@@ -1364,6 +1387,11 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    if (_isRestoringFromPiP) {
+        Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
+        return;
+    }
     
     Log(LOG_I, @"View size changed, terminating stream");
     

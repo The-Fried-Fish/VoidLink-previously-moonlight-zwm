@@ -30,6 +30,7 @@
 - (void)safeCopyMetricsTo:(PlotMetrics *)dst from:(PlotMetrics *)src;
 - (void)getAllStats:(video_stats_t *)stats;
 - (void)optimizeRefreshRate;
+- (void)resetFramePacing;
 
 - (int)submitDecodeBuffer:(unsigned char *)data
                    length:(int)length

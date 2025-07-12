@@ -64,7 +64,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         _displayLayer.videoGravity = AVLayerVideoGravityResize;
         [_view.layer addSublayer:_displayLayer];
     }
-
+    
     // Ensure the AVSampleBufferDisplayLayer is sized to preserve the aspect ratio
     // of the video stream. We used to use AVLayerVideoGravityResizeAspect, but that
     // respects the PAR encoded in the SPS which causes our computed video-relative
@@ -76,13 +76,13 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     } else {
         videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / _streamAspectRatio);
     }
-
+    
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     _displayLayer.position = CGPointMake(CGRectGetMidX(_view.bounds), CGRectGetMidY(_view.bounds));
     _displayLayer.bounds = CGRectMake(0, 0, videoSize.width, videoSize.height);
     [CATransaction commit];
-
+    
     // Hide the layer until we get an IDR frame. This ensures we
     // can see the loading progress label as the stream is starting.
     _displayLayer.hidden = YES;
@@ -91,13 +91,15 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         CFRelease(_formatDesc);
         _formatDesc = nil;
     }
-
+    
     if (_formatDescImageBuffer != nil) {
         CFRelease(_formatDescImageBuffer);
         _formatDescImageBuffer = nil;
     }
-
+    
     if (_decompressionSession != nil){
+        VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
+        
         VTDecompressionSessionInvalidate(_decompressionSession);
         CFRelease(_decompressionSession);
         _decompressionSession = nil;
@@ -1126,6 +1128,28 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     }
     else {
         _displayLink.preferredFramesPerSecond = targetRate;
+    }
+}
+
+- (void)resetFramePacing {
+    // Ensure this only runs for the AVSampleBuffer rendering backend and that the display link exists.
+    if (_renderingBackend == RENDER_AVSB && _displayLink) {
+        Log(LOG_I, @"Frame pacing is being reset to %d FPS...", self->_frameRate);
+
+        // Toggling the paused state can help re-engage the display link with the
+        // run loop correctly after the app resumes from a background state like PiP.
+        _displayLink.paused = YES;
+
+        // Re-apply the desired frame rate range. This is the critical hint for ProMotion
+        // that may have been lost or ignored during the PiP transition.
+        if (@available(iOS 15.0, *)) {
+            _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(self->_frameRate, self->_frameRate, self->_frameRate);
+        } else {
+            _displayLink.preferredFramesPerSecond = self->_frameRate;
+        }
+
+        // Resume the display link immediately.
+        _displayLink.paused = NO;
     }
 }
 
