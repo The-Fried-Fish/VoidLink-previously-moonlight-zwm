@@ -19,6 +19,8 @@
 @property (atomic, readonly) PlotMetrics decodeMetrics;
 @property (atomic, readonly) PlotMetrics frameQueueMetrics;
 
+@property (nonatomic, strong, readonly) AVSampleBufferDisplayLayer *displayLayer;
+
 - (id)initWithView:(UIView*)view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio;
 
 - (void)setupWithVideoFormat:(int)videoFormat width:(int)videoWidth height:(int)videoHeight frameRate:(int)frameRate;

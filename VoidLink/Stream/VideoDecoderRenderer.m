@@ -87,9 +87,10 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     // can see the loading progress label as the stream is starting.
     _displayLayer.hidden = YES;
     
-    if (formatDesc != nil) {
-        CFRelease(formatDesc);
-        formatDesc = nil;
+    if (_formatDesc != nil) {
+        CFRelease(_formatDesc);
+        _formatDesc = nil;
+    }
 
     if (_formatDescImageBuffer != nil) {
         CFRelease(_formatDescImageBuffer);
@@ -103,7 +104,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     }
 }
 
-- (id)initWithView:(StreamView*)view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio
+- (id)initWithView:(UIView* )view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio
 {
     NSLog(@"initializing video decoder %f", CACurrentMediaTime());
     self = [super init];
