@@ -79,6 +79,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                   useFramePacing:(BOOL)useFramePacing
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
+               // absoluteTouchMode:(BOOL)absoluteTouchMode
                        touchMode:(NSInteger)touchMode
                statsOverlayLevel:(NSInteger)statsOverlayLevel
                     statsOverlayEnabled:(BOOL)statsOverlayEnabled
@@ -90,6 +91,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                     enableGraphs:(BOOL)enableGraphs
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend;
+           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;
 - (void) updateHost:(TemporaryHost*)host;

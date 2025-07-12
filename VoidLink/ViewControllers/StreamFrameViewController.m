@@ -118,7 +118,7 @@
         self.imguiView.mtkView.hidden = NO;
         Log(LOG_I, @"Showing ImGui view after PiP stop.");
     }
-    
+
     if (!_isRestoringFromPiP) {
         [self returnToMainFrame];
     }
@@ -361,7 +361,7 @@
     if (self.imguiView && self.imguiView.mtkView.superview) {
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
-    
+
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
@@ -819,7 +819,7 @@
 
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
-
+    
     [self.navigationController popToRootViewControllerAnimated:YES];
     
     _extWindow = nil;
@@ -901,21 +901,8 @@
     
     //[self.pipController startPictureInPicture];
     //sleep(1);
-    
-    if (_inactivityTimer != nil) {
-        [_inactivityTimer invalidate];
-        _inactivityTimer = nil;
-    }
-    
-    
+
 #if !TARGET_OS_TV
-    // Terminate the stream if the app is inactive for 60 seconds
-    Log(LOG_I, @"Starting inactivity termination timer");
-    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:18000
-                                                      target:self
-                                                    selector:@selector(inactiveTimerExpired:)
-                                                    userInfo:nil
-                                                     repeats:NO];
 #endif
 }
 
@@ -928,13 +915,13 @@
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    // Stop the background timer
+    // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
-    
+
     // Check if we were in PiP
     if (self.pipController && self.pipController.isPictureInPictureActive) {
         [self.pipController stopPictureInPicture];
@@ -943,7 +930,7 @@
     if (_isRestoringFromPiP) {
         [self->_streamMan.videoRenderer resetFramePacing];
     }
-    
+
     _isRestoringFromPiP = NO;
 }
 
@@ -952,9 +939,21 @@
 
     NSLog(@"did enter background, %d, %@, %d", _settings.enablePIP, self.pipController, self.pipController.isPictureInPictureActive);
     if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
-        Log(LOG_I, @"PIP is active, not terminating stream");
-        return;
+        //Log(LOG_I, @"PIP is active, not terminating stream");
     }
+
+    if (_inactivityTimer != nil) {
+        [_inactivityTimer invalidate];
+        _inactivityTimer = nil;
+    }
+
+    // Terminate the stream if the app is inactive for ...
+    Log(LOG_I, @"Starting inactivity termination timer with %d min", _settings.backgroundSessionTimer.intValue);
+    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:60*(double)_settings.backgroundSessionTimer.intValue
+                                  target:self
+                                selector:@selector(inactiveTimerExpired:)
+                                userInfo:nil
+                                 repeats:NO];
 
 #if !TARGET_OS_TV
 
@@ -1204,7 +1203,7 @@
     if (@available(tvOS 11.2, *)) {
         UIWindow* window = [[[UIApplication sharedApplication] delegate] window];
         AVDisplayManager* displayManager = [window avDisplayManager];
-
+        
         // This logic comes from Kodi and MrMC
         if (streamActive) {
             int dynamicRange;
@@ -1215,7 +1214,7 @@
             else {
                 dynamicRange = 0; // SDR
             }
-
+            
             AVDisplayCriteria* displayCriteria = [[AVDisplayCriteria alloc] initWithRefreshRate:[_settings.framerate floatValue]
                                                                               videoDynamicRange:dynamicRange];
             displayManager.preferredDisplayCriteria = displayCriteria;
@@ -1392,7 +1391,7 @@
         Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
         return;
     }
-    
+
     Log(LOG_I, @"View size changed, terminating stream");
     
     double delayInSeconds = 0.2;

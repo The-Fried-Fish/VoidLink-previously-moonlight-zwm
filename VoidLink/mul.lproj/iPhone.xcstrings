@@ -727,6 +727,36 @@
         }
       }
     },
+    "9et-1g-y3D.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Background Session\"; ObjectID = \"9et-1g-y3D\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Background Session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台会话"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行"
+          }
+        }
+      }
+    },
     "9Gg-66-UdB.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Tap any widget to load configuration (per widget)\"; ObjectID = \"9Gg-66-UdB\";",
       "extractionState" : "extracted_with_value",

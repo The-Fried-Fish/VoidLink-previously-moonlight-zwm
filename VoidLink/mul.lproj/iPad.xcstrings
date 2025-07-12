@@ -349,6 +349,36 @@
         }
       }
     },
+    "9pX-93-bC2.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Background Session\"; ObjectID = \"9pX-93-bC2\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Background Session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台会话"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行"
+          }
+        }
+      }
+    },
     "9XL-xt-Q57.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Gyro Sensitivity\"; ObjectID = \"9XL-xt-Q57\";",
       "extractionState" : "extracted_with_value",

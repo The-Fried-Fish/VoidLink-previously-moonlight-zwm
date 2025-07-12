@@ -120,6 +120,7 @@
     self.enableGraphs = settings.enableGraphs;
     self.graphOpacity = settings.graphOpacity;
     self.renderingBackend = settings.renderingBackend;
+    self.backgroundSessionTimer = settings.backroundSessionTimer;
 #endif
     self.uniqueId = settings.uniqueId;
     

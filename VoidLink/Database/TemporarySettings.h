@@ -39,6 +39,7 @@
 @property (nonatomic, retain) NSNumber * resolutionSelected;
 @property (nonatomic, retain) NSNumber * externalDisplayMode;
 @property (nonatomic, retain) NSNumber * localMousePointerMode;
+@property (nonatomic, retain) NSNumber * backgroundSessionTimer;
 @property (nonatomic) enum {
     CODEC_PREF_AUTO,
     CODEC_PREF_H264,

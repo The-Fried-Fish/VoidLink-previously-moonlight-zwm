@@ -119,6 +119,9 @@
 @property (strong, nonatomic) IBOutlet UIStepper *graphOpacityStepper;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
 
+@property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
+@property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;
+
 
 
 #pragma clang diagnostic push
