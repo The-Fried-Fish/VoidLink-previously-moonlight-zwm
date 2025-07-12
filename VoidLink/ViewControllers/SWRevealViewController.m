@@ -800,8 +800,8 @@ const int FrontViewPositionNone = 0xff;
 }
 
 - (UIInterfaceOrientationMask)getCurrentOrientation{
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    CGFloat screenHeightInPoints = CGRectGetHeight(self.view.bounds);
+    CGFloat screenWidthInPoints = CGRectGetWidth(self.view.bounds);
     //lock the orientation accordingly after streaming is started
     if(screenWidthInPoints > screenHeightInPoints) return UIInterfaceOrientationMaskLandscape;
     else return UIInterfaceOrientationMaskPortrait|UIInterfaceOrientationMaskPortraitUpsideDown;

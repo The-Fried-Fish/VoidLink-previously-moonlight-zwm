@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1829CE3F2E2154DF0074A99A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1829CE3E2E2154DF0074A99A /* SceneDelegate.m */; };
 		18341A042DEB662C0094E5F2 /* FixedTintImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18341A032DEB662C0094E5F2 /* FixedTintImageView.m */; };
 		187F4B282E04658A00EECC59 /* WidgetPanelStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */; };
 		189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 189AD2992DE7446000E24B88 /* HostCollectionViewController.m */; };
@@ -130,6 +131,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1829CE3D2E2154DF0074A99A /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		1829CE3E2E2154DF0074A99A /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		18341A022DEB65AB0094E5F2 /* FixedTintImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FixedTintImageView.h; sourceTree = "<group>"; };
 		18341A032DEB662C0094E5F2 /* FixedTintImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FixedTintImageView.m; sourceTree = "<group>"; };
 		187F4B232E04633100EECC59 /* WidgetPanelStackView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WidgetPanelStackView.h; sourceTree = "<group>"; };
@@ -495,6 +498,8 @@
 				FBD3495F1A004453002D2A60 /* Database */,
 				FB290CFA19B2C406004C83CF /* Supporting Files */,
 				FB290D0219B2C406004C83CF /* AppDelegate.h */,
+				1829CE3D2E2154DF0074A99A /* SceneDelegate.h */,
+				1829CE3E2E2154DF0074A99A /* SceneDelegate.m */,
 				18341A022DEB65AB0094E5F2 /* FixedTintImageView.h */,
 				18341A032DEB662C0094E5F2 /* FixedTintImageView.m */,
 				FB290D0319B2C406004C83CF /* AppDelegate.m */,
@@ -907,6 +912,7 @@
 				84351B102C29ACCB00A77989 /* OSCProfile.m in Sources */,
 				84351B2C2C29AD6100A77989 /* OSCProfilesTableViewController.m in Sources */,
 				98D585701C0ED0E800F6CC00 /* TemporarySettings.m in Sources */,
+				1829CE3F2E2154DF0074A99A /* SceneDelegate.m in Sources */,
 				FB89462819F646E200339C8A /* CryptoManager.m in Sources */,
 				DC1F5A07206436B20037755F /* ConnectionHelper.m in Sources */,
 				FB89462E19F646E200339C8A /* PairManager.m in Sources */,

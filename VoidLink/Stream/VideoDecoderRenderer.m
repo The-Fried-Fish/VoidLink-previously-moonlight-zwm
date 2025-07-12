@@ -20,11 +20,11 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
                               int write_seq_header);
 
 @implementation VideoDecoderRenderer {
-    StreamView* _view;
+    UIView* _view;
     id<ConnectionCallbacks> _callbacks;
     float _streamAspectRatio;
     
-    AVSampleBufferDisplayLayer* displayLayer;
+    AVSampleBufferDisplayLayer* _displayLayer;
     int videoFormat;
     int frameRate;
     
@@ -39,10 +39,12 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 - (void)reinitializeDisplayLayer
 {
-    CALayer *oldLayer = displayLayer;
-    
-    displayLayer = [[AVSampleBufferDisplayLayer alloc] init];
-    displayLayer.backgroundColor = [UIColor blackColor].CGColor;
+    if (_displayLayer == nil) {
+        _displayLayer = [[AVSampleBufferDisplayLayer alloc] init];
+        _displayLayer.backgroundColor = [UIColor blackColor].CGColor;
+        _displayLayer.videoGravity = AVLayerVideoGravityResize;
+        [_view.layer addSublayer:_displayLayer];
+    }
     
     // Ensure the AVSampleBufferDisplayLayer is sized to preserve the aspect ratio
     // of the video stream. We used to use AVLayerVideoGravityResizeAspect, but that
@@ -55,21 +57,16 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     } else {
         videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / _streamAspectRatio);
     }
-    displayLayer.position = CGPointMake(CGRectGetMidX(_view.bounds), CGRectGetMidY(_view.bounds));
-    displayLayer.bounds = CGRectMake(0, 0, videoSize.width, videoSize.height);
-    displayLayer.videoGravity = AVLayerVideoGravityResize;
+    
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    _displayLayer.position = CGPointMake(CGRectGetMidX(_view.bounds), CGRectGetMidY(_view.bounds));
+    _displayLayer.bounds = CGRectMake(0, 0, videoSize.width, videoSize.height);
+    [CATransaction commit];
 
     // Hide the layer until we get an IDR frame. This ensures we
     // can see the loading progress label as the stream is starting.
-    displayLayer.hidden = YES;
-    
-    if (oldLayer != nil) {
-        // Switch out the old display layer with the new one
-        [_view.layer replaceSublayer:oldLayer with:displayLayer];
-    }
-    else {
-        [_view.layer addSublayer:displayLayer];
-    }
+    _displayLayer.hidden = YES;
     
     if (formatDesc != nil) {
         CFRelease(formatDesc);
@@ -77,7 +74,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     }
 }
 
-- (id)initWithView:(StreamView*)view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio useFramePacing:(BOOL)useFramePacing
+- (id)initWithView:(UIView* )view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio useFramePacing:(BOOL)useFramePacing
 {
     NSLog(@"initializing video decoder %f", CACurrentMediaTime());
     self = [super init];
@@ -522,9 +519,11 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     }
     
     // Check for previous decoder errors before doing anything
-    if (displayLayer.status == AVQueuedSampleBufferRenderingStatusFailed) {
-        Log(LOG_E, @"Display layer rendering failed: %@", displayLayer.error);
+    if (_displayLayer.status == AVQueuedSampleBufferRenderingStatusFailed) {
+        Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
         
+        [self->_displayLayer flushAndRemoveImage];
+
         // Recreate the display layer. We are already on the main thread,
         // so this is safe to do right here.
         [self reinitializeDisplayLayer];
@@ -601,11 +600,11 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     }
 
     // Enqueue the next frame
-    [self->displayLayer enqueueSampleBuffer:sampleBuffer];
+    [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
     
     if (du->frameType == FRAME_TYPE_IDR) {
         // Ensure the layer is visible now
-        self->displayLayer.hidden = NO;
+        self->_displayLayer.hidden = NO;
         
         // Tell our parent VC to hide the progress indicator
         [self->_callbacks videoContentShown];

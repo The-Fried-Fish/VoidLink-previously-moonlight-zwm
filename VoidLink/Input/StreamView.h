@@ -63,7 +63,6 @@
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
 
-
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse;
 #endif

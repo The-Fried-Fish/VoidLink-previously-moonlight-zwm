@@ -39,6 +39,7 @@
 @property (nonatomic, retain) NSNumber * resolutionSelected;
 @property (nonatomic, retain) NSNumber * externalDisplayMode;
 @property (nonatomic, retain) NSNumber * localMousePointerMode;
+@property (nonatomic, retain) NSNumber * backgroundSessionTimer;
 @property (nonatomic) enum {
     CODEC_PREF_AUTO,
     CODEC_PREF_H264,
@@ -46,6 +47,7 @@
     CODEC_PREF_AV1,
 } preferredCodec;
 @property (nonatomic) BOOL enableYUV444;
+@property (nonatomic) BOOL enablePIP;
 @property (nonatomic) BOOL reverseMouseWheelDirection;
 @property (nonatomic, retain) NSNumber * asyncNativeTouchPriority;
 @property (nonatomic) BOOL useFramePacing;

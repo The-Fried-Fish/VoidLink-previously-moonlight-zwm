@@ -14,18 +14,23 @@
 #import "StreamView.h"
 #import "LayoutOnScreenControlsViewController.h"
 #import "MainFrameViewController.h"
+#import "StreamManager.h"
 
+#import <AVKit/AVKit.h>
 #import <UIKit/UIKit.h>
 
 #if TARGET_OS_TV
 @import GameController;
 
-@interface StreamFrameViewController : GCEventViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate>
+@interface StreamFrameViewController : GCEventViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, AVPictureInPictureControllerDelegate>
 #else
-@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate>
+@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate>
 
 #endif
+@property (nonatomic) StreamManager* streamMan;
 @property (nonatomic) StreamConfiguration* streamConfig;
+@property (nonatomic, strong) AVPictureInPictureController *pipController API_AVAILABLE(ios(9.0));
+@property (nonatomic, strong) AVPictureInPictureControllerContentSource *pipContentSource API_AVAILABLE(ios(15.0)); // Needed for iOS 15+ layer-based PiP
 @property (nonatomic, assign) MainFrameViewController *mainFrameViewcontroller;
 
 

@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                        audioOnPC:(BOOL)audioOnPC
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
+                       enablePIP:(BOOL)enablePIP
                   useFramePacing:(BOOL)useFramePacing
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
@@ -85,7 +86,8 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                    unlockDisplayOrientation:(BOOL)unlockDisplayOrientation
               resolutionSelected:(NSInteger)resolutionSelected
              externalDisplayMode:(NSInteger)externalDisplayMode
-           localMousePointerMode:(NSInteger)localMousePointerMode;
+           localMousePointerMode:(NSInteger)localMousePointerMode
+           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;
 - (void) updateHost:(TemporaryHost*)host;

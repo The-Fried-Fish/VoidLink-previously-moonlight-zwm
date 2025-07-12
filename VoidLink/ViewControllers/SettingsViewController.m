@@ -253,7 +253,7 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)updateResolutionTable{
-    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+    UIWindow *window = self.view.window;
     CGFloat screenScale = window.screen.scale;
     CGFloat safeAreaWidth = (window.frame.size.width - window.safeAreaInsets.left - window.safeAreaInsets.right) * screenScale;
     CGFloat appWindowWidth = window.frame.size.width * screenScale;
@@ -482,6 +482,7 @@ BOOL isCustomResolution(CGSize res) {
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.HdrStack ofId:@"HdrStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
 
@@ -551,6 +552,7 @@ BOOL isCustomResolution(CGSize res) {
     }
     [self addSetting:self.statsOverlayStack ofId:@"statsOverlayStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.unlockDisplayOrientationStack ofId:@"unlockDisplayOrientationStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.backgroundSessionTimerStack ofId:@"backgroundSessionTimerStack" withInfoTag:NO withDynamicLabel:YES to:otherSection];
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
@@ -1245,6 +1247,7 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     [self.yuv444Switch setOn:currentSettings.enableYUV444];
+    [self.pipSwitch setOn:currentSettings.enablePIP];
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
@@ -1298,6 +1301,9 @@ BOOL isCustomResolution(CGSize res) {
     else [self.unlockDisplayOrientationSelector setSelectedSegmentIndex:1]; // can't lock screen orientation in this mode = Display Orientation always unlocked
     [self.unlockDisplayOrientationSelector setEnabled:unlockDisplayOrientationSelectorEnabled];
 
+    [self.backgroundSessionTimerSlider setValue:(uint32_t)currentSettings.backgroundSessionTimer.floatValue];
+    [self.backgroundSessionTimerSlider addTarget:self action:@selector(backgroundSessionTimerSliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self backgroundSessionTimerSliderMoved:self.backgroundSessionTimerSlider];
 
     // lift streamview setting
     [self.liftStreamViewForKeyboardSelector setSelectedSegmentIndex:currentSettings.liftStreamViewForKeyboard ? 1 : 0];// Load old setting
@@ -1510,6 +1516,14 @@ BOOL isCustomResolution(CGSize res) {
 
 - (void) gyroSensitivitySliderMoved:(UISlider* )sender {
     [self findDynamicLabelFromStack:self.gyroSensitivityStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)sender.value]; // Update label display
+}
+
+- (void) backgroundSessionTimerSliderMoved:(UISlider* )sender {
+    NSString* labelString;
+    labelString = [LocalizationHelper localizedStringForKey:@"  keep %d min  ", (uint16_t)sender.value];
+    if(sender.value == 0) labelString = [LocalizationHelper localizedStringForKey:@"  disconnect  "];
+    if(sender.value == sender.maximumValue) labelString = [LocalizationHelper localizedStringForKey:@"  keep alive  "];
+    [self findDynamicLabelFromStack:self.backgroundSessionTimerStack].text = labelString; // Update label display
 }
 
 
@@ -1957,6 +1971,7 @@ BOOL isCustomResolution(CGSize res) {
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
+    BOOL enablePIP = self.pipSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
     BOOL useFramePacing = [self.framePacingSelector selectedSegmentIndex] == 1;
     NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector.selectedSegmentIndex : NativeTouchOnly;
@@ -1967,6 +1982,7 @@ BOOL isCustomResolution(CGSize res) {
     NSInteger resolutionSelected = [self.resolutionSelector selectedSegmentIndex];
     NSInteger externalDisplayMode = [self.externalDisplayModeSelector selectedSegmentIndex];
     NSInteger localMousePointerMode = [self.localMousePointerModeSelector selectedSegmentIndex];
+    NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     [dataMan saveSettingsWithBitrate:_bitrate
                            framerate:framerate
                               height:height
@@ -1993,6 +2009,7 @@ BOOL isCustomResolution(CGSize res) {
                            audioOnPC:audioOnPC
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
+                           enablePIP:enablePIP
                       useFramePacing:useFramePacing
                            enableHdr:enableHdr
                       btMouseSupport:btMouseSupport
@@ -2002,7 +2019,8 @@ BOOL isCustomResolution(CGSize res) {
             unlockDisplayOrientation:unlockDisplayOrientation
                   resolutionSelected:resolutionSelected
                  externalDisplayMode:externalDisplayMode
-               localMousePointerMode:localMousePointerMode];
+               localMousePointerMode:localMousePointerMode
+              backgroundSessionTimer:backgroundSessionTimer];
 }
 
 - (void)didReceiveMemoryWarning {

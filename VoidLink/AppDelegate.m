@@ -27,6 +27,15 @@ static NSString* DB_NAME = @"Moonlight_tvOS.bin";
 static NSString* DB_NAME = @"Limelight_iOS.sqlite";
 #endif
 
+#pragma mark - UISceneSession lifecycle
+
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options API_AVAILABLE(ios(13.0)){
+    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+}
+
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions API_AVAILABLE(ios(13.0)){
+}
+
 
 #if !TARGET_OS_TV
 

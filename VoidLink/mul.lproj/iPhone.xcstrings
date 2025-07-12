@@ -211,6 +211,36 @@
         }
       }
     },
+    "4Ul-P6-eUk.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"4Ul-P6-eUk\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable PiP"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画中画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用子母畫面"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用子母畫面"
+          }
+        }
+      }
+    },
     "5JB-m0-nUF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"YUV 4:4:4\"; ObjectID = \"5JB-m0-nUF\";",
       "extractionState" : "extracted_with_value",
@@ -693,6 +723,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最佳化遊戲設定"
+          }
+        }
+      }
+    },
+    "9et-1g-y3D.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Background Session\"; ObjectID = \"9et-1g-y3D\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Background Session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台会话"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行"
           }
         }
       }
