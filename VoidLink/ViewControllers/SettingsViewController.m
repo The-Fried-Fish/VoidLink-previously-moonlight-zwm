@@ -2077,7 +2077,7 @@ BOOL isCustomResolution(CGSize res) {
                       frameQueueSize:_frameQueueSize
                         enableGraphs:enableGraphs
                         graphOpacity:_graphOpacity
-                    renderingBackend:renderingBackend];
+                    renderingBackend:renderingBackend
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

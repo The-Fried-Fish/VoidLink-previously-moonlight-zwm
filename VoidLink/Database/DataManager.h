@@ -90,7 +90,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                   frameQueueSize:(NSInteger)frameQueueSize
                     enableGraphs:(BOOL)enableGraphs
                     graphOpacity:(NSInteger)graphOpacity
-                renderingBackend:(NSInteger)renderingBackend;
+                renderingBackend:(NSInteger)renderingBackend
            backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

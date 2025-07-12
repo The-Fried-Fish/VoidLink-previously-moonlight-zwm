@@ -639,6 +639,7 @@
                                                                     framerate:[self->_settings.framerate floatValue]
                                                                     enableHdr:self->_settings.enableHdr
                                                                metricsHandler:self.imguiView.metricsHandler];
+        self.metalViewController.view.userInteractionEnabled = NO;
         [self.view addSubview:self.metalViewController.view];
         [self.view bringSubviewToFront:self.metalViewController.view];
     }
@@ -648,6 +649,7 @@
                                                 streamFps:[_settings.framerate intValue]
                                              enableGraphs:_settings.enableGraphs
                                              graphOpacity:[_settings.graphOpacity intValue]];
+    self.imguiView.mtkView.userInteractionEnabled = NO;
     [self.view addSubview:self.imguiView.mtkView];
     [self.view bringSubviewToFront:self.imguiView.mtkView];
 
