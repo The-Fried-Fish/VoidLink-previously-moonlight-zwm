@@ -1,12 +1,3 @@
-//
-//  MetalConfig.h
-//  VoidLink
-//
-//  Created by Mason Chen on 2025/7/11.
-//  Copyright © 2025 Moonlight Game Streaming Project. All rights reserved.
-//
-
-
 // When enabled, rendering occurs on the main application thread.
 // This can make responding to UI events during redraw simpler
 // to manage because UI calls usually need to occur on the main thread.
