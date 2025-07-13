@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="EVd-wq-ego">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -973,14 +973,14 @@
                                 <rect key="frame" x="440" y="2421" width="380" height="55.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Background Session" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9pX-93-bC2" userLabel="backgroundSessionTimerLabel">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Background Session" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9pX-93-bC2" userLabel="backgroundSessionTimerLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="61" minValue="0.0" maxValue="61" translatesAutoresizingMaskIntoConstraints="NO" id="lRU-fd-AsU">
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="61" minValue="0.0" maxValue="61" translatesAutoresizingMaskIntoConstraints="NO" id="lRU-fd-AsU">
                                         <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
@@ -1009,7 +1009,8 @@
                         <outlet property="codecSelector" destination="aFy-0w-YPe" id="DlU-0l-gwz"/>
                         <outlet property="codecStack" destination="gWg-BF-yDI" id="GGc-JQ-N8y"/>
                         <outlet property="customResolutionSwitch" destination="E5w-kK-dOo" id="hrt-v2-8dY"/>
-                        <outlet property="enableGraphsSwitch" destination="3Z9-RB-w4i" id="0yT-M0-sr5"/>
+                        <outlet property="enableGraphsLabel" destination="ccm-n2-PXi" id="oZu-xY-lT6"/>
+                        <outlet property="enableGraphsSwitch" destination="3Z9-RB-w4i" id="uHV-kg-9g3"/>
                         <outlet property="enableOswForNativeTouchSwitch" destination="Zmq-Kv-Nmp" id="f6j-0V-ldT"/>
                         <outlet property="enableOswSwitchStack" destination="SkS-ft-peB" id="n3M-EK-U74"/>
                         <outlet property="externalDisplayModeSelector" destination="VWB-YB-Ptj" id="0ak-pc-evb"/>
@@ -1021,7 +1022,7 @@
                         <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="uFG-Ch-nsK"/>
                         <outlet property="framepacingStack" destination="9C2-td-rMV" id="5wc-qn-fo5"/>
                         <outlet property="framerateSelector" destination="8hF-kb-2uV" id="dfT-hb-csE"/>
-                        <outlet property="graphOpacityStepper" destination="9VJ-Gj-nWG" id="plg-Q6-54j"/>
+                        <outlet property="graphOpacityStepper" destination="9VJ-Gj-nWG" id="c4x-HW-KXU"/>
                         <outlet property="gyroModeSelector" destination="aa5-3y-I4d" id="FsX-kH-h7w"/>
                         <outlet property="gyroModeStack" destination="kAD-mK-aP8" id="GvL-Yx-S2t"/>
                         <outlet property="gyroSensitivitySlider" destination="3Ge-IB-PBj" id="Pdg-ke-KG3"/>

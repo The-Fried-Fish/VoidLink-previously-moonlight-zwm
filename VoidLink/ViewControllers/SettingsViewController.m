@@ -1297,6 +1297,7 @@ BOOL isCustomResolution(CGSize res) {
     [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved) forControlEvents:UIControlEventValueChanged];
     [self updateFrameQueueSizeText];
 
+    [self.enableGraphsSwitch setOn:currentSettings.enableGraphs animated:NO]; // Add this line
     [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged) forControlEvents:UIControlEventValueChanged];
     [self enableGraphsChanged];
     [self.graphOpacityStepper setMinimumValue:0];
