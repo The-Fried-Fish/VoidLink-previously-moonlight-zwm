@@ -1256,7 +1256,14 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     [self.yuv444Switch setOn:currentSettings.enableYUV444];
+    
     [self.pipSwitch setOn:currentSettings.enablePIP];
+    if(@available(iOS 15.0, *)) [self.pipSwitch setEnabled:true];
+    else{
+        [self.pipSwitch setOn:false];
+        [self.pipSwitch setEnabled:false];
+    }
+    
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
 
     NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];

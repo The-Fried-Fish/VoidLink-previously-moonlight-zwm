@@ -822,7 +822,7 @@
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
     
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController popToRootViewControllerAnimated:NO];
     
     _extWindow = nil;
 }

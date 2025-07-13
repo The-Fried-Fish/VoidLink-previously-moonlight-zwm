@@ -493,6 +493,9 @@ static const float REFRESH_CYCLE = 2.0f;
     }*/
 }
 
+- (bool)isDarkTheme{
+    return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+}
 
 - (void) updateLoop {
     // Stop immediately if the view has been detached
@@ -517,9 +520,9 @@ static const float REFRESH_CYCLE = 2.0f;
             _statusLabel.text = [LocalizationHelper localizedStringForKey:@"Online"];
             self.statusIcon.image = [[UIImage imageNamed:@"wifi_green"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
             self.statusIcon.hidden = NO;
-            _hostIconView.tintColor = [UIColor whiteColor];
             _appButton.titleLabel.font = [UIFont systemFontOfSize:buttonLabelFontSize];
             if(host.pairState == PairStatePaired){
+                _hostIconView.tintColor = [UIColor whiteColor];
                 _iconBackgroundView.backgroundColor = defaultBlue;
                 lockIconView.hidden = YES;
                 [_appButton setTitle:[LocalizationHelper localizedStringForKey:@"Applications"] forState:UIControlStateNormal];
@@ -542,6 +545,9 @@ static const float REFRESH_CYCLE = 2.0f;
             }
             else {
                 _iconBackgroundView.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
+                UIColor* iconColor = [[UIColor whiteColor] colorWithAlphaComponent:[self isDarkTheme] ? 0.63 : 1];
+                _hostIconView.tintColor = iconColor;
+                lockIconView.tintColor = iconColor;
                 lockIconView.hidden = NO;
                 _appButton.hidden = YES;
                 _launchButton.hidden = YES;

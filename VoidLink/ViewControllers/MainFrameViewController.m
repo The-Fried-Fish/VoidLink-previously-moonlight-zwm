@@ -1142,7 +1142,7 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
-
+    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.pipStack];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
@@ -1430,9 +1430,23 @@ static NSMutableSet* hostList;
         [_settingsButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
     }
 
+    
+    
+    
     // Set the host name button action. When it's tapped, it'll show the host selection view.
     _upButton = [[UIBarButtonItem alloc] init];
-    [self->_upButton setTitle: [LocalizationHelper localizedStringForKey: @"Select New Host"]];
+    
+    if (@available(iOS 13.0, *)) {
+        [_upButton setTitle:@""];
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23 weight:UIImageSymbolWeightMedium ];
+        UIImage *image = [[UIImage systemImageNamed:@"tv" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [_upButton setImage:image];
+        _upButton.imageInsets = UIEdgeInsetsMake(25, 20, 0, 15);
+    } else {
+        [_upButton setTitle:[LocalizationHelper localizedStringForKey:@"Select New Host"]];
+    }
+    
+    //[self->_upButton setTitle: [LocalizationHelper localizedStringForKey: @"Select New Host"]];
     [_upButton setTarget:self];
     [_upButton setAction:@selector(switchToHostView)];
 }
@@ -2003,6 +2017,23 @@ static NSMutableSet* hostList;
 #endif
 
     return cell;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView
+                  layout:(UICollectionViewLayout *)collectionViewLayout
+  sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    CGSize cellSize;
+    if([self isIPhone]) cellSize.height = 0.365*MIN(CGRectGetHeight([[UIScreen mainScreen] bounds]),CGRectGetWidth([[UIScreen mainScreen] bounds]));
+    else cellSize.height = 0.272*MIN(CGRectGetHeight([[UIScreen mainScreen] bounds]),CGRectGetWidth([[UIScreen mainScreen] bounds]));
+    TemporaryApp* app = _sortedAppList[indexPath.row];
+    UIAppView* appView = [[UIAppView alloc] initWithApp:app cache:_boxArtCache andCallback:self];
+
+    cellSize.width = cellSize.height * (appView
+                                        .bounds.size.width/appView
+                                        .bounds.size.height);
+    // cardSize.width =
+
+    return cellSize;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
