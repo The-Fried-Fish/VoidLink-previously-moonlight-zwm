@@ -8,6 +8,7 @@
 
 #import "UIAppView.h"
 #import "AppAssetManager.h"
+#import "ThemeManager.h"
 
 static const float REFRESH_CYCLE = 1.0f;
 
@@ -157,19 +158,31 @@ static UIImage* noImage;
     
     if ([_app.id isEqualToString:_app.host.currentGame]) {
         // Only create the app overlay if needed
-        _appOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Play"]];
+        
+        if (@available(iOS 13.0, *)) {
+            UIImageView* playIcon = [[UIImageView alloc] initWithImage:[[UIImage systemImageNamed:@"play.circle"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+            playIcon.tintColor = [[UIColor systemTealColor] colorWithAlphaComponent:0.8];
+
+            _appOverlay = playIcon;
+        } else {
+            _appOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Play"]];
+            
+        }
+
+        
         _appOverlay.layer.shadowColor = [UIColor blackColor].CGColor;
-        _appOverlay.layer.shadowOffset = CGSizeMake(0, 0);
+        _appOverlay.layer.shadowOffset = CGSizeMake(1, 1);
         _appOverlay.layer.shadowOpacity = 1;
-        _appOverlay.layer.shadowRadius = 4.0;
+        _appOverlay.layer.shadowRadius = 1.3;
         _appOverlay.contentMode = UIViewContentModeScaleAspectFit;
     }
     
-    if (true) {
+    if (noAppImage) {
         _appLabel = [[UILabel alloc] init];
-        [_appLabel setTextColor:[UIColor whiteColor]];
+        [_appLabel setTextColor:[[UIColor blackColor] colorWithAlphaComponent:0.75]];
+        //_appLabel.shadowColor = [UIColor blackColor];
         [_appLabel setText:_app.name];
-        [_appLabel setFont:[UIFont systemFontOfSize:24]];
+        [_appLabel setFont:[UIFont systemFontOfSize:20]];
         [_appLabel setBaselineAdjustment:UIBaselineAdjustmentAlignCenters];
         [_appLabel setTextAlignment:NSTextAlignmentCenter];
         [_appLabel setLineBreakMode:NSLineBreakByWordWrapping];

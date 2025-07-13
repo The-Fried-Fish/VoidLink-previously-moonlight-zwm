@@ -2315,6 +2315,12 @@
             "value" : "Audio Configuration"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "声道配置"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",

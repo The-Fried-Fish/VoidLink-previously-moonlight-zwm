@@ -777,7 +777,7 @@
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
     
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController popToRootViewControllerAnimated:NO];
     
     _extWindow = nil;
 }
@@ -859,26 +859,13 @@
     //[self.pipController startPictureInPicture];
     //sleep(1);
     
-    if (_inactivityTimer != nil) {
-        [_inactivityTimer invalidate];
-        _inactivityTimer = nil;
-    }
-    
-    
 #if !TARGET_OS_TV
-    // Terminate the stream if the app is inactive for 60 seconds
-    Log(LOG_I, @"Starting inactivity termination timer with %d min", _settings.backgroundSessionTimer.intValue);
-    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:60*(double)_settings.backgroundSessionTimer.intValue
-                                  target:self
-                                selector:@selector(inactiveTimerExpired:)
-                                userInfo:nil
-                                 repeats:NO];
 #endif
 }
 
 - (void)inactiveTimerExpired:(NSTimer*)timer {
     Log(LOG_I, @"Terminating stream after inactivity");
-
+    
     [self returnToMainFrame];
     
     _inactivityTimer = nil;
@@ -901,9 +888,21 @@
 
     NSLog(@"did enter background, %d, %@, %d", _settings.enablePIP, self.pipController, self.pipController.isPictureInPictureActive);
     if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
-        Log(LOG_I, @"PIP is active, not terminating stream");
-        return;
+        //Log(LOG_I, @"PIP is active, not terminating stream");
     }
+    
+    if (_inactivityTimer != nil) {
+        [_inactivityTimer invalidate];
+        _inactivityTimer = nil;
+    }
+    
+    // Terminate the stream if the app is inactive for ...
+    Log(LOG_I, @"Starting inactivity termination timer with %d min", _settings.backgroundSessionTimer.intValue);
+    _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:60*(double)_settings.backgroundSessionTimer.intValue
+                                  target:self
+                                selector:@selector(inactiveTimerExpired:)
+                                userInfo:nil
+                                 repeats:NO];
 
 #if !TARGET_OS_TV
 

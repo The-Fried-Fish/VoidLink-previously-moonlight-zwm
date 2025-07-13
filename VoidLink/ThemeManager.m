@@ -127,7 +127,7 @@ static UIUserInterfaceStyle _userInterfaceStyle;
             break;
         case UIUserInterfaceStyleDark:
         default:
-            return [[ThemeManager appPrimaryColor] colorWithAlphaComponent:0.5];
+            return [[ThemeManager appPrimaryColor] colorWithAlphaComponent:0.24];
             break;
     }
 }

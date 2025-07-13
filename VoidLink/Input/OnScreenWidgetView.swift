@@ -57,6 +57,9 @@ import UIKit
     @objc public var mouseButtonAction: MouseButtonAction = .hovering;
     
     private let appWindow: UIView
+
+    private var displayLink: CADisplayLink?
+    private var hasMovingTouches: Bool = false
     
     private var vibrationGenerator = UIImpactFeedbackGenerator(style: .light)
     private var vibrationOn: Bool = false
@@ -236,11 +239,34 @@ import UIKit
     
         setupView()
         
+        setupDisplayLink()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private func setupDisplayLink() {
+        displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink))
+        displayLink?.add(to: .main, forMode: .common)
+        displayLink?.isPaused = true
+    }
+
+    @objc private func handleDisplayLink() {
+        if !self.hasMovingTouches {
+            // print("displayLinkUpdate \(CACurrentMediaTime())")
+            switch self.touchPadString{
+            case "RSVPAD":
+                self.onScreenControls.clearRightStickTouchPadFlag()
+            case "LSVPAD":
+                self.onScreenControls.clearLeftStickTouchPadFlag()
+            default: break
+            }
+        }
+        self.hasMovingTouches = false // 重置标记
+    }
+
+
     
     // ======================================================================================================
     
@@ -1008,6 +1034,12 @@ import UIKit
 //==============================================================================
     // Touch event handling
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // this is for checking stationary touch points
+        switch self.touchPadString {
+        case "RSVPAD","LSVPAD":
+            displayLink?.isPaused = false // start display refresh callback for vector mode stick touchPad only
+        default: displayLink?.isPaused = true
+        }
         
         self.touchBegan = true
         self.firstTouchMoved = false
@@ -1148,6 +1180,7 @@ import UIKit
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
+        self.hasMovingTouches = true // for checking if all touches are stationary
         if !OnScreenWidgetView.editMode {
             handleTouchPadMoveEvent(touches, with: event)
             if CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
@@ -1247,6 +1280,10 @@ import UIKit
         
         let allCapturedTouchesCount = event?.allTouches?.filter({ $0.view == self }).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         
+        // stop display refresh call back (for checking stationary touch points) when all touches are lifted
+        if touches.count == allCapturedTouchesCount {
+            displayLink?.isPaused = true
+        }
         
         // deal with pure MOUSPAD first
         if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
