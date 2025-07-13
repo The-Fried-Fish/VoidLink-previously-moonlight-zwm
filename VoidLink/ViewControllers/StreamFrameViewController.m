@@ -317,8 +317,12 @@
     }
 }
 
+- (void)reConfigStreamViewRealtime {
+    [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+}
+
 // key implementation of reconfiguring streamview after realtime setting menu is closed.
-- (void)reConfigStreamViewRealtime{
+- (void)reConfigStreamViewRealtimeAndReloadSettings:(BOOL)reloadSettings{
     //[self.view removeGestureRecognizer:]
     //first, remove all gesture recognizers:
     for (UIGestureRecognizer *recognizer in _streamView.gestureRecognizers) {
@@ -328,7 +332,9 @@
         [self.view removeGestureRecognizer:recognizer];
     }
     
-    _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
+    if (reloadSettings) {
+        _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
+    }
     [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
     [self configSwipeGestures];
@@ -348,13 +354,34 @@
     [self reloadAirPlayConfig];
     [self mousePresenceChanged];
     
-    //reconfig statsOverlay
-    self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
-                                                               target:self
-                                                             selector:@selector(updateStatsOverlay)
-                                                             userInfo:nil
-                                                              repeats:_settings.statsOverlayEnabled];
+    // Invalidate the old timer to prevent duplicates
+    if (self->_statsUpdateTimer) {
+        [self->_statsUpdateTimer invalidate];
+        self->_statsUpdateTimer = nil;
+    }
+    // Re-schedule the timer only if the overlay is enabled
+    if (_settings.statsOverlayEnabled) {
+        self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                                                 target:self
+                                                               selector:@selector(updateStatsOverlay)
+                                                               userInfo:nil
+                                                                repeats:YES];
+    }
     
+    // Re-create the ImGui view to properly apply the 'enableGraphs' setting
+    if (self.imguiView && self.imguiView.mtkView) {
+        [self.imguiView stop];
+        [self.imguiView.mtkView removeFromSuperview];
+        self.imguiView = nil;
+    }
+    self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
+                                                streamFps:[_settings.framerate intValue]
+                                             enableGraphs:_settings.enableGraphs
+                                             graphOpacity:[_settings.graphOpacity intValue]];
+    self.imguiView.mtkView.userInteractionEnabled = NO;
+    [self.view addSubview:self.imguiView.mtkView];
+
+    // Ensure views are layered correctly
     if (self.metalViewController && self.metalViewController.view.superview) {
         [self.view bringSubviewToFront:self.metalViewController.view];
     }
@@ -643,16 +670,6 @@
         [self.view addSubview:self.metalViewController.view];
         [self.view bringSubviewToFront:self.metalViewController.view];
     }
-
-    // Make a MetalKit view for ImGui
-    self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
-                                                streamFps:[_settings.framerate intValue]
-                                             enableGraphs:_settings.enableGraphs
-                                             graphOpacity:[_settings.graphOpacity intValue]];
-    self.imguiView.mtkView.userInteractionEnabled = NO;
-    [self.view addSubview:self.imguiView.mtkView];
-    [self.view bringSubviewToFront:self.imguiView.mtkView];
-
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
@@ -787,8 +804,7 @@
         [_overlayView setFont:[UIFont systemFontOfSize:12 weight:UIFontWeightMedium]];
 
 #endif
-        int opacity = MAX([_settings.graphOpacity intValue], 60);
-        [_overlayView setAlpha:(float)opacity / 100.0];
+        [_overlayView setAlpha:(float)[_settings.graphOpacity intValue]/ 100.0];
         [self.view addSubview:_overlayView];
     }
     
@@ -1311,13 +1327,12 @@
 }
 
 - (void)toggleStatsOverlay{
-    DataManager* dataMan = [[DataManager alloc] init];
-    Settings *currentSettings = [dataMan retrieveSettings];
+    // Toggle the values on the current in-memory settings object for a temporary effect
+    _settings.statsOverlayEnabled = !_settings.statsOverlayEnabled;
+    _settings.enableGraphs = _settings.statsOverlayEnabled;
     
-    currentSettings.statsOverlayEnabled = !currentSettings.statsOverlayEnabled;
-    
-    [dataMan saveData];
-    [self reConfigStreamViewRealtime];
+    // Reconfigure the UI using the current in-memory settings, without reloading from disk
+    [self reConfigStreamViewRealtimeAndReloadSettings:NO];
 }
 
 - (void)toggleMouseCapture{

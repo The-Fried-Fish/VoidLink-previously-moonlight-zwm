@@ -40,7 +40,7 @@
 @property (nonatomic, strong) ImGuiRenderer *imguiView;
 
 -(void)updatePreferredDisplayMode:(BOOL)streamActive;
--(void)reConfigStreamViewRealtime;
+-(void)reConfigStreamViewRealtime:(BOOL)reloadSettings;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 - (bool)shallDisableGyroHotSwitch;
 
