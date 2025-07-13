@@ -226,8 +226,7 @@
 // Allows the render loop to wait if the queue is empty
 - (void)waitForEnqueue {
     while ([self isEmpty]) {
-        FQLog(LOG_I, @"waitForEnqueue...");
-        long result = dispatch_semaphore_wait(_frameSemaphore, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_wait(_frameSemaphore, DISPATCH_TIME_FOREVER);
     }
 }
 

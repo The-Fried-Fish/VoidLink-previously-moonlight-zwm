@@ -196,7 +196,7 @@
     return [NSString stringWithFormat:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
             "Bitrate: %.1f Mbps, Peak: %.1f, Renderer: %@\n"
             "%@"
-            "Frames buffered: %.1f\n"
+            "Frames buffered: %.1f, Present \n"
             "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
             "Average network latency: %@\n"
             "Decode time: %.2f/%.2f/%.2f ms",

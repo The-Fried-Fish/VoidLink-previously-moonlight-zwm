@@ -31,6 +31,4 @@ typedef void (^MetricsHandler)(int plotId, CFTimeInterval value);
 -(void) show;
 -(void) hide;
 -(void) stop;
--(void) observeFloat:(int)plotId value:(CFTimeInterval)value;
--(void) observeFloatReturnMetrics:(int)plotId value:(CFTimeInterval)value plotMetrics:(PlotMetrics * _Nullable)plotMetrics;
 @end

@@ -17,6 +17,7 @@
 #import "Plot.h"
 #import "PlatformThreads.h"
 #import "MetalViewController.h"
+#import "ImGuiPlots.h"
 
 #include <libavcodec/avcodec.h>
 #include <libavcodec/cbs.h>
@@ -275,7 +276,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 // we missed a callback
                 // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
             }
-            [self->_callbacks observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
         }
         lastTargetLocal = targetLocal;
 
@@ -801,81 +802,16 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         return DR_NEED_IDR;
     }
 
-    OSStatus decodeStatus;
-    if (0 && _renderingBackend == RENDER_METAL) {
-        decodeStatus = [self decodeFrameToLinearColorspaceWithSampleBuffer:sampleBuffer
-                                             frameNumber:du->frameNumber
-                                               frameType:du->frameType
-                                         decodeStartTime:decodeStartTime];
-    } else {
-        decodeStatus = [self decodeFrameWithSampleBuffer:sampleBuffer
-                                             frameNumber:du->frameNumber
-                                               frameType:du->frameType
-                                         decodeStartTime:decodeStartTime];
-    }
+    OSStatus decodeStatus = [self decodeFrameWithSampleBuffer:sampleBuffer
+                                                  frameNumber:du->frameNumber
+                                                    frameType:du->frameType
+                                              decodeStartTime:decodeStartTime];
     // Dereference the buffers
     CFRelease(dataBlockBuffer);
     CFRelease(frameBlockBuffer);
     CFRelease(sampleBuffer);
 
     return DR_OK;
-}
-
-// For experimenting with improved HDR tone-mapping by directly decoding to linear so we can tonemap using
-// the host's metadata.
-- (OSStatus)decodeFrameToLinearColorspaceWithSampleBuffer:(CMSampleBufferRef)sampleBuffer
-                                              frameNumber:(int)frameNumber
-                                                frameType:(int)frameType
-                                          decodeStartTime:(CFTimeInterval)decodeStartTime
- {
-    NSDictionary *linearAttributes = @{
-      (id)kCVPixelBufferPixelFormatTypeKey    : @(kCVPixelFormatType_64RGBAHalf),  // half-float RGBA
-      (id)kCVImageBufferColorPrimariesKey     : (id)kCVImageBufferColorPrimaries_ITU_R_2020, // wide-gamut primaries (Rec.2020)
-      (id)kCVImageBufferTransferFunctionKey   : (id)kCVImageBufferTransferFunction_Linear, // linear transfer function
-      (id)kCVImageBufferYCbCrMatrixKey        : (id)kCVImageBufferYCbCrMatrix_ITU_R_2020, // Y′CbCr matrix → RGB matrix (Rec.2020)
-      (id)kCVPixelBufferMetalCompatibilityKey : @YES // make it GPU-compatible
-    };
-
-    if (frameType == FRAME_TYPE_IDR || _decompressionSession == nil) {
-        [self setupDecompressionSessionWithAttributes:linearAttributes];
-    }
-
-    OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(
-        _decompressionSession, sampleBuffer, 0, NULL,
-        ^(OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef _Nullable imageBuffer, CMTime pts, CMTime duration) {
-            CVPixelBufferRef pixelBuffer = CVPixelBufferRetain((CVPixelBufferRef)imageBuffer);
-            Log(LOG_D, @"Decoded to PixelBuffer %@", pixelBuffer); // dumps full frame details
-
-            // Dispatch onto our higher priority queue
-            dispatch_async(self->_vtq, ^{
-                Frame *frame = [[Frame alloc] initWithPixelBufffer:pixelBuffer
-                                                       frameNumber:frameNumber
-                                                         frameType:frameType
-                                                               pts:pts];
-                [frame setFormatDesc:self->_formatDesc];
-                int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
-
-                static PlotMetrics frameQueueMetrics = {};
-                [self->_callbacks observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
-                [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
-
-                [self->_callbacks observeFloat:PLOT_DROPPED value:framesDropped];
-
-                // It's important we capture host metrics on the incoming thread, as this frame object
-                // may have been dropped by the above enqueue
-                static CFTimeInterval lastHostFrame = 0.0f;
-                if (lastHostFrame != 0) {
-                    [self->_callbacks observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
-                }
-                lastHostFrame = frame.pts;
-
-                // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
-                static PlotMetrics decodeMetrics = {};
-                [self->_callbacks observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
-                [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
-            });
-        });
-     return status;
 }
 
 - (OSStatus)decodeFrameWithSampleBuffer:(CMSampleBufferRef)sampleBuffer
@@ -954,22 +890,22 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
               int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
 
               static PlotMetrics frameQueueMetrics = {};
-              [self->_callbacks observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
+              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
               [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
 
-              [self->_callbacks observeFloat:PLOT_DROPPED value:framesDropped];
+              [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
 
               // It's important we capture host metrics on the incoming thread, as this frame object
               // may have been dropped by the above enqueue
               static CFTimeInterval lastHostFrame = 0.0f;
               if (lastHostFrame != 0) {
-                [self->_callbacks observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
               }
               lastHostFrame = frame.pts;
 
               // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
               static PlotMetrics decodeMetrics = {};
-              [self->_callbacks observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
+              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
               [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
           });
       });

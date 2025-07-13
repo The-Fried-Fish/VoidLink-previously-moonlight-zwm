@@ -83,11 +83,9 @@ The implementation of the cross-platform game view controller.
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
     if (!_stopping) {
         // Renderer obtains a nextDrawable, waiting if necessary
-        FQLog(LOG_I, @"[MetalViewController] caling [_renderer waitToRenderTo:layer]");
         [_renderer waitToRenderTo:layer];
 
         // If we don't have a frame yet, wait on that too
-        FQLog(LOG_I, @"[MetalViewController] caling [_renderer waitForEnqueue]");
         [_frameQueue waitForEnqueue];
     }
 }
@@ -99,10 +97,8 @@ The implementation of the cross-platform game view controller.
     }
 
     CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
-    FQLog(LOG_I, @"[MetalViewController] caling [_frameQueue dequeueWithTimeout:%f]", timeout);
     Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
     if (frame) {
-        FQLog(LOG_I, @"[MetalViewController] calling [_renderer renderFrame] %@", frame);
         [_renderer renderFrame:frame toLayer:layer];
     }
 }

@@ -226,19 +226,6 @@
 #  endif
 #endif
 
-/// Stats Graphs, we can still track data this way even with ImGui disabled
-
-- (void) observeFloat:(int)plotId value:(CFTimeInterval)value {
-    [self.plots[plotId].buffer addValue:(float)value];
-}
-
-- (void) observeFloatReturnMetrics:(int)plotId value:(CFTimeInterval)value plotMetrics:(PlotMetrics *)plotMetrics {
-    [self.plots[plotId].buffer addValue:(float)value];
-    if (plotMetrics != nil) {
-        [self.plots[plotId].buffer copyMetrics:plotMetrics];
-    }
-}
-
 #if !defined(IMGUI_DISABLE)
 inline static float getValue(void *buffer, int idx) {
     float *fbuffer = (float *)buffer;

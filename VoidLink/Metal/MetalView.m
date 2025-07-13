@@ -6,13 +6,11 @@
 #import "MetalConfig.h"
 
 @implementation MetalView {
-#if !RENDER_ON_MAIN_THREAD
     // The secondary thread containing the render loop.
     NSThread *_renderThread;
 
     // The flag to indicate that rendering needs to cease on the main thread.
     BOOL _continueRunLoop;
-#endif
 }
 
 #pragma mark - Initialization and Setup.
@@ -64,7 +62,6 @@
 #endif  // END TARGET_OS_IOS || TARGET_OS_TV
 
 - (void)movedToWindow {
-#if !RENDER_ON_MAIN_THREAD
     // Protect _continueRunLoop with a `@synchronized` block because it's accessed by the separate
     // animation thread.
     @synchronized(self) {
@@ -72,13 +69,12 @@
         _continueRunLoop = NO;
     }
 
-    // Create and start a secondary NSThread that has another run runloop. The NSThread
+    // Create and start a secondary NSThread that has another runloop. The NSThread
     // class calls the 'runThread' method at the start of the secondary thread's execution.
     _renderThread = [[NSThread alloc] initWithTarget:self selector:@selector(runThread) object:nil];
     _continueRunLoop = YES;
     _renderThread.qualityOfService = NSQualityOfServiceUserInteractive;
     [_renderThread start];
-#endif  // END !RENDER_ON_MAIN_THREAD
 
     // Perform any actions that need to know the size and scale of the drawable. When UIKit calls
     // didMoveToWindow after the view initialization, this is the first opportunity to notify
@@ -98,7 +94,6 @@
 #endif
 }
 
-#if !RENDER_ON_MAIN_THREAD
 - (void)runThread {
     // The system sets the '_continueRunLoop' ivar outside this thread, so it needs to synchronize. Create a
     // 'continueRunLoop' local var that the system can set from the _continueRunLoop ivar in a @synchronized block.
@@ -124,7 +119,6 @@
         }
     }
 }
-#endif  // END !RENDER_ON_MAIN_THREAD
 
 #pragma mark - Resizing
 
@@ -178,15 +172,6 @@
         return;
     }
 
-#if RENDER_ON_MAIN_THREAD
-    if (newSize.width == _metalLayer.drawableSize.width && newSize.height == _metalLayer.drawableSize.height) {
-        return;
-    }
-
-    _metalLayer.drawableSize = newSize;
-
-    [_delegate drawableResize:newSize];
-#else
     // The system calls all AppKit and UIKit calls that notify of a resize on the main thread. Use
     // a synchronized block to ensure that resize notifications on the delegate are atomic.
     @synchronized(_metalLayer) {
@@ -194,11 +179,12 @@
             return;
         }
 
+        Log(LOG_I, @"[MetalView] resizeDrawable: %.2f x %.2f", newSize.width, newSize.height);
+
         _metalLayer.drawableSize = newSize;
 
         [_delegate drawableResize:newSize];
     }
-#endif
 }
 #endif  // END AUTOMATICALLY_RESIZE
 

@@ -24,7 +24,4 @@
 - (void) setControllerLed:(uint16_t)controllerNumber r:(uint8_t)r g:(uint8_t)g b:(uint8_t)b;
 - (void) videoContentShown;
 
-- (void) observeFloat:(int)plotId value:(CFTimeInterval)value;
-- (void) observeFloatReturnMetrics:(int)plotId value:(CFTimeInterval)value plotMetrics:(PlotMetrics *)plotMetrics;
-
 @end
