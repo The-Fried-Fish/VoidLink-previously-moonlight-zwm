@@ -213,8 +213,9 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
         // Recreate the display layer. We are already on the main thread,
         // so this is safe to do right here.
+        [self->_displayLayer flushAndRemoveImage];
         [self reinitializeDisplayLayer];
-
+        
         // Request an IDR frame to initialize the new decoder
         LiRequestIdrFrame();
     }
@@ -729,21 +730,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         return DR_NEED_IDR;
     }
     
-    // Check for previous decoder errors before doing anything
-    if (_displayLayer.status == AVQueuedSampleBufferRenderingStatusFailed) {
-        Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
-
-        [self->_displayLayer flushAndRemoveImage];
-
-        // Recreate the display layer. We are already on the main thread,
-        // so this is safe to do right here.
-        [self reinitializeDisplayLayer];
-        
-        // Request an IDR frame to initialize the new decoder
-        free(data);
-        return DR_NEED_IDR;
-    }
-    
     // Now we're decoding actual frame data here
     CMBlockBufferRef frameBlockBuffer;
     CMBlockBufferRef dataBlockBuffer;
@@ -909,7 +895,16 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
           if (status != noErr || !imageBuffer) {
             NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
             Log(LOG_E, @"Decompression session error: %@", error);
-            LiRequestIdrFrame();
+            if (status == kVTInvalidSessionErr) {
+                // The session was invalidated by the OS. Destroy our reference
+                // so it gets recreated on the next IDR frame.
+                if (self->_decompressionSession) {
+                    VTDecompressionSessionInvalidate(self->_decompressionSession);
+                    CFRelease(self->_decompressionSession);
+                    self->_decompressionSession = nil;
+                }
+            }
+            LiRequestIdrFrame(); // Request an IDR to restart the stream
             return;
           }
 

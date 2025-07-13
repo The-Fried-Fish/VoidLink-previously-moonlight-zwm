@@ -929,10 +929,7 @@
         [self.pipController stopPictureInPicture];
     }
     
-    if (_isRestoringFromPiP) {
-        [self->_streamMan.videoRenderer resetFramePacing];
-    }
-
+    [self->_streamMan.videoRenderer resetFramePacing];
     _isRestoringFromPiP = NO;
 }
 
