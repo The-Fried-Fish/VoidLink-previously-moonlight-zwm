@@ -56,6 +56,7 @@
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
+    uint16_t overlayLevel;
     UILabel *_stageLabel;
     UILabel *_tipLabel;
     UIActivityIndicatorView *_spinner;
@@ -335,6 +336,7 @@
     if (reloadSettings) {
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     }
+    overlayLevel = _settings.statsOverlayLevel.intValue;
     [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
     [self configSwipeGestures];
@@ -775,7 +777,8 @@
     }
     else [self.view addSubview:_overlayView]; // don't know why but this is necessary for reactivating overlay.
 
-    NSString* overlayText = [self->_streamMan getStatsOverlayText];
+    NSString* overlayText = [self->_streamMan getStatsOverlayText:overlayLevel];
+                             
     dispatch_async(dispatch_get_main_queue(), ^{
         [self updateOverlayText:overlayText];
     });

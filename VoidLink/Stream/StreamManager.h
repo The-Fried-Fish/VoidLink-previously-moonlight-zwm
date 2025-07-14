@@ -20,6 +20,6 @@
 
 - (void) stopStream;
 
-- (NSString*) getStatsOverlayText;
+- (NSString*) getStatsOverlayText: (uint16_t) overlayLevel;
 
 @end

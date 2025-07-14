@@ -154,7 +154,7 @@
     return TRUE;
 }
 
-- (NSString*) getStatsOverlayText {
+- (NSString*) getStatsOverlayText: (uint16_t) overlayLevel {
     video_stats_t stats;
 
     if (!_connection) {
@@ -168,7 +168,7 @@
     uint32_t rtt, variance;
     NSString* latencyString;
     if (LiGetEstimatedRttInfo(&rtt, &variance)) {
-        latencyString = [NSString stringWithFormat:@"%u ms (variance: %u ms)", rtt, variance];
+        latencyString = [LocalizationHelper localizedStringForKey:@"%u ms (variance: %u ms)", rtt, variance];
     }
     else {
         latencyString = @"N/A";
@@ -176,7 +176,7 @@
     
     NSString* hostProcessingString;
     if (stats.framesWithHostProcessingLatency != 0) {
-        hostProcessingString = [NSString stringWithFormat:@"Host processing latency min/max/avg: %.1f/%.1f/%.1f ms\n",
+        hostProcessingString = [LocalizationHelper localizedStringForKey:@"Host processing latency min/max/avg: %.1f/%.1f/%.1f ms\n",
                                 stats.minHostProcessingLatency / 10.f,
                                 stats.maxHostProcessingLatency / 10.f,
                                 (float)stats.totalHostProcessingLatency / stats.framesWithHostProcessingLatency / 10.f];
@@ -192,25 +192,29 @@
 
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
-
-    return [NSString stringWithFormat:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
-            "Bitrate: %.1f Mbps, Peak: %.1f, Renderer: %@\n"
-            "%@"
-            "Frames buffered: %.1f, Present \n"
-            "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
-            "Average network latency: %@\n"
-            "Decode time: %.2f/%.2f/%.2f ms",
-            _config.width,
-            _config.height,
-            fps,
-            [_connection getActiveCodecName],
-            avgVideoMbps, peakVideoMbps, (stats.renderingBackend == RENDER_METAL) ? @"Metal" : @"AVSampleBuffer",
-            hostProcessingString,
-            stats.frameQueueMetrics.avg,
-            (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
-            stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
-            latencyString,
-            stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
+    
+    if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@",
+                 stats.totalFrames / interval,
+                 stats.networkDroppedFrames / interval,
+                 latencyString];
+    else return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+                 "Bitrate: %.1f Mbps, Peak: %.1f, Renderer: %@\n"
+                 "%@"
+                 "Frames buffered: %.1f, Present \n"
+                 "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
+                 "Average network latency: %@\n"
+                 "Decode time: %.2f/%.2f/%.2f ms",
+                 _config.width,
+                 _config.height,
+                 fps,
+                 [_connection getActiveCodecName],
+                 avgVideoMbps, peakVideoMbps, (stats.renderingBackend == RENDER_METAL) ? @"Metal" : @"AVSampleBuffer",
+                 hostProcessingString,
+                 stats.frameQueueMetrics.avg,
+                 (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
+                 stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
+                 latencyString,
+                 stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
 }
 
 @end
