@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CFTimeInterval)estimatedFramerate;
 - (int)currentSoftCap;
 - (void)waitForEnqueue;
+- (void)stop;
 
 @end
 

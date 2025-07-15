@@ -33,4 +33,8 @@
 - (void)resizeDrawable:(CGFloat)scaleFactor;
 #endif
 
+- (void)stop;
+- (void)pause;
+- (void)resume;
+
 @end

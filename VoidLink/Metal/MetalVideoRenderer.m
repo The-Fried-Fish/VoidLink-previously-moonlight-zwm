@@ -95,8 +95,6 @@ static const NSUInteger MaxFramesInFlight = 3;
     id<MTLBuffer> _VideoVertexBuffer;
     CFTimeInterval _lastPresented;
 
-    // https://developer.apple.com/documentation/metal/synchronizing-cpu-and-gpu-work?language=objc
-    dispatch_semaphore_t _inFlightSemaphore;
 }
 
 - (instancetype)initWithMetalDevice:(id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate {
@@ -114,7 +112,6 @@ static const NSUInteger MaxFramesInFlight = 3;
         _lastColorSpace = -1;
         _lastFullRange = NO;
         _lastPresented = 0;
-        _inFlightSemaphore = dispatch_semaphore_create(MaxFramesInFlight);
 
         CFStringRef keys[1] = {kCVMetalTextureUsage};
         NSUInteger values[1] = {MTLTextureUsageShaderRead};
@@ -131,10 +128,21 @@ static const NSUInteger MaxFramesInFlight = 3;
 }
 
 - (void)dealloc {
-    if (_CscParamsBuffer) {
-        _CscParamsBuffer = nil;
+    // Release the Core Foundation texture cache, which is not managed by ARC.
+    if (_textureCache) {
+        CFRelease(_textureCache);
+        _textureCache = NULL;
     }
 
+    // Safely release any textures that might still be referenced.
+    for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+        if (_cvMetalTextures[i]) {
+            CFRelease(_cvMetalTextures[i]);
+            _cvMetalTextures[i] = NULL;
+        }
+    }
+    
+    // ARC will handle the rest of the Objective-C objects like _CscParamsBuffer.
 }
 
 #if !TARGET_OS_TV
@@ -453,38 +461,21 @@ static const NSUInteger MaxFramesInFlight = 3;
     id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderPassDescriptor];
 
     [renderEncoder setRenderPipelineState:_videoPipelineState];
+    [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
+    [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+
     for (size_t i = 0; i < planes; i++) {
         [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
     }
 
-    __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
-    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
-        dispatch_semaphore_signal(block_semaphore);
-
-        const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
-        const double alpha = 0.25f;
-        self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
-
-        // Free textures after completion of rendering
-        for (size_t i = 0; i < planes; i++) {
-            if (self->_cvMetalTextures[i]) {
-                CVBufferRelease(self->_cvMetalTextures[i]);
-                self->_cvMetalTextures[i] = nil;
-            }
-        }
-
-        CVMetalTextureCacheFlush(self->_textureCache, 0);
-    }];
-
-    [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
-    [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
     [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [renderEncoder endEncoding];
 
-    __weak typeof(self) self_ = self;
+    __weak typeof(self) weakSelf = self;
     [_nextDrawable addPresentedHandler:^(id<MTLDrawable> d) {
-        if (self_) {
-            [self_ plotFrametime:d.presentedTime];
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            [strongSelf plotFrametime:d.presentedTime];
         }
     }];
 
@@ -499,6 +490,19 @@ static const NSUInteger MaxFramesInFlight = 3;
 
     // Wait for the command buffer to complete and free our CVMetalTextureCache references
     [commandBuffer waitUntilCompleted];
+        
+    // Perform cleanup
+    const CFTimeInterval GPUTime = commandBuffer.GPUEndTime - commandBuffer.GPUStartTime;
+    const double alpha = 0.25f;
+    _averageGPUTime = (GPUTime * alpha) + (_averageGPUTime * (1.0 - alpha));
+
+    for (size_t i = 0; i < planes; i++) {
+            if (_cvMetalTextures[i]) {
+                CVBufferRelease(_cvMetalTextures[i]);
+                _cvMetalTextures[i] = nil;
+            }
+    }
+    CVMetalTextureCacheFlush(_textureCache, 0);
 
     _nextDrawable = nil;
 } }
@@ -522,7 +526,6 @@ static const NSUInteger MaxFramesInFlight = 3;
 
         // Wait to ensure only `MaxFramesInFlight` number of frames are getting processed
         // by any stage in the Metal pipeline (CPU, GPU, Metal, Drivers, etc.).
-        dispatch_semaphore_wait(_inFlightSemaphore, DISPATCH_TIME_FOREVER);
     }
 }
 
@@ -533,6 +536,9 @@ static const NSUInteger MaxFramesInFlight = 3;
 
 - (void)resize:(CGSize)size {
 
+}
+
+- (void)stop {
 }
 
 @end

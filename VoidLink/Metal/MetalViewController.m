@@ -31,6 +31,7 @@ The implementation of the cross-platform game view controller.
         _enableHdr = enableHdr;
         _metricsHandler = metricsHandler;
         _stopping = NO;
+        [_frameQueue clear];
     }
     return self;
 }
@@ -86,7 +87,9 @@ The implementation of the cross-platform game view controller.
         [_renderer waitToRenderTo:layer];
 
         // If we don't have a frame yet, wait on that too
-        [_frameQueue waitForEnqueue];
+        if (!_stopping) {
+            [_frameQueue waitForEnqueue];
+        }
     }
 }
 
@@ -136,5 +139,52 @@ The implementation of the cross-platform game view controller.
     (void)(event);
 }
 #endif
+
+- (void)stop {
+    // 1. Signal that we are stopping to prevent new work from starting.
+    _stopping = YES;
+    
+    // 2. Invalidate the CAMetalLayer by removing its device.
+    // This should cause any blocking calls like `nextDrawable` on the render thread to fail
+    // and return immediately, breaking the deadlock.
+    if (_metalView) {
+        _metalView.metalLayer.device = nil;
+    }
+
+    // 3. Unblock the render thread from any other potential waiting points.
+    if (_renderer) {
+        [_renderer stop];
+    }
+    [_frameQueue stop];
+
+    // 4. Now that the thread is unblocked, wait for it to finish its execution.
+    if (_metalView) {
+        [_metalView stop];
+    }
+
+    // 5. Once the thread has terminated, it's safe to deallocate all resources.
+    _renderer = nil;
+    _metalView = nil;
+}
+
+- (void)pause {
+    if (_renderer) {
+        // Add this line to discard any stale drawable before pausing the thread.
+        // This forces the renderer to get a fresh one on resume.
+        [_renderer discardNextDrawable];
+    }
+    
+    if (_metalView) {
+        [_metalView pause];
+        Log(LOG_I, @"Metal rendering paused.");
+    }
+}
+
+- (void)resume {
+    if (_metalView) {
+        [_metalView resume];
+        Log(LOG_I, @"Metal rendering resumed.");
+    }
+}
 
 @end

@@ -16,6 +16,7 @@
     int _count;
 
     BOOL _droppedLast;
+    BOOL _stopping;
     int _framesIn;
     CMTime _ptsCorrection;
     os_unfair_lock _lock;
@@ -75,6 +76,7 @@
 
         // ping estimatedFramerate to set initial last value
         [self estimatedFramerate];
+        _stopping = NO;
     }
 	return self;
 }
@@ -171,6 +173,10 @@
 // enqueue with simple alternate-drop logic
 - (int)enqueue:(Frame *)frame {
     os_unfair_lock_lock(&_lock);
+    if (_stopping) {
+        os_unfair_lock_unlock(&_lock);
+        return 0; // Don't enqueue if stopping
+    }
     int dropCount = [self _unsafeEnqueue:frame withDropTarget:_highWaterMark];
     os_unfair_lock_unlock(&_lock);
     return dropCount;
@@ -179,6 +185,10 @@
 // enqueue that is a bit more flexixble, using the same 500ms queue size history method as moonlight-qt.
 - (int)enqueue:(Frame *)frame withSlackSize:(int)slack {
     os_unfair_lock_lock(&_lock);
+    if (_stopping) {
+        os_unfair_lock_unlock(&_lock);
+        return 0; // Don't enqueue if stopping
+    }
     CFTimeInterval now = CACurrentMediaTime();
 
     // new data point for queue health
@@ -226,7 +236,13 @@
 // Allows the render loop to wait if the queue is empty
 - (void)waitForEnqueue {
     while ([self isEmpty]) {
+        if (_stopping) {
+            return;
+        }
         dispatch_semaphore_wait(_frameSemaphore, DISPATCH_TIME_FOREVER);
+        if (_stopping) {
+            return;
+        }
     }
 }
 
@@ -256,6 +272,9 @@
 
     // Always attempt to dequeue at least once
     do {
+        if (_stopping) {
+            return nil;
+        }
         if (round > 0) {
             usleep(100); // 0.1ms
         }
@@ -285,6 +304,7 @@
     os_unfair_lock_lock(&_lock);
     _head = _tail = _count = 0;
     _frameDropMetrics = [[FloatBuffer alloc] initWithCapacity:512];
+    _stopping = NO;
     os_unfair_lock_unlock(&_lock);
 }
 
@@ -325,6 +345,31 @@
         [parts addObject:[frame description]];
     }];
     return [NSString stringWithFormat:@"[%@]", [parts componentsJoinedByString:@",\n"]];
+}
+
+- (void)stop {
+    os_unfair_lock_lock(&_lock);
+    // Prevent redundant calls
+    if (_stopping) {
+        os_unfair_lock_unlock(&_lock);
+        return;
+    }
+    
+    _stopping = YES;
+    
+    // Clear the buffer's contents
+    _head = _tail = _count = 0;
+    for (int i = 0; i < _capacity; i++) {
+        [_buffer replaceObjectAtIndex:i withObject:[NSNull null]];
+    }
+    
+    os_unfair_lock_unlock(&_lock);
+    
+    // Unblock any threads waiting on the semaphore.
+    // Signaling multiple times ensures all potential consumer threads are released.
+    for (int i = 0; i < _maxCapacity; i++) {
+        dispatch_semaphore_signal(_frameSemaphore);
+    }
 }
 
 @end

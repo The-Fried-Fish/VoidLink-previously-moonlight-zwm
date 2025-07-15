@@ -11,6 +11,7 @@
 
     // The flag to indicate that rendering needs to cease on the main thread.
     BOOL _continueRunLoop;
+    dispatch_semaphore_t _renderThreadSemaphore;
 }
 
 #pragma mark - Initialization and Setup.
@@ -41,6 +42,7 @@
     _metalLayer = (CAMetalLayer *)self.layer;
 
     self.layer.delegate = self;
+    _renderThreadSemaphore = dispatch_semaphore_create(0);
 }
 
 #if TARGET_OS_IOS || TARGET_OS_TV
@@ -61,37 +63,44 @@
 }
 #endif  // END TARGET_OS_IOS || TARGET_OS_TV
 
-- (void)movedToWindow {
-    // Protect _continueRunLoop with a `@synchronized` block because it's accessed by the separate
-    // animation thread.
+- (void)startRenderThread {
     @synchronized(self) {
-        // Stop the animation loop, allowing it to complete if it's in progress.
-        _continueRunLoop = NO;
+        // Don't start a new thread if one is already running
+        if (_renderThread) {
+            return;
+        }
+
+        _continueRunLoop = YES;
+        _renderThread = [[NSThread alloc] initWithTarget:self selector:@selector(runThread) object:nil];
+        _renderThread.qualityOfService = NSQualityOfServiceUserInteractive;
+        [_renderThread start];
     }
+}
 
-    // Create and start a secondary NSThread that has another runloop. The NSThread
-    // class calls the 'runThread' method at the start of the secondary thread's execution.
-    _renderThread = [[NSThread alloc] initWithTarget:self selector:@selector(runThread) object:nil];
-    _continueRunLoop = YES;
-    _renderThread.qualityOfService = NSQualityOfServiceUserInteractive;
-    [_renderThread start];
+- (void)movedToWindow {
+    if (self.window) {
+        // The view was added to a window, so start rendering.
+        [self resume];
+        
+        // Notify the delegate of the drawable's size.
+        CGSize defaultDrawableSize = self.bounds.size;
+        defaultDrawableSize.width *= self.layer.contentsScale;
+        defaultDrawableSize.height *= self.layer.contentsScale;
+        [self.delegate drawableResize:defaultDrawableSize];
+    } else {
+        // The view was removed from a window, so stop rendering.
+        [self pause];
+    }
+}
 
-    // Perform any actions that need to know the size and scale of the drawable. When UIKit calls
-    // didMoveToWindow after the view initialization, this is the first opportunity to notify
-    // components of the drawable's size.
-#if AUTOMATICALLY_RESIZE
-#if TARGET_OS_IOS || TARGET_OS_TV
-    [self resizeDrawable:self.window.screen.nativeScale];
-#else
-    [self resizeDrawable:self.window.screen.backingScaleFactor];
-#endif
-#else
-    // Notify the delegate of the default drawable size when the system can calculate it.
-    CGSize defaultDrawableSize = self.bounds.size;
-    defaultDrawableSize.width *= self.layer.contentsScale;
-    defaultDrawableSize.height *= self.layer.contentsScale;
-    [self.delegate drawableResize:defaultDrawableSize];
-#endif
+- (void)pause {
+    // Pausing is implemented by simply stopping the render thread.
+    [self stop];
+}
+
+- (void)resume {
+    // Resuming is implemented by starting a new render thread.
+    [self startRenderThread];
 }
 
 - (void)runThread {
@@ -118,6 +127,7 @@
             }
         }
     }
+    dispatch_semaphore_signal(self->_renderThreadSemaphore);
 }
 
 #pragma mark - Resizing
@@ -188,4 +198,25 @@
 }
 #endif  // END AUTOMATICALLY_RESIZE
 
+- (void)stop {
+    @synchronized(self) {
+        // If already stopping, do nothing.
+        if (!_continueRunLoop) {
+            return;
+        }
+        _continueRunLoop = NO;
+    }
+
+    if (_renderThread && _renderThread != [NSThread currentThread]) {
+        // Wait for the render thread to finish its loop and signal the semaphore.
+        // We use a 1-second timeout to prevent the app from hanging indefinitely
+        // if the thread gets stuck for some reason.
+        long timeoutResult = dispatch_semaphore_wait(_renderThreadSemaphore, dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC));
+        if (timeoutResult != 0) {
+            Log(LOG_E, @"MetalView render thread failed to stop gracefully within 1 second.");
+        }
+    }
+    
+    _renderThread = nil;
+}
 @end

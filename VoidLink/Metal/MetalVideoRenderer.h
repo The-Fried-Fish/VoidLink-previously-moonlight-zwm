@@ -19,5 +19,7 @@
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer;
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)plotFrametime:(CFTimeInterval)presentedTime withPresentTime:(CFTimeInterval)presentTime;
+- (void)stop;
+- (void)discardNextDrawable;
 
 @end

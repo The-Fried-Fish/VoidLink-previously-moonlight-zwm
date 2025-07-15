@@ -668,7 +668,9 @@
                                                                     enableHdr:self->_settings.enableHdr
                                                                metricsHandler:self.imguiView.metricsHandler];
         self.metalViewController.view.userInteractionEnabled = NO;
+        [self addChildViewController:self.metalViewController];
         [self.view addSubview:self.metalViewController.view];
+        [self.metalViewController didMoveToParentViewController:self];
         [self.view bringSubviewToFront:self.metalViewController.view];
     }
 }
@@ -741,6 +743,12 @@
         if (_inactivityTimer != nil) {
             [_inactivityTimer invalidate];
             _inactivityTimer = nil;
+        }
+        if (self.metalViewController) {
+            [self.metalViewController stop];
+            [self.metalViewController.view removeFromSuperview];
+            self.metalViewController = nil;
+            NSLog(@"Metal renderer stopped and cleaned up.");
         }
         [[NSNotificationCenter defaultCenter] removeObserver:self];
     }
@@ -918,6 +926,10 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
+    if (self.metalViewController) {
+        [self.metalViewController pause];
+    }
+    
     
     //[self.pipController startPictureInPicture];
     //sleep(1);
@@ -935,6 +947,9 @@
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
+    if (self.metalViewController) {
+        [self.metalViewController resume];
+    }
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
