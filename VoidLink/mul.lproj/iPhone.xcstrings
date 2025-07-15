@@ -1255,6 +1255,36 @@
         }
       }
     },
+    "dUM-r9-0Bo.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Emulated Controller Type\"; ObjectID = \"dUM-r9-0Bo\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Emulated Controller Type"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射类型"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射類型"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射類型"
+          }
+        }
+      }
+    },
     "E7F-vx-pnM.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frame Rate\"; ObjectID = \"E7F-vx-pnM\";",
       "extractionState" : "extracted_with_value",
@@ -2301,6 +2331,60 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手把"
+          }
+        }
+      }
+    },
+    "q6v-Jb-ysy.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[0] = \"Xbox 360\"; ObjectID = \"q6v-Jb-ysy\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Xbox 360"
+          }
+        }
+      }
+    },
+    "q6v-Jb-ysy.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[1] = \"DS4\"; ObjectID = \"q6v-Jb-ysy\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DS4"
+          }
+        }
+      }
+    },
+    "q6v-Jb-ysy.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[2] = \"Both\"; ObjectID = \"q6v-Jb-ysy\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Both"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同时映射"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時映射"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時映射"
           }
         }
       }

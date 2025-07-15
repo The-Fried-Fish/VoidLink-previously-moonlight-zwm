@@ -264,7 +264,7 @@
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
         }
-        if(self->touchPointSpawnedAtUpperScreenEdge && [[event allTouches] count] == [touches count]) self->touchPointSpawnedAtUpperScreenEdge = false;
+        if(self->touchPointSpawnedAtUpperScreenEdge && [[event allTouches] count] == [touches count])  self->touchPointSpawnedAtUpperScreenEdge = false; //bugbugbugbugbugbugbugbug
     });
     else{
         for (UITouch* touch in touches){

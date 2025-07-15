@@ -111,6 +111,8 @@
 @property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
 @property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *emulatedControllerTypeStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *emulatedControllerTypeSelector;
 
 
 #pragma clang diagnostic push

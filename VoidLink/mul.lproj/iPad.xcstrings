@@ -1705,6 +1705,90 @@
         }
       }
     },
+    "JaY-XA-1V6.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[0] = \"Xbox 360\"; ObjectID = \"JaY-XA-1V6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Xbox 360"
+          }
+        }
+      }
+    },
+    "JaY-XA-1V6.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[1] = \"DS4\"; ObjectID = \"JaY-XA-1V6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DS4"
+          }
+        }
+      }
+    },
+    "JaY-XA-1V6.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[2] = \"Both\"; ObjectID = \"JaY-XA-1V6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Both"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同时映射"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時映射"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時映射"
+          }
+        }
+      }
+    },
+    "JTl-un-QJJ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Emulated Controller Type\"; ObjectID = \"JTl-un-QJJ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Emulated Controller Type"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射类型"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射類型"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射類型"
+          }
+        }
+      }
+    },
     "kho-5R-daP.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; kho-5R-daP.segmentTitles[0] = \"3 Finger Tap\"; ObjectID = \"kho-5R-daP\";",
       "extractionState" : "extracted_with_value",
