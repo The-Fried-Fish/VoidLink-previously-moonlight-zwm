@@ -824,30 +824,33 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                             frameNumber:(int)frameNumber
                               frameType:(int)frameType
                         decodeStartTime:(CFTimeInterval)decodeStartTime {
-  @synchronized(self) {
-        // If the decompression session is nil, we must decide what to do.
+    VTDecompressionSessionRef sessionForDecode = NULL;
+    @synchronized(self) {
+        // If the session is nil, it can only be created by an IDR frame.
         if (_decompressionSession == nil) {
-            // We can only create a session with an IDR frame.
             if (frameType == FRAME_TYPE_IDR) {
-                // This is the startup path. Create the session now.
                 [self setupDecompressionSession];
-
-                // If session creation still fails, we cannot proceed.
-                if (_decompressionSession == nil) {
-                     Log(LOG_E, @"Failed to create initial decompression session with IDR frame.");
-                     return kVTInvalidSessionErr;
-                }
             } else {
-                // This happens when resuming from background; we've reset the session
-                // and are waiting for a new IDR frame. Drop all other frames until it arrives.
+                // Not an IDR, so we can't create a session. Drop the frame.
                 return noErr;
             }
         }
-        // Also re-create the session if a new IDR frame arrives during an active stream,
-        // as it may contain updated video parameters (e.g., HDR toggled).
+        // If an IDR arrives during a valid session, re-create the session
+        // in case video parameters have changed.
         else if (frameType == FRAME_TYPE_IDR) {
             [self setupDecompressionSession];
         }
+
+        // If, after trying, the session is still nil, we cannot proceed.
+        if (_decompressionSession == nil) {
+            Log(LOG_E, @"Decompression session is nil after setup attempt. Dropping frame.");
+            return kVTInvalidSessionErr;
+        }
+
+        // Capture a strong reference to the session that we can use outside the lock.
+        // This prevents another thread from deallocating it while we're using it.
+        sessionForDecode = (VTDecompressionSessionRef)CFRetain(_decompressionSession);
+    }
         
       if (frameType == FRAME_TYPE_IDR && !_hasSentVideoContentShown) {
           // Tell our parent VC to hide the progress indicator and set up PiP
@@ -1001,7 +1004,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
           });
 
       return status;
-  }
 }
 
 - (void)setHdrMode:(BOOL)enabled {
