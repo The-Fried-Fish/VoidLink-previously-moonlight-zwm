@@ -507,8 +507,6 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 rightStickY = MAX_MAGNITUDE(rightStickY, controller.mergedWithController.lastRightStickY);
             }
             
-            
-            
             //NSLog(@"gamepadMask: %@", [self binaryRepresentationOfInteger:buttonFlags]); // we got the pressed OSC buttons here.
             
             // Player 1 is always present for OSC
@@ -733,18 +731,32 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 capabilities |= LI_CCAP_TOUCHPAD;
             }
             
-            if ([controller.extendedGamepad isKindOfClass:[GCXboxGamepad class]]) {
-                type = LI_CTYPE_XBOX;
-            }
-            else if ([controller.extendedGamepad isKindOfClass:[GCDualShockGamepad class]]) {
-                type = LI_CTYPE_PS;
+            
+            // LI_CTYPE_UNKNOWN for option "Both"
+            if(voidController.playerIndex == 0){
+                type = _streamConfig.emulatedControllerType == LI_CTYPE_UNKNOWN ? LI_CTYPE_PS : _streamConfig.emulatedControllerType;
             }
             
-            if (@available(iOS 14.5, tvOS 14.5, *)) {
-                if ([controller.extendedGamepad isKindOfClass:[GCDualSenseGamepad class]]) {
+            if(voidController.playerIndex == 1 && _streamConfig.emulatedControllerType == LI_CTYPE_UNKNOWN){
+                type = LI_CTYPE_XBOX;
+            }
+            
+            if(voidController.playerIndex >= 1 && _streamConfig.emulatedControllerType != LI_CTYPE_UNKNOWN){
+                if ([controller.extendedGamepad isKindOfClass:[GCXboxGamepad class]]) {
+                    type = LI_CTYPE_XBOX;
+                }
+                if ([controller.extendedGamepad isKindOfClass:[GCDualShockGamepad class]]) {
                     type = LI_CTYPE_PS;
                 }
+                
+                if (@available(iOS 14.5, tvOS 14.5, *)) {
+                    if ([controller.extendedGamepad isKindOfClass:[GCDualSenseGamepad class]]) {
+                        type = LI_CTYPE_PS;
+                    }
+                }
             }
+            
+            
             
             // Detect supported haptics localities
             if (controller.haptics) {
@@ -765,6 +777,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                     capabilities |= LI_CCAP_GYRO;
                 }
             }
+
+            
             
             // Detect RGB LED support
             if (controller.light) {
@@ -777,7 +791,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             }
             
             bool controllerLacksGyro = (capabilities & LI_CCAP_GYRO) == 0;
-            if ((_gyroMode == AlwaysDevice) || (_gyroMode == GyroModeAuto && controllerLacksGyro))
+            if(_streamConfig.emulatedControllerType == LI_CTYPE_PS && (_gyroMode == AlwaysDevice || (_gyroMode == GyroModeAuto && controllerLacksGyro)))
             {
                 type = LI_CTYPE_PS;
                 capabilities |= LI_CCAP_GYRO | LI_CCAP_ACCEL;
@@ -786,7 +800,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     }
     else {
         // This is a virtual controller corresponding to our OSC
-
+        // set osc to PS to utilize built-in gyro when "both" is selected
+        type = _streamConfig.emulatedControllerType == LI_CTYPE_UNKNOWN ? LI_CTYPE_PS : _streamConfig.emulatedControllerType;
+        
+        /*
         if (_streamConfig.gyroMode != GyroModeOff) {
             type = LI_CTYPE_PS;
             capabilities = LI_CCAP_GYRO | LI_CCAP_ACCEL;
@@ -795,6 +812,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             type = LI_CTYPE_XBOX;
             capabilities = 0;
         }
+         */
+
 
         // Set the standard supported buttons for the virtual controller.
         supportedButtonFlags =
@@ -1172,7 +1191,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
 
 - (void)updateVoidController:(VoidController* )voidController withGCController:(GCController* )controller{
-    voidController.playerIndex = controller.playerIndex == -1 ? 0 : (uint8_t) controller.playerIndex;
+    //voidController.playerIndex = controller.playerIndex == -1 ? 0 : (uint8_t) controller.playerIndex;
     voidController.motionTypes = [[NSMutableSet alloc] init];
     voidController.supportedEmulationFlags = EMULATING_SPECIAL | EMULATING_SELECT;
     voidController.gamepad = controller;
@@ -1232,8 +1251,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
         return voidController;
     }
     
+    // extenal controller start from playerIndex 1 for option "Both"
+    int startPlayIndex = _streamConfig.emulatedControllerType == LI_CTYPE_UNKNOWN ? 1 : 0;
     
-    for (int i = 0; i < 4; i++) {
+    for (int i = startPlayIndex; i < 4; i++) {
         if (!(_controllerNumbers & (1 << i))) {
             _controllerNumbers |= (1 << i);
             

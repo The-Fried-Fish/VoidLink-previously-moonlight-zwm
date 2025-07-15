@@ -816,6 +816,7 @@ static NSMutableSet* hostList;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
     _streamConfig.gyroMode = [streamSettings.gyroMode intValue];
+    _streamConfig.emulatedControllerType = streamSettings.emulatedControllerType.intValue;
     //NSLog(@"gyroMode from settings: %ld", _streamConfig.gyroMode);
     
     // multiController must be set before calling getConnectedGamepadMask
@@ -1126,9 +1127,11 @@ static NSMutableSet* hostList;
     // enable / disable widgets acoordingly: in streamview, disable, outside of streamview, enable.
     if(self.settingsExpandedInStreamView) [revealController buttonsInStreaming];
     else [revealController buttonsNotInStreaming];
+    
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* currentSettings = [dataMan getSettings];
 
     [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
-
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.resolutionStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.fpsStack];
     [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
@@ -1138,6 +1141,7 @@ static NSMutableSet* hostList;
     [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.gyroModeSelector setEnabled:!_settingsExpandedInStreamView || ![streamFrameViewController shallDisableGyroHotSwitch]];
+    [settingsViewController.emulatedControllerTypeSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
@@ -1753,7 +1757,7 @@ static NSMutableSet* hostList;
                                                object: nil];
     //[self simulateSettingsButtonPress]; //force reload resolution table in the setting
     //[self simulateSettingsButtonPress];
-    //[self updateResolutionAccordingly];
+    [self updateResolutionAccordingly];
 }
 
 
