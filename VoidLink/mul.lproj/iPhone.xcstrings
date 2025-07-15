@@ -19,13 +19,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "禁用"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "禁用"
           }
         }
@@ -49,13 +49,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "允許"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "允許"
           }
         }
@@ -91,66 +91,6 @@
         }
       }
     },
-    "3GB-Km-AL8.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 3GB-Km-AL8.segmentTitles[0] = \"No\"; ObjectID = \"3GB-Km-AL8\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "No"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "禁用"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "關閉"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "關閉"
-          }
-        }
-      }
-    },
-    "3GB-Km-AL8.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 3GB-Km-AL8.segmentTitles[1] = \"Yes\"; ObjectID = \"3GB-Km-AL8\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Yes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "启用"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "啟用"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "啟用"
-          }
-        }
-      }
-    },
     "3Hh-2q-gas.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Preferred Codec\"; ObjectID = \"3Hh-2q-gas\";",
       "extractionState" : "extracted_with_value",
@@ -177,36 +117,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "視訊編解碼"
-          }
-        }
-      }
-    },
-    "4pE-po-Zn1.normalTitle" : {
-      "comment" : "Class = \"UIButton\"; normalTitle = \"Edit\"; ObjectID = \"4pE-po-Zn1\";",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Edit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编辑"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编辑"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编辑"
           }
         }
       }
@@ -769,7 +679,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "轻按任意控件加载配置 (各控件独立)"
           }
         },
@@ -783,36 +693,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "輕按任意小工具載入設定（各小工具獨立）"
-          }
-        }
-      }
-    },
-    "885-w2-VAD.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Swap A/B and X/Y Buttons\"; ObjectID = \"885-w2-VAD\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Swap A/B and X/Y Buttons"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "交换 A/B、 X/Y 键位置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交換A/B鍵、X/Y鍵位置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交換A/B鍵、X/Y鍵位置"
           }
         }
       }
@@ -1147,6 +1027,36 @@
         }
       }
     },
+    "cl0-Qm-3kW.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Swap A/B X/Y Buttons\"; ObjectID = \"cl0-Qm-3kW\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Swap A/B X/Y Buttons"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交换 A/B、X/Y 键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交換A/B鍵、X/Y鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交換A/B鍵、X/Y鍵"
+          }
+        }
+      }
+    },
     "cti-T5-cSE.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Gesture Slide Distance\"; ObjectID = \"cti-T5-cSE\";",
       "extractionState" : "extracted_with_value",
@@ -1189,7 +1099,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "导出所有"
           }
         },
@@ -1603,7 +1513,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "5.1声道"
           }
         },
@@ -1633,7 +1543,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7.1声道"
           }
         },
@@ -2893,7 +2803,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "90°转屏"
           }
         },
@@ -3199,7 +3109,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "觸控模式"
           }
         },
@@ -3223,7 +3133,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "喚醒本地軟鍵盤時，抬升串流畫面"
           }
         },
@@ -3321,36 +3231,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸控移動事件間隔"
-          }
-        }
-      }
-    },
-    "yJC-bq-EOU.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Profile:\"; ObjectID = \"yJC-bq-EOU\";",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Profile:"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "当前布局:"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "当前布局:"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "当前布局:"
           }
         }
       }
