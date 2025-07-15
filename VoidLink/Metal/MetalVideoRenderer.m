@@ -79,7 +79,7 @@ static const NSUInteger MaxFramesInFlight = 3;
     id<ConnectionCallbacks> _callbacks;
     id<MTLCommandQueue> _commandQueue;
     id<MTLLibrary> _shaderLibrary;
-    id<MTLRenderPipelineState> _videoPipelineState;
+    id<MTLRenderPipelineState> _videoPipelineState[MAX_VIDEO_PLANES];
     MTLRenderPassDescriptor *_renderPassDescriptor;
     id<MTLTexture> _videoTexture;
     CVMetalTextureCacheRef _textureCache;
@@ -141,7 +141,7 @@ static const NSUInteger MaxFramesInFlight = 3;
             _cvMetalTextures[i] = NULL;
         }
     }
-    
+
     // ARC will handle the rest of the Objective-C objects like _CscParamsBuffer.
 }
 
@@ -365,73 +365,66 @@ static const NSUInteger MaxFramesInFlight = 3;
 
 - (void)renderFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer
 { @autoreleasepool {
-    // Handle changes to the frame's colorspace from last time we rendered
-    BOOL layerDidChange = NO;
-    if (![self updateColorSpaceForFrame:frame toLayer:layer layerDidChange:&layerDidChange]) {
-        return;
-    }
-
-    if (layerDidChange && frame.frameNumber > 1) {
-        Log(LOG_I, @"Metal frame changed layer's colorspace and/or pixel format, returning for new drawable");
-        [self discardNextDrawable];
-        return;
-    }
-
-    // Handle changes to the video size or drawable size
-    if (![self updateVideoRegionSizeForFrame:frame toLayer:layer]) {
-        return;
-    }
-
-    FQLog(LOG_I, @"[%d / %.3f ms] Metal frame rendering", frame.frameNumber, frame.pts);
-
-#if !TARGET_OS_TV
-    // Experimental EDR handling based on frame metadata
-    //[self applyEDRFromFrame:frame toLayer:layer];
-#endif
-
-    size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
-    assert(planes <= MAX_VIDEO_PLANES);
-
-    MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
-    id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
-    pipelineDesc.vertexFunction = [defaultLibrary newFunctionWithName:@"vs_draw"];
-    pipelineDesc.fragmentFunction = [defaultLibrary newFunctionWithName:planes == 2 ? @"ps_draw_biplanar" : @"ps_draw_triplanar"];
-    pipelineDesc.colorAttachments[0].pixelFormat = layer.pixelFormat;
-    pipelineDesc.vertexBuffers[0].mutability = MTLMutabilityImmutable;
-
-    NSError *error = nil;
-    _videoPipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineDesc error:&error];
-    if (!_videoPipelineState) {
-        Log(LOG_E, @"Failed to create video pipeline state: %@", error);
-        return;
-    }
-
-    for (size_t i = 0; i < planes; i++) {
-        MTLPixelFormat fmt;
-
-        switch (CVPixelBufferGetPixelFormatType(frame.pixelBuffer)) {
-        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-        case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
-        case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
-        case kCVPixelFormatType_444YpCbCr8BiPlanarFullRange:
-            fmt = (i == 0) ? MTLPixelFormatR8Unorm : MTLPixelFormatRG8Unorm;
-            break;
-
-        case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange:
-        case kCVPixelFormatType_444YpCbCr10BiPlanarFullRange:
-        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
-        case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
-            fmt = (i == 0) ? MTLPixelFormatR16Unorm : MTLPixelFormatRG16Unorm;
-            break;
-
-        default:
-            Log(LOG_E, @"Unknown pixel format: %@", CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
+        // Handle changes to the frame's colorspace from last time we rendered
+        BOOL layerDidChange = NO;
+        if (![self updateColorSpaceForFrame:frame toLayer:layer layerDidChange:&layerDidChange]) {
             return;
         }
 
-        if (_cvMetalTextures[i]) {
-            CVBufferRelease(_cvMetalTextures[i]);
+        if (![self updateVideoRegionSizeForFrame:frame toLayer:layer]) {
+            return;
         }
+
+        size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
+        assert(planes <= MAX_VIDEO_PLANES);
+
+        if (layerDidChange && frame.frameNumber > 1) {
+            Log(LOG_I, @"Metal frame changed layer's colorspace and/or pixel format, invalidating pipeline cache");
+            _videoPipelineState[planes] = nil;
+        }
+
+        if (!_videoPipelineState[planes]) {
+            MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
+            id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
+            pipelineDesc.vertexFunction = [defaultLibrary newFunctionWithName:@"vs_draw"];
+            pipelineDesc.fragmentFunction = [defaultLibrary newFunctionWithName:planes == 2 ? @"ps_draw_biplanar" : @"ps_draw_triplanar"];
+            pipelineDesc.colorAttachments[0].pixelFormat = layer.pixelFormat;
+            pipelineDesc.vertexBuffers[0].mutability = MTLMutabilityImmutable;
+
+            NSError *error = nil;
+            _videoPipelineState[planes] = [_device newRenderPipelineStateWithDescriptor:pipelineDesc error:&error];
+            if (!_videoPipelineState[planes]) {
+                Log(LOG_E, @"Failed to create video pipeline state: %@", error);
+                return;
+            }
+        }
+
+        for (size_t i = 0; i < planes; i++) {
+            MTLPixelFormat fmt;
+
+            switch (CVPixelBufferGetPixelFormatType(frame.pixelBuffer)) {
+                case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+                case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
+                case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
+                case kCVPixelFormatType_444YpCbCr8BiPlanarFullRange:
+                    fmt = (i == 0) ? MTLPixelFormatR8Unorm : MTLPixelFormatRG8Unorm;
+                    break;
+
+                case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange:
+                case kCVPixelFormatType_444YpCbCr10BiPlanarFullRange:
+                case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+                case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
+                    fmt = (i == 0) ? MTLPixelFormatR16Unorm : MTLPixelFormatRG16Unorm;
+                    break;
+
+                default:
+                    Log(LOG_E, @"Unknown pixel format: %@", CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
+                    return;
+            }
+
+            if (_cvMetalTextures[i]) {
+                CVBufferRelease(_cvMetalTextures[i]);
+            }
         CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                  _textureCache,
                                                                  frame.pixelBuffer,
@@ -441,71 +434,53 @@ static const NSUInteger MaxFramesInFlight = 3;
                                                                  CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i),
                                                                  i,
                                                                  &_cvMetalTextures[i]);
-        if (err != kCVReturnSuccess) {
-            Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed: %d", err);
+            if (err != kCVReturnSuccess) {
+                Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed: %d", err);
+                return;
+            }
+        }
+
+        id<CAMetalDrawable> drawable = [layer nextDrawable];
+        if (!drawable) {
+            Log(LOG_E, @"Failed to get nextDrawable from layer");
             return;
         }
-    }
+        _renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
 
-    if (!_nextDrawable) {
-        Log(LOG_E, @"Lost nextDrawable, trying to get a new one");
-        _nextDrawable = [layer nextDrawable];
-        if (!_nextDrawable) {
-            Log(LOG_E, @"Failed to get nextDrawable");
-            return;
+        id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderPassDescriptor];
+
+        [renderEncoder setRenderPipelineState:_videoPipelineState[planes]];
+        [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
+        [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+        for (size_t i = 0; i < planes; i++) {
+            [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
         }
-    }
-    _renderPassDescriptor.colorAttachments[0].texture = _nextDrawable.texture;
 
-    id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-    id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderPassDescriptor];
+        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
+        [renderEncoder endEncoding];
 
-    [renderEncoder setRenderPipelineState:_videoPipelineState];
-    [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
-    [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+        [commandBuffer presentDrawable:drawable afterMinimumDuration:1.0f / _framerate];
+        [commandBuffer commit];
 
-    for (size_t i = 0; i < planes; i++) {
-        [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
-    }
+        [commandBuffer waitUntilCompleted];
 
-    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
-    [renderEncoder endEncoding];
+        const CFTimeInterval GPUTime = commandBuffer.GPUEndTime - commandBuffer.GPUStartTime;
+        const double alpha = 0.25f;
+        _averageGPUTime = (GPUTime * alpha) + (_averageGPUTime * (1.0 - alpha));
 
-    __weak typeof(self) weakSelf = self;
-    [_nextDrawable addPresentedHandler:^(id<MTLDrawable> d) {
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (strongSelf) {
-            [strongSelf plotFrametime:d.presentedTime];
-        }
-    }];
-
-#if TARGET_OS_SIMULATOR
-    [commandBuffer presentDrawable:_nextDrawable];
-#else
-    // present for a minimum duration for best frame pacing
-    [commandBuffer presentDrawable:_nextDrawable afterMinimumDuration:1.0f / _framerate];
-#endif
-
-    [commandBuffer commit];
-
-    // Wait for the command buffer to complete and free our CVMetalTextureCache references
-    [commandBuffer waitUntilCompleted];
-        
-    // Perform cleanup
-    const CFTimeInterval GPUTime = commandBuffer.GPUEndTime - commandBuffer.GPUStartTime;
-    const double alpha = 0.25f;
-    _averageGPUTime = (GPUTime * alpha) + (_averageGPUTime * (1.0 - alpha));
-
-    for (size_t i = 0; i < planes; i++) {
+        for (size_t i = 0; i < planes; i++) {
             if (_cvMetalTextures[i]) {
                 CVBufferRelease(_cvMetalTextures[i]);
                 _cvMetalTextures[i] = nil;
             }
+        }
+        CVMetalTextureCacheFlush(_textureCache, 0);
     }
-    CVMetalTextureCacheFlush(_textureCache, 0);
+}
 
-    _nextDrawable = nil;
-} }
+- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
+}
 
 - (void)plotFrametime:(CFTimeInterval)presentedTime {
     if (_lastPresented > 0) {
@@ -515,27 +490,12 @@ static const NSUInteger MaxFramesInFlight = 3;
     _lastPresented = presentedTime;
 }
 
-- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
-    if (!_nextDrawable) {
-        // Wait for the next available drawable
-        _nextDrawable = [layer nextDrawable];
-        if (!_nextDrawable) {
-            Log(LOG_E, @"Error getting nextDrawable from CAMetalLayer");
-            return;
-        }
-
-        // Wait to ensure only `MaxFramesInFlight` number of frames are getting processed
-        // by any stage in the Metal pipeline (CPU, GPU, Metal, Drivers, etc.).
-    }
-}
-
 /// Responds to the drawable's size or orientation changes.
 - (void)drawableResize:(CGSize)drawableSize {
     [self resize:drawableSize];
 }
 
 - (void)resize:(CGSize)size {
-
 }
 
 - (void)stop {
