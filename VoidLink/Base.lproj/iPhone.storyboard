@@ -181,20 +181,20 @@
                                                     <action selector="undoTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="Lzm-gS-xMV"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-Fo-0GK" userLabel="Trash">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rXW-Ms-2cJ" userLabel="Load">
                                                 <rect key="frame" x="120" y="0.0" width="50" height="50"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="50" id="0vV-wV-Efz"/>
-                                                    <constraint firstAttribute="width" constant="50" id="j9W-Ja-bVn"/>
+                                                    <constraint firstAttribute="width" constant="50" id="91g-27-mVH"/>
+                                                    <constraint firstAttribute="height" constant="50" id="kRj-b6-Bx1"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                 <color key="tintColor" systemColor="systemTealColor"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" image="trash.fill" catalog="system">
-                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="bold"/>
+                                                <state key="normal" image="tray.full.fill" catalog="system">
+                                                    <color key="titleColor" systemColor="systemTealColor"/>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="semibold"/>
                                                 </state>
                                                 <connections>
-                                                    <action selector="trashCanTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="xeo-uK-pwk"/>
+                                                    <action selector="loadTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="DVp-Xi-K27"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LPA-ea-YHC" userLabel="Save">
@@ -213,20 +213,20 @@
                                                     <action selector="saveTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="cSe-fN-UWC"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rXW-Ms-2cJ" userLabel="Load">
+                                            <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-Fo-0GK" userLabel="Trash">
                                                 <rect key="frame" x="360" y="0.0" width="50" height="50"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="50" id="91g-27-mVH"/>
-                                                    <constraint firstAttribute="height" constant="50" id="kRj-b6-Bx1"/>
+                                                    <constraint firstAttribute="height" constant="50" id="0vV-wV-Efz"/>
+                                                    <constraint firstAttribute="width" constant="50" id="j9W-Ja-bVn"/>
                                                 </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                 <color key="tintColor" systemColor="systemTealColor"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" image="tray.full.fill" catalog="system">
-                                                    <color key="titleColor" systemColor="systemTealColor"/>
-                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="semibold"/>
+                                                <state key="normal" image="trash.fill" catalog="system">
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="bold"/>
                                                 </state>
                                                 <connections>
-                                                    <action selector="loadTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="DVp-Xi-K27"/>
+                                                    <action selector="trashCanTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="xeo-uK-pwk"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Up4-28-sgF" userLabel="Add">
