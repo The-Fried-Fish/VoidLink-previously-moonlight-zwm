@@ -47,14 +47,16 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     NSData *_masteringDisplayColorVolume;
     NSData *_contentLightLevelInfo;
     CMVideoFormatDescriptionRef _formatDesc;
-    CMVideoFormatDescriptionRef _formatDescImageBuffer;
+    CMVideoFormatDescriptionRef _pipFormatDesc;
+    CMVideoFormatDescriptionRef _avsbFormatDesc;
     VTDecompressionSessionRef _decompressionSession;
 
     CADisplayLink *_displayLink;
     FrameQueue *_frameQueue;
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
-
+    
+    BOOL _hasSentVideoContentShown;
 }
 
 - (void)reinitializeDisplayLayer
@@ -93,9 +95,13 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         _formatDesc = nil;
     }
     
-    if (_formatDescImageBuffer != nil) {
-        CFRelease(_formatDescImageBuffer);
-        _formatDescImageBuffer = nil;
+    if (_pipFormatDesc != nil) {
+        CFRelease(_pipFormatDesc);
+        _pipFormatDesc = nil;
+    }
+    if (_avsbFormatDesc != nil) {
+        CFRelease(_avsbFormatDesc);
+        _avsbFormatDesc = nil;
     }
     
     if (_decompressionSession != nil){
@@ -329,9 +335,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     if (frame.frameType == FRAME_TYPE_IDR) {
         // Ensure the layer is visible now
         self->_displayLayer.hidden = NO;
-
-        // Tell our parent VC to hide the progress indicator
-        [self->_callbacks videoContentShown];
     }
 }
 
@@ -821,6 +824,12 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
   if (frameType == FRAME_TYPE_IDR || _decompressionSession == nil) {
     [self setupDecompressionSession];
   }
+    
+  if (frameType == FRAME_TYPE_IDR && !_hasSentVideoContentShown) {
+      // Tell our parent VC to hide the progress indicator and set up PiP
+      [_callbacks videoContentShown];
+      _hasSentVideoContentShown = YES;
+  }
 
   OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(
       _decompressionSession,
@@ -843,71 +852,116 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
             LiRequestIdrFrame(); // Request an IDR to restart the stream
             return;
           }
-
-          CMSampleBufferRef sampleBufferOut = nil;
-          CVPixelBufferRef pixelBuffer = nil;
-
-          // AVSampleBuffer path: package into a SampleBuffer
-          if (self->_renderingBackend == RENDER_AVSB) {
-            if (self->_formatDescImageBuffer == NULL || !CMVideoFormatDescriptionMatchesImageBuffer(self->_formatDescImageBuffer, imageBuffer)) {
-              OSStatus res = CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imageBuffer, &(self->_formatDescImageBuffer));
-              if (res != noErr) {
-                Log(LOG_E, @"Failed to create video format description from imageBuffer");
-                return;
-              }
-            }
-
-            if (self->_formatDescImageBuffer == NULL || !CMVideoFormatDescriptionMatchesImageBuffer(self->_formatDescImageBuffer, imageBuffer)) {
-              OSStatus res = CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imageBuffer, &(self->_formatDescImageBuffer));
-              if (res != noErr) {
-                Log(LOG_E, @"Failed to create video format description from imageBuffer");
-                return;
-              }
-            }
-
-            CMSampleTimingInfo sampleTiming = {kCMTimeInvalid, presentationTimestamp, presentationDuration};
-
-            OSStatus err =
-                CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imageBuffer, self->_formatDescImageBuffer, &sampleTiming, &sampleBufferOut);
-            if (err != noErr) {
-              Log(LOG_E, @"Error creating sample buffer for decompressed image buffer %d", (int)err);
-              return;
-            }
-          } else if (self->_renderingBackend == RENDER_METAL) {
-            // Metal path: retain the pixelBuffer here so it survives the dispatch
-            pixelBuffer = CVPixelBufferRetain((CVPixelBufferRef)imageBuffer);
+          if (self->_renderingBackend == RENDER_METAL && self.pipLayer) {
+//              NSLog(@"[Metal PiP Path] Entered for frame number %d.", frameNumber);
+              CVPixelBufferRetain(imageBuffer);
+              dispatch_async(dispatch_get_main_queue(), ^{
+//                  NSLog(@"[Metal PiP Path] Executing on main thread for frame %d.", frameNumber);
+                  @synchronized(self) {
+                      if (self.pipLayer.controlTimebase == NULL) {
+                          NSLog(@"[Metal PiP Path] Timebase is NULL. Setting it now.");
+                          CMTimebaseRef timebase;
+                          CMTimebaseCreateWithSourceClock(kCFAllocatorDefault, CMClockGetHostTimeClock(), &timebase);
+                          if (timebase) {
+                              CMTimebaseSetTime(timebase, presentationTimestamp);
+                              CMTimebaseSetRate(timebase, 1.0);
+                              [self.pipLayer setControlTimebase:timebase];
+                              CFRelease(timebase);
+                          }
+                      }
+                      
+                      if (self->_pipFormatDesc == NULL || !CMVideoFormatDescriptionMatchesImageBuffer(self->_pipFormatDesc, imageBuffer)) {
+                          NSLog(@"[Metal PiP Path] Format description mismatch or NULL. Creating new one.");
+                          if (self->_pipFormatDesc) { CFRelease(self->_pipFormatDesc); }
+                          OSStatus res = CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imageBuffer, &(self->_pipFormatDesc));
+                          if (res == noErr) {
+                              NSLog(@"[Metal PiP Path] New format description created: %@", self->_pipFormatDesc);
+                          } else {
+                              NSLog(@"[Metal PiP Path] FAILED to create format description. Error: %d", (int)res);
+                          }
+                      }
+                      
+                      if (self->_pipFormatDesc) {
+                          CMSampleBufferRef sampleBufferForPip = NULL;
+                          CMSampleTimingInfo sampleTiming = {kCMTimeInvalid, presentationTimestamp, presentationDuration};
+                          OSStatus err = CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imageBuffer, self->_pipFormatDesc, &sampleTiming, &sampleBufferForPip);
+                          if (err == noErr && sampleBufferForPip) {
+//                              NSLog(@"[Metal PiP Path] Sample buffer created. Enqueuing to _pipLayer.");
+                              [self.pipLayer enqueueSampleBuffer:sampleBufferForPip];
+                              CFRelease(sampleBufferForPip);
+                          } else {
+                              NSLog(@"[Metal PiP Path] FAILED to create sample buffer. Error: %d", (int)err);
+                          }
+                      }
+                  }
+                  CVPixelBufferRelease(imageBuffer);
+              });
           }
-
-          // Dispatch onto our higher priority queue
-          dispatch_async(self->_vtq, ^{
-              Frame *frame = nil;
-              if (self->_renderingBackend == RENDER_AVSB) {
-                frame = [[Frame alloc] initWithSampleBuffer:sampleBufferOut frameNumber:frameNumber frameType:frameType];
+          // --- MAIN RENDERER PATH ---
+          if (self->_renderingBackend == RENDER_AVSB) {
+//              self.pipLayer.hidden = YES;
+              if (self->_avsbFormatDesc == NULL || !CMVideoFormatDescriptionMatchesImageBuffer(self->_avsbFormatDesc, imageBuffer)) {
+                  if (self->_avsbFormatDesc) {
+                      CFRelease(self->_avsbFormatDesc);
+                  }
+                  CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imageBuffer, &(self->_avsbFormatDesc));
+              }
+              
+              CMSampleBufferRef sampleBufferForAvsb = NULL;
+              CMSampleTimingInfo sampleTiming = {kCMTimeInvalid, presentationTimestamp, presentationDuration};
+              OSStatus err = CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imageBuffer, self->_avsbFormatDesc, &sampleTiming, &sampleBufferForAvsb);
+              
+              if (err == noErr && sampleBufferForAvsb) {
+                  dispatch_async(self->_vtq, ^{
+                      Frame *frame = [[Frame alloc] initWithSampleBuffer:sampleBufferForAvsb frameNumber:frameNumber frameType:frameType];
+                      int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
+                      // ... stats and metrics updates
+                  });
               } else {
-                frame = [[Frame alloc] initWithPixelBufffer:pixelBuffer frameNumber:frameNumber frameType:frameType pts:presentationTimestamp];
-                [frame setFormatDesc:self->_formatDesc];
+                  if (sampleBufferForAvsb) {
+                      CFRelease(sampleBufferForAvsb);
+                  }
               }
-              int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
-
-              static PlotMetrics frameQueueMetrics = {};
-              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
-              [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
-
-              [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
-
-              // It's important we capture host metrics on the incoming thread, as this frame object
-              // may have been dropped by the above enqueue
-              static CFTimeInterval lastHostFrame = 0.0f;
-              if (lastHostFrame != 0) {
-                [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+          } else if (self->_renderingBackend == RENDER_METAL) {
+              self.pipLayer.hidden = NO;
+              // Safely capture the format description for the background block.
+              __block CMVideoFormatDescriptionRef capturedFormatDesc = NULL;
+              @synchronized(self) {
+                  if (self->_formatDesc) {
+                      capturedFormatDesc = (CMVideoFormatDescriptionRef)CFRetain(self->_formatDesc);
+                  }
               }
-              lastHostFrame = frame.pts;
-
-              // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
-              static PlotMetrics decodeMetrics = {};
-              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
-              [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
-          });
+              
+              if (!capturedFormatDesc) {
+                  Log(LOG_E, @"Failed to capture format description for Metal frame, dropping.");
+                  return;
+              }
+              
+              CVPixelBufferRef pixelBuffer = CVPixelBufferRetain((CVPixelBufferRef)imageBuffer);
+              dispatch_async(self->_vtq, ^{
+                  Frame *frame = [[Frame alloc] initWithPixelBufffer:pixelBuffer frameNumber:frameNumber frameType:frameType pts:presentationTimestamp];
+                  [frame setFormatDesc:capturedFormatDesc];
+                  CFRelease(capturedFormatDesc);
+                  
+                  int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
+                  
+                  static PlotMetrics frameQueueMetrics = {};
+                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
+                  [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
+                  
+                  [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
+                  
+                  static CFTimeInterval lastHostFrame = 0.0f;
+                  if (lastHostFrame != 0) {
+                      [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                  }
+                  lastHostFrame = frame.pts;
+                  
+                  static PlotMetrics decodeMetrics = {};
+                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
+                  [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
+              });
+          }
       });
 
   return status;
@@ -1066,11 +1120,11 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     // Ensure this only runs for the AVSampleBuffer rendering backend and that the display link exists.
     if (_renderingBackend == RENDER_AVSB && _displayLink) {
         Log(LOG_I, @"Frame pacing is being reset to %d FPS...", self->_frameRate);
-
+        
         // Toggling the paused state can help re-engage the display link with the
         // run loop correctly after the app resumes from a background state like PiP.
         _displayLink.paused = YES;
-
+        
         // Re-apply the desired frame rate range. This is the critical hint for ProMotion
         // that may have been lost or ignored during the PiP transition.
         if (@available(iOS 15.0, *)) {
@@ -1078,9 +1132,35 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         } else {
             _displayLink.preferredFramesPerSecond = self->_frameRate;
         }
-
+        
         // Resume the display link immediately.
         _displayLink.paused = NO;
+    }
+    else if (_renderingBackend == RENDER_METAL) {
+        Log(LOG_I, @"Resetting video pipeline for Metal renderer after resuming...");
+
+        // 1. Reset the receiver (the PiP Layer) on the main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.pipLayer) {
+                // Flush stale buffers
+                [self.pipLayer flushAndRemoveImage];
+
+                // Destroy the old, stuck timebase
+                [self.pipLayer setControlTimebase:NULL];
+            }
+        });
+
+        // 2. Reset the sender (the Decompression Session)
+        @synchronized(self) {
+            if (_decompressionSession != nil) {
+                VTDecompressionSessionInvalidate(_decompressionSession);
+                CFRelease(_decompressionSession);
+                _decompressionSession = nil;
+            }
+        }
+        
+        // 3. Request a new keyframe to restart the stream cleanly
+        LiRequestIdrFrame();
     }
 }
 
