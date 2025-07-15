@@ -852,11 +852,10 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
             LiRequestIdrFrame(); // Request an IDR to restart the stream
             return;
           }
-          if (self->_renderingBackend == RENDER_METAL && self.pipLayer) {
-//              NSLog(@"[Metal PiP Path] Entered for frame number %d.", frameNumber);
+          
+          if (self.pipLayer) {
               CVPixelBufferRetain(imageBuffer);
               dispatch_async(dispatch_get_main_queue(), ^{
-//                  NSLog(@"[Metal PiP Path] Executing on main thread for frame %d.", frameNumber);
                   @synchronized(self) {
                       if (self.pipLayer.controlTimebase == NULL) {
                           NSLog(@"[Metal PiP Path] Timebase is NULL. Setting it now.");
@@ -886,7 +885,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                           CMSampleTimingInfo sampleTiming = {kCMTimeInvalid, presentationTimestamp, presentationDuration};
                           OSStatus err = CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imageBuffer, self->_pipFormatDesc, &sampleTiming, &sampleBufferForPip);
                           if (err == noErr && sampleBufferForPip) {
-//                              NSLog(@"[Metal PiP Path] Sample buffer created. Enqueuing to _pipLayer.");
                               [self.pipLayer enqueueSampleBuffer:sampleBufferForPip];
                               CFRelease(sampleBufferForPip);
                           } else {
@@ -899,7 +897,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
           }
           // --- MAIN RENDERER PATH ---
           if (self->_renderingBackend == RENDER_AVSB) {
-//              self.pipLayer.hidden = YES;
+              self.pipLayer.hidden = NO;
               if (self->_avsbFormatDesc == NULL || !CMVideoFormatDescriptionMatchesImageBuffer(self->_avsbFormatDesc, imageBuffer)) {
                   if (self->_avsbFormatDesc) {
                       CFRelease(self->_avsbFormatDesc);
@@ -915,7 +913,21 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                   dispatch_async(self->_vtq, ^{
                       Frame *frame = [[Frame alloc] initWithSampleBuffer:sampleBufferForAvsb frameNumber:frameNumber frameType:frameType];
                       int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
-                      // ... stats and metrics updates
+                      static PlotMetrics frameQueueMetrics = {};
+                      [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
+                      [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
+                      
+                      [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
+                      
+                      static CFTimeInterval lastHostFrame = 0.0f;
+                      if (lastHostFrame != 0) {
+                          [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                      }
+                      lastHostFrame = frame.pts;
+                      
+                      static PlotMetrics decodeMetrics = {};
+                      [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
+                      [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
                   });
               } else {
                   if (sampleBufferForAvsb) {
