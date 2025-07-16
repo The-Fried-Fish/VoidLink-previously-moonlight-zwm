@@ -10,7 +10,7 @@
 
 # 至Github通过TestFlight安装的用户 
 # To Github users who installed the app via TestFlight:
-### https://testflight.apple.com/join/1JDEKywe
+### [https://testflight.apple.com/join/1JDEKywe](https://testflight.apple.com/join/ZZHSVhd6)
 ### Testflight用户数量已于2024年12月达到10000人上限。因此我将定期将部分用户从testflight计划中移除。如果你发现自己被移除了， app在90天有效期结束前依然可以使用。如果你需要更新， 通过以上链接重新加入testflight即可。
 ### Number of users has already reached TestFlight limit (10000 users) in Dec. 2024. I will regularly remove some users from the TestFlight program. If you find yourself removed from TestFlight, the app will still be available until the 90-day build validity period expired. If you need an update, just join the testflight again by the link above.
 
