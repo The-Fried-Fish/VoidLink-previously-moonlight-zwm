@@ -69,7 +69,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *onscreenControllerLabel;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *onScreenWidgetSelector;
 //@property (strong, nonatomic) IBOutlet UISegmentedControl *asyncNativeTouchPrioritySelector;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *swapABXYButtonsSelector;
+@property (strong, nonatomic) IBOutlet UISwitch *swapAbxySwitch;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *codecSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *hdrSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *yuv444Switch;
@@ -88,7 +88,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *slideToSettingsDistanceUILabel;
 @property (strong, nonatomic) IBOutlet UISlider *slideToMenuDistanceSlider;
 @property (strong, nonatomic) IBOutlet UISlider *pointerVelocityModeDividerSlider;
-@property (strong, nonatomic) IBOutlet UILabel *pointerVelocityModeDividerUILabel;
 @property (strong, nonatomic) IBOutlet UISlider *touchPointerVelocityFactorSlider;
 @property (strong, nonatomic) IBOutlet UILabel *touchPointerVelocityFactorUILabel;
 @property (strong, nonatomic) IBOutlet UISlider *mousePointerVelocityFactorSlider;

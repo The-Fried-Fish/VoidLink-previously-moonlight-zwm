@@ -1293,7 +1293,7 @@ BOOL isCustomResolution(CGSize res) {
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
     [self.framePacingSelector setSelectedSegmentIndex:currentSettings.useFramePacing ? 1 : 0];
     [self.multiControllerSwitch setOn:currentSettings.multiController];
-    [self.swapABXYButtonsSelector setSelectedSegmentIndex:currentSettings.swapABXYButtons ? 1 : 0];
+    [self.swapAbxySwitch setOn:currentSettings.swapABXYButtons];
     
     [self.gyroModeSelector setSelectedSegmentIndex:currentSettings.gyroMode.intValue];
     [self.gyroSensitivitySlider setValue: (uint16_t)(currentSettings.gyroSensitivity.floatValue * 100) animated:YES]; // Load old setting.
@@ -2013,7 +2013,7 @@ BOOL isCustomResolution(CGSize res) {
     BOOL showKeyboardToolbar = self.softKeyboardToolbarSwitch.isOn;
     BOOL optimizeGames = self.optimizeGamesSwitch.isOn;
     BOOL multiController = self.multiControllerSwitch.isOn;
-    BOOL swapABXYButtons = [self.swapABXYButtonsSelector selectedSegmentIndex] == 1;
+    BOOL swapABXYButtons = self.swapAbxySwitch.isOn;
     NSInteger gyroMode = self.gyroModeSelector.selectedSegmentIndex;
     NSInteger emulatedControllerType = [self segmentIndexToControllerType:self.emulatedControllerTypeSelector.selectedSegmentIndex]; //self.emulatedControllerTypeSelector.selectedSegmentIndex;
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;

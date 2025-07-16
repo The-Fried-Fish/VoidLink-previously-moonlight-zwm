@@ -1141,39 +1141,9 @@
         }
       }
     },
-    "Dll-7x-18l.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Swap A/B and X/Y Buttons\"; ObjectID = \"Dll-7x-18l\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Swap A/B and X/Y Buttons"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交换A/B键、X/Y键位置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交換A/B鍵、X/Y鍵位置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交換A/B鍵、X/Y鍵位置"
-          }
-        }
-      }
-    },
     "dpd-Bw-aHE.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; dpd-Bw-aHE.segmentTitles[0] = \"No\"; ObjectID = \"dpd-Bw-aHE\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1203,7 +1173,7 @@
     },
     "dpd-Bw-aHE.segmentTitles[1]" : {
       "comment" : "Class = \"UISegmentedControl\"; dpd-Bw-aHE.segmentTitles[1] = \"Yes\"; ObjectID = \"dpd-Bw-aHE\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2559,6 +2529,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "滑鼠靈敏度"
+          }
+        }
+      }
+    },
+    "OXy-y4-yO4.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Swap A/B X/Y Buttons\"; ObjectID = \"OXy-y4-yO4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Swap A/B X/Y Buttons"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交换A/B键、X/Y键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交換A/B鍵、X/Y鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交換A/B鍵、X/Y鍵"
           }
         }
       }
