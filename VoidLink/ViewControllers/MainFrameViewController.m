@@ -1775,6 +1775,8 @@ static NSMutableSet* hostList;
 - (void)viewWillDisappear:(BOOL)animated{
     NSLog(@"willDisappear");
     [super viewWillDisappear:animated];
+    [self.collectionView removeFromSuperview];
+    [self.hostCollectionVC.view removeFromSuperview];
     [_foregroundHostUpdateTimer invalidate];
     _foregroundHostUpdateTimer = nil;
 }
@@ -1811,6 +1813,7 @@ static NSMutableSet* hostList;
     [self retrieveSavedHosts];
 
     _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated

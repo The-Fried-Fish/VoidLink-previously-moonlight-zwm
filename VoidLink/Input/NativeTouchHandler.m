@@ -19,7 +19,6 @@
     StreamView* streamView;
     TemporarySettings* currentSettings;
     bool activateCoordSelector;
-    bool touchPointSpawnedAtUpperScreenEdge;
     CGFloat pointerVelocityDividerLocationByPoints;
     uint16_t touchMoveEventIntervalUs;
     
@@ -35,7 +34,8 @@
     NSMutableSet<NSNumber *> *activePointerIds; //pointerId Set for active touches.
     NSMutableSet<NSNumber *> *pointerIdPool; //pre-defined pool of pointerIds.
     NSMutableSet<NSNumber *> *unassignedPointerIds;
-    
+    NSMutableSet *blacklistedTouches;
+
     NSMutableDictionary *pointerObjDict;
 
     CGFloat slideGestureVerticalThreshold;
@@ -59,9 +59,8 @@
         [self->pointerIdPool addObject:@(i)];
     }
     self->activePointerIds = [NSMutableSet set];
-    // self->excludedPointerIds = [[NSMutableSet alloc] init];
-    self->touchPointSpawnedAtUpperScreenEdge = false;
-    
+    self->blacklistedTouches = [NSMutableSet set];
+        
     self->asyncNativeTouch = settings.asyncNativeTouchPriority.intValue != AsyncNativeTouchOff;
     
     switch(settings.asyncNativeTouchPriority.intValue){
@@ -156,28 +155,27 @@
 // generate & populate pointerId into NSDict & NSSet, called in touchesBegan
 - (void)handleTouchDown:(UITouch*)touch{
     //populate pointerId
-    uintptr_t memAddrValue = (uintptr_t)touch;
+    NSNumber* touchAddrObj = @((uintptr_t)touch);
     unassignedPointerIds = [pointerIdPool mutableCopy]; //reset unassignedPointerIds
     [unassignedPointerIds minusSet:activePointerIds];
     uint8_t pointerId = [[unassignedPointerIds anyObject] unsignedIntValue];
-    [pointerIdDict setObject:@(pointerId) forKey:@(memAddrValue)];
+    [pointerIdDict setObject:@(pointerId) forKey:touchAddrObj];
     [activePointerIds addObject:@(pointerId)];
     
     //check if touch point is spawned on the left or right upper half screen edges, event to remote PC. this is for better handling in-stream slide gesture
     CGPoint initialPoint = [touch locationInView:self->streamView];
     if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < EDGE_TOLERANCE || initialPoint.x > screenWidthWithThreshold)) {
-        self->touchPointSpawnedAtUpperScreenEdge = true;
-        // [excludedPointerIds addObject:@(pointerId)];
+        [blacklistedTouches addObject:touchAddrObj];
     }
 }
 
 // remove pointerId in touchesEnded or touchesCancelled
 - (void)removePointerId:(UITouch*)touch{
-    uintptr_t memAddrValue = (uintptr_t)touch;
-    NSNumber* pointerIdObj = [pointerIdDict objectForKey:@(memAddrValue)];
+    NSNumber* touchAddrObj = @((uintptr_t)touch);
+    NSNumber* pointerIdObj = [pointerIdDict objectForKey:touchAddrObj];
     if(pointerIdObj != nil){
         [activePointerIds removeObject:pointerIdObj];
-        [pointerIdDict removeObjectForKey:@(memAddrValue)];
+        [pointerIdDict removeObjectForKey:touchAddrObj];
         // if([excludedPointerIds containsObject:pointerIdObj]) [excludedPointerIds removeObject:pointerIdObj]; // remove pointer id from excludedPointerId NSSet
     }
 }
@@ -190,7 +188,8 @@
 
 
 - (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType{
-    if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
+    //if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
+    if([blacklistedTouches containsObject:@((uintptr_t)touch)]) return;
     
     CGPoint targetCoords;
     //NSLog(@"selecting coords: %d", touch.phase == UITouchPhaseMoved);
@@ -263,9 +262,9 @@
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
+            [self->blacklistedTouches removeObject:@((uintptr_t)touch)];
         }
         //if(self->touchPointSpawnedAtUpperScreenEdge && [[event allTouches] count] == [touches count])
-        self->touchPointSpawnedAtUpperScreenEdge = false;
     });
     else{
         for (UITouch* touch in touches){
@@ -275,7 +274,6 @@
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
         }
-        if(self->touchPointSpawnedAtUpperScreenEdge && [[event allTouches] count] == [touches count]) self->touchPointSpawnedAtUpperScreenEdge = false;
     }
 }
 
@@ -309,7 +307,6 @@
 - (CGPoint)selectCoordsFor:(UITouch *)touch{
     NativeTouchPointer *pointer = [pointerObjDict objectForKey:@((uintptr_t)touch)];
     if(pointer == nil) return CGPointMake(0, 0);
-   // NSLog(@"using relative Coords: intialX %f, divider loc %f", pointer.initialPoint.x, pointerVelocityDividerLocationByPoints);
     return pointer.useRelativeCoords ? pointer.latestRelativePoint : pointer.latestPoint;
 }
 

@@ -74,7 +74,7 @@ static UIImage* noImage;
 #else
     // Rasterizing the cell layer increases rendering performance by quite a bit
     // but we want it unrasterized for tvOS where it must be scaled.
-    //self.layer.shouldRasterize = YES;
+    self.layer.shouldRasterize = YES;
     self.layer.rasterizationScale = [UIScreen mainScreen].scale;
     
     if (@available(iOS 13.4.1, *)) {
@@ -136,7 +136,8 @@ static UIImage* noImage;
     BOOL noAppImage = false;
     
     // First check the memory cache
-    UIImage* appImage = [_artCache objectForKey:_app];
+    //UIImage* appImage = [_artCache objectForKey:_app];
+    UIImage* appImage = nil;
     // NSLog(@"appImage instance: %lu", (uintptr_t)appImage);
     if (appImage == nil) {
         // Next try to load from the on disk cache
@@ -170,7 +171,7 @@ static UIImage* noImage;
         // Only create the app overlay if needed
         
         if (@available(iOS 13.0, *)) {
-            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23 weight:UIImageSymbolWeightBlack ];
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23];
             UIImageView* playIcon = [[UIImageView alloc] initWithImage:[[UIImage systemImageNamed:@"play.circle.fill" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
             //playIcon.tintColor = [[ThemeManager widgetBackgroundColor] colorWithAlphaComponent:0.85];
             playIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
@@ -188,20 +189,20 @@ static UIImage* noImage;
         //_appOverlay.layer.shadowRadius = 1.3;
         _appOverlay.contentMode = UIViewContentModeScaleAspectFit;
     }
-    else if(noAppImage){
-        if (@available(iOS 13.0, *)) {
+    else if(noAppImage && false){
+        if (@available(iOS 13.0, *)&&false) {
             UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:70];
             UIImage* appIconImage = [[UIImage imageNamed:@"icon-pc-app"] imageWithConfiguration:config];
             UIImageView* appIcon = [[UIImageView alloc] initWithImage:[appIconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
             
             //layIcon.tintColor = [[ThemeManager widgetBackgroundColor] colorWithAlphaComponent:0.85];
-            appIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
+            appIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:1];
 
             _appOverlay = appIcon;
         }
     }
     
-    if (true) {
+    if(true) {
         _appLabel = [[UILabel alloc] init];
         _appLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
         [_appLabel setTextColor:[[UIColor whiteColor] colorWithAlphaComponent:1]];

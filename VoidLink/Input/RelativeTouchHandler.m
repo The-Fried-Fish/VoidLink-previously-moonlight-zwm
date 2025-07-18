@@ -12,9 +12,6 @@
 #include <Limelight.h>
 
 
-
-static const int REFERENCE_WIDTH = 1280;
-static const int REFERENCE_HEIGHT = 720;
 static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
 @implementation RelativeTouchHandler {
