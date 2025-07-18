@@ -200,10 +200,10 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 #else
     NSNumber *pixelFormat = nil;
     if (self->_videoFormat & VIDEO_FORMAT_MASK_YUV444) {
-        pixelFormat = @(kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange);
+        pixelFormat = @(kCVPixelFormatType_444YpCbCr10BiPlanarFullRange);
     }
     else {
-        pixelFormat = @(kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange);
+        pixelFormat = @(kCVPixelFormatType_420YpCbCr10BiPlanarFullRange);
     }
 #endif
 
