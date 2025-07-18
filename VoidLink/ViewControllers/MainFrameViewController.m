@@ -1346,11 +1346,21 @@ static NSMutableSet* hostList;
     button.frame = CGRectMake(0, 0, buttonHeight, buttonHeight);
 
     // 添加点击事件
-    // [button addTarget:self action:@selector(addDeviceTapped) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(helpButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 
     // 创建 UIBarButtonItem
     UIBarButtonItem *barItem = [[UIBarButtonItem alloc] initWithCustomView:button];
     return barItem;
+}
+
+- (void)helpButtonTapped{
+    if (@available(iOS 13.0, *)) {
+        AboutViewController *aboutVC = [[AboutViewController alloc] init];
+        aboutVC.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self presentViewController:aboutVC animated:YES completion:nil];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 - (CGFloat)getStandardNavBarHeight{
@@ -1765,6 +1775,8 @@ static NSMutableSet* hostList;
 - (void)viewWillDisappear:(BOOL)animated{
     NSLog(@"willDisappear");
     [super viewWillDisappear:animated];
+    [self.collectionView removeFromSuperview];
+    [self.hostCollectionVC.view removeFromSuperview];
     [_foregroundHostUpdateTimer invalidate];
     _foregroundHostUpdateTimer = nil;
 }
@@ -1801,6 +1813,7 @@ static NSMutableSet* hostList;
     [self retrieveSavedHosts];
 
     _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -2001,7 +2014,7 @@ static NSMutableSet* hostList;
     if (appView.bounds.size.width > 10.0) {
         CGFloat scale = cell.bounds.size.width / appView.bounds.size.width;
         [appView setCenter:CGPointMake(appView.bounds.size.width / 2 * scale, appView.bounds.size.height / 2 * scale)];
-        appView.transform = CGAffineTransformMakeScale(scale, scale);
+        appView.transform = CGAffineTransformMakeScale(scale, scale); // view resize
     }
     
     [cell.subviews.firstObject removeFromSuperview]; // Remove a view that was previously added
@@ -2009,15 +2022,15 @@ static NSMutableSet* hostList;
     // [self.settingsButton setEnabled:![self isIPhonePortrait]]; // update settings button after host is clicked & appview loaded
     // Shadow opacity is controlled inside UIAppView based on whether the app
     // is hidden or not during the update cycle.
-    UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:cell.bounds];
-    cell.layer.masksToBounds = NO;
-    cell.layer.shadowColor = [UIColor blackColor].CGColor;
-    cell.layer.shadowOffset = CGSizeMake(1.0f, 5.0f);
-    cell.layer.shadowPath = shadowPath.CGPath;
+    //UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:cell.bounds];
+    //cell.layer.masksToBounds = YES;
+    //cell.layer.shadowColor = [UIColor blackColor].CGColor;
+    //cell.layer.shadowOffset = CGSizeMake(1.0f, 5.0f);
+    //cell.layer.shadowPath = shadowPath.CGPath;
     
 #if !TARGET_OS_TV
-    cell.layer.borderWidth = 1;
-    cell.layer.borderColor = [[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3f] CGColor];
+    //cell.layer.borderWidth = 1;
+    //cell.layer.borderColor = [[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3f] CGColor];
     cell.exclusiveTouch = YES;
 #endif
 

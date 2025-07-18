@@ -50,13 +50,16 @@
 
 static const float REFRESH_CYCLE = 2.0f;
 
+- (BOOL)isIPhone{
+    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         buttonLabelFontSize = 15*_sizeFactor;
         longPressFired = false;
-        computerIconMonitorCenterYOffset = -4.3523*_sizeFactor;
+        computerIconMonitorCenterYOffset = [self isIPhone] ? -3.62*_sizeFactor : -4.175*_sizeFactor;
         iconAndButtonSpacing = 37*_sizeFactor;
         buttonHeight = 39*_sizeFactor;
         defaultBlue = [ThemeManager appPrimaryColor];
@@ -92,6 +95,8 @@ static const float REFRESH_CYCLE = 2.0f;
     // for tvOS devices and iOS prior to 13.0.
     return self;
 }
+
+
 
 
 - (instancetype)initWithCoder:(NSCoder *)coder {

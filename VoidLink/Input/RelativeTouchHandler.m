@@ -12,9 +12,6 @@
 #include <Limelight.h>
 
 
-
-static const int REFERENCE_WIDTH = 1280;
-static const int REFERENCE_HEIGHT = 720;
 static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
 @implementation RelativeTouchHandler {
@@ -63,7 +60,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     mousePointerTimestamp = 0;
     
     // upper screen check
-    EDGE_TOLERANCE = 15.0;
+    EDGE_TOLERANCE = 10.0;
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - EDGE_TOLERANCE;
     self->touchPointSpawnedAtUpperScreenEdge = false;
@@ -238,8 +235,9 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         touchLockedForMouseMove = nil;
         mousePointerMoved = false; // need to reset this anyway
         [self resetAllPressedFlagsForOnScreenWidgetViews]; // reset all pressed flag for on-screen widget views after all fingers lifted from screen.
-        touchPointSpawnedAtUpperScreenEdge = false;
     }
+    
+    touchPointSpawnedAtUpperScreenEdge = false;
 }
 
 

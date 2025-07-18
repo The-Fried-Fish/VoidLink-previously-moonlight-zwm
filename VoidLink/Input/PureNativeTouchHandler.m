@@ -85,7 +85,7 @@
     
     self->pointerObjDict = [NSMutableDictionary dictionary];
     
-    EDGE_TOLERANCE = 15.0;
+    EDGE_TOLERANCE = 10.0;
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - EDGE_TOLERANCE;
 
@@ -189,8 +189,8 @@
 
 
 - (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType{
-    if(touchPointSpawnedAtUpperScreenEdge) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash!
-    
+    if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
+
     CGPoint targetCoords;
     //NSLog(@"selecting coords: %d", touch.phase == UITouchPhaseMoved);
     // NSLog(@"excluded count: %d", (uint32_t)[excludedPointerIds count]);
@@ -253,7 +253,7 @@
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
         }
-        if(self->touchPointSpawnedAtUpperScreenEdge && [[event allTouches] count] == [touches count]) self->touchPointSpawnedAtUpperScreenEdge = false;
+        self->touchPointSpawnedAtUpperScreenEdge = false;
     });
     else{
         for (UITouch* touch in touches){
