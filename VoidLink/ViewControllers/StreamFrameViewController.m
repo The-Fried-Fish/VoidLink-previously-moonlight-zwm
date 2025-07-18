@@ -97,7 +97,6 @@
 
 - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = YES;
-    _pipLayer.hidden = YES;
     if (self.imguiView) {
         self.imguiView.mtkView.hidden = YES;
         Log(LOG_I, @"Hiding ImGui view for PiP start.");
@@ -117,7 +116,6 @@
 
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = NO;
-    _pipLayer.hidden = NO;
     if (self.imguiView) {
         self.imguiView.mtkView.hidden = NO;
         Log(LOG_I, @"Showing ImGui view after PiP stop.");
@@ -131,7 +129,6 @@
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
     _isRestoringFromPiP = YES;
     _streamView.hidden = NO;
-    _pipLayer.hidden = NO;
     if (self.imguiView) {
         self.imguiView.mtkView.hidden = NO;
         Log(LOG_I, @"Showing ImGui view for PiP restore.");
@@ -181,23 +178,27 @@
     return (_settings.touchMode.intValue == RelativeTouch || _settings.touchMode.intValue == NativeTouch || _settings.touchMode.intValue == AbsoluteTouch) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
-- (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {
+- (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {    // Ensure we have the renderer and its layer
     if (self.pipController) {
         return;
     }
     Log(LOG_I, @"Setting up PiP controller...");
-
-    // Both Metal and AVSB will use the dedicated _pipLayer for PiP.
-    AVSampleBufferDisplayLayer* sourceLayer = _pipLayer;
-
+    
+    AVSampleBufferDisplayLayer* sourceLayer;
     if ([_settings.renderingBackend intValue] == RENDER_METAL) {
-        NSLog(@"[PiP LOG] Backend: Metal. Using dedicated _pipLayer: %p", sourceLayer);
+        sourceLayer = _pipLayer;
+        NSLog(@"[PiP LOG] Backend: Metal. Using _pipLayer: %p", sourceLayer);
+        if (!sourceLayer) {
+            NSLog(@"[PiP LOG] ERROR: _pipLayer is nil during setup.");
+            return;
+        }
     } else { // RENDER_AVSB
-        NSLog(@"[PiP LOG] Backend: AVSB. Using dedicated _pipLayer: %p", sourceLayer);
+        sourceLayer = videoRenderer.displayLayer;
+        NSLog(@"[PiP LOG] Backend: AVSB. Using _displayLayer: %p", sourceLayer);
     }
 
-    if (!sourceLayer) {
-        Log(LOG_E, @"PiP setup failed: Dedicated PiP layer is nil.");
+    if (!_pipLayer) {
+        Log(LOG_E, @"PiP setup failed: Dedicated PiP layer not ready.");
         return;
     }
 
