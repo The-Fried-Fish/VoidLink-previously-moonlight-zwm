@@ -80,7 +80,6 @@
     dispatch_block_t _delayedRemoveExtScreen;
     VideoDecoderRenderer *_videoRenderer;
     BOOL _isRestoringFromPiP;
-    AVSampleBufferDisplayLayer *_pipLayer;
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
     CustomEdgeSlideGestureRecognizer *_slideToCmdToolRecognizer;
@@ -183,36 +182,29 @@
         return;
     }
     Log(LOG_I, @"Setting up PiP controller...");
-    
-    AVSampleBufferDisplayLayer* sourceLayer;
-    if ([_settings.renderingBackend intValue] == RENDER_METAL) {
-        sourceLayer = _pipLayer;
-        NSLog(@"[PiP LOG] Backend: Metal. Using _pipLayer: %p", sourceLayer);
-        if (!sourceLayer) {
-            NSLog(@"[PiP LOG] ERROR: _pipLayer is nil during setup.");
-            return;
-        }
-    } else { // RENDER_AVSB
-        sourceLayer = videoRenderer.displayLayer;
-        NSLog(@"[PiP LOG] Backend: AVSB. Using _displayLayer: %p", sourceLayer);
-    }
 
-    if (!_pipLayer) {
-        Log(LOG_E, @"PiP setup failed: Dedicated PiP layer not ready.");
+    if (!videoRenderer || !videoRenderer.displayLayer) {
+        Log(LOG_E, @"PiP setup failed: Video renderer or display layer not ready.");
         return;
     }
 
+    AVSampleBufferDisplayLayer *streamLayer = videoRenderer.displayLayer;
+
     if ([AVPictureInPictureController isPictureInPictureSupported]) {
         if (@available(iOS 15.0, *)) {
-            self.pipContentSource = [[AVPictureInPictureControllerContentSource alloc] initWithSampleBufferDisplayLayer:sourceLayer playbackDelegate:(id<AVPictureInPictureSampleBufferPlaybackDelegate>)self];
+            self.pipContentSource = [[AVPictureInPictureControllerContentSource alloc] initWithSampleBufferDisplayLayer:streamLayer playbackDelegate:(id<AVPictureInPictureSampleBufferPlaybackDelegate>)self];
             self.pipController = [[AVPictureInPictureController alloc] initWithContentSource:self.pipContentSource];
-            self.pipController.requiresLinearPlayback = YES;
             self.pipController.canStartPictureInPictureAutomaticallyFromInline = YES;
-            self.pipController.delegate = self;
-            NSLog(@"[PiP LOG] PiP Controller created successfully with source layer: %@", sourceLayer);
         } else {
-            Log(LOG_E, @"PiP is not fully supported on this iOS version.");
+            Log(LOG_E, @"PiP not fully supported on this device.");
             return;
+        }
+
+        if (self.pipController) {
+            self.pipController.delegate = self;
+            Log(LOG_I, @"PiP controller created successfully.");
+        } else {
+            Log(LOG_E, @"Failed to create PiP controller.");
         }
     } else {
         Log(LOG_E, @"PiP not supported on this device.");
@@ -223,10 +215,10 @@
     if (self.pipController) {
         self.pipController.delegate = nil;
         self.pipController = nil;
-        _pipLayer = nil; // Clean up the layer
         if (@available(iOS 15.0, *)) {
             self.pipContentSource = nil;
         }
+
         Log(LOG_I, @"PiP controller cleaned up.");
     }
 }
@@ -624,15 +616,9 @@
     _tipLabel.textAlignment = NSTextAlignmentCenter;
     _tipLabel.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height * 0.9);
     
-    _pipLayer = [[AVSampleBufferDisplayLayer alloc] init];
-    _pipLayer.videoGravity = AVLayerVideoGravityResizeAspect;
-    _pipLayer.frame = self.view.bounds;
-    _pipLayer.hidden = YES;
-    [self.view.layer addSublayer:_pipLayer];
     _streamMan = [[StreamManager alloc] initWithConfig:self.streamConfig
                                             renderView:_streamVideoRenderView
                                    connectionCallbacks:self];
-    _streamMan.pipLayer = _pipLayer;
     NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
     [opQueue addOperation:_streamMan];
     
@@ -723,14 +709,7 @@
 }
 
 - (void)enterPip{
-    NSLog(@"[PiP LOG] enterPip called.");
-    if (self.pipController) {
-        NSLog(@"[PiP LOG] Controller exists. Firing startPictureInPicture.");
-        NSLog(@"[PiP LOG] Layer state before start: hidden=%d, frame=%@, timebase=%@", _pipLayer.hidden, NSStringFromCGRect(_pipLayer.frame), _pipLayer.controlTimebase);
-        [self.pipController startPictureInPicture];
-    } else {
-        NSLog(@"[PiP LOG] ERROR: enterPip called, but pipController is nil!");
-    }
+    [self.pipController startPictureInPicture];
 }
 
 - (void)oscLayoutClosed{
@@ -977,14 +956,13 @@
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
-    
-    [self->_streamMan.videoRenderer resetFramePacing];
 
     // Check if we were in PiP
     if (self.pipController && self.pipController.isPictureInPictureActive) {
         [self.pipController stopPictureInPicture];
     }
     
+    [self->_streamMan.videoRenderer resetFramePacing];
     _isRestoringFromPiP = NO;
 }
 

@@ -20,7 +20,6 @@
 @property (atomic, readonly) PlotMetrics frameQueueMetrics;
 
 @property (nonatomic, strong, readonly) AVSampleBufferDisplayLayer *displayLayer;
-@property (nonatomic, weak) AVSampleBufferDisplayLayer *pipLayer;
 
 - (id)initWithView:(UIView*)view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio;
 

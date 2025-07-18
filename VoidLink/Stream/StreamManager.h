@@ -16,8 +16,6 @@
 
 @property (nonatomic, strong, readonly) VideoDecoderRenderer *videoRenderer;
 
-@property (nonatomic, strong) AVSampleBufferDisplayLayer *pipLayer;
-
 - (id) initWithConfig:(StreamConfiguration*)config renderView:(UIView*)view connectionCallbacks:(id<ConnectionCallbacks>)callback;
 
 - (void) stopStream;
