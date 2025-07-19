@@ -20,6 +20,7 @@ typedef void (^MetricsHandler)(int plotId, CFTimeInterval value);
 @property (nonatomic) FloatBuffer * _Nonnull frametimes;
 @property (nonatomic) BOOL enableGraphs;
 @property (nonatomic) float graphOpacity;
+@property (nonatomic) int streamFps;
 @property (nonatomic) BOOL imguiRunning;
 @property (nonatomic) MetricsHandler _Nonnull metricsHandler;
 
