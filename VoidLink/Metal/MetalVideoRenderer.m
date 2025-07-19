@@ -56,6 +56,16 @@ static const struct CscParams k_CscParams_Bt2020Lim = {
     },
     {16.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f},
 };
+
+static const struct CscParams k_CscParams_Bt2020Lim_10bit = {
+    {
+        {1.1644f, 0.0f, 1.6781f},
+        {1.1644f, -0.1874f, -0.6505f},
+        {1.1644f, 2.1418f, 0.0f},
+    },
+    {64.0f / 1023.0f, 512.0f / 1023.0f, 512.0f / 1023.0f},
+};
+
 static const struct CscParams k_CscParams_Bt2020Full = {
     {
         {1.0f, 0.0f, 1.4746f},
@@ -63,6 +73,16 @@ static const struct CscParams k_CscParams_Bt2020Full = {
         {1.0f, 1.8814f, 0.0f},
     },
     {0.0f, 128.0f / 255.0f, 128.0f / 255.0f},
+};
+
+static const struct CscParams k_CscParams_Bt2020Full_10bit = {
+    {
+        {1.0f, 0.0f, 1.4746f},
+        {1.0f, -0.1646f, -0.5714f},
+        {1.0f, 1.8814f, 0.0f},
+    },
+
+    {0.0f, 512.0f / 1023.0f, 512.0f / 1023.0f},
 };
 
 struct Vertex {
@@ -237,7 +257,11 @@ static const NSUInteger MaxFramesInFlight = 3;
                     newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
                     newPixelFormat = MTLPixelFormatBGR10A2Unorm;
                 }
-                paramBuffer.cscParams = (fullRange ? k_CscParams_Bt2020Full : k_CscParams_Bt2020Lim);
+                if (isHDR) {
+                    paramBuffer.cscParams = (fullRange ? k_CscParams_Bt2020Full_10bit : k_CscParams_Bt2020Lim_10bit);
+                } else {
+                    paramBuffer.cscParams = (fullRange ? k_CscParams_Bt2020Full : k_CscParams_Bt2020Lim);
+                }
                 break;
             }
             case COLORSPACE_REC_601:
@@ -387,7 +411,20 @@ static const NSUInteger MaxFramesInFlight = 3;
             MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
             id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
             pipelineDesc.vertexFunction = [defaultLibrary newFunctionWithName:@"vs_draw"];
-            pipelineDesc.fragmentFunction = [defaultLibrary newFunctionWithName:planes == 2 ? @"ps_draw_biplanar" : @"ps_draw_triplanar"];
+            
+            // Determine if this is 10-bit based on the layer's pixel format (after colorspace update)
+            BOOL is10Bit = (layer.pixelFormat == MTLPixelFormatBGR10A2Unorm);
+            Log(LOG_I, @"Layer pixel format: %lu, is10Bit: %@", (unsigned long)layer.pixelFormat, is10Bit ? @"YES" : @"NO");
+            
+            NSString *fragmentShaderName;
+            if (planes == 2) {
+                fragmentShaderName = is10Bit ? @"ps_draw_biplanar_10bit" : @"ps_draw_biplanar_8bit";
+            } else {
+                fragmentShaderName = is10Bit ? @"ps_draw_triplanar_10bit" : @"ps_draw_triplanar_8bit";
+            }
+            
+            Log(LOG_I, @"Rendering frame with %zu planes, using shader: %@", planes, fragmentShaderName);
+            pipelineDesc.fragmentFunction = [defaultLibrary newFunctionWithName:fragmentShaderName];
             pipelineDesc.colorAttachments[0].pixelFormat = layer.pixelFormat;
             pipelineDesc.vertexBuffers[0].mutability = MTLMutabilityImmutable;
 
