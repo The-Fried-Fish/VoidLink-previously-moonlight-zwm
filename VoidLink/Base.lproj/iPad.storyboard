@@ -1262,7 +1262,7 @@
                                         </constraints>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hKp-ds-86I" userLabel="Chevron View">
-                                        <rect key="frame" x="624" y="50" width="52" height="30"/>
+                                        <rect key="frame" x="724" y="50" width="52" height="30"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ChevronCompactUp" translatesAutoresizingMaskIntoConstraints="NO" id="iVZ-Fd-dY7">
                                                 <rect key="frame" x="0.0" y="0.0" width="52" height="30"/>
@@ -1304,7 +1304,7 @@
                                     <constraint firstItem="hKp-ds-86I" firstAttribute="top" secondItem="YLK-IE-ajS" secondAttribute="bottom" id="RRf-mC-xx8"/>
                                     <constraint firstAttribute="height" constant="50" id="gfG-JH-DGG"/>
                                     <constraint firstAttribute="bottom" secondItem="YLK-IE-ajS" secondAttribute="bottom" id="gkv-Gt-6iw"/>
-                                    <constraint firstItem="hKp-ds-86I" firstAttribute="centerX" secondItem="fZU-G0-fgM" secondAttribute="centerX" id="uZV-o0-RdA"/>
+                                    <constraint firstItem="hKp-ds-86I" firstAttribute="centerX" secondItem="fZU-G0-fgM" secondAttribute="centerX" constant="100" id="uZV-o0-RdA"/>
                                     <constraint firstItem="YLK-IE-ajS" firstAttribute="centerX" secondItem="fZU-G0-fgM" secondAttribute="centerX" id="xm7-a0-8G7"/>
                                 </constraints>
                             </view>
@@ -1659,19 +1659,19 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

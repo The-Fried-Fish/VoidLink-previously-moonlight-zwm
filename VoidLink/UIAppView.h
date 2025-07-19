@@ -9,6 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "TemporaryApp.h"
 
+@protocol AppViewUpdateLoopDelegate <NSObject>
+- (bool)isStreaming;
+@end
+
+
 @protocol AppCallback <NSObject>
 
 - (void) appClicked:(TemporaryApp*)app view:(UIView*)view;
@@ -21,6 +26,9 @@
 #else
 @interface UIAppView : UIButton
 #endif
+
+
+@property (nonatomic, weak) id<AppViewUpdateLoopDelegate> updateLoopDelegate; // Delegate property
 
 - (id) initWithApp:(TemporaryApp*)app cache:(NSCache*)cache andCallback:(id<AppCallback>)callback;
 - (void) updateAppImage;

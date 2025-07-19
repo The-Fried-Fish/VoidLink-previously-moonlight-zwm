@@ -331,6 +331,7 @@ static NSMutableSet* hostList;
     // when at the host selection view.
     [self.navigationController.view removeGestureRecognizer:_menuRecognizer];
 #endif
+    [self.collectionView setContentOffset:CGPointZero animated:NO];
     [_appManager stopRetrieving];
     _showHiddenApps = NO;
     _selectedHost = nil;
@@ -2005,11 +2006,16 @@ static NSMutableSet* hostList;
     [self.collectionView reloadData];
 }
 
+- (bool)isStreaming{
+    return self.revealViewController.isStreaming;
+}
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"AppCell" forIndexPath:indexPath];
     
     TemporaryApp* app = _sortedAppList[indexPath.row];
     UIAppView* appView = [[UIAppView alloc] initWithApp:app cache:_boxArtCache andCallback:self];
+    appView.updateLoopDelegate = (id<AppViewUpdateLoopDelegate>)self;
     
     if (appView.bounds.size.width > 10.0) {
         CGFloat scale = cell.bounds.size.width / appView.bounds.size.width;
