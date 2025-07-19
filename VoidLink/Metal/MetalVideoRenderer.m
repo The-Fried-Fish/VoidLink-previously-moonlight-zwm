@@ -253,7 +253,7 @@ static const NSUInteger MaxFramesInFlight = 3;
                     newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
                     newPixelFormat = MTLPixelFormatBGR10A2Unorm;
                 } else {
-                    // SDR 2020
+                    // SDR 2020, I'm not sure it's possible to stream this though
                     newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
                     newPixelFormat = MTLPixelFormatBGR10A2Unorm;
                 }
@@ -395,18 +395,27 @@ static const NSUInteger MaxFramesInFlight = 3;
             return;
         }
 
+        // Handle changes to the video size or drawable size
         if (![self updateVideoRegionSizeForFrame:frame toLayer:layer]) {
             return;
         }
+
+        FQLog(LOG_I, @"[%d / %.3f ms] Metal frame rendering", frame.frameNumber, frame.pts);
+
+#if !TARGET_OS_TV
+        // Experimental EDR handling based on frame metadata
+        //[self applyEDRFromFrame:frame toLayer:layer];
+#endif
 
         size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
         assert(planes <= MAX_VIDEO_PLANES);
 
         if (layerDidChange && frame.frameNumber > 1) {
-            Log(LOG_I, @"Metal frame changed layer's colorspace and/or pixel format, invalidating pipeline cache");
+            Log(LOG_I, @"Metal frame changed layer's colorspace and/or pixel format");
             _videoPipelineState[planes] = nil;
         }
 
+        // This is created once and cached based on the planes value
         if (!_videoPipelineState[planes]) {
             MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
             id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
@@ -479,7 +488,7 @@ static const NSUInteger MaxFramesInFlight = 3;
 
         id<CAMetalDrawable> drawable = [layer nextDrawable];
         if (!drawable) {
-            Log(LOG_E, @"Failed to get nextDrawable from layer");
+            Log(LOG_E, @"Failed to get nextDrawable");
             return;
         }
         _renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
@@ -488,24 +497,37 @@ static const NSUInteger MaxFramesInFlight = 3;
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderPassDescriptor];
 
         [renderEncoder setRenderPipelineState:_videoPipelineState[planes]];
-        [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
-        [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
         for (size_t i = 0; i < planes; i++) {
             [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
         }
 
+        [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+        [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
 
+#if TARGET_OS_SIMULATOR
+        [commandBuffer presentDrawable:drawable];
+#else
+        // present for a minimum duration for best frame pacing
         [commandBuffer presentDrawable:drawable afterMinimumDuration:1.0f / _framerate];
+#endif
+
         [commandBuffer commit];
 
-        [commandBuffer waitUntilCompleted];
+        __weak typeof(self) self_ = self;
+        [drawable addPresentedHandler:^(id<MTLDrawable> d) {
+            if (self_) {
+                [self_ plotFrametime:d.presentedTime];
+            }
+        }];
+
 
         const CFTimeInterval GPUTime = commandBuffer.GPUEndTime - commandBuffer.GPUStartTime;
         const double alpha = 0.25f;
         _averageGPUTime = (GPUTime * alpha) + (_averageGPUTime * (1.0 - alpha));
 
+            // Free textures after completion of rendering
         for (size_t i = 0; i < planes; i++) {
             if (_cvMetalTextures[i]) {
                 CVBufferRelease(_cvMetalTextures[i]);
@@ -513,10 +535,8 @@ static const NSUInteger MaxFramesInFlight = 3;
             }
         }
         CVMetalTextureCacheFlush(_textureCache, 0);
+        [commandBuffer waitUntilCompleted];
     }
-}
-
-- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
 }
 
 - (void)plotFrametime:(CFTimeInterval)presentedTime {
@@ -525,6 +545,9 @@ static const NSUInteger MaxFramesInFlight = 3;
         [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
     }
     _lastPresented = presentedTime;
+}
+
+- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
 }
 
 /// Responds to the drawable's size or orientation changes.
