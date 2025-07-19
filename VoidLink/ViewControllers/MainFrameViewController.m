@@ -331,7 +331,6 @@ static NSMutableSet* hostList;
     // when at the host selection view.
     [self.navigationController.view removeGestureRecognizer:_menuRecognizer];
 #endif
-    [self.collectionView setContentOffset:CGPointZero animated:NO];
     [_appManager stopRetrieving];
     _showHiddenApps = NO;
     _selectedHost = nil;
@@ -375,6 +374,8 @@ static NSMutableSet* hostList;
     self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
     //self.view.backgroundColor = [ThemeManager appBackgroundColor];
 
+    [self.collectionView setContentOffset:CGPointZero animated:NO];
+    
     [self attachWaterMark];
     self.navigationItem.rightBarButtonItems = @[_upButton];
     self.revealViewController.mainFrameIsInHostView = false;
@@ -1776,8 +1777,6 @@ static NSMutableSet* hostList;
 - (void)viewWillDisappear:(BOOL)animated{
     NSLog(@"willDisappear");
     [super viewWillDisappear:animated];
-    [self.collectionView removeFromSuperview];
-    [self.hostCollectionVC.view removeFromSuperview];
     [_foregroundHostUpdateTimer invalidate];
     _foregroundHostUpdateTimer = nil;
 }

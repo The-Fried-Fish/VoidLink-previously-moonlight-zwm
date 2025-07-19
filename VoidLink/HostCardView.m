@@ -59,7 +59,7 @@ static const float REFRESH_CYCLE = 2.0f;
     if (self) {
         buttonLabelFontSize = 15*_sizeFactor;
         longPressFired = false;
-        computerIconMonitorCenterYOffset = [self isIPhone] ? -3.62*_sizeFactor : -4.175*_sizeFactor;
+        computerIconMonitorCenterYOffset = [self isIPhone] ? -2.75*_sizeFactor : -3.2*_sizeFactor;
         iconAndButtonSpacing = 37*_sizeFactor;
         buttonHeight = 39*_sizeFactor;
         defaultBlue = [ThemeManager appPrimaryColor];
@@ -195,7 +195,7 @@ static const float REFRESH_CYCLE = 2.0f;
     self.hostIconView.translatesAutoresizingMaskIntoConstraints = NO;
     self.hostIconView.contentMode = UIViewContentModeScaleAspectFit;
     if (@available(iOS 13.0, *)) {
-        self.hostIconView.image = [UIImage systemImageNamed:@"display"];
+        self.hostIconView.image = [[UIImage imageNamed:@"display"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     } else {
         self.hostIconView.image = [UIImage imageNamed:@"Computer"];
         [NSLayoutConstraint activateConstraints:@[
@@ -208,8 +208,8 @@ static const float REFRESH_CYCLE = 2.0f;
     [NSLayoutConstraint activateConstraints:@[
         [self.hostIconView.centerXAnchor constraintEqualToAnchor:self.iconBackgroundView.centerXAnchor constant:0],
         [self.hostIconView.centerYAnchor constraintEqualToAnchor:self.iconBackgroundView.centerYAnchor constant:0],
-        [self.hostIconView.heightAnchor constraintEqualToConstant:63*_sizeFactor],
-        [self.hostIconView.widthAnchor constraintEqualToConstant:63*_sizeFactor],
+        [self.hostIconView.heightAnchor constraintEqualToConstant:53.9*_sizeFactor],
+        [self.hostIconView.widthAnchor constraintEqualToConstant:53.9*_sizeFactor],
     ]];
     // [self.iconBackgroundView layoutIfNeeded];
     // [self.iconImageView layoutIfNeeded];
@@ -236,8 +236,9 @@ static const float REFRESH_CYCLE = 2.0f;
     // lockIcon
     lockIconView =[[UIImageView alloc] init];
     lockIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    lockIconView.contentMode = UIViewContentModeScaleAspectFit;
     if (@available(iOS 13.0, *)) {
-        lockIconView.image = [UIImage systemImageNamed:@"lock.fill"];
+        lockIconView.image = [[UIImage imageNamed:@"lock.fill"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     } else {
         lockIconView.image = [UIImage imageNamed:@"LockedOverlayIcon"];
         computerIconMonitorCenterYOffset = -5 * _sizeFactor;
@@ -247,8 +248,8 @@ static const float REFRESH_CYCLE = 2.0f;
     [NSLayoutConstraint activateConstraints:@[
         [lockIconView.centerXAnchor constraintEqualToAnchor:_iconBackgroundView.centerXAnchor constant:0],
         [lockIconView.centerYAnchor constraintEqualToAnchor:_iconBackgroundView.centerYAnchor constant:computerIconMonitorCenterYOffset],
-        [lockIconView.widthAnchor constraintEqualToConstant:22*_sizeFactor],
-        [lockIconView.heightAnchor constraintEqualToConstant:22*_sizeFactor]
+        [lockIconView.widthAnchor constraintEqualToConstant:18.5*_sizeFactor],
+        [lockIconView.heightAnchor constraintEqualToConstant:18.5*_sizeFactor]
     ]];
     lockIconView.hidden = true;
     
