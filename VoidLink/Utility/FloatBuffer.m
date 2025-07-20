@@ -36,7 +36,7 @@
         _count = 0;
         _minValue = 0.0f;
         _maxValue = 0.0f;
-        _sum = 0.0;
+        _sum = 0.0f;
 
         _sq = dispatch_queue_create("com.floatbuffer.serial", DISPATCH_QUEUE_SERIAL);
     }

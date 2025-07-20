@@ -52,5 +52,5 @@ typedef struct {
     PlotMetrics decodeMetrics;
     PlotMetrics frameQueueMetrics;
     PlotMetrics frameDropMetrics;
-    RenderingBackend renderingBackend;
+    NSString *renderingBackendString;
 } video_stats_t;

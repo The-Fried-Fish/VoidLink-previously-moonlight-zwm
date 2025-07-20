@@ -1,7 +1,10 @@
 #import "MetalVideoRenderer.h"
+#import <CoreGraphics/CoreGraphics.h>
 #import <CoreVideo/CoreVideo.h>
+#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
+#import <simd/simd.h>
 #import "ImGuiPlots.h"
 
 #include <Limelight.h>
@@ -81,7 +84,6 @@ static const struct CscParams k_CscParams_Bt2020Full_10bit = {
         {1.0f, -0.1646f, -0.5714f},
         {1.0f, 1.8814f, 0.0f},
     },
-
     {0.0f, 512.0f / 1023.0f, 512.0f / 1023.0f},
 };
 
@@ -101,10 +103,10 @@ static const NSUInteger MaxFramesInFlight = 3;
     id<MTLLibrary> _shaderLibrary;
     id<MTLRenderPipelineState> _videoPipelineState[MAX_VIDEO_PLANES];
     MTLRenderPassDescriptor *_renderPassDescriptor;
-    id<MTLTexture> _videoTexture;
     CVMetalTextureCacheRef _textureCache;
     CVMetalTextureRef _cvMetalTextures[MAX_VIDEO_PLANES];
 
+    CGFloat _currentEDRHeadroom;
     int _lastColorSpace;
     BOOL _lastFullRange;
     size_t _lastFrameWidth;
@@ -113,8 +115,9 @@ static const NSUInteger MaxFramesInFlight = 3;
     size_t _lastDrawableHeight;
     id<MTLBuffer> _CscParamsBuffer;
     id<MTLBuffer> _VideoVertexBuffer;
-    CFTimeInterval _lastPresented;
 
+    // https://developer.apple.com/documentation/metal/synchronizing-cpu-and-gpu-work?language=objc
+    dispatch_semaphore_t _inFlightSemaphore;
 }
 
 - (instancetype)initWithMetalDevice:(id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate {
@@ -124,14 +127,15 @@ static const NSUInteger MaxFramesInFlight = 3;
                                     dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0));
         _averageGPUTime = (1.0f / framerate) / 2;
         _device = device;
-        _nextDrawable = nil;
         _colorPixelFormat = MTLPixelFormatBGR10A2Unorm;
-        _colorspace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
         _framerate = framerate;
         _commandQueue = [_device newCommandQueue];
+        _currentEDRHeadroom = 1.0f;
         _lastColorSpace = -1;
         _lastFullRange = NO;
-        _lastPresented = 0;
+        _lastPresented = 0.0f;
+        _inFlightSemaphore = dispatch_semaphore_create(MaxFramesInFlight);
+        _isStopping = NO;
 
         CFStringRef keys[1] = {kCVMetalTextureUsage};
         NSUInteger values[1] = {MTLTextureUsageShaderRead};
@@ -148,63 +152,94 @@ static const NSUInteger MaxFramesInFlight = 3;
 }
 
 - (void)dealloc {
-    // Release the Core Foundation texture cache, which is not managed by ARC.
-    if (_textureCache) {
-        CFRelease(_textureCache);
-        _textureCache = NULL;
+    if (_CscParamsBuffer) {
+        _CscParamsBuffer = nil;
     }
-
-    // Safely release any textures that might still be referenced.
+    if (_VideoVertexBuffer) {
+        _VideoVertexBuffer = nil;
+    }
     for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
-        if (_cvMetalTextures[i]) {
-            CFRelease(_cvMetalTextures[i]);
-            _cvMetalTextures[i] = NULL;
+        if (_videoPipelineState[i]) {
+            _videoPipelineState[i] = nil;
         }
     }
-
-    // ARC will handle the rest of the Objective-C objects like _CscParamsBuffer.
+    if (_renderPassDescriptor) {
+        _renderPassDescriptor = nil;
+    }
 }
 
 #if !TARGET_OS_TV
-- (void)applyEDRFromFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer {
-    CFDictionaryRef ext = [frame getFormatDescExtensions];
-
-    Log(LOG_I, @"ext: %@", ext);
-
-    CFDataRef masteringData = CFDictionaryGetValue(ext, kCMFormatDescriptionExtension_MasteringDisplayColorVolume);
-    CFDataRef contentDataRef = CFDictionaryGetValue(ext, kCMFormatDescriptionExtension_ContentLightLevelInfo);
-
-    if (masteringData) {
-        Log(LOG_I, @"ext MDCV %@", masteringData);
-    }
-    if (contentDataRef) {
-        Log(LOG_I, @"ext CLLI %@", contentDataRef);
-    }
-
-    if (masteringData && CFDataGetLength(masteringData) == 24 && contentDataRef && CFDataGetLength(contentDataRef) == 4) {
-        NSData *displayData = (__bridge NSData *)masteringData;
-        NSData *contentData = (__bridge NSData *)contentDataRef;
-
-        layer.wantsExtendedDynamicRangeContent = YES;
-        layer.pixelFormat = MTLPixelFormatRGBA16Float;
-        CFStringRef name = kCGColorSpaceExtendedLinearITUR_2020;
-        CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(name);
-        layer.colorspace = colorspace;
-
-        layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:displayData contentInfo:contentData opticalOutputScale:100.0f];
-
-        Log(LOG_I, @"EDRMetadata set from MDCV %@ and CLLI %@", displayData, contentData);
+- (void)reportMaxEDRHeadroom {
+    CGFloat maxHeadroom = 1.0f;
+#if TARGET_OS_OSX
+    maxHeadroom = [[NSScreen mainScreen] maximumPotentialExtendedDynamicRangeColorComponentValue];
+#else
+    maxHeadroom = [[UIScreen mainScreen] potentialEDRHeadroom];
+#endif
+    if (maxHeadroom > 1.0) {
+        LogOnce(LOG_I, @"Display supports EDR with a max headroom of %.1f", maxHeadroom);
     } else {
+        LogOnce(LOG_I, @"Display does not support EDR");
+    }
+}
+
+- (void)pollCurrentEDRHeadroom {
+    CGFloat headroom = 1.0f;
+#if TARGET_OS_OSX
+    headroom = [[NSScreen mainScreen] maximumExtendedDynamicRangeColorComponentValue];
+#else
+    headroom = [[UIScreen mainScreen] currentEDRHeadroom];
+#endif
+    if (headroom != _currentEDRHeadroom) {
+        Log(LOG_I, @"EDR headroom changed to %.1f", headroom);
+        _currentEDRHeadroom = headroom;
+    }
+}
+
+- (void)setInitialEDRMetadata {
+}
+
+- (void)applyEDRFromFrame:(Frame *)frame withColorspace:(int)colorspace toLayer:(CAMetalLayer *)layer {
+    [self reportMaxEDRHeadroom];
+    [self setInitialEDRMetadata];
+
+    CFDictionaryRef ext = [frame getFormatDescExtensions];
+    CFStringRef frame_trc = CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey);
+
+    // These can only be changed on the main thread
+    dispatch_sync(dispatch_get_main_queue(), ^{
         layer.wantsExtendedDynamicRangeContent = YES;
         layer.pixelFormat = MTLPixelFormatRGBA16Float;
-        CFStringRef name = kCGColorSpaceExtendedLinearITUR_2020;
+
+        CFStringRef name;
+        switch (colorspace) {
+            case COLORSPACE_REC_2020:
+                name = kCGColorSpaceExtendedLinearITUR_2020;
+                break;
+            case COLORSPACE_REC_601:
+                name = kCGColorSpaceExtendedLinearSRGB;
+                break;
+            case COLORSPACE_REC_709:
+            default:
+                name = kCGColorSpaceExtendedLinearSRGB;
+                break;
+        }
+
         CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(name);
         layer.colorspace = colorspace;
+        CGColorSpaceRelease(colorspace);
 
-        layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.0005f maxLuminance:1000.0f opticalOutputScale:100.0f];
-
-        Log(LOG_I, @"EDRMetadata set for 1000 nits");
-    }
+        CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
+        CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
+        if (masteringDisplayColorVolume) {
+            layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:(__bridge NSData *)masteringDisplayColorVolume
+                                                                contentInfo:contentLightLevel ? (__bridge NSData *)contentLightLevel : nil
+                                                         opticalOutputScale:100.0f];
+        } else {
+            layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f maxLuminance:1000.0f opticalOutputScale:100.0f];
+        }
+        LogOnce(LOG_I, @"EDRMetadata set to colorspace %@, transfer function %@, %@", layer.colorspace, frame_trc, layer.EDRMetadata);
+    });
 }
 #endif
 
@@ -293,17 +328,21 @@ static const NSUInteger MaxFramesInFlight = 3;
                                                                        : [NSString stringWithFormat:@"Unknown: %lu", (unsigned long)layer.pixelFormat]);
             }
 
-            // These can only be changed on the main thread
-            dispatch_sync(dispatch_get_main_queue(), ^{
+            if ([CAEDRMetadata isAvailable]) {
+                [self applyEDRFromFrame:frame withColorspace:colorspace toLayer:layer];
+            } else {
+                // These can only be changed on the main thread
+                dispatch_sync(dispatch_get_main_queue(), ^{
 #if !TARGET_OS_TV
-                if (isHDR) {
-                    layer.wantsExtendedDynamicRangeContent = YES;
-                }
+                    if (isHDR) {
+                        layer.wantsExtendedDynamicRangeContent = YES;
+                    }
 #endif
-                layer.colorspace = newColorSpace;
-                layer.pixelFormat = newPixelFormat;
-            });
-            CGColorSpaceRelease(newColorSpace);
+                    layer.colorspace = newColorSpace;
+                    layer.pixelFormat = newPixelFormat;
+                });
+                CGColorSpaceRelease(newColorSpace);
+            }
         }
 
         // Create the new colorspace parameter buffer for our fragment shader
@@ -383,12 +422,13 @@ static const NSUInteger MaxFramesInFlight = 3;
     return YES;
 }
 
-- (void)discardNextDrawable {
-    _nextDrawable = nil;
-}
+- (void)renderFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer {
+    @autoreleasepool {
+        if (self.isStopping) {
+            Log(LOG_I, @"XXX Metal renderThread is stopping. returning from renderFrame");
+            return;
+        }
 
-- (void)renderFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer
-{ @autoreleasepool {
         // Handle changes to the frame's colorspace from last time we rendered
         BOOL layerDidChange = NO;
         if (![self updateColorSpaceForFrame:frame toLayer:layer layerDidChange:&layerDidChange]) {
@@ -402,11 +442,6 @@ static const NSUInteger MaxFramesInFlight = 3;
 
         FQLog(LOG_I, @"[%d / %.3f ms] Metal frame rendering", frame.frameNumber, frame.pts);
 
-#if !TARGET_OS_TV
-        // Experimental EDR handling based on frame metadata
-        //[self applyEDRFromFrame:frame toLayer:layer];
-#endif
-
         size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
         assert(planes <= MAX_VIDEO_PLANES);
 
@@ -419,23 +454,38 @@ static const NSUInteger MaxFramesInFlight = 3;
         if (!_videoPipelineState[planes]) {
             MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
             id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
-            pipelineDesc.vertexFunction = [defaultLibrary newFunctionWithName:@"vs_draw"];
-            
+
+            // RGB shaders
+            id<MTLFunction> vertexVsDraw = [defaultLibrary newFunctionWithName:@"vs_draw"];
+
+            // linear shaders
+            id<MTLFunction> yuvToLinear = [defaultLibrary newFunctionWithName:@"yuvToLinear"];
+
             // Determine if this is 10-bit based on the layer's pixel format (after colorspace update)
             BOOL is10Bit = (layer.pixelFormat == MTLPixelFormatBGR10A2Unorm);
-            Log(LOG_I, @"Layer pixel format: %lu, is10Bit: %@", (unsigned long)layer.pixelFormat, is10Bit ? @"YES" : @"NO");
-            
+
             NSString *fragmentShaderName;
             if (planes == 2) {
                 fragmentShaderName = is10Bit ? @"ps_draw_biplanar_10bit" : @"ps_draw_biplanar_8bit";
             } else {
                 fragmentShaderName = is10Bit ? @"ps_draw_triplanar_10bit" : @"ps_draw_triplanar_8bit";
             }
-            
-            Log(LOG_I, @"Rendering frame with %zu planes, using shader: %@", planes, fragmentShaderName);
-            pipelineDesc.fragmentFunction = [defaultLibrary newFunctionWithName:fragmentShaderName];
+
             pipelineDesc.colorAttachments[0].pixelFormat = layer.pixelFormat;
             pipelineDesc.vertexBuffers[0].mutability = MTLMutabilityImmutable;
+            
+            Log(LOG_I, @"Metal pipeline state for %zu planes with pixel format %@",
+                planes, layer.pixelFormat == MTLPixelFormatRGBA16Float ? @"MTLPixelFormatRGBA16Float" : @"MTLPixelFormatBGR10A2Unorm");
+
+            if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
+                // 4:2:0 or 4:4:4 YUV -> BT.2020 RGB -> linear float
+                pipelineDesc.vertexFunction = vertexVsDraw;
+                pipelineDesc.fragmentFunction = yuvToLinear;
+            } else {
+                // 4:2:0 or 4:4:4 YUV -> BT.2020 RGB
+                pipelineDesc.vertexFunction = vertexVsDraw;
+                pipelineDesc.fragmentFunction = [defaultLibrary newFunctionWithName:fragmentShaderName];
+            }
 
             NSError *error = nil;
             _videoPipelineState[planes] = [_device newRenderPipelineStateWithDescriptor:pipelineDesc error:&error];
@@ -468,18 +518,15 @@ static const NSUInteger MaxFramesInFlight = 3;
                     return;
             }
 
-            if (_cvMetalTextures[i]) {
-                CVBufferRelease(_cvMetalTextures[i]);
-            }
-        CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                                 _textureCache,
-                                                                 frame.pixelBuffer,
-                                                                 NULL,
-                                                                 fmt,
-                                                                 CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, i),
-                                                                 CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i),
-                                                                 i,
-                                                                 &_cvMetalTextures[i]);
+            CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                                     _textureCache,
+                                                                     frame.pixelBuffer,
+                                                                     NULL,
+                                                                     fmt,
+                                                                     CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, i),
+                                                                     CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i),
+                                                                     i,
+                                                                     &_cvMetalTextures[i]);
             if (err != kCVReturnSuccess) {
                 Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed: %d", err);
                 return;
@@ -501,10 +548,44 @@ static const NSUInteger MaxFramesInFlight = 3;
             [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
         }
 
-        [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+//        if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
+//            [self pollCurrentEDRHeadroom];
+//            [renderEncoder setFragmentBytes:&_currentEDRHeadroom length:sizeof(CGFloat) atIndex:0];
+//        }
+
         [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
+        [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
+
+        __block MetalVideoRenderer *strongSelf = self;
+        [drawable addPresentedHandler:^(id<MTLDrawable> d) {
+            if (strongSelf.lastPresented > 0.0f) {
+                CFTimeInterval frametime = d.presentedTime - strongSelf.lastPresented;
+                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
+            }
+            strongSelf.lastPresented = d.presentedTime;
+        }];
+
+        // signal semaphore, compute GPU time average, and clear textures
+        __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+            dispatch_semaphore_signal(block_semaphore);
+
+            const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
+            const double alpha = 0.25f;
+            self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
+
+            // Free textures after completion of rendering
+            for (size_t i = 0; i < planes; i++) {
+                if (self->_cvMetalTextures[i]) {
+                    CFRelease(self->_cvMetalTextures[i]);
+                    self->_cvMetalTextures[i] = nil;
+                }
+            }
+
+            CVMetalTextureCacheFlush(self->_textureCache, 0);
+        }];
 
 #if TARGET_OS_SIMULATOR
         [commandBuffer presentDrawable:drawable];
@@ -515,39 +596,28 @@ static const NSUInteger MaxFramesInFlight = 3;
 
         [commandBuffer commit];
 
-        __weak typeof(self) self_ = self;
-        [drawable addPresentedHandler:^(id<MTLDrawable> d) {
-            if (self_) {
-                [self_ plotFrametime:d.presentedTime];
-            }
-        }];
-
-
-        const CFTimeInterval GPUTime = commandBuffer.GPUEndTime - commandBuffer.GPUStartTime;
-        const double alpha = 0.25f;
-        _averageGPUTime = (GPUTime * alpha) + (_averageGPUTime * (1.0 - alpha));
-
-            // Free textures after completion of rendering
-        for (size_t i = 0; i < planes; i++) {
-            if (_cvMetalTextures[i]) {
-                CVBufferRelease(_cvMetalTextures[i]);
-                _cvMetalTextures[i] = nil;
-            }
-        }
-        CVMetalTextureCacheFlush(_textureCache, 0);
+        // Wait for the command buffer to complete and free our CVMetalTextureCache references
         [commandBuffer waitUntilCompleted];
     }
 }
 
-- (void)plotFrametime:(CFTimeInterval)presentedTime {
-    if (_lastPresented > 0) {
-        CFTimeInterval frametime = presentedTime - _lastPresented;
-        [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
+- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
+    // Wait to ensure only `MaxFramesInFlight` number of frames are getting processed
+    // by any stage in the Metal pipeline (CPU, GPU, Metal, Drivers, etc.).
+    if (!self.isStopping) {
+        dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC));  // 100ms
+        dispatch_semaphore_wait(_inFlightSemaphore, timeout);
     }
-    _lastPresented = presentedTime;
 }
 
-- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
+- (void)shutdown {
+    Log(LOG_I, @"XXX MetalVideoRenderer shutodwn");
+    self.isStopping = YES;
+
+    // Ensure no rendering is in flight
+    for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
+        dispatch_semaphore_signal(_inFlightSemaphore);
+    }
 }
 
 /// Responds to the drawable's size or orientation changes.
@@ -556,9 +626,6 @@ static const NSUInteger MaxFramesInFlight = 3;
 }
 
 - (void)resize:(CGSize)size {
-}
-
-- (void)stop {
 }
 
 @end

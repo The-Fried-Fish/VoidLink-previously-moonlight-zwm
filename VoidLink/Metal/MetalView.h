@@ -17,6 +17,7 @@
 - (void)drawableResize:(CGSize)size;
 - (void)renderTo:(nonnull CAMetalLayer *)layer;
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer;
+- (void)shutdown;
 
 @end
 
@@ -29,12 +30,9 @@
 @property (nonatomic) float framerate;
 
 - (void)initCommon;
+- (void)shutdown;
 #if AUTOMATICALLY_RESIZE
 - (void)resizeDrawable:(CGFloat)scaleFactor;
 #endif
-
-- (void)stop;
-- (void)pause;
-- (void)resume;
 
 @end

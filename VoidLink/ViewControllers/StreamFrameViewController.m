@@ -745,7 +745,6 @@
             _inactivityTimer = nil;
         }
         if (self.metalViewController) {
-            [self.metalViewController stop];
             [self.metalViewController.view removeFromSuperview];
             self.metalViewController = nil;
             NSLog(@"Metal renderer stopped and cleaned up.");
@@ -926,11 +925,6 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
-    if (self.metalViewController) {
-        [self.metalViewController pause];
-    }
-    
-    
     //[self.pipController startPictureInPicture];
     //sleep(1);
 
@@ -947,9 +941,6 @@
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    if (self.metalViewController) {
-        [self.metalViewController resume];
-    }
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");

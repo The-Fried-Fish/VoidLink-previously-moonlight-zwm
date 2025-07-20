@@ -201,7 +201,11 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     }
 #endif
 
-    NSDictionary *destinationPixelBufferAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey : pixelFormat};
+    NSDictionary *destinationPixelBufferAttributes = @{
+        (id)kCVPixelBufferPixelFormatTypeKey : pixelFormat,
+        (id)kVTDecompressionPropertyKey_GeneratePerFrameHDRDisplayMetadata : @YES,
+        (id)kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder : @YES
+    };
 
     return [self setupDecompressionSessionWithAttributes:destinationPixelBufferAttributes];
 }
@@ -344,6 +348,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 }
 - (void)cleanup
 {
+    [_frameQueue shutdown];
+    
     if (_renderingBackend == RENDER_AVSB) {
         [_displayLink invalidate];
     }
@@ -607,7 +613,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         formatDesc = NULL;
     }
 
-    Log(LOG_I, @"AV1 extensions: %@, format description: %@", extensions, formatDesc);
+    LogOnce(LOG_I, @"AV1 extensions: %@", extensions);
+    LogOnce(LOG_I, @"AV1 format description: %@", formatDesc);
 
     ff_cbs_fragment_free(&cbsFrag);
     ff_cbs_close(&cbsCtx);
@@ -674,6 +681,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 _formatDesc = NULL;
             }
 
+            LogOnce(LOG_I, @"H264 format description: %@", _formatDesc);
+
             // Free parameter set buffers after submission
             [_parameterSetBuffers removeAllObjects];
         }
@@ -712,6 +721,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 Log(LOG_E, @"Failed to create HEVC format description: %d", (int)status);
                 _formatDesc = NULL;
             }
+
+            LogOnce(LOG_I, @"HEVC format description: %@", _formatDesc);
 
             // Free parameter set buffers after submission
             [_parameterSetBuffers removeAllObjects];
@@ -1003,8 +1014,39 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 }
 
 - (void)getAllStats:(video_stats_t *)stats {
+    if (_renderingBackend == RENDER_METAL) {
+#if TARGET_OS_OSX
+        float edrHeadroom = [[NSScreen mainScreen] maximumExtendedDynamicRangeColorComponentValue];
+#else
+        float edrHeadroom = [[UIScreen mainScreen] currentEDRHeadroom];
+        UIScreenReferenceDisplayModeStatus referenceStatus = [[UIScreen mainScreen] referenceDisplayModeStatus];
+#endif
+        if (edrHeadroom > 1.0) {
+            NSString *ref;
+            // Device has a reference display that may or may not be enabled
+            switch (referenceStatus) {
+            case UIScreenReferenceDisplayModeStatusLimited:
+                ref = @"(Reference mode limited),";
+                break;
+            case UIScreenReferenceDisplayModeStatusEnabled:
+                ref = @"(Reference mode),";
+                break;
+            default:
+                ref = @",";
+                break;
+            }
+            int peakNits = 1000;
+            stats->renderingBackendString = [NSString stringWithFormat:@"Metal, EDR %.1f %@ tone-mapped: %d nits",
+                                             edrHeadroom, ref, peakNits];
+        } else {
+            // if HDR
+            stats->renderingBackendString = [NSString stringWithFormat:@"Metal, tone-mapped: HDR->sRGB"];
+        }
+    } else {
+        stats->renderingBackendString = @"AVSampleBuffer";
+    }
+
     dispatch_sync(_sq, ^{
-        stats->renderingBackend = _renderingBackend;
         memcpy(&stats->decodeMetrics, &_decodeMetrics, sizeof(PlotMetrics));
         memcpy(&stats->frameQueueMetrics, &_frameQueueMetrics, sizeof(PlotMetrics));
         [_frameQueue.frameDropMetrics copyMetrics:&stats->frameDropMetrics];

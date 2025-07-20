@@ -40,7 +40,7 @@
 		84E1CDFA2C4FE83400547904 /* SwiftLocalizationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E1CDF92C4FE83400547904 /* SwiftLocalizationHelper.swift */; };
 		84FD0B512C31338D006B5BE5 /* LocalizationHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FD0B502C31338D006B5BE5 /* LocalizationHelper.m */; };
 		84FD0B542C3134A6006B5BE5 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 84FD0B532C3134A6006B5BE5 /* Localizable.xcstrings */; };
-		97E20DBF2E21637B000D5DCA /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DBE2E21637B000D5DCA /* SceneDelegate.m */; };
+		9777AAF32E2CF7A400D7FBAF /* Shaders-Linear.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9777AAF22E2CF7A400D7FBAF /* Shaders-Linear.metal */; };
 		97E20DCF2E21647A000D5DCA /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DCD2E21647A000D5DCA /* Shaders.metal */; };
 		97E20DD02E21647A000D5DCA /* MetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DCC2E21647A000D5DCA /* MetalViewController.m */; };
 		97E20DD12E21647A000D5DCA /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DCA2E21647A000D5DCA /* MetalView.m */; };
@@ -211,6 +211,7 @@
 		84FD0B4F2C313343006B5BE5 /* LocalizationHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalizationHelper.h; sourceTree = "<group>"; };
 		84FD0B502C31338D006B5BE5 /* LocalizationHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocalizationHelper.m; sourceTree = "<group>"; };
 		84FD0B532C3134A6006B5BE5 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		9777AAF22E2CF7A400D7FBAF /* Shaders-Linear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shaders-Linear.metal"; sourceTree = "<group>"; };
 		97E20DBD2E21637B000D5DCA /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		97E20DBE2E21637B000D5DCA /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		97E20DC62E21647A000D5DCA /* MetalConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalConfig.h; sourceTree = "<group>"; };
@@ -469,6 +470,7 @@
 		97E20DCE2E21647A000D5DCA /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				9777AAF22E2CF7A400D7FBAF /* Shaders-Linear.metal */,
 				97E20DC62E21647A000D5DCA /* MetalConfig.h */,
 				97E20DC72E21647A000D5DCA /* MetalVideoRenderer.h */,
 				97E20DC82E21647A000D5DCA /* MetalVideoRenderer.m */,
@@ -1022,6 +1024,7 @@
 				FBD3495319FF36FB002D2A60 /* SWRevealViewController.m in Sources */,
 				84203F232C5F24C00032EEED /* OnScreenWidgetView.swift in Sources */,
 				97E21BB52E2186A3000D5DCA /* imgui_impl_metal.mm in Sources */,
+				9777AAF32E2CF7A400D7FBAF /* Shaders-Linear.metal in Sources */,
 				84FD0B512C31338D006B5BE5 /* LocalizationHelper.m in Sources */,
 				97E20DEA2E216532000D5DCA /* SceneDelegate.m in Sources */,
 				FB1D59971BBCCB6400F482CA /* ComputerScrollView.m in Sources */,

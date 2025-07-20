@@ -11,15 +11,12 @@ The implementation of the cross-platform game view controller.
 #import "MetalVideoRenderer.h"
 
 @implementation MetalViewController {
-    /// A queue to initialize the renderer asynchronously from the main thread.
-    dispatch_queue_t _dispatch_queue;
     FrameQueue *_frameQueue;
     float _framerate;
     BOOL _enableHdr;
     MetalView *_metalView;
     MetalVideoRenderer *_renderer;
     MetricsHandler _metricsHandler;
-    BOOL _stopping;
 }
 
 - (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate enableHdr:(BOOL)enableHdr metricsHandler:(MetricsHandler)metricsHandler {
@@ -30,8 +27,6 @@ The implementation of the cross-platform game view controller.
         _framerate = framerate;
         _enableHdr = enableHdr;
         _metricsHandler = metricsHandler;
-        _stopping = NO;
-        [_frameQueue clear];
     }
     return self;
 }
@@ -42,9 +37,6 @@ The implementation of the cross-platform game view controller.
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    /// A queue to initialize the renderer asynchronously from the main thread.
-    _dispatch_queue = dispatch_queue_create("com.moonlight.Metal", DISPATCH_QUEUE_CONCURRENT);
 
     __block MetalView *view = (MetalView *)self.view;
     if (!view) {
@@ -75,39 +67,44 @@ The implementation of the cross-platform game view controller.
 
     // Initialize the renderer-dependent view properties.
     view.metalLayer.pixelFormat = renderer.colorPixelFormat;
-    view.metalLayer.colorspace = renderer.colorspace;
     view.metalLayer.maximumDrawableCount = 3;
 
     self->_renderer = renderer;
 }
 
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
-    if (!_stopping) {
-        // Renderer obtains a nextDrawable, waiting if necessary
-        [_renderer waitToRenderTo:layer];
+    // Renderer obtains a nextDrawable, waiting if necessary
+    [_renderer waitToRenderTo:layer];
 
-        // If we don't have a frame yet, wait on that too
-        if (!_stopping) {
-            [_frameQueue waitForEnqueue];
-        }
-    }
+    // If we don't have a frame yet, wait on that too
+    [_frameQueue waitForEnqueue];
 }
 
 /// Draw frame (used by manual loop)
 - (void)renderTo:(nonnull CAMetalLayer *)layer {
-    if (!_renderer) {
-        return;
-    }
-
-    CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
-    Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
-    if (frame) {
-        [_renderer renderFrame:frame toLayer:layer];
+    if (!_renderer.isStopping) {
+        CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
+        Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
+        if (frame) {
+            [_renderer renderFrame:frame toLayer:layer];
+        }
     }
 }
 
 - (void)drawableResize:(CGSize)size {
     [_renderer drawableResize:size];
+}
+
+- (void)shutdown {
+    [_renderer shutdown];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
+    Log(LOG_I, @"XXX MetalViewController viewDidDisappear");
+
+    [_metalView shutdown];
 }
 
 #if TARGET_OS_IOS
@@ -139,52 +136,5 @@ The implementation of the cross-platform game view controller.
     (void)(event);
 }
 #endif
-
-- (void)stop {
-    // 1. Signal that we are stopping to prevent new work from starting.
-    _stopping = YES;
-    
-    // 2. Invalidate the CAMetalLayer by removing its device.
-    // This should cause any blocking calls like `nextDrawable` on the render thread to fail
-    // and return immediately, breaking the deadlock.
-    if (_metalView) {
-        _metalView.metalLayer.device = nil;
-    }
-
-    // 3. Unblock the render thread from any other potential waiting points.
-    if (_renderer) {
-        [_renderer stop];
-    }
-    [_frameQueue stop];
-
-    // 4. Now that the thread is unblocked, wait for it to finish its execution.
-    if (_metalView) {
-        [_metalView stop];
-    }
-
-    // 5. Once the thread has terminated, it's safe to deallocate all resources.
-    _renderer = nil;
-    _metalView = nil;
-}
-
-- (void)pause {
-    if (_renderer) {
-        // Add this line to discard any stale drawable before pausing the thread.
-        // This forces the renderer to get a fresh one on resume.
-        [_renderer discardNextDrawable];
-    }
-    
-    if (_metalView) {
-        [_metalView pause];
-        Log(LOG_I, @"Metal rendering paused.");
-    }
-}
-
-- (void)resume {
-    if (_metalView) {
-        [_metalView resume];
-        Log(LOG_I, @"Metal rendering resumed.");
-    }
-}
 
 @end

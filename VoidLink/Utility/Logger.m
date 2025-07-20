@@ -11,7 +11,9 @@
 #if defined(NDEBUG)
 static LogLevel LoggerLogLevel = LOG_I;
 #else
-static LogLevel LoggerLogLevel = LOG_D;
+// Debug is too spammy during discovery
+// static LogLevel LoggerLogLevel = LOG_D;
+static LogLevel LoggerLogLevel = LOG_I;
 #endif
 
 void LogTagv(LogLevel level, NSString* tag, NSString* fmt, va_list args) {

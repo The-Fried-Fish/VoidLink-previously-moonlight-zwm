@@ -21,8 +21,4 @@
                             enableHdr:(BOOL)enableHdr
                        metricsHandler:(MetricsHandler _Nonnull)metricsHandler;
 
-- (void)stop;
-- (void)pause;
-- (void)resume;
-
 @end
