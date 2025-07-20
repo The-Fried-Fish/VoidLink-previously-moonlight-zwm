@@ -374,6 +374,8 @@ static NSMutableSet* hostList;
     self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
     //self.view.backgroundColor = [ThemeManager appBackgroundColor];
 
+    [self.collectionView setContentOffset:CGPointZero animated:NO];
+    
     [self attachWaterMark];
     self.navigationItem.rightBarButtonItems = @[_upButton];
     self.revealViewController.mainFrameIsInHostView = false;
@@ -385,11 +387,12 @@ static NSMutableSet* hostList;
     //[self applyNavBarAppearance:navBarAppearance];
 }
 
-- (void)appButtonTappedForHost:(TemporaryHost *)host {
+- (void)appButtonTappedForHost:(TemporaryHost *)host{
     if (host.state != StateOnline) return;
     _selectedHost = host;
-    if (host.state == StateOnline && host.pairState == PairStatePaired && host.appList.count > 0) {
-        [self switchToAppView];
+    if(host.state == StateOnline && host.pairState == PairStatePaired){
+        [self updateAppsForHost:host];
+        if(host.appList.count>0) [self switchToAppView];
     }
 }
 
@@ -490,7 +493,7 @@ static NSMutableSet* hostList;
 
 
 - (void) noneUserInitiatedHostAction:(TemporaryHost *)host view:(UIView *)view {
-    Log(LOG_D, @"Clicked host: %@", host.name);
+    NSLog(@"Clicked host: %@", host.name);
     _selectedHost = host;
     //_appManager = [[AppAssetManager alloc] initWithCallback:self];
     [self.collectionView setCollectionViewLayout:self.collectionViewLayout];
@@ -1345,11 +1348,21 @@ static NSMutableSet* hostList;
     button.frame = CGRectMake(0, 0, buttonHeight, buttonHeight);
 
     // 添加点击事件
-    // [button addTarget:self action:@selector(addDeviceTapped) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(helpButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 
     // 创建 UIBarButtonItem
     UIBarButtonItem *barItem = [[UIBarButtonItem alloc] initWithCustomView:button];
     return barItem;
+}
+
+- (void)helpButtonTapped{
+    if (@available(iOS 13.0, *)) {
+        AboutViewController *aboutVC = [[AboutViewController alloc] init];
+        aboutVC.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self presentViewController:aboutVC animated:YES completion:nil];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 - (CGFloat)getStandardNavBarHeight{
@@ -1531,10 +1544,11 @@ static NSMutableSet* hostList;
     #endif
 
     [self updateTitle];
-    // [self.view addSubview:hostScrollView];
-
-    // if ([hostList count] == 1) [self hostClicked:[hostList anyObject] view:nil]; // auto click for single host
     
+    [self retrieveSavedHosts];
+
+    _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
+
 
     //if([SettingsViewController isLandscapeNow] != _streamConfig.width > _streamConfig.height)
     //[self simulateSettingsButtonPress]; //force expand setting view if orientation changed since last quit from app.
@@ -1796,10 +1810,6 @@ static NSMutableSet* hostList;
     [self.view addSubview:self.collectionView];
     [self initHostCollection];
     if(!_enteredAppView) [self switchToHostView];
-
-    [self retrieveSavedHosts];
-
-    _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1889,7 +1899,8 @@ static NSMutableSet* hostList;
         NSArray* sortedHostList = [[hostList allObjects] sortedArrayUsingSelector:@selector(compareName:)];
         for (TemporaryHost* comp in sortedHostList) {
             
-            if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
+            // if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
+            [self.hostCollectionVC addHost:comp];
 
             // Start jobs to decode the box art in advance
             for (TemporaryApp* app in comp.appList) {
@@ -1991,16 +2002,21 @@ static NSMutableSet* hostList;
     [self.collectionView reloadData];
 }
 
+- (bool)isInAppView{
+    return !self.revealViewController.isStreaming && _enteredAppView;
+}
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"AppCell" forIndexPath:indexPath];
     
     TemporaryApp* app = _sortedAppList[indexPath.row];
     UIAppView* appView = [[UIAppView alloc] initWithApp:app cache:_boxArtCache andCallback:self];
+    appView.updateLoopDelegate = (id<AppViewUpdateLoopDelegate>)self;
     
     if (appView.bounds.size.width > 10.0) {
         CGFloat scale = cell.bounds.size.width / appView.bounds.size.width;
         [appView setCenter:CGPointMake(appView.bounds.size.width / 2 * scale, appView.bounds.size.height / 2 * scale)];
-        appView.transform = CGAffineTransformMakeScale(scale, scale);
+        appView.transform = CGAffineTransformMakeScale(scale, scale); // view resize
     }
     
     [cell.subviews.firstObject removeFromSuperview]; // Remove a view that was previously added
@@ -2008,15 +2024,15 @@ static NSMutableSet* hostList;
     // [self.settingsButton setEnabled:![self isIPhonePortrait]]; // update settings button after host is clicked & appview loaded
     // Shadow opacity is controlled inside UIAppView based on whether the app
     // is hidden or not during the update cycle.
-    UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:cell.bounds];
-    cell.layer.masksToBounds = NO;
-    cell.layer.shadowColor = [UIColor blackColor].CGColor;
-    cell.layer.shadowOffset = CGSizeMake(1.0f, 5.0f);
-    cell.layer.shadowPath = shadowPath.CGPath;
+    //UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:cell.bounds];
+    //cell.layer.masksToBounds = YES;
+    //cell.layer.shadowColor = [UIColor blackColor].CGColor;
+    //cell.layer.shadowOffset = CGSizeMake(1.0f, 5.0f);
+    //cell.layer.shadowPath = shadowPath.CGPath;
     
 #if !TARGET_OS_TV
-    cell.layer.borderWidth = 1;
-    cell.layer.borderColor = [[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3f] CGColor];
+    //cell.layer.borderWidth = 1;
+    //cell.layer.borderColor = [[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3f] CGColor];
     cell.exclusiveTouch = YES;
 #endif
 

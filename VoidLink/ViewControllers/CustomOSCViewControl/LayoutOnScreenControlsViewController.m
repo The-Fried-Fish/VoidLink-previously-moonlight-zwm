@@ -370,6 +370,7 @@
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Read Widget Instruction"]
                                                            style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction *action){
+        [self saveTapped:nil];
         NSURL *url = [NSURL URLWithString:@"https://b23.tv/J8qEXOr"];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -609,7 +610,7 @@
         UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Current profile updated successfully"] preferredStyle:UIAlertControllerStyleAlert];
         [savedAlertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }]];
-        [self presentViewController:savedAlertController animated:YES completion:nil];
+        if(sender) [self presentViewController:savedAlertController animated:YES completion:nil];
     }
     else{
         UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Profile Default can not be overwritten"] preferredStyle:UIAlertControllerStyleAlert];

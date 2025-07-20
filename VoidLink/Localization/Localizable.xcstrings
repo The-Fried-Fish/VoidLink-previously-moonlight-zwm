@@ -13,13 +13,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n2. 打开命令工具: 从%@边缘滑动%d%%屏幕宽度\n\n3. 返回串流 / 收起设置菜单: 从左边缘滑动\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端"
+            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟指令工具：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從設定選單返回串流：從左側邊緣滑動\n\n4. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n2. 打开命令工具: 从%@边缘滑动%d%%屏幕宽度\n\n3. 返回串流 / 收起设置菜单: 从左边缘滑动\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端"
+            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟指令工具：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從設定選單返回串流：從左側邊緣滑動\n\n4. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
           }
         }
       }
@@ -36,13 +36,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n处理延迟 最小/最大/平均: %.1f/%.1f/%.1f ms"
+            "value" : "\n主機處理延遲 最小/最大/平均：%.1f/%.1f/%.1f ms"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n处理延迟 最小/最大/平均: %.1f/%.1f/%.1f ms"
+            "value" : "\n主機處理延遲 最小/最大/平均：%.1f/%.1f/%.1f ms"
           }
         }
       }
@@ -59,13 +59,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  斷開  "
+            "value" : "  中斷連線  "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  斷開  "
+            "value" : "  中斷連線  "
           }
         }
       }
@@ -128,13 +128,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  启动桌面"
+            "value" : "  啟動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  启动桌面"
+            "value" : "  啟動"
           }
         }
       }
@@ -151,13 +151,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  输入PIN码配对"
+            "value" : "  使用PIN碼配對"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  输入PIN码配对"
+            "value" : "  使用PIN碼配對"
           }
         }
       }
@@ -174,13 +174,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  当前布局: %@     当前组件: %@"
+            "value" : "  版面配置：%@ 小工具：%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  当前布局: %@     当前组件: %@"
+            "value" : "  版面配置：%@ 小工具：%@"
           }
         }
       }
@@ -197,13 +197,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  唤醒"
+            "value" : "  網路喚醒"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  唤醒"
+            "value" : "  網路喚醒"
           }
         }
       }
@@ -220,13 +220,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " 添加主机"
+            "value" : " 新增主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " 添加主机"
+            "value" : " 新增主機"
           }
         }
       }
@@ -249,13 +249,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "\n\n设备的网络连接似乎正在屏蔽Moonlight. 可能无法在此网络中串流."
+            "value" : "\n\n您裝置的遠端工作階段連線被阻擋。在此網路上連線時，串流可能無法運作。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n\n设备的网络连接似乎正在屏蔽远程会话. 可能无法在此网络中串流."
+            "value" : "\n\n您裝置的遠端工作階段連線被阻擋。在此網路上連線時，串流可能無法運作。"
           }
         }
       }
@@ -272,13 +272,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 打开本地软键盘 ]"
+            "value" : "[ 開啟軟體鍵盤 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 打开本地软键盘 ]"
+            "value" : "[ 開啟軟體鍵盤 ]"
           }
         }
       }
@@ -295,13 +295,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 进入画中画模式 ]"
+            "value" : "[ 進入子母畫面模式 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 进入画中画模式 ]"
+            "value" : "[ 進入子母畫面模式 ]"
           }
         }
       }
@@ -318,13 +318,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 打开屏显控件工具 ]"
+            "value" : "[ 開啟螢幕小工具 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 打开屏显控件工具 ]"
+            "value" : "[ 開啟螢幕小工具 ]"
           }
         }
       }
@@ -341,13 +341,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 切换屏显控件布局 ]"
+            "value" : "[ 切換螢幕小工具版面配置 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 切换屏显控件布局 ]"
+            "value" : "[ 切換螢幕小工具版面配置 ]"
           }
         }
       }
@@ -364,13 +364,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 正在运行"
+            "value" : "%@ 目前正在執行"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 正在运行"
+            "value" : "%@ 目前正在執行"
           }
         }
       }
@@ -387,13 +387,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d指轻按手势"
+            "value" : "%d指輕點"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d指轻按手势"
+            "value" : "%d指輕點"
           }
         }
       }
@@ -410,13 +410,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d%%屏幕宽度"
+            "value" : "%d%%螢幕寬度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d%%屏幕宽度"
+            "value" : "%d%%螢幕寬度"
           }
         }
       }
@@ -433,13 +433,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%u ms (抖动: %u ms)"
+            "value" : "%u ms (變異數：%u ms)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%u ms (抖动: %u ms)"
+            "value" : "%u ms (變異數：%u ms)"
           }
         }
       }
@@ -456,13 +456,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关于"
+            "value" : "關於"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关于"
+            "value" : "關於"
           }
         }
       }
@@ -479,13 +479,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加"
+            "value" : "新增"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加"
+            "value" : "新增"
           }
         }
       }
@@ -502,13 +502,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新增/复制"
+            "value" : "新增/複製"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新增/复制"
+            "value" : "新增/複製"
           }
         }
       }
@@ -531,13 +531,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加主机"
+            "value" : "新增主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加主机"
+            "value" : "新增主機"
           }
         }
       }
@@ -554,13 +554,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手动添加远程主机"
+            "value" : "手動新增主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手动添加远程主机"
+            "value" : "手動新增主機"
           }
         }
       }
@@ -577,13 +577,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收藏"
+            "value" : "新增至我的最愛"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收藏"
+            "value" : "新增至我的最愛"
           }
         }
       }
@@ -600,13 +600,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "别名 (允许留空)"
+            "value" : "別名 (可選)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "别名 (允许留空)"
+            "value" : "別名 (可選)"
           }
         }
       }
@@ -623,13 +623,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "别名标签 (可留空)"
+            "value" : "別名標籤 (可選)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "别名标签 (可留空)"
+            "value" : "別名標籤 (可選)"
           }
         }
       }
@@ -646,13 +646,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部设置"
+            "value" : "所有設定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部设置"
+            "value" : "所有設定"
           }
         }
       }
@@ -669,13 +669,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度"
+            "value" : "透明度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度"
+            "value" : "透明度"
           }
         }
       }
@@ -692,13 +692,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度: %.2f"
+            "value" : "透明度：%.2f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度: %.2f"
+            "value" : "透明度：%.2f"
           }
         }
       }
@@ -715,13 +715,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择应用"
+            "value" : "應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择应用"
+            "value" : "應用程式"
           }
         }
       }
@@ -738,13 +738,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "音频"
+            "value" : "音訊"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "音频"
+            "value" : "音訊"
           }
         }
       }
@@ -784,13 +784,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小球: 假定的触点   十字: 指示器偏离位置"
+            "value" : "球：假設的觸控點 十字：指示器位置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小球: 假定的触点   十字: 指示器偏离位置"
+            "value" : "球：假設的觸控點 十字：指示器位置"
           }
         }
       }
@@ -807,13 +807,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率: %.1f Mbps"
+            "value" : "位元率：%.1f Mbps"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率: %.1f Mbps"
+            "value" : "位元率：%.1f Mbps"
           }
         }
       }
@@ -830,13 +830,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率: %.1f Mbps - 码率偏高, 谨慎使用!"
+            "value" : "位元率：%.1f Mbps - 請謹慎使用高位元率！"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率: %.1f Mbps - 码率偏高, 谨慎使用!"
+            "value" : "位元率：%.1f Mbps - 請謹慎使用高位元率！"
           }
         }
       }
@@ -859,13 +859,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "调高码率, 尤其是超过50Mbps时, 请确保具备相应网络条件."
+            "value" : "僅在您的網路有能力時才增加位元率，尤其是在超過 50 Mbps 時要特別小心。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "调高码率, 尤其是超过50Mbps时, 请确保具备相应网络条件."
+            "value" : "僅在您的網路有能力時才增加位元率，尤其是在超過 50 Mbps 時要特別小心。"
           }
         }
       }
@@ -882,13 +882,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "边界宽度"
+            "value" : "邊框寬度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "边界宽度"
+            "value" : "邊框寬度"
           }
         }
       }
@@ -905,13 +905,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "边界宽度: %.2f"
+            "value" : "邊框寬度：%.2f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "边界宽度: %.2f"
+            "value" : "邊框寬度：%.2f"
           }
         }
       }
@@ -951,13 +951,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请检查输入的命令和参数"
+            "value" : "請檢查指令和參數。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请检查输入的命令和参数"
+            "value" : "請檢查指令和參數。"
           }
         }
       }
@@ -974,13 +974,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收起"
+            "value" : "收合"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收起"
+            "value" : "收合"
           }
         }
       }
@@ -997,13 +997,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "命令"
+            "value" : "指令"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "命令"
+            "value" : "指令"
           }
         }
       }
@@ -1020,13 +1020,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在连接"
+            "value" : "正在連線"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在连接"
+            "value" : "正在連線"
           }
         }
       }
@@ -1043,13 +1043,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接错误"
+            "value" : "連線錯誤"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接错误"
+            "value" : "連線錯誤"
           }
         }
       }
@@ -1066,13 +1066,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接失败"
+            "value" : "連線失敗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接失败"
+            "value" : "連線失敗"
           }
         }
       }
@@ -1089,13 +1089,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接帮助"
+            "value" : "連線說明"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接失败"
+            "value" : "連線說明"
           }
         }
       }
@@ -1112,13 +1112,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接已中断"
+            "value" : "連線已中斷"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接已中断"
+            "value" : "連線已中斷"
           }
         }
       }
@@ -1135,13 +1135,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接已终止"
+            "value" : "連線已終止"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接已终止"
+            "value" : "連線已終止"
           }
         }
       }
@@ -1164,13 +1164,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n\n检查主机端防火墙以及端口%s的转发规则"
+            "value" : "\n\n檢查您的防火牆和以下連接埠的連接埠轉發規則：\n%s"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n\n检查主机端防火墙以及端口%s的转发规则"
+            "value" : "\n\n檢查您的防火牆和以下連接埠的連接埠轉發規則：\n%s"
           }
         }
       }
@@ -1187,13 +1187,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新增"
+            "value" : "建立新的"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新增"
+            "value" : "建立新的"
           }
         }
       }
@@ -1210,13 +1210,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前布局已修改"
+            "value" : "目前版面配置已成功更新"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前布局已修改"
+            "value" : "目前版面配置已成功更新"
           }
         }
       }
@@ -1233,13 +1233,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已设定为自定义分辨率"
+            "value" : "已選取自訂解析度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已设定为自定义分辨率"
+            "value" : "已選取自訂解析度"
           }
         }
       }
@@ -1256,13 +1256,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您可能需要在主机端的显卡控制面板手动添加自定义分辨率"
+            "value" : "GeForce Experience 未正式支援自訂解析度，因此不會設定您的主機顯示解析度。您需要在遊戲中手動設定。\n\n您的用戶端或主機電腦不支援的解析度可能會導致串流錯誤。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您可能需要在主机端的显卡控制面板手动添加自定义分辨率"
+            "value" : "GeForce Experience 未正式支援自訂解析度，因此不會設定您的主機顯示解析度。您需要在遊戲中手動設定。\n\n您的用戶端或主機電腦不支援的解析度可能會導致串流錯誤。"
           }
         }
       }
@@ -1279,13 +1279,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "减速率: %.3f  "
+            "value" : "減速率：%.3f  "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "减速率: %.3f  "
+            "value" : "減速率：%.3f  "
           }
         }
       }
@@ -1302,13 +1302,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除"
+            "value" : "刪除"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除"
+            "value" : "刪除"
           }
         }
       }
@@ -1325,13 +1325,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按键删除"
+            "value" : "在此處刪除按鈕"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按键删除"
+            "value" : "在此處刪除按鈕"
           }
         }
       }
@@ -1348,13 +1348,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检测中…"
+            "value" : "正在偵測..."
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检测中…"
+            "value" : "正在偵測..."
           }
         }
       }
@@ -1371,13 +1371,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "断开"
+            "value" : "中斷連線"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "断开"
+            "value" : "中斷連線"
           }
         }
       }
@@ -1417,13 +1417,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将按键拖动到这个垃圾桶即可删除"
+            "value" : "將按鈕拖放到此垃圾桶以將其從介面中移除"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将按键拖动到这个垃圾桶即可删除"
+            "value" : "將按鈕拖放到此垃圾桶以將其從介面中移除"
           }
         }
       }
@@ -1440,13 +1440,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编辑"
+            "value" : "編輯"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编辑"
+            "value" : "編輯"
           }
         }
       }
@@ -1463,13 +1463,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编辑所选控件"
+            "value" : "編輯選取的小工具"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编辑所选控件"
+            "value" : "編輯選取的小工具"
           }
         }
       }
@@ -1486,13 +1486,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入新命令和对应的别名"
+            "value" : "輸入新指令與別名"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入新命令和对应的别名"
+            "value" : "輸入新指令與別名"
           }
         }
       }
@@ -1509,13 +1509,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入自定义分辨率"
+            "value" : "輸入自訂解析度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入自定义分辨率"
+            "value" : "輸入自訂解析度"
           }
         }
       }
@@ -1532,13 +1532,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入主机端IP地址"
+            "value" : "輸入IP位址以手動新增主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入主机端IP地址"
+            "value" : "輸入IP位址以手動新增主機"
           }
         }
       }
@@ -1555,13 +1555,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入控件命令和别名标签"
+            "value" : "輸入指令與別名標籤"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入控件命令和别名标签"
+            "value" : "輸入指令與別名標籤"
           }
         }
       }
@@ -1578,13 +1578,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将当前布局另存为"
+            "value" : "輸入您要儲存此版面配置的名稱"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将当前布局另存为"
+            "value" : "輸入您要儲存此版面配置的名稱"
           }
         }
       }
@@ -1607,13 +1607,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n请在主机端输入PIN码: %@\n\n如果主机运行的是Sunshine, 请在网页控制台输入PIN码"
+            "value" : "\n在主機上輸入以下 PIN 碼：%@\n\n如果您的主機電腦正在執行 Sunshine，請導覽至 Sunshine Web UI 以輸入 PIN"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n请在主机端输入PIN码: %@\n\n如果主机运行的是Sunshine, 请在网页控制台输入PIN码"
+            "value" : "\n在主機上輸入以下 PIN 碼：%@\n\n如果您的主機電腦正在執行 Sunshine，請導覽至 Sunshine Web UI 以輸入 PIN"
           }
         }
       }
@@ -1630,13 +1630,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出"
+            "value" : "離開"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出"
+            "value" : "離開"
           }
         }
       }
@@ -1653,13 +1653,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "实验性功能"
+            "value" : "實驗性"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "实验性功能"
+            "value" : "實驗性"
           }
         }
       }
@@ -1676,13 +1676,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局导入失败"
+            "value" : "匯入版面配置失敗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局导入失败"
+            "value" : "匯入版面配置失敗"
           }
         }
       }
@@ -1699,13 +1699,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出应用失败. 如果此应用是由其他串流设备启动的, 请用相应的设备退出此应用"
+            "value" : "退出應用程式失敗。如果此應用程式是由其他裝置啟動的，您需要從該裝置退出。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出应用失败. 如果此应用是由其他串流设备启动的, 请用相应的设备退出此应用"
+            "value" : "退出應用程式失敗。如果此應用程式是由其他裝置啟動的，您需要從該裝置退出。"
           }
         }
       }
@@ -1722,13 +1722,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析主机域名失败"
+            "value" : "解析主機失敗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析主机域名失败"
+            "value" : "解析主機失敗。"
           }
         }
       }
@@ -1745,13 +1745,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收藏夹"
+            "value" : "我的最愛設定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收藏夹"
+            "value" : "我的最愛設定"
           }
         }
       }
@@ -1768,13 +1768,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "首次串流提示"
+            "value" : "首次啟動提示"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "首次串流提示"
+            "value" : "首次啟動提示"
           }
         }
       }
@@ -1791,13 +1791,36 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "帧率: %5.2f     网络丢帧: %.2f%%     网络延迟: %@"
+            "value" : "FPS：%5.2f 網路掉幀：%.2f%% 網路延遲：%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "帧率: %5.2f     网络丢帧: %.2f%%     网络延迟: %@"
+            "value" : "FPS：%5.2f 網路掉幀：%.2f%% 網路延遲：%@"
+          }
+        }
+      }
+    },
+    "From the player community, to the player community." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从玩家社区中来，到玩家社区中去。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從玩家社群中來，到玩家社群中去。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從玩家社群中來，到玩家社群中去。"
           }
         }
       }
@@ -1814,13 +1837,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手势"
+            "value" : "手勢"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手势"
+            "value" : "手勢"
           }
         }
       }
@@ -1837,13 +1860,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解！"
+            "value" : "知道了！"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解！"
+            "value" : "知道了！"
           }
         }
       }
@@ -1860,13 +1883,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解! (%ld)"
+            "value" : "知道了！(%ld)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解! (%ld)"
+            "value" : "知道了！(%ld)"
           }
         }
       }
@@ -1883,13 +1906,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度"
+            "value" : "高度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度"
+            "value" : "高度"
           }
         }
       }
@@ -1906,13 +1929,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度: %.2f"
+            "value" : "高度：%.2f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度: %.2f"
+            "value" : "高度：%.2f"
           }
         }
       }
@@ -1929,13 +1952,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏应用"
+            "value" : "隱藏應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏应用"
+            "value" : "隱藏應用程式"
           }
         }
       }
@@ -1952,13 +1975,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主机信息已更新"
+            "value" : "主機資訊已更新"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主机信息已更新"
+            "value" : "主機資訊已更新"
           }
         }
       }
@@ -1975,13 +1998,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未知主机MAC地址, 无法发送WOL包"
+            "value" : "主機 MAC 未知，無法傳送 WOL 封包"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未知主机MAC地址, 无法发送WOL包"
+            "value" : "主機 MAC 未知，無法傳送 WOL 封包"
           }
         }
       }
@@ -1998,13 +2021,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程主机"
+            "value" : "主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程主机"
+            "value" : "主機"
           }
         }
       }
@@ -2021,13 +2044,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指示器偏离: %.0f"
+            "value" : "指示器偏移：%.0f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指示器偏离: %.0f"
+            "value" : "指示器偏移：%.0f"
           }
         }
       }
@@ -2044,13 +2067,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触点移动事件间隔: %d μs"
+            "value" : "多點觸控移動事件間隔：%d μs"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触点移动事件间隔: %d μs"
+            "value" : "多點觸控移動事件間隔：%d μs"
           }
         }
       }
@@ -2067,13 +2090,36 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效输入"
+            "value" : "無效輸入"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效输入"
+            "value" : "無效輸入"
+          }
+        }
+      }
+    },
+    "Join us" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入我们"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入我們"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入我們"
           }
         }
       }
@@ -2090,13 +2136,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动桌面"
+            "value" : "啟動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动桌面"
+            "value" : "啟動"
           }
         }
       }
@@ -2113,13 +2159,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动应用"
+            "value" : "啟動應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动应用"
+            "value" : "啟動應用程式"
           }
         }
       }
@@ -2136,13 +2182,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认布局无法被修改"
+            "value" : "無法變更預設版面配置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认布局无法被修改"
+            "value" : "無法變更預設版面配置"
           }
         }
       }
@@ -2182,13 +2228,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地软键盘切换手势已禁用"
+            "value" : "本機鍵盤切換已停用"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地软键盘切换手势已禁用"
+            "value" : "本機鍵盤切換已停用"
           }
         }
       }
@@ -2211,13 +2257,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法连接远程主机\n\n如果主机运行的是Geforce Experience, 确认SHIELD已启用.\n\n如果主机运行的是Sushine, 确认服务正常运行. 如果使用非默认端口, 请添加到地址中."
+            "value" : "無法連線到主機。\n\n如果您使用 GeForce Experience 進行託管，請確保您已在 SHIELD 標籤上啟用切換。\n\n如果您使用 Sunshine 進行託管，請確保其正常執行。如果您使用的是非預設連接埠，則需要在此處包含該連接埠。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法连接远程主机\n\n如果主机运行的是Geforce Experience, 确认SHIELD已启用.\n\n如果主机运行的是Sushine, 确认服务正常运行. 如果使用非默认端口, 请添加到地址中."
+            "value" : "無法連線到主機。\n\n如果您使用 GeForce Experience 進行託管，請確保您已在 SHIELD 標籤上啟用切換。\n\n如果您使用 Sunshine 進行託管，請確保其正常執行。如果您使用的是非預設連接埠，則需要在此處包含該連接埠。"
           }
         }
       }
@@ -2234,13 +2280,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手柄摇杆最小偏移量 (0~32766)"
+            "value" : "搖桿最小偏移量 (0~32766)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手柄摇杆最小偏移量 (0~32766)"
+            "value" : "搖桿最小偏移量 (0~32766)"
           }
         }
       }
@@ -2263,13 +2309,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "无法执行网络测试. 请检查网络连接后重试."
+            "value" : "由於無法連線到任何連線測試伺服器，因此無法執行網路測試。請檢查您的網際網路連線或稍後再試。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "无法执行网络测试. 请检查网络连接后重试."
+            "value" : "由於無法連線到任何連線測試伺服器，因此無法執行網路測試。請檢查您的網際網路連線或稍後再試。"
           }
         }
       }
@@ -2309,13 +2355,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鼠标指针灵敏度: %d%%"
+            "value" : "滑鼠指標速度：%d%%"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鼠标指针灵敏度: %d%%"
+            "value" : "滑鼠指標速度：%d%%"
           }
         }
       }
@@ -2332,13 +2378,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "名称"
+            "value" : "名稱"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "名称"
+            "value" : "名稱"
           }
         }
       }
@@ -2361,13 +2407,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "设备的网络连接似乎正在阻塞Moonlight. 可能无法在此网络中串流.\n\n以下网络端口被阻塞:\n%s"
+            "value" : "您目前的網路連線似乎正在阻擋遠端工作階段。在此網路上連線時，串流可能無法運作。\n\n下列網路連接埠被封鎖：\n%s"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设备的网络连接似乎正在阻塞远程会话. 可能无法在此网络中串流.\n\n以下网络端口被阻塞:\n%s"
+            "value" : "您目前的網路連線似乎正在阻擋遠端工作階段。在此網路上連線時，串流可能無法運作。\n\n下列網路連接埠被封鎖：\n%s"
           }
         }
       }
@@ -2390,13 +2436,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "网络测试成功. 如果仍然无法连接远程主机, 请检查主机端防火墙设置."
+            "value" : "此網路似乎未阻擋遠端工作階段。如果您仍然無法連線，請檢查您電腦的防火牆設定。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "网络测试成功. 如果仍然无法连接远程主机, 请检查主机端防火墙设置."
+            "value" : "此網路似乎未阻擋遠端工作階段。如果您仍然無法連線，請檢查您電腦的防火牆設定。"
           }
         }
       }
@@ -2413,13 +2459,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络错误"
+            "value" : "網路錯誤"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络错误"
+            "value" : "網路錯誤"
           }
         }
       }
@@ -2436,13 +2482,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络测试已完成"
+            "value" : "網路測試完成"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络测试已完成"
+            "value" : "網路測試完成"
           }
         }
       }
@@ -2459,13 +2505,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新建命令"
+            "value" : "新指令"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新建命令"
+            "value" : "新指令"
           }
         }
       }
@@ -2482,13 +2528,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新建屏显控件"
+            "value" : "新螢幕小工具"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新建屏显控件"
+            "value" : "新螢幕小工具"
           }
         }
       }
@@ -2505,13 +2551,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法从主机接收视频帧"
+            "value" : "未從主機收到視訊。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法从主机接收视频帧"
+            "value" : "未從主機收到視訊。"
           }
         }
       }
@@ -2528,13 +2574,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无修改可撤消"
+            "value" : "沒有可復原的內容"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无修改可撤消"
+            "value" : "沒有可復原的內容"
           }
         }
       }
@@ -2551,13 +2597,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NVIDIA GAMESTREAM 服务终止"
+            "value" : "NVIDIA GameStream 服務終止"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NVIDIA GAMESTREAM 服务终止"
+            "value" : "NVIDIA GameStream 服務終止"
           }
         }
       }
@@ -2574,13 +2620,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "离线"
+            "value" : "離線"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "离线"
+            "value" : "離線"
           }
         }
       }
@@ -2597,13 +2643,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确认"
+            "value" : "確定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确认"
+            "value" : "確定"
           }
         }
       }
@@ -2620,13 +2666,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确认"
+            "value" : "確定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确认"
+            "value" : "確定"
           }
         }
       }
@@ -2643,13 +2689,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "屏显虚拟手柄与控件"
+            "value" : "螢幕控制器與小工具"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "屏显虚拟手柄与控件"
+            "value" : "螢幕控制器與小工具"
           }
         }
       }
@@ -2666,13 +2712,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线"
+            "value" : "線上"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线"
+            "value" : "線上"
           }
         }
       }
@@ -2689,13 +2735,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线 - 未配对"
+            "value" : "線上 - 未配對"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线 - 未配对"
+            "value" : "線上 - 未配對"
           }
         }
       }
@@ -2712,13 +2758,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线 - 已配对"
+            "value" : "線上 - 已配對"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线 - 已配对"
+            "value" : "線上 - 已配對"
           }
         }
       }
@@ -2735,13 +2781,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在串流视图中修改布局:\n从屏幕%@边缘向内滑动.\n或轻按%d根手指, 手势需要的手指数量:"
+            "value" : "在串流中開啟小工具的方式：\n從螢幕%@邊緣滑動以開啟指令工具。\n或在串流畫面上用%d指輕點，所需的手指數量："
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在串流视图中修改布局:\n从屏幕%@边缘向内滑动.\n或轻按%d根手指, 手势需要的手指数量:"
+            "value" : "在串流中開啟小工具的方式：\n從螢幕%@邊緣滑動以開啟指令工具。\n或在串流畫面上用%d指輕點，所需的手指數量："
           }
         }
       }
@@ -2758,13 +2804,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选项"
+            "value" : "選項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选项"
+            "value" : "選項"
           }
         }
       }
@@ -2804,13 +2850,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在配对"
+            "value" : "正在配對"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在配对"
+            "value" : "正在配對"
           }
         }
       }
@@ -2827,13 +2873,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "配对失败"
+            "value" : "配對失敗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "配对失败"
+            "value" : "配對失敗"
           }
         }
       }
@@ -2850,13 +2896,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外设"
+            "value" : "周邊設備"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外设"
+            "value" : "周邊設備"
           }
         }
       }
@@ -2873,13 +2919,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局已导入"
+            "value" : "已匯入版面配置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局已导入"
+            "value" : "已匯入版面配置"
           }
         }
       }
@@ -2902,13 +2948,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "灵敏度分割线, 用于划分多点触控游戏(原神/崩坏星穹铁道)中触点移速的透传区域和调整区域. 详见在线文档."
+            "value" : "靈敏度分割線：用於在多點觸控遊戲（例如《原神》、《崩壞：星穹鐵道》）中分隔觸控點移動速度的傳遞區和調整區。詳情請參閱線上文件。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "灵敏度分割线, 用于划分多点触控游戏(原神/崩坏星穹铁道)中触点移速的透传区域和调整区域. 详见在线文档."
+            "value" : "靈敏度分割線：用於在多點觸控遊戲（例如《原神》、《崩壞：星穹鐵道》）中分隔觸控點移動速度的傳遞區和調整區。詳情請參閱線上文件。"
           }
         }
       }
@@ -2931,13 +2977,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "触点灵敏度,  用于调节右半屏触点的移速, 进而实现(原神/崩坏星穹铁道)游戏内视角转动的灵敏度调节.详见在线文档."
+            "value" : "觸控靈敏度：調整螢幕右半邊觸控點的移動速度，讓您可以控制遊戲內攝影機的靈敏度（適用於《原神》和《崩壞：星穹鐵道》）。詳情請參閱線上文件。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触点灵敏度,  用于调节右半屏触点的移速, 进而实现(原神/崩坏星穹铁道)游戏内视角转动的灵敏度调节.详见在线文档."
+            "value" : "觸控靈敏度：調整螢幕右半邊觸控點的移動速度，讓您可以控制遊戲內攝影機的靈敏度（適用於《原神》和《崩壞：星穹鐵道》）。詳情請參閱線上文件。"
           }
         }
       }
@@ -2954,13 +3000,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络状态较差"
+            "value" : "與電腦的連線品質不佳"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络状态较差"
+            "value" : "與電腦的連線品質不佳"
           }
         }
       }
@@ -2977,13 +3023,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前布局已另存为: %@"
+            "value" : "已從目前版面配置複製版面配置 %@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前布局已另存为: %@"
+            "value" : "已從目前版面配置複製版面配置 %@"
           }
         }
       }
@@ -3000,13 +3046,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认布局无法被覆盖保存"
+            "value" : "無法覆寫預設版面配置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认布局无法被覆盖保存"
+            "value" : "無法覆寫預設版面配置"
           }
         }
       }
@@ -3023,13 +3069,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局名称已存"
+            "value" : "版面配置名稱已存在"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局名称已存"
+            "value" : "版面配置名稱已存在"
           }
         }
       }
@@ -3046,13 +3092,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局名称不能为空!"
+            "value" : "版面配置名稱不可為空！"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "布局名称不能为空!"
+            "value" : "版面配置名稱不可為空！"
           }
         }
       }
@@ -3069,13 +3115,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前布局: %@"
+            "value" : "版面配置：%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前布局: %@"
+            "value" : "版面配置：%@"
           }
         }
       }
@@ -3092,13 +3138,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出应用"
+            "value" : "退出應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出应用"
+            "value" : "退出應用程式"
           }
         }
       }
@@ -3115,13 +3161,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出运行中的应用"
+            "value" : "退出執行中的應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出运行中的应用"
+            "value" : "退出執行中的應用程式"
           }
         }
       }
@@ -3138,13 +3184,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出运行中的应用, 并运行此应用"
+            "value" : "退出執行中的應用程式並啟動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出运行中的应用, 并运行此应用"
+            "value" : "退出執行中的應用程式並啟動"
           }
         }
       }
@@ -3161,13 +3207,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出应用失败"
+            "value" : "退出應用程式失敗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出应用失败"
+            "value" : "退出應用程式失敗"
           }
         }
       }
@@ -3184,13 +3230,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在退出应用: %@"
+            "value" : "正在退出應用程式：%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在退出应用: %@"
+            "value" : "正在退出應用程式：%@"
           }
         }
       }
@@ -3207,13 +3253,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "阅读控件添加说明"
+            "value" : "閱讀小工具說明"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "阅读控件添加说明"
+            "value" : "閱讀小工具說明"
           }
         }
       }
@@ -3230,13 +3276,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中修改布局"
+            "value" : "在串流中修改"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中修改布局"
+            "value" : "在串流中修改"
           }
         }
       }
@@ -3276,13 +3322,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移除主机"
+            "value" : "移除主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移除主机"
+            "value" : "移除主機"
           }
         }
       }
@@ -3299,13 +3345,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移除设置项"
+            "value" : "移除項目"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移除设置项"
+            "value" : "移除項目"
           }
         }
       }
@@ -3322,13 +3368,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "恢复应用"
+            "value" : "恢復應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "恢复应用"
+            "value" : "恢復應用程式"
           }
         }
       }
@@ -3345,13 +3391,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "恢复运行中的应用"
+            "value" : "恢復執行中的應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "恢复运行中的应用"
+            "value" : "恢復執行中的應用程式"
           }
         }
       }
@@ -3391,13 +3437,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存"
+            "value" : "儲存"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存"
+            "value" : "儲存"
           }
         }
       }
@@ -3414,13 +3460,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认布局无法被覆盖保存"
+            "value" : "不允許儲存覆寫「預設」版面配置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认布局无法被覆盖保存"
+            "value" : "不允許儲存覆寫「預設」版面配置"
           }
         }
       }
@@ -3443,13 +3489,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "提示: 手动锁定屏幕方向避免串流显示异常"
+            "value" : "提示：手動鎖定螢幕方向以避免顯示異常"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "提示: 手动锁定屏幕方向避免串流显示异常"
+            "value" : "提示：手動鎖定螢幕方向以避免顯示異常"
           }
         }
       }
@@ -3472,13 +3518,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在搜索网络中的主机 ..."
+            "value" : "正在網路上搜尋電腦..."
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在搜索网络中的主机 ..."
+            "value" : "正在網路上搜尋電腦..."
           }
         }
       }
@@ -3495,13 +3541,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择主机"
+            "value" : "選取主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择主机"
+            "value" : "選取主機"
           }
         }
       }
@@ -3518,13 +3564,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择新主机"
+            "value" : "選取新主機"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择新主机"
+            "value" : "選取新主機"
           }
         }
       }
@@ -3541,13 +3587,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "灵敏度X: %.2f"
+            "value" : "靈敏度X：%.2f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "灵敏度X: %.2f"
+            "value" : "靈敏度X：%.2f"
           }
         }
       }
@@ -3564,13 +3610,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "灵敏度Y: %.2f"
+            "value" : "靈敏度Y：%.2f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "灵敏度Y: %.2f"
+            "value" : "靈敏度Y：%.2f"
           }
         }
       }
@@ -3587,13 +3633,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流分辨率:"
+            "value" : "設定電腦/遊戲解析度："
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流分辨率:"
+            "value" : "設定電腦/遊戲解析度："
           }
         }
       }
@@ -3610,13 +3656,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "設定"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置"
+            "value" : "設定"
           }
         }
       }
@@ -3633,13 +3679,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按键形状 (r - 圆形, s - 方形)"
+            "value" : "形狀 (r - 圓形, s - 方形)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按键形状 (r - 圆形, s - 方形)"
+            "value" : "形狀 (r - 圓形, s - 方形)"
           }
         }
       }
@@ -3656,13 +3702,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示应用"
+            "value" : "顯示應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示应用"
+            "value" : "顯示應用程式"
           }
         }
       }
@@ -3679,13 +3725,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小"
+            "value" : "大小"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小"
+            "value" : "大小"
           }
         }
       }
@@ -3702,13 +3748,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小: %.2f"
+            "value" : "大小：%.2f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小: %.2f"
+            "value" : "大小：%.2f"
           }
         }
       }
@@ -3725,13 +3771,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开菜单滑动距离: %.2f x 屏幕宽度"
+            "value" : "串流中選單的滑動距離：%.2f * 螢幕寬度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开菜单滑动距离: %.2f x 屏幕宽度"
+            "value" : "串流中選單的滑動距離：%.2f * 螢幕寬度"
           }
         }
       }
@@ -3748,13 +3794,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络带宽不足, 请降低串流码率"
+            "value" : "與電腦的連線緩慢，請降低您的位元率"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络带宽不足, 请降低串流码率"
+            "value" : "與電腦的連線緩慢，請降低您的位元率"
           }
         }
       }
@@ -3771,13 +3817,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "双声道 (iOS18+支持环绕声)"
+            "value" : "立體聲 (iOS18+ 提供環繞音效)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "双声道 (iOS18+支持环绕声)"
+            "value" : "立體聲 (iOS18+ 提供環繞音效)"
           }
         }
       }
@@ -3794,13 +3840,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功发送唤醒请求. 主机唤醒需要一定时间. 如果主机未被唤醒, 请检查Wake-on-LAN设置"
+            "value" : "已成功傳送喚醒請求。電腦可能需要一些時間才能喚醒。如果它一直沒有喚醒，請確保已正確設定網路喚醒。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功发送唤醒请求. 主机唤醒需要一定时间. 如果主机未被唤醒, 请检查Wake-on-LAN设置"
+            "value" : "已成功傳送喚醒請求。電腦可能需要一些時間才能喚醒。如果它一直沒有喚醒，請確保已正確設定網路喚醒。"
           }
         }
       }
@@ -3817,13 +3863,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在串流视图中轻按%d根手指修改虚拟手柄布局"
+            "value" : "在串流畫面中輕點%d指以變更螢幕控制器版面配置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在串流视图中轻按%d根手指修改虚拟手柄布局"
+            "value" : "在串流畫面中輕點%d指以變更螢幕控制器版面配置"
           }
         }
       }
@@ -3840,13 +3886,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义屏显手柄触控无响应区面积: %d%%"
+            "value" : "自訂螢幕控制器點選手指排除區域大小：%d%%"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义屏显手柄触控无响应区面积: %d%%"
+            "value" : "自訂螢幕控制器點選手指排除區域大小：%d%%"
           }
         }
       }
@@ -3863,13 +3909,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "点击需要输入文字的位置, 自动抬升视图  "
+            "value" : "點選您要輸入文字的地方，畫面將自動升起  "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "点击需要输入文字的位置, 自动抬升视图  "
+            "value" : "點選您要輸入文字的地方，畫面將自動升起  "
           }
         }
       }
@@ -3886,13 +3932,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "测试网络"
+            "value" : "測試網路"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "测试网络"
+            "value" : "測試網路"
           }
         }
       }
@@ -3909,13 +3955,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接终止, 错误码: %@"
+            "value" : "連線已終止，錯誤碼：%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接终止, 错误码: %@"
+            "value" : "連線已終止，錯誤碼：%@"
           }
         }
       }
@@ -3932,13 +3978,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已经没有修改可以撤消"
+            "value" : "沒有可復原的變更"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已经没有修改可以撤消"
+            "value" : "沒有可復原的變更"
           }
         }
       }
@@ -3955,13 +4001,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提示: 从屏幕连续滑动一定距离退出远程桌面. 滑动边缘和距离取决于菜单设置."
+            "value" : "提示：從螢幕邊緣滑動一段距離（由滑動和離開設定配置）以中斷與您電腦的連線"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\\n提示: 从屏幕连续滑动一定距离退出远程桌面. 滑动边缘和距离取决于菜单设置."
+            "value" : "提示：從螢幕邊緣滑動一段距離（由滑動和離開設定配置）以中斷與您電腦的連線"
           }
         }
       }
@@ -4007,13 +4053,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "轻按%d根手指, 切换本地软键盘"
+            "value" : "若要切換本機鍵盤：輕點%d指"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "轻按%d根手指, 切换本地软键盘"
+            "value" : "若要切換本機鍵盤：輕點%d指"
           }
         }
       }
@@ -4053,13 +4099,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触屏与控制"
+            "value" : "觸控與控制"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触屏与控制"
+            "value" : "觸控與控制"
           }
         }
       }
@@ -4076,13 +4122,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 双击屏幕拖动, 支持屏显手柄"
+            "value" : "觸控板模式 - 輕點兩下來拖曳，可使用螢幕控制器"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 双击屏幕拖动, 支持屏显手柄"
+            "value" : "觸控板模式 - 輕點兩下來拖曳，可使用螢幕控制器"
           }
         }
       }
@@ -4099,13 +4145,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 适用MacOS单点触控"
+            "value" : "觸控模式 - 適用於 macOS 直接觸控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 适用MacOS单点触控"
+            "value" : "觸控模式 - 適用於 macOS 直接觸控"
           }
         }
       }
@@ -4122,13 +4168,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 不支持屏显手柄,鼠标"
+            "value" : "觸控模式 - 無螢幕控制器與滑鼠支援"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 不支持屏显手柄,鼠标"
+            "value" : "觸控模式 - 無螢幕控制器與滑鼠支援"
           }
         }
       }
@@ -4145,13 +4191,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 支持屏显手柄,鼠标"
+            "value" : "觸控模式 - 具備螢幕控制器與滑鼠支援"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控模式 - 支持屏显手柄,鼠标"
+            "value" : "觸控模式 - 具備螢幕控制器與滑鼠支援"
           }
         }
       }
@@ -4168,13 +4214,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触点灵敏度: %d%%"
+            "value" : "觸控指標速度：%d%%"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触点灵敏度: %d%%"
+            "value" : "觸控指標速度：%d%%"
           }
         }
       }
@@ -4191,13 +4237,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "调节屏幕靠右 %d%%区域的触点灵敏度"
+            "value" : "觸控指標速度：在右側螢幕的%d%%上縮放"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "调节屏幕靠右 %d%%区域的触点灵敏度"
+            "value" : "觸控指標速度：在右側螢幕的%d%%上縮放"
           }
         }
       }
@@ -4220,13 +4266,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 触控板: 拖移方式与Windows笔记本电脑触控板相同, 快速双击的第2下开始进入拖动状态.\n\n- 多点触控: 不支持macOS.\n\n- 单点鼠标: 可为macOS提供类触屏体验."
+            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 原生觸控：即多點觸控傳遞，macOS 不支援。\n\n- 絕對觸控：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 触控板: 拖移方式与Windows笔记本电脑触控板相同, 快速双击的第2下开始进入拖动状态.\n\n- 多点触控: 不支持macOS.\n\n- 单点鼠标: 可为macOS提供类触屏体验."
+            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 原生觸控：即多點觸控傳遞，macOS 不支援。\n\n- 絕對觸控：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         }
       }
@@ -4243,16 +4289,19 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该设备不支持"
+            "value" : "此裝置不支援"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该设备不支持"
+            "value" : "此裝置不支援"
           }
         }
       }
+    },
+    "Version %@" : {
+
     },
     "Video" : {
       "extractionState" : "manual",
@@ -4266,13 +4315,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频"
+            "value" : "視訊"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频"
+            "value" : "視訊"
           }
         }
       }
@@ -4289,13 +4338,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频高度"
+            "value" : "視訊高度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频高度"
+            "value" : "視訊高度"
           }
         }
       }
@@ -4312,13 +4361,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频流: %dx%d %.2f FPS (编解码: %@)\n网络丢帧: %.2f%%\n平均网络延迟: %@%@"
+            "value" : "視訊串流：%dx%d %.2f FPS (編解碼器：%@)\n網路掉幀：%.2f%%\n平均網路延遲：%@%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频流: %dx%d %.2f FPS (编解码: %@)\n网络丢帧: %.2f%%\n平均网络延迟: %@%@"
+            "value" : "視訊串流：%dx%d %.2f FPS (編解碼器：%@)\n網路掉幀：%.2f%%\n平均網路延遲：%@%@"
           }
         }
       }
@@ -4335,13 +4384,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频宽度"
+            "value" : "視訊寬度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视频宽度"
+            "value" : "視訊寬度"
           }
         }
       }
@@ -4358,13 +4407,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "查看所有应用"
+            "value" : "檢視所有應用程式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "查看所有应用"
+            "value" : "檢視所有應用程式"
           }
         }
       }
@@ -4381,13 +4430,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "唤醒PC"
+            "value" : "喚醒電腦"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "唤醒PC"
+            "value" : "喚醒電腦"
           }
         }
       }
@@ -4410,13 +4459,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "开发者: True砖家 (B站)"
+            "value" : "聯絡開發者 True砖家"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "开发者: True砖家 (B站)"
+            "value" : "聯絡開發者 True砖家"
           }
         }
       }
@@ -4433,13 +4482,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络状态较差. 请降低码率或更换可靠的网络连接."
+            "value" : "您的網路連線效能不佳。請降低您的視訊位元率設定或嘗試更快的連線。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络状态较差. 请降低码率或更换可靠的网络连接."
+            "value" : "您的網路連線效能不佳。請降低您的視訊位元率設定或嘗試更快的連線。"
           }
         }
       }
@@ -4462,16 +4511,19 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 开启YUV 4:4:4 选项可提供更高色彩保真度, 但对带宽要求也更高. \n\n- 由于Apple并未提供API判断设备是否支持YUV 4:4:4视频硬解码, 您需要自行打开该选项确认是否可用. 某些设备会因此产生视频亮度丢失的问题."
+            "value" : "- 啟用 YUV 4:4:4 選項可提供更高的色彩保真度，但也需要更大的頻寬。\n\n- 由於 Apple 未提供 API 來判斷裝置是否支援 YUV 4:4:4 視訊的硬體解碼，您需要手動啟用此選項以驗證相容性。在某些裝置上，這可能會導致視訊亮度遺失等問題。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 开启YUV 4:4:4 选项可提供更高色彩保真度, 但对带宽要求也更高. \n\n- 由于Apple并未提供API判断设备是否支持YUV 4:4:4视频硬解码, 您需要自行打开该选项确认是否可用. 某些设备会因此产生视频亮度丢失的问题."
+            "value" : "- 啟用 YUV 4:4:4 選項可提供更高的色彩保真度，但也需要更大的頻寬。\n\n- 由於 Apple 未提供 API 來判斷裝置是否支援 YUV 4:4:4 視訊的硬體解碼，您需要手動啟用此選項以驗證相容性。在某些裝置上，這可能會導致視訊亮度遺失等問題。"
           }
         }
       }
+    },
+    "闽ICP备17012590号-3A\n主办单位：福州创图信息技术有限公司" : {
+
     }
   },
   "version" : "1.0"
