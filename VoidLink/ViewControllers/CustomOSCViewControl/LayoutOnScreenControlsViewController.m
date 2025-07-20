@@ -626,7 +626,9 @@
     CGRect newFrame = view.frame;
     newFrame.size = fittingSize;
     view.frame = newFrame;
-    if([self isIPhone]) [self updateClippedMaskForView:view];
+    [self updateClippedMaskForView:view];
+    if (@available(iOS 14, *)) nil;
+    else [self applyBackgroundForiOS13:view];
 }
 
 - (void)enableCommonWidgetTools{
@@ -719,7 +721,6 @@
     [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", selectedWidgetView.trackballDecelerationRate]];
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
 
-    
     if([self isIPhone]){
         self.vibrationStyleStack.hidden =
         [widgetView.cmdString containsString:@"MOUSEPAD"] ||
@@ -1020,13 +1021,47 @@
     }
 }
 
+- (void)applyBackgroundForiOS13:(UIView* )view {
+    view.backgroundColor = [UIColor clearColor];
+    UIView *backgroundView;
+    for(UIView* subview in view.subviews){
+        if([subview.accessibilityIdentifier isEqualToString:@"iOS13Background"]){
+            backgroundView = subview;
+            break;
+        }
+    }
+    if(!backgroundView){
+        backgroundView = [[UIView alloc] init];
+        backgroundView.accessibilityIdentifier = @"iOS13Background";
+    }
+    
+    backgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    backgroundView.layer.cornerRadius = 16;
+    backgroundView.clipsToBounds = YES;
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    backgroundView.userInteractionEnabled = NO;
+    
+    [view insertSubview:backgroundView atIndex:0];
+
+    // UIEdgeInsets m = self.layoutMargins;
+    [NSLayoutConstraint activateConstraints:@[
+        [backgroundView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:0],
+        [backgroundView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:0],
+        [backgroundView.topAnchor constraintEqualToAnchor:view.topAnchor constant:0],
+        [backgroundView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor constant:0]
+    ]];
+}
+
+
 - (void)updateClippedMaskForView:(UIView* )view{
-    CAShapeLayer *maskLayer = [CAShapeLayer layer];
-    view.layer.mask = nil;
-    CGRect visibleRect = CGRectInset(view.bounds, 40, 0); // 左右各裁掉 20pt
-    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:visibleRect cornerRadius:12];
-    maskLayer.path = path.CGPath;
-    view.layer.mask = maskLayer;
+    if([self isIPhone]){
+        CAShapeLayer *maskLayer = [CAShapeLayer layer];
+        view.layer.mask = nil;
+        CGRect visibleRect = CGRectInset(view.bounds, 40, 0); // 左右各裁掉 20pt
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:visibleRect cornerRadius:12];
+        maskLayer.path = path.CGPath;
+        view.layer.mask = maskLayer;
+    }
 }
 
 - (BOOL)isIPhone{

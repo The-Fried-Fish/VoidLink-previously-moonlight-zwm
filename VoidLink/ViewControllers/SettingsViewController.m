@@ -1300,6 +1300,12 @@ BOOL isCustomResolution(CGSize res) {
     [self.gyroSensitivitySlider addTarget:self action:@selector(gyroSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self gyroSensitivitySliderMoved:self.gyroSensitivitySlider];
     
+    if (@available(iOS 14.0, tvOS 14.0, *)) nil;
+    else{
+        [self.gyroModeSelector setEnabled:false forSegmentAtIndex:1];
+        [self.gyroModeSelector setEnabled:false forSegmentAtIndex:3];
+    }
+    
     [self.emulatedControllerTypeSelector setSelectedSegmentIndex:[self controllerTypeToSegmentIndex:currentSettings.emulatedControllerType.intValue]];
     [self.emulatedControllerTypeSelector addTarget:self action:@selector(emulatedControllerTypeChanged:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self emulatedControllerTypeChanged:self.emulatedControllerTypeSelector];
