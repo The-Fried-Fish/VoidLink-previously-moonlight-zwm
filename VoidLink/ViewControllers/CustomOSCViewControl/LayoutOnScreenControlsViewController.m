@@ -621,14 +621,14 @@
     }
 }
 
-- (void)autoFitView:(UIView* )view{
-    CGSize fittingSize = [view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    CGRect newFrame = view.frame;
+- (void)autoFitStack:(UIStackView* )stack{
+    CGSize fittingSize = [stack systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    CGRect newFrame = stack.frame;
     newFrame.size = fittingSize;
-    view.frame = newFrame;
-    [self updateClippedMaskForView:view];
+    stack.frame = newFrame;
+    [self updateClippedMaskForView:stack];
     if (@available(iOS 14, *)) nil;
-    else [self applyBackgroundForiOS13:view];
+    else [self applyShadowForiOS13:stack];
 }
 
 - (void)enableCommonWidgetTools{
@@ -683,7 +683,7 @@
     self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     
-    [self autoFitView:self.widgetPanelStack];
+    [self autoFitStack:self.widgetPanelStack];
 
     if(showSensitivityFactorStack){
         [self.sensitivityXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
@@ -725,7 +725,7 @@
         self.vibrationStyleStack.hidden =
         [widgetView.cmdString containsString:@"MOUSEPAD"] ||
         [widgetView.cmdString containsString:@"TRACKBALL"];
-        [self autoFitView:self.widgetPanelStack];
+        [self autoFitStack:self.widgetPanelStack];
         self.vibrationStyleSelector.selectedSegmentIndex = self->selectedWidgetView.vibrationStyle;
     }
 }
@@ -770,7 +770,7 @@
         NSNumber *style = [OnScreenControls.layerVibrationStyleDic objectForKey:selectedControllerLayer.name];
         self.vibrationStyleSelector.selectedSegmentIndex = [style unsignedCharValue];
     }
-    [self autoFitView:_widgetPanelStack];
+    [self autoFitStack:_widgetPanelStack];
 }
 
 - (void)widgetSizeSliderMoved:(UISlider* )sender{
@@ -996,7 +996,7 @@
     self.widgetPanelStack.frame = frame;
     
     
-    [self autoFitView:self.widgetPanelStack];
+    [self autoFitStack:self.widgetPanelStack];
     
     if([self isIPhone]) {
         for(UIView* view in _widgetPanelStack.arrangedSubviews){
@@ -1021,35 +1021,36 @@
     }
 }
 
-- (void)applyBackgroundForiOS13:(UIView* )view {
-    view.backgroundColor = [UIColor clearColor];
-    UIView *backgroundView;
-    for(UIView* subview in view.subviews){
-        if([subview.accessibilityIdentifier isEqualToString:@"iOS13Background"]){
-            backgroundView = subview;
-            break;
+- (void)applyShadowForiOS13:(UIStackView* )stack {
+    stack.backgroundColor = [UIColor clearColor];
+    
+    for(UIView* view in stack.arrangedSubviews){
+        if([view isKindOfClass:[UIStackView class]]){
+            UIStackView* subStack = (UIStackView* )view;
+            for(UIView* view in subStack.arrangedSubviews){
+                if([view isKindOfClass:[UILabel class]]){
+                    view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+                    view.layer.cornerRadius = 6;
+                    view.clipsToBounds = YES;
+                    UILabel* label = (UILabel* )view;
+                    label.textAlignment = NSTextAlignmentCenter;
+                }
+                else{
+                    view.tintColor= [UIColor systemTealColor];
+                    view.layer.shadowColor = [[UIColor blackColor] colorWithAlphaComponent:0.9].CGColor;
+                    //view.layer.shadowColor = [UIColor blackColor].CGColor;
+                    view.layer.shadowOffset = CGSizeMake(1, 1);
+                    view.layer.shadowOpacity = 1;
+                    view.layer.shadowRadius = 5;
+                }
+            }
+        }
+        else{
+            view.layer.cornerRadius = 10;
+            view.clipsToBounds = YES;
+            view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
         }
     }
-    if(!backgroundView){
-        backgroundView = [[UIView alloc] init];
-        backgroundView.accessibilityIdentifier = @"iOS13Background";
-    }
-    
-    backgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
-    backgroundView.layer.cornerRadius = 16;
-    backgroundView.clipsToBounds = YES;
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    backgroundView.userInteractionEnabled = NO;
-    
-    [view insertSubview:backgroundView atIndex:0];
-
-    // UIEdgeInsets m = self.layoutMargins;
-    [NSLayoutConstraint activateConstraints:@[
-        [backgroundView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:0],
-        [backgroundView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:0],
-        [backgroundView.topAnchor constraintEqualToAnchor:view.topAnchor constant:0],
-        [backgroundView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor constant:0]
-    ]];
 }
 
 

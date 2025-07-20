@@ -1788,9 +1788,10 @@ static NSMutableSet* hostList;
     [super viewWillAppear:NO];
 
     /* this makes background color works*/
+    /*
     for (UIView *subview in self.view.subviews) {
         [subview removeFromSuperview]; // 暂时移除所有子视图
-    }
+    }*/
 
     
     // We can get here on home press while streaming
