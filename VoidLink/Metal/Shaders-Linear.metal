@@ -58,14 +58,27 @@ fragment float4 yuvToLinear(Vertex v [[ stage_in ]],
                             texture2d<float> luminancePlane [[ texture(0) ]],
                             texture2d<float> chrominancePlane [[ texture(1) ]])
 {
-    float3 yuv = float3(luminancePlane.sample(s, v.texCoords).r,
-                        chrominancePlane.sample(s, v.texCoords).rg);
-    yuv -= cscParams.offsets;
+    // 1. Sample the textures to get the raw float value from the GPU hardware.
+    float3 yuv_hardware_normalized = float3(luminancePlane.sample(s, v.texCoords).r,
+                                          chrominancePlane.sample(s, v.texCoords).rg);
+
+    // 2. Reverse the hardware normalization to get back to the approximate 10-bit integer value.
+    // This reverses the server's (v_10bit << 6) and the hardware's (/ 65535.0) operations.
+    float y_10bit = (yuv_hardware_normalized.r * 65535.0) / 64.0;
+    float2 uv_10bit = (yuv_hardware_normalized.gb * 65535.0) / 64.0;
+
+    // 3. Re-normalize the 10-bit value using the correct 1023.0 divisor that the CSC constants expect.
+    float3 yuv_corrected;
+    yuv_corrected.r = y_10bit / 1023.0;
+    yuv_corrected.gb = uv_10bit / 1023.0;
+
+    // 4. Use this perfectly scaled YUV value for the color conversion.
+    yuv_corrected -= cscParams.offsets;
 
     float3 rgb;
-    rgb.r = dot(yuv, cscParams.matrix[0]);
-    rgb.g = dot(yuv, cscParams.matrix[1]);
-    rgb.b = dot(yuv, cscParams.matrix[2]);
+    rgb.r = dot(yuv_corrected, cscParams.matrix[0]);
+    rgb.g = dot(yuv_corrected, cscParams.matrix[1]);
+    rgb.b = dot(yuv_corrected, cscParams.matrix[2]);
 
     // Clamp RGB to valid range [0, 1]
     rgb = clamp(rgb, 0.0, 1.0);
