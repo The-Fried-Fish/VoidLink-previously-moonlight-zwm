@@ -327,7 +327,8 @@ inline static float getValue(void *buffer, int idx) {
     for (int i = 0; i < PlotCount; i++) {
         if (self.plots[i].side != PLOT_LEFT) continue;
 
-        float minY, maxY;
+        float minY = 0.0f;
+        float maxY = 0.0f;
         int countF = [self.plots[i].buffer copyValuesIntoBuffer:buffers[i] min:&minY max:&maxY];
         float avgF = [self.plots[i].buffer averageValue];
         if (!countF) {
