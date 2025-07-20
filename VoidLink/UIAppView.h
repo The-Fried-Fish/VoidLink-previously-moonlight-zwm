@@ -10,7 +10,7 @@
 #import "TemporaryApp.h"
 
 @protocol AppViewUpdateLoopDelegate <NSObject>
-- (bool)isStreaming;
+- (bool)isInAppView;
 @end
 
 

@@ -387,11 +387,12 @@ static NSMutableSet* hostList;
     //[self applyNavBarAppearance:navBarAppearance];
 }
 
-- (void)appButtonTappedForHost:(TemporaryHost *)host {
+- (void)appButtonTappedForHost:(TemporaryHost *)host{
     if (host.state != StateOnline) return;
     _selectedHost = host;
-    if (host.state == StateOnline && host.pairState == PairStatePaired && host.appList.count > 0) {
-        [self switchToAppView];
+    if(host.state == StateOnline && host.pairState == PairStatePaired){
+        [self updateAppsForHost:host];
+        if(host.appList.count>0) [self switchToAppView];
     }
 }
 
@@ -492,7 +493,7 @@ static NSMutableSet* hostList;
 
 
 - (void) noneUserInitiatedHostAction:(TemporaryHost *)host view:(UIView *)view {
-    Log(LOG_D, @"Clicked host: %@", host.name);
+    NSLog(@"Clicked host: %@", host.name);
     _selectedHost = host;
     //_appManager = [[AppAssetManager alloc] initWithCallback:self];
     [self.collectionView setCollectionViewLayout:self.collectionViewLayout];
@@ -1544,10 +1545,11 @@ static NSMutableSet* hostList;
     #endif
 
     [self updateTitle];
-    // [self.view addSubview:hostScrollView];
-
-    // if ([hostList count] == 1) [self hostClicked:[hostList anyObject] view:nil]; // auto click for single host
     
+    [self retrieveSavedHosts];
+
+    _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
+
 
     //if([SettingsViewController isLandscapeNow] != _streamConfig.width > _streamConfig.height)
     //[self simulateSettingsButtonPress]; //force expand setting view if orientation changed since last quit from app.
@@ -1809,11 +1811,6 @@ static NSMutableSet* hostList;
     [self.view addSubview:self.collectionView];
     [self initHostCollection];
     if(!_enteredAppView) [self switchToHostView];
-
-    [self retrieveSavedHosts];
-
-    _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
-    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1903,7 +1900,8 @@ static NSMutableSet* hostList;
         NSArray* sortedHostList = [[hostList allObjects] sortedArrayUsingSelector:@selector(compareName:)];
         for (TemporaryHost* comp in sortedHostList) {
             
-            if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
+            // if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
+            [self.hostCollectionVC addHost:comp];
 
             // Start jobs to decode the box art in advance
             for (TemporaryApp* app in comp.appList) {
@@ -2005,8 +2003,8 @@ static NSMutableSet* hostList;
     [self.collectionView reloadData];
 }
 
-- (bool)isStreaming{
-    return self.revealViewController.isStreaming;
+- (bool)isInAppView{
+    return !self.revealViewController.isStreaming && _enteredAppView;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {

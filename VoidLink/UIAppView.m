@@ -5,6 +5,10 @@
 //  Created by Diego Waxemberg on 10/22/14.
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
+//  Created by True砖家 on 2025.7.20.
+//  Copyright © 2025 True砖家 @ Bilibili. All rights reserved.
+//
+
 
 #import "UIAppView.h"
 #import "AppAssetManager.h"
@@ -255,7 +259,7 @@ static UIImage* noImage;
 
 - (void) updateLoop {
     // Stop immediately if the view has been detached
-    if ([self.updateLoopDelegate isStreaming] || self.superview == nil) {
+    if (self.superview == nil) {
         return;
     }
     
@@ -277,7 +281,7 @@ static UIImage* noImage;
     [self setAlpha:_app.hidden ? 0.4 : 1.0];
     
     // Queue the next refresh cycle
-    [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
+    if([self.updateLoopDelegate isInAppView]) [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
 }
 
 @end

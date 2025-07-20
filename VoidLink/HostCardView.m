@@ -573,8 +573,12 @@ static const float REFRESH_CYCLE = 2.0f;
             } else {
                 self.statusIcon.hidden = YES;
             }
+            
+            bool hostPaired = host.pairState == PairStatePaired;
+            
             _hostIconView.tintColor = [ThemeManager lowProfileGray];
-            lockIconView.hidden = YES;
+            lockIconView.tintColor = [ThemeManager lowProfileGray];
+            lockIconView.hidden = hostPaired;
             _appButton.hidden = YES;
             _launchButton.hidden = YES;
             _pairButton.hidden = YES;
@@ -583,13 +587,15 @@ static const float REFRESH_CYCLE = 2.0f;
             if (@available(iOS 13.0, *)) {
                 UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:buttonHeight/3.45 weight:UIImageSymbolWeightBold];
                 UIImage *templateImage = [UIImage systemImageNamed:@"power" withConfiguration:config];
-                UIImage *coloredImage = [templateImage imageWithTintColor:defaultBlue renderingMode:UIImageRenderingModeAlwaysOriginal];
+                UIImage *coloredImage = [templateImage imageWithTintColor:hostPaired ? defaultBlue : [ThemeManager textColorGray] renderingMode:UIImageRenderingModeAlwaysOriginal];
                 [self.wakeupButton setImage:coloredImage forState:UIControlStateNormal];
             } else {
                 // Fallback on earlier versions
             }
-            self.wakeupButton.backgroundColor = [ThemeManager textTintColorWithAlpha];
-            [self.wakeupButton setTitleColor:defaultBlue forState:UIControlStateNormal];
+
+            self.wakeupButton.backgroundColor = hostPaired ? [ThemeManager textTintColorWithAlpha] : [[ThemeManager textColorGray] colorWithAlphaComponent:0.2];
+            [self.wakeupButton setTitleColor: hostPaired ? defaultBlue : [ThemeManager textColorGray] forState:UIControlStateNormal];
+            
             break;
         case StateUnknown:
             _hostSpinner.color = [UIColor whiteColor];
