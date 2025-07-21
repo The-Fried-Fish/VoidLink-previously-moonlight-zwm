@@ -509,10 +509,12 @@ static const float REFRESH_CYCLE = 2.0f;
         return;
     }
     
+    NSLog(@"hostCard update loop %f", CACurrentMediaTime());
+    
     [self updateContentsForHost:_host];
     
     // Queue the next refresh cycle
-    [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
+    if(![self.delegate isStreaming]) [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
 }
 
 - (void) updateContentsForHost:(TemporaryHost*)host {

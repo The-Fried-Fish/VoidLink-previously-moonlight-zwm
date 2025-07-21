@@ -621,12 +621,14 @@
     }
 }
 
-- (void)autoFitView:(UIView* )view{
-    CGSize fittingSize = [view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    CGRect newFrame = view.frame;
+- (void)autoFitStack:(UIStackView* )stack{
+    CGSize fittingSize = [stack systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    CGRect newFrame = stack.frame;
     newFrame.size = fittingSize;
-    view.frame = newFrame;
-    if([self isIPhone]) [self updateClippedMaskForView:view];
+    stack.frame = newFrame;
+    [self updateClippedMaskForView:stack];
+    if (@available(iOS 14, *)) nil;
+    else [self applyShadowForiOS13:stack];
 }
 
 - (void)enableCommonWidgetTools{
@@ -681,7 +683,7 @@
     self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     
-    [self autoFitView:self.widgetPanelStack];
+    [self autoFitStack:self.widgetPanelStack];
 
     if(showSensitivityFactorStack){
         [self.sensitivityXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
@@ -719,12 +721,11 @@
     [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", selectedWidgetView.trackballDecelerationRate]];
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
 
-    
     if([self isIPhone]){
         self.vibrationStyleStack.hidden =
         [widgetView.cmdString containsString:@"MOUSEPAD"] ||
         [widgetView.cmdString containsString:@"TRACKBALL"];
-        [self autoFitView:self.widgetPanelStack];
+        [self autoFitStack:self.widgetPanelStack];
         self.vibrationStyleSelector.selectedSegmentIndex = self->selectedWidgetView.vibrationStyle;
     }
 }
@@ -769,7 +770,7 @@
         NSNumber *style = [OnScreenControls.layerVibrationStyleDic objectForKey:selectedControllerLayer.name];
         self.vibrationStyleSelector.selectedSegmentIndex = [style unsignedCharValue];
     }
-    [self autoFitView:_widgetPanelStack];
+    [self autoFitStack:_widgetPanelStack];
 }
 
 - (void)widgetSizeSliderMoved:(UISlider* )sender{
@@ -995,7 +996,7 @@
     self.widgetPanelStack.frame = frame;
     
     
-    [self autoFitView:self.widgetPanelStack];
+    [self autoFitStack:self.widgetPanelStack];
     
     if([self isIPhone]) {
         for(UIView* view in _widgetPanelStack.arrangedSubviews){
@@ -1020,13 +1021,48 @@
     }
 }
 
+- (void)applyShadowForiOS13:(UIStackView* )stack {
+    stack.backgroundColor = [UIColor clearColor];
+    
+    for(UIView* view in stack.arrangedSubviews){
+        if([view isKindOfClass:[UIStackView class]]){
+            UIStackView* subStack = (UIStackView* )view;
+            for(UIView* view in subStack.arrangedSubviews){
+                if([view isKindOfClass:[UILabel class]]){
+                    view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+                    view.layer.cornerRadius = 6;
+                    view.clipsToBounds = YES;
+                    UILabel* label = (UILabel* )view;
+                    label.textAlignment = NSTextAlignmentCenter;
+                }
+                else{
+                    view.tintColor= [UIColor systemTealColor];
+                    view.layer.shadowColor = [[UIColor blackColor] colorWithAlphaComponent:0.9].CGColor;
+                    //view.layer.shadowColor = [UIColor blackColor].CGColor;
+                    view.layer.shadowOffset = CGSizeMake(1, 1);
+                    view.layer.shadowOpacity = 1;
+                    view.layer.shadowRadius = 5;
+                }
+            }
+        }
+        else{
+            view.layer.cornerRadius = 10;
+            view.clipsToBounds = YES;
+            view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+        }
+    }
+}
+
+
 - (void)updateClippedMaskForView:(UIView* )view{
-    CAShapeLayer *maskLayer = [CAShapeLayer layer];
-    view.layer.mask = nil;
-    CGRect visibleRect = CGRectInset(view.bounds, 40, 0); // 左右各裁掉 20pt
-    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:visibleRect cornerRadius:12];
-    maskLayer.path = path.CGPath;
-    view.layer.mask = maskLayer;
+    if([self isIPhone]){
+        CAShapeLayer *maskLayer = [CAShapeLayer layer];
+        view.layer.mask = nil;
+        CGRect visibleRect = CGRectInset(view.bounds, 40, 0); // 左右各裁掉 20pt
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:visibleRect cornerRadius:12];
+        maskLayer.path = path.CGPath;
+        view.layer.mask = maskLayer;
+    }
 }
 
 - (BOOL)isIPhone{

@@ -236,7 +236,7 @@ static UIImage* noImage;
     _appImage.layer.opacity = 0.5f;
 }
 - (void) buttonDeselected:(id)sender {
-    _appImage.layer.opacity = 1.0f;
+    _appImage.layer.opacity = [self isCurrentApp] ? 0.75 : 1.0f;
 }
 
 - (void) positionSubviews {
@@ -252,7 +252,8 @@ static UIImage* noImage;
         if (_appOverlay != nil) {
             _appOverlay.frame = [self isCurrentApp] ? CGRectMake(0, 0, frameSize.width / 2.39, frameSize.width / 2.39) : CGRectMake(0, 0, frameSize.width / 2, frameSize.width / 2);
             _appOverlay.center = CGPointMake(frameSize.width/2,  frameSize.height/2 - 2 * verticalPadding);
-            
+            if([self isCurrentApp]) _appImage.layer.opacity = 0.75f;
+
             //[_appLabel setFrame:CGRectMake(padding, _appOverlay.frame.size.height + padding, frameSize.width - 2 * padding, frameSize.height - _appOverlay.frame.size.height - 2 * padding)];
         }
 }
