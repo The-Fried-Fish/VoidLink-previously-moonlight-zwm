@@ -69,6 +69,7 @@
     NSCache* _boxArtCache;
     bool _background;
     bool _enteredAppView;
+    bool _settingsViewExpanded;
     UIView* menuSeparator;
     UIView* snapshot;
     SettingsViewController* settingsViewController;
@@ -1119,6 +1120,7 @@ static NSMutableSet* hostList;
 - (void)revealController:(SWRevealViewController *)revealController willMoveToPosition:(FrontViewPosition)position {
     settingsViewController = (SettingsViewController*)[revealController rearViewController];
     revealController.navBarMenuDelegate = settingsViewController;
+    _settingsViewExpanded = position != FrontViewPositionLeft;
     if (position == FrontViewPositionLeft) {
         self.navigationItem.leftBarButtonItems = @[_settingsButton];
     }
@@ -1788,11 +1790,12 @@ static NSMutableSet* hostList;
     [super viewWillAppear:NO];
 
     /* this makes background color works*/
-    /*
-    for (UIView *subview in self.view.subviews) {
-        [subview removeFromSuperview]; // 暂时移除所有子视图
-    }*/
-
+    
+    if(!_settingsViewExpanded){
+        for (UIView *subview in self.view.subviews) {
+            [subview removeFromSuperview]; // 暂时移除所有子视图
+        }
+    }
     
     // We can get here on home press while streaming
     // since the stream view segues to us just before
@@ -2006,6 +2009,10 @@ static NSMutableSet* hostList;
 
 - (bool)isInAppView{
     return !self.revealViewController.isStreaming && _enteredAppView;
+}
+
+- (bool)isStreaming{
+    return self.revealViewController.isStreaming;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {

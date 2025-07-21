@@ -16,6 +16,7 @@
 - (void)wakeupButtonTappedForHost:(TemporaryHost *)host;
 - (void)pairButtonTappedForHost:(TemporaryHost *)host;
 - (void)hostCardLongPressed:(TemporaryHost *)host view:(UIView *)view;
+- (bool)isStreaming;
 @end
 
 

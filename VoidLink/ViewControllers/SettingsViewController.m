@@ -576,7 +576,7 @@ BOOL isCustomResolution(CGSize res) {
     audioSection.delegate = self;
     audioSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Audio"];
     if (@available(iOS 13.0, *)) {
-        [audioSection setSectionWithIcon:[UIImage systemImageNamed:@"speaker.wave.2"] andSize:23];
+        [audioSection setSectionWithIcon:[UIImage imageNamed:@"speaker.wave.2"] andSize:20];
     }
     
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
