@@ -94,6 +94,12 @@ struct Vertex {
 
 static const NSUInteger MaxFramesInFlight = 3;
 
+// EDR tone-mapping is possible but it's unclear how
+// best to tone-map Windows content
+static BOOL useEDR = NO;
+
+CFStringRef __currentColorSpace;
+
 @implementation MetalVideoRenderer {
     dispatch_queue_t _sq;
     id<MTLDevice> _device;
@@ -106,7 +112,7 @@ static const NSUInteger MaxFramesInFlight = 3;
     CVMetalTextureCacheRef _textureCache;
     CVMetalTextureRef _cvMetalTextures[MAX_VIDEO_PLANES];
 
-    CGFloat _currentEDRHeadroom;
+    float _currentEDRHeadroom;
     int _lastColorSpace;
     BOOL _lastFullRange;
     size_t _lastFrameWidth;
@@ -166,6 +172,9 @@ static const NSUInteger MaxFramesInFlight = 3;
     if (_renderPassDescriptor) {
         _renderPassDescriptor = nil;
     }
+    if (__currentColorSpace) {
+        CFRelease(__currentColorSpace);
+    }
 }
 
 #if !TARGET_OS_TV
@@ -192,7 +201,7 @@ static const NSUInteger MaxFramesInFlight = 3;
 #endif
     if (headroom != _currentEDRHeadroom) {
         Log(LOG_I, @"EDR headroom changed to %.1f", headroom);
-        _currentEDRHeadroom = headroom;
+        _currentEDRHeadroom = (float)headroom;
     }
 }
 
@@ -232,11 +241,15 @@ static const NSUInteger MaxFramesInFlight = 3;
         CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
         CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
         if (masteringDisplayColorVolume) {
+            // This tone-mapper does receive the host's max nits in MDCV when connecting to Windows,
+            // but I think using this for tone-mapping would break apps not using system calibration (most apps).
             layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:(__bridge NSData *)masteringDisplayColorVolume
                                                                 contentInfo:contentLightLevel ? (__bridge NSData *)contentLightLevel : nil
                                                          opticalOutputScale:100.0f];
         } else {
-            layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f maxLuminance:1000.0f opticalOutputScale:100.0f];
+            layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f
+                                                                maxLuminance:1000.0f
+                                                          opticalOutputScale:100.0f];
         }
         LogOnce(LOG_I, @"EDRMetadata set to colorspace %@, transfer function %@, %@", layer.colorspace, frame_trc, layer.EDRMetadata);
     });
@@ -328,21 +341,31 @@ static const NSUInteger MaxFramesInFlight = 3;
                                                                        : [NSString stringWithFormat:@"Unknown: %lu", (unsigned long)layer.pixelFormat]);
             }
 
-            if ([CAEDRMetadata isAvailable]) {
+#if TARGET_OS_TV
+            // These can only be changed on the main thread
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                layer.colorspace = newColorSpace;
+                layer.pixelFormat = newPixelFormat;
+            });
+#else
+            if (useEDR && [CAEDRMetadata isAvailable]) {
                 [self applyEDRFromFrame:frame withColorspace:colorspace toLayer:layer];
             } else {
                 // These can only be changed on the main thread
                 dispatch_sync(dispatch_get_main_queue(), ^{
-#if !TARGET_OS_TV
                     if (isHDR) {
                         layer.wantsExtendedDynamicRangeContent = YES;
                     }
-#endif
                     layer.colorspace = newColorSpace;
                     layer.pixelFormat = newPixelFormat;
                 });
-                CGColorSpaceRelease(newColorSpace);
             }
+#endif
+            if (__currentColorSpace) {
+                CFRelease(__currentColorSpace);
+            }
+            __currentColorSpace = CGColorSpaceCopyName(newColorSpace);
+            CGColorSpaceRelease(newColorSpace);
         }
 
         // Create the new colorspace parameter buffer for our fragment shader
@@ -548,13 +571,12 @@ static const NSUInteger MaxFramesInFlight = 3;
             [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
         }
 
-//        if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
-//            [self pollCurrentEDRHeadroom];
-//            [renderEncoder setFragmentBytes:&_currentEDRHeadroom length:sizeof(CGFloat) atIndex:0];
-//        }
-
         [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
         [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+        if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
+            [self pollCurrentEDRHeadroom];
+            [renderEncoder setFragmentBytes:&_currentEDRHeadroom length:sizeof(float) atIndex:1];
+        }
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
 
@@ -626,6 +648,13 @@ static const NSUInteger MaxFramesInFlight = 3;
 }
 
 - (void)resize:(CGSize)size {
+}
+
++ (NSString *)currentColorSpace {
+    if (__currentColorSpace) {
+        return (__bridge NSString *)__currentColorSpace;
+    }
+    return nil;
 }
 
 @end

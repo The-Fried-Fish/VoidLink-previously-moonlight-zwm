@@ -20,4 +20,6 @@
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)shutdown;
 
++ (NSString *_Nullable)currentColorSpace;
+
 @end
