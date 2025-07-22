@@ -745,7 +745,9 @@
             _inactivityTimer = nil;
         }
         if (self.metalViewController) {
+            [self.metalViewController shutdown];
             [self.metalViewController.view removeFromSuperview];
+            [self.metalViewController removeFromParentViewController];
             self.metalViewController = nil;
             NSLog(@"Metal renderer stopped and cleaned up.");
         }

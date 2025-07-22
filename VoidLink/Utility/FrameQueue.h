@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)currentSoftCap;
 - (void)waitForEnqueue;
 - (void)shutdown;
+- (void)start;
 
 @end
 

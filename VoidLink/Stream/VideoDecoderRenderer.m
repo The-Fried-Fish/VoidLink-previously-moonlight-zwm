@@ -125,6 +125,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     _parameterSetBuffers = [[NSMutableArray alloc] init];
     _frameQueue = [FrameQueue sharedInstance];
+    [_frameQueue start];
     _maxRefreshRate = [[UIScreen mainScreen] maximumFramesPerSecond];
 
     DataManager* dataMan = [[DataManager alloc] init];

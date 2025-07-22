@@ -287,10 +287,15 @@
     return [self count] == 0;
 }
 
-- (void)clear {
-    os_unfair_lock_lock(&_lock);
+- (void)_clear_unsafe {
     _head = _tail = _count = 0;
     _frameDropMetrics = [[FloatBuffer alloc] initWithCapacity:512];
+}
+
+// The public clear method now safely calls the unsafe version.
+- (void)clear {
+    os_unfair_lock_lock(&_lock);
+    [self _clear_unsafe];
     os_unfair_lock_unlock(&_lock);
 }
 
@@ -329,6 +334,14 @@
     self.isStopping = YES;
     Log(LOG_I, @"XXX FrameQueue shutting down");
     dispatch_semaphore_signal(_frameSemaphore);
+}
+
+- (void)start {
+    os_unfair_lock_lock(&_lock);
+    [self _clear_unsafe]; // Use the version without the lock
+    self.isStopping = NO;
+    os_unfair_lock_unlock(&_lock);
+    Log(LOG_I, @"FrameQueue (re)started");
 }
 
 // For use with NSLog("%@", franeQueue);
