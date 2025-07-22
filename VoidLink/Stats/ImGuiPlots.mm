@@ -92,4 +92,12 @@
     }
 }
 
+- (void) clearData {
+    for (int i = 0; i < PlotCount; i++) {
+        if (_plots[i].buffer) {
+            [_plots[i].buffer clear];
+        }
+    }
+}
+
 @end

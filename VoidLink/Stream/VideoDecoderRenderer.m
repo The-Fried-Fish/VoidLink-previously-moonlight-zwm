@@ -65,7 +65,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         _displayLayer.videoGravity = AVLayerVideoGravityResize;
         [_view.layer addSublayer:_displayLayer];
     }
-    
+
     // Ensure the AVSampleBufferDisplayLayer is sized to preserve the aspect ratio
     // of the video stream. We used to use AVLayerVideoGravityResizeAspect, but that
     // respects the PAR encoded in the SPS which causes our computed video-relative
@@ -77,30 +77,30 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     } else {
         videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / _streamAspectRatio);
     }
-    
+
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     _displayLayer.position = CGPointMake(CGRectGetMidX(_view.bounds), CGRectGetMidY(_view.bounds));
     _displayLayer.bounds = CGRectMake(0, 0, videoSize.width, videoSize.height);
     [CATransaction commit];
-    
+
     // Hide the layer until we get an IDR frame. This ensures we
     // can see the loading progress label as the stream is starting.
     _displayLayer.hidden = YES;
-    
+
     if (_formatDesc != nil) {
         CFRelease(_formatDesc);
         _formatDesc = nil;
     }
-    
+
     if (_formatDescImageBuffer != nil) {
         CFRelease(_formatDescImageBuffer);
         _formatDescImageBuffer = nil;
     }
-    
+
     if (_decompressionSession != nil){
         VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
-        
+
         VTDecompressionSessionInvalidate(_decompressionSession);
         CFRelease(_decompressionSession);
         _decompressionSession = nil;
@@ -122,14 +122,13 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     _view = view;
     _callbacks = callbacks;
     _streamAspectRatio = aspectRatio;
-
-    _parameterSetBuffers = [[NSMutableArray alloc] init];
-    _frameQueue = [FrameQueue sharedInstance];
-    [_frameQueue start];
     _maxRefreshRate = [[UIScreen mainScreen] maximumFramesPerSecond];
+    _parameterSetBuffers = [[NSMutableArray alloc] init];
 
     DataManager* dataMan = [[DataManager alloc] init];
 
+    _frameQueue = [FrameQueue sharedInstance];
+    [_frameQueue start];
     [_frameQueue setHighWaterMark:(int)[[dataMan getSettings].frameQueueSize integerValue]];
 
     [self reinitializeDisplayLayer];
@@ -148,6 +147,9 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 {
     self->_videoFormat = videoFormat;
     self->_frameRate = frameRate;
+
+    // reset plot data in case we've already used it for a previous renderer
+    [[ImGuiPlots sharedInstance] clearData];
 
     DataManager* dataMan = [[DataManager alloc] init];
     if ([[dataMan getSettings].renderingBackend integerValue] == RENDER_AVSB) {
@@ -221,7 +223,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         // so this is safe to do right here.
         [self->_displayLayer flushAndRemoveImage];
         [self reinitializeDisplayLayer];
-        
+
         // Request an IDR frame to initialize the new decoder
         LiRequestIdrFrame();
     }
@@ -349,8 +351,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 }
 - (void)cleanup
 {
-    [_frameQueue shutdown];
-    
+    [_frameQueue stop];
+
     if (_renderingBackend == RENDER_AVSB) {
         [_displayLink invalidate];
     }
@@ -745,7 +747,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         free(data);
         return DR_NEED_IDR;
     }
-    
+
     // Now we're decoding actual frame data here
     CMBlockBufferRef frameBlockBuffer;
     CMBlockBufferRef dataBlockBuffer;

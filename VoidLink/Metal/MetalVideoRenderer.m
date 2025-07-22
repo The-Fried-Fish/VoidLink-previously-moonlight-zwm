@@ -158,6 +158,11 @@ CFStringRef __currentColorSpace;
 }
 
 - (void)dealloc {
+    Log(LOG_I, @"MetalVideoRenderer dealloc");
+
+    if (_commandQueue) {
+        _commandQueue = nil;
+    }
     if (_CscParamsBuffer) {
         _CscParamsBuffer = nil;
     }
@@ -172,6 +177,9 @@ CFStringRef __currentColorSpace;
     if (_renderPassDescriptor) {
         _renderPassDescriptor = nil;
     }
+    if (_textureCache) {
+        _textureCache = nil;
+    }
     if (__currentColorSpace) {
         CFRelease(__currentColorSpace);
     }
@@ -179,12 +187,7 @@ CFStringRef __currentColorSpace;
 
 #if !TARGET_OS_TV
 - (void)reportMaxEDRHeadroom {
-    CGFloat maxHeadroom = 1.0f;
-#if TARGET_OS_OSX
-    maxHeadroom = [[NSScreen mainScreen] maximumPotentialExtendedDynamicRangeColorComponentValue];
-#else
-    maxHeadroom = [[UIScreen mainScreen] potentialEDRHeadroom];
-#endif
+    CGFloat maxHeadroom = [[UIScreen mainScreen] potentialEDRHeadroom];
     if (maxHeadroom > 1.0) {
         LogOnce(LOG_I, @"Display supports EDR with a max headroom of %.1f", maxHeadroom);
     } else {
@@ -193,12 +196,7 @@ CFStringRef __currentColorSpace;
 }
 
 - (void)pollCurrentEDRHeadroom {
-    CGFloat headroom = 1.0f;
-#if TARGET_OS_OSX
-    headroom = [[NSScreen mainScreen] maximumExtendedDynamicRangeColorComponentValue];
-#else
-    headroom = [[UIScreen mainScreen] currentEDRHeadroom];
-#endif
+    CGFloat headroom = [[UIScreen mainScreen] currentEDRHeadroom];
     if (headroom != _currentEDRHeadroom) {
         Log(LOG_I, @"EDR headroom changed to %.1f", headroom);
         _currentEDRHeadroom = (float)headroom;
@@ -448,7 +446,7 @@ CFStringRef __currentColorSpace;
 - (void)renderFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer {
     @autoreleasepool {
         if (self.isStopping) {
-            Log(LOG_I, @"XXX Metal renderThread is stopping. returning from renderFrame");
+            Log(LOG_I, @"[MetalVideoRenderer] isStopping");
             return;
         }
 
@@ -573,10 +571,12 @@ CFStringRef __currentColorSpace;
 
         [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
         [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
+#if !TARGET_OS_TV
         if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
             [self pollCurrentEDRHeadroom];
             [renderEncoder setFragmentBytes:&_currentEDRHeadroom length:sizeof(float) atIndex:1];
         }
+#endif
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
 
@@ -617,8 +617,6 @@ CFStringRef __currentColorSpace;
 #endif
 
         [commandBuffer commit];
-
-        // Wait for the command buffer to complete and free our CVMetalTextureCache references
         [commandBuffer waitUntilCompleted];
     }
 }
@@ -633,12 +631,14 @@ CFStringRef __currentColorSpace;
 }
 
 - (void)shutdown {
-    Log(LOG_I, @"XXX MetalVideoRenderer shutodwn");
-    self.isStopping = YES;
+    if (!self.isStopping) {
+        self.isStopping = YES;
+        Log(LOG_I, @"[MetalVideoRenderer] shutdown");
 
-    // Ensure no rendering is in flight
-    for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
-        dispatch_semaphore_signal(_inFlightSemaphore);
+        // Ensure no rendering is in flight
+        for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
+            dispatch_semaphore_signal(_inFlightSemaphore);
+        }
     }
 }
 

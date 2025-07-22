@@ -1,4 +1,4 @@
-// This is based on the following Apple example:
+// This is based on the following Apple example
 // https://developer.apple.com/documentation/metal/achieving-smooth-frame-rates-with-a-metal-display-link?language=objc
 // https://developer.apple.com/wwdc23/10123/
 
@@ -29,29 +29,23 @@
 }
 
 - (void)initCommon {
-#if TARGET_OS_OSX
-    self.wantsLayer = YES;
-
-    self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawDuringViewResize;
-#endif
-
     _metalLayer = (CAMetalLayer *)self.layer;
-
     self.layer.delegate = self;
 }
 
 - (void)shutdown {
     if (_renderThread) {
+        Log(LOG_I, @"[MetalView] sending renderThread a cancel message");
         [_renderThread cancel];
-        // wait for thread to exist
+        Log(LOG_I, @"[MetalView] waiting on renderThread to finish");
         while (!_renderThread.isFinished) {
-            Log(LOG_I, @"XXX MetalView waiting on renderThread to finish");
             usleep(100);
         }
+        Log(LOG_I, @"[MetalView] renderThread has finished");
+        _renderThread = nil;
     }
 }
 
-#if TARGET_OS_IOS || TARGET_OS_TV
 + (Class)layerClass {
     return [CAMetalLayer class];
 }
@@ -59,29 +53,11 @@
 - (void)didMoveToWindow {
     [self movedToWindow];
 }
-#else
-- (CALayer *)makeBackingLayer {
-    return [CAMetalLayer layer];
-}
-
-- (void)viewDidMoveToWindow {
-    [self movedToWindow];
-}
-#endif  // END TARGET_OS_IOS || TARGET_OS_TV
 
 - (void)movedToWindow {
     if (!self.window) {
-        return;
-
-        // We have been removed
-        if (_renderThread) {
-            [_renderThread cancel];
-            // wait for thread to exist
-            while (!_renderThread.isFinished) {
-                Log(LOG_I, @"XXX MetalView waiting on renderThread to finish");
-                usleep(100);
-            }
-        }
+        Log(LOG_I, @"[MetalView] movedToWindow(nil): shutting down...");
+        [self shutdown];
         return;
     }
 
@@ -93,21 +69,18 @@
                 [self.delegate renderTo:self.metalLayer];
             }
         }
-        Log(LOG_I, @"XXX Metal renderThread shutting down");
+        Log(LOG_I, @"[MetalView] renderThread is exiting");
     }];
     _renderThread.name = @"MetalVideoRenderer";
     _renderThread.qualityOfService = NSQualityOfServiceUserInteractive;
     [_renderThread start];
+    Log(LOG_I, @"[MetalView] started renderThread %@", _renderThread);
 
     // Perform any actions that need to know the size and scale of the drawable. When UIKit calls
     // didMoveToWindow after the view initialization, this is the first opportunity to notify
     // components of the drawable's size.
 #if AUTOMATICALLY_RESIZE
-#if TARGET_OS_IOS || TARGET_OS_TV
     [self resizeDrawable:self.window.screen.nativeScale];
-#else
-    [self resizeDrawable:self.window.screen.backingScaleFactor];
-#endif
 #else
     // Notify the delegate of the default drawable size when the system can calculate it.
     CGSize defaultDrawableSize = self.bounds.size;
@@ -123,7 +96,6 @@
 
 // Override all methods that indicate the view's size has changed.
 
-#if TARGET_OS_IOS || TARGET_OS_TV
 - (void)setContentScaleFactor:(CGFloat)contentScaleFactor {
     [super setContentScaleFactor:contentScaleFactor];
     [self resizeDrawable:self.window.screen.nativeScale];
@@ -143,22 +115,6 @@
     [super setBounds:bounds];
     [self resizeDrawable:self.window.screen.nativeScale];
 }
-#else
-- (void)viewDidChangeBackingProperties {
-    [super viewDidChangeBackingProperties];
-    [self resizeDrawable:self.window.screen.backingScaleFactor];
-}
-
-- (void)setFrameSize:(NSSize)size {
-    [super setFrameSize:size];
-    [self resizeDrawable:self.window.screen.backingScaleFactor];
-}
-
-- (void)setBoundsSize:(NSSize)size {
-    [super setBoundsSize:size];
-    [self resizeDrawable:self.window.screen.backingScaleFactor];
-}
-#endif
 
 - (void)resizeDrawable:(CGFloat)scaleFactor {
     CGSize newSize = self.bounds.size;

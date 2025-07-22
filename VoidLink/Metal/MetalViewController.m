@@ -33,6 +33,7 @@ The implementation of the cross-platform game view controller.
 
 - (void)loadView {
     self.view = [[MetalView alloc] initWithFrame:_bounds];
+    Log(LOG_I, @"[MetalViewController] created MetalView %@", (MetalView *)self.view);
 }
 
 - (void)viewDidLoad {
@@ -51,7 +52,7 @@ The implementation of the cross-platform game view controller.
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
     if (!device) {
         Log(LOG_E, @"Metal isn't supported on this device.");
-        self.view = [[PlatformView alloc] initWithFrame:self.view.frame];
+        self.view = [[UIView alloc] initWithFrame:self.view.frame];
         return;
     }
     view.metalLayer.device = device;
@@ -64,12 +65,12 @@ The implementation of the cross-platform game view controller.
         Log(LOG_E, @"The renderer couldn't be initialized.");
         return;
     }
+    self->_renderer = renderer;
+    Log(LOG_I, @"[MetalViewController] viewDidLoad, created renderer: %@", renderer);
 
     // Initialize the renderer-dependent view properties.
     view.metalLayer.pixelFormat = renderer.colorPixelFormat;
     view.metalLayer.maximumDrawableCount = 3;
-
-    self->_renderer = renderer;
 }
 
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
@@ -95,45 +96,19 @@ The implementation of the cross-platform game view controller.
     [_renderer drawableResize:size];
 }
 
-- (void)shutdown {
-    [_renderer shutdown];
-}
-
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
 
-    Log(LOG_I, @"XXX MetalViewController viewDidDisappear");
+    Log(LOG_I, @"[MetalViewController] viewDidDisappear");
 
-    [_metalView shutdown];
+    [_renderer shutdown];
+    _renderer = nil;
 }
 
 #if TARGET_OS_IOS
-/// Hides the Home indicator button automatically.
+// Hides the Home indicator button automatically.
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
-}
-#endif
-
-#if TARGET_OS_OSX
-/// Makes the view controller the first responder to receive keyboard events.
-- (void)viewDidAppear {
-    [_metalView.window makeFirstResponder:self];
-}
-
-/// Receives the keydown events to avoid system beeps.
-///
-/// The `GameInputKeyboardMouse` class handles keyboard events.
-- (void)keyDown:(NSEvent *)event {
-    // Reference the parameter to avoid an unused parameter warning.
-    (void)(event);
-}
-
-/// Receives the keyup events to avoid system beeps.
-///
-/// The `GameInputKeyboardMouse` class handles keyboard events.
-- (void)keyUp:(NSEvent *)event {
-    // Reference the parameter to avoid an unused parameter warning.
-    (void)(event);
 }
 #endif
 

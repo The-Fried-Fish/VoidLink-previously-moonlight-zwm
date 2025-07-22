@@ -24,6 +24,7 @@ struct PlotDef {
 - (instancetype _Nonnull)init NS_UNAVAILABLE;
 + (instancetype _Nonnull)new NS_UNAVAILABLE;
 
+- (void)clearData;
 - (void)observeFloat:(int)plotId value:(CFTimeInterval)value;
 - (void)observeFloatReturnMetrics:(int)plotId value:(CFTimeInterval)value plotMetrics:(PlotMetrics * _Nullable)plotMetrics;
 
