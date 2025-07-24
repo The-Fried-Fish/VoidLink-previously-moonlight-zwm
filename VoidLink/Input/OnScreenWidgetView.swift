@@ -361,7 +361,7 @@ import UIKit
         if self.shape == "round"{ // we'll make custom osc buttons round & smaller
             NSLayoutConstraint.activate([
                 self.widthAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.heightFactor / 2) * 2)),])
+                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.widthFactor / 2) * 2)),])
         }
         if self.shape == "square" {
             NSLayoutConstraint.activate([
@@ -587,7 +587,7 @@ import UIKit
             // illustrate offset distance in edit mode
             // let offsetSign = self.selfViewOnTheRight ? -1 : 1 // dprecated
             // let illlustrationPoint = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMaxY(self.frame)/4)
-            self.crossMarkLayer.position = CGPointMake(CGRectGetMidX(self.stickBallLayer.frame), CGRectGetMidY(self.stickBallLayer.frame)-stickIndicatorOffset)
+            self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame)-stickIndicatorOffset)
         }
         CATransaction.commit()
     }

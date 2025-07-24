@@ -1,29 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "\n1. From %@ edge, slide %d%% screen width to open settings menu\n\n2. From %@ edge, slide %d%% screen width to open command tool\n\n3. Back to Streaming from settings menu: slide from left edge\n\n4. Slide from upper 40%% of screen edge to avoid sending touch events to PC side" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n1. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n2. 打开命令工具: 从%@边缘滑动%d%%屏幕宽度\n\n3. 返回串流 / 收起设置菜单: 从左边缘滑动\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟指令工具：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從設定選單返回串流：從左側邊緣滑動\n\n4. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟指令工具：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從設定選單返回串流：從左側邊緣滑動\n\n4. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
-          }
-        }
-      }
-    },
     "\nHost processing latency min/max/avg: %.1f/%.1f/%.1f ms" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -248,7 +225,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "\n\n您裝置的遠端工作階段連線被阻擋。在此網路上連線時，串流可能無法運作。"
           }
         },
@@ -306,7 +283,7 @@
         }
       }
     },
-    "[ Open on-screen widget tool ]" : {
+    "[ On-screen widget tool ]" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -329,7 +306,7 @@
         }
       }
     },
-    "[ Switch among on-screen widget profiles ]" : {
+    "[ Switch on-screen widget profile ]" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -1474,6 +1451,64 @@
         }
       }
     },
+    "emulatedControllerTypeStackDoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/uscwmv3vz8g30rmk?singleDoc#"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3?singleDoc#"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3?singleDoc#"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3?singleDoc#"
+          }
+        }
+      }
+    },
+    "emulatedControllerTypeStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine emulates game controller via VigemBus, which support DS4 & Xbox360. \n\n- Xbox360 does not support gyro.\n\n- When “both” is selected, the app will map built-in gyro as player0 & external game controller as player1"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine 通过 VigemBus 模拟游戏手柄，支持 DS4 和 Xbox 360。\n\n- Xbox 360 不支持陀螺仪。\n\n- 当选择“同时映射”时，app会将内置陀螺仪映射为玩家0，外接手柄映射为玩家1。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine 透過 VigemBus 模擬遊戲控制器，支援 DS4 和 Xbox 360。\n\n- Xbox 360 不支援陀螺儀。\n\n- 當選擇「同時映射」時，app 會將內建陀螺儀對應為玩家0，外接控制器對應為玩家1。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine 透過 VigemBus 模擬遊戲控制器，支援 DS4 和 Xbox 360。\n\n- Xbox 360 不支援陀螺儀。\n\n- 當選擇「同時映射」時，app 會將內建陀螺儀對應為玩家0，外接控制器對應為玩家1。"
+          }
+        }
+      }
+    },
     "Enter a new command and alias" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1664,6 +1699,64 @@
         }
       }
     },
+    "externalDisplayModeStackDoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bu3hki4pezy93g6r?singleDoc# "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/cqbse6t4o6f9hil1?singleDoc#"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/cqbse6t4o6f9hil1?singleDoc#"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/cqbse6t4o6f9hil1?singleDoc#"
+          }
+        }
+      }
+    },
+    "externalDisplayModeStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select “Stage Manager” to enable full screen external display.\n\nKeyboard Shortcuts for VoidLink (Desktop Mode):\n\nCtrl + Alt + Shift + Q — Disconnect the current session\n\nCtrl + Alt + Shift + S — Toggle the statistics overlay style\n\nCtrl + Alt + Shift + M — Toggle mouse capture mode\n\nCtrl + Alt + Shift + C — Toggle mouse pointer visibility\n"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "VoidLink 桌面模式快捷键：\n\n- Ctrl + Alt + Shift + Q — 断开当前会话\n\n- Ctrl + Alt + Shift + S — 切换性能信息叠加样式\n\n- Ctrl + Alt + Shift + M — 切换鼠标指针捕获模式\n\n- Ctrl + Alt + Shift + C — 切换鼠标指针可见性"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "VoidLink 桌面模式快捷鍵：\n\nCtrl + Alt + Shift + Q — 中斷目前連線\n\nCtrl + Alt + Shift + S — 切換統計資訊覆蓋樣式\n\nCtrl + Alt + Shift + M — 切換滑鼠指標捕捉模式\n\nCtrl + Alt + Shift + C — 切換滑鼠指標可見性"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "VoidLink 桌面模式快捷鍵：\n\nCtrl + Alt + Shift + Q — 中斷目前連線\n\nCtrl + Alt + Shift + S — 切換統計資訊覆蓋樣式\n\nCtrl + Alt + Shift + M — 切換滑鼠指標捕捉模式\n\nCtrl + Alt + Shift + C — 切換滑鼠指標可見性"
+          }
+        }
+      }
+    },
     "Failed to import profiles" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1779,6 +1872,35 @@
         }
       }
     },
+    "firstLaunchTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n1. From %@ edge, slide %d%% screen width to open settings menu\n\n2. From %@ edge, slide %d%% screen width to open toolbox menu\n\n3. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\n1. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n2. 打开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 从40%%上半边缘滑动避免触控事件影响PC端"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟工具箱選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟工具箱選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
+          }
+        }
+      }
+    },
     "FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1890,6 +2012,93 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "知道了！(%ld)"
+          }
+        }
+      }
+    },
+    "gyroModeStackDoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/uscwmv3vz8g30rmk?singleDoc#"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3?singleDoc#"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3?singleDoc#"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3?singleDoc#"
+          }
+        }
+      }
+    },
+    "gyroModeStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Gyro support for external game controllers is available on iOS 14+.\n\n- If a session is started with gyro mode disabled, it cannot be enabled during streaming."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 外接手柄的陀螺仪支持适用于 iOS 14 及以上版本。\n\n- 如果在启动会话时关闭了陀螺仪模式，则在串流过程中无法热切换开启。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 外接控制器的陀螺儀支援適用於 iOS 14 以上版本。\n\n- 若在啟動階段時未啟用陀螺儀模式，則無法在串流過程中熱切換開啟。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 外接控制器的陀螺儀支援適用於 iOS 14 以上版本。\n\n- 若在啟動階段時未啟用陀螺儀模式，則無法在串流過程中熱切換開啟。"
+          }
+        }
+      }
+    },
+    "hdrStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HDR video stream decoding is not supported on current device"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前系统不支持HDR视频流解码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當前裝置不支援HDR視訊串流解碼"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當前裝置不支援HDR視訊串流解碼"
           }
         }
       }
@@ -2239,6 +2448,64 @@
         }
       }
     },
+    "localMousePointerModeStackDoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zdf5l29s3vohs6iq?singleDoc#"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/yfao3s5bhl93rs01?singleDoc#"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/yfao3s5bhl93rs01?singleDoc#"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/yfao3s5bhl93rs01?singleDoc#"
+          }
+        }
+      }
+    },
+    "localMousePointerModeStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Captured: mouse pointer captured & limited within app window\n\n- Hidden: local mouse pointer is hidden.\n\n- Visible: local mouse pointer is visible to reduce the feeling of latency\n\nDo not select hidden/visible for any game play that uses mouse for camera control."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 被窗口捕获：鼠标指针被限制在app窗口内。\n\n- 隐藏：不显示本地鼠标指针。\n\n- 可见：显示iOS本地鼠标指针，减少延迟感。\n\n请勿使用 隐藏/可见 模式操作任何使用鼠标控制视角的游戏。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 被視窗捕獲：滑鼠游標被限制在應用程式視窗內。\n\n- 隱藏：不顯示本機滑鼠游標。\n\n- 可見：顯示 iOS 本機滑鼠游標，減少延遲感。\n\n​​請勿使用「隱藏/可見」模式操作任何需用滑鼠控制視角的遊戲。​​"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 被視窗捕獲：滑鼠游標被限制在應用程式視窗內。\n\n- 隱藏：不顯示本機滑鼠游標。\n\n- 可見：顯示 iOS 本機滑鼠游標，減少延遲感。\n\n​​請勿使用「隱藏/可見」模式操作任何需用滑鼠控制視角的遊戲。​​"
+          }
+        }
+      }
+    },
     "Manual_Add_Host_Fail" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2302,7 +2569,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "无法执行网络测试. 请检查网络连接后重试."
           }
         },
@@ -2429,7 +2696,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "网络测试成功. 如果仍然无法连接远程主机, 请检查主机端防火墙设置."
           }
         },
@@ -2769,6 +3036,81 @@
         }
       }
     },
+    "Online Documentation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在线支持文档"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "線上支援文件"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "線上支援文件"
+          }
+        }
+      }
+    },
+    "onScreenWidgetStackDoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zrg0ga93avz4s747?singleDoc# "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zrg0ga93avz4s747?singleDoc# "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zrg0ga93avz4s747?singleDoc# "
+          }
+        }
+      }
+    },
+    "onScreenWidgetStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- VoidLink supports rich, powerful custom on screen widgets including keyboard buttons, gamepad button & joysticks, mouse touchpad & button. Check online document for detail.\n\n- Multi-finger tap gesture is available for launching widget layout tool during streaming."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- VoidLink具备丰富而强大的自定义屏显控件，类型包括：键盘按键、手柄按键和摇杆、鼠标触摸板和按键等。详见在线文档。 \n\n- 可通过多指轻按手势在串流时打开控件布局工具。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。\n\n- 可透過多指輕點手勢，在串流時開啟控制元件佈局工具。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。\n\n- 可透過多指輕點手勢，在串流時開啟控制元件佈局工具。"
+          }
+        }
+      }
+    },
     "Open widget tool in streaming by:\nSliding from %@ screen edge to open cmd tool.\nOr tap %d fingers on stream view, number of fingers required:" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2788,6 +3130,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在串流中開啟小工具的方式：\n從螢幕%@邊緣滑動以開啟指令工具。\n或在串流畫面上用%d指輕點，所需的手指數量："
+          }
+        }
+      }
+    },
+    "optimizeGamesStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommended to keep this option enabled. Sunshine relies on it to load preset parameters."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine 依据该选项状态决定是否加载一些预置参数，建议保持开启。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine 依據此選項的狀態決定是否載入一些預設參數，建議保持開啟。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunshine 依據此選項的狀態決定是否載入一些預設參數，建議保持開啟。"
           }
         }
       }
@@ -2903,6 +3274,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "周邊設備"
+          }
+        }
+      }
+    },
+    "pipStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Enable auto picture-in-picture by switching on Settings -> Multitasking & Gestures -> Start PiP Automatically.\n\n- PiP can be manually started in toolbox menu.\n\n- PiP connection timeout is also defined by  “Background Session” settings in “Others” section\n\n-PiP is available for iOS15+"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- App切后台时自动开启画中画， 需要打开 iOS 设置-> 多任务与手势 -> 自动开启画中画。\n\n- 画中画可在工具箱菜单中手动开启。\n\n- 画中画时长由 “其他 -> 后台会话” 设置项控制\n\n- 仅 iOS15+ 支持画中画。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- App 切到背景時會自動啟用子母畫面，需開啟 iOS 「設定」→「多工與手勢」→「自動啟用子母畫面」。\n\n- 子母畫面也可透過工具箱選單手動啟用。\n\n- 子母畫面顯示時長由「其他」→「背景執行」設定項目控制。\n\n- 子母畫面功能自 iOS 15 起支援。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- App 切到背景時會自動啟用子母畫面，需開啟 iOS 「設定」→「多工與手勢」→「自動啟用子母畫面」。\n\n- 子母畫面也可透過工具箱選單手動啟用。\n\n- 子母畫面顯示時長由「其他」→「背景執行」設定項目控制。\n\n- 子母畫面功能自 iOS 15 起支援。"
           }
         }
       }
@@ -3782,6 +4182,35 @@
         }
       }
     },
+    "slideToSettingsDistanceStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A sufficient sliding distance ensures the menu is not triggered by unintentional touches."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手势所要求的滑动距离， 可有效防止因误触展开菜单。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手勢所需的滑動距離，可有效避免因誤觸而展開選單。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手勢所需的滑動距離，可有效避免因誤觸而展開選單。"
+          }
+        }
+      }
+    },
     "Slow connection to PC, Reduce your bitrate" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3801,6 +4230,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "與電腦的連線緩慢，請降低您的位元率"
+          }
+        }
+      }
+    },
+    "softKeyboardGestureStackDoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/rgc9if4xrf352555?singleDoc#"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ok4egvu4lt37wc1f?singleDoc#"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ok4egvu4lt37wc1f?singleDoc#"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ok4egvu4lt37wc1f?singleDoc#"
+          }
+        }
+      }
+    },
+    "softKeyboardGestureStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soft keyboard gesture is able to locate the remote typing area by the lowest touch point of your tap gesture to lift the stream view to proper height.\nCheck the online document for details."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "软键盘手势能够根据位置最低的触点定位远程文字输入位置，并将串流视图提升到合适高度。\n详见在线文档。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟體鍵盤手勢可根據最低位置的觸控點，定位遠端文字輸入的位置，並將串流畫面提升至適當高度。\n詳情請參閱線上說明文件。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟體鍵盤手勢可根據最低位置的觸控點，定位遠端文字輸入的位置，並將串流畫面提升至適當高度。\n詳情請參閱線上說明文件。"
           }
         }
       }
@@ -3847,6 +4334,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已成功傳送喚醒請求。電腦可能需要一些時間才能喚醒。如果它一直沒有喚醒，請確保已正確設定網路喚醒。"
+          }
+        }
+      }
+    },
+    "supportLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/dhmg3h27ls8mwt4a?singleDoc# 《About VoidLink》"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fdi4rxkxykhl5zpp?singleDoc# 《关于 VoidLink》"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fdi4rxkxykhl5zpp?singleDoc# 《关于 VoidLink》"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fdi4rxkxykhl5zpp?singleDoc# 《关于 VoidLink》"
           }
         }
       }
@@ -4266,13 +4782,42 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 原生觸控：即多點觸控傳遞，macOS 不支援。\n\n- 絕對觸控：在 macOS 上提供類似觸控螢幕的體驗。"
+            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 原生觸控：即多點觸控傳遞，macOS 不支援。\n\n- 絕對觸控：在 macOS 上提供類似觸控螢幕的體驗。"
+            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
+          }
+        }
+      }
+    },
+    "unlockDisplayOrientationStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPad is unable to lock run-time display orientation due to stage manager support. If necessary please manually lock display orientation."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为支持台前调度，iPad无法自动锁定显示方向。如有必要请手动锁定。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "為支援幕前調度，iPad 無法自動鎖定顯示方向。如有需要，請手動鎖定。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "為支援幕前調度，iPad 無法自動鎖定顯示方向。如有需要，請手動鎖定。"
           }
         }
       }

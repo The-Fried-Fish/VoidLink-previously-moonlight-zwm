@@ -48,7 +48,7 @@
 @property (strong, nonatomic) IBOutlet UIStackView *codecStack;
 @property (strong, nonatomic) IBOutlet UIStackView *yuv444Stack;
 @property (strong, nonatomic) IBOutlet UIStackView *pipStack;
-@property (strong, nonatomic) IBOutlet UIStackView *HdrStack;
+@property (strong, nonatomic) IBOutlet UIStackView *hdrStack;
 @property (strong, nonatomic) IBOutlet UIStackView *framepacingStack;
 @property (strong, nonatomic) IBOutlet UIStackView *reverseMouseWheelDirectionStack;
 @property (strong, nonatomic) IBOutlet UIStackView *citrixX1MouseStack;
@@ -136,7 +136,7 @@
 - (void)saveSettings;
 + (bool)isLandscapeNow;
 - (void)updateResolutionTable;
-- (void)widget:(UISlider*)widget setEnabled:(bool)enabled;
+- (void)widget:(UIView*)widget setEnabled:(bool)enabled;
 - (void)updateTheme;
 - (void)hideDynamicLabelsWhenOverlapped:(UIView* )view;
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack;

@@ -30,8 +30,8 @@ import UIKit
     private let titleLabel = UILabel()
     @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip"]
     private let specialEntryAliasDic : [String:String] = [
-        "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch among on-screen widget profiles ]"),
-        "widgetLayoutTool":SwiftLocalizationHelper.localizedString(forKey: "[ Open on-screen widget tool ]"),
+        "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch on-screen widget profile ]"),
+        "widgetLayoutTool":SwiftLocalizationHelper.localizedString(forKey: "[ On-screen widget tool ]"),
         "bringUpSoftKeyboard":SwiftLocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
         "enterPip":SwiftLocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]")
     ]
@@ -149,8 +149,7 @@ import UIKit
         NSLayoutConstraint.activate([
             
             // Set the width and height of the view
-            
-            view.widthAnchor.constraint(equalTo: view.superview!.widthAnchor, multiplier: isIPhone() ? 0.7 : 0.8),
+            view.widthAnchor.constraint(equalTo: view.superview!.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.8),
             view.heightAnchor.constraint(equalTo: view.superview!.heightAnchor, multiplier: 0.99),
             // Set the width and height of the view
             //view.leadingAnchor.constraint(equalTo: view.superview!.leadingAnchor, constant: 60),
@@ -177,7 +176,7 @@ import UIKit
             exitButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             
             // EditButton constraints
-            editButton.leadingAnchor.constraint(equalTo: exitButton.trailingAnchor, constant: 50),
+            editButton.leadingAnchor.constraint(equalTo: exitButton.trailingAnchor, constant: 25),
             editButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             
             // AddButton constraints
@@ -185,11 +184,11 @@ import UIKit
             addButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             
             // DeleteButton constraints
-            deleteButton.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -50),
+            deleteButton.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -25),
             deleteButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             
             // DeleteButton constraints
-            pinButton.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -50),
+            pinButton.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -25),
             pinButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
         ])
     }
@@ -208,7 +207,7 @@ import UIKit
             pinButton.backgroundColor = highlightColor
         }
         else{
-            pinButton.backgroundColor = viewBackgroundColor
+            pinButton.backgroundColor = .clear
         }
     }
     

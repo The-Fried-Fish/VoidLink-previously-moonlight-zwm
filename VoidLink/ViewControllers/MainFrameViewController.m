@@ -1133,8 +1133,8 @@ static NSMutableSet* hostList;
     if(self.settingsExpandedInStreamView) [revealController buttonsInStreaming];
     else [revealController buttonsNotInStreaming];
     
-    DataManager* dataMan = [[DataManager alloc] init];
-    TemporarySettings* currentSettings = [dataMan getSettings];
+    // DataManager* dataMan = [[DataManager alloc] init];
+    // TemporarySettings* currentSettings = [dataMan getSettings];
 
     [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.resolutionStack];
@@ -1269,6 +1269,19 @@ static NSMutableSet* hostList;
     }
 }
 
+- (BOOL)isFirstLaunch {
+    NSString *key = @"appHasLaunchedBefore";
+    BOOL launchedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+
+    if (!launchedBefore) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize]; // iOS 12+ 可省略
+        return YES;
+    }
+    return NO;
+}
+
+
 - (bool)isIPhone{
     return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
@@ -1347,7 +1360,7 @@ static NSMutableSet* hostList;
     button.tintColor = [ThemeManager appPrimaryColor];
     [button setTitleColor:button.tintColor forState:UIControlStateNormal];
 
-    button.frame = CGRectMake(0, 0, buttonHeight, buttonHeight);
+    button.frame = CGRectMake(0, 0, buttonHeight*1.3, buttonHeight*1.05);
 
     // 添加点击事件
     [button addTarget:self action:@selector(helpButtonTapped) forControlEvents:UIControlEventTouchUpInside];
@@ -1774,6 +1787,7 @@ static NSMutableSet* hostList;
     //[self simulateSettingsButtonPress]; //force reload resolution table in the setting
     //[self simulateSettingsButtonPress];
     [self updateResolutionAccordingly];
+    if([self isFirstLaunch])[self helpButtonTapped];
 }
 
 
@@ -2114,7 +2128,7 @@ static NSMutableSet* hostList;
     if(gesture.state == UIGestureRecognizerStateBegan){
         if(locationInView.x < 30) {
             snapshot = [[UIView alloc] init];
-            snapshot.backgroundColor = [ThemeManager appPrimaryColor];
+            snapshot.backgroundColor = [UIColor systemBlueColor];
             screenHeight = [UIScreen mainScreen].bounds.size.height;
             snapshot.frame = CGRectMake(locationInSuperView.x,0, 2, screenHeight);
             [self.revealViewController.view addSubview:snapshot];

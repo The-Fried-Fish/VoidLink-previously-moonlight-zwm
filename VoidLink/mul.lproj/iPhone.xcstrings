@@ -2834,19 +2834,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "台前调度"
+            "value" : "台前调度(可全屏)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度"
+            "value" : "幕前調度(可全螢幕)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度"
+            "value" : "幕前調度(可全螢幕)"
           }
         }
       }
@@ -2864,7 +2864,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隔空播放"
+            "value" : "隔空播放(镜像)"
           }
         },
         "zh-Hant" : {
