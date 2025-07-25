@@ -295,13 +295,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 開啟螢幕小工具 ]"
+            "value" : "[ 調整螢幕小工具版面配置 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 開啟螢幕小工具 ]"
+            "value" : "[ 調整螢幕小工具版面配置 ]"
           }
         }
       }

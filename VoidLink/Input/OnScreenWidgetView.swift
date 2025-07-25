@@ -1170,8 +1170,8 @@ import UIKit
         let offsetX = currentLocation.x - latestTouchLocation.x;
         let offsetY = currentLocation.y - latestTouchLocation.y;
         
-        let outOfBoundsX = center.x+offsetX > (self.superview?.bounds.width)! || center.x+offsetX < 0
-        let outOfBoundsY = center.y+offsetY > (self.superview?.bounds.height)! || center.y+offsetY < 0
+        let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
+        let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
 
         center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
         
