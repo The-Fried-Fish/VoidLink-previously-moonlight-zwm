@@ -56,7 +56,7 @@ public struct AboutView: View {
                 }
             }
             // 链接按钮
-            if #available(iOS 14.0, *),false  {
+            if #available(iOS 14.0, *) {
                 Link(SwiftLocalizationHelper.localizedString(forKey: "Join us"), destination: URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink"))!)
                     .padding(.top, 10)
                 Spacer()
