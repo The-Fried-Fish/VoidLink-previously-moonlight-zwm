@@ -61,7 +61,8 @@
                            width:(NSInteger)width
                      audioConfig:(NSInteger)audioConfig
                 onscreenControls:(NSInteger)onscreenControls
-                      gyroMode:(NSInteger)gyroMode
+                        gyroMode:(NSInteger)gyroMode
+          emulatedControllerType:(NSInteger)emulatedControllerType
            keyboardToggleFingers:(NSInteger)keyboardToggleFingers
             oscLayoutToolFingers:(NSInteger)oscLayoutToolFingers
        slideToSettingsScreenEdge:(NSInteger)slideToSettingsScreenEdge
@@ -104,6 +105,7 @@
         settingsToSave.audioConfig = [NSNumber numberWithInteger:audioConfig];
         settingsToSave.onscreenControls = [NSNumber numberWithInteger:onscreenControls];
         settingsToSave.gyroMode = [NSNumber numberWithInteger:gyroMode];
+        settingsToSave.emulatedControllerType = [NSNumber numberWithInteger:emulatedControllerType];
         settingsToSave.keyboardToggleFingers = [NSNumber numberWithInteger:(uint16_t)keyboardToggleFingers];
         settingsToSave.oscLayoutToolFingers = [NSNumber numberWithInteger:(uint16_t)oscLayoutToolFingers];
         settingsToSave.slideToSettingsScreenEdge = [NSNumber numberWithInteger:(uint32_t)slideToSettingsScreenEdge];

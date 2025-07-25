@@ -137,11 +137,11 @@
     }
 }
 
-- (BOOL)isFirstLaunch {
-    NSString *key = @"hasLaunchedBefore";
-    BOOL launchedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+- (BOOL)isFirstStreaming {
+    NSString *key = @"hasStreamedBefore";
+    BOOL streamedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
 
-    if (!launchedBefore) {
+    if (!streamedBefore) {
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
         [[NSUserDefaults standardUserDefaults] synchronize]; // iOS 12+ 可省略
         return YES;
@@ -244,7 +244,7 @@
     }
 }
 
-- (void)presentCommandManagerViewController{
+- (void)presentToolboxViewController{
     ToolboxViewController* oldToolboxVC = toolBoxViewController;
     toolBoxViewController = [[ToolboxViewController alloc] init];
     toolBoxViewController.specialEntryDelegate = self;
@@ -264,7 +264,7 @@
     [self.view addGestureRecognizer:_slideToSettingsRecognizer];
     
     
-    _slideToCmdToolRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(presentCommandManagerViewController)];
+    _slideToCmdToolRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(presentToolboxViewController)];
     if(_settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft) _slideToCmdToolRecognizer.edges = UIRectEdgeRight;
     else _slideToCmdToolRecognizer.edges = UIRectEdgeLeft;  // _commandManager triggered by sliding from another side.
     _slideToCmdToolRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
@@ -419,8 +419,7 @@
 }
 #endif
 
-- (void)popFirstLaunchTip {
-    return; // temp disable
+- (void)popFirstStreamingTip {
     // 初始化倒计时秒数
     __block NSInteger remainingSeconds = 16;
 
@@ -428,9 +427,25 @@
     NSString* cmdToolEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"right"] : [LocalizationHelper localizedStringForKey:@"left"];
     uint8_t slideDist = (uint8_t)(_settings.slideToSettingsDistance.floatValue * 100);
     // 创建弹窗
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"First Launch Tips"]
-                                                                   message:[LocalizationHelper localizedStringForKey:@"\n1. From %@ edge, slide %d%% screen width to open settings menu\n\n2. From %@ edge, slide %d%% screen width to open command tool\n\n3. Back to Streaming from settings menu: slide from left edge\n\n4. Slide from upper 40%% of screen edge to avoid sending touch events to PC side", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist]
-                                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    NSString* tipText = [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist];
+    
+    UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"First Launch Tips"] message: [LocalizationHelper localizedStringForKey:@"%@", tipText] preferredStyle:UIAlertControllerStyleAlert];
+
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+
+    NSDictionary *attributes = @{
+        NSParagraphStyleAttributeName: paragraphStyle,
+        NSFontAttributeName: [UIFont systemFontOfSize:14]
+    };
+
+    NSAttributedString *attributedMessage = [[NSAttributedString alloc] initWithString:tipText
+                                                                             attributes:attributes];
+
+    // 使用 KVC 设置 attributedMessage（注意审核风险）
+    [tipsAlertController setValue:attributedMessage forKey:@"attributedMessage"];
 
     // 添加确认按钮（初始禁用）
     UIAlertAction *confirmAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Got it! (15)"]
@@ -438,10 +453,10 @@
                                                          handler:^(UIAlertAction * _Nonnull action) {
     }];
     confirmAction.enabled = NO;
-    [alert addAction:confirmAction];
+    [tipsAlertController addAction:confirmAction];
 
     // 显示弹窗
-    [self presentViewController:alert animated:YES completion:nil];
+    [self presentViewController:tipsAlertController animated:YES completion:nil];
 
     // 使用dispatch_source_t实现精确倒计时
     dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
@@ -520,7 +535,7 @@
     //[_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig];
     [self reConfigStreamViewRealtime]; // call this method again to make sure all gestures are configured & added to the superview(self.view), including the gestures added from inside the streamview.
     
-    if([self isFirstLaunch]) [self popFirstLaunchTip];
+    if([self isFirstStreaming]) [self popFirstStreamingTip];
 
 #if TARGET_OS_TV
     if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer) {

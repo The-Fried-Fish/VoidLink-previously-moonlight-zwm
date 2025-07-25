@@ -81,9 +81,8 @@
 - (void) reloadOnScreenWidgetViews {
     NSLog(@"reloadOnScreenWidgets %f", CACurrentMediaTime());
     OnScreenWidgetView.editMode = true;
-    [self->selectedWidgetView.stickBallLayer removeFromSuperlayer];
-    [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
-    
+    [self clearStickIndicator];
+
     for (UIView *subview in self.view.subviews) {
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
             [subview removeFromSuperview];
@@ -168,7 +167,7 @@
      [profilesManager saveProfileWithName:@"Default" andButtonLayers:self.layoutOSC.OSCButtonLayers];
      [profilesManager importDefaultTemplates];
      }*/
-    if (![profilesManager profileName:DEFAULT_TEMPLATE_NAME alreadyExistIn:allProfiles]){
+    if (![profilesManager findProfileByName:DEFAULT_TEMPLATE_NAME1 inProfileArray:allProfiles]){
         [profilesManager importDefaultTemplates];
     }
         
@@ -239,6 +238,11 @@
                                                object:nil];
         
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OSCLayoutChanged) name:@"OSCLayoutChanged" object:nil];    // used to notifiy this view controller that the user made a change to the OSC layout so that the VC can either fade in or out its 'Undo button' which will signify to the user whether there are any OSC layout changes to undo
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
 
     OnScreenWidgetView.editMode = true;
     [self handleMissingToolBarIcon:toolbarRootView];
@@ -246,6 +250,11 @@
 }
 
 #pragma mark - Class Helper Functions
+
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    [self saveTapped:nil];
+}
+
 
 /* fades the 'Undo Button' in or out depending on whether the user has any OSC layout changes to undo */
 - (void) OSCLayoutChanged {
@@ -370,6 +379,7 @@
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Read Widget Instruction"]
                                                            style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction *action){
+        [self saveTapped:nil];
         NSURL *url = [NSURL URLWithString:@"https://b23.tv/J8qEXOr"];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -609,23 +619,25 @@
         UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Current profile updated successfully"] preferredStyle:UIAlertControllerStyleAlert];
         [savedAlertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }]];
-        [self presentViewController:savedAlertController animated:YES completion:nil];
+        if(sender) [self presentViewController:savedAlertController animated:YES completion:nil];
     }
     else{
         UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Profile Default can not be overwritten"] preferredStyle:UIAlertControllerStyleAlert];
         [savedAlertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [self.oscProfilesTableViewController profileViewRefresh]; // execute this will reset layout in OSC tool!
         }]];
-        [self presentViewController:savedAlertController animated:YES completion:nil];
+        if(sender) [self presentViewController:savedAlertController animated:YES completion:nil];
     }
 }
 
-- (void)autoFitView:(UIView* )view{
-    CGSize fittingSize = [view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    CGRect newFrame = view.frame;
+- (void)autoFitStack:(UIStackView* )stack{
+    CGSize fittingSize = [stack systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    CGRect newFrame = stack.frame;
     newFrame.size = fittingSize;
-    view.frame = newFrame;
-    if([self isIPhone]) [self updateClippedMaskForView:view];
+    stack.frame = newFrame;
+    [self updateClippedMaskForView:stack];
+    if (@available(iOS 14, *)) nil;
+    else [self applyShadowForiOS13:stack];
 }
 
 - (void)enableCommonWidgetTools{
@@ -642,6 +654,11 @@
     label.numberOfLines = 1;
 }
 
+- (void)clearStickIndicator{
+    [self->selectedWidgetView.stickBallLayer removeFromSuperlayer];
+    [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
+}
+
 - (void)widgetViewTapped: (NSNotification *)notification{
     //self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 && !CGPointEqualToPoint(selectedWidgetView.layoutChanges.lastObject.CGPointValue, selectedWidgetView.initialCenter)? 1.0 : 0.3;
 
@@ -650,8 +667,7 @@
 
     OnScreenWidgetView* widgetView = (OnScreenWidgetView* )notification.object;
     
-    [self->selectedWidgetView.stickBallLayer removeFromSuperlayer];
-    [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
+    [self clearStickIndicator];
     self->widgetViewSelected = true;
     self->controllerLayerSelected = false;
     self->selectedWidgetView = widgetView;
@@ -680,7 +696,7 @@
     self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     
-    [self autoFitView:self.widgetPanelStack];
+    [self autoFitStack:self.widgetPanelStack];
 
     if(showSensitivityFactorStack){
         [self.sensitivityXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
@@ -692,8 +708,7 @@
     }
     if(showStickIndicatorOffsetStack){
         // illustrating the indicator offset,
-        [selectedWidgetView.stickBallLayer removeFromSuperlayer];
-        [selectedWidgetView.crossMarkLayer removeFromSuperlayer];
+        [self clearStickIndicator];
         selectedWidgetView.touchBeganLocation = CGPointMake(CGRectGetWidth(selectedWidgetView.frame)/2, CGRectGetHeight(selectedWidgetView.frame)/4);
         [selectedWidgetView showStickIndicator];// this will create the indicator CAShapeLayers
         [self.stickIndicatorOffsetSlider setValue:self->selectedWidgetView.stickIndicatorOffset];
@@ -718,12 +733,11 @@
     [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", selectedWidgetView.trackballDecelerationRate]];
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
 
-    
     if([self isIPhone]){
         self.vibrationStyleStack.hidden =
         [widgetView.cmdString containsString:@"MOUSEPAD"] ||
         [widgetView.cmdString containsString:@"TRACKBALL"];
-        [self autoFitView:self.widgetPanelStack];
+        [self autoFitStack:self.widgetPanelStack];
         self.vibrationStyleSelector.selectedSegmentIndex = self->selectedWidgetView.vibrationStyle;
     }
 }
@@ -731,8 +745,7 @@
 - (void)legacyOscLayerTapped: (NSNotification *)notification{
     [self enableCommonWidgetTools];
     CALayer* controllerLayer = (CALayer* )notification.object;
-    [self->selectedWidgetView.stickBallLayer removeFromSuperlayer];
-    [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
+    [self clearStickIndicator];
     self->widgetViewSelected = false;
     self->selectedWidgetView = nil;
     
@@ -768,7 +781,7 @@
         NSNumber *style = [OnScreenControls.layerVibrationStyleDic objectForKey:selectedControllerLayer.name];
         self.vibrationStyleSelector.selectedSegmentIndex = [style unsignedCharValue];
     }
-    [self autoFitView:_widgetPanelStack];
+    [self autoFitStack:_widgetPanelStack];
 }
 
 - (void)widgetSizeSliderMoved:(UISlider* )sender{
@@ -994,7 +1007,7 @@
     self.widgetPanelStack.frame = frame;
     
     
-    [self autoFitView:self.widgetPanelStack];
+    [self autoFitStack:self.widgetPanelStack];
     
     if([self isIPhone]) {
         for(UIView* view in _widgetPanelStack.arrangedSubviews){
@@ -1019,13 +1032,48 @@
     }
 }
 
+- (void)applyShadowForiOS13:(UIStackView* )stack {
+    stack.backgroundColor = [UIColor clearColor];
+    
+    for(UIView* view in stack.arrangedSubviews){
+        if([view isKindOfClass:[UIStackView class]]){
+            UIStackView* subStack = (UIStackView* )view;
+            for(UIView* view in subStack.arrangedSubviews){
+                if([view isKindOfClass:[UILabel class]]){
+                    view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+                    view.layer.cornerRadius = 6;
+                    view.clipsToBounds = YES;
+                    UILabel* label = (UILabel* )view;
+                    label.textAlignment = NSTextAlignmentCenter;
+                }
+                else{
+                    view.tintColor= [UIColor systemTealColor];
+                    view.layer.shadowColor = [[UIColor blackColor] colorWithAlphaComponent:0.9].CGColor;
+                    //view.layer.shadowColor = [UIColor blackColor].CGColor;
+                    view.layer.shadowOffset = CGSizeMake(1, 1);
+                    view.layer.shadowOpacity = 1;
+                    view.layer.shadowRadius = 5;
+                }
+            }
+        }
+        else{
+            view.layer.cornerRadius = 10;
+            view.clipsToBounds = YES;
+            view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+        }
+    }
+}
+
+
 - (void)updateClippedMaskForView:(UIView* )view{
-    CAShapeLayer *maskLayer = [CAShapeLayer layer];
-    view.layer.mask = nil;
-    CGRect visibleRect = CGRectInset(view.bounds, 40, 0); // 左右各裁掉 20pt
-    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:visibleRect cornerRadius:12];
-    maskLayer.path = path.CGPath;
-    view.layer.mask = maskLayer;
+    if([self isIPhone]){
+        CAShapeLayer *maskLayer = [CAShapeLayer layer];
+        view.layer.mask = nil;
+        CGRect visibleRect = CGRectInset(view.bounds, 40, 0); // 左右各裁掉 20pt
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:visibleRect cornerRadius:12];
+        maskLayer.path = path.CGPath;
+        view.layer.mask = maskLayer;
+    }
 }
 
 - (BOOL)isIPhone{
@@ -1072,6 +1120,9 @@
 }
 
 - (void) presentProfilesTableView{
+    [self saveTapped:nil];
+    [self clearStickIndicator];
+    selectedWidgetView = nil;
     UIStoryboard *storyboard;
     BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
     if (isIPhone) {
@@ -1096,8 +1147,6 @@
 
     self.widgetPanelStack.hidden = YES;
     
-    [self->selectedWidgetView.stickBallLayer removeFromSuperlayer];
-    [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
     _oscProfilesTableViewController.currentOSCButtonLayers = self.layoutOSC.OSCButtonLayers;
     
     [self presentViewController:_oscProfilesTableViewController animated:YES completion:nil];
@@ -1204,8 +1253,7 @@
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
         [self->selectedWidgetView removeFromSuperview];
         [self.OnScreenWidgetViews removeObject:self->selectedWidgetView];
-        [selectedWidgetView.stickBallLayer removeFromSuperlayer];
-        [selectedWidgetView.crossMarkLayer removeFromSuperlayer];
+        [self clearStickIndicator];
         [selectedWidgetView.buttonDownVisualEffectLayer removeFromSuperlayer];
     }
     

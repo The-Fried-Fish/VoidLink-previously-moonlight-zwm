@@ -55,7 +55,8 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                            width:(NSInteger)width
                      audioConfig:(NSInteger)audioConfig
                 onscreenControls:(NSInteger)onscreenControls
-                      gyroMode:(NSInteger)gyroMode
+                        gyroMode:(NSInteger)gyroMode
+          emulatedControllerType:(NSInteger)emulatedControllerType
            keyboardToggleFingers:(NSInteger)keyboardToggleFingers
             oscLayoutToolFingers:(NSInteger)oscLayoutToolFingers
        slideToSettingsScreenEdge:(NSInteger)slideToSettingsScreenEdge

@@ -48,7 +48,7 @@
 @property (strong, nonatomic) IBOutlet UIStackView *codecStack;
 @property (strong, nonatomic) IBOutlet UIStackView *yuv444Stack;
 @property (strong, nonatomic) IBOutlet UIStackView *pipStack;
-@property (strong, nonatomic) IBOutlet UIStackView *HdrStack;
+@property (strong, nonatomic) IBOutlet UIStackView *hdrStack;
 @property (strong, nonatomic) IBOutlet UIStackView *framepacingStack;
 @property (strong, nonatomic) IBOutlet UIStackView *reverseMouseWheelDirectionStack;
 @property (strong, nonatomic) IBOutlet UIStackView *citrixX1MouseStack;
@@ -69,7 +69,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *onscreenControllerLabel;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *onScreenWidgetSelector;
 //@property (strong, nonatomic) IBOutlet UISegmentedControl *asyncNativeTouchPrioritySelector;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *swapABXYButtonsSelector;
+@property (strong, nonatomic) IBOutlet UISwitch *swapAbxySwitch;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *codecSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *hdrSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *yuv444Switch;
@@ -88,7 +88,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *slideToSettingsDistanceUILabel;
 @property (strong, nonatomic) IBOutlet UISlider *slideToMenuDistanceSlider;
 @property (strong, nonatomic) IBOutlet UISlider *pointerVelocityModeDividerSlider;
-@property (strong, nonatomic) IBOutlet UILabel *pointerVelocityModeDividerUILabel;
 @property (strong, nonatomic) IBOutlet UISlider *touchPointerVelocityFactorSlider;
 @property (strong, nonatomic) IBOutlet UILabel *touchPointerVelocityFactorUILabel;
 @property (strong, nonatomic) IBOutlet UISlider *mousePointerVelocityFactorSlider;
@@ -111,6 +110,8 @@
 @property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
 @property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *emulatedControllerTypeStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *emulatedControllerTypeSelector;
 
 
 #pragma clang diagnostic push
@@ -124,7 +125,7 @@
 - (void)saveSettings;
 + (bool)isLandscapeNow;
 - (void)updateResolutionTable;
-- (void)widget:(UISlider*)widget setEnabled:(bool)enabled;
+- (void)widget:(UIView*)widget setEnabled:(bool)enabled;
 - (void)updateTheme;
 - (void)hideDynamicLabelsWhenOverlapped:(UIView* )view;
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack;

@@ -47,7 +47,7 @@
     self->streamView = view;
     
     // upper screen check
-    EDGE_TOLERANCE = 15.0;
+    EDGE_TOLERANCE = 10.0;
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - EDGE_TOLERANCE;
     self->touchPointSpawnedAtUpperScreenEdge = false;

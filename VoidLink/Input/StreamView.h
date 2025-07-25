@@ -22,7 +22,7 @@
 - (void)userInteractionEnded;
 - (void)streamExitRequested;
 - (void)toggleStatsOverlay;
-- (void)localMousePointerMode;
+- (void)toggleMouseCapture;
 - (void)toggleMouseVisible;
 
 @end

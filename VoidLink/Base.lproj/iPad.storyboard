@@ -60,7 +60,7 @@
                         <viewControllerLayoutGuide type="bottom" id="XvO-F3-j4u"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="WRy-3f-gEP" customClass="UIScrollView">
-                        <rect key="frame" x="0.0" y="0.0" width="2000" height="2500"/>
+                        <rect key="frame" x="0.0" y="0.0" width="2000" height="5000"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="zpX-lo-MLA" userLabel="Resolutionstak">
@@ -399,29 +399,6 @@
                                     <constraint firstAttribute="height" priority="999" constant="56.5" id="t3w-8N-xWr"/>
                                 </constraints>
                             </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="2GS-cX-u4i" userLabel="swapABXYButtons Stack">
-                                <rect key="frame" x="20" y="1752" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B and X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dll-7x-18l">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="dpd-Bw-aHE" userLabel="Swap A/B and X/Y Buttons">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="No"/>
-                                            <segment title="Yes"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="Mi8-19-kyX"/>
-                                </constraints>
-                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Tv6-pw-87l" userLabel="keyboardToggleFingerNum Stack">
                                 <rect key="frame" x="17" y="884" width="380" height="56.5"/>
                                 <subviews>
@@ -604,7 +581,7 @@
                                         <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
                                         <segments>
                                             <segment title="Stage Manager"/>
-                                            <segment title="AirPlay"/>
+                                            <segment title="AirPlay (mirroring)"/>
                                         </segments>
                                         <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="selectedSegmentTintColor" systemColor="linkColor"/>
@@ -870,27 +847,6 @@
                                     <constraint firstAttribute="width" constant="380" id="pkz-ek-bOk"/>
                                 </constraints>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="12a-Wi-LlL" userLabel="pipStack">
-                                <rect key="frame" x="382" y="1899" width="280" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable PiP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3rP-dh-TJi" userLabel="pipLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="ir2-ut-mD3"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-Z9-IYM" userLabel="pipSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="ADb-7C-hgx"/>
-                                        </constraints>
-                                    </switch>
-                                </subviews>
-                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" id="z5W-q6-Y1z" userLabel="backgroundSessionTimerStack">
                                 <rect key="frame" x="440" y="2421" width="380" height="55.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -911,12 +867,74 @@
                                     <constraint firstAttribute="width" constant="380" id="dB2-bt-l6n"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="LGh-Lc-Odp" userLabel="emulatedControllerTypeStack">
+                                <rect key="frame" x="420" y="973" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emulated Controller Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JTl-un-QJJ" userLabel="emulatedControllerTypeLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="JaY-XA-1V6" userLabel="emulatedControllerTypeSelector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Xbox 360"/>
+                                            <segment title="DS4"/>
+                                            <segment title="Both"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="G6i-GX-IiT"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="2rP-Ui-wVU" userLabel="swapABXYStack">
+                                <rect key="frame" x="25" y="1189" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OXy-y4-yO4" userLabel="softKeyboardToolbarStack">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hv7-6b-rez" userLabel="swapABXYSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="IRh-Rr-kBF"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="12a-Wi-LlL" userLabel="pipStack">
+                                <rect key="frame" x="432" y="1860" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable PiP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3rP-dh-TJi" userLabel="pipLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="ir2-ut-mD3"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-Z9-IYM" userLabel="pipSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="ADb-7C-hgx"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
-                    <size key="freeformSize" width="2000" height="2500"/>
+                    <size key="freeformSize" width="2000" height="5000"/>
                     <connections>
-                        <outlet property="HdrStack" destination="dH7-Sy-EdJ" id="cJm-bj-Aqo"/>
                         <outlet property="audioConfigSelector" destination="iZL-dA-jk9" id="Yja-os-o6g"/>
                         <outlet property="audioConfigStack" destination="qnG-5F-2YY" id="kFX-VK-vuK"/>
                         <outlet property="audioOnPcStack" destination="Bbr-Wj-Z75" id="c2K-3R-whg"/>
@@ -931,6 +949,8 @@
                         <outlet property="codecSelector" destination="aFy-0w-YPe" id="DlU-0l-gwz"/>
                         <outlet property="codecStack" destination="gWg-BF-yDI" id="GGc-JQ-N8y"/>
                         <outlet property="customResolutionSwitch" destination="E5w-kK-dOo" id="hrt-v2-8dY"/>
+                        <outlet property="emulatedControllerTypeSelector" destination="JaY-XA-1V6" id="aU2-ps-esq"/>
+                        <outlet property="emulatedControllerTypeStack" destination="LGh-Lc-Odp" id="Fny-rC-9zP"/>
                         <outlet property="enableOswForNativeTouchSwitch" destination="Zmq-Kv-Nmp" id="f6j-0V-ldT"/>
                         <outlet property="enableOswSwitchStack" destination="SkS-ft-peB" id="n3M-EK-U74"/>
                         <outlet property="externalDisplayModeSelector" destination="VWB-YB-Ptj" id="0ak-pc-evb"/>
@@ -943,6 +963,7 @@
                         <outlet property="gyroModeStack" destination="kAD-mK-aP8" id="GvL-Yx-S2t"/>
                         <outlet property="gyroSensitivitySlider" destination="3Ge-IB-PBj" id="Pdg-ke-KG3"/>
                         <outlet property="gyroSensitivityStack" destination="T3L-Kz-2yA" id="iQS-ce-h0z"/>
+                        <outlet property="hdrStack" destination="dH7-Sy-EdJ" id="cJm-bj-Aqo"/>
                         <outlet property="hdrSwitch" destination="wIq-fF-X8l" id="Ozz-h0-nJL"/>
                         <outlet property="liftStreamViewForKeyboardSelector" destination="MM5-O0-vK3" id="tSC-Rp-Qfg"/>
                         <outlet property="liftStreamViewForKeyboardStack" destination="mes-so-dfK" id="nXR-Ot-Ydf"/>
@@ -983,8 +1004,8 @@
                         <outlet property="softKeyboardToolbarSwitch" destination="ztk-Xx-60P" id="A35-6y-cyp"/>
                         <outlet property="statsOverlaySelector" destination="NLH-qN-qCo" id="EF8-JF-O3S"/>
                         <outlet property="statsOverlayStack" destination="UcP-0b-nJD" id="UdI-NS-O6k"/>
-                        <outlet property="swapABXYButtonsSelector" destination="dpd-Bw-aHE" id="lJv-8Q-2jg"/>
-                        <outlet property="swapAbaxyStack" destination="2GS-cX-u4i" id="KXo-OS-k7C"/>
+                        <outlet property="swapAbaxyStack" destination="2rP-Ui-wVU" id="gUR-Vz-ORP"/>
+                        <outlet property="swapAbxySwitch" destination="hv7-6b-rez" id="iKX-qk-Dep"/>
                         <outlet property="touchModeLabel" destination="MUY-2Y-bHi" id="6jD-aq-rmE"/>
                         <outlet property="touchModeSelector" destination="bhC-da-VGd" id="hna-Cr-kyd"/>
                         <outlet property="touchModeStack" destination="M78-Pw-jWx" id="mdl-y3-54B"/>
@@ -1012,7 +1033,7 @@
                     </items>
                 </navigationBar>
             </objects>
-            <point key="canvasLocation" x="-383.45323741007195" y="1500"/>
+            <point key="canvasLocation" x="-503" y="1978"/>
         </scene>
         <!--Reveal View Controller-->
         <scene sceneID="rR7-ZT-bc7">
@@ -1137,21 +1158,21 @@
                                                     <action selector="undoTapped:" destination="xSZ-i2-Jts" eventType="touchUpInside" id="54z-kO-oCo"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qJs-n8-eV7" userLabel="Trash">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OId-gk-Wkg" userLabel="Load">
                                                 <rect key="frame" x="120" y="0.0" width="50" height="50"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="50" id="0UR-Tv-X69"/>
-                                                    <constraint firstAttribute="width" constant="50" id="MyN-Qt-jL7"/>
+                                                    <constraint firstAttribute="width" constant="50" id="XlA-qH-mSO"/>
+                                                    <constraint firstAttribute="height" constant="50" id="xSe-dW-zjg"/>
                                                 </constraints>
                                                 <color key="tintColor" systemColor="systemTealColor"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal">
                                                     <color key="titleColor" red="0.34534250659999999" green="0.68327885720000003" blue="0.76859849690000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                                    <imageReference key="image" image="trash.fill" catalog="system" symbolScale="large"/>
+                                                    <imageReference key="image" image="tray.full.fill" catalog="system" symbolScale="large"/>
                                                     <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                 </state>
                                                 <connections>
-                                                    <action selector="trashCanTapped:" destination="xSZ-i2-Jts" eventType="touchUpInside" id="6s3-Wc-6us"/>
+                                                    <action selector="loadTapped:" destination="xSZ-i2-Jts" eventType="touchUpInside" id="ZCn-S3-8em"/>
                                                 </connections>
                                             </button>
                                             <button autoresizesSubviews="NO" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uda-zt-xrG" userLabel="Save">
@@ -1176,21 +1197,21 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EPu-dl-Tv8">
                                                 <rect key="frame" x="360" y="0.0" width="50" height="50"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OId-gk-Wkg" userLabel="Load">
+                                                    <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qJs-n8-eV7" userLabel="Trash">
                                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="50" id="XlA-qH-mSO"/>
-                                                            <constraint firstAttribute="height" constant="50" id="xSe-dW-zjg"/>
+                                                            <constraint firstAttribute="height" constant="50" id="0UR-Tv-X69"/>
+                                                            <constraint firstAttribute="width" constant="50" id="MyN-Qt-jL7"/>
                                                         </constraints>
                                                         <color key="tintColor" systemColor="systemTealColor"/>
                                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                         <state key="normal">
                                                             <color key="titleColor" red="0.34534250659999999" green="0.68327885720000003" blue="0.76859849690000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                                            <imageReference key="image" image="tray.full.fill" catalog="system" symbolScale="large"/>
+                                                            <imageReference key="image" image="trash.fill" catalog="system" symbolScale="large"/>
                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="loadTapped:" destination="xSZ-i2-Jts" eventType="touchUpInside" id="ZCn-S3-8em"/>
+                                                            <action selector="trashCanTapped:" destination="xSZ-i2-Jts" eventType="touchUpInside" id="6s3-Wc-6us"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -1241,7 +1262,7 @@
                                         </constraints>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hKp-ds-86I" userLabel="Chevron View">
-                                        <rect key="frame" x="624" y="50" width="52" height="30"/>
+                                        <rect key="frame" x="724" y="50" width="52" height="30"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ChevronCompactUp" translatesAutoresizingMaskIntoConstraints="NO" id="iVZ-Fd-dY7">
                                                 <rect key="frame" x="0.0" y="0.0" width="52" height="30"/>
@@ -1283,7 +1304,7 @@
                                     <constraint firstItem="hKp-ds-86I" firstAttribute="top" secondItem="YLK-IE-ajS" secondAttribute="bottom" id="RRf-mC-xx8"/>
                                     <constraint firstAttribute="height" constant="50" id="gfG-JH-DGG"/>
                                     <constraint firstAttribute="bottom" secondItem="YLK-IE-ajS" secondAttribute="bottom" id="gkv-Gt-6iw"/>
-                                    <constraint firstItem="hKp-ds-86I" firstAttribute="centerX" secondItem="fZU-G0-fgM" secondAttribute="centerX" id="uZV-o0-RdA"/>
+                                    <constraint firstItem="hKp-ds-86I" firstAttribute="centerX" secondItem="fZU-G0-fgM" secondAttribute="centerX" constant="100" id="uZV-o0-RdA"/>
                                     <constraint firstItem="YLK-IE-ajS" firstAttribute="centerX" secondItem="fZU-G0-fgM" secondAttribute="centerX" id="xm7-a0-8G7"/>
                                 </constraints>
                             </view>
@@ -1485,6 +1506,7 @@
                                         </subviews>
                                     </stackView>
                                 </subviews>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="650" id="Rav-Dp-9pI"/>
                                 </constraints>
@@ -1545,7 +1567,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dev-Ck-vTF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2804" y="992"/>
+            <point key="canvasLocation" x="2530" y="958"/>
         </scene>
         <!--Profiles Table View Controller-->
         <scene sceneID="W0E-wz-n2b">

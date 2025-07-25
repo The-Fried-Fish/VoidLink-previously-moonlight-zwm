@@ -387,7 +387,7 @@ import UIKit
         if self.shape == "round"{ // we'll make custom osc buttons round & smaller
             NSLayoutConstraint.activate([
                 self.widthAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.heightFactor / 2) * 2)),])
+                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.widthFactor / 2) * 2)),])
         }
         if self.shape == "square" {
             NSLayoutConstraint.activate([
@@ -613,7 +613,7 @@ import UIKit
             // illustrate offset distance in edit mode
             // let offsetSign = self.selfViewOnTheRight ? -1 : 1 // dprecated
             // let illlustrationPoint = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMaxY(self.frame)/4)
-            self.crossMarkLayer.position = CGPointMake(CGRectGetMidX(self.stickBallLayer.frame), CGRectGetMidY(self.stickBallLayer.frame)-stickIndicatorOffset)
+            self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame)-stickIndicatorOffset)
         }
         CATransaction.commit()
     }
@@ -1166,10 +1166,15 @@ import UIKit
         let currentLocation: CGPoint
         if OnScreenWidgetView.editMode {currentLocation = touch.location(in: superview)}
         else {currentLocation = touch.location(in: self)}
+                
+        let offsetX = currentLocation.x - latestTouchLocation.x;
+        let offsetY = currentLocation.y - latestTouchLocation.y;
         
-        let offsetX = currentLocation.x - latestTouchLocation.x
-        let offsetY = currentLocation.y - latestTouchLocation.y
-        center = CGPoint(x: center.x + offsetX, y: center.y + offsetY)
+        let outOfBoundsX = center.x+offsetX > (self.superview?.bounds.width)! || center.x+offsetX < 0
+        let outOfBoundsY = center.y+offsetY > (self.superview?.bounds.height)! || center.y+offsetY < 0
+
+        center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
+        
         latestTouchLocation = currentLocation
         // center = currentLocation;
         //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)

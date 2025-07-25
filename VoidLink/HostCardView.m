@@ -50,13 +50,16 @@
 
 static const float REFRESH_CYCLE = 2.0f;
 
+- (BOOL)isIPhone{
+    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         buttonLabelFontSize = 15*_sizeFactor;
         longPressFired = false;
-        computerIconMonitorCenterYOffset = -4.3523*_sizeFactor;
+        computerIconMonitorCenterYOffset = [self isIPhone] ? -2.75*_sizeFactor : -3.2*_sizeFactor;
         iconAndButtonSpacing = 37*_sizeFactor;
         buttonHeight = 39*_sizeFactor;
         defaultBlue = [ThemeManager appPrimaryColor];
@@ -92,6 +95,8 @@ static const float REFRESH_CYCLE = 2.0f;
     // for tvOS devices and iOS prior to 13.0.
     return self;
 }
+
+
 
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
@@ -190,7 +195,7 @@ static const float REFRESH_CYCLE = 2.0f;
     self.hostIconView.translatesAutoresizingMaskIntoConstraints = NO;
     self.hostIconView.contentMode = UIViewContentModeScaleAspectFit;
     if (@available(iOS 13.0, *)) {
-        self.hostIconView.image = [UIImage systemImageNamed:@"display"];
+        self.hostIconView.image = [[UIImage imageNamed:@"display"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     } else {
         self.hostIconView.image = [UIImage imageNamed:@"Computer"];
         [NSLayoutConstraint activateConstraints:@[
@@ -203,8 +208,8 @@ static const float REFRESH_CYCLE = 2.0f;
     [NSLayoutConstraint activateConstraints:@[
         [self.hostIconView.centerXAnchor constraintEqualToAnchor:self.iconBackgroundView.centerXAnchor constant:0],
         [self.hostIconView.centerYAnchor constraintEqualToAnchor:self.iconBackgroundView.centerYAnchor constant:0],
-        [self.hostIconView.heightAnchor constraintEqualToConstant:63*_sizeFactor],
-        [self.hostIconView.widthAnchor constraintEqualToConstant:63*_sizeFactor],
+        [self.hostIconView.heightAnchor constraintEqualToConstant:53.9*_sizeFactor],
+        [self.hostIconView.widthAnchor constraintEqualToConstant:53.9*_sizeFactor],
     ]];
     // [self.iconBackgroundView layoutIfNeeded];
     // [self.iconImageView layoutIfNeeded];
@@ -231,8 +236,9 @@ static const float REFRESH_CYCLE = 2.0f;
     // lockIcon
     lockIconView =[[UIImageView alloc] init];
     lockIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    lockIconView.contentMode = UIViewContentModeScaleAspectFit;
     if (@available(iOS 13.0, *)) {
-        lockIconView.image = [UIImage systemImageNamed:@"lock.fill"];
+        lockIconView.image = [[UIImage imageNamed:@"lock.fill"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     } else {
         lockIconView.image = [UIImage imageNamed:@"LockedOverlayIcon"];
         computerIconMonitorCenterYOffset = -5 * _sizeFactor;
@@ -242,8 +248,8 @@ static const float REFRESH_CYCLE = 2.0f;
     [NSLayoutConstraint activateConstraints:@[
         [lockIconView.centerXAnchor constraintEqualToAnchor:_iconBackgroundView.centerXAnchor constant:0],
         [lockIconView.centerYAnchor constraintEqualToAnchor:_iconBackgroundView.centerYAnchor constant:computerIconMonitorCenterYOffset],
-        [lockIconView.widthAnchor constraintEqualToConstant:22*_sizeFactor],
-        [lockIconView.heightAnchor constraintEqualToConstant:22*_sizeFactor]
+        [lockIconView.widthAnchor constraintEqualToConstant:17.05*_sizeFactor],
+        [lockIconView.heightAnchor constraintEqualToConstant:17.05*_sizeFactor]
     ]];
     lockIconView.hidden = true;
     
@@ -503,10 +509,12 @@ static const float REFRESH_CYCLE = 2.0f;
         return;
     }
     
+    NSLog(@"hostCard update loop %f", CACurrentMediaTime());
+    
     [self updateContentsForHost:_host];
     
     // Queue the next refresh cycle
-    [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
+    if(![self.delegate isStreaming]) [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
 }
 
 - (void) updateContentsForHost:(TemporaryHost*)host {
@@ -567,8 +575,12 @@ static const float REFRESH_CYCLE = 2.0f;
             } else {
                 self.statusIcon.hidden = YES;
             }
+            
+            bool hostPaired = host.pairState == PairStatePaired;
+            
             _hostIconView.tintColor = [ThemeManager lowProfileGray];
-            lockIconView.hidden = YES;
+            lockIconView.tintColor = [ThemeManager lowProfileGray];
+            lockIconView.hidden = hostPaired;
             _appButton.hidden = YES;
             _launchButton.hidden = YES;
             _pairButton.hidden = YES;
@@ -577,13 +589,15 @@ static const float REFRESH_CYCLE = 2.0f;
             if (@available(iOS 13.0, *)) {
                 UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:buttonHeight/3.45 weight:UIImageSymbolWeightBold];
                 UIImage *templateImage = [UIImage systemImageNamed:@"power" withConfiguration:config];
-                UIImage *coloredImage = [templateImage imageWithTintColor:defaultBlue renderingMode:UIImageRenderingModeAlwaysOriginal];
+                UIImage *coloredImage = [templateImage imageWithTintColor:hostPaired ? defaultBlue : [ThemeManager textColorGray] renderingMode:UIImageRenderingModeAlwaysOriginal];
                 [self.wakeupButton setImage:coloredImage forState:UIControlStateNormal];
             } else {
                 // Fallback on earlier versions
             }
-            self.wakeupButton.backgroundColor = [ThemeManager textTintColorWithAlpha];
-            [self.wakeupButton setTitleColor:defaultBlue forState:UIControlStateNormal];
+
+            self.wakeupButton.backgroundColor = hostPaired ? [ThemeManager textTintColorWithAlpha] : [[ThemeManager textColorGray] colorWithAlphaComponent:0.2];
+            [self.wakeupButton setTitleColor: hostPaired ? defaultBlue : [ThemeManager textColorGray] forState:UIControlStateNormal];
+            
             break;
         case StateUnknown:
             _hostSpinner.color = [UIColor whiteColor];

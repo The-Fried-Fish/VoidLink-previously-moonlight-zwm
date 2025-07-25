@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="dgh-JZ-Q7z" customClass="MainFrameViewController" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Rtu-AT-Alw" customClass="AppCollectionView">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.3333333432674408" green="0.3333333432674408" blue="0.3333333432674408" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="15" minimumInteritemSpacing="15" id="YcZ-cR-3tK">
@@ -181,20 +181,20 @@
                                                     <action selector="undoTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="Lzm-gS-xMV"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-Fo-0GK" userLabel="Trash">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rXW-Ms-2cJ" userLabel="Load">
                                                 <rect key="frame" x="120" y="0.0" width="50" height="50"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="50" id="0vV-wV-Efz"/>
-                                                    <constraint firstAttribute="width" constant="50" id="j9W-Ja-bVn"/>
+                                                    <constraint firstAttribute="width" constant="50" id="91g-27-mVH"/>
+                                                    <constraint firstAttribute="height" constant="50" id="kRj-b6-Bx1"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                 <color key="tintColor" systemColor="systemTealColor"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" image="trash.fill" catalog="system">
-                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="bold"/>
+                                                <state key="normal" image="tray.full.fill" catalog="system">
+                                                    <color key="titleColor" systemColor="systemTealColor"/>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="semibold"/>
                                                 </state>
                                                 <connections>
-                                                    <action selector="trashCanTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="xeo-uK-pwk"/>
+                                                    <action selector="loadTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="DVp-Xi-K27"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LPA-ea-YHC" userLabel="Save">
@@ -213,20 +213,20 @@
                                                     <action selector="saveTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="cSe-fN-UWC"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rXW-Ms-2cJ" userLabel="Load">
+                                            <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-Fo-0GK" userLabel="Trash">
                                                 <rect key="frame" x="360" y="0.0" width="50" height="50"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="50" id="91g-27-mVH"/>
-                                                    <constraint firstAttribute="height" constant="50" id="kRj-b6-Bx1"/>
+                                                    <constraint firstAttribute="height" constant="50" id="0vV-wV-Efz"/>
+                                                    <constraint firstAttribute="width" constant="50" id="j9W-Ja-bVn"/>
                                                 </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                 <color key="tintColor" systemColor="systemTealColor"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" image="tray.full.fill" catalog="system">
-                                                    <color key="titleColor" systemColor="systemTealColor"/>
-                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="semibold"/>
+                                                <state key="normal" image="trash.fill" catalog="system">
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25" weight="bold"/>
                                                 </state>
                                                 <connections>
-                                                    <action selector="loadTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="DVp-Xi-K27"/>
+                                                    <action selector="trashCanTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="xeo-uK-pwk"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Up4-28-sgF" userLabel="Add">
@@ -314,7 +314,7 @@
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="BVp-3O-vZ7" userLabel="widgetPanelStack" customClass="WidgetPanelStackView">
-                                <rect key="frame" x="325" y="226" width="550" height="298.5"/>
+                                <rect key="frame" x="375" y="132" width="550" height="298.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile:" textAlignment="center" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f46-Pt-0Pv">
                                         <rect key="frame" x="0.0" y="0.0" width="550" height="28"/>
@@ -566,6 +566,7 @@
                                         </constraints>
                                     </stackView>
                                 </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="550" id="fNg-fG-rV5"/>
                                 </constraints>
@@ -1070,29 +1071,6 @@
                                     <constraint firstAttribute="height" priority="999" constant="56.5" id="yfu-kk-pSf"/>
                                 </constraints>
                             </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="c3s-U1-Vz7" userLabel="swapABXYButtons Stack">
-                                <rect key="frame" x="15" y="1471" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B and X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="885-w2-VAD">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="3GB-Km-AL8" userLabel="Swap A/B and X/Y Buttons">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="No"/>
-                                            <segment title="Yes"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="zeF-sa-eY5"/>
-                                </constraints>
-                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="enq-vm-5pN" userLabel="keyboardToggleFingerNum Stack">
                                 <rect key="frame" x="17" y="884" width="380" height="56.5"/>
                                 <subviews>
@@ -1497,7 +1475,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Rld-CY-qzs" userLabel="audioConfig Stack">
-                                <rect key="frame" x="437" y="1222" width="380" height="56.5"/>
+                                <rect key="frame" x="437" y="1316" width="380" height="56.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Audio Configuration" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qeW-hW-tSL" userLabel="Audio Config">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1542,7 +1520,7 @@
                                 </subviews>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="9eE-iu-W90" userLabel="backgroundSessionTimerStack">
-                                <rect key="frame" x="437" y="1318" width="380" height="55.5"/>
+                                <rect key="frame" x="437" y="1397" width="380" height="55.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Background Session" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9et-1g-y3D" userLabel="backgroundSessionTimerLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1560,12 +1538,53 @@
                                     <constraint firstAttribute="width" constant="380" id="fjm-Ch-JrJ"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="XoT-d0-QUQ" userLabel="emulatedControllerTypeStack">
+                                <rect key="frame" x="437" y="1471" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emulated Controller Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dUM-r9-0Bo" userLabel="emulatedControllerTypeLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="q6v-Jb-ysy" userLabel="emulatedControllerTypeSelector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Xbox 360"/>
+                                            <segment title="DS4"/>
+                                            <segment title="Both"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="Hwq-t1-6V0"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="reE-vr-Mdk" userLabel="swapABXYStack">
+                                <rect key="frame" x="15" y="1409" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cl0-Qm-3kW" userLabel="softKeyboardToolbarStack">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T5q-1k-zB3" userLabel="swapABXYSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="zfn-e2-2VQ"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <size key="freeformSize" width="1200" height="2500"/>
                     <connections>
-                        <outlet property="HdrStack" destination="kFw-d7-BTn" id="3aT-Gh-bDO"/>
                         <outlet property="audioConfigSelector" destination="hfR-K8-Ti4" id="4La-bI-jLq"/>
                         <outlet property="audioConfigStack" destination="Rld-CY-qzs" id="dmf-m8-sor"/>
                         <outlet property="audioOnPcStack" destination="aud-Zf-37T" id="58Y-ri-ILs"/>
@@ -1580,6 +1599,8 @@
                         <outlet property="codecSelector" destination="5Y7-To-ca2" id="Kmt-sp-eXj"/>
                         <outlet property="codecStack" destination="cVe-Uk-gXv" id="826-Tv-rMl"/>
                         <outlet property="customResolutionSwitch" destination="kRO-HO-zKO" id="ZUP-Yd-QDY"/>
+                        <outlet property="emulatedControllerTypeSelector" destination="q6v-Jb-ysy" id="o1B-2n-vOR"/>
+                        <outlet property="emulatedControllerTypeStack" destination="XoT-d0-QUQ" id="dGV-0G-xF9"/>
                         <outlet property="enableOswForNativeTouchSwitch" destination="MaZ-Wu-LNS" id="sYj-e8-eKn"/>
                         <outlet property="enableOswSwitchStack" destination="ULn-2e-7se" id="0BI-1o-JMp"/>
                         <outlet property="externalDisplayModeSelector" destination="Tue-Qh-8zP" id="YCO-TO-Dda"/>
@@ -1592,6 +1613,7 @@
                         <outlet property="gyroModeStack" destination="5Ep-SA-IBh" id="2qw-Sb-8O6"/>
                         <outlet property="gyroSensitivitySlider" destination="mHC-z4-AWQ" id="GHN-po-QYw"/>
                         <outlet property="gyroSensitivityStack" destination="Nd5-0L-wpv" id="Qo0-Z3-gkm"/>
+                        <outlet property="hdrStack" destination="kFw-d7-BTn" id="3aT-Gh-bDO"/>
                         <outlet property="hdrSwitch" destination="Kgb-YU-AFW" id="ksG-A4-HhS"/>
                         <outlet property="liftStreamViewForKeyboardSelector" destination="TJx-6E-kgr" id="KnL-15-Q6G"/>
                         <outlet property="liftStreamViewForKeyboardStack" destination="mgf-RQ-AVP" id="xH0-F0-dth"/>
@@ -1631,8 +1653,8 @@
                         <outlet property="softKeyboardToolbarSwitch" destination="c4W-2p-R3A" id="gf6-pq-L8o"/>
                         <outlet property="statsOverlaySelector" destination="Bda-3L-Wtg" id="9kj-wY-VjF"/>
                         <outlet property="statsOverlayStack" destination="dby-k3-aiH" id="1Ha-Y3-su4"/>
-                        <outlet property="swapABXYButtonsSelector" destination="3GB-Km-AL8" id="Ixb-zH-3Cv"/>
-                        <outlet property="swapAbaxyStack" destination="c3s-U1-Vz7" id="vZ0-If-toO"/>
+                        <outlet property="swapAbaxyStack" destination="reE-vr-Mdk" id="y3v-ac-LHy"/>
+                        <outlet property="swapAbxySwitch" destination="T5q-1k-zB3" id="153-6O-0Pv"/>
                         <outlet property="touchModeLabel" destination="v5B-5J-veL" id="ewI-fd-FnI"/>
                         <outlet property="touchModeSelector" destination="A9r-dE-rT4" id="DBR-8D-QTL"/>
                         <outlet property="touchModeStack" destination="2bi-tR-7sa" id="Fh0-Q4-fiq"/>

@@ -62,7 +62,9 @@
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];
         self.heightFactor = [decoder decodeFloatForKey:@"heightFactor"];
         self.sensitivityFactorX = [decoder decodeFloatForKey:@"sensitivityFactorX"];
+        self.sensitivityFactorX = self.sensitivityFactorX == 0 ? 1.0 : self.sensitivityFactorX;
         self.sensitivityFactorY = [decoder decodeFloatForKey:@"sensitivityFactorY"];
+        self.sensitivityFactorY = self.sensitivityFactorY == 0 ? 1.0 : self.sensitivityFactorY;
         self.decelerationRate = [decoder decodeFloatForKey:@"decelerationRate"];
         self.stickIndicatorOffset = [decoder decodeFloatForKey:@"stickIndicatorOffset"];
         self.oscLayerSizeFactor = [decoder decodeFloatForKey:@"oscLayerSizeFactor"];

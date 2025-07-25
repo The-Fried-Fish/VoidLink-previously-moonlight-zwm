@@ -69,6 +69,7 @@
     NSCache* _boxArtCache;
     bool _background;
     bool _enteredAppView;
+    bool _settingsViewExpanded;
     UIView* menuSeparator;
     UIView* snapshot;
     SettingsViewController* settingsViewController;
@@ -374,6 +375,8 @@ static NSMutableSet* hostList;
     self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
     //self.view.backgroundColor = [ThemeManager appBackgroundColor];
 
+    [self.collectionView setContentOffset:CGPointZero animated:NO];
+    
     [self attachWaterMark];
     self.navigationItem.rightBarButtonItems = @[_upButton];
     self.revealViewController.mainFrameIsInHostView = false;
@@ -385,11 +388,12 @@ static NSMutableSet* hostList;
     //[self applyNavBarAppearance:navBarAppearance];
 }
 
-- (void)appButtonTappedForHost:(TemporaryHost *)host {
+- (void)appButtonTappedForHost:(TemporaryHost *)host{
     if (host.state != StateOnline) return;
     _selectedHost = host;
-    if (host.state == StateOnline && host.pairState == PairStatePaired && host.appList.count > 0) {
-        [self switchToAppView];
+    if(host.state == StateOnline && host.pairState == PairStatePaired){
+        [self updateAppsForHost:host];
+        if(host.appList.count>0) [self switchToAppView];
     }
 }
 
@@ -490,7 +494,7 @@ static NSMutableSet* hostList;
 
 
 - (void) noneUserInitiatedHostAction:(TemporaryHost *)host view:(UIView *)view {
-    Log(LOG_D, @"Clicked host: %@", host.name);
+    NSLog(@"Clicked host: %@", host.name);
     _selectedHost = host;
     //_appManager = [[AppAssetManager alloc] initWithCallback:self];
     [self.collectionView setCollectionViewLayout:self.collectionViewLayout];
@@ -817,6 +821,7 @@ static NSMutableSet* hostList;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
     _streamConfig.gyroMode = [streamSettings.gyroMode intValue];
+    _streamConfig.emulatedControllerType = streamSettings.emulatedControllerType.intValue;
     //NSLog(@"gyroMode from settings: %ld", _streamConfig.gyroMode);
     
     // multiController must be set before calling getConnectedGamepadMask
@@ -1115,6 +1120,7 @@ static NSMutableSet* hostList;
 - (void)revealController:(SWRevealViewController *)revealController willMoveToPosition:(FrontViewPosition)position {
     settingsViewController = (SettingsViewController*)[revealController rearViewController];
     revealController.navBarMenuDelegate = settingsViewController;
+    _settingsViewExpanded = position != FrontViewPositionLeft;
     if (position == FrontViewPositionLeft) {
         self.navigationItem.leftBarButtonItems = @[_settingsButton];
     }
@@ -1127,9 +1133,11 @@ static NSMutableSet* hostList;
     // enable / disable widgets acoordingly: in streamview, disable, outside of streamview, enable.
     if(self.settingsExpandedInStreamView) [revealController buttonsInStreaming];
     else [revealController buttonsNotInStreaming];
+    
+    // DataManager* dataMan = [[DataManager alloc] init];
+    // TemporarySettings* currentSettings = [dataMan getSettings];
 
     [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
-
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.resolutionStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.fpsStack];
     [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
@@ -1139,6 +1147,7 @@ static NSMutableSet* hostList;
     [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.gyroModeSelector setEnabled:!_settingsExpandedInStreamView || ![streamFrameViewController shallDisableGyroHotSwitch]];
+    [settingsViewController.emulatedControllerTypeSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
@@ -1261,6 +1270,19 @@ static NSMutableSet* hostList;
     }
 }
 
+- (BOOL)isFirstLaunch {
+    NSString *key = @"appHasLaunchedBefore";
+    BOOL launchedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+
+    if (!launchedBefore) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize]; // iOS 12+ 可省略
+        return YES;
+    }
+    return NO;
+}
+
+
 - (bool)isIPhone{
     return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
@@ -1339,14 +1361,24 @@ static NSMutableSet* hostList;
     button.tintColor = [ThemeManager appPrimaryColor];
     [button setTitleColor:button.tintColor forState:UIControlStateNormal];
 
-    button.frame = CGRectMake(0, 0, buttonHeight, buttonHeight);
+    button.frame = CGRectMake(0, 0, buttonHeight*1.3, buttonHeight*1.05);
 
     // 添加点击事件
-    // [button addTarget:self action:@selector(addDeviceTapped) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(helpButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 
     // 创建 UIBarButtonItem
     UIBarButtonItem *barItem = [[UIBarButtonItem alloc] initWithCustomView:button];
     return barItem;
+}
+
+- (void)helpButtonTapped{
+    if (@available(iOS 13.0, *)) {
+        AboutViewController *aboutVC = [[AboutViewController alloc] init];
+        aboutVC.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self presentViewController:aboutVC animated:YES completion:nil];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 - (CGFloat)getStandardNavBarHeight{
@@ -1528,10 +1560,11 @@ static NSMutableSet* hostList;
     #endif
 
     [self updateTitle];
-    // [self.view addSubview:hostScrollView];
-
-    // if ([hostList count] == 1) [self hostClicked:[hostList anyObject] view:nil]; // auto click for single host
     
+    [self retrieveSavedHosts];
+
+    _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
+
 
     //if([SettingsViewController isLandscapeNow] != _streamConfig.width > _streamConfig.height)
     //[self simulateSettingsButtonPress]; //force expand setting view if orientation changed since last quit from app.
@@ -1754,7 +1787,8 @@ static NSMutableSet* hostList;
                                                object: nil];
     //[self simulateSettingsButtonPress]; //force reload resolution table in the setting
     //[self simulateSettingsButtonPress];
-    //[self updateResolutionAccordingly];
+    [self updateResolutionAccordingly];
+    if([self isFirstLaunch])[self helpButtonTapped];
 }
 
 
@@ -1770,10 +1804,12 @@ static NSMutableSet* hostList;
     [super viewWillAppear:NO];
 
     /* this makes background color works*/
-    for (UIView *subview in self.view.subviews) {
-        [subview removeFromSuperview]; // 暂时移除所有子视图
+    
+    if(!_settingsViewExpanded){
+        for (UIView *subview in self.view.subviews) {
+            [subview removeFromSuperview]; // 暂时移除所有子视图
+        }
     }
-
     
     // We can get here on home press while streaming
     // since the stream view segues to us just before
@@ -1793,10 +1829,6 @@ static NSMutableSet* hostList;
     [self.view addSubview:self.collectionView];
     [self initHostCollection];
     if(!_enteredAppView) [self switchToHostView];
-
-    [self retrieveSavedHosts];
-
-    _discMan = [[DiscoveryManager alloc] initWithHosts:[hostList allObjects] andCallback:self];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1886,7 +1918,8 @@ static NSMutableSet* hostList;
         NSArray* sortedHostList = [[hostList allObjects] sortedArrayUsingSelector:@selector(compareName:)];
         for (TemporaryHost* comp in sortedHostList) {
             
-            if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
+            // if(comp.state == StateOnline || comp.pairState == PairStatePaired || comp.pairState == PairStateUnknown) [self.hostCollectionVC addHost:comp];
+            [self.hostCollectionVC addHost:comp];
 
             // Start jobs to decode the box art in advance
             for (TemporaryApp* app in comp.appList) {
@@ -1988,16 +2021,25 @@ static NSMutableSet* hostList;
     [self.collectionView reloadData];
 }
 
+- (bool)isInAppView{
+    return !self.revealViewController.isStreaming && _enteredAppView;
+}
+
+- (bool)isStreaming{
+    return self.revealViewController.isStreaming;
+}
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"AppCell" forIndexPath:indexPath];
     
     TemporaryApp* app = _sortedAppList[indexPath.row];
     UIAppView* appView = [[UIAppView alloc] initWithApp:app cache:_boxArtCache andCallback:self];
+    appView.updateLoopDelegate = (id<AppViewUpdateLoopDelegate>)self;
     
     if (appView.bounds.size.width > 10.0) {
         CGFloat scale = cell.bounds.size.width / appView.bounds.size.width;
         [appView setCenter:CGPointMake(appView.bounds.size.width / 2 * scale, appView.bounds.size.height / 2 * scale)];
-        appView.transform = CGAffineTransformMakeScale(scale, scale);
+        appView.transform = CGAffineTransformMakeScale(scale, scale); // view resize
     }
     
     [cell.subviews.firstObject removeFromSuperview]; // Remove a view that was previously added
@@ -2005,15 +2047,15 @@ static NSMutableSet* hostList;
     // [self.settingsButton setEnabled:![self isIPhonePortrait]]; // update settings button after host is clicked & appview loaded
     // Shadow opacity is controlled inside UIAppView based on whether the app
     // is hidden or not during the update cycle.
-    UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:cell.bounds];
-    cell.layer.masksToBounds = NO;
-    cell.layer.shadowColor = [UIColor blackColor].CGColor;
-    cell.layer.shadowOffset = CGSizeMake(1.0f, 5.0f);
-    cell.layer.shadowPath = shadowPath.CGPath;
+    //UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:cell.bounds];
+    //cell.layer.masksToBounds = YES;
+    //cell.layer.shadowColor = [UIColor blackColor].CGColor;
+    //cell.layer.shadowOffset = CGSizeMake(1.0f, 5.0f);
+    //cell.layer.shadowPath = shadowPath.CGPath;
     
 #if !TARGET_OS_TV
-    cell.layer.borderWidth = 1;
-    cell.layer.borderColor = [[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3f] CGColor];
+    //cell.layer.borderWidth = 1;
+    //cell.layer.borderColor = [[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3f] CGColor];
     cell.exclusiveTouch = YES;
 #endif
 
@@ -2087,7 +2129,7 @@ static NSMutableSet* hostList;
     if(gesture.state == UIGestureRecognizerStateBegan){
         if(locationInView.x < 30) {
             snapshot = [[UIView alloc] init];
-            snapshot.backgroundColor = [ThemeManager appPrimaryColor];
+            snapshot.backgroundColor = [UIColor systemBlueColor];
             screenHeight = [UIScreen mainScreen].bounds.size.height;
             snapshot.frame = CGRectMake(locationInSuperView.x,0, 2, screenHeight);
             [self.revealViewController.view addSubview:snapshot];

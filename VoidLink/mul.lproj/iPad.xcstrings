@@ -1141,39 +1141,9 @@
         }
       }
     },
-    "Dll-7x-18l.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Swap A/B and X/Y Buttons\"; ObjectID = \"Dll-7x-18l\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Swap A/B and X/Y Buttons"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交换A/B键、X/Y键位置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交換A/B鍵、X/Y鍵位置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "交換A/B鍵、X/Y鍵位置"
-          }
-        }
-      }
-    },
     "dpd-Bw-aHE.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; dpd-Bw-aHE.segmentTitles[0] = \"No\"; ObjectID = \"dpd-Bw-aHE\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1203,7 +1173,7 @@
     },
     "dpd-Bw-aHE.segmentTitles[1]" : {
       "comment" : "Class = \"UISegmentedControl\"; dpd-Bw-aHE.segmentTitles[1] = \"Yes\"; ObjectID = \"dpd-Bw-aHE\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1701,6 +1671,90 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "7.1聲道"
+          }
+        }
+      }
+    },
+    "JaY-XA-1V6.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[0] = \"Xbox 360\"; ObjectID = \"JaY-XA-1V6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Xbox 360"
+          }
+        }
+      }
+    },
+    "JaY-XA-1V6.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[1] = \"DS4\"; ObjectID = \"JaY-XA-1V6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DS4"
+          }
+        }
+      }
+    },
+    "JaY-XA-1V6.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[2] = \"Both\"; ObjectID = \"JaY-XA-1V6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Both"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同时映射"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時映射"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時映射"
+          }
+        }
+      }
+    },
+    "JTl-un-QJJ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Emulated Controller Type\"; ObjectID = \"JTl-un-QJJ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Emulated Controller Type"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射类型"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射類型"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射類型"
           }
         }
       }
@@ -2479,6 +2533,36 @@
         }
       }
     },
+    "OXy-y4-yO4.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Swap A/B X/Y Buttons\"; ObjectID = \"OXy-y4-yO4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Swap A/B X/Y Buttons"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交换A/B键、X/Y键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交換A/B鍵、X/Y鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交換A/B鍵、X/Y鍵"
+          }
+        }
+      }
+    },
     "P34-hO-6cX.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Duplicate\"; ObjectID = \"P34-hO-6cX\";",
       "extractionState" : "extracted_with_value",
@@ -2984,37 +3068,37 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "台前调度"
+            "value" : "台前调度(可全屏)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度"
+            "value" : "幕前調度(可全螢幕)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度"
+            "value" : "幕前調度(可全螢幕)"
           }
         }
       }
     },
     "VWB-YB-Ptj.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; VWB-YB-Ptj.segmentTitles[1] = \"AirPlay\"; ObjectID = \"VWB-YB-Ptj\";",
+      "comment" : "Class = \"UISegmentedControl\"; VWB-YB-Ptj.segmentTitles[1] = \"AirPlay (mirroring)\"; ObjectID = \"VWB-YB-Ptj\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "AirPlay"
+            "value" : "AirPlay (mirroring)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "隔空播放"
+            "state" : "needs_review",
+            "value" : "隔空播放(镜像)"
           }
         },
         "zh-Hant" : {
@@ -3025,7 +3109,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "螢幕鏡像輸出"
           }
         }

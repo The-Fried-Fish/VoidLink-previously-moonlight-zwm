@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Lets the caller of this method know whether a profile with a given name already exists in persistent storage
  */
 - (BOOL) profileNameAlreadyExist:(NSString*)name;
-- (BOOL) profileName:(NSString*) name alreadyExistIn:(NSMutableArray*)profiles;
+- (OSCProfile *) findProfileByName:(NSString*) name inProfileArray:(NSMutableArray*)profiles;
 
 @end
 

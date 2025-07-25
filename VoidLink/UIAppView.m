@@ -5,6 +5,10 @@
 //  Created by Diego Waxemberg on 10/22/14.
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
+//  Created by True砖家 on 2025.7.20.
+//  Copyright © 2025 True砖家 @ Bilibili. All rights reserved.
+//
+
 
 #import "UIAppView.h"
 #import "AppAssetManager.h"
@@ -29,6 +33,9 @@ static UIImage* noImage;
     _callback = callback;
     _artCache = cache;
     
+    self.layer.cornerRadius = 16;
+    self.clipsToBounds = YES;
+    
     // Cache the NoAppImage ourselves to avoid
     // having to load it each time
     if (noImage == nil) {
@@ -45,6 +52,7 @@ static UIImage* noImage;
     
     _appImage = [[UIImageView alloc] initWithFrame:self.frame];
     [_appImage setImage:noImage];
+    
     [self addSubview:_appImage];
     
     // Use UIContextMenuInteraction on iOS 13.0+ and a standard UILongPressGestureRecognizer
@@ -71,8 +79,8 @@ static UIImage* noImage;
 #else
     // Rasterizing the cell layer increases rendering performance by quite a bit
     // but we want it unrasterized for tvOS where it must be scaled.
-    self.layer.shouldRasterize = YES;
-    self.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    self.layer.shouldRasterize = NO;
+    // self.layer.rasterizationScale = [UIScreen mainScreen].scale;
     
     if (@available(iOS 13.4.1, *)) {
         // Allow the button style to change when moused over
@@ -115,6 +123,10 @@ static UIImage* noImage;
 }
 #endif
 
+- (bool)isCurrentApp{
+    return [_app.id isEqualToString:_app.host.currentGame];
+}
+
 - (void) updateAppImage {
 
     if (_appOverlay != nil) {
@@ -129,7 +141,8 @@ static UIImage* noImage;
     BOOL noAppImage = false;
     
     // First check the memory cache
-    UIImage* appImage = [_artCache objectForKey:_app];
+    //UIImage* appImage = [_artCache objectForKey:_app];
+    UIImage* appImage = nil;
     // NSLog(@"appImage instance: %lu", (uintptr_t)appImage);
     if (appImage == nil) {
         // Next try to load from the on disk cache
@@ -138,6 +151,8 @@ static UIImage* noImage;
             [_artCache setObject:appImage forKey:_app];
         }
     }
+    
+    
     // [_artCache setObject:appImage forKey:_app];
 
     if (appImage != nil) {
@@ -156,12 +171,15 @@ static UIImage* noImage;
         noAppImage = true;
     }
     
-    if ([_app.id isEqualToString:_app.host.currentGame]) {
+    
+    if([self isCurrentApp]) {
         // Only create the app overlay if needed
         
         if (@available(iOS 13.0, *)) {
-            UIImageView* playIcon = [[UIImageView alloc] initWithImage:[[UIImage systemImageNamed:@"play.circle"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-            playIcon.tintColor = [[UIColor systemTealColor] colorWithAlphaComponent:0.8];
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23];
+            UIImageView* playIcon = [[UIImageView alloc] initWithImage:[[UIImage systemImageNamed:@"play.circle.fill" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+            //playIcon.tintColor = [[ThemeManager widgetBackgroundColor] colorWithAlphaComponent:0.85];
+            playIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
 
             _appOverlay = playIcon;
         } else {
@@ -170,23 +188,37 @@ static UIImage* noImage;
         }
 
         
-        _appOverlay.layer.shadowColor = [UIColor blackColor].CGColor;
-        _appOverlay.layer.shadowOffset = CGSizeMake(1, 1);
-        _appOverlay.layer.shadowOpacity = 1;
-        _appOverlay.layer.shadowRadius = 1.3;
-        _appOverlay.contentMode = UIViewContentModeScaleAspectFit;
+        //_appOverlay.layer.shadowColor = [UIColor blackColor].CGColor;
+        //_appOverlay.layer.shadowOffset = CGSizeMake(1, 1);
+        //_appOverlay.layer.shadowOpacity = 1;
+        //_appOverlay.layer.shadowRadius = 1.3;
+        //_appOverlay.contentMode = UIViewContentModeScaleAspectFit;
+    }
+    else if(noAppImage){
+        if (@available(iOS 13.0, *)) {
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:70];
+            UIImage* appIconImage = [[UIImage imageNamed:@"icon-pc-app"] imageWithConfiguration:config];
+            UIImageView* appIcon = [[UIImageView alloc] initWithImage:[appIconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+            
+            //layIcon.tintColor = [[ThemeManager widgetBackgroundColor] colorWithAlphaComponent:0.85];
+            appIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+
+            _appOverlay = appIcon;
+        }
     }
     
-    if (noAppImage) {
+    if(true) {
         _appLabel = [[UILabel alloc] init];
-        [_appLabel setTextColor:[[UIColor blackColor] colorWithAlphaComponent:0.75]];
+        _appLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
+        [_appLabel setTextColor:[[UIColor whiteColor] colorWithAlphaComponent:1]];
         //_appLabel.shadowColor = [UIColor blackColor];
-        [_appLabel setText:_app.name];
-        [_appLabel setFont:[UIFont systemFontOfSize:20]];
+        [_appLabel setText:[_app.name isEqualToString:@"Steam Big Picture"] ? @"Steam" : _app.name];
+        [_appLabel setFont:[UIFont systemFontOfSize:15]];
         [_appLabel setBaselineAdjustment:UIBaselineAdjustmentAlignCenters];
         [_appLabel setTextAlignment:NSTextAlignmentCenter];
         [_appLabel setLineBreakMode:NSLineBreakByWordWrapping];
-        [_appLabel setNumberOfLines:0];
+        [_appLabel setNumberOfLines:2];
+        _appLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     }
     
     [self positionSubviews];
@@ -195,8 +227,8 @@ static UIImage* noImage;
     [_appImage.overlayContentView addSubview:_appLabel];
     [_appImage.overlayContentView addSubview:_appOverlay];
 #else
-    [self addSubview:_appLabel];
     [self addSubview:_appOverlay];
+    [self addSubview:_appLabel];
 #endif
 }
 
@@ -204,29 +236,26 @@ static UIImage* noImage;
     _appImage.layer.opacity = 0.5f;
 }
 - (void) buttonDeselected:(id)sender {
-    _appImage.layer.opacity = 1.0f;
+    _appImage.layer.opacity = [self isCurrentApp] ? 0.75 : 1.0f;
 }
 
 - (void) positionSubviews {
-    CGFloat padding = 5.f;
+   // CGFloat padding = 28;
+    CGFloat verticalPadding = 10;
     CGSize frameSize = _appImage.frame.size;
-    CGPoint center = _appImage.center;
+   //  CGPoint center = _appImage.center;
     
-    if (_appLabel != nil) {
+    [_appLabel setFrame:CGRectMake(0, frameSize.height-43, frameSize.width, 43)];
+    //[_appLabel setFrame:CGRectMake(0, 0, 30, 12)];
+
+    
         if (_appOverlay != nil) {
-            _appOverlay.frame = CGRectMake(0, 0, frameSize.width / 3, frameSize.width / 3);
-            _appOverlay.center = CGPointMake(frameSize.width / 2, padding + _appOverlay.frame.size.height / 2);
-            
-            [_appLabel setFrame:CGRectMake(padding, _appOverlay.frame.size.height + padding, frameSize.width - 2 * padding, frameSize.height - _appOverlay.frame.size.height - 2 * padding)];
+            _appOverlay.frame = [self isCurrentApp] ? CGRectMake(0, 0, frameSize.width / 2.39, frameSize.width / 2.39) : CGRectMake(0, 0, frameSize.width / 2, frameSize.width / 2);
+            _appOverlay.center = CGPointMake(frameSize.width/2,  frameSize.height/2 - 2 * verticalPadding);
+            if([self isCurrentApp]) _appImage.layer.opacity = 0.75f;
+
+            //[_appLabel setFrame:CGRectMake(padding, _appOverlay.frame.size.height + padding, frameSize.width - 2 * padding, frameSize.height - _appOverlay.frame.size.height - 2 * padding)];
         }
-        else {
-            [_appLabel setFrame:CGRectMake(padding, padding, frameSize.width - 2 * padding, frameSize.height - 2 * padding)];
-        }
-    }
-    else if (_appOverlay != nil) {
-        _appOverlay.frame = CGRectMake(0, 0, frameSize.width / 2, frameSize.width / 2);
-        _appOverlay.center = center;
-    }
 }
 
 - (void) updateLoop {
@@ -234,6 +263,8 @@ static UIImage* noImage;
     if (self.superview == nil) {
         return;
     }
+    
+    NSLog(@"appview update loop %f", CACurrentMediaTime());
     
     // Update the app image if neccessary
     if ((_appOverlay != nil && ![_app.id isEqualToString:_app.host.currentGame]) ||
@@ -244,13 +275,14 @@ static UIImage* noImage;
     // Show no shadow for hidden apps. Because we adjust the opacity of the
     // cells for hidden apps, it makes them look bad when the shadow draws
     // through the app tile.
-    self.superview.layer.shadowOpacity = _app.hidden ? 0.0f : 0.5f;
-    
+    // self.superview.layer.shadowOpacity = _app.hidden ? 0.0f : 0.5f;
+    self.superview.layer.shadowOpacity = 0;
+
     // Update opacity if neccessary
     [self setAlpha:_app.hidden ? 0.4 : 1.0];
     
     // Queue the next refresh cycle
-    [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
+    if([self.updateLoopDelegate isInAppView]) [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
 }
 
 @end

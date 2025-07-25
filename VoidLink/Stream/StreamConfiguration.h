@@ -33,6 +33,7 @@
 @property BOOL swapABXYButtons;
 @property BOOL asyncNativeTouchPriority;
 @property int gyroMode;
+@property int emulatedControllerType;
 @property int audioConfiguration;
 @property int supportedVideoFormats;
 @property BOOL multiController;
