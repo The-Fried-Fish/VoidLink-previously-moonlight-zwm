@@ -59,7 +59,6 @@
 		DC1F5A07206436B20037755F /* ConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1F5A06206436B20037755F /* ConnectionHelper.m */; };
 		F74BEF9C2C1A705600224667 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F74BEF9B2C1A705600224667 /* OpenSSL */; };
 		FB1A674D2131E65900507771 /* KeyboardSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1A674C2131E65900507771 /* KeyboardSupport.m */; };
-		FB1D59971BBCCB6400F482CA /* ComputerScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1D59961BBCCB6400F482CA /* ComputerScrollView.m */; };
 		FB1D599A1BBCCD7E00F482CA /* AppCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1D59991BBCCD7E00F482CA /* AppCollectionView.m */; };
 		FB290CF219B2C406004C83CF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF119B2C406004C83CF /* Foundation.framework */; };
 		FB290CF419B2C406004C83CF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF319B2C406004C83CF /* CoreGraphics.framework */; };
@@ -104,7 +103,6 @@
 		FBD3495019FF2174002D2A60 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3494F19FF2174002D2A60 /* SettingsViewController.m */; };
 		FBD3495319FF36FB002D2A60 /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3495219FF36FB002D2A60 /* SWRevealViewController.m */; };
 		FBD349621A0089F6002D2A60 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD349611A0089F6002D2A60 /* DataManager.m */; };
-		FBDE86E019F7A837001C18A8 /* UIComputerView.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE86DF19F7A837001C18A8 /* UIComputerView.m */; };
 		FBDE86E619F82297001C18A8 /* UIAppView.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE86E519F82297001C18A8 /* UIAppView.m */; };
 /* End PBXBuildFile section */
 
@@ -233,8 +231,6 @@
 		FB1A67642132419A00507771 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		FB1A67E421324A1F00507771 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.4.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
 		FB1A67E921324DF300507771 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.4.sdk/usr/lib/libxml2.tbd; sourceTree = DEVELOPER_DIR; };
-		FB1D59951BBCCB6400F482CA /* ComputerScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerScrollView.h; sourceTree = "<group>"; };
-		FB1D59961BBCCB6400F482CA /* ComputerScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerScrollView.m; sourceTree = "<group>"; };
 		FB1D59981BBCCD7E00F482CA /* AppCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppCollectionView.h; sourceTree = "<group>"; };
 		FB1D59991BBCCD7E00F482CA /* AppCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppCollectionView.m; sourceTree = "<group>"; };
 		FB290CEE19B2C406004C83CF /* VoidLink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoidLink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -319,8 +315,6 @@
 		FBD3495219FF36FB002D2A60 /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
 		FBD349601A0089F6002D2A60 /* DataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataManager.h; path = Database/DataManager.h; sourceTree = "<group>"; };
 		FBD349611A0089F6002D2A60 /* DataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DataManager.m; path = Database/DataManager.m; sourceTree = "<group>"; };
-		FBDE86DE19F7A837001C18A8 /* UIComputerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIComputerView.h; sourceTree = "<group>"; };
-		FBDE86DF19F7A837001C18A8 /* UIComputerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIComputerView.m; sourceTree = "<group>"; };
 		FBDE86E419F82297001C18A8 /* UIAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAppView.h; sourceTree = "<group>"; };
 		FBDE86E519F82297001C18A8 /* UIAppView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAppView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -513,8 +507,6 @@
 				841BAC912DE35D6B00DA639E /* ThemeManager.m */,
 				847D2FD82DDA00C800937A62 /* MenuSectionView.h */,
 				847D2FDA2DDA015F00937A62 /* MenuSectionView.m */,
-				FBDE86DE19F7A837001C18A8 /* UIComputerView.h */,
-				FBDE86DF19F7A837001C18A8 /* UIComputerView.m */,
 				FBDE86E419F82297001C18A8 /* UIAppView.h */,
 				FBDE86E519F82297001C18A8 /* UIAppView.m */,
 				1888C1902E24C2C800108730 /* AboutView.swift */,
@@ -522,8 +514,6 @@
 				FB89463719F6473800339C8A /* Launch Screen.xib */,
 				FB290D0819B2C406004C83CF /* Images.xcassets */,
 				FB290D0519B2C406004C83CF /* Limelight.xcdatamodeld */,
-				FB1D59951BBCCB6400F482CA /* ComputerScrollView.h */,
-				FB1D59961BBCCB6400F482CA /* ComputerScrollView.m */,
 				FB1D59981BBCCD7E00F482CA /* AppCollectionView.h */,
 				FB1D59991BBCCD7E00F482CA /* AppCollectionView.m */,
 				843E93BD2C41528700B1651F /* OrientationHelper.swift */,
@@ -889,12 +879,10 @@
 				84351B112C29ACCB00A77989 /* OSCProfilesManager.m in Sources */,
 				FB89462919F646E200339C8A /* mkcert.c in Sources */,
 				FB9AFD281A7C84ED00872C98 /* HttpResponse.m in Sources */,
-				FBDE86E019F7A837001C18A8 /* UIComputerView.m in Sources */,
 				FB89463019F646E200339C8A /* StreamConfiguration.m in Sources */,
 				FBD3495319FF36FB002D2A60 /* SWRevealViewController.m in Sources */,
 				84203F232C5F24C00032EEED /* OnScreenWidgetView.swift in Sources */,
 				84FD0B512C31338D006B5BE5 /* LocalizationHelper.m in Sources */,
-				FB1D59971BBCCB6400F482CA /* ComputerScrollView.m in Sources */,
 				FBD3495019FF2174002D2A60 /* SettingsViewController.m in Sources */,
 				843CC7F02C1E757D00BBC475 /* NativeTouchPointer.m in Sources */,
 				FB89462C19F646E200339C8A /* HttpManager.m in Sources */,
