@@ -238,12 +238,13 @@
                                                object:nil];
         
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OSCLayoutChanged) name:@"OSCLayoutChanged" object:nil];    // used to notifiy this view controller that the user made a change to the OSC layout so that the VC can either fade in or out its 'Undo button' which will signify to the user whether there are any OSC layout changes to undo
+        
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(handleReturnToForeground)
+                                                 name: UIApplicationDidBecomeActiveNotification
+                                               object: nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillResignActive:)
-                                                 name:UIApplicationWillResignActiveNotification
-                                               object:nil];
-
+    
     OnScreenWidgetView.editMode = true;
     [self handleMissingToolBarIcon:toolbarRootView];
     [self profileRefresh];
@@ -251,10 +252,9 @@
 
 #pragma mark - Class Helper Functions
 
-- (void)applicationWillResignActive:(NSNotification *)notification {
-    [self saveTapped:nil];
+- (void)handleReturnToForeground {
+    [OSCProfilesManager setOnScreenWidgetViewsSet:self.OnScreenWidgetViews];   // pass the keyboard button dict to profiles manager
 }
-
 
 /* fades the 'Undo Button' in or out depending on whether the user has any OSC layout changes to undo */
 - (void) OSCLayoutChanged {
@@ -379,8 +379,8 @@
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Read Widget Instruction"]
                                                            style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction *action){
-        [self saveTapped:nil];
-        NSURL *url = [NSURL URLWithString:@"https://b23.tv/J8qEXOr"];
+        //[self saveTapped:nil];
+        NSURL *url = [NSURL URLWithString:[LocalizationHelper localizedStringForKey:@"onScreenWidgetStackDoc"]];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         }
@@ -435,7 +435,8 @@
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Read Widget Instruction"]
                                                            style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction *action){
-        NSURL *url = [NSURL URLWithString:@"https://b23.tv/J8qEXOr"];
+        //[self saveTapped:nil];
+        NSURL *url = [NSURL URLWithString:[LocalizationHelper localizedStringForKey:@"onScreenWidgetStackDoc"]];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         }
@@ -503,7 +504,7 @@
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
         textField.text = self->selectedWidgetView.shape;
         if([self->selectedWidgetView.shape isEqualToString: @"largeSquare"]) textField.enabled = false;
-    }];		
+    }];
     
 
     UIAlertAction *createNewAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Create New"]

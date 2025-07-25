@@ -56,12 +56,12 @@ public struct AboutView: View {
                 }
             }
             // 链接按钮
-            if #available(iOS 14.0, *)  {
+            if #available(iOS 14.0, *),false  {
                 Link(SwiftLocalizationHelper.localizedString(forKey: "Join us"), destination: URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink"))!)
                     .padding(.top, 10)
                 Spacer()
                 // OK 按钮
-                Button("OK") {
+                Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .padding()
@@ -84,8 +84,8 @@ public struct AboutView: View {
                     .cornerRadius(12)
                     .frame(height: 33)
                     .frame(minWidth: 100)
-
-                    Button("OK") {
+                    /*
+                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .padding()
@@ -93,7 +93,7 @@ public struct AboutView: View {
                     .foregroundColor(.white)
                     .cornerRadius(12)
                     .frame(height: 33)
-                    .frame(minWidth: 100)
+                    .frame(minWidth: 100)*/
                 }
                 .padding(.top, 10)
             }
