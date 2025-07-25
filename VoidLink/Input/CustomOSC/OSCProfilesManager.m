@@ -142,7 +142,11 @@ static CGRect streamViewBounds;
 
 - (void) importEncodedProfiles:(NSMutableArray* )profilesEncoded {
     NSMutableArray* targetProfiles = [_currentProfiles mutableCopy]; //_currentProfiles is availabled as long as getAllProfiles was called before calling this method (_currentProfiles avoids frequent accessing persisted data)
-    if([self profileName:DEFAULT_TEMPLATE_NAME alreadyExistIn:targetProfiles] && targetProfiles.count > 1) [targetProfiles removeObjectAtIndex:1];
+    OSCProfile* profile;
+    profile = [self findProfileByName:DEFAULT_TEMPLATE_NAME1 inProfileArray:targetProfiles];
+    if(profile && targetProfiles.count > 1) [targetProfiles removeObject:profile];
+    profile = [self findProfileByName:DEFAULT_TEMPLATE_NAME2 inProfileArray:targetProfiles];
+    if(profile && targetProfiles.count > 1) [targetProfiles removeObject:profile];
     if(targetProfiles.count > 0) [targetProfiles removeObjectAtIndex:0];
     NSMutableArray* localEncodedPofiles = [self encodedProfilesFromArray:targetProfiles];
     [profilesEncoded addObjectsFromArray:localEncodedPofiles];
@@ -393,14 +397,14 @@ static CGRect streamViewBounds;
     return NO;
 }
 
-- (BOOL) profileName:(NSString*) name alreadyExistIn:(NSMutableArray*)profiles {
+- (OSCProfile *) findProfileByName:(NSString*) name inProfileArray:(NSMutableArray*)profiles {
     /* Iterate through the decoded profiles and return 'YES' if one of the profiles' 'name' properties equals the 'name' passed into this method */
     for (OSCProfile *profile in profiles) {
         if ([profile.name isEqualToString:name]) {
-            return YES;
+            return profile;
         }
     }
-    return NO;
+    return nil;
 }
 
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data {

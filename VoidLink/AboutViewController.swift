@@ -28,7 +28,7 @@ import SwiftUI
         ])
 
         // 🎯 设置弹窗大小
-        preferredContentSize = CGSize(width: 600, height: 450)
+        preferredContentSize = CGSize(width: 530, height: 450)
         //preferredContentSize = CGSize(width:150, height:120 )
 
         // ⚠️ 一定要设置以下样式才会生效 preferredContentSize

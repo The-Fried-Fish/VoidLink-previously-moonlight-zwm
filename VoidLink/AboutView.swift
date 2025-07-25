@@ -17,9 +17,10 @@ public struct AboutView: View {
         VStack(spacing: 10) {
             // App 图标
             Image(uiImage: UIImage(named: "AppIconMedium") ?? UIImage())
-                .resizable()
-                .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 36))
+                // .resizable()
+                .resizable(capInsets:EdgeInsets(top: 3.5, leading: 3.5, bottom: 3.5, trailing: 3.5))
+                .frame(width: 100, height: 100)
+                .clipShape(RoundedRectangle(cornerRadius: 28))
 
             // App 名称
             Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "App Name")
@@ -56,7 +57,7 @@ public struct AboutView: View {
             }
             // 链接按钮
             if #available(iOS 14.0, *)  {
-                Link(SwiftLocalizationHelper.localizedString(forKey: "Join us"), destination: URL(string: "https://example.com")!)
+                Link(SwiftLocalizationHelper.localizedString(forKey: "Join us"), destination: URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink"))!)
                     .padding(.top, 10)
                 Spacer()
                 // OK 按钮
@@ -73,7 +74,7 @@ public struct AboutView: View {
                 HStack(spacing: 20) {
                     Button(SwiftLocalizationHelper.localizedString(forKey: "Join us")) {
                         // 打开链接
-                        if let url = URL(string: "https://example.com") {
+                        if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink")) {
                             UIApplication.shared.open(url)
                         }
                     }
@@ -81,6 +82,7 @@ public struct AboutView: View {
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(12)
+                    .frame(height: 33)
                     .frame(minWidth: 100)
 
                     Button("OK") {
@@ -90,6 +92,7 @@ public struct AboutView: View {
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(12)
+                    .frame(height: 33)
                     .frame(minWidth: 100)
                 }
                 .padding(.top, 10)

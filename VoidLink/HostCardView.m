@@ -248,8 +248,8 @@ static const float REFRESH_CYCLE = 2.0f;
     [NSLayoutConstraint activateConstraints:@[
         [lockIconView.centerXAnchor constraintEqualToAnchor:_iconBackgroundView.centerXAnchor constant:0],
         [lockIconView.centerYAnchor constraintEqualToAnchor:_iconBackgroundView.centerYAnchor constant:computerIconMonitorCenterYOffset],
-        [lockIconView.widthAnchor constraintEqualToConstant:18.5*_sizeFactor],
-        [lockIconView.heightAnchor constraintEqualToConstant:18.5*_sizeFactor]
+        [lockIconView.widthAnchor constraintEqualToConstant:17.05*_sizeFactor],
+        [lockIconView.heightAnchor constraintEqualToConstant:17.05*_sizeFactor]
     ]];
     lockIconView.hidden = true;
     

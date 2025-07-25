@@ -79,8 +79,8 @@ static UIImage* noImage;
 #else
     // Rasterizing the cell layer increases rendering performance by quite a bit
     // but we want it unrasterized for tvOS where it must be scaled.
-    self.layer.shouldRasterize = YES;
-    self.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    self.layer.shouldRasterize = NO;
+    // self.layer.rasterizationScale = [UIScreen mainScreen].scale;
     
     if (@available(iOS 13.4.1, *)) {
         // Allow the button style to change when moused over

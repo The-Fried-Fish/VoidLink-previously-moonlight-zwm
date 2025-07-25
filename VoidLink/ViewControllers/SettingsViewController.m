@@ -514,13 +514,14 @@ BOOL isCustomResolution(CGSize res) {
     if (@available(iOS 13.0, *)) {
         [videoSection setSectionWithIcon:[UIImage systemImageNamed:@"waveform"] andSize:20];
     }
-    [self addSetting:self.resolutionStack ofId:@"resolutionStack" withInfoTag:YES withDynamicLabel:YES to:videoSection];
+    [self addSetting:self.resolutionStack ofId:@"resolutionStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [self addSetting:self.fpsStack ofId:@"fpsStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.bitrateStack ofId:@"bitrateStack" withInfoTag:YES withDynamicLabel:YES to:videoSection];
     [self addSetting:self.framepacingStack ofId:@"framepacingStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.HdrStack ofId:@"HdrStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
@@ -595,8 +596,8 @@ BOOL isCustomResolution(CGSize res) {
     [self addSetting:self.unlockDisplayOrientationStack ofId:@"unlockDisplayOrientationStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.backgroundSessionTimerStack ofId:@"backgroundSessionTimerStack" withInfoTag:NO withDynamicLabel:YES to:otherSection];
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     
@@ -607,7 +608,7 @@ BOOL isCustomResolution(CGSize res) {
     if (@available(iOS 13.0, *)) {
         [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] andSize:20];
     }
-    [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:YES withDynamicLabel:YES to:experimentalSection];
+    [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     [experimentalSection addToParentStack:_parentStack];
     [experimentalSection setExpanded:YES];
 }
@@ -943,13 +944,14 @@ BOOL isCustomResolution(CGSize res) {
     [stack addSubview:button];
     [NSLayoutConstraint activateConstraints:@[
         [button.trailingAnchor constraintEqualToAnchor:stack.trailingAnchor constant:-4],
-        [button.bottomAnchor constraintEqualToAnchor:stack.arrangedSubviews[0].bottomAnchor constant:0],
+        [button.centerYAnchor constraintEqualToAnchor:stack.arrangedSubviews[0].centerYAnchor constant:0],
     ]];
 }
 
 -  (void)infoButtonTapped:(UIButton* )sender{
     
     NSString* tipText = @"";
+    NSString* onlineDocLink = @"";
     bool showOnlineDocAction = false;
     tipText = sender.superview.accessibilityIdentifier;
     if([sender.superview.accessibilityIdentifier isEqualToString: @"bitrateStack"]){
@@ -959,6 +961,7 @@ BOOL isCustomResolution(CGSize res) {
     if([sender.superview.accessibilityIdentifier isEqualToString: @"yuv444Stack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"yuv444StackTip"];
         showOnlineDocAction = true;
+        onlineDocLink = @"https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/koeimmrvt4o17auc?singleDoc#";
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"touchModeStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"touchModeStackTip"];
@@ -972,9 +975,57 @@ BOOL isCustomResolution(CGSize res) {
         tipText = [LocalizationHelper localizedStringForKey:@"pointerVelocityFactorStackTip"];
         showOnlineDocAction = true;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"hdrStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"hdrStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"pipStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"pipStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"softKeyboardGestureStack" ]){
+        tipText = [LocalizationHelper localizedStringForKey:@"softKeyboardGestureStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"softKeyboardGestureStackDoc"];
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"slideToSettingsDistanceStack" ]){
+        tipText = [LocalizationHelper localizedStringForKey:@"slideToSettingsDistanceStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"unlockDisplayOrientationStack" ]){
+        tipText = [LocalizationHelper localizedStringForKey:@"unlockDisplayOrientationStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"optimizeGamesStack" ]){
+        tipText = [LocalizationHelper localizedStringForKey:@"optimizeGamesStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"localMousePointerModeStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"localMousePointerModeStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"localMousePointerModeStackDoc"];
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"onScreenWidgetStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"onScreenWidgetStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"onScreenWidgetStackDoc"];
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"externalDisplayModeStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"externalDisplayModeStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"externalDisplayModeStackDoc"];
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"emulatedControllerTypeStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"emulatedControllerTypeStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"emulatedControllerTypeStackDoc"];
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"gyroModeStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"gyroModeStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"gyroModeStackDoc"];
+    }
 
-    
-    
     
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message: [LocalizationHelper localizedStringForKey:@"%@", tipText] preferredStyle:UIAlertControllerStyleAlert];
 
@@ -998,7 +1049,7 @@ BOOL isCustomResolution(CGSize res) {
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Online Documentation"]
                                                            style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction *action){
-        NSURL *url = [NSURL URLWithString:@"https://b23.tv/J8qEXOr"];
+        NSURL *url = [NSURL URLWithString:onlineDocLink];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         }
@@ -1271,9 +1322,9 @@ BOOL isCustomResolution(CGSize res) {
             break;
     }
 
-    if (!VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) || !(AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10)) {
+    if (![self hdrSupported]) {
         [self.hdrSwitch setOn:NO];
-        [self.hdrSwitch setEnabled:NO];
+        [self widget:self.hdrSwitch setEnabled:NO];
     }
     else {
         [self.hdrSwitch setOn:currentSettings.enableHdr];
@@ -1310,6 +1361,7 @@ BOOL isCustomResolution(CGSize res) {
     [self.emulatedControllerTypeSelector addTarget:self action:@selector(emulatedControllerTypeChanged:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self emulatedControllerTypeChanged:self.emulatedControllerTypeSelector];
     
+
 
     [self.audioOnPcSwitch setOn:currentSettings.playAudioOnPC];
     _lastSelectedResolutionIndex = resolution;
@@ -1515,7 +1567,7 @@ BOOL isCustomResolution(CGSize res) {
         [_softKeyboardGestureSelector setSelectedSegmentIndex:_softKeyboardGestureSelector.selectedSegmentIndex-1];
     }
     for (NSInteger i = 0; i < _softKeyboardGestureSelector.numberOfSegments; i++) {
-        [_softKeyboardGestureSelector setEnabled:![self isCustomOswEnabled] ? true : i+3 != oswLayoutFingers forSegmentAtIndex:i]; // 或 NO 来禁用
+        [_softKeyboardGestureSelector setEnabled:![self isCustomOswEnabled] || i == 3 ? true : i+3 != oswLayoutFingers forSegmentAtIndex:i]; // 或 NO 来禁用
     }
 }
 
@@ -1614,13 +1666,21 @@ BOOL isCustomResolution(CGSize res) {
     return 0;
 }
 
-- (void) widget:(UISlider*)widget setEnabled:(bool)enabled{
-    [widget setEnabled:enabled];
-    if(enabled){
-        widget.alpha = 1.0;
-        [widget setValue:widget.value + 0.0001]; // this is for low iOS version (like iOS14), only setting this minor value change is able to make widget visibility clear
+- (void) widget:(UIView*)widget setEnabled:(bool)enabled{
+    if([widget isKindOfClass:[UISlider class]]){
+        UISlider* widgetPtr = (UISlider* )widget;
+        [widgetPtr setEnabled:enabled];
+        if(enabled){
+            widgetPtr.alpha = 1.0;
+            [widgetPtr setValue:widgetPtr.value + 0.0001]; // this is for low iOS version (like iOS14), only setting this minor value change is able to make widget visibility clear
+        }
+        else widgetPtr.alpha = 0.5; // this is for updating widget visibility on low iOS version like mini5 ios14
     }
-    else widget.alpha = 0.5; // this is for updating widget visibility on low iOS version like mini5 ios14
+    
+    if([widget isKindOfClass:[UISwitch class]]){
+        widget.userInteractionEnabled = enabled;
+        widget.alpha = enabled ? 1 : 0.5;
+    }
 }
 
 /*
@@ -1860,6 +1920,10 @@ BOOL isCustomResolution(CGSize res) {
     assert(self.bitrateSlider.value < (sizeof(bitrateTable) / sizeof(*bitrateTable)));
     _bitrate = bitrateTable[(int)self.bitrateSlider.value];
     [self updateBitrateText];
+}
+
+- (bool)hdrSupported{
+    return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) && (AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10);
 }
 
 - (void) updateBitrateText {
