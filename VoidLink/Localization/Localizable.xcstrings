@@ -4603,25 +4603,25 @@
         }
       }
     },
-    "Touch & Control" : {
+    "Touch & Controller" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触屏与控制"
+            "value" : "触屏与手柄"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控與控制"
+            "value" : "觸控與控制器"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控與控制"
+            "value" : "觸控與控制器"
           }
         }
       }
