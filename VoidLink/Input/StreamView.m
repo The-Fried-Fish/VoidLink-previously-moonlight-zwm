@@ -350,7 +350,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void) showOnScreenControls {
 #if !TARGET_OS_TV
-    [onScreenControls show];
+    if(!_widgetToolOpened) [onScreenControls show];
 #endif
 }
 
@@ -399,7 +399,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 
-- (void) clearOnScreenKeyboardButtons{
+- (void) clearOnScreenWidgets{
     for (UIView *subview in self->streamFrameTopLayerView.subviews) {
         // 检查子视图是否是特定类型的实例
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -411,8 +411,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (CGPoint)denormalizeWidgetPosition:(CGPoint)position {
     if(position.x < 1.0 && position.y < 1.0){
-        position.x = position.x * self.bounds.size.width;
-        position.y = position.y * self.bounds.size.height;
+        position.x = position.x * streamFrameTopLayerView.bounds.size.width;
+        position.y = position.y * streamFrameTopLayerView.bounds.size.height;
+    }
+    else{
+        NSLog(@"invalid coords");
     }
     return position;
 }
@@ -422,7 +425,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // NSLog(@"reload on screen keyboard buttons here");
 
     // remove all keyboard widget views first
-    [self clearOnScreenKeyboardButtons];
+    [self clearOnScreenWidgets];
     
     // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
     

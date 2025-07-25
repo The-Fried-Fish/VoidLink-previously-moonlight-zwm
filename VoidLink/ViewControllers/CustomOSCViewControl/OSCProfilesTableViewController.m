@@ -74,7 +74,7 @@ const double NAV_BAR_HEIGHT = 50;
     
     // self.profileTableViewNavigationBar.layer.cornerRadius = 15;  // 设置圆角半径
     
-    profilesManager = [OSCProfilesManager sharedManager:_streamViewBounds];
+    profilesManager = [OSCProfilesManager sharedManager:_layoutViewBounds];
     
     self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, NAV_BAR_HEIGHT)];
     

@@ -218,15 +218,8 @@
 }
 
 - (void)configOscLayoutTool{
+
     if([self isOscLayoutToolEnabled]){
-        _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(openWidgetLayoutTool)];
-        _oscLayoutTapRecoginizer.numberOfTouchesRequired = _settings.oscLayoutToolFingers.intValue; //tap a predefined number of fingers to open osc layout tool
-        _oscLayoutTapRecoginizer.tapDownTimeThreshold = 0.2;
-        _oscLayoutTapRecoginizer.delaysTouchesBegan = NO;
-        _oscLayoutTapRecoginizer.delaysTouchesEnded = NO;
-        if(_settings.touchMode.intValue == AbsoluteTouch) _oscLayoutTapRecoginizer.immediateTriggering = true; // make immediate triggering on for absolute touch mode
-        
-        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer]; //
         /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
         // _layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
         BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
@@ -242,20 +235,22 @@
         _layoutOnScreenControlsVC.view.backgroundColor = UIColor.clearColor;
         _layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     }
+    //NSLog(@"in osc frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
+    //NSLog(@"in osc streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
 
 - (void)presentToolboxViewController{
+    [self configOscLayoutTool];
     ToolboxViewController* oldToolboxVC = toolBoxViewController;
     toolBoxViewController = [[ToolboxViewController alloc] init];
     toolBoxViewController.specialEntryDelegate = self;
     toolBoxViewController.specialEntries = oldToolboxVC.specialEntries;
-    [self configOscLayoutTool];
     [self presentViewController:toolBoxViewController animated:YES completion:^{
         //[self->toolBoxViewController setupConstraints];
     }];
 }
 
-- (void)configSwipeGestures{
+- (void)configGestures{
     _slideToSettingsRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
     _slideToSettingsRecognizer.edges = _settings.slideToSettingsScreenEdge.intValue;
     _slideToSettingsRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
@@ -271,6 +266,17 @@
     _slideToCmdToolRecognizer.delaysTouchesBegan = NO;
     _slideToCmdToolRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:_slideToCmdToolRecognizer];
+    
+    if([self isOscLayoutToolEnabled]){
+        _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleWidgetLayoutGesture)];
+        _oscLayoutTapRecoginizer.numberOfTouchesRequired = _settings.oscLayoutToolFingers.intValue; //tap a predefined number of fingers to open osc layout tool
+        _oscLayoutTapRecoginizer.tapDownTimeThreshold = 0.2;
+        _oscLayoutTapRecoginizer.delaysTouchesBegan = NO;
+        _oscLayoutTapRecoginizer.delaysTouchesEnded = NO;
+        if(_settings.touchMode.intValue == AbsoluteTouch) _oscLayoutTapRecoginizer.immediateTriggering = true; // make immediate triggering on for absolute touch mode
+        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer]; //
+    }
+    
 }
 
 - (void)configZoomGestureAndAddStreamView{
@@ -310,7 +316,7 @@
     overlayLevel = _settings.statsOverlayLevel.intValue;
     [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
-    [self configSwipeGestures];
+    [self configGestures];
     [self configZoomGestureAndAddStreamView];
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
     [self.mainFrameViewcontroller reloadStreamConfig]; // reload streamconfig
@@ -628,10 +634,15 @@
     [_streamView keyboardWillHide];
 }
 
+- (void)handleWidgetLayoutGesture{
+    [self configOscLayoutTool];
+    [self openWidgetLayoutTool];
+}
 
 - (void)openWidgetLayoutTool{
+    _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
-    [self->_streamView clearOnScreenKeyboardButtons]; // clear all onScreenKeyboardButtons before entering edit mode
+    [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
     _layoutOnScreenControlsVC.quickSwitchEnabled = false;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = false;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = false;
@@ -639,8 +650,9 @@
 }
 
 - (void)switchWidgetProfile{
+    _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
-    [self->_streamView clearOnScreenKeyboardButtons]; // clear all onScreenKeyboardButtons before entering edit mode
+    [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
     _layoutOnScreenControlsVC.quickSwitchEnabled = true;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
@@ -659,6 +671,7 @@
 
 - (void)oscLayoutClosed{
     // Handle the callback
+    _streamView.widgetToolOpened = false;
     [self->_streamView disableOnScreenControls]; // add this to get realtime back menu working.
     [self->_streamView reloadOnScreenControlsWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig];

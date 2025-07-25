@@ -417,7 +417,7 @@ import UIKit
             print("No match found for input: \(input)")
             return nil
         }
-        print("Regex matched for input: \(input)")
+        // print("Regex matched for input: \(input)")
         
         let matchedString = (input as NSString).substring(with: match.range(at: 0))
         let keyStrings = matchedString.split(separator: "+").map { String($0) }
@@ -475,7 +475,7 @@ import UIKit
             print("No match found for input: \(input)")
             return nil
         }
-        print("Regex matched for input: \(input)")
+        // print("Regex matched for input: \(input)")
         
         let matchedString = (input as NSString).substring(with: match.range(at: 0))
         let cmdStrings = matchedString.split(separator: "-").map { String($0) }

@@ -343,7 +343,7 @@ static float L3_Y;
     if(position.x < 1.0 && position.y < 1.0) {
         position.x = position.x * _view.bounds.size.width;
         position.y = position.y * _view.bounds.size.height;
-        NSLog(@"denormalizing position: %f, %f", position.x, position.y);
+        // NSLog(@"denormalizing position: %f, %f", position.x, position.y);
     }
     return position;
 }
@@ -1930,7 +1930,7 @@ static float L3_Y;
     if(alpha < 0.23) targetAlpha = 0.23;
     if(alpha == 0.0 || alpha == 1.0) targetAlpha = 5.0f/6.0f; // invalid alpha value
     
-    NSLog(@"alphas: %f",targetAlpha);
+    // NSLog(@"alphas: %f",targetAlpha);
 
     if (layer == self._aButton ||
         layer == self._bButton ||

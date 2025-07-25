@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentProfilesTableView;
 
 @property LayoutOnScreenControls *layoutOSC;    // object that contains a view which contains the on screen controller buttons that allows the user to drag and positions each button on the screen using touch
-@property (nonatomic) NSMutableSet* OnScreenWidgetViews;
+@property (nonatomic) NSMutableSet* onScreenWidgetViews;
 
 @property int OSCSegmentSelected;
 @property (nonatomic, assign) bool quickSwitchEnabled;
