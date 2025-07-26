@@ -60,6 +60,7 @@
     UIScrollView *_scrollView;
     BOOL _userIsInteracting;
     bool viewJustLoaded;
+    bool viewIsBeingResized;
     CGSize _keyboardSize;
     UIWindow *_extWindow;
     UIView *_streamVideoRenderView;
@@ -314,7 +315,8 @@
     
     _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     overlayLevel = _settings.statsOverlayLevel.intValue;
-    [self configOscLayoutTool];
+    if(viewIsBeingResized) viewIsBeingResized = false;
+    else [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
     [self configGestures];
     [self configZoomGestureAndAddStreamView];
@@ -491,6 +493,7 @@
 - (void)viewDidLoad
 {
     viewJustLoaded = true;
+    viewIsBeingResized = false;
     [super viewDidLoad];
 
     [self.navigationController setNavigationBarHidden:YES animated:YES];
@@ -869,6 +872,7 @@
 }
 
 - (void) handleViewResize{
+    viewIsBeingResized = true;
     _streamView.bounds = _deviceWindow.bounds;
     _streamView.frame = _deviceWindow.frame;
     if(![self isAirPlaying]){

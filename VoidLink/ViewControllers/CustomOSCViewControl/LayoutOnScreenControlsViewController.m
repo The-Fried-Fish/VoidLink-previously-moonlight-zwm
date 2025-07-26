@@ -31,6 +31,7 @@
     CGRect controllerLoadedBounds;
     bool widgetViewSelected;
     bool controllerLayerSelected;
+    bool viewWillBeResized;
     __weak IBOutlet NSLayoutConstraint *toolbarTopConstraintiPhone;
     __weak IBOutlet NSLayoutConstraint *toolbarTopConstraintiPad;
     UIColor* trashCanStoryBoardColor;
@@ -71,11 +72,13 @@
 }
 
 - (CGPoint)denormalizeWidgetPosition:(CGPoint)position {
+    // NSLog(@"position: %f, %f", position.x, position.y);
+    CGPoint newPosition = position;
     if(position.x < 1.0 && position.y < 1.0){
-        position.x = position.x * self.view.bounds.size.width;
-        position.y = position.y * self.view.bounds.size.height;
+        newPosition.x = position.x * self.view.bounds.size.width;
+        newPosition.y = position.y * self.view.bounds.size.height;
     }
-    return position;
+    return newPosition;
 }
 
 - (void)reloadLegacyOnScreenControls{
@@ -140,6 +143,7 @@
     
     //isToolbarHidden = NO;   // keeps track if the toolbar is hidden up above the screen so that we know whether to hide or show it when the user taps the toolbar's hide/show button
     _quickSwitchEnabled = false;
+    viewWillBeResized = false;
     
     /* add curve to bottom of chevron tab view */
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.chevronView.bounds byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerBottomRight) cornerRadii:CGSizeMake(10.0, 10.0)];
@@ -268,14 +272,23 @@
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
-    [self saveTapped:nil];
+    viewWillBeResized = true;
+    [self clearStickIndicator];
+    if(!_quickSwitchEnabled) [self saveTapped:nil];
 }
 
 - (void)deviceOrientationDidChange{
-    [self performSelector:@selector(handleOrientationChangeForOnScreenWidgets) withObject:self afterDelay:1];
+    [self performSelector:@selector(handleOrientationChangeForOnScreenWidgets) withObject:self afterDelay:0.05];
 }
 
 - (void)handleOrientationChangeForOnScreenWidgets{
+    if(!viewWillBeResized) return;
+    [self setupWidgetPanel];
+
+    viewWillBeResized = false;
+    selectedWidgetView = nil;
+    selectedControllerLayer = nil;
+
     _oscProfilesTableViewController.layoutViewBounds = self.view.bounds;
     [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
     [self reloadOnScreenWidgetViews];
@@ -641,6 +654,7 @@
 
 /* show pop up notification that lets users choose to save the current OSC layout configuration as a profile they can load when they want. User can also choose to cancel out of this pop up */
 - (IBAction) saveTapped:(id)sender {
+    [OSCProfilesManager setLayoutViewBounds:self.view.bounds];
     
     if([self->profilesManager updateSelectedProfile:self.layoutOSC.OSCButtonLayers]){
         UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Current profile updated successfully"] preferredStyle:UIAlertControllerStyleAlert];

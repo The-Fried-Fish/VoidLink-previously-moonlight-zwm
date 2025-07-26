@@ -1518,21 +1518,6 @@ BOOL isCustomResolution(CGSize res) {
     [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self enableOswForNativeTouchSwitchFlipped:self.enableOswForNativeTouchSwitch];
 
-
-    // init CustomOSC stuff
-    /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
-    // self.layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
-    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
-    if (isIPhone) {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-    }
-    else {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-        self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    }
-
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
     
@@ -1638,6 +1623,20 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)invokeOscLayout{
+    // init CustomOSC stuff
+    /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
+    // self.layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
+    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+    if (isIPhone) {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
+        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+    }
+    else {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
+        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+        self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    }
+    
     self.layoutOnScreenControlsVC.view.backgroundColor = [UIColor colorWithWhite:0.55 alpha:1.0];
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
 }

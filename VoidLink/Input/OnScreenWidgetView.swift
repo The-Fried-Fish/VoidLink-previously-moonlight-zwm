@@ -498,7 +498,7 @@ import UIKit
         if vibrationOn {
             vibrationGenerator.prepare()
             vibrationGenerator.impactOccurred()
-            print("vibrationInstance: \(vibrationGenerator)")
+            // print("vibrationInstance: \(vibrationGenerator)")
         }
 
         return indicatorBorder
@@ -890,7 +890,7 @@ import UIKit
         if vibrationOn {
             vibrationGenerator.prepare()
             vibrationGenerator.impactOccurred()
-            print("vibrationInstance: \(vibrationGenerator)")
+            // print("vibrationInstance: \(vibrationGenerator)")
         }
         CATransaction.commit()
     }

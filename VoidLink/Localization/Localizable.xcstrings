@@ -2898,6 +2898,29 @@
         }
       }
     },
+    "Offline\n%@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "离线\n%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "離線\n%@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "離線\n%@"
+          }
+        }
+      }
+    },
     "Ok" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2990,48 +3013,48 @@
         }
       }
     },
-    "Online - Not Paired" : {
+    "Online - Not Paired\n%@" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线 - 未配对"
+            "value" : "在线 - 未配对\n%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "線上 - 未配對"
+            "value" : "線上 - 未配對\n%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "線上 - 未配對"
+            "value" : "線上 - 未配對\n%@"
           }
         }
       }
     },
-    "Online - Paired" : {
+    "Online - Paired\n%@" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在线 - 已配对"
+            "value" : "在线 - 已配对\n%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "線上 - 已配對"
+            "value" : "線上 - 已配對\n%@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "線上 - 已配對"
+            "value" : "線上 - 已配對\n%@"
           }
         }
       }

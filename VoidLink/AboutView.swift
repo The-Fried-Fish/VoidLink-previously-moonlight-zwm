@@ -10,8 +10,10 @@
 import SwiftUI
 
 @available(iOS 13.0, *)
+
 public struct AboutView: View {
     @Environment(\.presentationMode) var presentationMode
+    public var aboutVC:UIViewController
 
     public var body: some View {
         VStack(spacing: 10) {
@@ -62,13 +64,12 @@ public struct AboutView: View {
                 Spacer()
                 // OK 按钮
                 Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
-                    presentationMode.wrappedValue.dismiss()
+                    aboutVC.dismiss(animated:true)
                 }
                 .padding()
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .frame(height: 46)
-                //.frame(width: 100)
                 .cornerRadius(12)
             } else {
                 HStack(spacing: 20) {
@@ -94,6 +95,14 @@ public struct AboutView: View {
                     .cornerRadius(12)
                     .frame(height: 33)
                     .frame(minWidth: 100)*/
+                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                        aboutVC.dismiss(animated:true)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .frame(height: 33)
                 }
                 .padding(.top, 10)
             }
@@ -101,3 +110,4 @@ public struct AboutView: View {
         .padding()
     }
 }
+
