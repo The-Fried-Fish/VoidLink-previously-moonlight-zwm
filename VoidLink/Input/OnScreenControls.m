@@ -1560,7 +1560,7 @@ static float L3_Y;
     // on screen at the time
     
     // DZ capturing shall be refactored in CustomOSC Mode & non-default profile condition
-    if(self._level == OnScreenControlsLevelCustom && [profilesManager getIndexOfSelectedProfile] != 0){
+    if(self._level == OnScreenControlsLevelCustom){
         CGPoint touchLocation  = [touch locationInView:_view];
         for (NSString *key in _activeCustomOscButtonPositionDict) {
             NSValue *value = _activeCustomOscButtonPositionDict[key];

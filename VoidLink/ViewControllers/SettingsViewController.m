@@ -285,6 +285,8 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)updateResolutionTable{
+    if(self.mainFrameViewController.settingsExpandedInStreamView) return;
+    
     UIWindow *window = self.view.window;
     NSLog(@" window %@", window);
 
