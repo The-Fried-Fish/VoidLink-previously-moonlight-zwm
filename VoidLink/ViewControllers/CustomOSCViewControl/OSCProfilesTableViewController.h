@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, FileOperation) {
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, copy) void (^needToUpdateOscLayoutTVC)(void);
 @property (nonatomic, assign) NSMutableArray *currentOSCButtonLayers;
-@property (nonatomic, assign) CGRect streamViewBounds;
+@property (nonatomic, assign) CGRect layoutViewBounds;
 @property (weak, nonatomic) IBOutlet UINavigationBar *profileTableViewNavigationBar;
 
 @end

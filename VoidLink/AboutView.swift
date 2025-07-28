@@ -10,8 +10,10 @@
 import SwiftUI
 
 @available(iOS 13.0, *)
+
 public struct AboutView: View {
     @Environment(\.presentationMode) var presentationMode
+    public var aboutVC:UIViewController
 
     public var body: some View {
         VStack(spacing: 10) {
@@ -56,19 +58,18 @@ public struct AboutView: View {
                 }
             }
             // 链接按钮
-            if #available(iOS 14.0, *)  {
+            if #available(iOS 14.0, *) {
                 Link(SwiftLocalizationHelper.localizedString(forKey: "Join us"), destination: URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink"))!)
                     .padding(.top, 10)
                 Spacer()
                 // OK 按钮
-                Button("OK") {
-                    presentationMode.wrappedValue.dismiss()
+                Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                    aboutVC.dismiss(animated:true)
                 }
                 .padding()
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .frame(height: 46)
-                //.frame(width: 100)
                 .cornerRadius(12)
             } else {
                 HStack(spacing: 20) {
@@ -84,8 +85,8 @@ public struct AboutView: View {
                     .cornerRadius(12)
                     .frame(height: 33)
                     .frame(minWidth: 100)
-
-                    Button("OK") {
+                    /*
+                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .padding()
@@ -93,7 +94,15 @@ public struct AboutView: View {
                     .foregroundColor(.white)
                     .cornerRadius(12)
                     .frame(height: 33)
-                    .frame(minWidth: 100)
+                    .frame(minWidth: 100)*/
+                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                        aboutVC.dismiss(animated:true)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .frame(height: 33)
                 }
                 .padding(.top, 10)
             }
@@ -101,3 +110,4 @@ public struct AboutView: View {
         .padding()
     }
 }
+

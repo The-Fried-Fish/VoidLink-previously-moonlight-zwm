@@ -133,6 +133,7 @@
 
 #pragma clang diagnostic pop
 
+- (bool)hdrSupported;
 - (void)saveSettings;
 + (bool)isLandscapeNow;
 - (void)updateResolutionTable;

@@ -12,7 +12,7 @@
 #import "BandwidthTracker.h"
 #import "Plot.h"
 
-#define CONN_TEST_SERVER "ios.conntest.moonlight-stream.org"
+#define CONN_TEST_SERVER "www.baidu.com"
 
 @interface Connection : NSOperation <NSStreamDelegate>
 

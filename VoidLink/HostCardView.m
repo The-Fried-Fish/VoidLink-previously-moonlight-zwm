@@ -505,7 +505,7 @@ static const float REFRESH_CYCLE = 2.0f;
 
 - (void) updateLoop {
     // Stop immediately if the view has been detached
-    if (self.superview == nil) {
+    if (self.superview == nil || [self.delegate isStreaming]) {
         return;
     }
     
@@ -514,7 +514,7 @@ static const float REFRESH_CYCLE = 2.0f;
     [self updateContentsForHost:_host];
     
     // Queue the next refresh cycle
-    if(![self.delegate isStreaming]) [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
+    [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
 }
 
 - (void) updateContentsForHost:(TemporaryHost*)host {

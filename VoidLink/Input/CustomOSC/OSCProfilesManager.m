@@ -18,15 +18,15 @@
 @implementation OSCProfilesManager
 
 static NSMutableSet *OnScreenWidgetViews;
-static CGRect streamViewBounds;
+static CGRect layoutViewBounds;
 
 #pragma mark - Initializer
 
 + (OSCProfilesManager *) sharedManager:(CGRect)viewBounds {
     static OSCProfilesManager *_sharedManager = nil;
     static dispatch_once_t onceToken;
-    streamViewBounds = viewBounds;
-    NSLog(@"bounds width: %f, height: %f", streamViewBounds.size.width, streamViewBounds.size.height);
+    layoutViewBounds = viewBounds;
+    // NSLog(@"bounds width: %f, height: %f", layoutViewBounds.size.width, layoutViewBounds.size.height);
     dispatch_once(&onceToken, ^{
         _sharedManager = [[self alloc] init];
     });
@@ -38,8 +38,12 @@ static CGRect streamViewBounds;
 #pragma mark - Class Helper Methods
 
 
-+ (void) setOnScreenWidgetViewsSet:(NSMutableSet* )set{
++ (void)setOnScreenWidgetViewsSet:(NSMutableSet* )set{
     OnScreenWidgetViews = set;
+}
+
++ (void)setLayoutViewBounds:(CGRect)bounds{
+    layoutViewBounds = bounds;
 }
 
 /**
@@ -297,17 +301,21 @@ static CGRect streamViewBounds;
 }
 
 - (CGPoint)normalizeWidgetPosition:(CGPoint)position {
+    CGPoint newPosition = position;
     if(position.x > 1.0 && position.y >1.0){
-        position.x = position.x / streamViewBounds.size.width;
-        position.y = position.y / streamViewBounds.size.height;
+        position.x = position.x / layoutViewBounds.size.width;
+        position.y = position.y / layoutViewBounds.size.height;
     }
+    // asdfsda;
+    NSLog(@"sef.view bounds: %f, %f", layoutViewBounds.size.width, layoutViewBounds.size.height);
+    NSLog(@"position: %f, %f, denormalized position: %f, %f", position.x, position.y, newPosition.x, newPosition.y);
     return position;
 }
 
 - (CGPoint)denormalizeWidgetPosition:(CGPoint)position {
     if(position.x < 1.0 && position.y < 1.0){
-        position.x = position.x * streamViewBounds.size.width;
-        position.y = position.y * streamViewBounds.size.height;
+        position.x = position.x * layoutViewBounds.size.width;
+        position.y = position.y * layoutViewBounds.size.height;
     }
     return position;
 }

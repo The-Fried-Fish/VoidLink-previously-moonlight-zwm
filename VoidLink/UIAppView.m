@@ -260,7 +260,7 @@ static UIImage* noImage;
 
 - (void) updateLoop {
     // Stop immediately if the view has been detached
-    if (self.superview == nil) {
+    if (self.superview == nil || ![self.updateLoopDelegate isInAppView]) {
         return;
     }
     
@@ -282,7 +282,7 @@ static UIImage* noImage;
     [self setAlpha:_app.hidden ? 0.4 : 1.0];
     
     // Queue the next refresh cycle
-    if([self.updateLoopDelegate isInAppView]) [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
+    [self performSelector:@selector(updateLoop) withObject:self afterDelay:REFRESH_CYCLE];
 }
 
 @end

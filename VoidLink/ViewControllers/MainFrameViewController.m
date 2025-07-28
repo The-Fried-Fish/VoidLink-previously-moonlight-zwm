@@ -16,7 +16,6 @@
 #import "Connection.h"
 #import "StreamManager.h"
 #import "Utils.h"
-#import "UIComputerView.h"
 #import "UIAppView.h"
 #import "DataManager.h"
 #import "TemporarySettings.h"
@@ -25,7 +24,6 @@
 #import "ServerInfoResponse.h"
 #import "StreamFrameViewController.h"
 #import "LoadingFrameViewController.h"
-#import "ComputerScrollView.h"
 #import "TemporaryApp.h"
 #import "IdManager.h"
 #import "ConnectionHelper.h"
@@ -597,22 +595,24 @@ static NSMutableSet* hostList;
     Log(LOG_D, @"Long clicked host: %@", host.name);
     NSString* message;
     
+    NSString* hostAddress = [host.activeAddress componentsSeparatedByString:@":"].firstObject;
+    
     switch (host.state) {
         case StateOffline:
-            message = [LocalizationHelper localizedStringForKey:@"Offline"];
+            message = [LocalizationHelper localizedStringForKey:@"Offline\n%@", hostAddress ? hostAddress : @"Unknown address"];
             break;
             
         case StateOnline:
             if (host.pairState == PairStatePaired) {
-                message = [LocalizationHelper localizedStringForKey:@"Online - Paired"];
+                message = [LocalizationHelper localizedStringForKey:@"Online - Paired\n%@", hostAddress ? hostAddress : @"Unknown address"];
             }
             else {
-                message = [LocalizationHelper localizedStringForKey:@"Online - Not Paired"];
+                message = [LocalizationHelper localizedStringForKey:@"Online - Not Paired\n%@", hostAddress ? hostAddress : @"Unknown address"];
             }
             break;
             
         case StateUnknown:
-            message = [LocalizationHelper localizedStringForKey:@"Connecting"];
+            message = [LocalizationHelper localizedStringForKey:@"Connecting\n"];
             break;
             
         default:
@@ -622,7 +622,7 @@ static NSMutableSet* hostList;
     UIAlertController* longClickAlert = [UIAlertController alertControllerWithTitle:host.name message:message preferredStyle:UIAlertControllerStyleActionSheet];
 
     if (host.state != StateOnline) {
-        /*[longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Wake PC"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
+        [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Wake PC"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
             UIAlertController* wolAlert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Wake-On-LAN"] message:@"" preferredStyle:UIAlertControllerStyleAlert];
             [wolAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
             if (host.mac == nil || [host.mac isEqualToString:@"00:00:00:00:00:00"]) {
@@ -634,7 +634,7 @@ static NSMutableSet* hostList;
                 wolAlert.message = [LocalizationHelper localizedStringForKey:@"Successfully sent wake-up request. It may take a few moments for the PC to wake. If it never wakes up, ensure it's properly configured for Wake-on-LAN."];
             }
             [[self activeViewController] presentViewController:wolAlert animated:YES completion:nil];
-        }]];*/
+        }]];
     }
     else if (host.pairState == PairStatePaired) {
         /*
@@ -644,18 +644,14 @@ static NSMutableSet* hostList;
         }]]; */
         
 #if !TARGET_OS_TV
-        if (false) {
-            [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"NVIDIA GameStream End-of-Service"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
-                [Utils launchUrl:@"https://github.com/moonlight-stream/moonlight-docs/wiki/NVIDIA-GameStream-End-Of-Service-Announcement-FAQ"];
-            }]];
-        }
+      
 #endif
     }
-    [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Test Network"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+    /*[longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Test Network"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
         [self showLoadingFrame:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // Perform the network test on a GCD worker thread. It may take a while.
-                unsigned int portTestResult = LiTestClientConnectivity(CONN_TEST_SERVER, 443, ML_PORT_FLAG_ALL);
+                unsigned int portTestResult = LiTestClientConnectivity([host.activeAddress UTF8String], 443, ML_PORT_FLAG_ALL);
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [self hideLoadingFrame:^{
                         NSString* message;
@@ -681,8 +677,9 @@ static NSMutableSet* hostList;
                 });
             });
         }];
-    }]];
+    }]];*/
 #if !TARGET_OS_TV
+    /*
     if (host.state != StateOnline) {
         [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"NVIDIA GameStream End-of-Service"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
             [Utils launchUrl:@"https://github.com/moonlight-stream/moonlight-docs/wiki/NVIDIA-GameStream-End-Of-Service-Announcement-FAQ"];
@@ -690,7 +687,7 @@ static NSMutableSet* hostList;
         [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Connection Help"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
             [Utils launchUrl:@"https://github.com/moonlight-stream/moonlight-docs/wiki/Troubleshooting"];
         }]];
-    }
+    }*/
 #endif
     [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Remove Host"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction* action) {   // host removed here
         [self->_discMan removeHostFromDiscovery:host];
@@ -748,7 +745,7 @@ static NSMutableSet* hostList;
                             }];
                         });
                     } else {
-                        unsigned int portTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443,
+                        unsigned int portTestResults = LiTestClientConnectivity([host.activeAddress UTF8String], 443,
                                                                                 ML_PORT_FLAG_TCP_47984 | ML_PORT_FLAG_TCP_47989);
                         if (portTestResults != ML_TEST_RESULT_INCONCLUSIVE && portTestResults != 0) {
                             error = [error stringByAppendingString:[LocalizationHelper localizedStringForKey:@"!ML_TEST_RESULT_INCONCLUSIVE"]];
@@ -1144,7 +1141,7 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
-    [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView];
+    [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView && [settingsViewController hdrSupported]];
     [settingsViewController.gyroModeSelector setEnabled:!_settingsExpandedInStreamView || ![streamFrameViewController shallDisableGyroHotSwitch]];
     [settingsViewController.emulatedControllerTypeSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
@@ -1470,7 +1467,7 @@ static NSMutableSet* hostList;
     
     if (@available(iOS 13.0, *)) {
         [_upButton setTitle:@""];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23 weight:UIImageSymbolWeightMedium ];
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:21.5 weight:UIImageSymbolWeightMedium ];
         UIImage *image = [[UIImage systemImageNamed:@"tv" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_upButton setImage:image];
         _upButton.imageInsets = UIEdgeInsetsMake(25, 20, 0, 15);
@@ -1933,7 +1930,7 @@ static NSMutableSet* hostList;
     [self updateHostShortcuts];
     
     // Update the title in case we now have a PC
-    [self updateTitle];
+    // [self updateTitle];
     
     // Reset state first so we can rediscover hosts that were deleted before
     [_discMan resetDiscoveryState];
@@ -1942,7 +1939,7 @@ static NSMutableSet* hostList;
 // This function forces immediate decoding of the UIImage, rather
 // than the default lazy decoding that results in janky scrolling.
 -(void)deviceOrientationDidChange{
-    if(self.collectionView.superview == nil) return;
+    if(self.revealViewController.isStreaming || self.collectionView.superview == nil) return;
     [NSLayoutConstraint activateConstraints:@[
         [self.collectionView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
         [self.collectionView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
