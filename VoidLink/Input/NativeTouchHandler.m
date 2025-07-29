@@ -35,7 +35,6 @@
     NSMutableSet<NSNumber *> *pointerIdPool; //pre-defined pool of pointerIds.
     NSMutableSet<NSNumber *> *unassignedPointerIds;
     NSMutableSet *blacklistedTouches;
-    bool doNotBlockTouchEvents;
 
     NSMutableDictionary *pointerObjDict;
 
@@ -61,7 +60,6 @@
     }
     self->activePointerIds = [NSMutableSet set];
     self->blacklistedTouches = [NSMutableSet set];
-    doNotBlockTouchEvents = true;
         
     self->asyncNativeTouch = settings.asyncNativeTouchPriority.intValue != AsyncNativeTouchOff;
     
@@ -160,15 +158,14 @@
     NSNumber* touchAddrObj = @((uintptr_t)touch);
     unassignedPointerIds = [pointerIdPool mutableCopy]; //reset unassignedPointerIds
     [unassignedPointerIds minusSet:activePointerIds];
-    uint8_t pointerId = [[unassignedPointerIds anyObject] unsignedIntValue];
-    [pointerIdDict setObject:@(pointerId) forKey:touchAddrObj];
-    [activePointerIds addObject:@(pointerId)];
+    NSNumber* pointerIdObj = @([[unassignedPointerIds anyObject] unsignedIntValue]);
+    [pointerIdDict setObject:pointerIdObj forKey:touchAddrObj];
+    [activePointerIds addObject:pointerIdObj];
     
     //check if touch point is spawned on the left or right upper half screen edges, event to remote PC. this is for better handling in-stream slide gesture
     CGPoint initialPoint = [touch locationInView:self->streamView];
     if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < EDGE_TOLERANCE || initialPoint.x > screenWidthWithThreshold)) {
-        doNotBlockTouchEvents = false;
-        // [blacklistedTouches addObject:touchAddrObj];
+        [blacklistedTouches addObject:touchAddrObj];
     }
 }
 
@@ -192,8 +189,8 @@
 
 - (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType{
     //if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
-    // if([blacklistedTouches containsObject:@((uintptr_t)touch)]) return;
-
+    if([blacklistedTouches containsObject:@((uintptr_t)touch)]) return;
+    
     CGPoint targetCoords;
     //NSLog(@"selecting coords: %d", touch.phase == UITouchPhaseMoved);
     // NSLog(@"excluded count: %d", (uint32_t)[excludedPointerIds count]);
@@ -239,7 +236,7 @@
             // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
             if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
             if(self->activateCoordSelector) [self updatePointerObjInDict:touch];
-            if(self->doNotBlockTouchEvents) [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE];
+            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE];
             [[self getPointerObjFromDict:touch] doesNeedResetCoords]; // execute the judging of doesReachBoundary for current pointer instance. (happens after the event is sent to Sunshine service)
             usleep(self->touchMoveEventIntervalUs);
         }
@@ -265,9 +262,8 @@
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
-            //[self->blacklistedTouches removeObject:@((uintptr_t)touch)];
+            [self->blacklistedTouches removeObject:@((uintptr_t)touch)];
         }
-        self->doNotBlockTouchEvents = true;
         //if(self->touchPointSpawnedAtUpperScreenEdge && [[event allTouches] count] == [touches count])
     });
     else{
@@ -297,10 +293,10 @@
 }
 
 - (void)removePointerObjFromDict:(UITouch*)touch{
-    uintptr_t memAddrValue = (uintptr_t)touch;
-    NativeTouchPointer* pointer = [pointerObjDict objectForKey:@(memAddrValue)];
+    NSNumber* touchAddrObj = @((uintptr_t)touch);
+    NativeTouchPointer* pointer = [pointerObjDict objectForKey:touchAddrObj];
     if(pointer != nil){
-        [pointerObjDict removeObjectForKey:@(memAddrValue)];
+        [pointerObjDict removeObjectForKey:touchAddrObj];
     }
 }
 

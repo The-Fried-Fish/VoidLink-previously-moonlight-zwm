@@ -13,7 +13,6 @@
 #import "DiscoveryManager.h"
 #import "PairManager.h"
 #import "StreamConfiguration.h"
-#import "UIComputerView.h"
 #import "HostCardView.h"
 #import "UIAppView.h"
 #import "AppAssetManager.h"
@@ -21,7 +20,7 @@
 #import "HostCollectionViewController.h"
 
 
-@interface MainFrameViewController : UICollectionViewController <DiscoveryCallback, PairCallback, HostCallback, AppCallback, AppAssetCallback, NSURLConnectionDelegate, SWRevealViewControllerDelegate, HostCardActionDelegate, AppViewUpdateLoopDelegate>
+@interface MainFrameViewController : UICollectionViewController <DiscoveryCallback, PairCallback, AppCallback, AppAssetCallback, NSURLConnectionDelegate, SWRevealViewControllerDelegate, HostCardActionDelegate, AppViewUpdateLoopDelegate>
 
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *settingsButton;
 #if !TARGET_OS_TV

@@ -22,6 +22,7 @@
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
 #import "OSCProfilesManager.h"
+#import "ThemeManager.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -60,6 +61,7 @@
     UIScrollView *_scrollView;
     BOOL _userIsInteracting;
     bool viewJustLoaded;
+    bool viewIsBeingResized;
     CGSize _keyboardSize;
     UIWindow *_extWindow;
     UIView *_streamVideoRenderView;
@@ -218,15 +220,8 @@
 }
 
 - (void)configOscLayoutTool{
+
     if([self isOscLayoutToolEnabled]){
-        _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(openWidgetLayoutTool)];
-        _oscLayoutTapRecoginizer.numberOfTouchesRequired = _settings.oscLayoutToolFingers.intValue; //tap a predefined number of fingers to open osc layout tool
-        _oscLayoutTapRecoginizer.tapDownTimeThreshold = 0.2;
-        _oscLayoutTapRecoginizer.delaysTouchesBegan = NO;
-        _oscLayoutTapRecoginizer.delaysTouchesEnded = NO;
-        if(_settings.touchMode.intValue == AbsoluteTouch) _oscLayoutTapRecoginizer.immediateTriggering = true; // make immediate triggering on for absolute touch mode
-        
-        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer]; //
         /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
         // _layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
         BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
@@ -242,20 +237,22 @@
         _layoutOnScreenControlsVC.view.backgroundColor = UIColor.clearColor;
         _layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     }
+    //NSLog(@"in osc frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
+    //NSLog(@"in osc streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
 
 - (void)presentToolboxViewController{
+    [self configOscLayoutTool];
     ToolboxViewController* oldToolboxVC = toolBoxViewController;
     toolBoxViewController = [[ToolboxViewController alloc] init];
     toolBoxViewController.specialEntryDelegate = self;
     toolBoxViewController.specialEntries = oldToolboxVC.specialEntries;
-    [self configOscLayoutTool];
     [self presentViewController:toolBoxViewController animated:YES completion:^{
         //[self->toolBoxViewController setupConstraints];
     }];
 }
 
-- (void)configSwipeGestures{
+- (void)configGestures{
     _slideToSettingsRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
     _slideToSettingsRecognizer.edges = _settings.slideToSettingsScreenEdge.intValue;
     _slideToSettingsRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
@@ -271,6 +268,17 @@
     _slideToCmdToolRecognizer.delaysTouchesBegan = NO;
     _slideToCmdToolRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:_slideToCmdToolRecognizer];
+    
+    if([self isOscLayoutToolEnabled]){
+        _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleWidgetLayoutGesture)];
+        _oscLayoutTapRecoginizer.numberOfTouchesRequired = _settings.oscLayoutToolFingers.intValue; //tap a predefined number of fingers to open osc layout tool
+        _oscLayoutTapRecoginizer.tapDownTimeThreshold = 0.2;
+        _oscLayoutTapRecoginizer.delaysTouchesBegan = NO;
+        _oscLayoutTapRecoginizer.delaysTouchesEnded = NO;
+        if(_settings.touchMode.intValue == AbsoluteTouch) _oscLayoutTapRecoginizer.immediateTriggering = true; // make immediate triggering on for absolute touch mode
+        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer]; //
+    }
+    
 }
 
 - (void)configZoomGestureAndAddStreamView{
@@ -308,9 +316,10 @@
     
     _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     overlayLevel = _settings.statsOverlayLevel.intValue;
-    [self configOscLayoutTool];
+    if(viewIsBeingResized) viewIsBeingResized = false;
+    else [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
-    [self configSwipeGestures];
+    [self configGestures];
     [self configZoomGestureAndAddStreamView];
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
     [self.mainFrameViewcontroller reloadStreamConfig]; // reload streamconfig
@@ -485,6 +494,7 @@
 - (void)viewDidLoad
 {
     viewJustLoaded = true;
+    viewIsBeingResized = false;
     [super viewDidLoad];
 
     [self.navigationController setNavigationBarHidden:YES animated:YES];
@@ -495,7 +505,8 @@
     
     _stageLabel = [[UILabel alloc] init];
     [_stageLabel setUserInteractionEnabled:NO];
-    [_stageLabel setText:[NSString stringWithFormat:@"Starting %@...", self.streamConfig.appName]];
+    // [_stageLabel setText:[NSString stringWithFormat:@"Starting %@...", self.streamConfig.appName]];
+    [_stageLabel setText: [LocalizationHelper localizedStringForKey:@"Connecting..."]];
     [_stageLabel sizeToFit];
     _stageLabel.textAlignment = NSTextAlignmentCenter;
     _stageLabel.textColor = [UIColor whiteColor];
@@ -615,6 +626,15 @@
                                                object: nil];
 #endif
     
+    // for compatibility of iOS14 & lower
+    self.view.backgroundColor = [UIColor systemGrayColor];
+    _stageLabel.textColor = [UIColor systemGrayColor];
+    _spinner.color = [UIColor systemGrayColor];
+    
+    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
+    _spinner.color = [ThemeManager textColor];
+    
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];
     [self.view addSubview:_tipLabel];
@@ -628,10 +648,15 @@
     [_streamView keyboardWillHide];
 }
 
+- (void)handleWidgetLayoutGesture{
+    [self configOscLayoutTool];
+    [self openWidgetLayoutTool];
+}
 
 - (void)openWidgetLayoutTool{
+    _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
-    [self->_streamView clearOnScreenKeyboardButtons]; // clear all onScreenKeyboardButtons before entering edit mode
+    [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
     _layoutOnScreenControlsVC.quickSwitchEnabled = false;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = false;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = false;
@@ -639,8 +664,9 @@
 }
 
 - (void)switchWidgetProfile{
+    _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
-    [self->_streamView clearOnScreenKeyboardButtons]; // clear all onScreenKeyboardButtons before entering edit mode
+    [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
     _layoutOnScreenControlsVC.quickSwitchEnabled = true;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
@@ -659,6 +685,7 @@
 
 - (void)oscLayoutClosed{
     // Handle the callback
+    _streamView.widgetToolOpened = false;
     [self->_streamView disableOnScreenControls]; // add this to get realtime back menu working.
     [self->_streamView reloadOnScreenControlsWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig];
@@ -795,6 +822,8 @@
     [self.navigationController popToRootViewControllerAnimated:NO];
     
     _extWindow = nil;
+    
+    self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
 }
 
 // External Screen connected
@@ -856,6 +885,7 @@
 }
 
 - (void) handleViewResize{
+    viewIsBeingResized = true;
     _streamView.bounds = _deviceWindow.bounds;
     _streamView.frame = _deviceWindow.frame;
     if(![self isAirPlaying]){
@@ -940,7 +970,6 @@
 
 - (void)disconnectRemoteSession {
     Log(LOG_I, @"Settings view disconnect the session in stream view");
-    self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
     [self returnToMainFrame];
 }
 
@@ -1050,6 +1079,7 @@
 
 - (void) stageStarting:(const char*)stageName {
     Log(LOG_I, @"Starting %s", stageName);
+    return;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString* lowerCase = [NSString stringWithFormat:@"%s ...", stageName];
         NSString* titleCase = [[[lowerCase substringToIndex:1] uppercaseString] stringByAppendingString:[lowerCase substringFromIndex:1]];

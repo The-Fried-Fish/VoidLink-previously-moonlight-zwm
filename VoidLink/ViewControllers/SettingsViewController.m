@@ -285,6 +285,8 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)updateResolutionTable{
+    if(self.mainFrameViewController.settingsExpandedInStreamView) return;
+    
     UIWindow *window = self.view.window;
     NSLog(@" window %@", window);
 
@@ -389,7 +391,7 @@ BOOL isCustomResolution(CGSize res) {
     _parentStack.translatesAutoresizingMaskIntoConstraints = NO;
     [self.scrollView addSubview:_parentStack];
     [NSLayoutConstraint activateConstraints:@[
-        [_parentStack.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: currentSettingsMenuMode == AllSettings ? [self getStandardNavBarHeight] : [self getStandardNavBarHeight]+20],
+        [_parentStack.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: currentSettingsMenuMode == AllSettings ? [self getStandardNavBarHeight] : [self getStandardNavBarHeight]+10],
         [_parentStack.bottomAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.bottomAnchor constant:-20],
         [_parentStack.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor constant: 0], //mark: settingMenuLayout
         [_parentStack.widthAnchor constraintEqualToAnchor:self.view.widthAnchor constant:-20] // section width adjusted here //mark: settingMenuLayout
@@ -528,7 +530,7 @@ BOOL isCustomResolution(CGSize res) {
 
     touchAndControlSection = [[MenuSectionView alloc] init];
     touchAndControlSection.delegate = self;
-    touchAndControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch & Control"];
+    touchAndControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch & Controller"];
     if (@available(iOS 13.0, *)) {
         [touchAndControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] andSize:20.5];
     }
@@ -1166,6 +1168,20 @@ BOOL isCustomResolution(CGSize res) {
     }
 }
 
+/*
+- (BOOL)isFirstLaunch {
+    NSString *key = @"appHasLaunchedBefore";
+    BOOL launchedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+
+    if (!launchedBefore) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize]; // iOS 12+ 可省略
+        return YES;
+    }
+    return NO;
+}
+*/
+
 - (void)saveFavoriteSettingStackIdentifiers {
     
     if(currentSettingsMenuMode != AllSettings){
@@ -1175,18 +1191,40 @@ BOOL isCustomResolution(CGSize res) {
             [_favoriteSettingStackIdentifiers addObject:_parentStack.arrangedSubviews[i].accessibilityIdentifier];
         }
     }
-    
     [[NSUserDefaults standardUserDefaults] setObject:_favoriteSettingStackIdentifiers forKey:@"FavoriteSettingStackIdentifiers"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)loadFavoriteSettingStackIdentifiers {
     NSArray *savedArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"FavoriteSettingStackIdentifiers"];
+        
     if ([savedArray isKindOfClass:[NSArray class]]) {
         _favoriteSettingStackIdentifiers = [savedArray mutableCopy];
     } else {
         _favoriteSettingStackIdentifiers = [NSMutableArray array];
+        [_favoriteSettingStackIdentifiers addObject:@"resolutionStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"fpsStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"bitrateStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"framepacingStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"codecStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"hdrStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"yuv444Stack"];
+        [_favoriteSettingStackIdentifiers addObject:@"pipStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"touchModeStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"pointerVelocityDividerStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"pointerVelocityFactorStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"mousePointerVelocityStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"onScreenWidgetStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"pipStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"backgroundSessionTimerStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"statsOverlayStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"softKeyboardGestureStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"slideToSettingsScreenEdgeStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"slideToToolboxScreenEdgeStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"slideToSettingsDistanceStack"];
+        [_favoriteSettingStackIdentifiers addObject:@"unlockDisplayOrientationStack"];
     }
+    
     /*
     for(NSString* str in _favoriteSettingStackIdentifiers){
         NSLog(@"favarite setting loaded: %@", str);
@@ -1324,7 +1362,7 @@ BOOL isCustomResolution(CGSize res) {
 
     if (![self hdrSupported]) {
         [self.hdrSwitch setOn:NO];
-        [self widget:self.hdrSwitch setEnabled:NO];
+        [self.hdrSwitch setEnabled:NO];
     }
     else {
         [self.hdrSwitch setOn:currentSettings.enableHdr];
@@ -1480,21 +1518,6 @@ BOOL isCustomResolution(CGSize res) {
     [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self enableOswForNativeTouchSwitchFlipped:self.enableOswForNativeTouchSwitch];
 
-
-    // init CustomOSC stuff
-    /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
-    // self.layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
-    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
-    if (isIPhone) {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-    }
-    else {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-        self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    }
-
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
     
@@ -1600,6 +1623,20 @@ BOOL isCustomResolution(CGSize res) {
 }
 
 - (void)invokeOscLayout{
+    // init CustomOSC stuff
+    /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
+    // self.layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
+    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+    if (isIPhone) {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
+        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+    }
+    else {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
+        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+        self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    }
+    
     self.layoutOnScreenControlsVC.view.backgroundColor = [UIColor colorWithWhite:0.55 alpha:1.0];
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
 }

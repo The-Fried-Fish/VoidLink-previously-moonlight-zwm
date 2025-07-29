@@ -22,8 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSMutableArray <OSCProfile *> *currentProfiles;
 
 
-+ (OSCProfilesManager *) sharedManager:(CGRect)viewBounds;
-+ (void) setOnScreenWidgetViewsSet:(NSMutableSet* )set;
++ (OSCProfilesManager *)sharedManager:(CGRect)viewBounds;
++ (void)setOnScreenWidgetViewsSet:(NSMutableSet* )set;
++ (void)setLayoutViewBounds:(CGRect)bounds;
+
 
 #pragma mark - Getters
 /**

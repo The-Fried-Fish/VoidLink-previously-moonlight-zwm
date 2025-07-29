@@ -13,8 +13,9 @@ import SwiftUI
 @objc class AboutViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let hostingVC = UIHostingController(rootView: AboutView())
+        
+        let hostingVC = UIHostingController(rootView: AboutView( aboutVC: self))
+        
         addChild(hostingVC)
         hostingVC.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingVC.view)
@@ -29,7 +30,6 @@ import SwiftUI
 
         // 🎯 设置弹窗大小
         preferredContentSize = CGSize(width: 530, height: 450)
-        //preferredContentSize = CGSize(width:150, height:120 )
 
         // ⚠️ 一定要设置以下样式才会生效 preferredContentSize
         modalPresentationStyle = .formSheet

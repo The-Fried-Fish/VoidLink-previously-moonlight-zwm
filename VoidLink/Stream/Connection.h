@@ -9,7 +9,7 @@
 #import "VideoDecoderRenderer.h"
 #import "StreamConfiguration.h"
 
-#define CONN_TEST_SERVER "ios.conntest.moonlight-stream.org"
+#define CONN_TEST_SERVER "www.baidu.com"
 
 typedef struct {
     CFTimeInterval startTime;
