@@ -159,8 +159,14 @@ static CGRect layoutViewBounds;
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+
+- (BOOL)isIPhone{
+    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+}
+
+
 - (void) importDefaultTemplates{
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"widgetTemplates" ofType:@"bin"];
+    NSString *filePath = [[NSBundle mainBundle] pathForResource: [self isIPhone] ? @"widgetTemplatesIPhone": @"widgetTemplates" ofType:@"bin"];
     if (filePath) {
         // 2. 读取二进制数据
         NSError *error;
