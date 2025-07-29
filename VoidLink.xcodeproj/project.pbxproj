@@ -12,6 +12,7 @@
 		187F4B282E04658A00EECC59 /* WidgetPanelStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */; };
 		1888C1922E24C33100108730 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1912E24C33100108730 /* AboutViewController.swift */; };
 		1888C1932E24C41000108730 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1902E24C2C800108730 /* AboutView.swift */; };
+		188973D32E386A670025E48C /* widgetTemplatesIPhone.bin in Resources */ = {isa = PBXBuildFile; fileRef = 188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */; };
 		189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 189AD2992DE7446000E24B88 /* HostCollectionViewController.m */; };
 		840751B32BF49C050096B657 /* CustomTapGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 840751B22BF49C050096B657 /* CustomTapGestureRecognizer.m */; };
 		841BAC922DE35D6B00DA639E /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 841BAC912DE35D6B00DA639E /* ThemeManager.m */; };
@@ -139,6 +140,7 @@
 		187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WidgetPanelStackView.m; sourceTree = "<group>"; };
 		1888C1902E24C2C800108730 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		1888C1912E24C33100108730 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = widgetTemplatesIPhone.bin; path = PresetConfigs/widgetTemplatesIPhone.bin; sourceTree = "<group>"; };
 		189AD2962DE743B700E24B88 /* HostCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HostCollectionViewController.h; sourceTree = "<group>"; };
 		189AD2992DE7446000E24B88 /* HostCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HostCollectionViewController.m; sourceTree = "<group>"; };
 		18BF141D2E0D7A00009DEE4F /* VoidLink v1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VoidLink v1.0.xcdatamodel"; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 		843667ED2D9D70A3004A7D7F /* PresetConfigs */ = {
 			isa = PBXGroup;
 			children = (
+				188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */,
 				843667EF2D9D7173004A7D7F /* widgetTemplates.bin */,
 			);
 			name = PresetConfigs;
@@ -840,6 +843,7 @@
 			files = (
 				FB290CFE19B2C406004C83CF /* InfoPlist.strings in Resources */,
 				FB290D0919B2C406004C83CF /* Images.xcassets in Resources */,
+				188973D32E386A670025E48C /* widgetTemplatesIPhone.bin in Resources */,
 				FB89463819F6473800339C8A /* Launch Screen.xib in Resources */,
 				8454AC662C31907F00F0A302 /* iPad.storyboard in Resources */,
 				8454AC6A2C319BDA00F0A302 /* iPhone.storyboard in Resources */,
