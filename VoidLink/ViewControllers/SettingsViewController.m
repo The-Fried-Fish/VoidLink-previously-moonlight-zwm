@@ -1029,10 +1029,10 @@ BOOL isCustomResolution(CGSize res) {
     }
 
     
-    UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message: [LocalizationHelper localizedStringForKey:@"%@", tipText] preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
     
-    
+    /*
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.alignment = NSTextAlignmentLeft;
 
@@ -1046,7 +1046,7 @@ BOOL isCustomResolution(CGSize res) {
 
     // 使用 KVC 设置 attributedMessage（注意审核风险）
     [tipsAlertController setValue:attributedMessage forKey:@"attributedMessage"];
-
+     */
     
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Online Documentation"]
                                                            style:UIAlertActionStyleDefault
