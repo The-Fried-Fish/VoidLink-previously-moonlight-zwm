@@ -431,7 +431,7 @@ static const float REFRESH_CYCLE = 2.0f;
     
     _size = CGSizeMake(_widthConstraint.constant, _heightConstraint.constant);
     
-    [self updateTheme:ThemeManager.userInterfaceStyle];
+    [self updateTheme];
 }
 
 - (void)createBackgroundLayer{
@@ -469,7 +469,7 @@ static const float REFRESH_CYCLE = 2.0f;
 }
 
 
-- (void)updateTheme:(UIUserInterfaceStyle)userIterfaceStyle{
+- (void)updateTheme {
     self.backgroundColor = [ThemeManager widgetBackgroundColor];
     _hostNameLabel.textColor = [ThemeManager textColor];
     [_appButton setTitleColor:[ThemeManager appPrimaryColor] forState:UIControlStateNormal];

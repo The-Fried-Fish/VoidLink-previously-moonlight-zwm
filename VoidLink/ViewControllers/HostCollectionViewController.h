@@ -28,6 +28,7 @@
 /// 添加一个 item
 - (void)addHost:(TemporaryHost *)host;
 - (void)removeHost:(TemporaryHost *)host;
+- (void)updateTheme;
 
 /// 移除最后一个 item（如果有）
 - (void)removeLastItem;

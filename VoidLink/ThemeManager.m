@@ -8,6 +8,8 @@
 
 #import "ThemeManager.h"
 
+NSString * const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
+
 @implementation ThemeManager
 
 static UIUserInterfaceStyle _privateUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
@@ -34,8 +36,12 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 }
 
 + (void)setUserInterfaceStyle:(UIUserInterfaceStyle)style {
+    if (_userInterfaceStyle == style) {
+        return;
+    }
     _privateUserInterfaceStyle = style;
     [ThemeManager getUIStyle];
+    [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil];
 }
 
 + (UIColor *)appBackgroundColor {

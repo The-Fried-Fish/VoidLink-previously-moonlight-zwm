@@ -1232,8 +1232,16 @@ BOOL isCustomResolution(CGSize res) {
      */
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad {
-    //[self updateTheme];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+    
     settingStackWillBeRelocatedToLowestPosition = false;
     hiddenStacks = [[NSMutableSet alloc] init];
 

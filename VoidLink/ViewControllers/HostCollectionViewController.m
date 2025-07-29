@@ -100,13 +100,28 @@ static const CGFloat cellOffsetY = 20;
     return self;
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)updateTheme {
+    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
+    for (HostCell *cell in [self.collectionView visibleCells]) {
+        [cell.cardView updateTheme];
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.collectionView registerClass:[HostCell class] forCellWithReuseIdentifier:@"HostCell"];
     self.collectionView.alwaysBounceVertical = NO;
     self.collectionView.showsVerticalScrollIndicator = NO;
-    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+    [self updateTheme];
 }
 
 

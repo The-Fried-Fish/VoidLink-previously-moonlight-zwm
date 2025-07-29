@@ -1481,10 +1481,45 @@ static NSMutableSet* hostList;
     [_upButton setAction:@selector(switchToHostView)];
 }
 
-- (void)viewDidLoad{
-    [ThemeManager setUserInterfaceStyle:UIScreen.mainScreen.traitCollection.userInterfaceStyle];
+- (void)updateTheme {
+    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    self.hostCollectionVC.view.backgroundColor = [ThemeManager appBackgroundColor];
+    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
 
+    if (@available(iOS 13.0, *)) {
+        [navBarAppearanceStandard setValue:[ThemeManager appBackgroundColor] forKey:@"backgroundColor"];
+        NSDictionary* titleTextAttributes = @{
+            NSForegroundColorAttributeName: [ThemeManager textColor]
+        };
+        [navBarAppearanceStandard setValue:titleTextAttributes forKey:@"titleTextAttributes"];
+    }
+    
+    _settingsButton.tintColor = [ThemeManager appPrimaryColor];
+    _upButton.tintColor = [ThemeManager appPrimaryColor];
+    ((UIButton*)_addHostButton.customView).backgroundColor = [ThemeManager appPrimaryColor];
+    ((UIButton*)_helpButton.customView).tintColor = [ThemeManager appPrimaryColor];
+
+    [self applyNavBarAppearance];
+    [self updateTitle];
+    if (hostViewTitleLabel) {
+        hostViewTitleLabel.textColor = [ThemeManager textColor];
+    }
+    [self.hostCollectionVC updateTheme];
+}
+
+// Called when the system's theme (light/dark mode) changes
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    if (@available(iOS 13.0, *)) {
+        if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+            [ThemeManager setUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
+        }
+    }
+}
+
+- (void)viewDidLoad{
     [super viewDidLoad];
+    
     //[OrientationHelper updateOrientationToLandscape];
     // self.navigationController.delegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1800,6 +1835,11 @@ static NSMutableSet* hostList;
 {
     [super viewWillAppear:NO];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+
     /* this makes background color works*/
     
     if(!_settingsViewExpanded){
@@ -1819,13 +1859,12 @@ static NSMutableSet* hostList;
     // this view via an error dialog from the stream
     // view, so we won't get a return to active notification
     // for that which would normally fire beginForegroundRefresh.
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
-    self.hostCollectionVC.view.backgroundColor = [ThemeManager appBackgroundColor];
-    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
-
+    
     [self.view addSubview:self.collectionView];
     [self initHostCollection];
     if(!_enteredAppView) [self switchToHostView];
+    
+    [self updateTheme];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
