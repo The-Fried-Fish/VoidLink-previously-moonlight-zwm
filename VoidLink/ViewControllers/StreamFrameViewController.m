@@ -26,6 +26,7 @@
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
 #import "OSCProfilesManager.h"
+#import "ThemeManager.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -561,7 +562,8 @@
     
     _stageLabel = [[UILabel alloc] init];
     [_stageLabel setUserInteractionEnabled:NO];
-    [_stageLabel setText:[NSString stringWithFormat:@"Starting %@...", self.streamConfig.appName]];
+    // [_stageLabel setText:[NSString stringWithFormat:@"Starting %@...", self.streamConfig.appName]];
+    [_stageLabel setText: [LocalizationHelper localizedStringForKey:@"Connecting..."]];
     [_stageLabel sizeToFit];
     _stageLabel.textAlignment = NSTextAlignmentCenter;
     _stageLabel.textColor = [UIColor whiteColor];
@@ -680,6 +682,15 @@
                                                  name: UIKeyboardWillHideNotification
                                                object: nil];
 #endif
+    
+    // for compatibility of iOS14 & lower
+    self.view.backgroundColor = [UIColor systemGrayColor];
+    _stageLabel.textColor = [UIColor systemGrayColor];
+    _spinner.color = [UIColor systemGrayColor];
+    
+    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
+    _spinner.color = [ThemeManager textColor];
     
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];
@@ -883,6 +894,8 @@
     [self.navigationController popToRootViewControllerAnimated:NO];
     
     _extWindow = nil;
+    
+    self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
 }
 
 // External Screen connected
@@ -1033,7 +1046,6 @@
 
 - (void)disconnectRemoteSession {
     Log(LOG_I, @"Settings view disconnect the session in stream view");
-    self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
     [self returnToMainFrame];
 }
 
@@ -1143,6 +1155,7 @@
 
 - (void) stageStarting:(const char*)stageName {
     Log(LOG_I, @"Starting %s", stageName);
+    return;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString* lowerCase = [NSString stringWithFormat:@"%s ...", stageName];
         NSString* titleCase = [[[lowerCase substringToIndex:1] uppercaseString] stringByAppendingString:[lowerCase substringFromIndex:1]];

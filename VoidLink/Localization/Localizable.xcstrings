@@ -1008,6 +1008,29 @@
         }
       }
     },
+    "Connecting..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在連線..."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在連線..."
+          }
+        }
+      }
+    },
     "Connection Error" : {
       "extractionState" : "manual",
       "localizations" : {

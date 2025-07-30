@@ -72,12 +72,14 @@ NSString *const deviceName = @"roth";
 #endif
 
 + (void) addHelpOptionToDialog:(UIAlertController*)dialog {
+    return;/*
 #if !TARGET_OS_TV
     // tvOS doesn't have a browser
     [dialog addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Help"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
         [Utils launchUrl:@"https://github.com/moonlight-stream/moonlight-docs/wiki/Troubleshooting"];
     }]];
 #endif
+ */
 }
 
 + (BOOL) parseAddressPortString:(NSString*)addressPort address:(NSRange*)address port:(NSRange*)port {
