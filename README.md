@@ -1,53 +1,42 @@
+# VoidLink 已上架App Store.
+# VoidLink is available on App Store
+### [https://apps.apple.com/cn/app/voidlink/id6747717070](https://apps.apple.com/cn/app/voidlink/id6747717070)
+
+<br>
 
 # 代码 Coding
-### 代码提交在`noWaterMark`分支。
-### For latest coding commits, go to branch `noWaterMark`.
+- 代码提交在`Integration`分支。
+- For latest coding commits, go to branch `Integration`.
 
 <br>
 
+# 关于VoidLink. About VoidLink
+- 本项目最初基于开源项目 [moonlight-iOS] fork 而来。在此基础上，True砖家（True Zhuanjia）@ Bilibili 及其他社区开发者对项目进行了大量重构、重新设计与功能扩展，包括全新的用户界面和显著增强的功能特性。<br>我们对 moonlight-iOS 开发者的开创性工作表示衷心感谢。 <br><br>
+- VoidLink was originally forked from the open-source project [moonlight-iOS], but has since been extensively reworked, redesigned, and expanded by True砖家 (True Zhuanjia) @ Bilibili and other community developers. These contributions include a completely new user interface and significant enhancements to the application's functionality.<br>We gratefully acknowledge the foundational work of the moonlight-iOS developers.
 
-# 安装 Installation
+<br>
 
-# 至Github通过TestFlight安装的用户 
-# To Github users who installed the app via TestFlight:
-### [https://testflight.apple.com/join/1JDEKywe](https://testflight.apple.com/join/ZZHSVhd6)
-### Testflight用户数量已于2024年12月达到10000人上限。因此我将定期将部分用户从testflight计划中移除。如果你发现自己被移除了， app在90天有效期结束前依然可以使用。如果你需要更新， 通过以上链接重新加入testflight即可。
-### Number of users has already reached TestFlight limit (10000 users) in Dec. 2024. I will regularly remove some users from the TestFlight program. If you find yourself removed from TestFlight, the app will still be available until the 90-day build validity period expired. If you need an update, just join the testflight again by the link above.
-
-### 如果觉得这个fork好用， 请记得点星。
-### Give it a star if you find this version helpful.
-
+# App Store 分发一次性收费声明. 
+# Statement on One-Time App Store Distribution Fee. 
+- VoidLink 的 App Store 安装费用用于覆盖通过 Apple 框架进行安全可靠应用分发的成本。同时也支持项目维护者进行持续的开发、维护，以及公众用户访问并下载官方签名版本。感谢您对项目的支持，帮助我们持续改进和优化。<br><br>
+- The App Store fee for VoidLink covers the cost of secure and trusted distribution using Apple's infrastructure. It supports ongoing development, maintenance, and access to the official signed build. Thank you for supporting the project and helping sustain ongoing improvements.  
 
  <br>
-
-# 概述 Overview
-
-#### 这是首个实现iOS多点触控透传的Fork。  <br>
-#### This fork is the first one to implement native multi-touch.
-#### A Reddit post introducing this fork:
-https://www.reddit.com/r/cloudygamer/comments/1f322q3/made_a_fork_of_moonlightios_with_many_deviations/
-
-<br>
 
 # 开发者B站号. Developer on Bilibili
 
-如果你有在用Bilibili， 请关注`True砖家`，了解该fork的最新消息。 <br>
+如果你在用Bilibili， 请关注`True砖家`，了解该fork的最新消息。 <br>
 If you are on Bilibili, subscribe `True砖家` to get the latest news of this fork: <br>
 https://b23.tv/A0F9v7n
-
- <br>
-
-# 添加屏显控件 Custom On Screen Widgets
-<br>Read this instruction:
-[Custom On Screen Widget Commands for moonlight-iOS](https://b23.tv/fgdRJk8)
 
 <br>
 
 # 贡献者 Contributors
-[@TrueZhuangJia](https://github.com/TrueZhuangJia) - Maintainer & main developer </br>
-[@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) - Product design for ongoing UI refactoring </br>
-[@King0fSpace](https://github.com/King0fSpace) - Customization of legacy on-screen controller buttons </br>
-[@xzzpig](https://github.com/xzzpig) - Wake-on-LAN optimization, external display & stage manager support, 3 physical mouse mode </br>
-[@Acaki](https://github.com/Acaki) - YUV 444 implementation (based on works already done on moonlight-common-c) </br>
-[@Qian23333](https://github.com/Qian23333) - Action script for ipa building </br>
-
+[@TrueZhuangJia](https://github.com/TrueZhuangJia) <br>
+[@All contributors from moonlight-iOS](https://github.com/moonlight-stream/moonlight-ios/graphs/contributors) <br>
+[@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) <br>
+[@Acaki](https://github.com/Acaki) <br>
+[@seastwood](https://github.com/seastwood) <br>
+[@Danos0100](https://github.com/Danos0100) <br>
+[@xzzpig](https://github.com/xzzpig) <br>
+[@King0fSpace](https://github.com/King0fSpace) <br>
