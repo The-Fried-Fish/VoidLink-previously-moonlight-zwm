@@ -778,19 +778,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率: %.1f Mbps"
+            "value" : "码率: %.1f Mbps"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位元率：%.1f Mbps"
+            "value" : "碼率：%.1f Mbps"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位元率：%.1f Mbps"
+            "value" : "Bitrate：%.1f Mbps"
           }
         }
       }
@@ -801,19 +801,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率: %.1f Mbps - 码率偏高, 谨慎使用!"
+            "value" : "码率: %.1f Mbps - 当前码率偏高，请谨慎使用！"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位元率：%.1f Mbps - 請謹慎使用高位元率！"
+            "value" : "碼率：%.1f Mbps - 目前碼率偏高，請注意調整！"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位元率：%.1f Mbps - 請謹慎使用高位元率！"
+            "value" : "Bitrate：%.1f Mbps - Currently too high, use with caution！"
           }
         }
       }

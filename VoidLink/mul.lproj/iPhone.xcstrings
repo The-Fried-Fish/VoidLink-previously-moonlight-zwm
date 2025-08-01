@@ -176,19 +176,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放主机端声音"
+            "value" : "在主机端播放声音"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放主機端聲音"
+            "value" : "在主機端播放聲音"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放主機端聲音"
+            "value" : "在主機端播放聲音"
           }
         }
       }
@@ -800,19 +800,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开工具箱"
+            "value" : "串流时打开工具箱"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中開啟工具箱"
+            "value" : "串流时開啟工具箱"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中開啟工具箱"
+            "value" : "串流时開啟工具箱"
           }
         }
       }
@@ -1208,19 +1208,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流帧率"
+            "value" : "帧率"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "串流幀率"
+            "state" : "translated",
+            "value" : "幀率"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "串流幀率"
+            "state" : "translated",
+            "value" : "格率"
           }
         }
       }
@@ -1310,19 +1310,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中打开设置菜单"
+            "value" : "串流时打开设置菜单"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中開啟設定選單"
+            "value" : "串流时開啟設定選單"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流中開啟設定選單"
+            "value" : "串流时開啟設定選單"
           }
         }
       }
@@ -1634,19 +1634,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流码率"
+            "value" : "码率"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "串流位元速率"
+            "state" : "translated",
+            "value" : "碼率"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "串流位元速率"
+            "state" : "translated",
+            "value" : "Bitrate"
           }
         }
       }
@@ -2078,19 +2078,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性能数据叠加"
+            "value" : "实时性能浮窗"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "效能資料圖層"
+            "value" : "即時效能浮窗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "效能資料圖層"
+            "value" : "即時效能浮窗"
           }
         }
       }
@@ -2606,19 +2606,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流分辨率"
+            "value" : "分辨率"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "串流解析度"
+            "state" : "translated",
+            "value" : "畫面解析度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "串流解析度"
+            "state" : "translated",
+            "value" : "Resolution"
           }
         }
       }
@@ -3131,16 +3131,22 @@
             "value" : "Lift Stream View for Local Keyboard                                          "
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入时上移画面"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "喚醒本地軟鍵盤時，抬升串流畫面"
+            "value" : "輸入時自動上移視窗"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "喚醒本地軟鍵盤時，抬升串流畫面"
+            "state" : "translated",
+            "value" : "輸入時自動調整視窗"
           }
         }
       }
