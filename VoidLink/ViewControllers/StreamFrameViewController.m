@@ -430,7 +430,7 @@
 
 - (void)popFirstStreamingTip {
     // 初始化倒计时秒数
-    __block NSInteger remainingSeconds = 16;
+    __block NSInteger remainingSeconds = 2;
 
     NSString* settingsEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
     NSString* cmdToolEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"right"] : [LocalizationHelper localizedStringForKey:@"left"];
