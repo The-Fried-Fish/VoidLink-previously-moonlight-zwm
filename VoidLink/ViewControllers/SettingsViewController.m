@@ -972,10 +972,12 @@ BOOL isCustomResolution(CGSize res) {
     if([sender.superview.accessibilityIdentifier isEqualToString: @"pointerVelocityDividerStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"pointerVelocityDividerStackTip"];
         showOnlineDocAction = true;
+        onlineDocLink =[LocalizationHelper localizedStringForKey:@"pointerVelocityDividerStackDoc"];
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"pointerVelocityFactorStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"pointerVelocityFactorStackTip"];
         showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"pointerVelocityFactorStackDoc"];
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"hdrStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"hdrStackTip"];
