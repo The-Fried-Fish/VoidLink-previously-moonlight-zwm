@@ -63,6 +63,7 @@
 -(void)readyToBringUpSoftKeyboardByToolbox;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
+- (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight;
 
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse;

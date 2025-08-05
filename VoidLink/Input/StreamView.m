@@ -12,6 +12,8 @@
 #import "StreamView.h"
 #include <Limelight.h>
 #import "DataManager.h"
+#import "TemporarySettings.h"
+#import "Plot.h"
 #import "ControllerSupport.h"
 #import "KeyboardSupport.h"
 #import "VoidLink-Swift.h"
@@ -244,6 +246,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         CGRect liftedStreamFrame = self.frame;
         liftedStreamFrame.origin.y -= HeightViewLiftedTo;
         self.frame = liftedStreamFrame;
+        
+        // Also lift Metal video view if using Metal rendering backend
+        [self liftMetalVideoViewIfNeeded:HeightViewLiftedTo];
+        
         isInputingText = true;
         [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
         [keyboardToggleTip removeFromSuperview];
@@ -258,7 +264,46 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleRecognizer.numberOfTouchesRequired = settings.keyboardToggleFingers.intValue; // reset this number
     if(isInputingText){
         self.frame = _originalFrame;
+        
+        // Also restore Metal video view if using Metal rendering backend
+        [self liftMetalVideoViewIfNeeded:0];
+        
         isInputingText = NO;
+    }
+}
+
+- (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight {
+    // Check if we're using Metal rendering backend
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* currentSettings = [dataMan getSettings];
+    
+    if ([currentSettings.renderingBackend intValue] == RENDER_METAL) {
+        // Find the StreamFrameViewController that contains the MetalViewController
+        UIViewController* parentVC = nil;
+        UIResponder* responder = self.streamFrameTopLayerView;
+        while (responder && ![responder isKindOfClass:[UIViewController class]]) {
+            responder = [responder nextResponder];
+        }
+        
+        if ([responder isKindOfClass:[UIViewController class]]) {
+            parentVC = (UIViewController*)responder;
+            
+            // Check if this is StreamFrameViewController with metalViewController property
+            if ([parentVC respondsToSelector:@selector(metalViewController)]) {
+                id metalViewController = [parentVC performSelector:@selector(metalViewController)];
+                
+                if (metalViewController && [metalViewController respondsToSelector:@selector(view)]) {
+                    UIView* metalView = [metalViewController performSelector:@selector(view)];
+                    
+                    if (metalView) {
+                        CGRect metalFrame = metalView.frame;
+                        metalFrame.origin.y = liftHeight > 0 ? -liftHeight : 0;
+                        metalView.frame = metalFrame;
+                        NSLog(@"Lifted Metal video view by %f pixels", liftHeight);
+                    }
+                }
+            }
+        }
     }
 }
 
