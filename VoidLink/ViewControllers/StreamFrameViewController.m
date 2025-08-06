@@ -239,6 +239,9 @@
     }
     else [toolBoxViewController.specialEntries removeObject:@"enterPip"];
     
+    // Always add the stats toggle option
+    if(![toolBoxViewController.specialEntries containsObject:@"toggleStatsOverlay"]) [toolBoxViewController.specialEntries addObject:@"toggleStatsOverlay"];
+    
     NSLog(@"toolBoxViewController.specialEntries %@", toolBoxViewController.specialEntries);
 }
 
@@ -342,7 +345,15 @@
     }
     
     if (reloadSettings) {
+        // Preserve current statistics overlay state when reloading settings
+        BOOL currentStatsOverlayEnabled = _settings.statsOverlayEnabled;
+        BOOL currentEnableGraphs = _settings.enableGraphs;
+        
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
+        
+        // Restore the current statistics overlay state to maintain consistency between overlay and graphs
+        _settings.statsOverlayEnabled = currentStatsOverlayEnabled;
+        _settings.enableGraphs = currentEnableGraphs;
     }
     overlayLevel = _settings.statsOverlayLevel.intValue;
     if(viewIsBeingResized) viewIsBeingResized = false;
@@ -377,6 +388,9 @@
                                                                selector:@selector(updateStatsOverlay)
                                                                userInfo:nil
                                                                 repeats:YES];
+    } else {
+        // When stats overlay is disabled, make sure to hide it immediately
+        [self updateStatsOverlay];
     }
     
     // Re-create the ImGui view to properly apply the 'enableGraphs' setting
