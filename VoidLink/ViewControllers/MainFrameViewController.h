@@ -34,5 +34,6 @@
 -(void)reloadStreamConfig;
 -(bool)isIPhonePortrait;
 #endif
+- (void)fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
 
 @end

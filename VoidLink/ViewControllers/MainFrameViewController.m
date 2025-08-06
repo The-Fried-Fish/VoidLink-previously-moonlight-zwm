@@ -409,19 +409,22 @@ static NSMutableSet* hostList;
 
 - (void)wakeupButtonTappedForHost:(TemporaryHost *)host{
     _selectedHost = host;
-    if (host.state == StateOffline && host.pairState == PairStatePaired) {
-        UIAlertController* wolAlert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Wake-On-LAN"] message:@"" preferredStyle:UIAlertControllerStyleAlert];
-        [wolAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
-        if (host.mac == nil || [host.mac isEqualToString:@"00:00:00:00:00:00"]) {
-            wolAlert.message = [LocalizationHelper localizedStringForKey: @"Host MAC unknown, unable to send WOL Packet"];
-        } else {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [WakeOnLanManager wakeHost:host];
-            });
-            wolAlert.message = [LocalizationHelper localizedStringForKey:@"Successfully sent wake-up request. It may take a few moments for the PC to wake. If it never wakes up, ensure it's properly configured for Wake-on-LAN."];
-        }
-        [[self activeViewController] presentViewController:wolAlert animated:YES completion:nil];
+    bool hasValidMac = host.mac != nil && ![host.mac isEqualToString:@"00:00:00:00:00:00"];
+
+    //if (hasValidMac) {
+    UIAlertController* wolAlert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Wake-On-LAN"] message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    [wolAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
+    
+    if (!hasValidMac) {
+        wolAlert.message = [LocalizationHelper localizedStringForKey: @"Host MAC unknown, unable to send WOL Packet"];
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [WakeOnLanManager wakeHost:host];
+        });
+        wolAlert.message = [LocalizationHelper localizedStringForKey:@"Successfully sent wake-up request. It may take a few moments for the PC to wake. If it never wakes up, ensure it's properly configured for Wake-on-LAN."];
     }
+    [[self activeViewController] presentViewController:wolAlert animated:YES completion:nil];
+    //}
 }
 
 - (void)pairButtonTappedForHost:(TemporaryHost *)host{
@@ -1599,50 +1602,56 @@ static NSMutableSet* hostList;
 //    });
 //}
 
--(void) updateResolutionAccordingly {
-    DataManager* dataMan = [[DataManager alloc] init];
-    Settings *currentSettings = [dataMan retrieveSettings];
-    UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+-(void) fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode{
+    UIWindow *window = self.view.window;
+    NSLog(@" window %@", window);
+
     CGFloat screenScale = window.screen.scale;
-    CGFloat appWindowWidth = CGRectGetWidth(window.frame) * screenScale;
-    CGFloat appWindowHeight = CGRectGetHeight(window.frame) * screenScale;
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
-    
-    if(currentSettings.externalDisplayMode.intValue == 1 && UIScreen.screens.count > 1){
+    CGFloat safeAreaWidth = (window.frame.size.width - window.safeAreaInsets.left - window.safeAreaInsets.right) * screenScale;
+    CGFloat appWindowWidth = window.frame.size.width * screenScale;
+    CGFloat appWindowHeight = window.frame.size.height * screenScale;
+
+    if(externalDisplayMode == 1 && UIScreen.screens.count > 1){
         CGRect bounds = [UIScreen.screens.lastObject bounds];
         screenScale = [UIScreen.screens.lastObject scale];
         appWindowWidth = bounds.size.width * screenScale;
         appWindowHeight = bounds.size.height * screenScale;
     }
-
-    bool needSwap = false;
     
-    if([self isFullScreenRequired]){ // if force fullscreen is enabled in app bundle, we use screen bounds to tell if a swap between width & height is needed
-        needSwap = (currentSettings.width.floatValue - currentSettings.height.floatValue) * (screenWidthInPoints - screenHeightInPoints) < 0; //update the current resolution accordingly
-        NSLog(@"need to swap width & height (non-app window mode): %d", needSwap);
-        if(needSwap){
-            CGFloat tmpLength = currentSettings.width.floatValue;
-            currentSettings.width = @(currentSettings.height.floatValue);
-            currentSettings.height = @(tmpLength);
-        }
+    bool needSwapWidthAndHeight = appWindowWidth < appWindowHeight;
+    
+    resolutionTable[0] = CGSizeMake(1280, 720);
+    resolutionTable[1] = CGSizeMake(1920, 1080);
+    resolutionTable[2] = CGSizeMake(3840, 2160);
+    
+    for(uint8_t i=0;i<6;i++){
+        CGFloat longSideLen = resolutionTable[i].height > resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
+        CGFloat shortSideLen = resolutionTable[i].height < resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
+        if(needSwapWidthAndHeight) resolutionTable[i] = CGSizeMake(shortSideLen, longSideLen);
+        else resolutionTable[i] = CGSizeMake(longSideLen, shortSideLen);
     }
-    else{// if force fullscreen is disabled in app bundle, we use appWindowSize to directly update or to get if we need a swap
-        if(currentSettings.resolutionSelected.intValue == 5){ // app window res, previous fullscreen, update resolution directly
-            currentSettings.width = @(appWindowWidth);
-            currentSettings.height = @(appWindowHeight);
-            NSLog(@"Directly Update app window resolution: %f, %f", appWindowWidth, appWindowHeight);
-        }
-        else if(currentSettings.resolutionSelected.intValue){
-            needSwap = (currentSettings.width.floatValue - currentSettings.height.floatValue) * (appWindowWidth - appWindowHeight) < 0;
-            if(needSwap){
-                CGFloat tmpLength = currentSettings.width.floatValue;
-                currentSettings.width = @(currentSettings.height.floatValue);
-                currentSettings.height = @(tmpLength);
-                NSLog(@"Swap resolution width & height");
-            }
-        }
+
+    // add app window resolution and not swap width and height
+    resolutionTable[3] = CGSizeMake(safeAreaWidth, appWindowHeight);
+    resolutionTable[4] = CGSizeMake(appWindowWidth, appWindowHeight);
+}
+
+-(void) updateResolutionAccordingly {
+    DataManager* dataMan = [[DataManager alloc] init];
+    Settings *currentSettings = [dataMan retrieveSettings];
+
+    CGSize tempResolutionTable[6] = {0};
+    tempResolutionTable[5] = CGSizeMake(currentSettings.width.intValue, currentSettings.height.intValue);
+    [self fillResolutionTable:tempResolutionTable externalDisplayMode:currentSettings.externalDisplayMode.intValue];
+
+    int selectedIndex = currentSettings.resolutionSelected.intValue;
+    if (selectedIndex >= 0 && selectedIndex < 6) {
+        CGSize selectedSize = tempResolutionTable[selectedIndex];
+        currentSettings.width = @(selectedSize.width);
+        currentSettings.height = @(selectedSize.height);
+        NSLog(@"Updated resolution to: %@ x %@", currentSettings.width, currentSettings.height);
     }
+
     [dataMan saveData];
 }
 
