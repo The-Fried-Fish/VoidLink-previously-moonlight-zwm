@@ -590,14 +590,14 @@ static const float REFRESH_CYCLE = 2.0f;
             if (@available(iOS 13.0, *)) {
                 UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:buttonHeight/3.45 weight:UIImageSymbolWeightBold];
                 UIImage *templateImage = [UIImage systemImageNamed:@"power" withConfiguration:config];
-                UIImage *coloredImage = [templateImage imageWithTintColor:hostPaired ? defaultBlue : [ThemeManager textColorGray] renderingMode:UIImageRenderingModeAlwaysOriginal];
+                UIImage *coloredImage = [templateImage imageWithTintColor:hasValidMac ? defaultBlue : [ThemeManager textColorGray] renderingMode:UIImageRenderingModeAlwaysOriginal];
                 [self.wakeupButton setImage:coloredImage forState:UIControlStateNormal];
             } else {
                 // Fallback on earlier versions
             }
 
-            self.wakeupButton.backgroundColor = hostPaired ? [ThemeManager textTintColorWithAlpha] : [[ThemeManager textColorGray] colorWithAlphaComponent:0.2];
-            [self.wakeupButton setTitleColor: hostPaired ? defaultBlue : [ThemeManager textColorGray] forState:UIControlStateNormal];
+            self.wakeupButton.backgroundColor = hasValidMac ? [ThemeManager textTintColorWithAlpha] : [[ThemeManager textColorGray] colorWithAlphaComponent:0.2];
+            [self.wakeupButton setTitleColor: hasValidMac ? defaultBlue : [ThemeManager textColorGray] forState:UIControlStateNormal];
             
             break;
         case StateUnknown:
@@ -624,7 +624,7 @@ static const float REFRESH_CYCLE = 2.0f;
             if (@available(iOS 13.0, *)) {
                 UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:buttonHeight/3.45 weight:UIImageSymbolWeightBold];
                 UIImage *templateImage = [UIImage systemImageNamed:@"power" withConfiguration:config];
-                UIImage *coloredImage = [templateImage imageWithTintColor:hostPaired ? defaultBlue : [ThemeManager textColorGray] renderingMode:UIImageRenderingModeAlwaysOriginal];
+                UIImage *coloredImage = [templateImage imageWithTintColor:hasValidMac ? defaultBlue : [ThemeManager textColorGray] renderingMode:UIImageRenderingModeAlwaysOriginal];
                 [self.wakeupButton setImage:coloredImage forState:UIControlStateNormal];
             } else {
                 // Fallback on earlier versions

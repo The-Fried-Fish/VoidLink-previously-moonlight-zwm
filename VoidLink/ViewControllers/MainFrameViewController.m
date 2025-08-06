@@ -411,20 +411,20 @@ static NSMutableSet* hostList;
     _selectedHost = host;
     bool hasValidMac = host.mac != nil && ![host.mac isEqualToString:@"00:00:00:00:00:00"];
 
-    if ((host.state == StateOffline || host.state == StateUnknown)) {
-        UIAlertController* wolAlert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Wake-On-LAN"] message:@"" preferredStyle:UIAlertControllerStyleAlert];
-        [wolAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
-        
-        if (!hasValidMac) {
-            wolAlert.message = [LocalizationHelper localizedStringForKey: @"Host MAC unknown, unable to send WOL Packet"];
-        } else {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [WakeOnLanManager wakeHost:host];
-            });
-            wolAlert.message = [LocalizationHelper localizedStringForKey:@"Successfully sent wake-up request. It may take a few moments for the PC to wake. If it never wakes up, ensure it's properly configured for Wake-on-LAN."];
-        }
-        [[self activeViewController] presentViewController:wolAlert animated:YES completion:nil];
+    //if (hasValidMac) {
+    UIAlertController* wolAlert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Wake-On-LAN"] message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    [wolAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
+    
+    if (!hasValidMac) {
+        wolAlert.message = [LocalizationHelper localizedStringForKey: @"Host MAC unknown, unable to send WOL Packet"];
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [WakeOnLanManager wakeHost:host];
+        });
+        wolAlert.message = [LocalizationHelper localizedStringForKey:@"Successfully sent wake-up request. It may take a few moments for the PC to wake. If it never wakes up, ensure it's properly configured for Wake-on-LAN."];
     }
+    [[self activeViewController] presentViewController:wolAlert animated:YES completion:nil];
+    //}
 }
 
 - (void)pairButtonTappedForHost:(TemporaryHost *)host{
