@@ -399,26 +399,12 @@
         [self.imguiView.mtkView removeFromSuperview];
         self.imguiView = nil;
     }
-    
-    // Only create ImGui view if it doesn't exist or we're not using Metal rendering
-    // (Metal rendering creates it earlier in viewDidLoad)
-    if (!self.imguiView || [_settings.renderingBackend intValue] != RENDER_METAL) {
-        self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
-                                                    streamFps:[_settings.framerate intValue]
-                                                 enableGraphs:_settings.enableGraphs
-                                                 graphOpacity:[_settings.graphOpacity intValue]];
-        self.imguiView.mtkView.userInteractionEnabled = NO;
-        [self.view addSubview:self.imguiView.mtkView];
-    } else {
-        // Update settings for existing ImGui view
-        self.imguiView.enableGraphs = _settings.enableGraphs;
-        self.imguiView.graphOpacity = [_settings.graphOpacity intValue] / 100.0f;
-        if (_settings.enableGraphs) {
-            [self.imguiView start];
-        } else {
-            [self.imguiView hide];
-        }
-    }
+    self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
+                                                streamFps:[_settings.framerate intValue]
+                                             enableGraphs:_settings.enableGraphs
+                                             graphOpacity:[_settings.graphOpacity intValue]];
+    self.imguiView.mtkView.userInteractionEnabled = NO;
+    [self.view addSubview:self.imguiView.mtkView];
 
     // Ensure views are layered correctly
     if (self.metalViewController && self.metalViewController.view.superview) {
@@ -725,16 +711,6 @@
     [self.view addSubview:_tipLabel];
 
     if ([_settings.renderingBackend intValue] == RENDER_METAL) {
-        // Create ImGui view first to get the metrics handler
-        if (!self.imguiView) {
-            self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
-                                                        streamFps:[_settings.framerate intValue]
-                                                     enableGraphs:_settings.enableGraphs
-                                                     graphOpacity:[_settings.graphOpacity intValue]];
-            self.imguiView.mtkView.userInteractionEnabled = NO;
-            [self.view addSubview:self.imguiView.mtkView];
-        }
-        
         // Metal view for video
         Log(LOG_I, @"StreamFrameViewController creating MetalViewController");
         self.metalViewController = [[MetalViewController alloc] initWithFrame:self.view.bounds
@@ -746,11 +722,6 @@
         [self.view addSubview:self.metalViewController.view];
         [self.metalViewController didMoveToParentViewController:self];
         [self.view bringSubviewToFront:self.metalViewController.view];
-        
-        // Ensure ImGui view is on top of Metal view for graphs to be visible
-        if (self.imguiView && self.imguiView.mtkView.superview) {
-            [self.view bringSubviewToFront:self.imguiView.mtkView];
-        }
     }
 }
 
