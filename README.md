@@ -40,3 +40,13 @@ https://b23.tv/A0F9v7n
 [@Danos0100](https://github.com/Danos0100) <br>
 [@xzzpig](https://github.com/xzzpig) <br>
 [@King0fSpace](https://github.com/King0fSpace) <br>
+
+# ScreenShots
+
+<img width="2752" height="2064" alt="1" src="https://github.com/user-attachments/assets/9c39246b-797b-4d45-8d3b-490b9664886c" />
+<img width="2752" height="2064" alt="2" src="https://github.com/user-attachments/assets/51481cb0-c156-4877-a42a-dd0c672fe9f3" />
+<img width="2752" height="2064" alt="3-appView" src="https://github.com/user-attachments/assets/c3683e86-c647-4aa9-9c66-5874e9484370" />
+<img width="2752" height="2064" alt="4" src="https://github.com/user-attachments/assets/822250f1-22b7-4d28-aa4d-dc6bc7f69d82" />
+<img width="2752" height="2064" alt="5-stProfilePad" src="https://github.com/user-attachments/assets/4b9bc28b-a99b-4126-a9db-8277e8d98b1e" />
+<img width="2752" height="2064" alt="6" src="https://github.com/user-attachments/assets/fe3e18a7-6813-4ac8-8fbe-ec424634ae44" />
+<img width="2752" height="2064" alt="7" src="https://github.com/user-attachments/assets/dbc28764-d20d-4a2c-8ce9-c63d61ccd569" />
