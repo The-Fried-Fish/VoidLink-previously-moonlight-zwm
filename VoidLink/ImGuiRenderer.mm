@@ -30,7 +30,6 @@
     _enableGraphs = enableGraphs;
     _graphOpacity = (float)(graphOpacity / 100.0);
     _bounds = bounds;
-    _streamFps = streamFps;
     _device = MTLCreateSystemDefaultDevice();
     _commandQueue = [_device newCommandQueue];
 
@@ -84,45 +83,33 @@
 
     self.mtkView.device = self.device;
     self.mtkView.delegate = self;
-    self.mtkView.preferredFramesPerSecond = _streamFps; // Match the stream frame rate for proper display sync
+    self.mtkView.preferredFramesPerSecond = 60; // ImGui overlay will always render at this rate
     self.mtkView.opaque = NO;
     self.mtkView.enableSetNeedsDisplay = NO;
 
     if (_enableGraphs) {
         [self ImGui_Init];
         self.mtkView.paused = NO;
-        self.mtkView.hidden = NO;
     }
     else {
-        // Keep Metal view running for display sync but don't initialize ImGui
-        self.mtkView.paused = NO;
-        self.mtkView.hidden = YES; // Hide but keep running for display sync
+        self.mtkView.paused = YES;
     }
 }
 
 // start & stop are used to show/hide graphs when swiping stats in or out
 -(void)start {
+    [self ImGui_Init];
     if (_enableGraphs) {
-        [self ImGui_Init];
-        self.mtkView.hidden = NO;
-    } else {
-        // Keep running for display sync but stay hidden
-        self.mtkView.hidden = YES;
+        self.mtkView.paused = NO;
     }
-    self.mtkView.paused = NO;
 }
 
 -(void)show {
-    if (_enableGraphs) {
-        [self.mtkView setHidden:NO];
-    }
+    [self.mtkView setHidden:NO];
 }
 
 -(void)hide {
-    if (_enableGraphs) {
-        [self.mtkView setHidden:YES];
-    }
-    // When graphs are disabled, ImGui stays hidden but keeps running for display sync
+    [self.mtkView setHidden:YES];
 }
 
 -(void)stop {
@@ -133,6 +120,14 @@
 // Only called when mtkView.paused is false
 - (void)drawInMTKView:(MTKView *)view
 {
+#if !defined(IMGUI_DISABLE)
+    ImGuiIO &io = ImGui::GetIO();
+    io.DisplaySize.x = view.bounds.size.width;
+    io.DisplaySize.y = view.bounds.size.height;
+
+    CGFloat framebufferScale = view.window.screen.scale ?: UIScreen.mainScreen.scale;
+    io.DisplayFramebufferScale = ImVec2(framebufferScale, framebufferScale);
+
     id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
 
     MTLRenderPassDescriptor* renderPassDescriptor = view.currentRenderPassDescriptor;
@@ -141,59 +136,40 @@
         return;
     }
 
-    if (_enableGraphs) {
-#if !defined(IMGUI_DISABLE)
-        ImGuiIO &io = ImGui::GetIO();
-        io.DisplaySize.x = view.bounds.size.width;
-        io.DisplaySize.y = view.bounds.size.height;
+    // Start the Dear ImGui frame
+    ImGui_ImplMetal_NewFrame(renderPassDescriptor);
+    ImGui::NewFrame();
 
-        CGFloat framebufferScale = view.window.screen.scale ?: UIScreen.mainScreen.scale;
-        io.DisplayFramebufferScale = ImVec2(framebufferScale, framebufferScale);
+    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+    static bool show_demo_window = false;
+    if (show_demo_window)
+        ImGui::ShowDemoWindow(&show_demo_window);
 
-        // Start the Dear ImGui frame
-        ImGui_ImplMetal_NewFrame(renderPassDescriptor);
-        ImGui::NewFrame();
+    // Custom Moonlight stuff goes here
+    [self drawStatsGraphs];
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        static bool show_demo_window = false;
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+    // Rendering
+    ImGui::Render();
+    ImDrawData* draw_data = ImGui::GetDrawData();
 
-        // Custom Moonlight stuff goes here
-        [self drawStatsGraphs];
+    // This looks silly when clear_color is all zeros but the original example uses this method to tint or make transparent the rest of the viewport
+    static ImVec4 clear_color = ImVec4(0, 0, 0, 0);
+    renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 
-        // Rendering
-        ImGui::Render();
-        ImDrawData* draw_data = ImGui::GetDrawData();
+    id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+    [renderEncoder pushDebugGroup:@"Dear ImGui rendering"];
+    ImGui_ImplMetal_RenderDrawData(draw_data, commandBuffer, renderEncoder);
+    [renderEncoder popDebugGroup];
+    [renderEncoder endEncoding];
 
-        // This looks silly when clear_color is all zeros but the original example uses this method to tint or make transparent the rest of the viewport
-        static ImVec4 clear_color = ImVec4(0, 0, 0, 0);
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-
-        id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        [renderEncoder pushDebugGroup:@"Dear ImGui rendering"];
-        ImGui_ImplMetal_RenderDrawData(draw_data, commandBuffer, renderEncoder);
-        [renderEncoder popDebugGroup];
-        [renderEncoder endEncoding];
-#endif
-    } else {
-        // When graphs are disabled, just render a transparent frame for display sync
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
-        
-        id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        [renderEncoder pushDebugGroup:@"Display sync frame"];
-        // Don't render anything, just clear
-        [renderEncoder popDebugGroup];
-        [renderEncoder endEncoding];
-    }
-
-    // Present (always with timing for display sync)
+    // Present
 #if TARGET_OS_SIMULATOR
     [commandBuffer presentDrawable:view.currentDrawable];
 #else
     [commandBuffer presentDrawable:view.currentDrawable afterMinimumDuration:1.0 / view.preferredFramesPerSecond];
 #endif
     [commandBuffer commit];
+#endif
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size
