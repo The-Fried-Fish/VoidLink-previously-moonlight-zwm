@@ -255,6 +255,10 @@
                                              selector: @selector(handleReturnToForeground)
                                                  name: UIApplicationDidBecomeActiveNotification
                                                object: nil];
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(handleEnterBackground)
+                                                 name: UIApplicationWillResignActiveNotification
+                                               object: nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
@@ -267,24 +271,7 @@
 
 #pragma mark - Class Helper Functions
 
-- (void)handleReturnToForeground {
-    [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
-    viewWillBeResized = true;
-    [self clearStickIndicator];
-    if(!_quickSwitchEnabled) [self saveTapped:nil];
-}
-
-- (void)deviceOrientationDidChange{
-    [self performSelector:@selector(handleOrientationChangeForOnScreenWidgets) withObject:self afterDelay:0.05];
-}
-
-- (void)handleOrientationChangeForOnScreenWidgets{
-    if(!viewWillBeResized) return;
-    [self setupWidgetPanel];
-
+- (void)updateViewBounds{
     viewWillBeResized = false;
     selectedWidgetView = nil;
     selectedControllerLayer = nil;
@@ -293,6 +280,33 @@
     [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
     [self reloadOnScreenWidgetViews];
     [self reloadLegacyOnScreenControls];
+}
+
+- (void)handleEnterBackground{
+    [self saveTapped:nil];
+}
+
+- (void)handleReturnToForeground {
+    // [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
+    [self setupWidgetPanel];
+    [self updateViewBounds];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
+    viewWillBeResized = true;
+    [self clearStickIndicator];
+    if(!_quickSwitchEnabled) [self saveTapped:nil];
+}
+
+- (void)deviceOrientationDidChange{
+    [self performSelector:@selector(handleOrientationChangeForOnScreenWidgets) withObject:self afterDelay:0.0];
+}
+
+- (void)handleOrientationChangeForOnScreenWidgets{
+    if(!viewWillBeResized) return;
+    [self setupWidgetPanel];
+    [self updateViewBounds];
 }
 
 /* fades the 'Undo Button' in or out depending on whether the user has any OSC layout changes to undo */

@@ -1,24 +1,42 @@
-# Moonlight iOS/tvOS
+# VoidLink 已上架App Store.
+# VoidLink is available on App Store
+### [https://apps.apple.com/app/voidlink/id6747717070](https://apps.apple.com/cn/app/voidlink/id6747717070)
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/kwv8vpwr457lqn25/branch/master?svg=true)](https://ci.appveyor.com/project/cgutman/moonlight-ios/branch/master)
+<br>
 
-[Moonlight for iOS/tvOS](https://moonlight-stream.org) is an open source client for [Sunshine](https://github.com/LizardByte/Sunshine) and NVIDIA GameStream. Moonlight for iOS/tvOS allows you to stream your full collection of games and apps from your powerful desktop computer to your iOS device or Apple TV.
+# 代码 Coding
+- 代码提交在`Integration`分支。
+- For latest coding commits, go to branch `Integration`.
 
-Moonlight also has a [PC client](https://github.com/moonlight-stream/moonlight-qt) and [Android client](https://github.com/moonlight-stream/moonlight-android).
+<br>
 
-Check out [the Moonlight wiki](https://github.com/moonlight-stream/moonlight-docs/wiki) for more detailed project information, setup guide, or troubleshooting steps.
+# 关于VoidLink. About VoidLink
+- 本项目最初基于开源项目 [moonlight-iOS] fork 而来。在此基础上，True砖家（True Zhuanjia）@ Bilibili 及其他社区开发者对项目进行了大量重构、重新设计与功能扩展，包括全新的用户界面和显著增强的功能特性。<br>我们对 moonlight-iOS 开发者的开创性工作表示衷心感谢。 <br><br>
+- VoidLink was originally forked from the open-source project [moonlight-iOS], but has since been extensively reworked, redesigned, and expanded by True砖家 (True Zhuanjia) @ Bilibili and other community developers. These contributions include a completely new user interface and significant enhancements to the application's functionality.<br>We gratefully acknowledge the foundational work of the moonlight-iOS developers.
 
-[![Moonlight for iOS and tvOS](https://moonlight-stream.org/images/App_Store_Badge_135x40.svg)](https://apps.apple.com/us/app/moonlight-game-streaming/id1000551566)
+<br>
 
-## Building
-* Install Xcode from the [App Store page](https://apps.apple.com/us/app/xcode/id497799835)
-* Run `git clone --recursive https://github.com/moonlight-stream/moonlight-ios.git`
-  *  If you've already clone the repo without `--recursive`, run `git submodule update --init --recursive`
-* Open Moonlight.xcodeproj in Xcode
-* To run on a real device, you will need to locally modify the signing options:
-    * Click on "Moonlight" at the top of the left sidebar
-    * Click on the "Signing & Capabilities" tab
-    * Under "Targets", select "Moonlight" (for iOS/iPadOS) or "Moonlight TV" (for tvOS)
-    * In the "Team" dropdown, select your name. If your name doesn't appear, you may need to sign into Xcode with your Apple account.
-    * Change the "Bundle Identifier" to something different. You can add your name or some random letters to make it unique.
-    * Now you can select your Apple device in the top bar as a target and click the Play button to run.
+# App Store 分发一次性收费声明. 
+# Statement on One-Time App Store Distribution Fee. 
+- VoidLink 的 App Store 安装费用用于覆盖通过 Apple 框架进行安全可靠应用分发的成本。同时也支持项目维护者进行持续的开发、维护，以及公众用户访问并下载官方签名版本。感谢您对项目的支持，帮助我们持续改进和优化。<br><br>
+- The App Store fee for VoidLink covers the cost of secure and trusted distribution using Apple's infrastructure. It supports ongoing development, maintenance, and access to the official signed build. Thank you for supporting the project and helping sustain ongoing improvements.  
+
+ <br>
+
+# 开发者B站号. Developer on Bilibili
+
+如果你在用Bilibili， 请关注`True砖家`，了解该fork的最新消息。 <br>
+If you are on Bilibili, subscribe `True砖家` to get the latest news of this fork: <br>
+https://b23.tv/A0F9v7n
+
+<br>
+
+# 贡献者 Contributors
+[@TrueZhuangJia](https://github.com/TrueZhuangJia) <br>
+[@All contributors from moonlight-iOS](https://github.com/moonlight-stream/moonlight-ios/graphs/contributors) <br>
+[@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) <br>
+[@Acaki](https://github.com/Acaki) <br>
+[@seastwood](https://github.com/seastwood) <br>
+[@Danos0100](https://github.com/Danos0100) <br>
+[@xzzpig](https://github.com/xzzpig) <br>
+[@King0fSpace](https://github.com/King0fSpace) <br>
