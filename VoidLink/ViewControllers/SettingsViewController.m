@@ -535,7 +535,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    
+    // Only show Metal renderer option on iOS 17+ where CAMetalDisplayLink is available
+    if (@available(iOS 17.0, *)) {
+        [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    }
 
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
