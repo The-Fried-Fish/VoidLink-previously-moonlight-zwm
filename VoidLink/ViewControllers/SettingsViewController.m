@@ -1566,9 +1566,7 @@ BOOL isCustomResolution(int resolutionSelected) {
          }
                                                          
         [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
-        //markmark
-        [self handleOswGestureChange];
-                                                     }];
+        [self handleOswGestureChange];}];
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];

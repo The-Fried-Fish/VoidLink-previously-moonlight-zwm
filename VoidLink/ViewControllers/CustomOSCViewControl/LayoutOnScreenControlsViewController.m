@@ -123,6 +123,7 @@
             widgetView.trackballDecelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
+            widgetView.isSlidable = buttonState.isSlidable;
             // Add the widgetView to the view controller's view
             [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
@@ -634,6 +635,7 @@
     newWidget.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
     [newWidget setVibrationWithStyle:widget.vibrationStyle];
     newWidget.mouseButtonAction = widget.mouseButtonAction;
+    newWidget.isSlidable = widget.isSlidable;
     [self.view insertSubview:newWidget belowSubview:self.widgetPanelStack];
 
     if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
@@ -714,6 +716,13 @@
     [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
 }
 
+/*
+- (CGFloat)denormalizeSizeFactor:(CGFloat)sizeFactor{
+    bool isNormalizedSizeFactor = sizeFactor > 6;
+    return isNormalizedSizeFactor ? sizeFactor/10000*[UIScreen mainScreen].bounds.size.width
+}
+ */
+
 - (void)widgetViewTapped: (NSNotification *)notification{
     //self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 && !CGPointEqualToPoint(selectedWidgetView.layoutChanges.lastObject.CGPointValue, selectedWidgetView.initialCenter)? 1.0 : 0.3;
 
@@ -738,10 +747,13 @@
     
     [self.layoutOSC updateGuidelinesForOnScreenWidget:self->selectedWidgetView]; // shows guideline immediately when widget is tapped
     // setup slider values
-    [self.widgetSizeSlider setValue: self->selectedWidgetView.widthFactor];
-    [self.widgetHeightSlider setValue: self->selectedWidgetView.heightFactor];
+    [self.widgetSizeSlider setValue: self->selectedWidgetView.deNormalizedWidthFactor];
+    [self.widgetHeightSlider setValue: self->selectedWidgetView.deNormalizedHeightFactor];
     [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
     [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
+    
+    self.slidableStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
+    [self.slidableSelector setSelectedSegmentIndex:selectedWidgetView.isSlidable ? 0 : 1];
     
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
@@ -772,10 +784,12 @@
         [self->selectedWidgetView updateStickIndicator];
     }
     [self autoFitLabel:self.widgetSizeLabel];
-    [self.widgetSizeLabel setText:[LocalizationHelper localizedStringForKey:@"Size: %.2f", self->selectedWidgetView.widthFactor]];
+    
+
+    [self.widgetSizeLabel setText:[LocalizationHelper localizedStringForKey:@"Size: %.2f", self->selectedWidgetView.deNormalizedWidthFactor]];
     
     [self autoFitLabel:self.widgetHeightLabel];
-    [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.heightFactor]];
+    [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
     
     [self autoFitLabel:self.widgetAlphaLabel];
     [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", self->selectedWidgetView.backgroundAlpha]];
@@ -796,6 +810,7 @@
         self.vibrationStyleSelector.selectedSegmentIndex = self->selectedWidgetView.vibrationStyle;
     }
 }
+
 
 - (void)legacyOscLayerTapped: (NSNotification *)notification{
     [self enableCommonWidgetTools];
@@ -888,6 +903,12 @@
 - (void)mouseDownButtonChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         selectedWidgetView.mouseButtonAction = _mouseButtonDownSelector.selectedSegmentIndex;
+    }
+}
+
+- (void)slidableChanged:(UISegmentedControl* )sender{
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        selectedWidgetView.isSlidable = _slidableSelector.selectedSegmentIndex == 0;
     }
 }
 
@@ -1036,12 +1057,17 @@
     self.stickIndicatorOffsetLabel.text = [LocalizationHelper localizedStringForKey:@"Indicator Offset"];
     self.stickIndicatorOffsetStack.hidden = YES;
     
-    [self.mouseButtonDownSelector addTarget:self action:@selector(mouseDownButtonChanged:) forControlEvents:(UIControlEventValueChanged)];
     NSDictionary *whiteFontAttributes = @{
         NSForegroundColorAttributeName: [UIColor whiteColor]
     };
+
+    [self.mouseButtonDownSelector addTarget:self action:@selector(mouseDownButtonChanged:) forControlEvents:(UIControlEventValueChanged)];
     [self.mouseButtonDownSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.mouseDownButtonStack.hidden = YES;
+
+    [self.slidableSelector addTarget:self action:@selector(slidableChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.slidableSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
+    self.slidableStack.hidden = YES;
 
     
     if([self isIPhone]){

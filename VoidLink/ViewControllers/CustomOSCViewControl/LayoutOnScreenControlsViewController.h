@@ -93,6 +93,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIStackView *mouseDownButtonStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *mouseButtonDownSelector;
 
+@property (strong, nonatomic) IBOutlet UIStackView *slidableStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *slidableSelector;
+
 
 
 @property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;

@@ -37,6 +37,7 @@
     [encoder encodeInt:self.mouseButtonAction forKey:@"mouseButtonAction"];
     [encoder encodeCGPoint:self.position forKey:@"position"];
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
+    [encoder encodeBool:self.isSlidable forKey:@"isSlidable"];
     [encoder encodeFloat:self.widthFactor forKey:@"widthFactor"];
     [encoder encodeFloat:self.heightFactor forKey:@"heightFactor"];
     [encoder encodeFloat:self.sensitivityFactorX forKey:@"sensitivityFactorX"];
@@ -59,6 +60,7 @@
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
         self.position = [decoder decodeCGPointForKey:@"position"];
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];
+        self.isSlidable = [decoder decodeBoolForKey:@"isSlidable"];
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];
         self.heightFactor = [decoder decodeFloatForKey:@"heightFactor"];
         self.sensitivityFactorX = [decoder decodeFloatForKey:@"sensitivityFactorX"];
