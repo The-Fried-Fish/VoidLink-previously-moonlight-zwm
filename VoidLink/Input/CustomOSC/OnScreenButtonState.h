@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *alias;
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
+@property (nonatomic, assign) BOOL isSlidable;
 @property (nonatomic, assign) uint8_t buttonType;
 @property (nonatomic, assign) CGFloat widthFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat heightFactor; // for OnScreenWidgetView

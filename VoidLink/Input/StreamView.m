@@ -232,12 +232,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
-    NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
+    // NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
     if(settings.liftStreamViewForKeyboard && !isInputingText){
         NSDictionary *userInfo = notification.userInfo;
         // Get the keyboard size from the notification
         CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-        NSLog(@"keyboard will show markmark, lowest height %f", keyboardToggleRecognizer.lowestTouchPointHeight);
+        // NSLog(@"keyboard will show markmark, lowest height %f", keyboardToggleRecognizer.lowestTouchPointHeight);
         if(keyboardFrame.size.height < CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.25) return; // return in case of abnormal keyboard height
         HeightViewLiftedTo = keyboardFrame.size.height - keyboardToggleRecognizer.lowestTouchPointHeight + CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.1; // lift the StreamView to the height of lowest touch point of multi-finger tap gesture, while reserving the view of 1/10 screen height for remote typing.
         if(HeightViewLiftedTo < 0) HeightViewLiftedTo = 0;  // set HeightViewLiftedTo to 0 if it is high enough and not going to be covered by keyboard.
@@ -253,7 +253,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 // this method also deals with recovering streamview when local keyboard is turned off
 - (void)keyboardWillHide{
-    NSLog(@"keyboard will hide markmark %f", CACurrentMediaTime());
+    // NSLog(@"keyboard will hide markmark %f", CACurrentMediaTime());
 
     keyboardToggleRecognizer.numberOfTouchesRequired = settings.keyboardToggleFingers.intValue; // reset this number
     if(isInputingText){
@@ -280,7 +280,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 
 - (void)toggleKeyboard{
-    NSLog(@"toggleKeyboard markmark, %d", isInputingText);
+    // NSLog(@"toggleKeyboard markmark, %d", isInputingText);
     if (isInputingText) {
         Log(LOG_D, @"Closing the keyboard");
         [keyInputField resignFirstResponder];
@@ -454,6 +454,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.trackballDecelerationRate = buttonState.decelerationRate;
                 widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
                 widgetView.minStickOffset = buttonState.minStickOffset;
+                widgetView.isSlidable = buttonState.isSlidable;
                 // Add the widgetView to the view controller's view
                 [self->streamFrameTopLayerView addSubview:widgetView]; // add keyboard button to the stream frame view. must add it to the target view before setting location.
                 buttonState.position = [self denormalizeWidgetPosition:buttonState.position];

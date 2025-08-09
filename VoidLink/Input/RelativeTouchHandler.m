@@ -127,7 +127,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 }*/
 
 - (BOOL)isAdjacentTouches:(CGPoint)currentPoint from:(CGPoint)originalPoint {
-    return hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= 100;
+    return hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= 300;
 }
 
 
@@ -177,7 +177,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     // we must use [event allTouches] to check if touchLockedForMouseMove is captured, because the UITouch object could be captured by upper layer of UIView(in cases like tap gestures), not passed to the touches callbacks in this class, but still available in [event allTouches]
     if(candidateTouch != nil && ![[event allTouches] containsObject:touchLockedForMouseMove]){
         touchLockedForMouseMove = candidateTouch;
-        NSLog(@"Candidate touch for mouse movement locked");
+        // NSLog(@"Candidate touch for mouse movement locked");
         mousePointerTimestamp = CACurrentMediaTime();
         initialMousePointerLocation = latestMousePointerLocation = [touchLockedForMouseMove locationInView:streamView];
     }
@@ -278,7 +278,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         if(!self->quickTapDetected){
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
         }
-        else NSLog(@"Left mouse button release cancelled, keep pressing down, turning into dragging...");
+        // else NSLog(@"Left mouse button release cancelled, keep pressing down, turning into dragging...");
 
         // do not release the button if we're still dragging, this will prevent the dragging from being interrupted.
     });

@@ -1918,7 +1918,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)updateHosts {
-    Log(LOG_I, @"Updating hosts %f", CACurrentMediaTime());
+    // Log(LOG_I, @"Updating hosts %f", CACurrentMediaTime());
     @synchronized (hostList) {
         // Sort the host list in alphabetical order
         NSArray* sortedHostList = [[hostList allObjects] sortedArrayUsingSelector:@selector(compareName:)];

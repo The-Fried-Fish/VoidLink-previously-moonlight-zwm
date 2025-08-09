@@ -1051,6 +1051,66 @@
         }
       }
     },
+    "cKS-fy-Zpg.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[0] = \"yes\"; ObjectID = \"cKS-fy-Zpg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "yes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟"
+          }
+        }
+      }
+    },
+    "cKS-fy-Zpg.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[1] = \"no\"; ObjectID = \"cKS-fy-Zpg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "no"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
     "CpY-Sb-BDc.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Import\"; ObjectID = \"CpY-Sb-BDc\";",
       "extractionState" : "extracted_with_value",
@@ -1137,6 +1197,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最佳化遊戲設定"
+          }
+        }
+      }
+    },
+    "dOF-FW-cBU.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"                                    \"; ObjectID = \"dOF-FW-cBU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "                                    "
           }
         }
       }
@@ -2733,6 +2805,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "軟鍵盤工具列"
+          }
+        }
+      }
+    },
+    "qNQ-fB-jhY.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide Activated\"; ObjectID = \"qNQ-fB-jhY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide Activated"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动触发"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動觸發"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動觸發"
           }
         }
       }
