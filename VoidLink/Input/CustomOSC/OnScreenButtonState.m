@@ -60,7 +60,7 @@
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
         self.position = [decoder decodeCGPointForKey:@"position"];
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];
-        self.isSlidable = [decoder decodeBoolForKey:@"isSlidable"];
+        self.isSlidable = [decoder containsValueForKey:@"isSlidable"] ? [decoder decodeBoolForKey:@"isSlidable"] : YES;
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];
         self.heightFactor = [decoder decodeFloatForKey:@"heightFactor"];
         self.sensitivityFactorX = [decoder decodeFloatForKey:@"sensitivityFactorX"];
