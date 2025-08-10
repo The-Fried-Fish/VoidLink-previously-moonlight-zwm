@@ -78,7 +78,8 @@
     if (_formatDesc) {
         CFRelease(_formatDesc);
     }
-    _formatDesc = CFRetain(formatDesc);
+    // When resizing formatDesc can be NULL
+    _formatDesc = formatDesc ? CFRetain(formatDesc) : NULL;
 }
 
 - (CFDictionaryRef)getFormatDescExtensions {

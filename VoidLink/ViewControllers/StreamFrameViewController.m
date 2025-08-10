@@ -977,6 +977,16 @@
     if(![self isAirPlaying]){
         _streamVideoRenderView.bounds = _deviceWindow.bounds;
         _streamVideoRenderView.frame = _deviceWindow.frame;
+
+        // Handle resize for meetal renderer
+        if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+            self.metalViewController.view.frame = _deviceWindow.bounds;
+            [self.metalViewController.view setNeedsLayout];
+            [self.metalViewController.view layoutIfNeeded];
+            Log(LOG_I, @"Updated Metal view bounds after resize");
+        }
+        
+        // Handle resize for AVSB renderer
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc postNotificationName:@"ScreenChanged" object:self];
     }

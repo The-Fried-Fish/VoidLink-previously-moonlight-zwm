@@ -108,6 +108,7 @@ CFStringRef __currentColorSpace;
     id<MTLCommandQueue> _commandQueue;
     id<MTLLibrary> _shaderLibrary;
     id<MTLRenderPipelineState> _videoPipelineState[MAX_VIDEO_PLANES];
+    MTLPixelFormat _videoPipelinePixelFormat[MAX_VIDEO_PLANES];
     MTLRenderPassDescriptor *_renderPassDescriptor;
     CVMetalTextureCacheRef _textureCache;
     CVMetalTextureRef _cvMetalTextures[MAX_VIDEO_PLANES];
@@ -173,6 +174,7 @@ CFStringRef __currentColorSpace;
         if (_videoPipelineState[i]) {
             _videoPipelineState[i] = nil;
         }
+        _videoPipelinePixelFormat[i] = MTLPixelFormatInvalid;
     }
     if (_renderPassDescriptor) {
         _renderPassDescriptor = nil;
@@ -259,18 +261,24 @@ CFStringRef __currentColorSpace;
 
     // FQLog(LOG_I, @"%@", ext);
 
+    *isFullRange = NO;
+
+    // Return default values if format description extensions are not available, especially during resizing
+    if (!ext) {
+        return COLORSPACE_REC_601;
+    }
+
     // Full Range boolean
     CFBooleanRef fullRangeRef = CFDictionaryGetValue(ext, kCMFormatDescriptionExtension_FullRangeVideo);
-    *isFullRange = NO;
     if (fullRangeRef && CFGetTypeID(fullRangeRef) == CFBooleanGetTypeID()) {
         *isFullRange = CFBooleanGetValue(fullRangeRef);
     }
 
     // Colorspace
     CFStringRef frame_color = CFDictionaryGetValue(ext, kCVImageBufferColorPrimariesKey);
-    if (CFEqual(frame_color, kCVImageBufferColorPrimaries_ITU_R_709_2)) {
+    if (frame_color && CFEqual(frame_color, kCVImageBufferColorPrimaries_ITU_R_709_2)) {
         return COLORSPACE_REC_709;
-    } else if (CFEqual(frame_color, kCVImageBufferColorPrimaries_ITU_R_2020)) {
+    } else if (frame_color && CFEqual(frame_color, kCVImageBufferColorPrimaries_ITU_R_2020)) {
         return COLORSPACE_REC_2020;
     }
     return COLORSPACE_REC_601;
@@ -472,16 +480,32 @@ CFStringRef __currentColorSpace;
 
         FQLog(LOG_I, @"[%d / %.3f ms] Metal frame rendering", frame.frameNumber, frame.pts);
 
+        if (!frame.pixelBuffer) {
+            Log(LOG_W, @"Frame pixelBuffer is NULL, skipping render");
+            return;
+        }
+
         size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
         assert(planes <= MAX_VIDEO_PLANES);
 
         if (layerDidChange && frame.frameNumber > 1) {
             Log(LOG_I, @"Metal frame changed layer's colorspace and/or pixel format");
-            _videoPipelineState[planes] = nil;
+            // Invalidate all pipeline states since pixel format affects all of them
+            for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+                _videoPipelineState[i] = nil;
+                _videoPipelinePixelFormat[i] = MTLPixelFormatInvalid;
+            }
         }
 
-        // This is created once and cached based on the planes value
-        if (!_videoPipelineState[planes]) {
+        // Get the framebuffer pixel format for pipeline creation
+        MTLPixelFormat framebufferPixelFormat = drawable.texture.pixelFormat;
+
+        // Check if we need to recreate pipeline state due to pixel format change
+        if (!_videoPipelineState[planes] || _videoPipelinePixelFormat[planes] != framebufferPixelFormat) {
+            if (_videoPipelineState[planes]) {
+                Log(LOG_I, @"Recreating pipeline state for %zu planes due to pixel format change: %lu -> %lu",
+                    planes, (unsigned long)_videoPipelinePixelFormat[planes], (unsigned long)framebufferPixelFormat);
+            }
             MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
             id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
 
@@ -491,8 +515,8 @@ CFStringRef __currentColorSpace;
             // linear shaders
             id<MTLFunction> yuvToLinear = [defaultLibrary newFunctionWithName:@"yuvToLinear"];
 
-            // Determine if this is 10-bit based on the layer's pixel format (after colorspace update)
-            BOOL is10Bit = (((CAMetalLayer *)drawable.layer).pixelFormat == MTLPixelFormatBGR10A2Unorm);
+            // Determine if this is 10-bit based on the framebuffer's pixel format
+            BOOL is10Bit = (framebufferPixelFormat == MTLPixelFormatBGR10A2Unorm);
 
             NSString *fragmentShaderName;
             if (planes == 2) {
@@ -501,13 +525,13 @@ CFStringRef __currentColorSpace;
                 fragmentShaderName = is10Bit ? @"ps_draw_triplanar_10bit" : @"ps_draw_triplanar_8bit";
             }
 
-            pipelineDesc.colorAttachments[0].pixelFormat = ((CAMetalLayer *)drawable.layer).pixelFormat;
+            pipelineDesc.colorAttachments[0].pixelFormat = framebufferPixelFormat;
             pipelineDesc.vertexBuffers[0].mutability = MTLMutabilityImmutable;
             
-            Log(LOG_I, @"Metal pipeline state for %zu planes with pixel format %@",
-                planes, ((CAMetalLayer *)drawable.layer).pixelFormat == MTLPixelFormatRGBA16Float ? @"MTLPixelFormatRGBA16Float" : @"MTLPixelFormatBGR10A2Unorm");
+            Log(LOG_I, @"Creating Metal pipeline state for %zu planes with pixel format %lu",
+                planes, (unsigned long)framebufferPixelFormat);
 
-            if (((CAMetalLayer *)drawable.layer).pixelFormat == MTLPixelFormatRGBA16Float) {
+            if (framebufferPixelFormat == MTLPixelFormatRGBA16Float) {
                 // 4:2:0 or 4:4:4 YUV -> BT.2020 RGB -> linear float
                 pipelineDesc.vertexFunction = vertexVsDraw;
                 pipelineDesc.fragmentFunction = yuvToLinear;
@@ -523,6 +547,9 @@ CFStringRef __currentColorSpace;
                 Log(LOG_E, @"Failed to create video pipeline state: %@", error);
                 return;
             }
+
+            // Store the pixel format this pipeline state was created for
+            _videoPipelinePixelFormat[planes] = framebufferPixelFormat;
         }
 
         for (size_t i = 0; i < planes; i++) {
