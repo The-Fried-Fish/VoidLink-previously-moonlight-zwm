@@ -578,19 +578,20 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" alpha="0.69999998807907104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ojp-aS-m8w">
-                                                <rect key="frame" x="160" y="0.0" width="195" height="21"/>
+                                                <rect key="frame" x="160" y="0.0" width="291" height="21"/>
                                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <segments>
-                                                    <segment title="yes"/>
-                                                    <segment title="no"/>
+                                                    <segment title="toggle"/>
+                                                    <segment title="slide &amp; hold"/>
+                                                    <segment title="disabled"/>
                                                 </segments>
                                                 <color key="tintColor" systemColor="systemGray2Color"/>
                                                 <color key="selectedSegmentTintColor" red="0.23136288839999999" green="0.45776400810000001" blue="0.5149240678" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             </segmentedControl>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="    " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KZ3-vJ-E8J" userLabel="uilabel">
-                                                <rect key="frame" x="355" y="0.0" width="195" height="20"/>
+                                                <rect key="frame" x="451" y="0.0" width="99" height="20"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="195" id="BZO-g1-Px9"/>
+                                                    <constraint firstAttribute="width" constant="99" id="BZO-g1-Px9"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
