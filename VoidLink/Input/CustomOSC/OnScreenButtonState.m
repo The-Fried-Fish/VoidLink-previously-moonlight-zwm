@@ -35,9 +35,9 @@
     [encoder encodeInt:self.buttonType forKey:@"buttonType"];
     [encoder encodeInt:self.vibrationStyle forKey:@"vibrationStyle"];
     [encoder encodeInt:self.mouseButtonAction forKey:@"mouseButtonAction"];
+    [encoder encodeInt:self.slideMode forKey:@"slideMode"];
     [encoder encodeCGPoint:self.position forKey:@"position"];
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
-    [encoder encodeBool:self.isSlidable forKey:@"isSlidable"];
     [encoder encodeFloat:self.widthFactor forKey:@"widthFactor"];
     [encoder encodeFloat:self.heightFactor forKey:@"heightFactor"];
     [encoder encodeFloat:self.sensitivityFactorX forKey:@"sensitivityFactorX"];
@@ -58,9 +58,9 @@
         self.buttonType = [decoder decodeIntForKey:@"buttonType"];
         self.vibrationStyle = [decoder decodeIntForKey:@"vibrationStyle"];
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
+        self.slideMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
         self.position = [decoder decodeCGPointForKey:@"position"];
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];
-        self.isSlidable = [decoder containsValueForKey:@"isSlidable"] ? [decoder decodeBoolForKey:@"isSlidable"] : YES;
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];
         self.heightFactor = [decoder decodeFloatForKey:@"heightFactor"];
         self.sensitivityFactorX = [decoder decodeFloatForKey:@"sensitivityFactorX"];
