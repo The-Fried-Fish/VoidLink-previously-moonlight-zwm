@@ -2078,43 +2078,73 @@
       }
     },
     "ojp-aS-m8w.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"yes\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"toggle\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "yes"
+            "value" : "toggle"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启"
+            "value" : "滑出时松开"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟"
+            "value" : "滑出時鬆開"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟"
+            "value" : "滑出時鬆開"
           }
         }
       }
     },
     "ojp-aS-m8w.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[1] = \"no\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[1] = \"slide & hold\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "no"
+            "value" : "slide & hold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动时按下"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動時按下"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "滑動時按下"
+          }
+        }
+      }
+    },
+    "ojp-aS-m8w.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[2] = \"disabled\"; ObjectID = \"ojp-aS-m8w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "disabled"
           }
         },
         "zh-Hans" : {

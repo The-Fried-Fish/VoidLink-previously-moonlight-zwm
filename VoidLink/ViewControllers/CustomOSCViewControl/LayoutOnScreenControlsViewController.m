@@ -123,7 +123,7 @@
             widgetView.trackballDecelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
-            widgetView.isSlidable = buttonState.isSlidable;
+            widgetView.slideMode = buttonState.slideMode;
             // Add the widgetView to the view controller's view
             [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
@@ -635,7 +635,7 @@
     newWidget.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
     [newWidget setVibrationWithStyle:widget.vibrationStyle];
     newWidget.mouseButtonAction = widget.mouseButtonAction;
-    newWidget.isSlidable = widget.isSlidable;
+    newWidget.slideMode = widget.slideMode;
     [self.view insertSubview:newWidget belowSubview:self.widgetPanelStack];
 
     if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
@@ -753,7 +753,7 @@
     [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
     
     self.slidableStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    [self.slidableSelector setSelectedSegmentIndex:selectedWidgetView.isSlidable ? 0 : 1];
+    [self.slidableSelector setSelectedSegmentIndex:selectedWidgetView.slideMode];
     
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
@@ -906,9 +906,9 @@
     }
 }
 
-- (void)slidableChanged:(UISegmentedControl* )sender{
+- (void)slideModeChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        selectedWidgetView.isSlidable = _slidableSelector.selectedSegmentIndex == 0;
+        selectedWidgetView.slideMode = _slidableSelector.selectedSegmentIndex;
     }
 }
 
@@ -1065,7 +1065,7 @@
     [self.mouseButtonDownSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.mouseDownButtonStack.hidden = YES;
 
-    [self.slidableSelector addTarget:self action:@selector(slidableChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.slidableSelector addTarget:self action:@selector(slideModeChanged:) forControlEvents:(UIControlEventValueChanged)];
     [self.slidableSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.slidableStack.hidden = YES;
 

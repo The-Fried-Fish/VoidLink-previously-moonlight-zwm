@@ -1518,19 +1518,20 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" alpha="0.76999998092651367" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="cKS-fy-Zpg">
-                                                <rect key="frame" x="160" y="0.0" width="244" height="32"/>
+                                                <rect key="frame" x="160" y="0.0" width="367" height="32"/>
                                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <segments>
-                                                    <segment title="yes"/>
-                                                    <segment title="no"/>
+                                                    <segment title="toggle"/>
+                                                    <segment title="slide &amp; hold"/>
+                                                    <segment title="disabled"/>
                                                 </segments>
                                                 <color key="tintColor" systemColor="systemGray3Color"/>
                                                 <color key="selectedSegmentTintColor" red="0.23087820410000001" green="0.4576539993" blue="0.51765710119999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             </segmentedControl>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="                                    " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dOF-FW-cBU" userLabel="uiLabel">
-                                                <rect key="frame" x="404" y="0.0" width="246" height="31"/>
+                                                <rect key="frame" x="527" y="0.0" width="123" height="31"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="246" id="hfV-um-PjK"/>
+                                                    <constraint firstAttribute="width" constant="123" id="hfV-um-PjK"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

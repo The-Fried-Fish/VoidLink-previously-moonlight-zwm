@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *alias;
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
-@property (nonatomic, assign) BOOL isSlidable;
+@property (nonatomic, assign) uint8_t slideMode;
 @property (nonatomic, assign) uint8_t buttonType;
 @property (nonatomic, assign) CGFloat widthFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat heightFactor; // for OnScreenWidgetView
@@ -56,6 +56,13 @@ typedef NS_ENUM(NSInteger, MouseButtonAction) {
     middleButtonDown,
     rightButtonDown,
 };
+
+typedef NS_ENUM(NSInteger, ButtonSlideMode) {
+    toggle,
+    slideAndHold,
+    disabled
+};
+
 
 
 - (id) initWithButtonName:(NSString*)name buttonType:(uint8_t)buttonType andPosition:(CGPoint)position;
