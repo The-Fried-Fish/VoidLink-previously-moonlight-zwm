@@ -90,6 +90,7 @@ import UIKit
         "OSCDOWN" : DOWN_FLAG,
         "OSCLEFT" : LEFT_FLAG,
         "OSCRIGHT" : RIGHT_FLAG,
+        "DS4TOUCH" : TOUCHPAD_FLAG,
         "OSCL2" : 0,
         "L2" : 0,
         "LT" : 0,
@@ -109,7 +110,7 @@ import UIKit
         "OSCBACK"
     ]
     
-    @objc public static let touchPadCmds: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD", "MOUSEPAD", "DPAD", "TRACKBALL", "WASDPAD", "ARROWPAD"]
+    @objc public static let touchPadCmds: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD", "DS4TOUCH", "MOUSEPAD", "DPAD", "TRACKBALL", "WASDPAD", "ARROWPAD"]
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]
     @objc public static let specialOverlayButtonCmds: [String] = ["SETTINGS"]

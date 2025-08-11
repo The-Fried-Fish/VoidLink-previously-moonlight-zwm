@@ -1099,6 +1099,96 @@
         }
       }
     },
+    "cKS-fy-Zpg.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[0] = \"toggle\"; ObjectID = \"cKS-fy-Zpg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "toggle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑出时松开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑出時鬆開"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑出時鬆開"
+          }
+        }
+      }
+    },
+    "cKS-fy-Zpg.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[1] = \"slide & hold\"; ObjectID = \"cKS-fy-Zpg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "slide & hold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动时按下"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動時按下"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動時按下"
+          }
+        }
+      }
+    },
+    "cKS-fy-Zpg.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[2] = \"disabled\"; ObjectID = \"cKS-fy-Zpg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉\n"
+          }
+        }
+      }
+    },
     "CpY-Sb-BDc.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Import\"; ObjectID = \"CpY-Sb-BDc\";",
       "extractionState" : "extracted_with_value",
@@ -1197,6 +1287,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats."
+          }
+        }
+      }
+    },
+    "dOF-FW-cBU.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"                                    \"; ObjectID = \"dOF-FW-cBU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "                                    "
           }
         }
       }
@@ -2793,6 +2895,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "軟鍵盤工具列"
+          }
+        }
+      }
+    },
+    "qNQ-fB-jhY.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide Activated\"; ObjectID = \"qNQ-fB-jhY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide Activated"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动触发"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動觸發"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動觸發"
           }
         }
       }

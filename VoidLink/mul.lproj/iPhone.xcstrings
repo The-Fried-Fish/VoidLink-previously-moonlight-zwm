@@ -1783,6 +1783,18 @@
         }
       }
     },
+    "KZ3-vJ-E8J.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"    \"; ObjectID = \"KZ3-vJ-E8J\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "    "
+          }
+        }
+      }
+    },
     "lwy-Nu-hQj.text" : {
       "comment" : "Class = \"UILabel\"; text = \"External Display Mode\"; ObjectID = \"lwy-Nu-hQj\";",
       "extractionState" : "extracted_with_value",
@@ -1975,6 +1987,36 @@
         }
       }
     },
+    "o9I-Gt-YRd.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide Activated\"; ObjectID = \"o9I-Gt-YRd\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide Activated"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动触发"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動觸發"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動觸發"
+          }
+        }
+      }
+    },
     "oBs-zz-ZQv.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; oBs-zz-ZQv.segmentTitles[0] = \"Slide From Left Edge\"; ObjectID = \"oBs-zz-ZQv\";",
       "extractionState" : "extracted_with_value",
@@ -2031,6 +2073,96 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "從右側邊緣滑動"
+          }
+        }
+      }
+    },
+    "ojp-aS-m8w.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"toggle\"; ObjectID = \"ojp-aS-m8w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "toggle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑出时松开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑出時鬆開"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑出時鬆開"
+          }
+        }
+      }
+    },
+    "ojp-aS-m8w.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[1] = \"slide & hold\"; ObjectID = \"ojp-aS-m8w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "slide & hold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动时按下"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動時按下"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "滑動時按下"
+          }
+        }
+      }
+    },
+    "ojp-aS-m8w.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[2] = \"disabled\"; ObjectID = \"ojp-aS-m8w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
           }
         }
       }

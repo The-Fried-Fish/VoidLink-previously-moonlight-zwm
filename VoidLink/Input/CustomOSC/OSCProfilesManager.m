@@ -363,8 +363,6 @@ static CGRect layoutViewBounds;
         else buttonState.vibrationStyle = UIImpactFeedbackStyleLight;
 
         // NSLog(@"oscLayerName: %@, opacity: %f, ", oscButtonLayer.name, buttonState.backgroundAlpha);
-
-        
         // buttonState.oscLayerSizeFactor = oscButtonLayer.bounds;
         
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
@@ -376,8 +374,9 @@ static CGRect layoutViewBounds;
         CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.center];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.buttonLabel;
-        buttonState.widthFactor = widgetView.widthFactor;
-        buttonState.heightFactor = widgetView.heightFactor;
+        buttonState.widthFactor = [self normalizeSizeWidthFactor:widgetView];
+        NSLog(@"logging widthFactor %f", buttonState.widthFactor);
+        buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView];
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.borderWidth = widgetView.borderWidth;
         buttonState.vibrationStyle = widgetView.vibrationStyle;
@@ -388,6 +387,7 @@ static CGRect layoutViewBounds;
         buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
         buttonState.widgetShape = widgetView.shape;
         buttonState.minStickOffset = widgetView.minStickOffset;
+        buttonState.slideMode = widgetView.slideMode;
         
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
         [buttonStatesEncoded addObject: buttonStateEncoded];
@@ -396,6 +396,15 @@ static CGRect layoutViewBounds;
     return buttonStatesEncoded;
 }
 
+- (CGFloat)normalizeSizeWidthFactor:(OnScreenWidgetView* )widget{
+    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    return widget.bounds.size.width/screenWidthInPoints * 10000;
+}
+
+- (CGFloat)normalizeSizeHeightFactor:(OnScreenWidgetView* )widget{
+    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    return widget.bounds.size.height/screenWidthInPoints * 10000;
+}
 
 
 #pragma mark - Queries

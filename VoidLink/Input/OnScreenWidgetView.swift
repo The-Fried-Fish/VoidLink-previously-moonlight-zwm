@@ -45,6 +45,11 @@ import UIKit
     @objc public var pressed: Bool
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
+    @objc public var slideMode: Int = 0
+
+    @objc public var deNormalizedWidthFactor: CGFloat = 1.0
+    @objc public var deNormalizedHeightFactor: CGFloat = 1.0
+    
     @objc public var borderWidth: CGFloat = 0.0
     @objc public var backgroundAlpha: CGFloat = 0.5
     @objc public var vibrationStyle: Int = 6
@@ -131,8 +136,16 @@ import UIKit
     // border & visual effect
     private var minimumBorderAlpha: CGFloat = 0.19
     private var defaultBorderColor: CGColor = UIColor(white: 0.2, alpha: 0.3).cgColor
-    private let moonlightPurple: CGColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 0.86).cgColor
-
+    private let voidlinkPurple: CGColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 0.86).cgColor
+    
+    //slide buttons
+    private var capturedTouches: NSMutableSet
+    private let noTouch: UITouch = UITouch()
+    
+    //controller touch pad
+    private var pointerIdPool: Set<UInt32>
+    private var pointerIdDict: Dictionary<ObjectIdentifier, UInt32>
+    private var activePointerIds: Set<UInt32>
     
     // whole button press down visual effect
     @objc public let buttonDownVisualEffectLayer = CAShapeLayer()
@@ -180,6 +193,8 @@ import UIKit
                     self.comboButtonStrings = ["OSCL3"]
                 case "RSPAD", "RSVPAD":
                     self.comboButtonStrings = ["OSCR3"]
+                case "DS4TOUCH":
+                    self.comboButtonStrings = ["DS4TOUCH"]
                 default: break
                 }
             }
@@ -223,6 +238,13 @@ import UIKit
         self.stickIndicatorOffset = 95
         self.sensitivityFactorX = 1.0
         self.sensitivityFactorY = 1.0
+        self.capturedTouches = NSMutableSet()
+        self.pointerIdDict = [:]
+        self.pointerIdPool = []
+        for i in 0...10 { // iPadOS supports up to 11 finger touches
+            self.pointerIdPool.insert(UInt32(i))
+        }
+        self.activePointerIds = []
         super.init(frame: .zero)
         
         upIndicator = createLrudDirectionLayer()
@@ -319,7 +341,6 @@ import UIKit
         if self.widthFactor == 0 {self.widthFactor = 1.0}
         if self.heightFactor == 0 {self.heightFactor = 1.0}
         
-
         /*
         NSLayoutConstraint.activate([
             self.centerXAnchor.constraint(equalTo: self.superview!.leadingAnchor, constant: storedLocation.x),
@@ -357,21 +378,46 @@ import UIKit
         }
     }
     
+    func nearestEven(_ value: CGFloat) -> CGFloat {
+        let rounded = round(value)
+        if Int(rounded) % 2 == 0 {
+            return rounded
+        } else {
+            let lowerEven = rounded - 1
+            let upperEven = rounded + 1
+            return abs(value - lowerEven) <= abs(value - upperEven) ? lowerEven : upperEven
+        }
+    }
+    
+    private func denormalizeSize(sizeFactor:CGFloat) -> CGFloat {
+        let screenWidthInPoints = UIScreen.main.bounds.width
+        // return CGFloat(Int(sizeFactor/10000*screenWidthInPoints/2)*2);
+        return nearestEven(sizeFactor/10000*screenWidthInPoints);
+    }
+    
     private func changeAndActivateContraints(){
+        let isNormalizedSizeFactor = self.widthFactor > 6;
+        
         if self.shape == "round"{ // we'll make custom osc buttons round & smaller
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(60 * self.widthFactor / 2) * 2)),])
+                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(60 * self.widthFactor / 2) * 2)),
+                self.heightAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(60 * self.widthFactor / 2) * 2)),])
+            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/60 : self.widthFactor;
+            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/60 : self.widthFactor;
         }
         if self.shape == "square" {
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: CGFloat(Int(70 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(65 * self.heightFactor / 2) * 2)),])
+                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(70 * self.widthFactor / 2) * 2)),
+                self.heightAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(65 * self.heightFactor / 2) * 2)),])
+            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/70 : self.widthFactor;
+            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor)/65 : self.heightFactor;
         }
         if self.shape == "largeSquare" { // override all shape strings
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: CGFloat(Int(170 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: CGFloat(Int(150 * self.heightFactor / 2) * 2)),])
+                self.widthAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(170 * self.widthFactor / 2) * 2)),
+                self.heightAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(150 * self.heightFactor / 2) * 2)),])
+            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/170 : self.widthFactor;
+            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor)/150 : self.heightFactor;
         }
 
         NSLayoutConstraint.activate([
@@ -379,6 +425,11 @@ import UIKit
             label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),])
+        
+        if self.shape != "round"{
+            let shortSideLen = min(self.layer.bounds.size.width, self.layer.bounds.size.height)
+            self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
+        }
     }
     
     private func setupView() {
@@ -464,7 +515,7 @@ import UIKit
         indicatorBorder.fillColor = UIColor.clear.cgColor
         let path = UIBezierPath(roundedRect: indicatorBorder.bounds, cornerRadius: indicatorBorder.cornerRadius)
         indicatorBorder.path = path.cgPath
-        indicatorBorder.borderColor = moonlightPurple
+        indicatorBorder.borderColor = voidlinkPurple
         
         self.layer.superlayer?.addSublayer(indicatorBorder)
         indicatorBorder.position = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
@@ -658,7 +709,7 @@ import UIKit
         indicatorBorder.fillColor = UIColor.clear.cgColor
         let path = UIBezierPath(roundedRect: indicatorBorder.bounds, cornerRadius: indicatorBorder.cornerRadius)
         indicatorBorder.path = path.cgPath
-        indicatorBorder.borderColor = moonlightPurple
+        indicatorBorder.borderColor = voidlinkPurple
         
         return indicatorBorder
     }
@@ -668,7 +719,15 @@ import UIKit
         self.layer.superlayer?.insertSublayer(indicatorLayer, below: self.layer)
         
         // show the indicator based on the touchBeganLocation
-        indicatorLayer.position = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
+        let newPosition = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
+        
+        if indicatorLayer.position != newPosition && vibrationOn {
+            vibrationGenerator.prepare()
+            vibrationGenerator.impactOccurred()
+            // print("vibrationInstance: \(vibrationGenerator)")
+        }
+        
+        indicatorLayer.position = newPosition
     }
     
     private func handleLrudTouchMove(){
@@ -718,6 +777,7 @@ import UIKit
         }
         else{
             self.upIndicator.removeFromSuperlayer()
+            self.upIndicator.position = CGPointMake(0, 0)
             switch touchPadString {
             case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_UP), 0)
@@ -736,6 +796,7 @@ import UIKit
         }
         else{
             self.downIndicator.removeFromSuperlayer()
+            self.downIndicator.position = CGPointMake(0, 0)
             switch touchPadString {
             case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_UP), 0)
@@ -754,6 +815,7 @@ import UIKit
         }
         else{
             self.leftIndicator.removeFromSuperlayer()
+            self.leftIndicator.position = CGPointMake(0, 0)
             switch touchPadString {
             case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
@@ -772,6 +834,7 @@ import UIKit
         }
         else{
             self.rightIndicator.removeFromSuperlayer()
+            self.rightIndicator.position = CGPointMake(0, 0)
             switch touchPadString {
             case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
@@ -853,14 +916,14 @@ import UIKit
 
     
     //==== wholeButtonPress visual effect=============================================
-    private func buttonDownEffect() {
-        // setupBorderLayer()
+    private func handleButtonDown() {
+        if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         // self.layer.borderWidth = 0
         buttonDownVisualEffectLayer.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)) // update position every time we press down the button
         buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
-        buttonDownVisualEffectLayer.borderColor = moonlightPurple
+        buttonDownVisualEffectLayer.borderColor = voidlinkPurple
         if vibrationOn {
             vibrationGenerator.prepare()
             vibrationGenerator.impactOccurred()
@@ -869,7 +932,8 @@ import UIKit
         CATransaction.commit()
     }
     
-    private func buttonUpVisualEffect() {
+    private func handlebuttonUp() {
+        if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         // self.layer.borderWidth = 1
@@ -882,7 +946,7 @@ import UIKit
     private func setupButtonDownVisualEffectLayer() {
         self.buttonDownVisualEffectWidth = 8
         if self.shape == "round" {
-            if widthFactor < 1.3 {self.buttonDownVisualEffectWidth = 15.3} // wider visual effect for osc buttons
+            if deNormalizedWidthFactor < 1.3 {self.buttonDownVisualEffectWidth = 15.3} // wider visual effect for osc buttons
             else {self.buttonDownVisualEffectWidth = 9}
         }
         
@@ -1008,11 +1072,11 @@ import UIKit
 //==============================================================================
     // Touch event handling
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         self.touchBegan = true
         self.firstTouchMoved = false
         super.touchesBegan(touches, with: event)
-        self.isMultipleTouchEnabled = self.touchPadString == "MOUSEPAD" // only enable multi-touch in mousePad mode
+        // self.isMultipleTouchEnabled = self.touchPadString == "MOUSEPAD" // only enable multi-touch in mousePad mode
+        self.isMultipleTouchEnabled = true
 
         if !OnScreenWidgetView.editMode && self.touchPadString == "TRACKBALL" {
             stopTrackballMomentum()
@@ -1073,6 +1137,11 @@ import UIKit
                             self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
                         }
                     }
+                case "DS4TOUCH":
+                    if quickDoubleTapDetected {
+                        self.l3r3Indicator = self.createAndShowl3r3Indicator()
+                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+                    }
                 default:
                     break
                 }
@@ -1093,25 +1162,15 @@ import UIKit
                 }
             }
             
-            /*
-            if !self.buttonString.isEmpty {
-                // if there's no "+" in the keystring, treat it as a regular button:
-                if CommandManager.oscButtonMappings.keys.contains(self.cmdString) {
-                    self.sendOscButtonDownEvent(keyString: self.cmdString)
-                }
-                if CommandManager.keyboardButtonMappings.keys.contains(self.cmdString) {
-                    LiSendLiSendKeyboardEvent(CommandManager.keyboardButtonMappings[self.cmdString]!,Int8(KEY_ACTION_DOWN), 0)
-                }
-                if CommandManager.mouseButtonMappings.keys.contains(self.cmdString) {
-                    LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), Int32(CommandManager.mouseButtonMappings[self.cmdString]!))
-                }
+            if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "DS4TOUCH" {
+                self.handleControllerTouchesDown(touches: touches)
             }
-            */
-            
+                        
             // this will also deal with button events
             if self.widgetType == WidgetTypeEnum.button && !self.comboButtonStrings.isEmpty {
-                self.buttonDownEffect()
-                self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+                self.handleButtonDown()
+                self.capturedTouches.union(touches)
+                //self.handleButtonSliding(touches: touches)
             }
             
             // legacy keyboard button combo connected by "+"
@@ -1119,13 +1178,13 @@ import UIKit
                 let keyboardCmdStrings = CommandManager.shared.extractKeyStringsFromComboCommand(from: self.cmdString)!
                 CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings) // send multi-key command
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { // reset shadow color immediately 50ms later
-                    self.buttonUpVisualEffect()
+                    self.handlebuttonUp()
                 }
             }
         }
         // here is in edit mode:
         else{
-            self.buttonDownEffect()
+            self.handleButtonDown()
             NotificationCenter.default.post(name: Notification.Name("OnScreenWidgetViewSelected"),object: self) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
         }
     }
@@ -1151,16 +1210,100 @@ import UIKit
         }
     }
     
+    private func handleControllerTouchesDown(touches: Set<UITouch>) {
+        for touch in touches{
+            let availablePointerIds = pointerIdPool.subtracting(activePointerIds)
+            if let pointerId = availablePointerIds.first {
+                pointerIdDict[ObjectIdentifier(touch)] = pointerId
+                let coordX = touch.location(in: self).x/self.bounds.width
+                let coordY = touch.location(in: self).y/self.bounds.height
+                LiSendControllerTouchEvent(0, UInt8(LI_TOUCH_EVENT_DOWN), pointerId, Float(coordX), Float(coordY), 1)
+                activePointerIds.insert(pointerId)
+            }
+        }
+    }
+    
+    private func handleControllerTouchesMove(touches: Set<UITouch>) {
+        for touch in touches{
+            if let pointerId = pointerIdDict[ObjectIdentifier(touch)] {
+                let coordX = touch.location(in: self).x/self.bounds.width
+                let coordY = touch.location(in: self).y/self.bounds.height
+                LiSendControllerTouchEvent(0, UInt8(LI_TOUCH_EVENT_MOVE), pointerId, Float(coordX), Float(coordY), 1)
+            }
+        }
+    }
+
+    private func handleControllerTouchesUp(touches: Set<UITouch>) {
+        for touch in touches{
+            if let pointerId = pointerIdDict[ObjectIdentifier(touch)] {
+                let coordX = touch.location(in: self).x/self.bounds.width
+                let coordY = touch.location(in: self).y/self.bounds.height
+                LiSendControllerTouchEvent(0, UInt8(LI_TOUCH_EVENT_UP), pointerId, Float(coordX), Float(coordY), 1)
+                activePointerIds.remove(pointerId)
+                pointerIdDict.removeValue(forKey: ObjectIdentifier(touch))
+            }
+        }
+    }
+
+    
+    private func handleButtonSlidingUp(touches: Set<UITouch>) {
+        for touch in touches {
+            for subview in self.superview?.subviews ?? [] {
+                if let widget = subview as? OnScreenWidgetView{
+                    if !widget.capturedTouches.contains(touch) || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                    widget.handlebuttonUp()
+                }
+            }
+        }
+    }
+
+    private func handleButtonSliding(touches: Set<UITouch>) {
+        for touch in touches {
+            let locationInSuperView = touch.location(in: self.superview)
+            for subview in self.superview?.subviews ?? [] {
+                if let widget = subview as? OnScreenWidgetView{
+                    if widget.widgetType != WidgetTypeEnum.button {continue}
+                    let pointInSubview = widget.convert(locationInSuperView, from: self.superview)
+                    if widget.bounds.contains(pointInSubview){
+                        if widget.capturedTouches.contains(touch) || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        widget.capturedTouches.add(touch)
+                        widget.handleButtonDown()
+                        // print("UIButton: \(widget.buttonLabel) in, \(widget.touchPadString), \(CACurrentMediaTime())")
+                    }
+                    else{
+                        if !widget.capturedTouches.contains(touch) || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
+                        if(widget.slideMode == ButtonSlideMode.toggle.rawValue){
+                            widget.capturedTouches.remove(touch)
+                            widget.handlebuttonUp()
+                        }
+                        if(widget.slideMode == ButtonSlideMode.slideAndHold.rawValue){
+                            // do nothing here
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
         if !OnScreenWidgetView.editMode {
-            handleTouchPadMoveEvent(touches, with: event)
+            
+            if !self.touchPadString.isEmpty{
+                handleTouchPadMoveEvent(touches, with: event)
+            }
+            
+            if !self.buttonString.isEmpty{
+                if self.slideMode != ButtonSlideMode.disabled.rawValue {self.handleButtonSliding(touches: touches)}
+            }
+            
             if CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
                 if let touch = touches.first {
                     NSLog("touchTapTimeStamp %f", self.touchTapTimeStamp)
                     if CACurrentMediaTime() - self.touchTapTimeStamp > 0.3 { // temporarily relocate special buttons
                         self.moveByTouch(touch: touch)
-                        self.buttonUpVisualEffect()
+                        self.handlebuttonUp()
                     }
                 }
             }
@@ -1195,7 +1338,6 @@ import UIKit
     
     private func handleTouchPadMoveEvent (_ touches: Set<UITouch>, with event: UIEvent?){
         if touches.count == 1{ // don't use event.alltouches.count here, it will counts all touches
-            
             switch self.touchPadString{
             case "MOUSEPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
@@ -1239,6 +1381,9 @@ import UIKit
             default:
                 break
             }
+        }
+        if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "DS4TOUCH" {
+            self.handleControllerTouchesMove(touches: touches)
         }
     }
     
@@ -1320,6 +1465,8 @@ import UIKit
                 self.onScreenControls.releaseControllerButton(RIGHT_FLAG)
                 self.onScreenControls.releaseControllerButton(UP_FLAG)
                 self.onScreenControls.releaseControllerButton(DOWN_FLAG)
+            case "DS4TOUCH":
+                self.handleControllerTouchesUp(touches: touches)
             default:
                 break
             }
@@ -1332,7 +1479,8 @@ import UIKit
         self.lrudIndicatorBall.removeFromSuperlayer()
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
-            self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
+            self.handleButtonSlidingUp(touches: touches)
+            self.capturedTouches.minus(touches)
         }
         
         if !OnScreenWidgetView.editMode && CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
@@ -1384,7 +1532,7 @@ import UIKit
             }
         }
         
-        self.buttonUpVisualEffect()
+        self.handlebuttonUp()
     }
 }
 
