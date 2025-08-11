@@ -708,6 +708,11 @@
         [self.view addSubview:self.metalViewController.view];
         [self.metalViewController didMoveToParentViewController:self];
         [self.view bringSubviewToFront:self.metalViewController.view];
+        
+        // Ensure ImGui view (graphs) is layered above Metal view
+        if (self.imguiView && self.imguiView.mtkView.superview) {
+            [self.view bringSubviewToFront:self.imguiView.mtkView];
+        }
     }
 }
 
