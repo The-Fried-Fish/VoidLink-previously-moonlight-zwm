@@ -697,6 +697,30 @@
         }
       }
     },
+    "53H-ST-OtY.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Balanced"
+          }
+        }
+      }
+    },
+    "53H-ST-OtY.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Performance\"; ObjectID = \"53H-ST-OtY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance"
+          }
+        }
+      }
+    },
     "A9r-dE-rT4.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; A9r-dE-rT4.segmentTitles[0] = \"Touchpad\"; ObjectID = \"A9r-dE-rT4\";",
       "extractionState" : "extracted_with_value",
@@ -3249,6 +3273,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "觸控模式"
+          }
+        }
+      }
+    },
+    "v8l-hf-kiR.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Rendering Mode\"; ObjectID = \"v8l-hf-kiR\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Rendering Mode"
           }
         }
       }

@@ -35,8 +35,8 @@ typedef struct {
 } PlotMetrics;
 
 typedef enum {
-    RENDER_METAL = 0,
-    RENDER_AVSB
+    RENDER_AVSB = 0,
+    RENDER_METAL
 } RenderingBackend;
 
 typedef struct {

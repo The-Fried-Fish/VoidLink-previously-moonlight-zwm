@@ -55,11 +55,11 @@
     // Set rendering backend based on iOS version and user preference
     NSInteger savedBackend = [[NSUserDefaults standardUserDefaults] integerForKey:@"renderingBackend"];
     if (@available(iOS 17.0, *)) {
-        // iOS 17+ can use Metal renderer (CAMetalDisplayLink available)
+        // iOS 17+ can use Performance mode (Metal renderer)
         self.renderingBackend = [NSNumber numberWithInteger:savedBackend];
     } else {
-        // iOS < 17 must use AVSB renderer (no CAMetalDisplayLink)
-        self.renderingBackend = [NSNumber numberWithInteger:1]; // RENDER_AVSB = 1
+        // iOS < 17 must use Balanced mode (AVSB renderer)
+        self.renderingBackend = [NSNumber numberWithInteger:RENDER_AVSB];
     }
 
     NSInteger _screenSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"streamResolution"];

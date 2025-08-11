@@ -1631,13 +1631,13 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)renderingBackendChanged:(UISegmentedControl *)sender {
-    // Disable PiP toggle when Metal renderer (index 0) is selected
+    // Disable PiP toggle when Metal renderer is selected
     if (sender.selectedSegmentIndex == RENDER_METAL) {
-        // Metal renderer selected - disable PiP
+        // Performance mode (Metal renderer) selected - disable PiP
         [self.pipSwitch setOn:NO animated:YES];
         [self.pipSwitch setEnabled:NO];
     } else {
-        // Other renderers - enable PiP toggle if iOS 15+
+        // Balanced mode (AVSB renderer) - enable PiP toggle if iOS 15+
         if (@available(iOS 15.0, *)) {
             [self.pipSwitch setEnabled:YES];
         } else {

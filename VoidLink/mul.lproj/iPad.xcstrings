@@ -410,25 +410,25 @@
       }
     },
     "53H-ST-OtY.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Metal\"; ObjectID = \"53H-ST-OtY\";",
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Metal"
+            "value" : "Balanced"
           }
         }
       }
     },
     "53H-ST-OtY.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"AVSampleBuffer\"; ObjectID = \"53H-ST-OtY\";",
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Performance\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "AVSampleBuffer"
+            "value" : "Performance"
           }
         }
       }
@@ -3236,13 +3236,13 @@
       }
     },
     "v8l-hf-kiR.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Rendering Backend\"; ObjectID = \"v8l-hf-kiR\";",
+      "comment" : "Class = \"UILabel\"; text = \"Rendering Mode\"; ObjectID = \"v8l-hf-kiR\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Rendering Backend"
+            "value" : "Rendering Mode"
           }
         }
       }
