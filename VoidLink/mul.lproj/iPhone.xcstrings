@@ -2078,13 +2078,13 @@
       }
     },
     "ojp-aS-m8w.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"toggle\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"slide to release\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "toggle"
+            "value" : "slide to release"
           }
         },
         "zh-Hans" : {
@@ -2131,7 +2131,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑動時按下"
           }
         }

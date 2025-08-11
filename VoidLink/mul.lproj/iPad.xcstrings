@@ -1052,13 +1052,13 @@
       }
     },
     "cKS-fy-Zpg.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[0] = \"toggle\"; ObjectID = \"cKS-fy-Zpg\";",
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[0] = \"slide to release\"; ObjectID = \"cKS-fy-Zpg\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "toggle"
+            "value" : "slide to release"
           }
         },
         "zh-Hans" : {
