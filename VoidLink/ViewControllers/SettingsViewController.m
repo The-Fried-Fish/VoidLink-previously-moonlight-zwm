@@ -13,6 +13,7 @@
 #import "TemporarySettings.h"
 #import "DataManager.h"
 #import "ThemeManager.h"
+#import "Plot.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #import <VideoToolbox/VideoToolbox.h>
@@ -1396,6 +1397,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
     [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
+    [self.renderingBackendSelector addTarget:self action:@selector(renderingBackendChanged:) forControlEvents:UIControlEventValueChanged];
+    [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP state based on current selection
 
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
@@ -1624,6 +1627,23 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     for (NSInteger i = 0; i < _softKeyboardGestureSelector.numberOfSegments; i++) {
         [_softKeyboardGestureSelector setEnabled:![self isCustomOswEnabled] || i == 3 ? true : i+3 != oswLayoutFingers forSegmentAtIndex:i]; // 或 NO 来禁用
+    }
+}
+
+- (void)renderingBackendChanged:(UISegmentedControl *)sender {
+    // Disable PiP toggle when Metal renderer (index 0) is selected
+    if (sender.selectedSegmentIndex == RENDER_METAL) {
+        // Metal renderer selected - disable PiP
+        [self.pipSwitch setOn:NO animated:YES];
+        [self.pipSwitch setEnabled:NO];
+    } else {
+        // Other renderers - enable PiP toggle if iOS 15+
+        if (@available(iOS 15.0, *)) {
+            [self.pipSwitch setEnabled:YES];
+        } else {
+            [self.pipSwitch setOn:NO];
+            [self.pipSwitch setEnabled:NO];
+        }
     }
 }
 
