@@ -2153,9 +2153,13 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void) saveSettings {
     DataManager* dataMan = [[DataManager alloc] init];
+    Settings* currentSettings = [dataMan retrieveSettings];
+    
+    NSInteger height = self.mainFrameViewController.settingsExpandedInStreamView ? currentSettings.height.intValue : [self getChosenStreamHeight];
+    NSInteger width = self.mainFrameViewController.settingsExpandedInStreamView ? currentSettings.width.intValue : [self getChosenStreamWidth];
+    
     NSInteger framerate = [self getChosenFrameRate];
-    NSInteger height = [self getChosenStreamHeight];
-    NSInteger width = [self getChosenStreamWidth];
+
     NSInteger audioConfig = [@[@2, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
     NSInteger renderingBackend = [self.renderingBackendSelector selectedSegmentIndex];
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
