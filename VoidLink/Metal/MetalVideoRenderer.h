@@ -1,3 +1,11 @@
+//
+//  MetalVideoRenderer.h
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #import <QuartzCore/CAMetalLayer.h>
 #import <QuartzCore/QuartzCore.h>
 #import <simd/simd.h>

@@ -1,3 +1,11 @@
+//
+//  MetalViewController.h
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #import <Metal/Metal.h>
 #import <UIKit/UIKit.h>
 #import "FrameQueue.h"

@@ -1,3 +1,10 @@
+//
+//  ImGuiPlots.mm
+//
+//  Created by Andy Grundman.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #import "ImGuiPlots.h"
 
 @implementation ImGuiPlots

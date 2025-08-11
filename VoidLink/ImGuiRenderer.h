@@ -1,3 +1,10 @@
+//
+//  ImGuiRenderer.h
+//
+//  Created by Andy Grundman.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>

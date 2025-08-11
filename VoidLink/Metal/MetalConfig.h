@@ -1,3 +1,11 @@
+//
+//  MetalConfig.h
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 // When enabled, rendering occurs on the main application thread.
 // This can make responding to UI events during redraw simpler
 // to manage because UI calls usually need to occur on the main thread.

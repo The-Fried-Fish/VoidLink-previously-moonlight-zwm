@@ -1,9 +1,10 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-The implementation of the cross-platform game view controller.
-*/
+//
+//  MetalViewController.m
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
 
 #import "MetalViewController.h"
 #import "FrameQueue.h"

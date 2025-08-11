@@ -1,3 +1,11 @@
+//
+//  Shaders-Linear.metal
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #include <metal_stdlib>
 #include <simd/simd.h>
 

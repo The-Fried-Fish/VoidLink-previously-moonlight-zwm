@@ -1,3 +1,11 @@
+//
+//  MetalView.h
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalDisplayLink.h>
 #import <QuartzCore/CAMetalLayer.h>

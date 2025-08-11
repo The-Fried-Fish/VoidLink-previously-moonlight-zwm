@@ -1,3 +1,10 @@
+//
+//  ImGuiPlots.h
+//
+//  Created by Andy Grundman.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 #import <VideoToolbox/VideoToolbox.h>
 
