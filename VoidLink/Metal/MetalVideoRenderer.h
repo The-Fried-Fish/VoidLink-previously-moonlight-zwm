@@ -23,8 +23,7 @@
 @property (atomic) BOOL isStopping;
 
 - (nonnull instancetype)initWithMetalDevice:(nonnull id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate;
-- (void)renderFrame:(nonnull Frame *)frame withDrawable:(nonnull id<CAMetalDrawable>)drawable API_AVAILABLE(ios(17.0));
-- (void)renderFrame:(nonnull Frame *)frame withDrawable:(nonnull id<CAMetalDrawable>)drawable targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0));
+- (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer;
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer;
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)shutdown;

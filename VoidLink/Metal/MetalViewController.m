@@ -82,25 +82,13 @@
     [_frameQueue waitForEnqueue];
 }
 
-
-// New method for CAMetalDisplayLink that provides the drawable
-- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(17.0)) {
+/// Draw frame (used by manual loop)
+- (void)renderTo:(nonnull CAMetalLayer *)layer {
     if (!_renderer.isStopping) {
         CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
         Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
         if (frame) {
-            [_renderer renderFrame:frame withDrawable:drawable];
-        }
-    }
-}
-
-// Enhanced method that receives timing information from CAMetalDisplayLink
-- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0)) {
-    if (!_renderer.isStopping) {
-        CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
-        Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
-        if (frame) {
-            [_renderer renderFrame:frame withDrawable:drawable targetPresentationTimestamp:targetPresentationTimestamp];
+            [_renderer renderFrame:frame toLayer:layer];
         }
     }
 }
@@ -114,14 +102,8 @@
 
     Log(LOG_I, @"[MetalViewController] viewDidDisappear");
 
-    // Shutdown the renderer first
     [_renderer shutdown];
     _renderer = nil;
-    
-    // Then shutdown the view's display link
-    if (_metalView) {
-        [_metalView shutdown];
-    }
 }
 
 #if TARGET_OS_IOS

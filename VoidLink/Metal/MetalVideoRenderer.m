@@ -459,30 +459,21 @@ CFStringRef __currentColorSpace;
     return YES;
 }
 
-
-// Enhanced method that receives timing information from CAMetalDisplayLink
-- (void)renderFrame:(Frame *)frame withDrawable:(id<CAMetalDrawable>)drawable targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0)) {
+- (void)renderFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer {
     @autoreleasepool {
         if (self.isStopping) {
             Log(LOG_I, @"[MetalVideoRenderer] isStopping");
             return;
         }
 
-        // Calculate accurate frametime using CAMetalDisplayLink timing
-        if (self.lastPresented > 0.0f) {
-            CFTimeInterval frametime = targetPresentationTimestamp - self.lastPresented;
-            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
-        }
-        self.lastPresented = targetPresentationTimestamp;
-
         // Handle changes to the frame's colorspace from last time we rendered
         BOOL layerDidChange = NO;
-        if (![self updateColorSpaceForFrame:frame toLayer:(CAMetalLayer *)drawable.layer layerDidChange:&layerDidChange]) {
+        if (![self updateColorSpaceForFrame:frame toLayer:layer layerDidChange:&layerDidChange]) {
             return;
         }
 
         // Handle changes to the video size or drawable size
-        if (![self updateVideoRegionSizeForFrame:frame toLayer:(CAMetalLayer *)drawable.layer]) {
+        if (![self updateVideoRegionSizeForFrame:frame toLayer:layer]) {
             return;
         }
 
@@ -505,6 +496,13 @@ CFStringRef __currentColorSpace;
             }
         }
 
+        // Get the next drawable early to get its pixel format
+        id<CAMetalDrawable> drawable = [layer nextDrawable];
+        if (!drawable) {
+            Log(LOG_E, @"Failed to get nextDrawable");
+            return;
+        }
+        
         // Get the framebuffer pixel format for pipeline creation
         MTLPixelFormat framebufferPixelFormat = drawable.texture.pixelFormat;
 
@@ -598,7 +596,6 @@ CFStringRef __currentColorSpace;
             }
         }
 
-        // Use the provided drawable instead of getting nextDrawable from layer
         _renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
 
         id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
@@ -612,13 +609,22 @@ CFStringRef __currentColorSpace;
         [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
         [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
 #if !TARGET_OS_TV
-        if (((CAMetalLayer *)drawable.layer).pixelFormat == MTLPixelFormatRGBA16Float) {
+        if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
             [self pollCurrentEDRHeadroom];
             [renderEncoder setFragmentBytes:&_currentEDRHeadroom length:sizeof(float) atIndex:1];
         }
 #endif
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
+
+        __block MetalVideoRenderer *strongSelf = self;
+        [drawable addPresentedHandler:^(id<MTLDrawable> d) {
+            if (strongSelf.lastPresented > 0.0f) {
+                CFTimeInterval frametime = d.presentedTime - strongSelf.lastPresented;
+                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
+            }
+            strongSelf.lastPresented = d.presentedTime;
+        }];
 
         // signal semaphore, compute GPU time average, and clear textures
         __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
@@ -640,10 +646,15 @@ CFStringRef __currentColorSpace;
             CVMetalTextureCacheFlush(self->_textureCache, 0);
         }];
 
-        // CAMetalDisplayLink handles timing automatically, so we don't use afterMinimumDuration
+#if TARGET_OS_SIMULATOR
         [commandBuffer presentDrawable:drawable];
+#else
+        // present for a minimum duration for best frame pacing
+        [commandBuffer presentDrawable:drawable afterMinimumDuration:1.0f / _framerate];
+#endif
 
         [commandBuffer commit];
+        [commandBuffer waitUntilCompleted];
     }
 }
 
