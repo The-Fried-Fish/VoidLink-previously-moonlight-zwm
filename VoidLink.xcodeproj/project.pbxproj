@@ -1182,7 +1182,7 @@
 				INFOPLIST_FILE = "VoidLink/Limelight-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "VoidLink - beta";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
