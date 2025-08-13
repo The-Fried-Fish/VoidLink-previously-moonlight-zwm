@@ -1294,7 +1294,7 @@
     // -------- for OSC buttons
     [self.layoutOSC touchesMoved:touches withEvent:event];
     
-    trashCanButton.tintColor = trashCanButton.tintColor = [self layerIsOverlappingWithTrashcanButton:self.layoutOSC.layerBeingDragged] ? [UIColor redColor] : trashCanStoryBoardColor;
+    trashCanButton.tintColor = trashCanButton.titleLabel.textColor = [self layerIsOverlappingWithTrashcanButton:self.layoutOSC.layerBeingDragged] ? [UIColor redColor] : trashCanStoryBoardColor;
 }
 
 - (bool)touchWithinTashcanButton:(UITouch* )touch {
