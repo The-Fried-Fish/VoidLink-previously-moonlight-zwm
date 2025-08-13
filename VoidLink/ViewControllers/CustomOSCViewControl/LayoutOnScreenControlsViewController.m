@@ -978,9 +978,11 @@
             UIButton *button = (UIButton *)subview;
             button.imageView.image = [button.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             button.tintColor = [UIColor systemTealColor];
-            if(!button.imageView.image){
+            if(@available(iOS 13.0, *)) nil;
+            else{
                 NSLog(@"missing image %d", button==_saveButton);
                 button.titleLabel.font = [UIFont systemFontOfSize:18 weight:UIFontWeightMedium];
+                [button setImage:nil forState:UIControlStateNormal];
                 if(button==_exitButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Exit"] forState:UIControlStateNormal];
                 if(button==trashCanButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Del"] forState:UIControlStateNormal];
                 if(button==undoButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Undo"] forState:UIControlStateNormal];
@@ -988,6 +990,7 @@
                 if(button==_loadButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Load"] forState:UIControlStateNormal];
                 if(button==_addButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Add"] forState:UIControlStateNormal];
                 if(button==_editButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Edit"] forState:UIControlStateNormal];
+
             }
         }
         [self handleMissingToolBarIcon:subview];
@@ -1221,6 +1224,8 @@
     
     _oscProfilesTableViewController.currentOSCButtonLayers = self.layoutOSC.OSCButtonLayers;
     
+    // _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     [self presentViewController:_oscProfilesTableViewController animated:YES completion:nil];
 }
 
@@ -1236,7 +1241,8 @@
     OnScreenWidgetView* widget = (OnScreenWidgetView* )sender;
     [self.layoutOSC updateGuidelinesForOnScreenWidget:widget];
     [self.view bringSubviewToFront:widget];
-    trashCanButton.tintColor = [self layerIsOverlappingWithTrashcanButton:widget.layer] ? [UIColor redColor] : trashCanStoryBoardColor;
+    trashCanButton.tintColor = trashCanButton.titleLabel.textColor = [self layerIsOverlappingWithTrashcanButton:widget.layer] ? [UIColor redColor] : trashCanStoryBoardColor;
+
     self.undoButton.alpha = 1.0;
 }
 
@@ -1287,10 +1293,8 @@
 
     // -------- for OSC buttons
     [self.layoutOSC touchesMoved:touches withEvent:event];
-    if ([self layerIsOverlappingWithTrashcanButton:self.layoutOSC.layerBeingDragged]) { // check if user is dragging around a button and hovering it over the trash can button
-        trashCanButton.tintColor = [UIColor redColor];
-    }
-    else trashCanButton.tintColor = trashCanStoryBoardColor;
+    
+    trashCanButton.tintColor = trashCanButton.tintColor = [self layerIsOverlappingWithTrashcanButton:self.layoutOSC.layerBeingDragged] ? [UIColor redColor] : trashCanStoryBoardColor;
 }
 
 - (bool)touchWithinTashcanButton:(UITouch* )touch {
@@ -1364,7 +1368,7 @@
     }
     
     
-    trashCanButton.tintColor = trashCanStoryBoardColor;
+    trashCanButton.tintColor = trashCanButton.titleLabel.textColor = trashCanStoryBoardColor;
     widgetPanelMovedByTouch = false;
 }
 

@@ -940,14 +940,15 @@ const int FrontViewPositionNone = 0xff;
         _dockedNavBar.standardAppearance = navBarAppearanceStandard;
         _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
     } else {
-        _dockedNavBar.backgroundColor = [UIColor clearColor];
-        _dockedNavBar.backgroundColor = [ThemeManager appBackgroundColor];
+        _dockedNavBar.barTintColor = [UIColor clearColor];
+        _dockedNavBar.barTintColor = [ThemeManager appBackgroundColor];
         _dockedNavBar.shadowImage = [UIImage new]; // remove bottom line for navbar
     }
 
     
     // 创建导航项
-    _navItem = [[UINavigationItem alloc] initWithTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
+    if (@available(iOS 13.0, *)) _navItem = [[UINavigationItem alloc] initWithTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
+    else _navItem = [[UINavigationItem alloc] initWithTitle:@""];
     
     
     [self setupBackButton];

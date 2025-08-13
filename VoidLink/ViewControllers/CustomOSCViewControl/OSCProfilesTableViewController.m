@@ -85,7 +85,7 @@ const double NAV_BAR_HEIGHT = 50;
          forCellReuseIdentifier:@"Cell"]; // Register the custom cell nib file with the table view
     self.tableView.alpha = 0.7;
     //self.tableView.backgroundColor = [[UIColor colorWithRed:0.5 green:0.7 blue:1.0 alpha:1.0] colorWithAlphaComponent:0.2]; // set background color & transparency
-    self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.1]; // set background color & transparency
+    self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5]; // set background color & transparency
     // self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2]; // set background color & transparency
 
 }

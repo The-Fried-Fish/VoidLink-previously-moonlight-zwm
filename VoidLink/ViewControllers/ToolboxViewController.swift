@@ -26,7 +26,7 @@ import UIKit
     private let exitButton = UIButton(type: .system)
     private let pinButton = UIButton(type: .system)
     private let viewBackgroundColor = UIColor(white: 0.2, alpha: 0.8);
-    private let highlightColor = UIColor(white: 0.39, alpha: 0.8);
+    private let highlightColor = UIColor(white: 0.55, alpha: 0.8);
     private let titleLabel = UILabel()
     @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip"]
     private let specialEntryAliasDic : [String:String] = [
@@ -88,7 +88,8 @@ import UIKit
         view.backgroundColor = viewBackgroundColor
         tableView.backgroundColor = .clear
         tableView.rowHeight = isIPhone() ? 47 : 60
-        tableView.separatorColor = highlightColor
+        tableView.separatorColor = .white.withAlphaComponent(0.33)
+        tableView.separatorInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         // Configure buttons
         addButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Add / Duplicate"), for: .normal)
         deleteButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Delete"), for: .normal)
@@ -149,8 +150,8 @@ import UIKit
         NSLayoutConstraint.activate([
             
             // Set the width and height of the view
-            view.widthAnchor.constraint(equalTo: view.superview!.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.8),
-            view.heightAnchor.constraint(equalTo: view.superview!.heightAnchor, multiplier: 0.99),
+            view.widthAnchor.constraint(equalTo: view.superview!.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.52),
+            view.heightAnchor.constraint(equalTo: view.superview!.heightAnchor, multiplier: 0.93),
             // Set the width and height of the view
             //view.leadingAnchor.constraint(equalTo: view.superview!.leadingAnchor, constant: 60),
             //view.trailingAnchor.constraint(equalTo: view.superview!.trailingAnchor, constant: -60),
@@ -310,6 +311,7 @@ import UIKit
         // Configure cell appearance
         cell.backgroundColor = .clear // Set background color of the cell
         cell.textLabel?.textColor = UIColor.white // Set font color of the text
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 18.5)
         
         
         // Set selected background view
