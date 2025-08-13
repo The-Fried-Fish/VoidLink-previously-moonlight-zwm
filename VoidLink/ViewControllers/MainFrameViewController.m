@@ -1211,7 +1211,7 @@ static NSMutableSet* hostList;
 
 - (void)waterMarkTapped {
     // Handle the tap action here, e.g., open a URL
-    NSURL *url = [NSURL URLWithString:@"https://www.wolai.com/k8RVqMrgYgC9NB4tXdz46H"];
+    NSURL *url = [NSURL URLWithString:[LocalizationHelper localizedStringForKey:@"supportLink"]];
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }
@@ -1231,7 +1231,8 @@ static NSMutableSet* hostList;
 
 - (void)attachWaterMark {
     // Create and configure the label
-    if(false){
+    if (@available(iOS 13.0, *)) return;
+    else {
         [self->waterMark removeFromSuperview];
         self->waterMark = [[UILabel alloc] init];
         self->waterMark.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1240,18 +1241,8 @@ static NSMutableSet* hostList;
         self->waterMark.text = [LocalizationHelper localizedStringForKey:@"waterMarkText"];
         CGFloat labelHeight = 60;
         // the app is unable to automatically lock screen orientation in app window resizable mode(aka. not require fullscreen)
-        
-        // if(![self isFullScreenRequired]){
-        if(false){
-            NSString* screenRotationTip = [LocalizationHelper localizedStringForKey:@"screenRotationTIp"];
-            self->waterMark.text = [NSString stringWithFormat:@"%@\n%@", self->waterMark.text, screenRotationTip];
-            self->waterMark.numberOfLines = 0; // Allow multiline text
-            self->waterMark.font = [UIFont systemFontOfSize:19];
-            labelHeight = 80;
-        }
-        
-        self->waterMark.textColor = UIColor.blackColor;
-        self->waterMark.alpha = 0.35;
+        self->waterMark.textColor = UIColor.whiteColor;
+        self->waterMark.alpha = 0.2;
         self->waterMark.textAlignment = NSTextAlignmentCenter;
         self->waterMark.backgroundColor = [UIColor clearColor];
         self->waterMark.userInteractionEnabled = YES; // Enable user interaction for tap gesture

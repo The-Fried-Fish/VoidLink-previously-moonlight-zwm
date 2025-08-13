@@ -46,7 +46,7 @@
         <attribute name="playAudioOnPC" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="pointerVelocityModeDivider" optional="YES" attributeType="Float" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="preferredCodec" attributeType="Integer 32" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="resolutionSelected" optional="YES" attributeType="Integer 16" defaultValueString="5" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="resolutionSelected" optional="YES" attributeType="Integer 16" defaultValueString="4" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="reverseMouseWheelDirection" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="settingsMenuMode" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="settingsMenuWidth" attributeType="Float" defaultValueString="370" usesScalarValueType="NO" syncable="YES"/>

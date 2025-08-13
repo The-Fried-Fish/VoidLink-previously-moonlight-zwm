@@ -1618,11 +1618,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.5" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="BA3-hd-bDp">
-                                <rect key="frame" x="50" y="0.0" width="1033" height="744"/>
+                                <rect key="frame" x="198.5" y="60" width="736" height="634"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
-                            <navigationBar clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="62V-DN-FUk">
-                                <rect key="frame" x="50" y="0.0" width="1033" height="44"/>
+                            <navigationBar clipsSubviews="YES" alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="62V-DN-FUk">
+                                <rect key="frame" x="198.5" y="60" width="736" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="lQr-5u-g05"/>
                                 </constraints>
@@ -1663,13 +1663,13 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="62V-DN-FUk" firstAttribute="leading" secondItem="PlJ-LJ-d1p" secondAttribute="leading" constant="50" id="5fw-ZV-2GR"/>
-                            <constraint firstAttribute="bottom" secondItem="BA3-hd-bDp" secondAttribute="bottom" id="5xN-fy-xH7"/>
-                            <constraint firstAttribute="trailing" secondItem="62V-DN-FUk" secondAttribute="trailing" constant="50" id="7ZT-th-hPo"/>
-                            <constraint firstItem="BA3-hd-bDp" firstAttribute="leading" secondItem="PlJ-LJ-d1p" secondAttribute="leading" constant="50" id="AYr-wz-Qrt"/>
-                            <constraint firstItem="BA3-hd-bDp" firstAttribute="top" secondItem="62V-DN-FUk" secondAttribute="top" id="TgZ-Pm-jit"/>
-                            <constraint firstItem="62V-DN-FUk" firstAttribute="top" secondItem="PlJ-LJ-d1p" secondAttribute="top" symbolic="YES" id="g6N-4g-Wej"/>
-                            <constraint firstAttribute="trailing" secondItem="BA3-hd-bDp" secondAttribute="trailing" constant="50" id="iwN-Gw-g4S"/>
+                            <constraint firstItem="62V-DN-FUk" firstAttribute="top" secondItem="BA3-hd-bDp" secondAttribute="top" id="600-lH-rte"/>
+                            <constraint firstItem="62V-DN-FUk" firstAttribute="width" secondItem="PlJ-LJ-d1p" secondAttribute="width" multiplier="0.65" id="OWL-Yd-KfG"/>
+                            <constraint firstItem="BA3-hd-bDp" firstAttribute="centerX" secondItem="PlJ-LJ-d1p" secondAttribute="centerX" id="Xte-bA-pFb"/>
+                            <constraint firstItem="BA3-hd-bDp" firstAttribute="width" secondItem="PlJ-LJ-d1p" secondAttribute="width" multiplier="0.65" id="eQf-gF-6kX"/>
+                            <constraint firstItem="BA3-hd-bDp" firstAttribute="top" secondItem="PlJ-LJ-d1p" secondAttribute="top" constant="60" id="eje-7O-RaF"/>
+                            <constraint firstItem="BA3-hd-bDp" firstAttribute="bottom" secondItem="PlJ-LJ-d1p" secondAttribute="bottom" constant="-50" id="j96-Mz-xiG"/>
+                            <constraint firstItem="62V-DN-FUk" firstAttribute="centerX" secondItem="PlJ-LJ-d1p" secondAttribute="centerX" id="qmh-Pp-B9S"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
@@ -1696,19 +1696,19 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
