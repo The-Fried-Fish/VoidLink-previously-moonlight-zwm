@@ -197,19 +197,25 @@ CFStringRef __currentColorSpace;
 
 #if !TARGET_OS_TV
 - (void)reportMaxEDRHeadroom {
-    CGFloat maxHeadroom = [[UIScreen mainScreen] potentialEDRHeadroom];
-    if (maxHeadroom > 1.0) {
-        LogOnce(LOG_I, @"Display supports EDR with a max headroom of %.1f", maxHeadroom);
+    if (@available(iOS 16.0, *)) {
+        CGFloat maxHeadroom = [[UIScreen mainScreen] potentialEDRHeadroom];
+        if (maxHeadroom > 1.0) {
+            LogOnce(LOG_I, @"Display supports EDR with a max headroom of %.1f", maxHeadroom);
+        } else {
+            LogOnce(LOG_I, @"Display does not support EDR");
+        }
     } else {
-        LogOnce(LOG_I, @"Display does not support EDR");
+        LogOnce(LOG_I, @"Display does not support EDR (iOS < 16.0)");
     }
 }
 
 - (void)pollCurrentEDRHeadroom {
-    CGFloat headroom = [[UIScreen mainScreen] currentEDRHeadroom];
-    if (headroom != _currentEDRHeadroom) {
-        Log(LOG_I, @"EDR headroom changed to %.1f", headroom);
-        _currentEDRHeadroom = (float)headroom;
+    if (@available(iOS 16.0, *)) {
+        CGFloat headroom = [[UIScreen mainScreen] currentEDRHeadroom];
+        if (headroom != _currentEDRHeadroom) {
+            Log(LOG_I, @"EDR headroom changed to %.1f", headroom);
+            _currentEDRHeadroom = (float)headroom;
+        }
     }
 }
 
@@ -225,13 +231,19 @@ CFStringRef __currentColorSpace;
 
     // These can only be changed on the main thread
     dispatch_sync(dispatch_get_main_queue(), ^{
-        layer.wantsExtendedDynamicRangeContent = YES;
+        if (@available(iOS 16.0, *)) {
+            layer.wantsExtendedDynamicRangeContent = YES;
+        }
         layer.pixelFormat = MTLPixelFormatRGBA16Float;
 
         CFStringRef name;
         switch (colorspace) {
             case COLORSPACE_REC_2020:
-                name = kCGColorSpaceExtendedLinearITUR_2020;
+                if (@available(iOS 12.3, *)) {
+                    name = kCGColorSpaceExtendedLinearITUR_2020;
+                } else {
+                    name = kCGColorSpaceExtendedLinearSRGB;
+                }
                 break;
             case COLORSPACE_REC_601:
                 name = kCGColorSpaceExtendedLinearSRGB;
@@ -246,20 +258,25 @@ CFStringRef __currentColorSpace;
         layer.colorspace = colorspace;
         CGColorSpaceRelease(colorspace);
 
-        CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
-        CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
-        if (masteringDisplayColorVolume) {
-            // This tone-mapper does receive the host's max nits in MDCV when connecting to Windows,
-            // but I think using this for tone-mapping would break apps not using system calibration (most apps).
-            layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:(__bridge NSData *)masteringDisplayColorVolume
-                                                                contentInfo:contentLightLevel ? (__bridge NSData *)contentLightLevel : nil
-                                                         opticalOutputScale:100.0f];
+        // CAEDRMetadata is only available on iOS 16.0+
+        if (@available(iOS 16.0, tvOS 16.0, *)) {
+            CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
+            CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
+            if (masteringDisplayColorVolume) {
+                // This tone-mapper does receive the host's max nits in MDCV when connecting to Windows,
+                // but I think using this for tone-mapping would break apps not using system calibration (most apps).
+                layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:(__bridge NSData *)masteringDisplayColorVolume
+                                                                    contentInfo:contentLightLevel ? (__bridge NSData *)contentLightLevel : nil
+                                                             opticalOutputScale:100.0f];
+            } else {
+                layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f
+                                                                    maxLuminance:1000.0f
+                                                              opticalOutputScale:100.0f];
+            }
+            LogOnce(LOG_I, @"EDRMetadata set to colorspace %@, transfer function %@, %@", layer.colorspace, frame_trc, layer.EDRMetadata);
         } else {
-            layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f
-                                                                maxLuminance:1000.0f
-                                                          opticalOutputScale:100.0f];
+            LogOnce(LOG_I, @"EDRMetadata not available on iOS < 16.0, colorspace %@, transfer function %@", layer.colorspace, frame_trc);
         }
-        LogOnce(LOG_I, @"EDRMetadata set to colorspace %@, transfer function %@, %@", layer.colorspace, frame_trc, layer.EDRMetadata);
     });
 }
 #endif
@@ -312,7 +329,11 @@ CFStringRef __currentColorSpace;
                 CFStringRef frame_trc = CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey);
                 if (CFEqual(frame_trc, kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ)) {
                     isHDR = YES;
-                    newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
+                    if (@available(iOS 14.0, *)) {
+                        newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
+                    } else {
+                        newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
+                    }
                     newPixelFormat = MTLPixelFormatBGR10A2Unorm;
                 } else {
                     // SDR 2020, I'm not sure it's possible to stream this though
@@ -362,13 +383,19 @@ CFStringRef __currentColorSpace;
                 layer.pixelFormat = newPixelFormat;
             });
 #else
-            if (useEDR && [CAEDRMetadata isAvailable]) {
+            BOOL canUseEDR = NO;
+            if (@available(iOS 16.0, tvOS 16.0, *)) {
+                canUseEDR = useEDR && [CAEDRMetadata isAvailable];
+            }
+            if (canUseEDR) {
                 [self applyEDRFromFrame:frame withColorspace:colorspace toLayer:layer];
             } else {
                 // These can only be changed on the main thread
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    if (isHDR) {
-                        layer.wantsExtendedDynamicRangeContent = YES;
+                    if (@available(iOS 16.0, *)) {
+                        if (isHDR) {
+                            layer.wantsExtendedDynamicRangeContent = YES;
+                        }
                     }
                     layer.colorspace = newColorSpace;
                     layer.pixelFormat = newPixelFormat;
@@ -618,6 +645,7 @@ CFStringRef __currentColorSpace;
         [renderEncoder endEncoding];
 
         __block MetalVideoRenderer *strongSelf = self;
+#if !TARGET_OS_SIMULATOR
         [drawable addPresentedHandler:^(id<MTLDrawable> d) {
             if (strongSelf.lastPresented > 0.0f) {
                 CFTimeInterval frametime = d.presentedTime - strongSelf.lastPresented;
@@ -625,6 +653,7 @@ CFStringRef __currentColorSpace;
             }
             strongSelf.lastPresented = d.presentedTime;
         }];
+#endif
 
         // signal semaphore, compute GPU time average, and clear textures
         __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;

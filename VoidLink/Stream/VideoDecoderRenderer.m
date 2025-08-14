@@ -204,12 +204,15 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     }
 #endif
 
-    NSDictionary *destinationPixelBufferAttributes = @{
-        (id)kCVPixelBufferPixelFormatTypeKey : pixelFormat,
-        (id)kVTDecompressionPropertyKey_GeneratePerFrameHDRDisplayMetadata : @YES,
-        (id)kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder : @YES
-    };
-
+    NSMutableDictionary *destinationPixelBufferAttributes = [@{
+        (id)kCVPixelBufferPixelFormatTypeKey : pixelFormat
+    } mutableCopy];
+    
+    if (@available(iOS 17.0, tvOS 17.0, *)) {
+        destinationPixelBufferAttributes[(id)kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder] = @YES;
+        destinationPixelBufferAttributes[(id)kVTDecompressionPropertyKey_GeneratePerFrameHDRDisplayMetadata] = @YES;
+    }
+    
     return [self setupDecompressionSessionWithAttributes:destinationPixelBufferAttributes];
 }
 

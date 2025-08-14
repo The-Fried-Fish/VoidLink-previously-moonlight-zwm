@@ -91,7 +91,9 @@
 
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
     // Renderer obtains a nextDrawable, waiting if necessary
-    [_renderer waitToRenderTo:layer];
+    if (@available(iOS 13.0, *)) {
+        [_renderer waitToRenderTo:layer];
+    }
 
     // If we don't have a frame yet, wait on that too
     [_frameQueue waitForEnqueue];
@@ -103,7 +105,9 @@
         CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
         Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
         if (frame) {
-            [_renderer renderFrame:frame toLayer:layer];
+            if (@available(iOS 13.0, *)) {
+                [_renderer renderFrame:frame toLayer:layer];
+            }
         }
     }
 }
