@@ -3889,6 +3889,35 @@
         }
       }
     },
+    "renderingBackendStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Performance rendering mode can handle higher bitrate (>200mbps) with lower latency, the battery usage can be higher and PiP is not supported in this mode. Use balanced mode when issues occurred."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能渲染模式可以处理更高的比特率（>200mbps）和更低的延迟，但电池消耗可能更高，且该模式不支持画中画。如遇到问题请使用平衡模式。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能渲染模式可以處理更高的位元速率（>200mbps）和更低的延遲，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能渲染模式可以處理更高的位元速率（>200mbps）和更低的延遲，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+          }
+        }
+      }
+    },
     "Resume App" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5196,6 +5225,144 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "- 啟用 YUV 4:4:4 選項可提供更高的色彩保真度，但也需要更大的頻寬。\n\n- 由於 Apple 未提供 API 來判斷裝置是否支援 YUV 4:4:4 視訊的硬體解碼，您需要手動啟用此選項以驗證相容性。在某些裝置上，這可能會導致視訊亮度遺失等問題。"
+          }
+        }
+      }
+    },
+    "Rendering Mode (Experimental)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（实验性）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        }
+      }
+    },
+    "Frames to Buffer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        }
+      }
+    },
+    "Frames to buffer: %ld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数：%ld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數：%ld"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數：%ld"
+          }
+        }
+      }
+    },
+    "Performance Graphs - Opacity: %ld%%" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能图表 - 不透明度：%ld%%"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：%ld%%"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：%ld%%"
+          }
+        }
+      }
+    },
+    "Balanced" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        }
+      }
+    },
+    "Performance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
           }
         }
       }

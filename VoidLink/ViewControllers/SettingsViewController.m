@@ -2151,7 +2151,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void) updateFrameQueueSizeText {
-    [self.frameQueueSizeLabel setText:[NSString stringWithFormat:@"Frames to buffer: %ld", _frameQueueSize ]];
+    [self.frameQueueSizeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Frames to buffer: %ld", @"Frames to buffer label"), _frameQueueSize ]];
 }
 
 - (void) enableGraphsChanged {
@@ -2165,7 +2165,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void) updateGraphOpacityText {
-    [self.enableGraphsLabel setText:[NSString stringWithFormat:@"Performance Graphs - Opacity: %ld%%", _graphOpacity ]];
+    [self.enableGraphsLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Performance Graphs - Opacity: %ld%%", @"Performance graphs opacity label"), _graphOpacity ]];
 }
 
 - (void) saveSettings {
