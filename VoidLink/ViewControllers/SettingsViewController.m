@@ -529,7 +529,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.resolutionStack ofId:@"resolutionStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [self addSetting:self.fpsStack ofId:@"fpsStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.bitrateStack ofId:@"bitrateStack" withInfoTag:YES withDynamicLabel:YES to:videoSection];
-    [self addSetting:self.framepacingStack ofId:@"framepacingStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
@@ -1041,6 +1040,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         showOnlineDocAction = true;
         onlineDocLink = [LocalizationHelper localizedStringForKey:@"gyroModeStackDoc"];
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"renderingBackendStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"renderingBackendStackTip"];
+        showOnlineDocAction = false;
+    }
 
     
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
@@ -1219,7 +1222,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         [_favoriteSettingStackIdentifiers addObject:@"resolutionStack"];
         [_favoriteSettingStackIdentifiers addObject:@"fpsStack"];
         [_favoriteSettingStackIdentifiers addObject:@"bitrateStack"];
-        [_favoriteSettingStackIdentifiers addObject:@"framepacingStack"];
         [_favoriteSettingStackIdentifiers addObject:@"codecStack"];
         [_favoriteSettingStackIdentifiers addObject:@"hdrStack"];
         [_favoriteSettingStackIdentifiers addObject:@"yuv444Stack"];
@@ -1398,7 +1400,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
-    [self.framePacingSelector setSelectedSegmentIndex:currentSettings.useFramePacing ? 1 : 0];
     [self.multiControllerSwitch setOn:currentSettings.multiController];
     [self.swapAbxySwitch setOn:currentSettings.swapABXYButtons];
     
@@ -2206,7 +2207,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL enableYUV444 = self.yuv444Switch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
-    BOOL useFramePacing = [self.framePacingSelector selectedSegmentIndex] == 1;
     NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector.selectedSegmentIndex : NativeTouchOnly;
     NSInteger statsOverlayLevel = [self.statsOverlaySelector selectedSegmentIndex];
     BOOL statsOverlayEnabled = statsOverlayLevel != 0;
@@ -2249,7 +2249,6 @@ BOOL isCustomResolution(int resolutionSelected) {
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP
-                      useFramePacing:useFramePacing
                            enableHdr:enableHdr
                       btMouseSupport:btMouseSupport
                            touchMode:touchMode
