@@ -1,6 +1,7 @@
 #import "SceneDelegate.h"
 #import "StreamFrameViewController.h"
 
+API_AVAILABLE(ios(13.0))
 @implementation SceneDelegate
 
 static UIView *_sharedStreamVideoRenderView = nil;

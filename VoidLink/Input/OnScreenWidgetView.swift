@@ -194,7 +194,7 @@ import UIKit
                 case "RSPAD", "RSVPAD":
                     self.comboButtonStrings = ["OSCR3"]
                 case "DS4TOUCH":
-                    self.comboButtonStrings = ["DS4TOUCH"]
+                    self.comboButtonStrings = ["DS4TCHBTN"]
                 default: break
                 }
             }

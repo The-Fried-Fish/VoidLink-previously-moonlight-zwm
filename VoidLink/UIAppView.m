@@ -183,8 +183,10 @@ static UIImage* noImage;
 
             _appOverlay = playIcon;
         } else {
-            _appOverlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Play"]];
-            
+            UIImageView* playIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"play.circle.fill"]];
+            playIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
+            _appOverlay = playIcon;
+
         }
 
         

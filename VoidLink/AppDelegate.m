@@ -60,6 +60,27 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for command tool customization after application launch (works only when user default is nil)
     [CommandManager presetDefaultCommands];
+    
+    // For iOS 12 and below, we need to manually create the window
+    if (@available(iOS 13.0, *)) {
+        // Scene delegate will handle window creation
+    } else {
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        
+        NSString *storyboardName;
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            storyboardName = @"iPad";
+        } else {
+            storyboardName = @"iPhone";
+        }
+        
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardName bundle:nil];
+        UIViewController *initialViewController = [storyboard instantiateInitialViewController];
+        
+        self.window.rootViewController = initialViewController;
+        [self.window makeKeyAndVisible];
+    }
+    
     return YES;
 }
 

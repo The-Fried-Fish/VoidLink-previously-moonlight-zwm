@@ -10,6 +10,7 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+@property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) NSString *pcUuidToLoad;
 @property (strong, nonatomic) void (^shortcutCompletionHandler)(BOOL);
 
