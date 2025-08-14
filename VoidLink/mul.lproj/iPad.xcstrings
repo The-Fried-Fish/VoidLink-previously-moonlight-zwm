@@ -982,6 +982,24 @@
             "state" : "new",
             "value" : "Performance Graphs - Opacity: 50%"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能图表 - 不透明度：50%"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：50%"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：50%"
+          }
         }
       }
     },
@@ -1341,6 +1359,24 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示帧时间和缓冲健康指标。如果遮挡屏幕部分内容，请调整透明度。用两指上下滑动以显示或隐藏所有统计信息。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。用兩指上下滑動以顯示或隱藏所有統計資訊。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。用兩指上下滑動以顯示或隱藏所有統計資訊。"
           }
         }
       }
@@ -3369,6 +3405,24 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建议值为2。1帧提供最低延迟，但可能需要以太网连接。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建議值為2。1影格提供最低延遲，但可能需要乙太網路連線。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建議值為2。1影格提供最低延遲，但可能需要乙太網路連線。"
           }
         }
       }
