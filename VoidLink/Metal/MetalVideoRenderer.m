@@ -580,9 +580,6 @@ CFStringRef __currentColorSpace;
                 fragmentShaderName = is10BitInput ? @"ps_draw_triplanar_10bit" : @"ps_draw_triplanar_8bit";
             }
 
-            Log(LOG_I, @"DEBUG: CVPixelBuffer format: 0x%X, planes: %zu, is10BitInput: %d, shader: %@, framebuffer format: %lu",
-                pixelFormatType, planes, is10BitInput, fragmentShaderName, (unsigned long)framebufferPixelFormat);
-
             pipelineDesc.colorAttachments[0].pixelFormat = framebufferPixelFormat;
             pipelineDesc.vertexBuffers[0].mutability = MTLMutabilityImmutable;
             
@@ -638,10 +635,6 @@ CFStringRef __currentColorSpace;
                 return;
             } else {
                 id<MTLTexture> texture = CVMetalTextureGetTexture(_cvMetalTextures[0]);
-                Log(LOG_I, @"DEBUG: Created BGRA texture: format=%lu, width=%zu, height=%zu",
-                    (unsigned long)MTLPixelFormatBGRA8Unorm,
-                    CVPixelBufferGetWidth(frame.pixelBuffer),
-                    CVPixelBufferGetHeight(frame.pixelBuffer));
             }
         } else {
             // Handle planar YUV formats
@@ -683,10 +676,6 @@ CFStringRef __currentColorSpace;
                     return;
                 } else {
                     id<MTLTexture> texture = CVMetalTextureGetTexture(_cvMetalTextures[i]);
-                    Log(LOG_I, @"DEBUG: Created texture for plane %zu: format=%lu, width=%zu, height=%zu",
-                        i, (unsigned long)fmt,
-                        CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, i),
-                        CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i));
                 }
             }
         }

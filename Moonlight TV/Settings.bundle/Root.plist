@@ -38,44 +38,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Request HDR Video</string>
-			<key>Key</key>
-			<string>enableHdr</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Audio Configuration</string>
-			<key>Key</key>
-			<string>audioConfig</string>
-			<key>DefaultValue</key>
-			<string>2</string>
-			<key>Titles</key>
-			<array>
-				<string>Stereo</string>
-				<string>LPCM 5.1</string>
-				<string>LPCM 7.1</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>2</string>
-				<string>6</string>
-				<string>8</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>Enable Match Content Rate for best results</string>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Frame Rate</string>
@@ -85,16 +47,12 @@
 			<string>60</string>
 			<key>Values</key>
 			<array>
-				<string>24</string>
 				<string>30</string>
-				<string>59.94</string>
 				<string>60</string>
 			</array>
 			<key>Titles</key>
 			<array>
-				<string>24 FPS</string>
 				<string>30 FPS</string>
-				<string>59.94 FPS (experimental)</string>
 				<string>60 FPS</string>
 			</array>
 		</dict>
@@ -136,6 +94,28 @@
 				<string>80000</string>
 				<string>100000</string>
 				<string>150000</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Audio Configuration</string>
+			<key>Key</key>
+			<string>audioConfig</string>
+			<key>DefaultValue</key>
+			<string>2</string>
+			<key>Titles</key>
+			<array>
+				<string>Stereo</string>
+				<string>LPCM 5.1</string>
+				<string>LPCM 7.1</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>2</string>
+				<string>6</string>
+				<string>8</string>
 			</array>
 		</dict>
 		<dict>
@@ -232,53 +212,37 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Frames to Buffer</string>
+			<string>Frame Pacing Preference</string>
 			<key>Key</key>
-			<string>frameQueueSize</string>
-			<key>DefaultValue</key>
-			<integer>2</integer>
-			<key>Values</key>
-			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-				<integer>5</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>1 - Lowest Latency</string>
-				<string>2 - Recommended</string>
-				<string>3 - Smoother Video</string>
-				<string>4</string>
-				<string>5</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Rendering Backend</string>
-			<key>Key</key>
-			<string>renderingBackend</string>
+			<string>useFramePacing</string>
 			<key>DefaultValue</key>
 			<string>0</string>
 			<key>Values</key>
 			<array>
-				<integer>0</integer>
-				<integer>1</integer>
+				<string>0</string>
+				<string>1</string>
 			</array>
 			<key>Titles</key>
 			<array>
-				<string>Metal</string>
-				<string>AVSampleBuffer</string>
+				<string>Lowest Latency</string>
+				<string>Smoothest Video</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Request HDR Video</string>
+			<key>Key</key>
+			<string>enableHdr</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Double-click select button for stats</string>
+			<string>Troubleshooting</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -289,42 +253,6 @@
 			<string>statsOverlay</string>
 			<key>DefaultValue</key>
 			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Performance Graphs</string>
-			<key>Key</key>
-			<string>enableGraphs</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Performance Graph Opacity</string>
-			<key>Key</key>
-			<string>graphOpacity</string>
-			<key>DefaultValue</key>
-			<integer>50</integer>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>25</integer>
-				<integer>50</integer>
-				<integer>75</integer>
-				<integer>100</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>0% - Transparent</string>
-				<string>25%</string>
-				<string>50%</string>
-				<string>75%</string>
-				<string>100% - Opaque</string>
-			</array>
 		</dict>
 	</array>
 </dict>

@@ -59,7 +59,7 @@
     }
     self->activePointerIds = [NSMutableSet set];
     self->blacklistedTouches = [NSMutableSet set];
-
+        
     self->asyncNativeTouch = settings.asyncNativeTouchPriority.intValue != AsyncNativeTouchOff;
     
     switch(settings.asyncNativeTouchPriority.intValue){
@@ -239,6 +239,7 @@
     });
     else {
         for (UITouch* touch in touches){
+            // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
             if(self->activateCoordSelector) [self updatePointerObjInDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE];
             [[self getPointerObjFromDict:touch] doesNeedResetCoords]; // execute the judging of doesReachBoundary for current pointer instance. (happens after the event is sent to Sunshine service)

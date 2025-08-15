@@ -7,7 +7,6 @@
 //
 
 #import <Metal/Metal.h>
-#import <QuartzCore/CAMetalDisplayLink.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import <UIKit/UIKit.h>
 #import "MetalConfig.h"

@@ -75,7 +75,7 @@
     if ([[event allTouches] count] > 1) {
         return;
     }
-
+    
     UITouch* touch = [touches anyObject];
     CGPoint touchLocation = [touch locationInView:streamView];
     
