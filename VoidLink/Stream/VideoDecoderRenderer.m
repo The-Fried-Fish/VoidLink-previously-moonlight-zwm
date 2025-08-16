@@ -59,12 +59,18 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 - (void)reinitializeDisplayLayer
 {
-    if (_displayLayer == nil) {
-        _displayLayer = [[AVSampleBufferDisplayLayer alloc] init];
-        _displayLayer.backgroundColor = [UIColor blackColor].CGColor;
-        _displayLayer.videoGravity = AVLayerVideoGravityResize;
-        [_view.layer addSublayer:_displayLayer];
+    // Clean up existing display layer if it exists
+    if (_displayLayer != nil) {
+        [_displayLayer flushAndRemoveImage];
+        [_displayLayer removeFromSuperlayer];
+        _displayLayer = nil;
     }
+    
+    // Create a new display layer
+    _displayLayer = [[AVSampleBufferDisplayLayer alloc] init];
+    _displayLayer.backgroundColor = [UIColor blackColor].CGColor;
+    _displayLayer.videoGravity = AVLayerVideoGravityResize;
+    [_view.layer addSublayer:_displayLayer];
 
     // Ensure the AVSampleBufferDisplayLayer is sized to preserve the aspect ratio
     // of the video stream. We used to use AVLayerVideoGravityResizeAspect, but that
@@ -358,12 +364,31 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
     if (_renderingBackend == RENDER_AVSB) {
         [_displayLink invalidate];
+        _displayLink = nil;
+        
+        // Properly clean up the display layer
+        if (_displayLayer != nil) {
+            [_displayLayer flushAndRemoveImage];
+            [_displayLayer removeFromSuperlayer];
+            _displayLayer = nil;
+        }
     }
 
     if (_decompressionSession != NULL) {
         VTDecompressionSessionInvalidate(_decompressionSession);
         CFRelease(_decompressionSession);
         _decompressionSession = nil;
+    }
+    
+    // Clean up format descriptors
+    if (_formatDesc != nil) {
+        CFRelease(_formatDesc);
+        _formatDesc = nil;
+    }
+    
+    if (_formatDescImageBuffer != nil) {
+        CFRelease(_formatDescImageBuffer);
+        _formatDescImageBuffer = nil;
     }
 }
 
