@@ -319,11 +319,13 @@
         
         // Add StreamView inside a UIScrollView for absolute mode
         [_scrollView addSubview:_streamView];
-        [self.view addSubview:_scrollView];
+        // Insert at index 0 to ensure it doesn't cover OSC controls (CALayers)
+        [self.view insertSubview:_scrollView atIndex:0];
     }
     else{
         // Add streamView directly to self.view in other touch modes
-        [self.view addSubview:_streamView];
+        // Insert at index 0 to ensure it doesn't cover OSC controls (CALayers)
+        [self.view insertSubview:_streamView atIndex:0];
     }
 }
 
@@ -378,6 +380,9 @@
                                                                selector:@selector(updateStatsOverlay)
                                                                userInfo:nil
                                                                 repeats:YES];
+    } else {
+        // Ensure the overlay is removed when disabled
+        [_overlayView removeFromSuperview];
     }
     
     // Re-create the ImGui view to properly apply the 'enableGraphs' setting
@@ -394,9 +399,15 @@
     [self.view addSubview:self.imguiView.mtkView];
 
     // Ensure views are layered correctly
+    // Metal view should be at the bottom for video rendering
     if (self.metalViewController && self.metalViewController.view.superview) {
-        [self.view bringSubviewToFront:self.metalViewController.view];
+        [self.view sendSubviewToBack:self.metalViewController.view];
     }
+    // StreamView should also be at the back so OSC CALayers on self.view show
+    if (self->_streamView && self->_streamView.superview) {
+        [self.view sendSubviewToBack:self->_streamView];
+    }
+    // ImGui view should be on top for debug graphs
     if (self.imguiView && self.imguiView.mtkView.superview) {
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
@@ -707,14 +718,9 @@
                                                                metricsHandler:self.imguiView.metricsHandler];
         self.metalViewController.view.userInteractionEnabled = NO;
         [self addChildViewController:self.metalViewController];
-        [self.view addSubview:self.metalViewController.view];
+        // Insert Metal view at the bottom of the view hierarchy
+        [self.view insertSubview:self.metalViewController.view atIndex:0];
         [self.metalViewController didMoveToParentViewController:self];
-        [self.view bringSubviewToFront:self.metalViewController.view];
-        
-        // Ensure ImGui view (graphs) is layered above Metal view
-        if (self.imguiView && self.imguiView.mtkView.superview) {
-            [self.view bringSubviewToFront:self.imguiView.mtkView];
-        }
     }
 }
 
@@ -831,9 +837,18 @@
 - (void)updateStatsOverlay {
     if(!_settings.statsOverlayEnabled){
         [_overlayView removeFromSuperview];
+        // Invalidate the timer when stats overlay is disabled
+        if (_statsUpdateTimer) {
+            [_statsUpdateTimer invalidate];
+            _statsUpdateTimer = nil;
+        }
         return; // add this for realtime streamview reconfig
     }
-    else [self.view addSubview:_overlayView]; // don't know why but this is necessary for reactivating overlay.
+    
+    // Only add the overlay if it's not already in the view hierarchy
+    if (_overlayView.superview == nil) {
+        [self.view addSubview:_overlayView];
+    }
 
     NSString* overlayText = [self->_streamMan getStatsOverlayText:overlayLevel];
                              
@@ -1084,6 +1099,15 @@
         self->_stageLabel.hidden = YES;
         self->_tipLabel.hidden = YES;
         self->_spinner.hidden = YES;
+        
+        // Ensure correct view hierarchy before showing OSC
+        if ([self->_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+            [self.view sendSubviewToBack:self.metalViewController.view];
+        }
+        // For AVSB renderer, ensure streamView is at the back so OSC layers show
+        if (self->_streamView && self->_streamView.superview) {
+            [self.view sendSubviewToBack:self->_streamView];
+        }
         
         [self->_streamView showOnScreenControls];
         
