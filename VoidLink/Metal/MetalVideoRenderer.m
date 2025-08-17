@@ -753,7 +753,6 @@ CFStringRef __currentColorSpace;
 #endif
 
         [commandBuffer commit];
-        [commandBuffer waitUntilCompleted];
     }
 }
 
