@@ -579,7 +579,7 @@
 #if TARGET_OS_TV
     [_tipLabel setText:@"Tip: Tap the Play/Pause button on the Apple TV Remote to disconnect from your PC"];
 #else
-    [_tipLabel setText:[LocalizationHelper localizedStringForKey:@"Tip: Swipe from screen edge to a certiain distance (configured by Swipe & Exit settings) to disconnect from your PC"]];
+    // [_tipLabel setText:[LocalizationHelper localizedStringForKey:@"Tip: Swipe from screen edge to a certiain distance (configured by Swipe & Exit settings) to disconnect from your PC"]];
 #endif
     
     [_tipLabel sizeToFit];
@@ -983,6 +983,17 @@
 - (void)disconnectRemoteSession {
     Log(LOG_I, @"Settings view disconnect the session in stream view");
     [self returnToMainFrame];
+    
+}
+
+- (void)disconnectAndQuitApp{
+    [self returnToMainFrame];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        sleep(1.5);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.mainFrameViewcontroller quitRunningApp];
+        });
+    });
 }
 
 - (void) connectionStarted {

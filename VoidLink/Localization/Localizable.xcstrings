@@ -260,6 +260,29 @@
         }
       }
     },
+    "[ Disconnect & quit app ]" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 断开连接并退出应用 ]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 斷開連線並退出應用程式 ]"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 斷開連線並退出應用程式 ]"
+          }
+        }
+      }
+    },
     "[ Enter picture-in-picture mode ]" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4651,29 +4674,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有可復原的變更"
-          }
-        }
-      }
-    },
-    "Tip: Swipe from screen edge to a certiain distance (configured by Swipe & Exit settings) to disconnect from your PC" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提示: 从屏幕连续滑动一定距离退出远程桌面. 滑动边缘和距离取决于菜单设置."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提示：從螢幕邊緣滑動一段距離（由滑動和離開設定配置）以中斷與您電腦的連線"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提示：從螢幕邊緣滑動一段距離（由滑動和離開設定配置）以中斷與您電腦的連線"
           }
         }
       }
