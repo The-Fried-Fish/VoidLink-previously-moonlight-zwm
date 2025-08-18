@@ -58,27 +58,9 @@
     }
     view.metalLayer.device = device;
 
-    // Determine supported pixel format before initializing renderer
-    // Use TARGET_OS_SIMULATOR to detect simulator environment
-    MTLPixelFormat pixelFormat;
-#if TARGET_OS_SIMULATOR
-    // iOS Simulator doesn't support BGR10A2Unorm
-    pixelFormat = MTLPixelFormatBGRA8Unorm;
-    Log(LOG_W, @"Running on iOS Simulator, using BGRA8Unorm pixel format");
-#else
-    // On real devices, check if we should enable HDR
-    if (_enableHdr) {
-        pixelFormat = MTLPixelFormatBGR10A2Unorm;
-        Log(LOG_I, @"HDR enabled, using BGR10A2Unorm pixel format");
-    } else {
-        pixelFormat = MTLPixelFormatBGRA8Unorm;
-        Log(LOG_I, @"HDR disabled, using BGRA8Unorm pixel format");
-    }
-#endif
-
     // Initialize the renderer.
     MetalVideoRenderer *renderer = [[MetalVideoRenderer alloc] initWithMetalDevice:device
-                                                               drawablePixelFormat:pixelFormat
+                                                               drawablePixelFormat:MTLPixelFormatBGR10A2Unorm
                                                                          framerate:self->_framerate];
     if (!renderer) {
         Log(LOG_E, @"The renderer couldn't be initialized.");

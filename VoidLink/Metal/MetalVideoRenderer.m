@@ -142,18 +142,12 @@ CFStringRef __currentColorSpace;
                                     dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0));
         _averageGPUTime = (1.0f / framerate) / 2;
         _device = device;
-        _colorPixelFormat = drawablePixelFormat;
+        _colorPixelFormat = MTLPixelFormatBGR10A2Unorm;
         _framerate = framerate;
         _commandQueue = [_device newCommandQueue];
         _currentEDRHeadroom = 1.0f;
         _lastColorSpace = -1;
         _lastFullRange = NO;
-        
-        // Initialize default CSC parameters buffer with BT.601 limited range
-        struct ParamBuffer defaultParamBuffer;
-        defaultParamBuffer.cscParams = k_CscParams_Bt601Lim;
-        MTLResourceOptions bufferOptions = MTLResourceStorageModeShared;
-        _CscParamsBuffer = [_device newBufferWithBytes:(void *)&defaultParamBuffer length:sizeof(defaultParamBuffer) options:bufferOptions];
         _lastPresented = 0.0f;
         _inFlightSemaphore = dispatch_semaphore_create(MaxFramesInFlight);
         _isStopping = NO;
@@ -518,15 +512,6 @@ CFStringRef __currentColorSpace;
         }
 
         size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
-
-        // For packed formats like BGRA, plane count is 0 but we treat it as 1 plane
-        OSType pixelFormatType = CVPixelBufferGetPixelFormatType(frame.pixelBuffer);
-        BOOL isPackedFormat = (pixelFormatType == kCVPixelFormatType_32BGRA ||
-                               pixelFormatType == kCVPixelFormatType_32ARGB);
-        if (isPackedFormat) {
-            planes = 1;  // Treat packed formats as single plane
-        }
-
         assert(planes <= MAX_VIDEO_PLANES);
 
         if (layerDidChange && frame.frameNumber > 1) {
@@ -563,21 +548,14 @@ CFStringRef __currentColorSpace;
             // linear shaders
             id<MTLFunction> yuvToLinear = [defaultLibrary newFunctionWithName:@"yuvToLinear"];
 
-            // Determine if this is 10-bit based on the input CVPixelBuffer format, not the output framebuffer format
-            // pixelFormatType is already declared above
-            BOOL is10BitInput = (pixelFormatType == kCVPixelFormatType_420YpCbCr10BiPlanarFullRange ||
-                                 pixelFormatType == kCVPixelFormatType_444YpCbCr10BiPlanarFullRange ||
-                                 pixelFormatType == kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange ||
-                                 pixelFormatType == kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange);
+            // Determine if this is 10-bit based on the framebuffer's pixel format
+            BOOL is10Bit = (framebufferPixelFormat == MTLPixelFormatBGR10A2Unorm);
 
             NSString *fragmentShaderName;
-            if (isPackedFormat) {
-                // BGRA/ARGB packed formats don't need color space conversion
-                fragmentShaderName = @"ps_draw_bgra";
-            } else if (planes == 2) {
-                fragmentShaderName = is10BitInput ? @"ps_draw_biplanar_10bit" : @"ps_draw_biplanar_8bit";
+            if (planes == 2) {
+                fragmentShaderName = is10Bit ? @"ps_draw_biplanar_10bit" : @"ps_draw_biplanar_8bit";
             } else {
-                fragmentShaderName = is10BitInput ? @"ps_draw_triplanar_10bit" : @"ps_draw_triplanar_8bit";
+                fragmentShaderName = is10Bit ? @"ps_draw_triplanar_10bit" : @"ps_draw_triplanar_8bit";
             }
 
             pipelineDesc.colorAttachments[0].pixelFormat = framebufferPixelFormat;
@@ -607,76 +585,41 @@ CFStringRef __currentColorSpace;
             _videoPipelinePixelFormat[planes] = framebufferPixelFormat;
         }
 
-        if (isPackedFormat) {
-            // Handle packed BGRA format - iOS/macOS uses BGRA internally
-            // Check if the pixel buffer has IOSurface backing
-            CFTypeRef ioSurface = CVPixelBufferGetIOSurface(frame.pixelBuffer);
-            if (!ioSurface) {
-                Log(LOG_E, @"CVPixelBuffer does not have IOSurface backing - cannot create Metal texture");
-                return;
+        for (size_t i = 0; i < planes; i++) {
+            MTLPixelFormat fmt;
+
+            switch (CVPixelBufferGetPixelFormatType(frame.pixelBuffer)) {
+                case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+                case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
+                case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
+                case kCVPixelFormatType_444YpCbCr8BiPlanarFullRange:
+                    fmt = (i == 0) ? MTLPixelFormatR8Unorm : MTLPixelFormatRG8Unorm;
+                    break;
+
+                case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange:
+                case kCVPixelFormatType_444YpCbCr10BiPlanarFullRange:
+                case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+                case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
+                    fmt = (i == 0) ? MTLPixelFormatR16Unorm : MTLPixelFormatRG16Unorm;
+                    break;
+
+                default:
+                    Log(LOG_E, @"Unknown pixel format: %@", CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
+                    return;
             }
 
             CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                      _textureCache,
                                                                      frame.pixelBuffer,
                                                                      NULL,
-                                                                     MTLPixelFormatBGRA8Unorm,
-                                                                     CVPixelBufferGetWidth(frame.pixelBuffer),
-                                                                     CVPixelBufferGetHeight(frame.pixelBuffer),
-                                                                     0,  // planeIndex must be 0 for non-planar
-                                                                     &_cvMetalTextures[0]);
+                                                                     fmt,
+                                                                     CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, i),
+                                                                     CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i),
+                                                                     i,
+                                                                     &_cvMetalTextures[i]);
             if (err != kCVReturnSuccess) {
-                Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed for BGRA: %d", err);
-                Log(LOG_E, @"PixelBuffer info - format: 0x%X, width: %zu, height: %zu, IOSurface: %p",
-                    pixelFormatType,
-                    CVPixelBufferGetWidth(frame.pixelBuffer),
-                    CVPixelBufferGetHeight(frame.pixelBuffer),
-                    ioSurface);
+                Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed: %d", err);
                 return;
-            } else {
-                id<MTLTexture> texture = CVMetalTextureGetTexture(_cvMetalTextures[0]);
-            }
-        } else {
-            // Handle planar YUV formats
-            size_t actualPlanes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
-            for (size_t i = 0; i < actualPlanes; i++) {
-                MTLPixelFormat fmt;
-
-                switch (CVPixelBufferGetPixelFormatType(frame.pixelBuffer)) {
-                    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-                    case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
-                    case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
-                    case kCVPixelFormatType_444YpCbCr8BiPlanarFullRange:
-                        fmt = (i == 0) ? MTLPixelFormatR8Unorm : MTLPixelFormatRG8Unorm;
-                        break;
-
-                    case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange:
-                    case kCVPixelFormatType_444YpCbCr10BiPlanarFullRange:
-                    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
-                    case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
-                        fmt = (i == 0) ? MTLPixelFormatR16Unorm : MTLPixelFormatRG16Unorm;
-                        break;
-
-                    default:
-                        Log(LOG_E, @"Unknown pixel format: %@", CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
-                        return;
-                }
-
-                CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                                         _textureCache,
-                                                                         frame.pixelBuffer,
-                                                                         NULL,
-                                                                         fmt,
-                                                                         CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, i),
-                                                                         CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i),
-                                                                         i,
-                                                                         &_cvMetalTextures[i]);
-                if (err != kCVReturnSuccess) {
-                    Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed: %d", err);
-                    return;
-                } else {
-                    id<MTLTexture> texture = CVMetalTextureGetTexture(_cvMetalTextures[i]);
-                }
             }
         }
 
@@ -686,24 +629,12 @@ CFStringRef __currentColorSpace;
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderPassDescriptor];
 
         [renderEncoder setRenderPipelineState:_videoPipelineState[planes]];
-
-        if (isPackedFormat) {
-            // For packed formats, we only have one texture
-            [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[0]) atIndex:0];
-        } else {
-            // For planar formats, set multiple textures
-            size_t actualPlanes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
-            for (size_t i = 0; i < actualPlanes; i++) {
-                [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
-            }
+        for (size_t i = 0; i < planes; i++) {
+            [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
         }
 
         [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
-
-        // Only set CSC params buffer for YUV formats that need color space conversion
-        if (!isPackedFormat) {
-            [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
-        }
+        [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
 #if !TARGET_OS_TV
         if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
             [self pollCurrentEDRHeadroom];
@@ -726,7 +657,6 @@ CFStringRef __currentColorSpace;
 
         // signal semaphore, compute GPU time average, and clear textures
         __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
-        __block size_t texturesToClean = isPackedFormat ? 1 : CVPixelBufferGetPlaneCount(frame.pixelBuffer);
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             dispatch_semaphore_signal(block_semaphore);
 
@@ -735,7 +665,7 @@ CFStringRef __currentColorSpace;
             self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
 
             // Free textures after completion of rendering
-            for (size_t i = 0; i < texturesToClean; i++) {
+            for (size_t i = 0; i < planes; i++) {
                 if (self->_cvMetalTextures[i]) {
                     CFRelease(self->_cvMetalTextures[i]);
                     self->_cvMetalTextures[i] = nil;

@@ -127,11 +127,3 @@ fragment float4 ps_draw_triplanar_10bit(Vertex v [[ stage_in ]],
     rgb.b = dot(yuv_corrected, cscParams.matrix[2]);
     return float4(rgb, 1.0f);
 }
-
-// Shader for packed BGRA format (no color space conversion needed)
-fragment float4 ps_draw_bgra(Vertex v [[ stage_in ]],
-                             texture2d<float> bgraTexture [[ texture(0) ]])
-{
-    // BGRA format is already in RGB color space, just sample and return
-    return bgraTexture.sample(s, v.texCoords);
-}
