@@ -273,6 +273,8 @@ inline static float getValue(void *buffer, int idx) {
             graphW = 379.0f; graphH = 45.0f; break;
         case 1133: // iPad Mini 1133x744 2x
             graphW = 360.0f; graphH = 45.0f; break;
+        case 926: // iPhone 13 Pro Max 926x428 3x
+            graphW = 285.0f; graphH = 45.0f; break;
         case 874: // iPhone 16 Pro 874x402 3x
             graphW = 275.0f; graphH = 45.0f; break;
         // TODO:
