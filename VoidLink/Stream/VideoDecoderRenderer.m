@@ -200,6 +200,12 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 - (void)setupDecompressionSession {
 #if TARGET_OS_SIMULATOR
     NSNumber *pixelFormat = @(kCVPixelFormatType_32BGRA);
+    NSMutableDictionary *destinationPixelBufferAttributes = [@{
+        (id)kCVPixelBufferPixelFormatTypeKey : pixelFormat,
+        (id)kCVPixelBufferIOSurfacePropertiesKey : @{
+            (id)kIOSurfaceIsGlobal : @YES
+        },
+    } mutableCopy];
 #else
     NSNumber *pixelFormat = nil;
     if (self->_videoFormat & VIDEO_FORMAT_MASK_YUV444) {
@@ -208,12 +214,11 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     else {
         pixelFormat = @(kCVPixelFormatType_420YpCbCr10BiPlanarFullRange);
     }
-#endif
-
     NSMutableDictionary *destinationPixelBufferAttributes = [@{
         (id)kCVPixelBufferPixelFormatTypeKey : pixelFormat
     } mutableCopy];
-    
+#endif
+
     if (@available(iOS 17.0, tvOS 17.0, *)) {
         destinationPixelBufferAttributes[(id)kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder] = @YES;
         destinationPixelBufferAttributes[(id)kVTDecompressionPropertyKey_GeneratePerFrameHDRDisplayMetadata] = @YES;
