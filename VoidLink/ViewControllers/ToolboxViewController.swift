@@ -14,6 +14,7 @@ import UIKit
     @objc optional func bringUpSoftKeyboard()
     @objc optional func enterPip()
     @objc optional func toggleStatsOverlay()
+    @objc optional func disconnectAndQuitApp()
 }
 
 
@@ -29,13 +30,14 @@ import UIKit
     private let viewBackgroundColor = UIColor(white: 0.2, alpha: 0.8);
     private let highlightColor = UIColor(white: 0.55, alpha: 0.8);
     private let titleLabel = UILabel()
-    @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip", "toggleStatsOverlay"]
+    @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip", "toggleStatsOverlay", "disconnectAndQuitApp"]
     private let specialEntryAliasDic : [String:String] = [
         "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch on-screen widget profile ]"),
         "widgetLayoutTool":SwiftLocalizationHelper.localizedString(forKey: "[ On-screen widget tool ]"),
         "bringUpSoftKeyboard":SwiftLocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
         "enterPip":SwiftLocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]"),
         "toggleStatsOverlay":SwiftLocalizationHelper.localizedString(forKey: "[ Toggle stats overlay & graphs ]")
+        "disconnectAndQuitApp":SwiftLocalizationHelper.localizedString(forKey: "[ Disconnect & quit app ]")
     ]
     
     private var viewPinned: Bool = false
@@ -383,6 +385,8 @@ import UIKit
             specialEntryDelegate?.enterPip?()
         case "toggleStatsOverlay":
             specialEntryDelegate?.toggleStatsOverlay?()
+        case "disconnectAndQuitApp":
+            specialEntryDelegate?.disconnectAndQuitApp?()
         default: break
         }
     }

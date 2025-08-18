@@ -73,7 +73,8 @@
     SettingsViewController* settingsViewController;
     StreamFrameViewController* streamFrameViewController;
     id navBarAppearanceStandard;
-bool _viewJustAppeared;
+    bool _viewJustAppeared;
+    TemporaryApp * launchedApp;
 
     NSTimer *_foregroundHostUpdateTimer;
 
@@ -771,6 +772,7 @@ static NSMutableSet* hostList;
 }
 
 - (void) prepareToStreamApp:(TemporaryApp *)app {
+    launchedApp = app;
     [self updateResolutionAccordingly];
     self.revealViewController.isStreaming = true; // tell the revealViewController streaming is started.
     _streamConfig = [[StreamConfiguration alloc] init];
@@ -912,6 +914,55 @@ static NSMutableSet* hostList;
 #endif
 }
 
+- (HttpResponse* )requestToQuitApp:(TemporaryApp* )app{
+    HttpManager* hMan = [[HttpManager alloc] initWithHost:app.host];
+    HttpResponse* quitResponse = [[HttpResponse alloc] init];
+    HttpRequest* quitRequest = [HttpRequest requestForResponse: quitResponse withUrlRequest:[hMan newQuitAppRequest]];
+
+    // Exempt this host from discovery while handling the quit operation
+    [self->_discMan pauseDiscoveryForHost:app.host];
+    [hMan executeRequestSynchronously:quitRequest];
+    if (quitResponse.statusCode == 200) {
+        ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
+        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
+                                                            fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
+        if (![serverInfoResp isStatusOk] || [[serverInfoResp getStringTag:@"state"] hasSuffix:@"_SERVER_BUSY"]) {
+            // On newer GFE versions, the quit request succeeds even though the app doesn't
+            // really quit if another client tries to kill your app. We'll patch the response
+            // to look like the old error in that case, so the UI behaves.
+            quitResponse.statusCode = 599;
+        }
+        else if ([serverInfoResp isStatusOk]) {
+            // Update the host object with this info
+            [serverInfoResp populateHost:app.host];
+        }
+    }
+    [self->_discMan resumeDiscoveryForHost:app.host];
+    return quitResponse;
+}
+
+- (void)quitRunningApp{
+    [self showLoadingFrame: ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            HttpResponse* quitResponse = [self requestToQuitApp:self->launchedApp];
+            // If it fails, display an error and stop the current operation
+            if (quitResponse.statusCode != 200) {
+                UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
+                                                                               message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
+                                                     preferredStyle:UIAlertControllerStyleAlert];
+                [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self updateAppsForHost:self->launchedApp.host];
+                    [self hideLoadingFrame: ^{
+                        [[self activeViewController] presentViewController:alert animated:YES completion:nil];
+                    }];
+                });
+            }
+            else dispatch_async(dispatch_get_main_queue(), ^{[self hideLoadingFrame:nil];});
+        });
+    }];
+}
+
 - (void)appLongClicked:(TemporaryApp *)app view:(UIView *)view {
     Log(LOG_D, @"Long clicked app: %@", app.name);
     
@@ -967,30 +1018,7 @@ static NSMutableSet* hostList;
                                         Log(LOG_I, @"Quitting application: %@", currentApp.name);
                                         [self showLoadingFrame: ^{
                                             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                                HttpManager* hMan = [[HttpManager alloc] initWithHost:app.host];
-                                                HttpResponse* quitResponse = [[HttpResponse alloc] init];
-                                                HttpRequest* quitRequest = [HttpRequest requestForResponse: quitResponse withUrlRequest:[hMan newQuitAppRequest]];
-                                                
-                                                // Exempt this host from discovery while handling the quit operation
-                                                [self->_discMan pauseDiscoveryForHost:app.host];
-                                                [hMan executeRequestSynchronously:quitRequest];
-                                                if (quitResponse.statusCode == 200) {
-                                                    ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
-                                                    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
-                                                                                                        fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
-                                                    if (![serverInfoResp isStatusOk] || [[serverInfoResp getStringTag:@"state"] hasSuffix:@"_SERVER_BUSY"]) {
-                                                        // On newer GFE versions, the quit request succeeds even though the app doesn't
-                                                        // really quit if another client tries to kill your app. We'll patch the response
-                                                        // to look like the old error in that case, so the UI behaves.
-                                                        quitResponse.statusCode = 599;
-                                                    }
-                                                    else if ([serverInfoResp isStatusOk]) {
-                                                        // Update the host object with this info
-                                                        [serverInfoResp populateHost:app.host];
-                                                    }
-                                                }
-                                                [self->_discMan resumeDiscoveryForHost:app.host];
-
+                                                HttpResponse* quitResponse = [self requestToQuitApp:app];
                                                 // If it fails, display an error and stop the current operation
                                                 if (quitResponse.statusCode != 200) {
                                                     UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]

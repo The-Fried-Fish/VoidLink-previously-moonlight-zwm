@@ -31,8 +31,9 @@
 
 -(void)expandSettingsView;
 - (void)closeSettingViewAnimated:(BOOL)anaimated;
--(void)reloadStreamConfig;
--(bool)isIPhonePortrait;
+- (void)reloadStreamConfig;
+- (bool)isIPhonePortrait;
+- (void)quitRunningApp;
 #endif
 - (void)fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
 
