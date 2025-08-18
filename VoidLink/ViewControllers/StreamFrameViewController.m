@@ -1043,12 +1043,6 @@
     }
     
     [self->_streamMan.videoRenderer resetFramePacing];
-    
-    // Also reset Metal renderer timing for iOS 15.0 and below compatibility
-    if (self.metalViewController) {
-        [self.metalViewController resetFrameTiming];
-    }
-    
     _isRestoringFromPiP = NO;
 }
 

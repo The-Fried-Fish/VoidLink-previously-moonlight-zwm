@@ -22,7 +22,4 @@
                             enableHdr:(BOOL)enableHdr
                        metricsHandler:(MetricsHandler _Nonnull)metricsHandler;
 
-// Reset frame timing for iOS 15.0 and below compatibility
-- (void)resetFrameTiming;
-
 @end

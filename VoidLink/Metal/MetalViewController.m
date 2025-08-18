@@ -92,35 +92,19 @@
     view.metalLayer.pixelFormat = renderer.colorPixelFormat;
     view.metalLayer.maximumDrawableCount = 3;
 
-    // We need a displaylink timer for iOS 15.0 and below to provide accurate frame timing,
-    // or just as a no-op for iOS 16+ to prevent iOS from dropping to 60fps
+    // We need a no-op displaylink timer or iOS can decide to run at 60fps
+    // The overhead from this should be minimal.
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler:)];
-    if (@available(iOS 16.0, tvOS 16.0, *)) {
-        // iOS 16+: Use CAFrameRateRange, displaylink is just a no-op
+    if (@available(iOS 15.0, tvOS 15.0, *)) {
         _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(_framerate, _framerate, _framerate);
-        Log(LOG_I, @"MetalViewController: DisplayLink using iOS 16+ CAFrameRateRange");
-    } else if (@available(iOS 15.0, tvOS 15.0, *)) {
-        // iOS 15.0: Use legacy preferredFramesPerSecond to avoid CAFrameRateRange bugs
-        _displayLink.preferredFramesPerSecond = _framerate;
-        Log(LOG_I, @"MetalViewController: DisplayLink using iOS 15.0 legacy preferredFramesPerSecond");
     } else {
-        // iOS 14 and below
         _displayLink.preferredFramesPerSecond = _framerate;
     }
     [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 }
 
 - (void)displayLinkHandler:(CADisplayLink *)link {
-    // For iOS 16+: This is just a no-op to fool iOS into keeping us running at the desired framerate
-    // For iOS 15.0 and below: Update renderer with accurate frame timing to fix negative framerates
-    if (@available(iOS 16.0, *)) {
-        // No-op for iOS 16+, Metal's presentedTime is reliable
-    } else {
-        // iOS 15.0 and below: Use DisplayLink timing since Metal's presentedTime is unreliable
-        if (_renderer) {
-            [_renderer updateLegacyFrameTiming:link.timestamp];
-        }
-    }
+    // Rendering does not use DisplayLink, this exists to fool iOS into keeping us running at the desired framerate
 }
 
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
@@ -169,33 +153,5 @@
     return YES;
 }
 #endif
-
-- (void)resetFrameTiming {
-    // Reset the renderer's frame timing state for iOS 15.0 and below compatibility
-    if (_renderer) {
-        [_renderer resetFrameTiming];
-        Log(LOG_I, @"MetalViewController: Reset frame timing called");
-    }
-    
-    // Reset DisplayLink timing for iOS 15.0 and below
-    if (@available(iOS 16.0, *)) {
-        // No additional DisplayLink reset needed for iOS 16+
-    } else {
-        // For iOS 15.0 and below, pause and resume DisplayLink to re-engage timing
-        if (_displayLink) {
-            _displayLink.paused = YES;
-            
-            // Re-apply frame rate (avoid CAFrameRateRange on iOS 15.0)
-            if (@available(iOS 15.0, *)) {
-                _displayLink.preferredFramesPerSecond = _framerate;
-            } else {
-                _displayLink.preferredFramesPerSecond = _framerate;
-            }
-            
-            _displayLink.paused = NO;
-            Log(LOG_I, @"MetalViewController: Reset DisplayLink timing for iOS 15.0 and below");
-        }
-    }
-}
 
 @end

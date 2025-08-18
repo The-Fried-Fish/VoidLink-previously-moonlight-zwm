@@ -22,20 +22,11 @@
 @property (nonatomic) id<CAMetalDrawable> _Nullable nextDrawable;
 @property (atomic) BOOL isStopping;
 
-// iOS 15.0 and below frame timing properties
-@property (nonatomic) BOOL useLegacyFrameTiming;
-@property (nonatomic) CFTimeInterval lastDisplayLinkTime;
-@property (nonatomic) CFTimeInterval displayLinkFrametime;
-
 - (nonnull instancetype)initWithMetalDevice:(nonnull id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate;
 - (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)shutdown;
-
-// iOS 15.0 and below legacy timing support
-- (void)updateLegacyFrameTiming:(CFTimeInterval)displayLinkTimestamp;
-- (void)resetFrameTiming;
 
 + (NSString *_Nullable)currentColorSpace;
 
