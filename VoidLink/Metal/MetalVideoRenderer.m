@@ -157,6 +157,17 @@ CFStringRef __currentColorSpace;
         _lastPresented = 0.0f;
         _inFlightSemaphore = dispatch_semaphore_create(MaxFramesInFlight);
         _isStopping = NO;
+        
+        // Enable legacy frame timing for iOS 15.0 and below to fix timing issues
+        if (@available(iOS 16.0, *)) {
+            _useLegacyFrameTiming = NO;
+            Log(LOG_I, @"MetalVideoRenderer: Using iOS 16+ timing (Metal presentedTime)");
+        } else {
+            _useLegacyFrameTiming = YES;
+            _lastDisplayLinkTime = 0.0f;
+            _displayLinkFrametime = 1.0f / framerate * 1000.0f; // Expected frametime in ms
+            Log(LOG_I, @"MetalVideoRenderer: Using legacy timing for iOS 15.0 and below (CADisplayLink)");
+        }
 
         CFStringRef keys[1] = {kCVMetalTextureUsage};
         NSUInteger values[1] = {MTLTextureUsageShaderRead};
@@ -713,14 +724,21 @@ CFStringRef __currentColorSpace;
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
 
-        __block MetalVideoRenderer *strongSelf = self;
 #if !TARGET_OS_SIMULATOR
+        __block MetalVideoRenderer *strongSelf = self;
         [drawable addPresentedHandler:^(id<MTLDrawable> d) {
-            if (strongSelf.lastPresented > 0.0f) {
-                CFTimeInterval frametime = d.presentedTime - strongSelf.lastPresented;
-                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
+            // Only use Metal's presentedTime on iOS 16+ due to timing bugs on iOS 15.0
+            if (!strongSelf.useLegacyFrameTiming) {
+                if (strongSelf.lastPresented > 0.0f) {
+                    CFTimeInterval frametime = d.presentedTime - strongSelf.lastPresented;
+                    // Sanity check: reject negative or impossibly large frametimes
+                    if (frametime > 0 && frametime < 0.1) { // Less than 100ms
+                        [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
+                    }
+                }
+                strongSelf.lastPresented = d.presentedTime;
             }
-            strongSelf.lastPresented = d.presentedTime;
+            // For iOS 15.0 and below, frametime is calculated in updateLegacyFrameTiming
         }];
 #endif
 
@@ -774,6 +792,43 @@ CFStringRef __currentColorSpace;
         for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
             dispatch_semaphore_signal(_inFlightSemaphore);
         }
+    }
+}
+
+#pragma mark - iOS 15.0 and below legacy timing support
+
+- (void)updateLegacyFrameTiming:(CFTimeInterval)displayLinkTimestamp {
+    if (!_useLegacyFrameTiming) {
+        return; // Only for iOS 15.0 and below
+    }
+    
+    if (_lastDisplayLinkTime > 0.0f) {
+        CFTimeInterval actualFrametime = (displayLinkTimestamp - _lastDisplayLinkTime) * 1000.0; // Convert to ms
+        
+        // Sanity check: reject negative or impossibly large frametimes
+        if (actualFrametime > 0 && actualFrametime < 100.0) { // Less than 100ms
+            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:actualFrametime];
+            _displayLinkFrametime = actualFrametime;
+        } else {
+            // Use expected frametime if actual is unreliable
+            Log(LOG_W, @"MetalVideoRenderer: Rejecting invalid frametime %.2f ms, using expected %.2f ms", actualFrametime, _displayLinkFrametime);
+            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:_displayLinkFrametime];
+        }
+    }
+    
+    _lastDisplayLinkTime = displayLinkTimestamp;
+}
+
+- (void)resetFrameTiming {
+    if (_useLegacyFrameTiming) {
+        // Reset legacy timing state for iOS 15.0 and below
+        _lastDisplayLinkTime = 0.0f;
+        _displayLinkFrametime = 1.0f / _framerate * 1000.0f;
+        Log(LOG_I, @"MetalVideoRenderer: Reset legacy frame timing for iOS 15.0 and below");
+    } else {
+        // Reset Metal timing state for iOS 16+
+        _lastPresented = 0.0f;
+        Log(LOG_I, @"MetalVideoRenderer: Reset Metal frame timing for iOS 16+");
     }
 }
 
