@@ -1636,6 +1636,48 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)renderingBackendChanged:(UISegmentedControl *)sender {
+
+    // Get the current settings to compare with the new selection
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* currentSettings = [dataMan getSettings];
+    NSInteger previousBackend = [currentSettings.renderingBackend integerValue];
+    
+
+    // Check if the rendering backend has actually changed
+    if (previousBackend != sender.selectedSegmentIndex) {
+        // Show alert to prompt user to restart the app
+        NSString *message = [LocalizationHelper localizedStringForKey:@"Rendering mode change requires app restart"];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Restart Required"]
+                                                                                 message:message
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Quit Now"]
+                                                              style:UIAlertActionStyleDestructive
+                                                            handler:^(UIAlertAction * _Nonnull action) {
+
+            DataManager* directDataMan = [[DataManager alloc] init];
+            Settings* directSettings = [directDataMan retrieveSettings];
+            directSettings.renderingBackend = [NSNumber numberWithInteger:sender.selectedSegmentIndex];
+            [directDataMan saveData];
+            
+            [self saveSettings];
+            
+            exit(0);
+        }];
+        
+        UIAlertAction *laterAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Later"]
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction * _Nonnull action) {
+            // Save settings immediately to persist the renderer change
+            [self saveSettings];
+        }];
+        
+        [alertController addAction:laterAction];
+        [alertController addAction:quitAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+    
     // Disable PiP toggle when Metal renderer is selected
     if (sender.selectedSegmentIndex == RENDER_METAL) {
         // Performance mode (Metal renderer) selected - disable PiP
