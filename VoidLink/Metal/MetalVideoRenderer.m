@@ -650,9 +650,14 @@ CFStringRef __currentColorSpace;
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             dispatch_semaphore_signal(block_semaphore);
 
-            const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
-            const double alpha = 0.25f;
-            self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
+            if (cb.error) {
+                // Request IDR frame to recover from rendering error  
+                LiRequestIdrFrame();
+            } else {
+                const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
+                const double alpha = 0.25f;
+                self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
+            }
 
             // Free textures after completion of rendering
             for (size_t i = 0; i < planes; i++) {
@@ -677,7 +682,15 @@ CFStringRef __currentColorSpace;
     // by any stage in the Metal pipeline (CPU, GPU, Metal, Drivers, etc.).
     if (!self.isStopping) {
         dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC));  // 100ms
-        dispatch_semaphore_wait(_inFlightSemaphore, timeout);
+        long result = dispatch_semaphore_wait(_inFlightSemaphore, timeout);
+        if (result != 0) {
+            // Timeout occurred - this is the main cause of video freezes
+            // Signal the semaphore to unblock potentially stuck frames
+            for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
+                dispatch_semaphore_signal(_inFlightSemaphore);
+            }
+            LiRequestIdrFrame(); // Request recovery
+        }
     }
 }
 
