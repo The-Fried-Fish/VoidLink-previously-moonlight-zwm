@@ -171,7 +171,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         else {
             _displayLink.preferredFramesPerSecond = self->_frameRate;
         }
-        [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+        [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     } else {
         _renderingBackend = RENDER_METAL;
         // RENDER_METAL begins in StreamFrameViewController.
