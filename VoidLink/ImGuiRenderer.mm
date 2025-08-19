@@ -264,20 +264,21 @@ inline static float getValue(void *buffer, int idx) {
     float graphH = 0.0f;
     switch ((int)io.DisplaySize.x) {
         case 1920: // ATV 4K 1920x1080 2x
-            graphW = 525.0f; graphH = 80.0f; break;
+            graphW = 528.0f; graphH = 80.0f; break;
         case 1376: // iPad Pro 1376x1032 2x
-            graphW = 450.0f; graphH = 45.0f; break;
+            graphW = 448.0f; graphH = 48.0f; break;
         case 1366: // iPad Air 1366x1024 2x
-            graphW = 446.0f; graphW = 44.0f; break;
+            graphW = 448.0f; graphH = 48.0f; break;
+        case 1210: // iPad Pro M4 11 1210x834 2x
+            graphW = 400.0f; graphH = 48.0f; break;
         case 1194: // Vision Pro (iPad mode) 1194x834 2x
-            graphW = 379.0f; graphH = 45.0f; break;
+            graphW = 384.0f; graphH = 48.0f; break;
         case 1133: // iPad Mini 1133x744 2x
-            graphW = 360.0f; graphH = 45.0f; break;
+            graphW = 360.0f; graphH = 48.0f; break;
         case 926: // iPhone 13 Pro Max 926x428 3x
-            graphW = 285.0f; graphH = 45.0f; break;
+            graphW = 288.0f; graphH = 48.0f; break;
         case 874: // iPhone 16 Pro 874x402 3x
-            graphW = 275.0f; graphH = 45.0f; break;
-        // TODO:
+            graphW = 280.0f; graphH = 48.0f; break;
         default:
             float x = io.DisplaySize.x;
             float y = io.DisplaySize.y;
@@ -285,8 +286,10 @@ inline static float getValue(void *buffer, int idx) {
                 x = x * io.DisplayFramebufferScale.x / 2.0f;
                 y = y * io.DisplayFramebufferScale.y / 2.0f;
             }
-            graphW = x * 0.327f;
-            graphH = y * 0.044f;
+            // Round to nearest multiple of 8 for smooth scrolling
+            float rawWidth = x * 0.327f;
+            graphW = roundf(rawWidth / 8.0f) * 8.0f;
+            graphH = roundf(y * 0.044f);
     }
 
     LogOnce(LOG_I, @"Drawing graphs of size %.1f x %.1f in viewport %.1f x %.1f scale %.0f,%.0f using opacity %.2f",
