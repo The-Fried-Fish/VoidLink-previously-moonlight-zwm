@@ -84,15 +84,23 @@
     [_frameQueue waitForEnqueue];
 }
 
-/// Draw frame (used by manual loop)
-- (void)renderTo:(nonnull CAMetalLayer *)layer {
+
+- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(17.0)) {
     if (!_renderer.isStopping) {
         CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
         Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
         if (frame) {
-            if (@available(iOS 13.0, *)) {
-                [_renderer renderFrame:frame toLayer:layer];
-            }
+            [_renderer renderFrame:frame withDrawable:drawable];
+        }
+    }
+}
+
+- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0)) {
+    if (!_renderer.isStopping) {
+        CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
+        Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
+        if (frame) {
+            [_renderer renderFrame:frame withDrawable:drawable targetPresentationTimestamp:targetPresentationTimestamp];
         }
     }
 }
@@ -106,8 +114,14 @@
 
     Log(LOG_I, @"[MetalViewController] viewDidDisappear");
 
+    // Shutdown the renderer first
     [_renderer shutdown];
     _renderer = nil;
+
+    // Then shutdown the view's display link
+    if (_metalView) {
+        [_metalView shutdown];
+    }
 }
 
 #if TARGET_OS_IOS

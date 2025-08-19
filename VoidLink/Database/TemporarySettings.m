@@ -52,7 +52,15 @@
     self.statsOverlay = [[NSUserDefaults standardUserDefaults] boolForKey:@"statsOverlay"];
     self.enableGraphs = [[NSUserDefaults standardUserDefaults] boolForKey:@"enableGraphs"];
     self.graphOpacity = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"graphOpacity"]];
-    self.renderingBackend = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"renderingBackend"]];
+    // Set rendering backend based on iOS version and user preference
+    NSInteger savedBackend = [[NSUserDefaults standardUserDefaults] integerForKey:@"renderingBackend"];
+    if (@available(iOS 17.0, *)) {
+        // iOS 17+ can use Performance mode (Metal renderer)
+        self.renderingBackend = [NSNumber numberWithInteger:savedBackend];
+    } else {
+        // iOS < 17 must use Balanced mode (AVSB renderer)
+        self.renderingBackend = [NSNumber numberWithInteger:RENDER_AVSB];
+    }
 
     NSInteger _screenSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"streamResolution"];
     switch (_screenSize) {
