@@ -109,6 +109,15 @@ import UIKit
     
     // for DPAD LRUD pad
     private var lrudIndicatorBall = CAShapeLayer()
+    private let triggeringAngle = 67.5
+    private enum Direction: Int {
+        case right = 1
+        case up = 2
+        case left = 4
+        case down = 8
+        case initialStatus = 16
+    }
+    private var previousButtonMask = Direction.initialStatus.rawValue
     
     // OnScreenControls instance
     private var onScreenControls: OnScreenControls
@@ -688,6 +697,7 @@ import UIKit
         ballLayer.shadowOffset = CGSize(width: 0.5, height: 0.5)
         ballLayer.shadowRadius = 0;
         ballLayer.shadowOpacity = 0.8
+        ballLayer.name = "lrudBall"
         
         // Set the fill color (inside of the circle)
         ballLayer.fillColor = stickBallColor  // Light fill with some transparency
@@ -734,114 +744,111 @@ import UIKit
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
-        let triggeringAngle = 67.5
         let radians  = atan2(-offSetY,offSetX)
         let degrees = radians * 180 / .pi
-        enum Direction: Int {
-            case right = 1
-            case up = 2
-            case left = 4
-            case down = 8
-        }
-        
         let nearZeroPoint = abs(offSetX) < 16/sensitivityFactorX && abs(offSetY) < 16/sensitivityFactorY
         // NSLog("deltaX: %f, detalY: %f", deltaX, deltaY)
         
-        var buttonPressed = 0;
+        
+        var pressedButtonMask = 0;
         if abs(degrees) < triggeringAngle {
             // NSLog("button pressed: right")
-            buttonPressed = buttonPressed | Direction.right.rawValue
+            pressedButtonMask = pressedButtonMask | Direction.right.rawValue
         }
         if 180.0 - abs(degrees) < triggeringAngle {
             // NSLog("button pressed: left")
-            buttonPressed = buttonPressed | Direction.left.rawValue
+            pressedButtonMask = pressedButtonMask | Direction.left.rawValue
         }
         if abs(90.0 - degrees) < triggeringAngle {
             // NSLog("button pressed: up")
-            buttonPressed = buttonPressed | Direction.up.rawValue
+            pressedButtonMask = pressedButtonMask | Direction.up.rawValue
         }
         if abs(-90.0 - degrees) < triggeringAngle {
             // NSLog("button pressed: down")
-            buttonPressed = buttonPressed | Direction.down.rawValue
+            pressedButtonMask = pressedButtonMask | Direction.down.rawValue
         }
-        if nearZeroPoint {buttonPressed = 0}
+        if nearZeroPoint {pressedButtonMask = 0}
         
-        if(buttonPressed & Direction.up.rawValue == Direction.up.rawValue){
+        if pressedButtonMask != previousButtonMask {
+            if(pressedButtonMask & Direction.up.rawValue == Direction.up.rawValue) {
             showLrudDirectionIndicator(with: upIndicator)
             switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "DPAD": self.onScreenControls.pressDownControllerButton(UP_FLAG)
-            default: break
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "DPAD": self.onScreenControls.pressDownControllerButton(UP_FLAG)
+                default: break
+                }
+            }
+            else{
+                self.upIndicator.removeFromSuperlayer()
+                self.upIndicator.position = CGPointMake(0, 0)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_UP), 0)
+                case "DPAD": self.onScreenControls.releaseControllerButton(UP_FLAG)
+                default: break
+                }
+            }
+            if(pressedButtonMask & Direction.down.rawValue == Direction.down.rawValue){
+                showLrudDirectionIndicator(with: downIndicator)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "DPAD": self.onScreenControls.pressDownControllerButton(DOWN_FLAG)
+                default: break
+                }
+            }
+            else{
+                self.downIndicator.removeFromSuperlayer()
+                self.downIndicator.position = CGPointMake(0, 0)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_UP), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_UP), 0)
+                case "DPAD": self.onScreenControls.releaseControllerButton(DOWN_FLAG)
+                default: break
+                }
+            }
+            if(pressedButtonMask & Direction.left.rawValue == Direction.left.rawValue){
+                showLrudDirectionIndicator(with: leftIndicator)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "DPAD": self.onScreenControls.pressDownControllerButton(LEFT_FLAG)
+                default: break
+                }
+            }
+            else{
+                self.leftIndicator.removeFromSuperlayer()
+                self.leftIndicator.position = CGPointMake(0, 0)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
+                case "DPAD": self.onScreenControls.releaseControllerButton(LEFT_FLAG)
+                default: break
+                }
+            }
+            if(pressedButtonMask & Direction.right.rawValue == Direction.right.rawValue){
+                showLrudDirectionIndicator(with: rightIndicator)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
+                case "DPAD": self.onScreenControls.pressDownControllerButton(RIGHT_FLAG)
+                default: break
+                }
+            }
+            else{
+                self.rightIndicator.removeFromSuperlayer()
+                self.rightIndicator.position = CGPointMake(0, 0)
+                switch touchPadString {
+                case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_UP), 0)
+                case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
+                case "DPAD": self.onScreenControls.releaseControllerButton(RIGHT_FLAG)
+                default: break
+                }
             }
         }
-        else{
-            self.upIndicator.removeFromSuperlayer()
-            self.upIndicator.position = CGPointMake(0, 0)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_UP), 0)
-            case "DPAD": self.onScreenControls.releaseControllerButton(UP_FLAG)
-            default: break
-            }
-        }
-        if(buttonPressed & Direction.down.rawValue == Direction.down.rawValue){
-            showLrudDirectionIndicator(with: downIndicator)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "DPAD": self.onScreenControls.pressDownControllerButton(DOWN_FLAG)
-            default: break
-            }
-        }
-        else{
-            self.downIndicator.removeFromSuperlayer()
-            self.downIndicator.position = CGPointMake(0, 0)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_UP), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_UP), 0)
-            case "DPAD": self.onScreenControls.releaseControllerButton(DOWN_FLAG)
-            default: break
-            }
-        }
-        if(buttonPressed & Direction.left.rawValue == Direction.left.rawValue){
-            showLrudDirectionIndicator(with: leftIndicator)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "DPAD": self.onScreenControls.pressDownControllerButton(LEFT_FLAG)
-            default: break
-            }
-        }
-        else{
-            self.leftIndicator.removeFromSuperlayer()
-            self.leftIndicator.position = CGPointMake(0, 0)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
-            case "DPAD": self.onScreenControls.releaseControllerButton(LEFT_FLAG)
-            default: break
-            }
-        }
-        if(buttonPressed & Direction.right.rawValue == Direction.right.rawValue){
-            showLrudDirectionIndicator(with: rightIndicator)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
-            case "DPAD": self.onScreenControls.pressDownControllerButton(RIGHT_FLAG)
-            default: break
-            }
-        }
-        else{
-            self.rightIndicator.removeFromSuperlayer()
-            self.rightIndicator.position = CGPointMake(0, 0)
-            switch touchPadString {
-            case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_UP), 0)
-            case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
-            case "DPAD": self.onScreenControls.releaseControllerButton(RIGHT_FLAG)
-            default: break
-            }
-        }
+        
+        previousButtonMask = pressedButtonMask
         
         CATransaction.commit()
     }
@@ -1076,7 +1083,7 @@ import UIKit
         self.firstTouchMoved = false
         super.touchesBegan(touches, with: event)
         // self.isMultipleTouchEnabled = self.touchPadString == "MOUSEPAD" // only enable multi-touch in mousePad mode
-        self.isMultipleTouchEnabled = true
+        self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
 
         if !OnScreenWidgetView.editMode && self.touchPadString == "TRACKBALL" {
             stopTrackballMomentum()
@@ -1129,7 +1136,7 @@ import UIKit
                         self.l3r3Indicator = self.createAndShowl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "DPAD", "WASDPAD", "ARROWPAD":
-                    self.lrudIndicatorBall = createAndShowLrudBall(at: touchBeganLocation)
+                    if allCapturedTouchesCount == 1 {self.lrudIndicatorBall = createAndShowLrudBall(at: touchBeganLocation)}
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                         DispatchQueue.global(qos: .userInteractive).async {
@@ -1476,7 +1483,11 @@ import UIKit
         self.downIndicator.removeFromSuperlayer()
         self.leftIndicator.removeFromSuperlayer()
         self.rightIndicator.removeFromSuperlayer()
-        self.lrudIndicatorBall.removeFromSuperlayer()
+        // self.lrudIndicatorBall.removeFromSuperlayer()
+        for subLayer in self.layer.superlayer?.sublayers ?? [] {
+            if subLayer.name == "lrudBall" {subLayer.removeFromSuperlayer()}
+        }
+        
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
             self.handleButtonSlidingUp(touches: touches)
