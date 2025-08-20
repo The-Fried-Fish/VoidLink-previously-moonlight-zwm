@@ -104,7 +104,7 @@ static const NSUInteger MaxFramesInFlight = 3;
 
 // EDR tone-mapping is possible but it's unclear how
 // best to tone-map Windows content
-static BOOL useEDR = NO;
+static BOOL useEDR = YES;
 
 CFStringRef __currentColorSpace;
 
@@ -223,14 +223,20 @@ CFStringRef __currentColorSpace;
 }
 
 - (void)applyEDRFromFrame:(Frame *)frame withColorspace:(int)colorspace toLayer:(CAMetalLayer *)layer {
+    // Validate input parameters
+    if (!frame || !layer) {
+        Log(LOG_E, @"applyEDRFromFrame called with nil frame or layer");
+        return;
+    }
+    
     [self reportMaxEDRHeadroom];
     [self setInitialEDRMetadata];
 
     CFDictionaryRef ext = [frame getFormatDescExtensions];
-    CFStringRef frame_trc = CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey);
+    CFStringRef frame_trc = ext ? CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey) : nil;
 
     // These can only be changed on the main thread
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    void (^updateLayerBlock)(void) = ^{
         if (@available(iOS 16.0, *)) {
             layer.wantsExtendedDynamicRangeContent = YES;
         }
@@ -260,24 +266,49 @@ CFStringRef __currentColorSpace;
 
         // CAEDRMetadata is only available on iOS 16.0+
         if (@available(iOS 16.0, tvOS 16.0, *)) {
-            CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
-            CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
-            if (masteringDisplayColorVolume) {
-                // This tone-mapper does receive the host's max nits in MDCV when connecting to Windows,
-                // but I think using this for tone-mapping would break apps not using system calibration (most apps).
-                layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:(__bridge NSData *)masteringDisplayColorVolume
-                                                                    contentInfo:contentLightLevel ? (__bridge NSData *)contentLightLevel : nil
-                                                             opticalOutputScale:100.0f];
-            } else {
-                layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f
-                                                                    maxLuminance:1000.0f
-                                                              opticalOutputScale:100.0f];
+            if (frame.pixelBuffer) {
+                CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
+                CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
+                
+                // Configure optical output scale (100.0f is standard for HDR10)
+                const float opticalOutputScale = 100.0f;
+                
+                if (masteringDisplayColorVolume) {
+                    // This tone-mapper does receive the host's max nits in MDCV when connecting to Windows,
+                    // but I think using this for tone-mapping would break apps not using system calibration (most apps).
+                    layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithDisplayInfo:(__bridge NSData *)masteringDisplayColorVolume
+                                                                        contentInfo:contentLightLevel ? (__bridge NSData *)contentLightLevel : nil
+                                                                 opticalOutputScale:opticalOutputScale];
+                    CFRelease(masteringDisplayColorVolume);
+                } else {
+                    layer.EDRMetadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0.005f
+                                                                        maxLuminance:1000.0f
+                                                                  opticalOutputScale:opticalOutputScale];
+                }
+                
+                // Clean up contentLightLevel if it was created
+                if (contentLightLevel) {
+                    CFRelease(contentLightLevel);
+                }
+                
+                LogOnce(LOG_I, @"EDRMetadata set to colorspace %@, transfer function %@, %@", 
+                       layer.colorspace, 
+                       frame_trc ? (__bridge NSString *)frame_trc : @"<none>", 
+                       layer.EDRMetadata);
             }
-            LogOnce(LOG_I, @"EDRMetadata set to colorspace %@, transfer function %@, %@", layer.colorspace, frame_trc, layer.EDRMetadata);
         } else {
-            LogOnce(LOG_I, @"EDRMetadata not available on iOS < 16.0, colorspace %@, transfer function %@", layer.colorspace, frame_trc);
+            LogOnce(LOG_I, @"EDRMetadata not available on iOS < 16.0, colorspace %@, transfer function %@", 
+                   layer.colorspace, 
+                   frame_trc ? (__bridge NSString *)frame_trc : @"<none>");
         }
-    });
+    };
+    
+    // Check if we're already on the main thread
+    if ([NSThread isMainThread]) {
+        updateLayerBlock();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), updateLayerBlock);
+    }
 }
 #endif
 
