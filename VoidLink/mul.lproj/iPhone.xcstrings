@@ -91,6 +91,36 @@
         }
       }
     },
+    "3Ff-AF-K42.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.\"; ObjectID = \"3Ff-AF-K42\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "显示帧时间和缓冲健康指标。如果遮挡屏幕部分内容，请调整透明度。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。"
+          }
+        }
+      }
+    },
     "3Hh-2q-gas.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Preferred Codec\"; ObjectID = \"3Hh-2q-gas\";",
       "extractionState" : "extracted_with_value",
@@ -693,6 +723,66 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "輕按任意小工具載入設定（各小工具獨立）"
+          }
+        }
+      }
+    },
+    "53H-ST-OtY.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Balanced"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        }
+      }
+    },
+    "53H-ST-OtY.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Performance\"; ObjectID = \"53H-ST-OtY\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
           }
         }
       }
@@ -1327,66 +1417,6 @@
         }
       }
     },
-    "F2F-TK-tyR.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; F2F-TK-tyR.segmentTitles[0] = \"Lowest Latency\"; ObjectID = \"F2F-TK-tyR\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Lowest Latency"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低延迟"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低延遲"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低延遲"
-          }
-        }
-      }
-    },
-    "F2F-TK-tyR.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; F2F-TK-tyR.segmentTitles[1] = \"Smoothest Video\"; ObjectID = \"F2F-TK-tyR\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Smoothest Video"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最高流畅度"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最高流暢度"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最高流暢度"
-          }
-        }
-      }
-    },
     "f46-Pt-0Pv.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Profile:\"; ObjectID = \"f46-Pt-0Pv\";",
       "extractionState" : "extracted_with_value",
@@ -1437,36 +1467,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刪除"
-          }
-        }
-      }
-    },
-    "GQm-O3-z8H.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing Preference\"; ObjectID = \"GQm-O3-z8H\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Frame Pacing Preference"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "帧步进控制"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "影格步進控制"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "影格步進控制"
           }
         }
       }
@@ -1791,6 +1791,36 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "    "
+          }
+        }
+      }
+    },
+    "LVq-7c-3zg.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs - Opacity: 50%\"; ObjectID = \"LVq-7c-3zg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance Graphs - Opacity: 50%"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能图表 - 不透明度：50%"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：50%"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：50%"
           }
         }
       }
@@ -2653,6 +2683,36 @@
         }
       }
     },
+    "r8X-jt-JfH.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Frames to Buffer\"; ObjectID = \"r8X-jt-JfH\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Frames to Buffer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        }
+      }
+    },
     "R9C-JW-nkF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"R9C-JW-nkF\";",
       "extractionState" : "extracted_with_value",
@@ -2953,6 +3013,36 @@
         }
       }
     },
+    "ttV-kY-jCi.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection.\"; ObjectID = \"ttV-kY-jCi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建议值为2。1帧提供最低延迟，但可能需要以太网连接。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建議值為2。1影格提供最低延遲，但可能需要乙太網路連線。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建議值為2。1影格提供最低延遲，但可能需要乙太網路連線。"
+          }
+        }
+      }
+    },
     "Tue-Qh-8zP.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; Tue-Qh-8zP.segmentTitles[0] = \"Stage Manager\"; ObjectID = \"Tue-Qh-8zP\";",
       "extractionState" : "extracted_with_value",
@@ -3249,6 +3339,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "觸控模式"
+          }
+        }
+      }
+    },
+    "v8l-hf-kiR.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Rendering Mode (Experimental)\"; ObjectID = \"v8l-hf-kiR\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Rendering Mode (Experimental)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（实验性）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
           }
         }
       }

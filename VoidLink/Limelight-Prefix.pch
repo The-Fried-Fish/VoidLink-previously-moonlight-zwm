@@ -8,7 +8,7 @@
 #include <TargetConditionals.h>
 
 #ifndef __IPHONE_3_0
-#warning "This project uses features only available in iOS SDK 3.0 and later."
+#error "This project uses features only available in iOS SDK 3.0 and later."
 #endif
 
 #ifdef __OBJC__
@@ -20,5 +20,11 @@
 #endif
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+
+#if !defined(NDEBUG)
+// # define FRAME_QUEUE_VERBOSE
+#endif
 #import "Logger.h"
 #endif
+
+#import "MetalConfig.h"

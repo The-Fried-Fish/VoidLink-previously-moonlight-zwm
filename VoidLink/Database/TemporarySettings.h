@@ -51,7 +51,6 @@
 @property (nonatomic) BOOL enablePIP;
 @property (nonatomic) BOOL reverseMouseWheelDirection;
 @property (nonatomic, retain) NSNumber * asyncNativeTouchPriority;
-@property (nonatomic) BOOL useFramePacing;
 @property (nonatomic) BOOL multiController;
 @property (nonatomic) BOOL swapABXYButtons;
 @property (nonatomic) BOOL playAudioOnPC;
@@ -65,6 +64,10 @@
 @property (nonatomic) BOOL liftStreamViewForKeyboard;
 @property (nonatomic) BOOL showKeyboardToolbar;
 @property (nonatomic) BOOL unlockDisplayOrientation;
+@property (nonatomic) BOOL enableGraphs;
+@property (nonatomic, retain) NSNumber * frameQueueSize;
+@property (nonatomic, retain) NSNumber * graphOpacity;
+@property (nonatomic, retain) NSNumber * renderingBackend;
 
 - (id) initFromSettings:(Settings*)settings;
 

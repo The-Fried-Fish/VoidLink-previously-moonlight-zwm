@@ -7,6 +7,7 @@
 //
 
 #import "Connection.h"
+#import "Plot.h"
 #import "Utils.h"
 
 #import <VideoToolbox/VideoToolbox.h>
@@ -45,24 +46,28 @@ static int audioFrameSize;
 
 static VideoDecoderRenderer* renderer;
 
+static BandwidthTracker *bwTracker;
+
 int DrDecoderSetup(int videoFormat, int width, int height, int redrawRate, void* context, int drFlags)
 {
     [renderer setupWithVideoFormat:videoFormat width:width height:height frameRate:redrawRate];
     lastFrameNumber = 0;
     activeVideoFormat = videoFormat;
+    Log(LOG_I, @"Active video format: 0x%x", activeVideoFormat);
     memset(&currentVideoStats, 0, sizeof(currentVideoStats));
     memset(&lastVideoStats, 0, sizeof(lastVideoStats));
+    bwTracker = [[BandwidthTracker alloc] initWithWindowSeconds:10 bucketIntervalMs:250];
     return 0;
 }
 
-void DrStart(void)
+void DrCleanup(void)
 {
-    [renderer start];
+    [renderer cleanup];
 }
 
-void DrStop(void)
+-(BandwidthTracker *) getBwTracker
 {
-    [renderer stop];
+    return bwTracker;
 }
 
 -(BOOL) getVideoStats:(video_stats_t*)stats
@@ -72,10 +77,12 @@ void DrStop(void)
     if (lastVideoStats.endTime != 0) {
         memcpy(stats, &lastVideoStats, sizeof(*stats));
         [videoStatsLock unlock];
+
+        // Pull in the separately-collected renderer stats
+        [renderer getAllStats:stats];
+
         return YES;
     }
-    
-    // No stats yet
     [videoStatsLock unlock];
     return NO;
 }
@@ -133,6 +140,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit)
 {
     int offset = 0;
     int ret;
+    CFTimeInterval decodeStartTime = CACurrentMediaTime();
+
     unsigned char* data = (unsigned char*) malloc(decodeUnit->fullLength);
     if (data == NULL) {
         // A frame was lost due to OOM condition
@@ -158,8 +167,13 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit)
         }
         
         // Any frame number greater than m_LastFrameNumber + 1 represents a dropped frame
-        currentVideoStats.networkDroppedFrames += decodeUnit->frameNumber - (lastFrameNumber + 1);
-        currentVideoStats.totalFrames += decodeUnit->frameNumber - (lastFrameNumber + 1);
+        int droppedFrames = decodeUnit->frameNumber - (lastFrameNumber + 1);
+        if (droppedFrames > 0) {
+            currentVideoStats.networkDroppedFrames += droppedFrames;
+            currentVideoStats.totalFrames += droppedFrames;
+
+            Log(LOG_W, @"Network dropped %d frame(s): %d - %d", droppedFrames, lastFrameNumber + 1, decodeUnit->frameNumber - 1);
+        }
         lastFrameNumber = decodeUnit->frameNumber;
     }
     
@@ -179,6 +193,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit)
     currentVideoStats.receivedFrames++;
     currentVideoStats.totalFrames++;
 
+    [bwTracker addBytes:decodeUnit->fullLength];
+
     PLENTRY entry = decodeUnit->bufferList;
     while (entry != NULL) {
         // Submit parameter set NALUs directly since no copy is required by the decoder
@@ -186,7 +202,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit)
             ret = [renderer submitDecodeBuffer:(unsigned char*)entry->data
                                         length:entry->length
                                     bufferType:entry->bufferType
-                                     decodeUnit:decodeUnit];
+                                    decodeUnit:decodeUnit
+                               decodeStartTime:decodeStartTime];
             if (ret != DR_OK) {
                 free(data);
                 return ret;
@@ -204,7 +221,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit)
     return [renderer submitDecodeBuffer:data
                                  length:offset
                              bufferType:BUFFER_TYPE_PICDATA
-                             decodeUnit:decodeUnit];
+                             decodeUnit:decodeUnit
+                        decodeStartTime:decodeStartTime];
 }
 
 int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, void* context, int flags)
@@ -219,7 +237,7 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
         
     SDL_zero(want);
     want.freq = opusConfig->sampleRate;
-    want.format = AUDIO_S16;
+    want.format = AUDIO_F32;
     want.channels = opusConfig->channelCount;
     want.samples = opusConfig->samplesPerFrame;
 
@@ -231,7 +249,7 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
     }
     
     audioConfig = *opusConfig;
-    audioFrameSize = opusConfig->samplesPerFrame * sizeof(short) * opusConfig->channelCount;
+    audioFrameSize = opusConfig->samplesPerFrame * sizeof(float) * opusConfig->channelCount;
     audioBuffer = SDL_malloc(audioFrameSize);
     if (audioBuffer == NULL) {
         Log(LOG_E, @"Failed to allocate audio frame buffer");
@@ -291,19 +309,23 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
     if (LiGetPendingAudioDuration() > 30) {
         return;
     }
-    
-    decodeLen = opus_multistream_decode(opusDecoder, (unsigned char *)sampleData, sampleLength,
-                                        (short*)audioBuffer, audioConfig.samplesPerFrame, 0);
+
+    decodeLen = opus_multistream_decode_float(opusDecoder,
+                                              (unsigned char*)sampleData,
+                                              sampleLength,
+                                              (float*)audioBuffer,
+                                              audioConfig.samplesPerFrame,
+                                              0);
     if (decodeLen > 0) {
         // Provide backpressure on the queue to ensure too many frames don't build up
         // in SDL's audio queue.
         while (SDL_GetQueuedAudioSize(audioDevice) / audioFrameSize > 10) {
-            SDL_Delay(1);
+            [NSThread sleepForTimeInterval:0.001f];
         }
         
         if (SDL_QueueAudio(audioDevice,
                            audioBuffer,
-                           sizeof(short) * decodeLen * audioConfig.channelCount) < 0) {
+                           sizeof(float) * decodeLen * audioConfig.channelCount) < 0) {
             Log(LOG_E, @"Failed to queue audio sample: %s\n", SDL_GetError());
         }
     }
@@ -437,14 +459,28 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     renderer = myRenderer;
     _callbacks = callbacks;
 
+    // Check for low power mode which limits framerate to 60
+    if (config.frameRate > 60 && [[NSProcessInfo processInfo] isLowPowerModeEnabled]) {
+        Log(LOG_W, @"Limiting stream to 60fps because device is in low power mode");
+        config.frameRate = 60;
+    }
+
+    // Lower to 90fps on Vision Pro
+    NSInteger deviceFps = UIScreen.mainScreen.maximumFramesPerSecond;
+    if (deviceFps < config.frameRate) {
+        Log(LOG_W, @"Limiting stream to %dfps due to max refresh rate", deviceFps);
+        config.frameRate = (int)deviceFps;
+    }
+
     LiInitializeStreamConfiguration(&_streamConfig);
+    _streamConfig.colorRange = 1; // Full range
     _streamConfig.width = config.width;
     _streamConfig.height = config.height;
     _streamConfig.fps = config.frameRate;
     _streamConfig.bitrate = config.bitRate;
     _streamConfig.supportedVideoFormats = config.supportedVideoFormats;
     _streamConfig.audioConfiguration = config.audioConfiguration;
-    
+
     // Since we require iOS 12 or above, we're guaranteed to be running
     // on a 64-bit device with ARMv8 crypto instructions, so we don't
     // need to check for that here.
@@ -468,9 +504,9 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
 
     LiInitializeVideoCallbacks(&_drCallbacks);
     _drCallbacks.setup = DrDecoderSetup;
-    _drCallbacks.start = DrStart;
-    _drCallbacks.stop = DrStop;
-    _drCallbacks.capabilities = CAPABILITY_PULL_RENDERER |
+    _drCallbacks.cleanup = DrCleanup;
+    _drCallbacks.submitDecodeUnit = DrSubmitDecodeUnit;
+    _drCallbacks.capabilities = CAPABILITY_DIRECT_SUBMIT |
                                 CAPABILITY_REFERENCE_FRAME_INVALIDATION_HEVC |
                                 CAPABILITY_REFERENCE_FRAME_INVALIDATION_AV1;
 
@@ -486,7 +522,9 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _clCallbacks.stageFailed = ClStageFailed;
     _clCallbacks.connectionStarted = ClConnectionStarted;
     _clCallbacks.connectionTerminated = ClConnectionTerminated;
+#ifdef DEBUG
     _clCallbacks.logMessage = ClLogMessage;
+#endif
     _clCallbacks.rumble = ClRumble;
     _clCallbacks.connectionStatusUpdate = ClConnectionStatusUpdate;
     _clCallbacks.setHdrMode = ClSetHdrMode;

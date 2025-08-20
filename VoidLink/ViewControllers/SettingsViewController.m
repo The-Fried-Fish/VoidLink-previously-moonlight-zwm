@@ -13,6 +13,7 @@
 #import "TemporarySettings.h"
 #import "DataManager.h"
 #import "ThemeManager.h"
+#import "Plot.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #import <VideoToolbox/VideoToolbox.h>
@@ -40,6 +41,8 @@
     CGFloat _currentRefreshRate;
     MenuSectionView *touchAndControlSection;
     NSMutableSet* hiddenStacks;
+    NSInteger _frameQueueSize;
+    NSInteger _graphOpacity;
 }
 
 @dynamic overrideUserInterfaceStyle;
@@ -148,6 +151,31 @@ static const int bitrateTable[] = {
     460000,
     480000,
     500000,
+    520000,
+    540000,
+    560000,
+    580000,
+    600000,
+    620000,
+    640000,
+    660000,
+    680000,
+    700000,
+    720000,
+    740000,
+    760000,
+    780000,
+    800000,
+    820000,
+    840000,
+    860000,
+    880000,
+    900000,
+    920000,
+    940000,
+    960000,
+    980000,
+    1000000,
 };
 
 const int RESOLUTION_TABLE_SIZE = 6;
@@ -526,12 +554,18 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.resolutionStack ofId:@"resolutionStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [self addSetting:self.fpsStack ofId:@"fpsStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.bitrateStack ofId:@"bitrateStack" withInfoTag:YES withDynamicLabel:YES to:videoSection];
-    [self addSetting:self.framepacingStack ofId:@"framepacingStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    
+    // Only show Metal renderer option on iOS 17+ where CAMetalDisplayLink is available
+    if (@available(iOS 17.0, *)) {
+        [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    }
+
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
 
@@ -609,6 +643,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     
@@ -1037,6 +1072,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         showOnlineDocAction = true;
         onlineDocLink = [LocalizationHelper localizedStringForKey:@"gyroModeStackDoc"];
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"renderingBackendStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"renderingBackendStackTip"];
+        showOnlineDocAction = false;
+    }
 
     
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
@@ -1215,7 +1254,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         [_favoriteSettingStackIdentifiers addObject:@"resolutionStack"];
         [_favoriteSettingStackIdentifiers addObject:@"fpsStack"];
         [_favoriteSettingStackIdentifiers addObject:@"bitrateStack"];
-        [_favoriteSettingStackIdentifiers addObject:@"framepacingStack"];
         [_favoriteSettingStackIdentifiers addObject:@"codecStack"];
         [_favoriteSettingStackIdentifiers addObject:@"hdrStack"];
         [_favoriteSettingStackIdentifiers addObject:@"yuv444Stack"];
@@ -1289,6 +1327,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     // Ensure we pick a bitrate that falls exactly onto a slider notch
     _bitrate = bitrateTable[[self getSliderValueForBitrate:[currentSettings.bitrate intValue]]];
+    _frameQueueSize = [currentSettings.frameQueueSize intValue];
+    _graphOpacity = [currentSettings.graphOpacity intValue];
 
     // Get the size of the screen with and without safe area insets
     // UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
@@ -1387,9 +1427,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     
     [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
+
+    NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
+    [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
+    [self.renderingBackendSelector addTarget:self action:@selector(renderingBackendChanged:) forControlEvents:UIControlEventValueChanged];
+    [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP state based on current selection
+
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
-    [self.framePacingSelector setSelectedSegmentIndex:currentSettings.useFramePacing ? 1 : 0];
     [self.multiControllerSwitch setOn:currentSettings.multiController];
     [self.swapAbxySwitch setOn:currentSettings.swapABXYButtons];
     
@@ -1425,6 +1470,22 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
     [self updateBitrateText];
     [self updateResolutionDisplayLabel];
+
+    [self.frameQueueSizeSlider setMinimumValue:1];
+    [self.frameQueueSizeSlider setMaximumValue:5];
+    [self.frameQueueSizeSlider setValue:_frameQueueSize];
+    [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved) forControlEvents:UIControlEventValueChanged];
+    [self updateFrameQueueSizeText];
+
+    [self.enableGraphsSwitch setOn:currentSettings.enableGraphs animated:NO]; // Add this line
+    [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged) forControlEvents:UIControlEventValueChanged];
+    [self enableGraphsChanged];
+    [self.graphOpacityStepper setMinimumValue:0];
+    [self.graphOpacityStepper setMaximumValue:100];
+    [self.graphOpacityStepper setValue:_graphOpacity];
+    [self.graphOpacityStepper addTarget:self action:@selector(graphOpacityStepperMoved) forControlEvents:UIControlEventValueChanged];
+    [self updateGraphOpacityText];
+
     if (@available(iOS 18.0, tvOS 18.0, *)) {}else{
         [self.audioConfigSelector removeSegmentAtIndex:1 animated:false];
         [self.audioConfigSelector removeSegmentAtIndex:1 animated:false]; // segment 2 goes away when you remove index 2
@@ -1603,6 +1664,65 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
+- (void)renderingBackendChanged:(UISegmentedControl *)sender {
+
+    // Get the current settings to compare with the new selection
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* currentSettings = [dataMan getSettings];
+    NSInteger previousBackend = [currentSettings.renderingBackend integerValue];
+    
+
+    // Check if the rendering backend has actually changed
+    if (previousBackend != sender.selectedSegmentIndex) {
+        // Show alert to prompt user to restart the app
+        NSString *message = [LocalizationHelper localizedStringForKey:@"Rendering mode change requires app restart"];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Restart Required"]
+                                                                                 message:message
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Quit Now"]
+                                                              style:UIAlertActionStyleDestructive
+                                                            handler:^(UIAlertAction * _Nonnull action) {
+
+            DataManager* directDataMan = [[DataManager alloc] init];
+            Settings* directSettings = [directDataMan retrieveSettings];
+            directSettings.renderingBackend = [NSNumber numberWithInteger:sender.selectedSegmentIndex];
+            [directDataMan saveData];
+            
+            [self saveSettings];
+            
+            exit(0);
+        }];
+        
+        UIAlertAction *laterAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Later"]
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction * _Nonnull action) {
+            // Save settings immediately to persist the renderer change
+            [self saveSettings];
+        }];
+        
+        [alertController addAction:laterAction];
+        [alertController addAction:quitAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+    
+    // Disable PiP toggle when Metal renderer is selected
+    if (sender.selectedSegmentIndex == RENDER_METAL) {
+        // Performance mode (Metal renderer) selected - disable PiP
+        [self.pipSwitch setOn:NO animated:YES];
+        [self.pipSwitch setEnabled:NO];
+    } else {
+        // Balanced mode (AVSB renderer) - enable PiP toggle if iOS 15+
+        if (@available(iOS 15.0, *)) {
+            [self.pipSwitch setEnabled:YES];
+        } else {
+            [self.pipSwitch setOn:NO];
+            [self.pipSwitch setEnabled:NO];
+        }
+    }
+}
+
 - (void)onScreenWidgetChanged{
     
     BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
@@ -1722,7 +1842,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         }
         else widgetPtr.alpha = 0.5; // this is for updating widget visibility on low iOS version like mini5 ios14
     }
-    
+
     if([widget isKindOfClass:[UISwitch class]]){
         widget.userInteractionEnabled = enabled;
         widget.alpha = enabled ? 1 : 0.5;
@@ -2110,6 +2230,30 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self updateThemeForSliders:self.view];
 }
 
+- (void) frameQueueSizeSliderMoved {
+    assert(self.frameQueueSizeSlider.value >= 0 && self.frameQueueSizeSlider.value <= 5);
+    _frameQueueSize = (int)self.frameQueueSizeSlider.value;
+    [self updateFrameQueueSizeText];
+}
+
+- (void) updateFrameQueueSizeText {
+    [self.frameQueueSizeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Frames to buffer: %ld", @"Frames to buffer label"), _frameQueueSize ]];
+}
+
+- (void) enableGraphsChanged {
+    [self.graphOpacityStepper setEnabled:[self.enableGraphsSwitch isOn]];
+}
+
+- (void) graphOpacityStepperMoved {
+    assert(self.graphOpacityStepper.value >= 0 && self.graphOpacityStepper.value <= 100);
+    _graphOpacity = (int)self.graphOpacityStepper.value;
+    [self updateGraphOpacityText];
+}
+
+- (void) updateGraphOpacityText {
+    [self.enableGraphsLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Performance Graphs - Opacity: %ld%%", @"Performance graphs opacity label"), _graphOpacity ]];
+}
+
 - (void) saveSettings {
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* currentSettings = [dataMan retrieveSettings];
@@ -2120,6 +2264,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger framerate = [self getChosenFrameRate];
 
     NSInteger audioConfig = [@[@2, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
+    NSInteger renderingBackend = [self.renderingBackendSelector selectedSegmentIndex];
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
     NSInteger keyboardToggleFingers = self.softKeyboardGestureSelector.selectedSegmentIndex == 3 ? 20 : self.softKeyboardGestureSelector.selectedSegmentIndex+3;
     NSInteger oscLayoutToolFingers = (uint16_t)self->oswLayoutFingers;
@@ -2148,12 +2293,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL enableYUV444 = self.yuv444Switch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
-    BOOL useFramePacing = [self.framePacingSelector selectedSegmentIndex] == 1;
     NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector.selectedSegmentIndex : NativeTouchOnly;
     NSInteger statsOverlayLevel = [self.statsOverlaySelector selectedSegmentIndex];
     BOOL statsOverlayEnabled = statsOverlayLevel != 0;
     BOOL enableHdr = self.hdrSwitch.isOn;
     BOOL unlockDisplayOrientation = [self.unlockDisplayOrientationSelector selectedSegmentIndex] == 1;
+    BOOL enableGraphs = self.enableGraphsSwitch.isOn;
     NSInteger resolutionSelected = [self.resolutionSelector selectedSegmentIndex];
     if (self.customResolutionSwitch.isOn) {
         resolutionSelected = RESOLUTION_TABLE_CUSTOM_INDEX;
@@ -2190,7 +2335,6 @@ BOOL isCustomResolution(int resolutionSelected) {
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP
-                      useFramePacing:useFramePacing
                            enableHdr:enableHdr
                       btMouseSupport:btMouseSupport
                            touchMode:touchMode
@@ -2200,6 +2344,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                   resolutionSelected:resolutionSelected
                  externalDisplayMode:externalDisplayMode
                localMousePointerMode:localMousePointerMode
+                      frameQueueSize:_frameQueueSize
+                        enableGraphs:enableGraphs
+                        graphOpacity:_graphOpacity
+                    renderingBackend:renderingBackend
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

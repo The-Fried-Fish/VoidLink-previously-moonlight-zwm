@@ -49,7 +49,6 @@
 @property (strong, nonatomic) IBOutlet UIStackView *yuv444Stack;
 @property (strong, nonatomic) IBOutlet UIStackView *pipStack;
 @property (strong, nonatomic) IBOutlet UIStackView *hdrStack;
-@property (strong, nonatomic) IBOutlet UIStackView *framepacingStack;
 @property (strong, nonatomic) IBOutlet UIStackView *reverseMouseWheelDirectionStack;
 @property (strong, nonatomic) IBOutlet UIStackView *citrixX1MouseStack;
 @property (strong, nonatomic) IBOutlet UISwitch *citrixX1MouseSwitch;
@@ -57,6 +56,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *unlockDisplayOrientationStack;
 @property (strong, nonatomic) IBOutlet UIStackView *externalDisplayModeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *localMousePointerModeStack;
+@property (strong, nonatomic) IBOutlet UIStackView *renderingBackendStack;
+@property (strong, nonatomic) IBOutlet UIStackView *frameQueueSizeStack;
+@property (strong, nonatomic) IBOutlet UIStackView *performanceGraphStack;
 
 @property (strong, nonatomic) IBOutlet UILabel *bitrateLabel;
 @property (strong, nonatomic) IBOutlet UISlider *bitrateSlider;
@@ -74,7 +76,6 @@
 @property (strong, nonatomic) IBOutlet UISwitch *hdrSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *yuv444Switch;
 @property (strong, nonatomic) IBOutlet UISwitch *pipSwitch;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *framePacingSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *reverseMouseWheelDirectionSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *statsOverlaySelector;
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
@@ -106,6 +107,14 @@
 
 @property (strong, nonatomic) IBOutlet UIStackView *audioConfigStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioConfigSelector;
+
+@property (strong, nonatomic) IBOutlet UILabel *frameQueueSizeLabel;
+@property (strong, nonatomic) IBOutlet UISlider *frameQueueSizeSlider;
+
+@property (strong, nonatomic) IBOutlet UILabel *enableGraphsLabel;
+@property (strong, nonatomic) IBOutlet UISwitch *enableGraphsSwitch;
+@property (strong, nonatomic) IBOutlet UIStepper *graphOpacityStepper;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
 
 @property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
 @property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;

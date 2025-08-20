@@ -75,7 +75,7 @@
     id navBarAppearanceStandard;
     bool _viewJustAppeared;
     TemporaryApp * launchedApp;
-    
+
     NSTimer *_foregroundHostUpdateTimer;
 
 #if TARGET_OS_TV
@@ -819,7 +819,6 @@ static NSMutableSet* hostList;
     _streamConfig.bitRate = [streamSettings.bitrate intValue];
     _streamConfig.optimizeGameSettings = streamSettings.optimizeGames;
     _streamConfig.playAudioOnPC = streamSettings.playAudioOnPC;
-    _streamConfig.useFramePacing = streamSettings.useFramePacing;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
     _streamConfig.gyroMode = [streamSettings.gyroMode intValue];
@@ -919,7 +918,7 @@ static NSMutableSet* hostList;
     HttpManager* hMan = [[HttpManager alloc] initWithHost:app.host];
     HttpResponse* quitResponse = [[HttpResponse alloc] init];
     HttpRequest* quitRequest = [HttpRequest requestForResponse: quitResponse withUrlRequest:[hMan newQuitAppRequest]];
-    
+
     // Exempt this host from discovery while handling the quit operation
     [self->_discMan pauseDiscoveryForHost:app.host];
     [hMan executeRequestSynchronously:quitRequest];
@@ -1176,11 +1175,11 @@ static NSMutableSet* hostList;
     [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView && [settingsViewController hdrSupported]];
     [settingsViewController.gyroModeSelector setEnabled:!_settingsExpandedInStreamView || ![streamFrameViewController shallDisableGyroHotSwitch]];
     [settingsViewController.emulatedControllerTypeSelector setEnabled:!_settingsExpandedInStreamView];
-    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.pipStack];
+    [settingsViewController.renderingBackendSelector setEnabled:!_settingsExpandedInStreamView];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
@@ -1700,9 +1699,9 @@ static NSMutableSet* hostList;
 {
     if (!_background || _viewJustAppeared) {
         // This will kick off box art caching
-        
+
         _viewJustAppeared = false;
-        
+
         [_foregroundHostUpdateTimer invalidate];
         _foregroundHostUpdateTimer = nil;
         
@@ -1770,11 +1769,11 @@ static NSMutableSet* hostList;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:NO];
-    
+
     _viewJustAppeared = true;
-    
+
     [self beginForegroundRefresh];
-    
+
     // [self setupHostViewTitle];
     // [self reloadScrollHostView]; //remove this for proper test
     [self attachWaterMark];

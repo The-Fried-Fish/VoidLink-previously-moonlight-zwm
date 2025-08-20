@@ -77,7 +77,6 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP
-                  useFramePacing:(BOOL)useFramePacing
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
                // absoluteTouchMode:(BOOL)absoluteTouchMode
@@ -88,6 +87,10 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
               resolutionSelected:(NSInteger)resolutionSelected
              externalDisplayMode:(NSInteger)externalDisplayMode
            localMousePointerMode:(NSInteger)localMousePointerMode
+                  frameQueueSize:(NSInteger)frameQueueSize
+                    enableGraphs:(BOOL)enableGraphs
+                    graphOpacity:(NSInteger)graphOpacity
+                renderingBackend:(NSInteger)renderingBackend
            backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;
