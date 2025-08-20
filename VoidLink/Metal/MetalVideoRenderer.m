@@ -705,7 +705,6 @@ CFStringRef __currentColorSpace;
         [commandBuffer presentDrawable:drawable];
 
         [commandBuffer commit];
-        [commandBuffer waitUntilCompleted];
     }
 }
 
@@ -716,11 +715,7 @@ CFStringRef __currentColorSpace;
         dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC));  // 100ms
         long result = dispatch_semaphore_wait(_inFlightSemaphore, timeout);
         if (result != 0) {
-            // Timeout occurred - this is the main cause of video freezes
-            // Signal the semaphore to unblock potentially stuck frames
-            for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
-                dispatch_semaphore_signal(_inFlightSemaphore);
-            }
+            Log(LOG_W, @"MetalVideoRenderer semaphore timeout - requesting IDR frame");
             LiRequestIdrFrame(); // Request recovery
         }
     }
