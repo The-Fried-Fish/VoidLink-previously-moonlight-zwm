@@ -882,14 +882,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
               }
             }
 
-            if (self->_formatDescImageBuffer == NULL || !CMVideoFormatDescriptionMatchesImageBuffer(self->_formatDescImageBuffer, imageBuffer)) {
-              OSStatus res = CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imageBuffer, &(self->_formatDescImageBuffer));
-              if (res != noErr) {
-                Log(LOG_E, @"Failed to create video format description from imageBuffer");
-                return;
-              }
-            }
-
             CMSampleTimingInfo sampleTiming = {kCMTimeInvalid, presentationTimestamp, presentationDuration};
 
             OSStatus err =
