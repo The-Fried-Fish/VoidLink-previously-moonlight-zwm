@@ -674,6 +674,7 @@ CFStringRef __currentColorSpace;
         [commandBuffer presentDrawable:drawable];
 
         [commandBuffer commit];
+        [commandBuffer waitUntilCompleted];
     }
 }
 
