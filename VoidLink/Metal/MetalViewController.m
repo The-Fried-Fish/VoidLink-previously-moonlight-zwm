@@ -18,6 +18,7 @@
     MetalView *_metalView;
     MetalVideoRenderer *_renderer;
     MetricsHandler _metricsHandler;
+    CADisplayLink *_displayLink;
 }
 
 - (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate enableHdr:(BOOL)enableHdr metricsHandler:(MetricsHandler)metricsHandler {
@@ -72,6 +73,20 @@
     // Initialize the renderer-dependent view properties.
     view.metalLayer.pixelFormat = renderer.colorPixelFormat;
     view.metalLayer.maximumDrawableCount = 3;
+
+    // We need a no-op displaylink timer or iOS can decide to run at 60fps
+    // The overhead from this should be minimal.
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler:)];
+    if (@available(iOS 15.0, tvOS 15.0, *)) {
+        _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(_framerate, _framerate, _framerate);
+    } else {
+        _displayLink.preferredFramesPerSecond = _framerate;
+    }
+    [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+- (void)displayLinkHandler:(CADisplayLink *)link {
+    // Rendering does not use DisplayLink, this exists to fool iOS into keeping us running at the desired framerate
 }
 
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
@@ -84,23 +99,15 @@
     [_frameQueue waitForEnqueue];
 }
 
-
-- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(17.0)) {
+/// Draw frame (used by manual loop)
+- (void)renderTo:(nonnull CAMetalLayer *)layer {
     if (!_renderer.isStopping) {
         CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
         Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
         if (frame) {
-            [_renderer renderFrame:frame withDrawable:drawable];
-        }
-    }
-}
-
-- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0)) {
-    if (!_renderer.isStopping) {
-        CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
-        Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
-        if (frame) {
-            [_renderer renderFrame:frame withDrawable:drawable targetPresentationTimestamp:targetPresentationTimestamp];
+            if (@available(iOS 13.0, *)) {
+                [_renderer renderFrame:frame toLayer:layer];
+            }
         }
     }
 }
@@ -114,14 +121,12 @@
 
     Log(LOG_I, @"[MetalViewController] viewDidDisappear");
 
-    // Shutdown the renderer first
+    if (_displayLink) {
+        [_displayLink invalidate];
+    }
+
     [_renderer shutdown];
     _renderer = nil;
-
-    // Then shutdown the view's display link
-    if (_metalView) {
-        [_metalView shutdown];
-    }
 }
 
 #if TARGET_OS_IOS
