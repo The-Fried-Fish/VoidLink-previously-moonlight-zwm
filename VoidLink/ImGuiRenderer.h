@@ -28,7 +28,6 @@ typedef void (^MetricsHandler)(int plotId, CFTimeInterval value);
 @property (nonatomic) BOOL enableGraphs;
 @property (nonatomic) float graphOpacity;
 @property (nonatomic) BOOL imguiRunning;
-@property (nonatomic) int streamFps;
 @property (nonatomic) MetricsHandler _Nonnull metricsHandler;
 
 -(nonnull instancetype) initWithFrame:(CGRect)bounds

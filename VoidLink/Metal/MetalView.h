@@ -15,14 +15,13 @@
 @protocol MetalViewDelegate <NSObject>
 
 - (void)drawableResize:(CGSize)size;
-- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(17.0));
-- (void)renderWithDrawable:(nonnull id<CAMetalDrawable>)drawable toLayer:(nonnull CAMetalLayer *)layer targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0));
+- (void)renderTo:(nonnull CAMetalLayer *)layer;
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer;
 
 @end
 
 // The Metal game view base class.
-@interface MetalView : UIView <CALayerDelegate, CAMetalDisplayLinkDelegate>
+@interface MetalView : UIView <CALayerDelegate>
 
 @property (nonatomic, nonnull, readonly) CAMetalLayer *metalLayer;
 @property (nonatomic, nullable) id<MetalViewDelegate> delegate;
