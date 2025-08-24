@@ -847,6 +847,10 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     [self setupDecompressionSession];
   }
 
+  if (_decompressionSession == nil) {
+    return kVTInvalidSessionErr;
+  }
+
   OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(
       _decompressionSession,
       sampleBuffer,
