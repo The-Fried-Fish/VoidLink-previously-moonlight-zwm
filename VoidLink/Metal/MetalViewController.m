@@ -62,7 +62,8 @@
     // Initialize the renderer.
     MetalVideoRenderer *renderer = [[MetalVideoRenderer alloc] initWithMetalDevice:device
                                                                drawablePixelFormat:MTLPixelFormatBGR10A2Unorm
-                                                                         framerate:self->_framerate];
+                                                                         framerate:self->_framerate
+                                                                        hdrEnabled:self->_enableHdr];
     if (!renderer) {
         Log(LOG_E, @"The renderer couldn't be initialized.");
         return;

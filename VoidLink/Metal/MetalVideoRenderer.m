@@ -135,7 +135,7 @@ CFStringRef __currentColorSpace;
     dispatch_semaphore_t _inFlightSemaphore;
 }
 
-- (instancetype)initWithMetalDevice:(id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate {
+- (instancetype)initWithMetalDevice:(id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate hdrEnabled:(BOOL)hdrEnabled {
     self = [super init];
     if (self) {
         _sq = dispatch_queue_create("com.moonlight.MetalVideoRenderer",
@@ -144,6 +144,7 @@ CFStringRef __currentColorSpace;
         _device = device;
         _colorPixelFormat = MTLPixelFormatBGR10A2Unorm;
         _framerate = framerate;
+        _hdrEnabled = hdrEnabled;
         _commandQueue = [_device newCommandQueue];
         _currentEDRHeadroom = 1.0f;
         _lastColorSpace = -1;
@@ -416,7 +417,7 @@ CFStringRef __currentColorSpace;
 #else
             BOOL canUseEDR = NO;
             if (@available(iOS 16.0, tvOS 16.0, *)) {
-                canUseEDR = useEDR && [CAEDRMetadata isAvailable];
+                canUseEDR = useEDR && [CAEDRMetadata isAvailable] && _hdrEnabled && isHDR;
             }
             if (canUseEDR) {
                 [self applyEDRFromFrame:frame withColorspace:colorspace toLayer:layer];
