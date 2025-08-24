@@ -22,4 +22,7 @@
                             enableHdr:(BOOL)enableHdr
                        metricsHandler:(MetricsHandler _Nonnull)metricsHandler;
 
+- (void)pauseRendering;
+- (void)resumeRendering;
+
 @end

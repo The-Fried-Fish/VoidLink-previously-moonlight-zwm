@@ -128,6 +128,12 @@
 - (void)drawInMTKView:(MTKView *)view
 {
 #if !defined(IMGUI_DISABLE)
+    // Don't render if app is in background to avoid GPU submission errors
+    // Allow rendering when inactive (control center, notifications)
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        return;
+    }
+    
     ImGuiIO &io = ImGui::GetIO();
     io.DisplaySize.x = view.bounds.size.width;
     io.DisplaySize.y = view.bounds.size.height;

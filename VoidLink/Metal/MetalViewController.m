@@ -91,6 +91,11 @@
 }
 
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer {
+    // Skip waiting when renderer is paused
+    if (_renderer.isStopping) {
+        return;
+    }
+
     // Renderer obtains a nextDrawable, waiting if necessary
     if (@available(iOS 13.0, *)) {
         [_renderer waitToRenderTo:layer];
@@ -102,19 +107,45 @@
 
 /// Draw frame (used by manual loop)
 - (void)renderTo:(nonnull CAMetalLayer *)layer {
+    CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
+    Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
+
     if (!_renderer.isStopping) {
-        CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
-        Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
+        // Only render if not paused
         if (frame) {
             if (@available(iOS 13.0, *)) {
                 [_renderer renderFrame:frame toLayer:layer];
             }
         }
+    } else {
+        // When paused, we still dequeue frames to prevent accumulation
+        // but don't render them. Also sleep a bit to reduce CPU usage
+        usleep(100000);
     }
 }
 
 - (void)drawableResize:(CGSize)size {
     [_renderer drawableResize:size];
+}
+
+- (void)pauseRendering {
+    if (_displayLink) {
+        _displayLink.paused = YES;
+    }
+    if (_renderer) {
+        _renderer.isStopping = YES;
+    }
+    Log(LOG_I, @"[MetalViewController] Rendering paused");
+}
+
+- (void)resumeRendering {
+    if (_renderer) {
+        _renderer.isStopping = NO;
+    }
+    if (_displayLink) {
+        _displayLink.paused = NO;
+    }
+    Log(LOG_I, @"[MetalViewController] Rendering resumed");
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

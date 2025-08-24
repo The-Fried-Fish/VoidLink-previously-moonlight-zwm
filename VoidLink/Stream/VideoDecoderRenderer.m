@@ -291,7 +291,9 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 // we missed a callback
                 // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
             }
-            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+            }
         }
         lastTargetLocal = targetLocal;
 
@@ -843,11 +845,24 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                             frameNumber:(int)frameNumber
                               frameType:(int)frameType
                         decodeStartTime:(CFTimeInterval)decodeStartTime {
-  if (frameType == FRAME_TYPE_IDR || _decompressionSession == nil) {
+  // Check if we need to create/recreate the decompression session
+  BOOL needsNewSession = (frameType == FRAME_TYPE_IDR || _decompressionSession == nil);
+
+  // Also check if the session might have been invalidated by iOS during background
+  if (!needsNewSession && _decompressionSession != nil) {
+    Boolean isValid = VTDecompressionSessionCanAcceptFormatDescription(_decompressionSession, _formatDesc);
+    if (!isValid) {
+      Log(LOG_W, @"Decompression session is invalid, needs recreation");
+      needsNewSession = YES;
+    }
+  }
+
+  if (needsNewSession) {
     [self setupDecompressionSession];
   }
 
   if (_decompressionSession == nil) {
+    Log(LOG_E, @"Failed to create decompression session");
     return kVTInvalidSessionErr;
   }
 
@@ -910,24 +925,26 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
               }
               int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
 
-              static PlotMetrics frameQueueMetrics = {};
-              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
-              [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
+              if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                  static PlotMetrics frameQueueMetrics = {};
+                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
+                  [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
 
-              [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
+                  [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
 
-              // It's important we capture host metrics on the incoming thread, as this frame object
-              // may have been dropped by the above enqueue
-              static CFTimeInterval lastHostFrame = 0.0f;
-              if (lastHostFrame != 0) {
-                [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                  // It's important we capture host metrics on the incoming thread, as this frame object
+                  // may have been dropped by the above enqueue
+                  static CFTimeInterval lastHostFrame = 0.0f;
+                  if (lastHostFrame != 0) {
+                    [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                  }
+                  lastHostFrame = frame.pts;
+
+                  // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
+                  static PlotMetrics decodeMetrics = {};
+                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
+                  [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
               }
-              lastHostFrame = frame.pts;
-
-              // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
-              static PlotMetrics decodeMetrics = {};
-              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
-              [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
           });
       });
 
