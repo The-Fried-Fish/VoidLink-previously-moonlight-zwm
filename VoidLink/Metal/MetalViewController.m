@@ -124,10 +124,19 @@
 
     if (_displayLink) {
         [_displayLink invalidate];
+        _displayLink = nil;
     }
 
-    [_renderer shutdown];
-    _renderer = nil;
+    if (_renderer) {
+        [_renderer shutdown];
+        _renderer = nil;
+    }
+    
+    if (_metalView) {
+        _metalView.delegate = nil;
+        [_metalView shutdown];
+        _metalView = nil;
+    }
 }
 
 #if TARGET_OS_IOS

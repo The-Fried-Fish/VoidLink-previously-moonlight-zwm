@@ -163,6 +163,11 @@ CFStringRef __currentColorSpace;
         _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
         _renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
         _renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+        
+        // Initialize texture array to NULL
+        for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+            _cvMetalTextures[i] = NULL;
+        }
     }
     return self;
 }
@@ -179,20 +184,36 @@ CFStringRef __currentColorSpace;
     if (_VideoVertexBuffer) {
         _VideoVertexBuffer = nil;
     }
+    
+    // Clean up pipeline states
     for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
         if (_videoPipelineState[i]) {
             _videoPipelineState[i] = nil;
         }
         _videoPipelinePixelFormat[i] = MTLPixelFormatInvalid;
     }
+    
+    // Clean up any remaining Metal textures
+    for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+        if (_cvMetalTextures[i]) {
+            CFRelease(_cvMetalTextures[i]);
+            _cvMetalTextures[i] = NULL;
+        }
+    }
+    
+    // Properly release texture cache
+    if (_textureCache) {
+        CFRelease(_textureCache);
+        _textureCache = NULL;
+    }
+    
     if (_renderPassDescriptor) {
         _renderPassDescriptor = nil;
     }
-    if (_textureCache) {
-        _textureCache = nil;
-    }
+    
     if (__currentColorSpace) {
         CFRelease(__currentColorSpace);
+        __currentColorSpace = NULL;
     }
 }
 
@@ -345,6 +366,17 @@ CFStringRef __currentColorSpace;
     BOOL fullRange = NO;
     int colorspace = [self getFrameColorspaceAndRange:frame isFullRange:&fullRange];
     if (colorspace != _lastColorSpace || fullRange != _lastFullRange) {
+        // Clean up any pending textures before colorspace change
+        for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+            if (_cvMetalTextures[i]) {
+                CFRelease(_cvMetalTextures[i]);
+                _cvMetalTextures[i] = NULL;
+            }
+        }
+        // Flush texture cache to avoid memory accumulation
+        if (_textureCache) {
+            CVMetalTextureCacheFlush(_textureCache, 0);
+        }
         CGColorSpaceRef newColorSpace = nil;
         MTLPixelFormat newPixelFormat = layer.pixelFormat;
         BOOL isHDR = NO;
@@ -436,6 +468,7 @@ CFStringRef __currentColorSpace;
 #endif
             if (__currentColorSpace) {
                 CFRelease(__currentColorSpace);
+                __currentColorSpace = NULL;
             }
             __currentColorSpace = CGColorSpaceCopyName(newColorSpace);
             CGColorSpaceRelease(newColorSpace);
@@ -443,11 +476,14 @@ CFStringRef __currentColorSpace;
 
         // Create the new colorspace parameter buffer for our fragment shader
         MTLResourceOptions bufferOptions = MTLResourceStorageModeShared;
-        _CscParamsBuffer = [_device newBufferWithBytes:(void *)&paramBuffer length:sizeof(paramBuffer) options:bufferOptions];
-        if (!_CscParamsBuffer) {
+        id<MTLBuffer> newCscParamsBuffer = [_device newBufferWithBytes:(void *)&paramBuffer length:sizeof(paramBuffer) options:bufferOptions];
+        if (!newCscParamsBuffer) {
             Log(LOG_E, @"Failed to create CSC parameters buffer");
             return NO;
         }
+        
+        // Replace old buffer with new one
+        _CscParamsBuffer = newCscParamsBuffer;
 
         _lastColorSpace = colorspace;
         _lastFullRange = fullRange;
@@ -504,11 +540,14 @@ CFStringRef __currentColorSpace;
     };
 
     MTLResourceOptions bufferOptions = MTLResourceStorageModeShared;
-    _VideoVertexBuffer = [_device newBufferWithBytes:verts length:sizeof(verts) options:bufferOptions];
-    if (!_VideoVertexBuffer) {
+    id<MTLBuffer> newVideoVertexBuffer = [_device newBufferWithBytes:verts length:sizeof(verts) options:bufferOptions];
+    if (!newVideoVertexBuffer) {
         Log(LOG_E, @"Failed to create video vertex buffer");
         return NO;
     }
+    
+    // Replace old buffer with new one
+    _VideoVertexBuffer = newVideoVertexBuffer;
 
     _lastFrameWidth = [frame width];
     _lastFrameHeight = [frame height];
@@ -550,7 +589,9 @@ CFStringRef __currentColorSpace;
             Log(LOG_I, @"Metal frame changed layer's colorspace and/or pixel format");
             // Invalidate all pipeline states since pixel format affects all of them
             for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
-                _videoPipelineState[i] = nil;
+                if (_videoPipelineState[i]) {
+                    _videoPipelineState[i] = nil;
+                }
                 _videoPipelinePixelFormat[i] = MTLPixelFormatInvalid;
             }
         }
@@ -700,7 +741,7 @@ CFStringRef __currentColorSpace;
             for (size_t i = 0; i < planes; i++) {
                 if (self->_cvMetalTextures[i]) {
                     CFRelease(self->_cvMetalTextures[i]);
-                    self->_cvMetalTextures[i] = nil;
+                    self->_cvMetalTextures[i] = NULL;
                 }
             }
 
@@ -736,6 +777,27 @@ CFStringRef __currentColorSpace;
         // Ensure no rendering is in flight
         for (NSUInteger i = 0; i < MaxFramesInFlight; i++) {
             dispatch_semaphore_signal(_inFlightSemaphore);
+        }
+        
+        // Clean up any pending Metal textures
+        for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+            if (_cvMetalTextures[i]) {
+                CFRelease(_cvMetalTextures[i]);
+                _cvMetalTextures[i] = NULL;
+            }
+        }
+        
+        // Flush texture cache to free memory
+        if (_textureCache) {
+            CVMetalTextureCacheFlush(_textureCache, 0);
+        }
+        
+        // Clear pipeline states
+        for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
+            if (_videoPipelineState[i]) {
+                _videoPipelineState[i] = nil;
+            }
+            _videoPipelinePixelFormat[i] = MTLPixelFormatInvalid;
         }
     }
 }
