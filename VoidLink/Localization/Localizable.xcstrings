@@ -24,6 +24,29 @@
         }
       }
     },
+    "  %d%% opacity  " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        }
+      }
+    },
     "  disconnect  " : {
       "extractionState" : "manual",
       "localizations" : {
@@ -417,29 +440,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%d指輕點"
-          }
-        }
-      }
-    },
-    "%d%% opacity" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d%%不透明度"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d%%不透明度"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d%%不透明度"
           }
         }
       }

@@ -40,6 +40,8 @@
     CGFloat _scrollSpeed;
     CGFloat _currentRefreshRate;
     MenuSectionView *touchAndControlSection;
+    MenuSectionView *videoSection;
+    MenuSectionView *otherSection;
     NSMutableSet* hiddenStacks;
 }
 
@@ -543,7 +545,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
     
 - (void)layoutSections{
-    MenuSectionView *videoSection = [[MenuSectionView alloc] init];
+    videoSection = [[MenuSectionView alloc] init];
     videoSection.delegate = self;
     videoSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Video"];
     if (@available(iOS 13.0, *)) {
@@ -557,8 +559,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
 
     // Only show Metal renderer option on iOS 17+ where CAMetalDisplayLink is available
     if (@available(iOS 17.0, *)) {
@@ -630,7 +632,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [audioSection setExpanded:YES];
 
     
-    MenuSectionView *otherSection = [[MenuSectionView alloc] init];
+    otherSection = [[MenuSectionView alloc] init];
     otherSection.delegate = self;
     otherSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Others"];
     if (@available(iOS 13.0, *)) {
@@ -1489,8 +1491,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self frameQueueSizeSliderMoved:self.frameQueueSizeSlider];
 
     [self.enableGraphsSwitch setOn:currentSettings.enableGraphs animated:NO]; // Add this line
-    [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged) forControlEvents:UIControlEventValueChanged];
-    [self enableGraphsChanged];
+    [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged:) forControlEvents:UIControlEventValueChanged];
+    [self enableGraphsChanged:self.enableGraphsSwitch];
     [self.graphOpacityStepper setMinimumValue:0];
     [self.graphOpacityStepper setMaximumValue:100];
     [self.graphOpacityStepper setValue:(int)currentSettings.graphOpacity.intValue];
@@ -1738,21 +1740,35 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
-
+    [self setHidden:sender.selectedSegmentIndex == FramePacingModeLegacy forStack:self.frameQueueSizeStack];
+    [videoSection updateViewForFoldState];
+    
+    if(sender.selectedSegmentIndex == FramePacingModeLegacy){
+        [self.enableGraphsSwitch setOn:NO];
+        [self findDynamicLabelFromStack:_graphOpacityStack].hidden = YES;
+    }
+    [self.enableGraphsSwitch setEnabled:sender.selectedSegmentIndex == FramePacingModeQueue];
+    [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
+    [self setHidden:sender.selectedSegmentIndex == FramePacingModeLegacy forStack:self.performanceGraphStack];
+    [otherSection updateViewForFoldState];
+    
+    /*
     if (sender.selectedSegmentIndex == FramePacingModeLegacy) {
         // Legacy mode selected - disable frames to buffer and graph settings
         [self.frameQueueSizeSlider setEnabled:NO];
         [self.enableGraphsSwitch setOn:NO animated:YES];
+        
         [self.enableGraphsSwitch setEnabled:NO];
         [self.graphOpacityStepper setEnabled:NO];
     } else {
         // Queue mode selected - enable frames to buffer and graph settings
         [self.frameQueueSizeSlider setEnabled:YES];
         [self.enableGraphsSwitch setEnabled:YES];
+        
         if (self.enableGraphsSwitch.isOn) {
             [self.graphOpacityStepper setEnabled:YES];
         }
-    }
+    }*/
 }
 
 - (void)onScreenWidgetChanged{
@@ -2267,8 +2283,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_frameQueueSizeStack].text = [NSString stringWithFormat:@"  %d  ", (int)self.frameQueueSizeSlider.value];
 }
 
-- (void) enableGraphsChanged {
-    [self.graphOpacityStepper setEnabled:[self.enableGraphsSwitch isOn]];
+- (void) enableGraphsChanged:(UISwitch* )sender {
+    [self.graphOpacityStepper setEnabled:sender.isOn];
+    [self findDynamicLabelFromStack:self.graphOpacityStack].hidden = !sender.isOn;
 }
 
 - (void) graphOpacityStepperTapped:(UIStepper* )sender {
