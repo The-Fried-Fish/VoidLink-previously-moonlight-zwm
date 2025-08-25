@@ -1035,7 +1035,7 @@
     },
     "ccm-n2-PXi.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Performance Graphs - Opacity: 50%\"; ObjectID = \"ccm-n2-PXi\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1413,7 +1413,7 @@
     },
     "dK2-1g-PUQ.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.\"; ObjectID = \"dK2-1g-PUQ\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3309,6 +3309,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "test"
+          }
+        }
+      }
+    },
+    "t7a-18-5wz.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs  \"; ObjectID = \"t7a-18-5wz\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance Graphs  "
           }
         }
       }

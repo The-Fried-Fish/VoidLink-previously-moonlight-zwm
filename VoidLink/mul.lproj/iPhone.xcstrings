@@ -1886,30 +1886,30 @@
       }
     },
     "LVq-7c-3zg.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs\"; ObjectID = \"LVq-7c-3zg\";",
+      "comment" : "Class = \"UILabel\"; text = \"Performance Graph  \"; ObjectID = \"LVq-7c-3zg\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Performance Graphs"
+            "value" : "Performance Graph  "
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "性能图表"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "效能圖表"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "效能圖表"
           }
         }

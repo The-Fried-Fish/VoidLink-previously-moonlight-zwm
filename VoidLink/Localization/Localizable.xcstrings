@@ -3554,6 +3554,35 @@
         }
       }
     },
+    "performanceGraphStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示帧时间和缓冲区健康指标。如果它们遮挡了屏幕的部分内容，请调整透明度。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間和緩衝區健康指標。如果它們遮蓋了畫面部分內容，請調整透明度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間和緩衝區健康指標。如果它們遮蓋了畫面部分內容，請調整透明度。"
+          }
+        }
+      }
+    },
     "Peripherals" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -1079,8 +1079,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"renderingBackendStackTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"performanceGraphStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"performanceGraphStackTip"];
+        showOnlineDocAction = false;
+    }
 
     
+        
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
     
