@@ -55,6 +55,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
+    BOOL _useLegacyPacing;
 }
 
 - (void)reinitializeDisplayLayer
@@ -129,6 +130,8 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     DataManager* dataMan = [[DataManager alloc] init];
 
+    _useLegacyPacing = [[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy;
+
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];
     [_frameQueue setHighWaterMark:(int)[[dataMan getSettings].frameQueueSize integerValue]];
@@ -155,11 +158,22 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     DataManager* dataMan = [[DataManager alloc] init];
     if ([[dataMan getSettings].renderingBackend integerValue] == RENDER_AVSB) {
-        // PACING_MODE_VSYNC:
-        // Deliver 1 frame at each vsync interval. Ignores server pts timestamps.
-        // Drop frames intelligently to maintain chosen queue size.
         _renderingBackend = RENDER_AVSB;
-        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(renderModeAVSB:)];
+        
+        // Choose the appropriate selector based on frame pacing mode
+        SEL displayLinkSelector;
+        if (_useLegacyPacing) {
+            // Legacy frame pacing: use simple displayLinkCallback
+            displayLinkSelector = @selector(displayLinkCallback:);
+        } else {
+            // PACING_MODE_VSYNC:
+            // Deliver 1 frame at each vsync interval. Ignores server pts timestamps.
+            // Drop frames intelligently to maintain chosen queue size.
+            // Queue-based frame pacing: use renderModeAVSB
+            displayLinkSelector = @selector(renderModeAVSB:);
+        }
+        
+        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:displayLinkSelector];
 
         if (@available(iOS 15.0, tvOS 15.0, *)) {
             _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(self->_frameRate, self->_frameRate, self->_frameRate);
@@ -304,6 +318,33 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         // This is used to avoid overshooting a vsync by waiting too long.
         const double alpha = 0.1f;
         avgOverhead = ((CACurrentMediaTime() - dl1) * alpha) + (avgOverhead * (1.0 - alpha));
+    }
+}
+
+#pragma mark DisplayLink - Legacy Frame Pacing
+
+// Legacy frame pacing callback - matches upstream/Integration behavior exactly
+- (void)displayLinkCallback:(CADisplayLink *)sender
+{
+    VIDEO_FRAME_HANDLE handle;
+    PDECODE_UNIT du;
+    
+    while (LiPollNextVideoFrame(&handle, &du)) {
+        LiCompleteVideoFrame(handle, DrSubmitDecodeUnit(du));
+        
+        // Calculate the actual display refresh rate
+        double displayRefreshRate = 1 / (_displayLink.targetTimestamp - _displayLink.timestamp);
+        
+        // Only pace frames if the display refresh rate is >= 90% of our stream frame rate.
+        // Battery saver, accessibility settings, or device thermals can cause the actual
+        // refresh rate of the display to drop below the physical maximum.
+        if (displayRefreshRate >= _frameRate * 0.9f) {
+            // Keep one pending frame to smooth out gaps due to
+            // network jitter at the cost of 1 frame of latency
+            if (LiGetPendingVideoFrames() == 1) {
+                break;
+            }
+        }
     }
 }
 
@@ -813,15 +854,21 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         }
     }
 
+    CMSampleBufferRef sampleBuffer;
+    CMTime presentationTimeStamp;
+    if (_useLegacyPacing) {
+        presentationTimeStamp = CMTimeMake(du->presentationTimeUs / 1000, 1000);
+    } else {
+        presentationTimeStamp = CMTimeMake((int64_t)du->rtpTimestamp, 90000);
+    }
     // Set the current frame's pts, in RTP 90khz units. We will set the duration
     // later in FrameQueue because it requires the next frame's timestamp.
     CMSampleTimingInfo sampleTiming = {
-        .duration              = kCMTimeInvalid,
-        .presentationTimeStamp = CMTimeMake((int64_t)du->rtpTimestamp, 90000),
-        .decodeTimeStamp       = kCMTimeInvalid,
+        .duration = kCMTimeInvalid,
+        .presentationTimeStamp = presentationTimeStamp,
+        .decodeTimeStamp = kCMTimeInvalid,
     };
 
-    CMSampleBufferRef sampleBuffer;
     status = CMSampleBufferCreateReady(kCFAllocatorDefault,
                                        frameBlockBuffer,
                                        _formatDesc, 1, 1,
@@ -834,10 +881,24 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         return DR_NEED_IDR;
     }
 
-    OSStatus decodeStatus = [self decodeFrameWithSampleBuffer:sampleBuffer
-                                                  frameNumber:du->frameNumber
-                                                    frameType:du->frameType
-                                              decodeStartTime:decodeStartTime];
+    if (_useLegacyPacing) {
+        // Enqueue the next frame
+        [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
+
+        if (du->frameType == FRAME_TYPE_IDR) {
+            // Ensure the layer is visible now
+            self->_displayLayer.hidden = NO;
+
+            // Tell our parent VC to hide the progress indicator
+            [self->_callbacks videoContentShown];
+        }
+    } else {
+        OSStatus decodeStatus = [self decodeFrameWithSampleBuffer:sampleBuffer
+                                                      frameNumber:du->frameNumber
+                                                        frameType:du->frameType
+                                                  decodeStartTime:decodeStartTime];
+    }
+
     // Dereference the buffers
     CFRelease(dataBlockBuffer);
     CFRelease(frameBlockBuffer);
