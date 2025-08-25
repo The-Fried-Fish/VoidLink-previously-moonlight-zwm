@@ -91,36 +91,6 @@
         }
       }
     },
-    "3Ff-AF-K42.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.\"; ObjectID = \"3Ff-AF-K42\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "显示帧时间和缓冲健康指标。如果遮挡屏幕部分内容，请调整透明度。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。"
-          }
-        }
-      }
-    },
     "3Hh-2q-gas.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Preferred Codec\"; ObjectID = \"3Hh-2q-gas\";",
       "extractionState" : "extracted_with_value",
@@ -1087,6 +1057,66 @@
         }
       }
     },
+    "CC6-pu-Uoh.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[0] = \"Legacy\"; ObjectID = \"CC6-pu-Uoh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Legacy"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "传统模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "傳統模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "傳統模式"
+          }
+        }
+      }
+    },
+    "CC6-pu-Uoh.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[1] = \"Queue Buffering\"; ObjectID = \"CC6-pu-Uoh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Queue Buffering"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "队列缓冲"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "佇列緩衝"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "佇列緩衝"
+          }
+        }
+      }
+    },
     "ci6-ak-aCa.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Custom Resolution\"; ObjectID = \"ci6-ak-aCa\";",
       "extractionState" : "extracted_with_value",
@@ -1173,6 +1203,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "手勢滑動觸發距離"
+          }
+        }
+      }
+    },
+    "Cvx-kQ-L3H.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing Mode\"; ObjectID = \"Cvx-kQ-L3H\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Frame Pacing Mode"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帧步进控制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影格步調"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影格步調"
           }
         }
       }
@@ -1796,31 +1856,31 @@
       }
     },
     "LVq-7c-3zg.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs - Opacity: 50%\"; ObjectID = \"LVq-7c-3zg\";",
+      "comment" : "Class = \"UILabel\"; text = \"Performance Graph  \"; ObjectID = \"LVq-7c-3zg\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Performance Graphs - Opacity: 50%"
+            "value" : "Performance Graph  "
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "性能图表 - 不透明度：50%"
+            "state" : "needs_review",
+            "value" : "性能图表"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能圖表 - 不透明度：50%"
+            "state" : "needs_review",
+            "value" : "效能圖表"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能圖表 - 不透明度：50%"
+            "state" : "needs_review",
+            "value" : "效能圖表"
           }
         }
       }

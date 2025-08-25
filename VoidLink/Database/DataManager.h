@@ -42,6 +42,10 @@ typedef NS_ENUM(NSInteger, GyroMode) {
     AlwaysController
 };
 
+typedef NS_ENUM(NSInteger, FramePacingMode) {
+    FramePacingModeLegacy,
+    FramePacingModeQueue
+};
 
 typedef NS_ENUM(NSInteger, SettingsMenuMode) {
     AllSettings,
@@ -91,6 +95,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                     enableGraphs:(BOOL)enableGraphs
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
+                framePacingMode:(NSInteger)framePacingMode
            backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

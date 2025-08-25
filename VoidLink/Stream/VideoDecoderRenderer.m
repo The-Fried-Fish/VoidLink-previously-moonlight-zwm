@@ -55,6 +55,13 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
+    // Frame pacing mode
+    BOOL _useLegacyPacing;
+
+    // Legacy pacing frame counter and queue management
+    NSInteger _simplePacingFrameCount;
+    NSInteger _enqueuedSampleBuffers;
+
 }
 
 - (void)reinitializeDisplayLayer
@@ -129,9 +136,15 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     DataManager* dataMan = [[DataManager alloc] init];
 
-    _frameQueue = [FrameQueue sharedInstance];
-    [_frameQueue start];
-    [_frameQueue setHighWaterMark:(int)[[dataMan getSettings].frameQueueSize integerValue]];
+    // Check if we should use legacy pacing mode
+    _useLegacyPacing = [[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy;
+
+    if (!_useLegacyPacing) {
+        // Queue pacing mode uses FrameQueue
+        _frameQueue = [FrameQueue sharedInstance];
+        [_frameQueue start];
+        [_frameQueue setHighWaterMark:(int)[[dataMan getSettings].frameQueueSize integerValue]];
+    }
 
     [self reinitializeDisplayLayer];
 
@@ -155,11 +168,17 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     DataManager* dataMan = [[DataManager alloc] init];
     if ([[dataMan getSettings].renderingBackend integerValue] == RENDER_AVSB) {
-        // PACING_MODE_VSYNC:
-        // Deliver 1 frame at each vsync interval. Ignores server pts timestamps.
-        // Drop frames intelligently to maintain chosen queue size.
         _renderingBackend = RENDER_AVSB;
-        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(renderModeAVSB:)];
+
+        if (_useLegacyPacing) {
+            // Legacy pacing mode
+            _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(renderModeLegacy:)];
+        } else {
+            // PACING_MODE_VSYNC:
+            // Deliver 1 frame at each vsync interval. Ignores server pts timestamps.
+            // Drop frames intelligently to maintain chosen queue size.
+            _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(renderModeAVSB:)];
+        }
 
         if (@available(iOS 15.0, tvOS 15.0, *)) {
             _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(self->_frameRate, self->_frameRate, self->_frameRate);
@@ -176,7 +195,6 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 
 - (void)setupDecompressionSessionWithAttributes:(NSDictionary *)destinationPixelBufferAttributes {
-    // This method is called from within synchronized block, so no additional sync needed here
     if (_decompressionSession != NULL) {
         VTDecompressionSessionInvalidate(_decompressionSession);
         CFRelease(_decompressionSession);
@@ -242,7 +260,33 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
-#pragma mark DisplayLink - Frame Pacing - Vsync with FrameQueue
+#pragma mark DisplayLink - Legacy Frame Pacing
+
+// Legacy frame pacing method from upstream/Integration - direct polling without FrameQueue
+- (void)renderModeLegacy:(CADisplayLink *)link {
+    VIDEO_FRAME_HANDLE handle;
+    PDECODE_UNIT du;
+
+    while (LiPollNextVideoFrame(&handle, &du)) {
+        LiCompleteVideoFrame(handle, DrSubmitDecodeUnit(du));
+
+        // Calculate the actual display refresh rate
+        double displayRefreshRate = 1 / (link.targetTimestamp - link.timestamp);
+
+        // Only pace frames if the display refresh rate is >= 90% of our stream frame rate.
+        // Battery saver, accessibility settings, or device thermals can cause the actual
+        // refresh rate of the display to drop below the physical maximum.
+        if (displayRefreshRate >= _frameRate * 0.9f) {
+            // Keep one pending frame to smooth out gaps due to
+            // network jitter at the cost of 1 frame of latency
+            if (LiGetPendingVideoFrames() == 1) {
+                break;
+            }
+        }
+    }
+}
+
+#pragma mark DisplayLink - Frame Pacing - Vsync with FrameQueue (Queue Pacing)
 
 // This frame pacing method was inspired by the behavior of moonlight-qt's Pacer class, although it has evolved
 // a few additional features. Incoming frames from Sunshine are asynchronously processed into a queue by the VideoRecv thread.
@@ -294,9 +338,11 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 // we missed a callback
                 // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
             }
-            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                    [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+                }
+            });
         }
         lastTargetLocal = targetLocal;
 
@@ -364,7 +410,9 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 }
 - (void)cleanup
 {
-    [_frameQueue stop];
+    if (_frameQueue) {
+        [_frameQueue stop];
+    }
 
     if (_renderingBackend == RENDER_AVSB) {
         [_displayLink invalidate];
@@ -925,34 +973,82 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
           // Dispatch onto our higher priority queue
           dispatch_async(self->_vtq, ^{
-              Frame *frame = nil;
-              if (self->_renderingBackend == RENDER_AVSB) {
-                frame = [[Frame alloc] initWithSampleBuffer:sampleBufferOut frameNumber:frameNumber frameType:frameType];
+              if (self->_useLegacyPacing && self->_renderingBackend == RENDER_AVSB) {
+                  // Legacy pacing: Process all frames normally, but with immediate display timing
+                  
+                  // Set presentation time to current time for immediate display
+                  CMTime targetTime = CMTimeMakeWithSeconds(CACurrentMediaTime(), NSEC_PER_SEC);
+                  CMSampleBufferSetOutputPresentationTimeStamp(sampleBufferOut, targetTime);
+                  
+                  // Dispatch display layer operations to main thread to avoid CATransaction warnings
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                      if (frameType == FRAME_TYPE_IDR) {
+                          // Ensure the layer is visible now
+                          self->_displayLayer.hidden = NO;
+
+                          // Tell our parent VC to hide the progress indicator
+                          [self->_callbacks videoContentShown];
+                      }
+
+                      if ([self->_displayLayer controlTimebase] == NULL) {
+                          // On first frame, set timebase
+                          CMTimebaseRef timebase = NULL;
+                          CMTimebaseCreateWithSourceClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(), &timebase);
+
+                          CMTime pts = CMSampleBufferGetOutputPresentationTimeStamp(sampleBufferOut);
+                          CMTimebaseSetTime(timebase, pts);
+                          CMTimebaseSetRate(timebase, 1.0);
+
+                          [self->_displayLayer setControlTimebase:timebase];
+                          if (timebase) {
+                              CFRelease(timebase);
+                          }
+                          Log(LOG_I, @"Setting timebase for legacy pacing to %d / %d", pts.value, pts.timescale);
+                      }
+
+                      [self->_displayLayer enqueueSampleBuffer:sampleBufferOut];
+                      CFRelease(sampleBufferOut);
+                  });
               } else {
-                frame = [[Frame alloc] initWithPixelBufffer:pixelBuffer frameNumber:frameNumber frameType:frameType pts:presentationTimestamp];
-                [frame setFormatDesc:self->_formatDesc];
-              }
-              int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
-
-              if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-                  static PlotMetrics frameQueueMetrics = {};
-                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
-                  [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
-
-                  [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
-
-                  // It's important we capture host metrics on the incoming thread, as this frame object
-                  // may have been dropped by the above enqueue
-                  static CFTimeInterval lastHostFrame = 0.0f;
-                  if (lastHostFrame != 0) {
-                    [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                  // Queue pacing: use FrameQueue
+                  Frame *frame = nil;
+                  if (self->_renderingBackend == RENDER_AVSB) {
+                      frame = [[Frame alloc] initWithSampleBuffer:sampleBufferOut frameNumber:frameNumber frameType:frameType];
+                  } else {
+                      frame = [[Frame alloc] initWithPixelBufffer:pixelBuffer frameNumber:frameNumber frameType:frameType pts:presentationTimestamp];
+                      [frame setFormatDesc:self->_formatDesc];
                   }
-                  lastHostFrame = frame.pts;
+                  int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
 
-                  // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
-                  static PlotMetrics decodeMetrics = {};
-                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
-                  [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
+                  // Capture metrics on main thread to avoid UIApplication thread warning
+                  int frameQueueCount = [self->_frameQueue count];
+                  CFTimeInterval capturedDecodeTime = CACurrentMediaTime() - decodeStartTime;
+                  CFTimeInterval hostFramePts = frame.pts;
+                  
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                      if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                          static PlotMetrics frameQueueMetrics = {};
+                          [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:frameQueueCount plotMetrics:&frameQueueMetrics];
+                          [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
+
+                          [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
+
+                          // It's important we capture host metrics on the incoming thread, as this frame object
+                          // may have been dropped by the above enqueue
+                          static CFTimeInterval lastHostFrame = 0.0f;
+                          if (lastHostFrame != 0) {
+                              [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(hostFramePts - lastHostFrame) * 1000.0];
+                          }
+                          lastHostFrame = hostFramePts;
+
+                          // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
+                          static PlotMetrics decodeMetrics = {};
+                          [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE
+                                                                           value:capturedDecodeTime * 1000.0
+                                                                     plotMetrics:&decodeMetrics];
+                          [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
+                      }
+                  });
               }
           });
       });
@@ -1051,13 +1147,16 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     if (_renderingBackend == RENDER_METAL) {
         stats->renderingBackendString = [NSString stringWithFormat:@"Metal, colorspace: %@", [MetalVideoRenderer currentColorSpace]];
     } else {
-        stats->renderingBackendString = @"AVSampleBuffer";
+        NSString *pacingMode = _useLegacyPacing ? @"Legacy" : @"Queue";
+        stats->renderingBackendString = [NSString stringWithFormat:@"AVSampleBuffer (%@ pacing)", pacingMode];
     }
 
     dispatch_sync(_sq, ^{
         memcpy(&stats->decodeMetrics, &_decodeMetrics, sizeof(PlotMetrics));
-        memcpy(&stats->frameQueueMetrics, &_frameQueueMetrics, sizeof(PlotMetrics));
-        [_frameQueue.frameDropMetrics copyMetrics:&stats->frameDropMetrics];
+        if (_frameQueue) {
+            memcpy(&stats->frameQueueMetrics, &_frameQueueMetrics, sizeof(PlotMetrics));
+            [_frameQueue.frameDropMetrics copyMetrics:&stats->frameDropMetrics];
+        }
     });
 }
 
@@ -1069,7 +1168,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     static int lastTargetRate = 0;
     int targetRate = (int)_maxRefreshRate;
 
-    if (_maxRefreshRate <= 60 || _maxRefreshRate == 90) {
+    if (_maxRefreshRate <= 60 || _maxRefreshRate == 90 || !_frameQueue) {
         return;
     }
 

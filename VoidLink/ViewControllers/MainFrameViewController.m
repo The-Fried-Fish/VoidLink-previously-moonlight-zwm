@@ -28,6 +28,7 @@
 #import "IdManager.h"
 #import "ConnectionHelper.h"
 #import "LocalizationHelper.h"
+#import "Plot.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "DataManager.h"
 #import "ThemeManager.h"
@@ -1180,6 +1181,9 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.pipStack];
     [settingsViewController.renderingBackendSelector setEnabled:!_settingsExpandedInStreamView];
+    // Enable frame pacing mode selector only if not in stream view AND not in performance mode
+    BOOL shouldEnableFramePacing = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
+    [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacing];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {

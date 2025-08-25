@@ -24,6 +24,29 @@
         }
       }
     },
+    "  %d%% opacity  " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        }
+      }
+    },
     "  disconnect  " : {
       "extractionState" : "manual",
       "localizations" : {
@@ -306,29 +329,6 @@
         }
       }
     },
-    "[ Toggle stats overlay & graphs ]" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[ 切换统计覆盖层和图表 ]"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[ 切換統計覆蓋層和圖表 ]"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[ 切換統計覆蓋層和圖表 ]"
-          }
-        }
-      }
-    },
     "[ On-screen widget tool ]" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -371,6 +371,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "[ 切換螢幕小工具版面配置 ]"
+          }
+        }
+      }
+    },
+    "[ Toggle stats overlay & graphs ]" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 切换统计覆盖层和图表 ]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 切換統計覆蓋層和圖表 ]"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 切換統計覆蓋層和圖表 ]"
           }
         }
       }
@@ -785,6 +808,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "返回"
+          }
+        }
+      }
+    },
+    "Balanced" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
           }
         }
       }
@@ -2010,6 +2056,52 @@
         }
       }
     },
+    "Frames to Buffer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        }
+      }
+    },
+    "Frames to buffer: %ld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数：%ld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數：%ld"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數：%ld"
+          }
+        }
+      }
+    },
     "From the player community, to the player community." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2415,6 +2507,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加入我們"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍后"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍後"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍後"
           }
         }
       }
@@ -3393,6 +3508,81 @@
         }
       }
     },
+    "Performance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
+          }
+        }
+      }
+    },
+    "Performance Graphs - Opacity: %ld%%" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能图表 - 不透明度：%ld%%"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：%ld%%"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：%ld%%"
+          }
+        }
+      }
+    },
+    "performanceGraphStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示帧时间和缓冲区健康指标。如果它们遮挡了屏幕的部分内容，请调整透明度。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間和緩衝區健康指標。如果它們遮蓋了畫面部分內容，請調整透明度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間和緩衝區健康指標。如果它們遮蓋了畫面部分內容，請調整透明度。"
+          }
+        }
+      }
+    },
     "Peripherals" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3745,6 +3935,29 @@
         }
       }
     },
+    "Quit Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即退出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即退出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即退出"
+          }
+        }
+      }
+    },
     "Quit Running App" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3833,98 +4046,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在退出應用程式：%@"
-          }
-        }
-      }
-    },
-    "Quit Now" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "立即退出"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "立即退出"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "立即退出"
-          }
-        }
-      }
-    },
-    "Rendering mode change requires app restart" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改渲染模式需要重启应用以确保干净启动。您是否要立即退出应用？"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
-          }
-        }
-      }
-    },
-    "Restart Required" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "需要重启"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "需要重新啟動"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "需要重新啟動"
-          }
-        }
-      }
-    },
-    "Later" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "稍后"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "稍後"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "稍後"
           }
         }
       }
@@ -4044,6 +4165,52 @@
         }
       }
     },
+    "Rendering Mode (Experimental)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（实验性）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        }
+      }
+    },
+    "Rendering mode change requires app restart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改渲染模式需要重启应用以确保干净启动。您是否要立即退出应用？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+          }
+        }
+      }
+    },
     "renderingBackendStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4069,6 +4236,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "效能渲染模式可以處理更高的位元速率（>200mbps）和更低的延遲，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+          }
+        }
+      }
+    },
+    "Restart Required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重启"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重新啟動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重新啟動"
           }
         }
       }
@@ -5380,144 +5570,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "- 啟用 YUV 4:4:4 選項可提供更高的色彩保真度，但也需要更大的頻寬。\n\n- 由於 Apple 未提供 API 來判斷裝置是否支援 YUV 4:4:4 視訊的硬體解碼，您需要手動啟用此選項以驗證相容性。在某些裝置上，這可能會導致視訊亮度遺失等問題。"
-          }
-        }
-      }
-    },
-    "Rendering Mode (Experimental)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "渲染模式（实验性）"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "渲染模式（實驗性）"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "渲染模式（實驗性）"
-          }
-        }
-      }
-    },
-    "Frames to Buffer" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "缓冲帧数"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緩衝影格數"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緩衝影格數"
-          }
-        }
-      }
-    },
-    "Frames to buffer: %ld" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "缓冲帧数：%ld"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緩衝影格數：%ld"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緩衝影格數：%ld"
-          }
-        }
-      }
-    },
-    "Performance Graphs - Opacity: %ld%%" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "性能图表 - 不透明度：%ld%%"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能圖表 - 不透明度：%ld%%"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能圖表 - 不透明度：%ld%%"
-          }
-        }
-      }
-    },
-    "Balanced" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平衡"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平衡"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平衡"
-          }
-        }
-      }
-    },
-    "Performance" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "性能"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能"
           }
         }
       }

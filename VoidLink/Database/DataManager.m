@@ -97,6 +97,7 @@
                     enableGraphs:(BOOL)enableGraphs
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
+                framePacingMode:(NSInteger)framePacingMode
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -145,6 +146,7 @@
         settingsToSave.enableGraphs = enableGraphs;
         settingsToSave.graphOpacity = [NSNumber numberWithInteger:graphOpacity];
         settingsToSave.renderingBackend = [NSNumber numberWithInteger:renderingBackend];
+        settingsToSave.framePacingMode = [NSNumber numberWithInteger:framePacingMode];
         [self saveData];
     }];
 }

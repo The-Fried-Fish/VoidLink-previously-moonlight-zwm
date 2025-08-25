@@ -31,6 +31,66 @@
         }
       }
     },
+    "2Dp-Qg-chi.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[0] = \"Legacy\"; ObjectID = \"2Dp-Qg-chi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Legacy"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "传统模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "傳統模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "傳統模式"
+          }
+        }
+      }
+    },
+    "2Dp-Qg-chi.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[1] = \"Queue Buffering\"; ObjectID = \"2Dp-Qg-chi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Queue Buffering"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "队列缓冲"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "佇列緩衝"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "佇列緩衝"
+          }
+        }
+      }
+    },
     "2w1-Vw-GVy.text" : {
       "comment" : "Class = \"UILabel\"; text = \"HDR\"; ObjectID = \"2w1-Vw-GVy\";",
       "extractionState" : "extracted_with_value",
@@ -973,36 +1033,6 @@
         }
       }
     },
-    "ccm-n2-PXi.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs - Opacity: 50%\"; ObjectID = \"ccm-n2-PXi\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Performance Graphs - Opacity: 50%"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "性能图表 - 不透明度：50%"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能圖表 - 不透明度：50%"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能圖表 - 不透明度：50%"
-          }
-        }
-      }
-    },
     "Ce3-FM-vIh.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frames to Buffer\"; ObjectID = \"Ce3-FM-vIh\";",
       "extractionState" : "extracted_with_value",
@@ -1347,36 +1377,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最佳化遊戲設定"
-          }
-        }
-      }
-    },
-    "dK2-1g-PUQ.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.\"; ObjectID = \"dK2-1g-PUQ\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示帧时间和缓冲健康指标。如果遮挡屏幕部分内容，请调整透明度。用两指上下滑动以显示或隐藏所有统计信息。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。用兩指上下滑動以顯示或隱藏所有統計資訊。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示影格時間與緩衝健康指標。如遮擋螢幕部分內容，請調整透明度。用兩指上下滑動以顯示或隱藏所有統計資訊。"
           }
         }
       }
@@ -2311,6 +2311,36 @@
         }
       }
     },
+    "MaN-f7-I3g.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing Mode\"; ObjectID = \"MaN-f7-I3g\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Frame Pacing Mode"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帧步进控制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影格步調"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影格步調"
+          }
+        }
+      }
+    },
     "Mm0-xf-9eh.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; Mm0-xf-9eh.segmentTitles[0] = \"Slide From Left Edge\"; ObjectID = \"Mm0-xf-9eh\";",
       "extractionState" : "extracted_with_value",
@@ -3219,6 +3249,36 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "test"
+          }
+        }
+      }
+    },
+    "t7a-18-5wz.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Performance Graphs  \"; ObjectID = \"t7a-18-5wz\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Performance Graphs  "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能图表"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表"
           }
         }
       }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,7 +14,7 @@
             <objects>
                 <viewController id="dgh-JZ-Q7z" customClass="MainFrameViewController" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Rtu-AT-Alw" customClass="AppCollectionView">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="804"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.3333333432674408" green="0.3333333432674408" blue="0.3333333432674408" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="15" minimumInteritemSpacing="15" id="YcZ-cR-3tK">
@@ -81,7 +81,7 @@
             <objects>
                 <navigationController id="ftZ-kC-fxI" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" translucent="NO" id="0ZA-Ec-QgD">
-                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.66666668653488159" green="0.66666668653488159" blue="0.66666668653488159" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="barTintColor" red="0.66666668653488159" green="0.66666668653488159" blue="0.66666668653488159" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -677,12 +677,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.5" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="kTH-ez-aKD">
-                                <rect key="frame" x="80" y="64" width="692" height="309"/>
+                                <rect key="frame" x="80" y="112" width="692" height="261"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
                             <navigationBar alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zsA-6X-Qc5">
-                                <rect key="frame" x="80" y="64" width="692" height="44"/>
+                                <rect key="frame" x="80" y="112" width="692" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="R90-2b-UrU"/>
                                 </constraints>
@@ -1288,7 +1288,7 @@
                                 <rect key="frame" x="20" y="1973" width="280" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Citrix X1 Mouse" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HQS-Vu-wQO">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Citrix X1 Mouse" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.65000000000000002" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HQS-Vu-wQO">
                                         <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="eJb-Db-i4m"/>
@@ -1542,29 +1542,6 @@
                                     </switch>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackendStack">
-                                <rect key="frame" x="437" y="1655" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rendering Mode (Experimental)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v8l-hf-kiR" userLabel="Rendering Mode">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="53H-ST-OtY" userLabel="Rendering Mode Selector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="Balanced"/>
-                                            <segment title="Performance"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="qqz-w2-ABC"/>
-                                </constraints>
-                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="9eE-iu-W90" userLabel="backgroundSessionTimerStack">
                                 <rect key="frame" x="437" y="1397" width="380" height="55.5"/>
                                 <subviews>
@@ -1626,41 +1603,6 @@
                                     </switch>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="1Sh-ai-CrI" userLabel="multiControllerStack">
-                                <rect key="frame" x="273" y="1704" width="280" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="9r0-OX-NYn" userLabel="performanceGraphs Stack">
-                                <rect key="frame" x="437" y="1743" width="380" height="186.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Performance Graphs - Opacity: 50%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LVq-7c-3zg" userLabel="Performance Graphs">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mst-TU-HT2" userLabel="performanceGraphSwitch">
-                                        <rect key="frame" x="0.0" y="40.5" width="382" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="dTT-ki-b68"/>
-                                        </constraints>
-                                    </switch>
-                                    <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" maximumValue="100" stepValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="TIF-tB-E8s">
-                                        <rect key="frame" x="0.0" y="91.5" width="380" height="32"/>
-                                    </stepper>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Ff-AF-K42" userLabel="Performance Graphs Caption">
-                                        <rect key="frame" x="0.0" y="143.5" width="380" height="43"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <string key="text">Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen. Swipe up/down with two fingers to show or hide all stats.</string>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <color key="textColor" systemColor="secondarySystemGroupedBackgroundColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="HMd-xt-94L"/>
-                                </constraints>
-                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="IHx-FO-ctr" userLabel="frameQueueSize Stack">
                                 <rect key="frame" x="437" y="1973" width="380" height="89.5"/>
                                 <subviews>
@@ -1685,6 +1627,85 @@
                                     <constraint firstAttribute="width" constant="380" id="A4I-UV-heD"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="9r0-OX-NYn" userLabel="performanceGraphs Stack">
+                                <rect key="frame" x="437" y="1784" width="380" height="68"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="abM-sK-zqV" userLabel="performanceGraphStack">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Performance Graph  " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.65000000000000002" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LVq-7c-3zg" userLabel="Performance Graphs">
+                                                <rect key="frame" x="0.0" y="0.0" width="250" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mst-TU-HT2" userLabel="performanceGraphSwitch">
+                                                <rect key="frame" x="250" y="0.0" width="132" height="31"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="130" id="dTT-ki-b68"/>
+                                                </constraints>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Dfy-4R-t2l" userLabel="Graph Opacity Stack">
+                                        <rect key="frame" x="0.0" y="36" width="380" height="32"/>
+                                        <subviews>
+                                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" maximumValue="100" stepValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="TIF-tB-E8s">
+                                                <rect key="frame" x="0.0" y="0.0" width="380" height="32"/>
+                                            </stepper>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="HMd-xt-94L"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackendStack">
+                                <rect key="frame" x="437" y="1691" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rendering Mode (Experimental)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v8l-hf-kiR" userLabel="Rendering Mode">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="53H-ST-OtY" userLabel="Rendering Mode Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Balanced"/>
+                                            <segment title="Performance"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="qqz-w2-ABC"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="U0H-kh-QLS" userLabel="framePacing Stack">
+                                <rect key="frame" x="437" y="2081" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Frame Pacing Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cvx-kQ-L3H" userLabel="Frame Pacing Mode">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="CC6-pu-Uoh" userLabel="Frame Pacing Mode Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Legacy"/>
+                                            <segment title="Queue Buffering"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="AUi-t1-5ej"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1706,17 +1727,19 @@
                         <outlet property="customResolutionSwitch" destination="kRO-HO-zKO" id="ZUP-Yd-QDY"/>
                         <outlet property="emulatedControllerTypeSelector" destination="q6v-Jb-ysy" id="o1B-2n-vOR"/>
                         <outlet property="emulatedControllerTypeStack" destination="XoT-d0-QUQ" id="dGV-0G-xF9"/>
-                        <outlet property="enableGraphsLabel" destination="LVq-7c-3zg" id="ua8-FE-HOI"/>
                         <outlet property="enableGraphsSwitch" destination="Mst-TU-HT2" id="Qpv-pU-8dE"/>
                         <outlet property="enableOswForNativeTouchSwitch" destination="MaZ-Wu-LNS" id="sYj-e8-eKn"/>
                         <outlet property="enableOswSwitchStack" destination="ULn-2e-7se" id="0BI-1o-JMp"/>
                         <outlet property="externalDisplayModeSelector" destination="Tue-Qh-8zP" id="YCO-TO-Dda"/>
                         <outlet property="externalDisplayModeStack" destination="1Q7-WA-wrj" id="KLk-cJ-fa3"/>
                         <outlet property="fpsStack" destination="aMv-7Q-yYg" id="JxU-wq-2Za"/>
+                        <outlet property="framePacingModeSelector" destination="CC6-pu-Uoh" id="HTB-6I-QgB"/>
+                        <outlet property="framePacingStack" destination="U0H-kh-QLS" id="M8w-wy-HI8"/>
                         <outlet property="frameQueueSizeLabel" destination="r8X-jt-JfH" id="Tr9-eb-bIx"/>
                         <outlet property="frameQueueSizeSlider" destination="thv-JE-onX" id="gKD-6c-5tw"/>
                         <outlet property="frameQueueSizeStack" destination="IHx-FO-ctr" id="gob-Ea-Avh"/>
                         <outlet property="framerateSelector" destination="dAN-Gy-Eg7" id="tMv-Va-PhO"/>
+                        <outlet property="graphOpacityStack" destination="Dfy-4R-t2l" id="GSD-WX-VF1"/>
                         <outlet property="graphOpacityStepper" destination="TIF-tB-E8s" id="qIa-PX-8PS"/>
                         <outlet property="gyroModeSelector" destination="PIo-LV-9Gt" id="6Mc-5v-dmJ"/>
                         <outlet property="gyroModeStack" destination="5Ep-SA-IBh" id="2qw-Sb-8O6"/>
