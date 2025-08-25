@@ -41,7 +41,6 @@
     CGFloat _currentRefreshRate;
     MenuSectionView *touchAndControlSection;
     NSMutableSet* hiddenStacks;
-    NSInteger _frameQueueSize;
 }
 
 @dynamic overrideUserInterfaceStyle;
@@ -558,9 +557,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    
+
     // Only show Metal renderer option on iOS 17+ where CAMetalDisplayLink is available
     if (@available(iOS 17.0, *)) {
         [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
@@ -1335,7 +1334,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     // Ensure we pick a bitrate that falls exactly onto a slider notch
     _bitrate = bitrateTable[[self getSliderValueForBitrate:[currentSettings.bitrate intValue]]];
-    _frameQueueSize = [currentSettings.frameQueueSize intValue];
 
     // Get the size of the screen with and without safe area insets
     // UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
@@ -1443,7 +1441,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.framePacingModeSelector setSelectedSegmentIndex:framePacingMode];
     [self.framePacingModeSelector addTarget:self action:@selector(framePacingModeChanged:) forControlEvents:UIControlEventValueChanged];
     [self framePacingModeChanged:self.framePacingModeSelector];
-    
+
     [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
@@ -1486,9 +1484,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self.frameQueueSizeSlider setMinimumValue:1];
     [self.frameQueueSizeSlider setMaximumValue:5];
-    [self.frameQueueSizeSlider setValue:_frameQueueSize];
-    [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved) forControlEvents:UIControlEventValueChanged];
-    [self updateFrameQueueSizeText];
+    [self.frameQueueSizeSlider setValue:currentSettings.frameQueueSize.intValue];
+    [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self frameQueueSizeSliderMoved:self.frameQueueSizeSlider];
 
     [self.enableGraphsSwitch setOn:currentSettings.enableGraphs animated:NO]; // Add this line
     [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged) forControlEvents:UIControlEventValueChanged];
@@ -2264,14 +2262,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self updateThemeForSliders:self.view];
 }
 
-- (void) frameQueueSizeSliderMoved {
+- (void) frameQueueSizeSliderMoved:(UISlider* )sender {
     assert(self.frameQueueSizeSlider.value >= 0 && self.frameQueueSizeSlider.value <= 5);
-    _frameQueueSize = (int)self.frameQueueSizeSlider.value;
-    [self updateFrameQueueSizeText];
-}
-
-- (void) updateFrameQueueSizeText {
-    [self.frameQueueSizeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Frames to buffer: %ld", @"Frames to buffer label"), _frameQueueSize ]];
+    [self findDynamicLabelFromStack:_frameQueueSizeStack].text = [NSString stringWithFormat:@"  %d  ", (int)self.frameQueueSizeSlider.value];
 }
 
 - (void) enableGraphsChanged {
@@ -2280,7 +2273,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void) graphOpacityStepperTapped:(UIStepper* )sender {
     assert(self.graphOpacityStepper.value >= 0 && sender.value <= 100);
-    [self findDynamicLabelFromStack:_graphOpacityStack].text = [LocalizationHelper localizedStringForKey:@"%d%% opacity",(int)sender.value];
+    [self findDynamicLabelFromStack:_graphOpacityStack].text = [LocalizationHelper localizedStringForKey:@"  %d%% opacity  ",(int)sender.value];
 }
 
 - (void) saveSettings {
@@ -2330,6 +2323,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL unlockDisplayOrientation = [self.unlockDisplayOrientationSelector selectedSegmentIndex] == 1;
     BOOL enableGraphs = self.enableGraphsSwitch.isOn;
     int graphOpacity = (int)self.graphOpacityStepper.value;
+    int frameQueueSize = (int)self.frameQueueSizeSlider.value;
     NSInteger resolutionSelected = [self.resolutionSelector selectedSegmentIndex];
     if (self.customResolutionSwitch.isOn) {
         resolutionSelected = RESOLUTION_TABLE_CUSTOM_INDEX;
@@ -2375,7 +2369,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                   resolutionSelected:resolutionSelected
                  externalDisplayMode:externalDisplayMode
                localMousePointerMode:localMousePointerMode
-                      frameQueueSize:_frameQueueSize
+                      frameQueueSize:frameQueueSize
                         enableGraphs:enableGraphs
                         graphOpacity:graphOpacity
                     renderingBackend:renderingBackend
