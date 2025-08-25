@@ -42,9 +42,6 @@
 
     _plots = [ImGuiPlots sharedInstance].plots;
 
-    // Store stream FPS to synchronize MTKView
-    _streamFps = streamFps;
-
     return self;
 }
 
@@ -93,7 +90,7 @@
 
     self.mtkView.device = self.device;
     self.mtkView.delegate = self;
-    self.mtkView.preferredFramesPerSecond = _streamFps; // Synchronize with stream framerate
+    self.mtkView.preferredFramesPerSecond = 60; // ImGui overlay will always render at this rate
     self.mtkView.opaque = NO;
     self.mtkView.enableSetNeedsDisplay = NO;
 
@@ -182,7 +179,7 @@
 #if TARGET_OS_SIMULATOR
     [commandBuffer presentDrawable:view.currentDrawable];
 #else
-    [commandBuffer presentDrawable:view.currentDrawable afterMinimumDuration:1.0 / _streamFps];
+    [commandBuffer presentDrawable:view.currentDrawable afterMinimumDuration:1.0 / view.preferredFramesPerSecond];
 #endif
     [commandBuffer commit];
 #endif
