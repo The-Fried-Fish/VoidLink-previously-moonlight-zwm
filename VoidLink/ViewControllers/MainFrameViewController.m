@@ -915,6 +915,15 @@ static NSMutableSet* hostList;
 #endif
 }
 
+- (NSInteger)requestForBitrate:(NSInteger)bitrateKbps{
+    HttpManager* hMan = [[HttpManager alloc] initWithHost:launchedApp.host];
+    HttpResponse* bitrateResponse = [[HttpResponse alloc] init];
+    HttpRequest* bitrateRequest = [HttpRequest requestForResponse: bitrateResponse withUrlRequest:[hMan newBirateRequest:bitrateKbps forClient:@"unknown"]];
+    [hMan executeRequestSynchronously:bitrateRequest];
+    NSLog(@"bitrate request status code: %ld", (long)bitrateResponse.statusCode);
+    return bitrateResponse.statusCode;
+}
+
 - (HttpResponse* )requestToQuitApp:(TemporaryApp* )app{
     HttpManager* hMan = [[HttpManager alloc] initWithHost:app.host];
     HttpResponse* quitResponse = [[HttpResponse alloc] init];
@@ -1168,7 +1177,7 @@ static NSMutableSet* hostList;
     [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.resolutionStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.fpsStack];
-    [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
+    // [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.optimizeGamesStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];

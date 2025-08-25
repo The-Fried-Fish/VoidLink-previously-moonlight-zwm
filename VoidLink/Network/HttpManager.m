@@ -231,6 +231,7 @@
     }
     
     NSString* urlString = [NSString stringWithFormat:@"%@/applist?uniqueid=%@", _baseHTTPSURL, _uniqueId];
+    NSLog(@"urlString: %@", urlString);
     return [self createRequestFromString:urlString timeout:NORMAL_TIMEOUT_SEC];
 }
 
@@ -292,8 +293,21 @@
     }
     
     NSString* urlString = [NSString stringWithFormat:@"%@/cancel?uniqueid=%@", _baseHTTPSURL, _uniqueId];
+    NSLog(@"urlString print: %@", urlString);
     return [self createRequestFromString:urlString timeout:LONG_TIMEOUT_SEC];
 }
+
+- (NSURLRequest*)newBirateRequest:(NSInteger)bitrateKbps forClient:(NSString* )clientName {
+    if (![self ensureHttpsUrlPopulated:NO]) {
+        return nil;
+    }
+    
+    NSString* urlString = [NSString stringWithFormat:@"%@/bitrate?clientname=%@&bitrate=%@&uniqueid=%@", _baseHTTPSURL, clientName, [NSString stringWithFormat:@"%ld", (long)bitrateKbps], _uniqueId];
+
+    NSLog(@"bitrate urlString print: %@", urlString);
+    return [self createRequestFromString:urlString timeout:LONG_TIMEOUT_SEC];
+}
+
 
 - (NSURLRequest*) newAppAssetRequestWithAppId:(NSString *)appId {
     if (![self ensureHttpsUrlPopulated:NO]) {
