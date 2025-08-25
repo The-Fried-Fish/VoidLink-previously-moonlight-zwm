@@ -421,6 +421,29 @@
         }
       }
     },
+    "%d%% opacity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d%%不透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d%%不透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d%%不透明度"
+          }
+        }
+      }
+    },
     "%d%% screen width" : {
       "extractionState" : "manual",
       "localizations" : {

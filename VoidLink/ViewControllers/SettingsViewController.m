@@ -42,7 +42,6 @@
     MenuSectionView *touchAndControlSection;
     NSMutableSet* hiddenStacks;
     NSInteger _frameQueueSize;
-    NSInteger _graphOpacity;
 }
 
 @dynamic overrideUserInterfaceStyle;
@@ -644,7 +643,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
+    
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
+    [self addDynamicLabelForStack:self.graphOpacityStack];
+    
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     
@@ -1329,7 +1331,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     // Ensure we pick a bitrate that falls exactly onto a slider notch
     _bitrate = bitrateTable[[self getSliderValueForBitrate:[currentSettings.bitrate intValue]]];
     _frameQueueSize = [currentSettings.frameQueueSize intValue];
-    _graphOpacity = [currentSettings.graphOpacity intValue];
 
     // Get the size of the screen with and without safe area insets
     // UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
@@ -1489,9 +1490,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self enableGraphsChanged];
     [self.graphOpacityStepper setMinimumValue:0];
     [self.graphOpacityStepper setMaximumValue:100];
-    [self.graphOpacityStepper setValue:_graphOpacity];
-    [self.graphOpacityStepper addTarget:self action:@selector(graphOpacityStepperMoved) forControlEvents:UIControlEventValueChanged];
-    [self updateGraphOpacityText];
+    [self.graphOpacityStepper setValue:(int)currentSettings.graphOpacity.intValue];
+    [self.graphOpacityStepper addTarget:self action:@selector(graphOpacityStepperTapped:) forControlEvents:UIControlEventValueChanged];
+    [self graphOpacityStepperTapped:self.graphOpacityStepper];
 
     if (@available(iOS 18.0, tvOS 18.0, *)) {}else{
         [self.audioConfigSelector removeSegmentAtIndex:1 animated:false];
@@ -2272,14 +2273,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.graphOpacityStepper setEnabled:[self.enableGraphsSwitch isOn]];
 }
 
-- (void) graphOpacityStepperMoved {
-    assert(self.graphOpacityStepper.value >= 0 && self.graphOpacityStepper.value <= 100);
-    _graphOpacity = (int)self.graphOpacityStepper.value;
-    [self updateGraphOpacityText];
-}
-
-- (void) updateGraphOpacityText {
-    [self.enableGraphsLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Performance Graphs - Opacity: %ld%%", @"Performance graphs opacity label"), _graphOpacity ]];
+- (void) graphOpacityStepperTapped:(UIStepper* )sender {
+    assert(self.graphOpacityStepper.value >= 0 && sender.value <= 100);
+    [self findDynamicLabelFromStack:_graphOpacityStack].text = [LocalizationHelper localizedStringForKey:@"%d%% opacity",(int)sender.value];
 }
 
 - (void) saveSettings {
@@ -2328,6 +2324,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL enableHdr = self.hdrSwitch.isOn;
     BOOL unlockDisplayOrientation = [self.unlockDisplayOrientationSelector selectedSegmentIndex] == 1;
     BOOL enableGraphs = self.enableGraphsSwitch.isOn;
+    int graphOpacity = (int)self.graphOpacityStepper.value;
     NSInteger resolutionSelected = [self.resolutionSelector selectedSegmentIndex];
     if (self.customResolutionSwitch.isOn) {
         resolutionSelected = RESOLUTION_TABLE_CUSTOM_INDEX;
@@ -2375,7 +2372,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                localMousePointerMode:localMousePointerMode
                       frameQueueSize:_frameQueueSize
                         enableGraphs:enableGraphs
-                        graphOpacity:_graphOpacity
+                        graphOpacity:graphOpacity
                     renderingBackend:renderingBackend
                      framePacingMode:framePacingMode
               backgroundSessionTimer:backgroundSessionTimer];

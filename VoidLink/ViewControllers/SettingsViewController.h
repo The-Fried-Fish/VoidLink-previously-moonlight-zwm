@@ -115,6 +115,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *enableGraphsLabel;
 @property (strong, nonatomic) IBOutlet UISwitch *enableGraphsSwitch;
 @property (strong, nonatomic) IBOutlet UIStepper *graphOpacityStepper;
+@property (strong, nonatomic) IBOutlet UIStackView *graphOpacityStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *framePacingModeSelector;
 
