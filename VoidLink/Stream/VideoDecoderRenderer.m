@@ -98,12 +98,14 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         _formatDescImageBuffer = nil;
     }
 
-    if (_decompressionSession != nil){
-        VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
+    @synchronized(self) {
+        if (_decompressionSession != nil){
+            VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
 
-        VTDecompressionSessionInvalidate(_decompressionSession);
-        CFRelease(_decompressionSession);
-        _decompressionSession = nil;
+            VTDecompressionSessionInvalidate(_decompressionSession);
+            CFRelease(_decompressionSession);
+            _decompressionSession = nil;
+        }
     }
 }
 
@@ -174,6 +176,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 
 - (void)setupDecompressionSessionWithAttributes:(NSDictionary *)destinationPixelBufferAttributes {
+    // This method is called from within synchronized block, so no additional sync needed here
     if (_decompressionSession != NULL) {
         VTDecompressionSessionInvalidate(_decompressionSession);
         CFRelease(_decompressionSession);
@@ -291,7 +294,9 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 // we missed a callback
                 // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
             }
-            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+            }
         }
         lastTargetLocal = targetLocal;
 
@@ -365,10 +370,12 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         [_displayLink invalidate];
     }
 
-    if (_decompressionSession != NULL) {
-        VTDecompressionSessionInvalidate(_decompressionSession);
-        CFRelease(_decompressionSession);
-        _decompressionSession = nil;
+    @synchronized(self) {
+        if (_decompressionSession != NULL) {
+            VTDecompressionSessionInvalidate(_decompressionSession);
+            CFRelease(_decompressionSession);
+            _decompressionSession = nil;
+        }
     }
 }
 
@@ -843,11 +850,30 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                             frameNumber:(int)frameNumber
                               frameType:(int)frameType
                         decodeStartTime:(CFTimeInterval)decodeStartTime {
-  if (frameType == FRAME_TYPE_IDR || _decompressionSession == nil) {
-    [self setupDecompressionSession];
-  }
+  // Synchronize access to decompression session to prevent race conditions during background/foreground transitions
+  @synchronized(self) {
+    // Check if we need to create/recreate the decompression session
+    BOOL needsNewSession = (frameType == FRAME_TYPE_IDR || _decompressionSession == nil);
 
-  OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(
+    // Also check if the session might have been invalidated by iOS during background
+    if (!needsNewSession && _decompressionSession != nil) {
+      Boolean isValid = VTDecompressionSessionCanAcceptFormatDescription(_decompressionSession, _formatDesc);
+      if (!isValid) {
+        Log(LOG_W, @"Decompression session is invalid, needs recreation");
+        needsNewSession = YES;
+      }
+    }
+
+    if (needsNewSession) {
+      [self setupDecompressionSession];
+    }
+
+    if (_decompressionSession == nil) {
+      Log(LOG_E, @"Failed to create decompression session");
+      return kVTInvalidSessionErr;
+    }
+
+    OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(
       _decompressionSession,
       sampleBuffer,
       0,
@@ -859,10 +885,12 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
             if (status == kVTInvalidSessionErr) {
                 // The session was invalidated by the OS. Destroy our reference
                 // so it gets recreated on the next IDR frame.
-                if (self->_decompressionSession) {
-                    VTDecompressionSessionInvalidate(self->_decompressionSession);
-                    CFRelease(self->_decompressionSession);
-                    self->_decompressionSession = nil;
+                @synchronized(self) {
+                    if (self->_decompressionSession) {
+                        VTDecompressionSessionInvalidate(self->_decompressionSession);
+                        CFRelease(self->_decompressionSession);
+                        self->_decompressionSession = nil;
+                    }
                 }
             }
             LiRequestIdrFrame(); // Request an IDR to restart the stream
@@ -906,28 +934,31 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
               }
               int framesDropped = [self->_frameQueue enqueue:frame withSlackSize:3];
 
-              static PlotMetrics frameQueueMetrics = {};
-              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
-              [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
+              if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                  static PlotMetrics frameQueueMetrics = {};
+                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_QUEUED_FRAMES value:[self->_frameQueue count] plotMetrics:&frameQueueMetrics];
+                  [self safeCopyMetricsTo:&self->_frameQueueMetrics from:&frameQueueMetrics];
 
-              [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
+                  [[ImGuiPlots sharedInstance] observeFloat:PLOT_DROPPED value:framesDropped];
 
-              // It's important we capture host metrics on the incoming thread, as this frame object
-              // may have been dropped by the above enqueue
-              static CFTimeInterval lastHostFrame = 0.0f;
-              if (lastHostFrame != 0) {
-                [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                  // It's important we capture host metrics on the incoming thread, as this frame object
+                  // may have been dropped by the above enqueue
+                  static CFTimeInterval lastHostFrame = 0.0f;
+                  if (lastHostFrame != 0) {
+                    [[ImGuiPlots sharedInstance] observeFloat:PLOT_HOST_FRAMETIME value:(frame.pts - lastHostFrame) * 1000.0];
+                  }
+                  lastHostFrame = frame.pts;
+
+                  // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
+                  static PlotMetrics decodeMetrics = {};
+                  [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
+                  [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
               }
-              lastHostFrame = frame.pts;
-
-              // Decode time is not graphed because it is marked as hidden, but we can use the same mechanism for the value used by stats
-              static PlotMetrics decodeMetrics = {};
-              [[ImGuiPlots sharedInstance] observeFloatReturnMetrics:PLOT_DECODE value:(CACurrentMediaTime() - decodeStartTime) * 1000.0 plotMetrics:&decodeMetrics];
-              [self safeCopyMetricsTo:&self->_decodeMetrics from:&decodeMetrics];
           });
       });
 
-  return status;
+    return status;
+  }
 }
 
 - (void)setHdrMode:(BOOL)enabled {

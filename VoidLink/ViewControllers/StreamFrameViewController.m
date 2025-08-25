@@ -1042,6 +1042,17 @@
         [self.pipController stopPictureInPicture];
     }
     
+    if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+        Log(LOG_I, @"Resuming Metal renderer on foreground");
+        [self.metalViewController resumeRendering];
+    }
+    
+    if (self.imguiView && self.imguiView.mtkView && _settings.enableGraphs) {
+        self.imguiView.mtkView.enableSetNeedsDisplay = YES;
+        self.imguiView.mtkView.paused = NO;
+        Log(LOG_I, @"Resuming ImGui renderer on foreground");
+    }
+    
     [self->_streamMan.videoRenderer resetFramePacing];
     _isRestoringFromPiP = NO;
 }
@@ -1052,6 +1063,17 @@
     NSLog(@"did enter background, %d, %@, %d", _settings.enablePIP, self.pipController, self.pipController.isPictureInPictureActive);
     if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
         //Log(LOG_I, @"PIP is active, not terminating stream");
+    } else {
+        if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+            Log(LOG_I, @"Pausing Metal renderer on background");
+            [self.metalViewController pauseRendering];
+        }
+        
+        if (self.imguiView && self.imguiView.mtkView) {
+            self.imguiView.mtkView.paused = YES;
+            self.imguiView.mtkView.enableSetNeedsDisplay = NO;
+            Log(LOG_I, @"Pausing ImGui renderer on background");
+        }
     }
 
     if (_inactivityTimer != nil) {

@@ -43,4 +43,6 @@
                               frameType:(int)frameType
                         decodeStartTime:(CFTimeInterval)decodeStartTime;
 
+- (void)invalidateDecompressionSession;
+
 @end
