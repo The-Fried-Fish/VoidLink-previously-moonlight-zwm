@@ -61,6 +61,7 @@
         // iOS < 17 must use Balanced mode (AVSB renderer)
         self.renderingBackend = [NSNumber numberWithInteger:RENDER_AVSB];
     }
+    self.framePacingMode = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"framePacingMode"]];
 
     NSInteger _screenSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"streamResolution"];
     switch (_screenSize) {
@@ -129,6 +130,7 @@
     self.enableGraphs = settings.enableGraphs;
     self.graphOpacity = settings.graphOpacity;
     self.renderingBackend = settings.renderingBackend;
+    self.framePacingMode = settings.framePacingMode;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
 #endif
     self.uniqueId = settings.uniqueId;

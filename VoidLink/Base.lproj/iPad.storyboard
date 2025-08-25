@@ -986,6 +986,29 @@
                                     </switch>
                                 </subviews>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="oZG-5Y-pw5" userLabel="framePacing Stack">
+                                <rect key="frame" x="420" y="1189" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Frame Pacing Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MaN-f7-I3g" userLabel="Frame Pacing Mode">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Dp-Qg-chi" userLabel="Frame Pacing Mode Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Legacy"/>
+                                            <segment title="Queue"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="7VX-PK-miO"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1014,9 +1037,11 @@
                         <outlet property="externalDisplayModeSelector" destination="VWB-YB-Ptj" id="0ak-pc-evb"/>
                         <outlet property="externalDisplayModeStack" destination="YBu-VX-wpN" id="72y-R6-fF7"/>
                         <outlet property="fpsStack" destination="TuR-H8-e2H" id="zGQ-gR-P1i"/>
+                        <outlet property="framePacingModeSelector" destination="2Dp-Qg-chi" id="h8A-YF-SZP"/>
+                        <outlet property="framePacingStack" destination="oZG-5Y-pw5" id="vGd-hD-zTr"/>
                         <outlet property="frameQueueSizeLabel" destination="Ce3-FM-vIh" id="90D-Tq-OGd"/>
                         <outlet property="frameQueueSizeSlider" destination="oZa-8Y-icz" id="Jo1-Fx-UMw"/>
-                        <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="uFG-Ch-nsK"/>
+                        <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="82B-r7-Zbh"/>
                         <outlet property="framerateSelector" destination="8hF-kb-2uV" id="dfT-hb-csE"/>
                         <outlet property="graphOpacityStepper" destination="9VJ-Gj-nWG" id="c4x-HW-KXU"/>
                         <outlet property="gyroModeSelector" destination="aa5-3y-I4d" id="FsX-kH-h7w"/>

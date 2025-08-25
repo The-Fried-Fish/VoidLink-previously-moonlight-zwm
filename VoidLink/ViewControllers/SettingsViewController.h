@@ -57,6 +57,7 @@
 @property (strong, nonatomic) IBOutlet UIStackView *externalDisplayModeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *localMousePointerModeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *renderingBackendStack;
+@property (strong, nonatomic) IBOutlet UIStackView *framePacingStack;
 @property (strong, nonatomic) IBOutlet UIStackView *frameQueueSizeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *performanceGraphStack;
 
@@ -115,6 +116,7 @@
 @property (strong, nonatomic) IBOutlet UISwitch *enableGraphsSwitch;
 @property (strong, nonatomic) IBOutlet UIStepper *graphOpacityStepper;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *framePacingModeSelector;
 
 @property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
 @property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;

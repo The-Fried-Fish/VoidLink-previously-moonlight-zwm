@@ -560,6 +560,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     
     // Only show Metal renderer option on iOS 17+ where CAMetalDisplayLink is available
     if (@available(iOS 17.0, *)) {
@@ -1431,7 +1432,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
     [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
     [self.renderingBackendSelector addTarget:self action:@selector(renderingBackendChanged:) forControlEvents:UIControlEventValueChanged];
-    [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP state based on current selection
+
+    NSInteger framePacingMode = [currentSettings.framePacingMode integerValue];
+    [self.framePacingModeSelector setSelectedSegmentIndex:framePacingMode];
+    [self.framePacingModeSelector addTarget:self action:@selector(framePacingModeChanged:) forControlEvents:UIControlEventValueChanged];
+    [self framePacingModeChanged:self.framePacingModeSelector];
+    
+    [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
     [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
@@ -1665,6 +1672,24 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)renderingBackendChanged:(UISegmentedControl *)sender {
+    // Disable PiP toggle when Metal renderer is selected
+    if (sender.selectedSegmentIndex == RENDER_METAL) {
+        // Performance mode (Metal renderer) selected - disable PiP
+        [self.pipSwitch setOn:NO animated:YES];
+        [self.pipSwitch setEnabled:NO];
+        // Set pacing method to Queue and disable selector
+        [self.framePacingModeSelector setSelectedSegmentIndex:FramePacingModeQueue];
+        [self.framePacingModeSelector setEnabled:NO];
+    } else {
+        // Balanced mode (AVSB renderer) - enable PiP toggle if iOS 15+
+        if (@available(iOS 15.0, *)) {
+            [self.pipSwitch setEnabled:YES];
+        } else {
+            [self.pipSwitch setOn:NO];
+            [self.pipSwitch setEnabled:NO];
+        }
+        [self.framePacingModeSelector setEnabled:YES];
+    }
 
     // Get the current settings to compare with the new selection
     DataManager* dataMan = [[DataManager alloc] init];
@@ -1706,19 +1731,22 @@ BOOL isCustomResolution(int resolutionSelected) {
         [alertController addAction:quitAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }
-    
-    // Disable PiP toggle when Metal renderer is selected
-    if (sender.selectedSegmentIndex == RENDER_METAL) {
-        // Performance mode (Metal renderer) selected - disable PiP
-        [self.pipSwitch setOn:NO animated:YES];
-        [self.pipSwitch setEnabled:NO];
+}
+
+- (void)framePacingModeChanged:(UISegmentedControl *)sender {
+
+    if (sender.selectedSegmentIndex == FramePacingModeLegacy) {
+        // Legacy mode selected - disable frames to buffer and graph settings
+        [self.frameQueueSizeSlider setEnabled:NO];
+        [self.enableGraphsSwitch setOn:NO animated:YES];
+        [self.enableGraphsSwitch setEnabled:NO];
+        [self.graphOpacityStepper setEnabled:NO];
     } else {
-        // Balanced mode (AVSB renderer) - enable PiP toggle if iOS 15+
-        if (@available(iOS 15.0, *)) {
-            [self.pipSwitch setEnabled:YES];
-        } else {
-            [self.pipSwitch setOn:NO];
-            [self.pipSwitch setEnabled:NO];
+        // Queue mode selected - enable frames to buffer and graph settings
+        [self.frameQueueSizeSlider setEnabled:YES];
+        [self.enableGraphsSwitch setEnabled:YES];
+        if (self.enableGraphsSwitch.isOn) {
+            [self.graphOpacityStepper setEnabled:YES];
         }
     }
 }
@@ -2265,6 +2293,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     NSInteger audioConfig = [@[@2, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
     NSInteger renderingBackend = [self.renderingBackendSelector selectedSegmentIndex];
+    NSInteger framePacingMode = [self.framePacingModeSelector selectedSegmentIndex];
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
     NSInteger keyboardToggleFingers = self.softKeyboardGestureSelector.selectedSegmentIndex == 3 ? 20 : self.softKeyboardGestureSelector.selectedSegmentIndex+3;
     NSInteger oscLayoutToolFingers = (uint16_t)self->oswLayoutFingers;
@@ -2348,6 +2377,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                         enableGraphs:enableGraphs
                         graphOpacity:_graphOpacity
                     renderingBackend:renderingBackend
+                     framePacingMode:framePacingMode
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

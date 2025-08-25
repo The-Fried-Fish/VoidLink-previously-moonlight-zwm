@@ -1,9 +1,4 @@
 typedef enum {
-    PACING_MODE_VSYNC,
-    PACING_MODE_PTS
-} FramePacingMode;
-
-typedef enum {
     PLOT_FRAMETIME = 0,
     PLOT_HOST_FRAMETIME,
     PLOT_QUEUED_FRAMES,
