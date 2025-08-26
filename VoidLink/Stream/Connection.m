@@ -9,6 +9,7 @@
 #import "Connection.h"
 #import "Plot.h"
 #import "Utils.h"
+#import "DataManager.h"
 
 #import <VideoToolbox/VideoToolbox.h>
 
@@ -459,19 +460,6 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     renderer = myRenderer;
     _callbacks = callbacks;
 
-    // Check for low power mode which limits framerate to 60
-    if (config.frameRate > 60 && [[NSProcessInfo processInfo] isLowPowerModeEnabled]) {
-        Log(LOG_W, @"Limiting stream to 60fps because device is in low power mode");
-        config.frameRate = 60;
-    }
-
-    // Lower to 90fps on Vision Pro
-    NSInteger deviceFps = UIScreen.mainScreen.maximumFramesPerSecond;
-    if (deviceFps < config.frameRate) {
-        Log(LOG_W, @"Limiting stream to %dfps due to max refresh rate", deviceFps);
-        config.frameRate = (int)deviceFps;
-    }
-
     LiInitializeStreamConfiguration(&_streamConfig);
     _streamConfig.colorRange = 1; // Full range
     _streamConfig.width = config.width;
@@ -505,10 +493,19 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     LiInitializeVideoCallbacks(&_drCallbacks);
     _drCallbacks.setup = DrDecoderSetup;
     _drCallbacks.cleanup = DrCleanup;
-    _drCallbacks.submitDecodeUnit = DrSubmitDecodeUnit;
-    _drCallbacks.capabilities = CAPABILITY_DIRECT_SUBMIT |
-                                CAPABILITY_REFERENCE_FRAME_INVALIDATION_HEVC |
-                                CAPABILITY_REFERENCE_FRAME_INVALIDATION_AV1;
+    // Use pull renderer for legacy frame pacing, direct submit for modern frame pacing
+    DataManager* dataMan = [[DataManager alloc] init];
+    if ([[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy) {
+        _drCallbacks.capabilities = CAPABILITY_PULL_RENDERER |
+                                    CAPABILITY_REFERENCE_FRAME_INVALIDATION_HEVC |
+                                    CAPABILITY_REFERENCE_FRAME_INVALIDATION_AV1;
+        _drCallbacks.submitDecodeUnit = NULL;
+    } else {
+        _drCallbacks.capabilities = CAPABILITY_DIRECT_SUBMIT |
+                                    CAPABILITY_REFERENCE_FRAME_INVALIDATION_HEVC |
+                                    CAPABILITY_REFERENCE_FRAME_INVALIDATION_AV1;
+        _drCallbacks.submitDecodeUnit = DrSubmitDecodeUnit;
+    }
 
     LiInitializeAudioCallbacks(&_arCallbacks);
     _arCallbacks.init = ArInit;

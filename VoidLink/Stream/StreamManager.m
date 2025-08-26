@@ -14,6 +14,7 @@
 #import "HttpManager.h"
 #import "Plot.h"
 #import "Utils.h"
+#import "DataManager.h"
 
 #import "StreamView.h"
 #import "ServerInfoResponse.h"
@@ -187,34 +188,75 @@
     }
     
     float interval = stats.endTime - stats.startTime;
-    float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
-    float fps = (stats.totalFrames - stats.networkDroppedFrames - (stats.frameDropMetrics.total / scalePlotMetrics)) / interval;
+    
+    // Check if we're using legacy pacing mode
+    DataManager* dataMan = [[DataManager alloc] init];
+    BOOL isLegacyPacing = [[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy;
+    
+    // Calculate FPS differently based on pacing mode
+    float fps;
+    if (isLegacyPacing) {
+        fps = stats.totalFrames / interval;
+    } else {
+        float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
+        fps = (stats.totalFrames - stats.networkDroppedFrames - (stats.frameDropMetrics.total / scalePlotMetrics)) / interval;
+    }
 
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
 
     if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@",
-                 stats.totalFrames / interval,
+                 fps,
                  stats.networkDroppedFrames / interval,
                  latencyString];
-    else return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
-                 "Bitrate: %.1f Mbps, Peak: %.1f, Frames buffered: %.1f\n"
-                 "%@"
-                 "Renderer: %@\n"
-                 "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
-                 "Average network latency: %@\n"
-                 "Decode time: %.2f/%.2f/%.2f ms",
-                 _config.width,
-                 _config.height,
-                 fps,
-                 [_connection getActiveCodecName],
-                 avgVideoMbps, peakVideoMbps, stats.frameQueueMetrics.avg,
-                 hostProcessingString,
-                 stats.renderingBackendString,
-                 (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
-                 stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
-                 latencyString,
-                 stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
+    else {
+        if (isLegacyPacing) {
+            NSString* rendererWithPacing = stats.renderingBackendString;
+            if ([stats.renderingBackendString isEqualToString:@"AVSampleBuffer"]) {
+                rendererWithPacing = @"AVSampleBuffer (Legacy Pacing)";
+            }
+            
+            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+                     "Bitrate: %.1f Mbps, Peak: %.1f\n"
+                     "%@"
+                     "Renderer: %@\n"
+                     "Frames dropped by network: %.1f%%\n"
+                     "Average network latency: %@",
+                     _config.width,
+                     _config.height,
+                     fps,
+                     [_connection getActiveCodecName],
+                     avgVideoMbps, peakVideoMbps,
+                     hostProcessingString,
+                     rendererWithPacing,
+                     (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
+                     latencyString];
+        } else {
+            NSString* rendererWithPacing = stats.renderingBackendString;
+            if ([stats.renderingBackendString isEqualToString:@"AVSampleBuffer"]) {
+                rendererWithPacing = @"AVSampleBuffer (Queue Pacing)";
+            }
+            
+            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+                     "Bitrate: %.1f Mbps, Peak: %.1f, Frames buffered: %.1f\n"
+                     "%@"
+                     "Renderer: %@\n"
+                     "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
+                     "Average network latency: %@\n"
+                     "Decode time: %.2f/%.2f/%.2f ms",
+                     _config.width,
+                     _config.height,
+                     fps,
+                     [_connection getActiveCodecName],
+                     avgVideoMbps, peakVideoMbps, stats.frameQueueMetrics.avg,
+                     hostProcessingString,
+                     rendererWithPacing,
+                     (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
+                     stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
+                     latencyString,
+                     stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
+        }
+    }
 }
 
 @end

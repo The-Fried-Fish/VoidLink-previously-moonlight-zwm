@@ -724,8 +724,19 @@ CFStringRef __currentColorSpace;
             dispatch_semaphore_signal(block_semaphore);
 
             if (cb.error) {
+                Log(LOG_E, @"Command buffer error: %@", cb.error);
                 // Request IDR frame to recover from rendering error  
                 LiRequestIdrFrame();
+                
+                // Clear the command queue to reset GPU state
+                if (cb.status == MTLCommandBufferStatusError) {
+                    NSError *error = cb.error;
+                    if (error.code == 2 || error.code == 4) { // GPU timeout or submissions ignored
+                        Log(LOG_W, @"GPU timeout detected, flushing command queue");
+                        // Force texture cache flush
+                        CVMetalTextureCacheFlush(self->_textureCache, 0);
+                    }
+                }
             } else {
                 const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
                 const double alpha = 0.25f;
@@ -759,6 +770,9 @@ CFStringRef __currentColorSpace;
         if (result != 0) {
             Log(LOG_W, @"MetalVideoRenderer semaphore timeout - requesting IDR frame");
             LiRequestIdrFrame(); // Request recovery
+            
+            // Force flush the texture cache when we timeout
+            CVMetalTextureCacheFlush(_textureCache, 0);
         }
     }
 }
