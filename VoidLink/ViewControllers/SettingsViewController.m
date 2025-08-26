@@ -320,6 +320,15 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        if(self.mainFrameViewController.settingsExpandedInStreamView){
+            NSInteger responseCode = [self.mainFrameViewController requestForBitrate:self->_bitrate];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self widget:self.bitrateSlider setEnabled:responseCode == 200];
+            });
+        }
+    });
  }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -1953,6 +1962,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [touchAndControlSection updateViewForFoldState];
 }
 
+
 - (void) updateBitrate {
     NSInteger fps = [self getChosenFrameRate];
     NSInteger width = [self getChosenStreamWidth];
@@ -2294,6 +2304,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void) saveSettings {
+    
+    if(self.mainFrameViewController.settingsExpandedInStreamView){
+        [self.mainFrameViewController requestForBitrate:(uint32_t)_bitrate];
+    }
+    
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* currentSettings = [dataMan retrieveSettings];
     

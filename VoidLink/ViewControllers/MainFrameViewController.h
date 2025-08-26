@@ -34,6 +34,7 @@
 - (void)reloadStreamConfig;
 - (bool)isIPhonePortrait;
 - (void)quitRunningApp;
+- (NSInteger)requestForBitrate:(NSInteger)bitrateKbps;
 #endif
 - (void)fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
 
