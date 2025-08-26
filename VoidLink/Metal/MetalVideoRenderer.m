@@ -557,29 +557,21 @@ CFStringRef __currentColorSpace;
     return YES;
 }
 
-
-- (void)renderFrame:(Frame *)frame withDrawable:(id<CAMetalDrawable>)drawable targetPresentationTimestamp:(CFTimeInterval)targetPresentationTimestamp API_AVAILABLE(ios(17.0)) {
+- (void)renderFrame:(Frame *)frame toLayer:(CAMetalLayer *)layer {
     @autoreleasepool {
         if (self.isStopping) {
             Log(LOG_I, @"[MetalVideoRenderer] isStopping");
             return;
         }
 
-        // Calculate accurate frametime using CAMetalDisplayLink timing
-        if (self.lastPresented > 0.0f) {
-            CFTimeInterval frametime = targetPresentationTimestamp - self.lastPresented;
-            [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
-        }
-        self.lastPresented = targetPresentationTimestamp;
-
         // Handle changes to the frame's colorspace from last time we rendered
         BOOL layerDidChange = NO;
-        if (![self updateColorSpaceForFrame:frame toLayer:(CAMetalLayer *)drawable.layer layerDidChange:&layerDidChange]) {
+        if (![self updateColorSpaceForFrame:frame toLayer:layer layerDidChange:&layerDidChange]) {
             return;
         }
 
         // Handle changes to the video size or drawable size
-        if (![self updateVideoRegionSizeForFrame:frame toLayer:(CAMetalLayer *)drawable.layer]) {
+        if (![self updateVideoRegionSizeForFrame:frame toLayer:layer]) {
             return;
         }
 
@@ -602,6 +594,13 @@ CFStringRef __currentColorSpace;
                 }
                 _videoPipelinePixelFormat[i] = MTLPixelFormatInvalid;
             }
+        }
+
+        // Get the next drawable early to get its pixel format
+        id<CAMetalDrawable> drawable = [layer nextDrawable];
+        if (!drawable) {
+            Log(LOG_E, @"Failed to get nextDrawable");
+            return;
         }
 
         // Get the framebuffer pixel format for pipeline creation
@@ -710,7 +709,7 @@ CFStringRef __currentColorSpace;
         [renderEncoder setVertexBuffer:_VideoVertexBuffer offset:0 atIndex:0];
         [renderEncoder setFragmentBuffer:_CscParamsBuffer offset:0 atIndex:0];
 #if !TARGET_OS_TV
-        if (((CAMetalLayer *)drawable.layer).pixelFormat == MTLPixelFormatRGBA16Float) {
+        if (layer.pixelFormat == MTLPixelFormatRGBA16Float) {
             [self pollCurrentEDRHeadroom];
             [renderEncoder setFragmentBytes:&_currentEDRHeadroom length:sizeof(float) atIndex:1];
         }
@@ -718,30 +717,25 @@ CFStringRef __currentColorSpace;
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
         [renderEncoder endEncoding];
 
+        __block MetalVideoRenderer *strongSelf = self;
+#if !TARGET_OS_SIMULATOR
+        [drawable addPresentedHandler:^(id<MTLDrawable> d) {
+            if (strongSelf.lastPresented > 0.0f) {
+                CFTimeInterval frametime = d.presentedTime - strongSelf.lastPresented;
+                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:(frametime * 1000.0)];
+            }
+            strongSelf.lastPresented = d.presentedTime;
+        }];
+#endif
+
         // signal semaphore, compute GPU time average, and clear textures
         __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             dispatch_semaphore_signal(block_semaphore);
 
-            if (cb.error) {
-                Log(LOG_E, @"Command buffer error: %@", cb.error);
-                // Request IDR frame to recover from rendering error  
-                LiRequestIdrFrame();
-                
-                // Clear the command queue to reset GPU state
-                if (cb.status == MTLCommandBufferStatusError) {
-                    NSError *error = cb.error;
-                    if (error.code == 2 || error.code == 4) { // GPU timeout or submissions ignored
-                        Log(LOG_W, @"GPU timeout detected, flushing command queue");
-                        // Force texture cache flush
-                        CVMetalTextureCacheFlush(self->_textureCache, 0);
-                    }
-                }
-            } else {
-                const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
-                const double alpha = 0.25f;
-                self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
-            }
+            const CFTimeInterval GPUTime = cb.GPUEndTime - cb.GPUStartTime;
+            const double alpha = 0.25f;
+            self->_averageGPUTime = (GPUTime * alpha) + (self->_averageGPUTime * (1.0 - alpha));
 
             // Free textures after completion of rendering
             for (size_t i = 0; i < planes; i++) {
@@ -754,10 +748,15 @@ CFStringRef __currentColorSpace;
             CVMetalTextureCacheFlush(self->_textureCache, 0);
         }];
 
-        // CAMetalDisplayLink handles timing automatically, so we don't use afterMinimumDuration
+#if TARGET_OS_SIMULATOR
         [commandBuffer presentDrawable:drawable];
+#else
+        // present for a minimum duration for best frame pacing
+        [commandBuffer presentDrawable:drawable afterMinimumDuration:1.0f / _framerate];
+#endif
 
         [commandBuffer commit];
+        [commandBuffer waitUntilCompleted];
     }
 }
 
@@ -766,14 +765,7 @@ CFStringRef __currentColorSpace;
     // by any stage in the Metal pipeline (CPU, GPU, Metal, Drivers, etc.).
     if (!self.isStopping) {
         dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC));  // 100ms
-        long result = dispatch_semaphore_wait(_inFlightSemaphore, timeout);
-        if (result != 0) {
-            Log(LOG_W, @"MetalVideoRenderer semaphore timeout - requesting IDR frame");
-            LiRequestIdrFrame(); // Request recovery
-            
-            // Force flush the texture cache when we timeout
-            CVMetalTextureCacheFlush(_textureCache, 0);
-        }
+        dispatch_semaphore_wait(_inFlightSemaphore, timeout);
     }
 }
 

@@ -320,7 +320,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
-    
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         if(self.mainFrameViewController.settingsExpandedInStreamView){
             NSInteger responseCode = [self.mainFrameViewController requestForBitrate:self->_bitrate];
@@ -570,11 +570,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
-
-    // Only show Metal renderer option on iOS 17+ where CAMetalDisplayLink is available
-    if (@available(iOS 17.0, *)) {
-        [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    }
+    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
 
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
@@ -653,10 +649,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
-    
+
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
-    
+
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     
@@ -1095,7 +1091,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 
     
-        
+
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
     
@@ -1751,7 +1747,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
     [self setHidden:sender.selectedSegmentIndex == FramePacingModeLegacy forStack:self.frameQueueSizeStack];
     [videoSection updateViewForFoldState];
-    
+
     if(sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
         [self findDynamicLabelFromStack:_graphOpacityStack].hidden = YES;
@@ -1760,20 +1756,20 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
     [self setHidden:sender.selectedSegmentIndex == FramePacingModeLegacy forStack:self.performanceGraphStack];
     [otherSection updateViewForFoldState];
-    
+
     /*
     if (sender.selectedSegmentIndex == FramePacingModeLegacy) {
         // Legacy mode selected - disable frames to buffer and graph settings
         [self.frameQueueSizeSlider setEnabled:NO];
         [self.enableGraphsSwitch setOn:NO animated:YES];
-        
+
         [self.enableGraphsSwitch setEnabled:NO];
         [self.graphOpacityStepper setEnabled:NO];
     } else {
         // Queue mode selected - enable frames to buffer and graph settings
         [self.frameQueueSizeSlider setEnabled:YES];
         [self.enableGraphsSwitch setEnabled:YES];
-        
+
         if (self.enableGraphsSwitch.isOn) {
             [self.graphOpacityStepper setEnabled:YES];
         }
@@ -2304,11 +2300,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void) saveSettings {
-    
+
     if(self.mainFrameViewController.settingsExpandedInStreamView){
         [self.mainFrameViewController requestForBitrate:(uint32_t)_bitrate];
     }
-    
+
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* currentSettings = [dataMan retrieveSettings];
     
