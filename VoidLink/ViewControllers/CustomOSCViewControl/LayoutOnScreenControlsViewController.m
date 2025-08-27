@@ -91,7 +91,7 @@
 - (void)reloadOnScreenWidgetViews{
     NSLog(@"reloadOnScreenWidgets %f", CACurrentMediaTime());
     OnScreenWidgetView.editMode = true;
-    [self clearStickIndicator];
+    [self hideStickIndicators];
 
     for (UIView *subview in self.view.subviews) {
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -296,7 +296,7 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
     viewWillBeResized = true;
-    [self clearStickIndicator];
+    [self hideStickIndicators];
     if(!_quickSwitchEnabled) [self saveTapped:nil];
 }
 
@@ -711,9 +711,15 @@
     label.numberOfLines = 1;
 }
 
-- (void)clearStickIndicator{
-    [self->selectedWidgetView.stickBallLayer removeFromSuperlayer];
-    [self->selectedWidgetView.crossMarkLayer removeFromSuperlayer];
+- (void)hideStickIndicators{
+    for(UIView* view in self.view.subviews){
+        if([view isKindOfClass:[OnScreenWidgetView class]]){
+            OnScreenWidgetView* widget = (OnScreenWidgetView* )view;
+            [widget.crossMarkLayer setHidden:true];
+            [widget.stickBallLayer setHidden:true];
+
+        }
+    }
 }
 
 /*
@@ -725,13 +731,13 @@
 
 - (void)widgetViewTapped: (NSNotification *)notification{
     //self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 && !CGPointEqualToPoint(selectedWidgetView.layoutChanges.lastObject.CGPointValue, selectedWidgetView.initialCenter)? 1.0 : 0.3;
-
+    [self hideStickIndicators];
+    
     // receive the selected widgetView obj passed from the notification
     [self enableCommonWidgetTools];
 
-    OnScreenWidgetView* widgetView = (OnScreenWidgetView* )notification.object;
     
-    [self clearStickIndicator];
+    OnScreenWidgetView* widgetView = (OnScreenWidgetView* )notification.object;
     self->widgetViewSelected = true;
     self->controllerLayerSelected = false;
     self->selectedWidgetView = widgetView;
@@ -775,7 +781,7 @@
     }
     if(showStickIndicatorOffsetStack){
         // illustrating the indicator offset,
-        [self clearStickIndicator];
+        [self hideStickIndicators];
         selectedWidgetView.touchBeganLocation = CGPointMake(CGRectGetWidth(selectedWidgetView.frame)/2, CGRectGetHeight(selectedWidgetView.frame)/4);
         [selectedWidgetView showStickIndicator];// this will create the indicator CAShapeLayers
         [self.stickIndicatorOffsetSlider setValue:self->selectedWidgetView.stickIndicatorOffset];
@@ -815,7 +821,7 @@
 - (void)legacyOscLayerTapped: (NSNotification *)notification{
     [self enableCommonWidgetTools];
     CALayer* controllerLayer = (CALayer* )notification.object;
-    [self clearStickIndicator];
+    [self hideStickIndicators];
     self->widgetViewSelected = false;
     self->selectedWidgetView = nil;
     
@@ -1202,7 +1208,7 @@
 
 - (void) presentProfilesTableView{
     [self saveTapped:nil];
-    [self clearStickIndicator];
+    [self hideStickIndicators];
     selectedWidgetView = nil;
     UIStoryboard *storyboard;
     BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
@@ -1329,7 +1335,7 @@
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
         [self->selectedWidgetView removeFromSuperview];
         [self.onScreenWidgetViews removeObject:self->selectedWidgetView];
-        [self clearStickIndicator];
+        [self hideStickIndicators];
         [selectedWidgetView.buttonDownVisualEffectLayer removeFromSuperlayer];
     }
     
