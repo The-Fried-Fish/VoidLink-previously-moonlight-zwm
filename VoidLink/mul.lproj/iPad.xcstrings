@@ -32,7 +32,37 @@
       }
     },
     "2Dp-Qg-chi.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[0] = \"Legacy\"; ObjectID = \"2Dp-Qg-chi\";",
+      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[0] = \"Off\"; ObjectID = \"2Dp-Qg-chi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Off"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "2Dp-Qg-chi.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[1] = \"Legacy\"; ObjectID = \"2Dp-Qg-chi\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
@@ -61,8 +91,8 @@
         }
       }
     },
-    "2Dp-Qg-chi.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[1] = \"Queue Buffering\"; ObjectID = \"2Dp-Qg-chi\";",
+    "2Dp-Qg-chi.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 2Dp-Qg-chi.segmentTitles[2] = \"Queue Buffering\"; ObjectID = \"2Dp-Qg-chi\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
@@ -2312,30 +2342,30 @@
       }
     },
     "MaN-f7-I3g.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing Mode\"; ObjectID = \"MaN-f7-I3g\";",
+      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing\"; ObjectID = \"MaN-f7-I3g\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Frame Pacing Mode"
+            "value" : "Frame Pacing"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "帧步进控制"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "影格步調"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "影格步調"
           }
         }

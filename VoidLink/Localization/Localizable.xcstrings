@@ -2056,6 +2056,35 @@
         }
       }
     },
+    "framePacingStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Off = no frame pacing, previously “Lowest Latency”.\n\n- Legacy, previously “Smoothest Video” (though it’s not the smoothest option anymore)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 关闭 = 无帧步进控制，即为之前的“最低延迟”.\n\n- 传统模式，相当于之前的“最高流畅度” (尽管已经不是最流畅的选项)."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 關閉 = 無影格步調控制，即為之前的“最低延遲”。\n\n- 傳統模式，相當於之前的“最高流暢度”（儘管已經不是最流暢的選項）。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 關閉 = 無影格步調控制，即為之前的“最低延遲”。\n\n- 傳統模式，相當於之前的“最高流暢度”（儘管已經不是最流暢的選項）。"
+          }
+        }
+      }
+    },
     "Frames to Buffer" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -55,7 +55,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
-    BOOL _useLegacyPacing;
+    FramePacingMode _framePacingMode;
 }
 
 - (void)reinitializeDisplayLayer
@@ -130,7 +130,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     DataManager* dataMan = [[DataManager alloc] init];
 
-    _useLegacyPacing = [[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy;
+    _framePacingMode = [[dataMan getSettings].framePacingMode integerValue];
 
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];
@@ -162,8 +162,8 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         
         // Choose the appropriate selector based on frame pacing mode
         SEL displayLinkSelector;
-        if (_useLegacyPacing) {
-            // Legacy frame pacing: use simple displayLinkCallback
+        if (_framePacingMode == FramePacingModeLegacy || _framePacingMode == FramePacingModeOff) {
+            // Legacy frame pacing or Off mode: use simple displayLinkCallback
             displayLinkSelector = @selector(displayLinkCallback:);
         } else {
             // PACING_MODE_VSYNC:
@@ -332,17 +332,20 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     while (LiPollNextVideoFrame(&handle, &du)) {
         LiCompleteVideoFrame(handle, DrSubmitDecodeUnit(du));
         
-        // Calculate the actual display refresh rate
-        double displayRefreshRate = 1 / (_displayLink.targetTimestamp - _displayLink.timestamp);
-        
-        // Only pace frames if the display refresh rate is >= 90% of our stream frame rate.
-        // Battery saver, accessibility settings, or device thermals can cause the actual
-        // refresh rate of the display to drop below the physical maximum.
-        if (displayRefreshRate >= _frameRate * 0.9f) {
-            // Keep one pending frame to smooth out gaps due to
-            // network jitter at the cost of 1 frame of latency
-            if (LiGetPendingVideoFrames() == 1) {
-                break;
+        // Skip frame pacing logic if frame pacing is off
+        if (_framePacingMode != FramePacingModeOff) {
+            // Calculate the actual display refresh rate
+            double displayRefreshRate = 1 / (_displayLink.targetTimestamp - _displayLink.timestamp);
+            
+            // Only pace frames if the display refresh rate is >= 90% of our stream frame rate.
+            // Battery saver, accessibility settings, or device thermals can cause the actual
+            // refresh rate of the display to drop below the physical maximum.
+            if (displayRefreshRate >= _frameRate * 0.9f) {
+                // Keep one pending frame to smooth out gaps due to
+                // network jitter at the cost of 1 frame of latency
+                if (LiGetPendingVideoFrames() == 1) {
+                    break;
+                }
             }
         }
     }
@@ -856,7 +859,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
     CMSampleBufferRef sampleBuffer;
     CMTime presentationTimeStamp;
-    if (_useLegacyPacing) {
+    if (_framePacingMode == FramePacingModeLegacy || _framePacingMode == FramePacingModeOff) {
         presentationTimeStamp = CMTimeMake(du->presentationTimeUs / 1000, 1000);
     } else {
         presentationTimeStamp = CMTimeMake((int64_t)du->rtpTimestamp, 90000);
@@ -881,7 +884,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         return DR_NEED_IDR;
     }
 
-    if (_useLegacyPacing) {
+    if (_framePacingMode == FramePacingModeLegacy || _framePacingMode == FramePacingModeOff) {
         // Enqueue the next frame
         [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
 
