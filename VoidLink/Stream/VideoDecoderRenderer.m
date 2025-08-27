@@ -332,6 +332,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     while (LiPollNextVideoFrame(&handle, &du)) {
         LiCompleteVideoFrame(handle, DrSubmitDecodeUnit(du));
         
+        /*
         // Calculate the actual display refresh rate
         double displayRefreshRate = 1 / (_displayLink.targetTimestamp - _displayLink.timestamp);
         
@@ -345,6 +346,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 break;
             }
         }
+        */
     }
 }
 
