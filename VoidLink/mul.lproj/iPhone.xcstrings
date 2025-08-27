@@ -1058,7 +1058,38 @@
       }
     },
     "CC6-pu-Uoh.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[0] = \"Legacy\"; ObjectID = \"CC6-pu-Uoh\";",
+      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[0] = \"Off\"; ObjectID = \"CC6-pu-Uoh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Off"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "關閉"
+          }
+        }
+
+      }
+    },
+    "CC6-pu-Uoh.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[1] = \"Legacy\"; ObjectID = \"CC6-pu-Uoh\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
@@ -1087,8 +1118,8 @@
         }
       }
     },
-    "CC6-pu-Uoh.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[1] = \"Queue Buffering\"; ObjectID = \"CC6-pu-Uoh\";",
+    "CC6-pu-Uoh.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[2] = \"Queue Buffering\"; ObjectID = \"CC6-pu-Uoh\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {

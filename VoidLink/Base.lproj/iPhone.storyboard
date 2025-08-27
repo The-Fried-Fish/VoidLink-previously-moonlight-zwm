@@ -1695,6 +1695,7 @@
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="CC6-pu-Uoh" userLabel="Frame Pacing Mode Selector">
                                         <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
                                         <segments>
+                                            <segment title="Off"/>
                                             <segment title="Legacy"/>
                                             <segment title="Queue Buffering"/>
                                         </segments>

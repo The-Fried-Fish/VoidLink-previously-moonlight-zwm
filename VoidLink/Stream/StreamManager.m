@@ -189,13 +189,13 @@
     
     float interval = stats.endTime - stats.startTime;
     
-    // Check if we're using legacy pacing mode
+    // Get frame pacing mode
     DataManager* dataMan = [[DataManager alloc] init];
-    BOOL isLegacyPacing = [[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy;
-    
+    FramePacingMode framePacingMode = [[dataMan getSettings].framePacingMode integerValue];
+
     // Calculate FPS differently based on pacing mode
     float fps;
-    if (isLegacyPacing) {
+    if (framePacingMode == FramePacingModeLegacy || framePacingMode == FramePacingModeOff) {
         fps = stats.totalFrames / interval;
     } else {
         float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
@@ -210,10 +210,14 @@
                  stats.networkDroppedFrames / interval,
                  latencyString];
     else {
-        if (isLegacyPacing) {
+        if (framePacingMode == FramePacingModeLegacy || framePacingMode == FramePacingModeOff) {
             NSString* rendererWithPacing = stats.renderingBackendString;
             if ([stats.renderingBackendString isEqualToString:@"AVSampleBuffer"]) {
-                rendererWithPacing = @"AVSampleBuffer (Legacy Pacing)";
+                if (framePacingMode == FramePacingModeOff) {
+                    rendererWithPacing = @"AVSampleBuffer (No Pacing)";
+                } else {
+                    rendererWithPacing = @"AVSampleBuffer (Legacy Pacing)";
+                }
             }
             
             return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"

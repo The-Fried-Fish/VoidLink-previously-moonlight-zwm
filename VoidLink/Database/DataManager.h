@@ -43,6 +43,7 @@ typedef NS_ENUM(NSInteger, GyroMode) {
 };
 
 typedef NS_ENUM(NSInteger, FramePacingMode) {
+    FramePacingModeOff,
     FramePacingModeLegacy,
     FramePacingModeQueue
 };

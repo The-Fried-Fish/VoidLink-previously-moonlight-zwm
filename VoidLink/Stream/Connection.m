@@ -493,9 +493,10 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     LiInitializeVideoCallbacks(&_drCallbacks);
     _drCallbacks.setup = DrDecoderSetup;
     _drCallbacks.cleanup = DrCleanup;
-    // Use pull renderer for legacy frame pacing, direct submit for modern frame pacing
+    // Use pull renderer for legacy and off frame pacing, direct submit for queue-based frame pacing
     DataManager* dataMan = [[DataManager alloc] init];
-    if ([[dataMan getSettings].framePacingMode integerValue] == FramePacingModeLegacy) {
+    FramePacingMode framePacingMode = [[dataMan getSettings].framePacingMode integerValue];
+    if (framePacingMode == FramePacingModeLegacy || framePacingMode == FramePacingModeOff) {
         _drCallbacks.capabilities = CAPABILITY_PULL_RENDERER |
                                     CAPABILITY_REFERENCE_FRAME_INVALIDATION_HEVC |
                                     CAPABILITY_REFERENCE_FRAME_INVALIDATION_AV1;

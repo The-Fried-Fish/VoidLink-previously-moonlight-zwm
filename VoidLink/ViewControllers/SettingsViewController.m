@@ -1745,16 +1745,17 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
-    [self setHidden:sender.selectedSegmentIndex == FramePacingModeLegacy forStack:self.frameQueueSizeStack];
+    // Hide frame queue size for Off and Legacy modes
+    [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
     [videoSection updateViewForFoldState];
 
-    if(sender.selectedSegmentIndex == FramePacingModeLegacy){
+    if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
         [self findDynamicLabelFromStack:_graphOpacityStack].hidden = YES;
     }
     [self.enableGraphsSwitch setEnabled:sender.selectedSegmentIndex == FramePacingModeQueue];
     [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
-    [self setHidden:sender.selectedSegmentIndex == FramePacingModeLegacy forStack:self.performanceGraphStack];
+    [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.performanceGraphStack];
     [otherSection updateViewForFoldState];
 
     /*
