@@ -1089,6 +1089,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"performanceGraphStackTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"framePacingStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"framePacingStackTip"];
+        showOnlineDocAction = false;
+    }
 
     
 

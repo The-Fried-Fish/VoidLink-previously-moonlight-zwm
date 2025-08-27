@@ -1085,7 +1085,6 @@
             "value" : "關閉"
           }
         }
-
       }
     },
     "CC6-pu-Uoh.segmentTitles[1]" : {
@@ -1239,30 +1238,30 @@
       }
     },
     "Cvx-kQ-L3H.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing Mode\"; ObjectID = \"Cvx-kQ-L3H\";",
+      "comment" : "Class = \"UILabel\"; text = \"Frame Pacing\"; ObjectID = \"Cvx-kQ-L3H\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Frame Pacing Mode"
+            "value" : "Frame Pacing"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "帧步进控制"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "影格步調"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "影格步調"
           }
         }
