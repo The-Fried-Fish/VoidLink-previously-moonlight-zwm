@@ -554,9 +554,10 @@
                                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <segments>
                                                     <segment title="hovering"/>
-                                                    <segment title="left button"/>
-                                                    <segment title="middle button"/>
-                                                    <segment title="right button"/>
+                                                    <segment title="left btn"/>
+                                                    <segment title="middle btn"/>
+                                                    <segment title="right btn"/>
+                                                    <segment title="no click"/>
                                                 </segments>
                                                 <color key="tintColor" systemColor="systemGray2Color"/>
                                                 <color key="selectedSegmentTintColor" red="0.23136288839999999" green="0.45776400810000001" blue="0.5149240678" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>

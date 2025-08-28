@@ -1224,7 +1224,7 @@ import UIKit
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_MIDDLE)
                     case .rightButtonDown:
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_RIGHT)
-                    case .hovering:
+                    case .hovering,.noClick:
                         break
                     default:
                         break
@@ -1489,6 +1489,8 @@ import UIKit
                         quickDoubleTapDetected = false
                     }
                     mousePointerMoved = false // reset this flag
+                case .noClick:
+                    break
                 default:
                     break
                 }

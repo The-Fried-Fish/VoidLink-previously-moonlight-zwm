@@ -1765,6 +1765,36 @@
         }
       }
     },
+    "H8S-aI-EBo.segmentTitles[4]" : {
+      "comment" : "Class = \"UISegmentedControl\"; H8S-aI-EBo.segmentTitles[4] = \"no click\"; ObjectID = \"H8S-aI-EBo\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "no click"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无点击"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無點擊"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無點擊"
+          }
+        }
+      }
+    },
     "hAo-1k-oYF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"90° Display Rotation\"; ObjectID = \"hAo-1k-oYF\";",
       "extractionState" : "extracted_with_value",

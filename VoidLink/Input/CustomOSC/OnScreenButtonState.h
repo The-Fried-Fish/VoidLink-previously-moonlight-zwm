@@ -55,6 +55,7 @@ typedef NS_ENUM(NSInteger, MouseButtonAction) {
     leftButtonDown,
     middleButtonDown,
     rightButtonDown,
+    noClick
 };
 
 typedef NS_ENUM(NSInteger, ButtonSlideMode) {
