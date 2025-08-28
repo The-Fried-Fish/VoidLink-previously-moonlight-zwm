@@ -131,9 +131,9 @@
     if (!_renderer.isStopping) {
         // Only render if not paused
         if (frame) {
-            if (@available(iOS 13.0, *)) {
+            //if (@available(iOS 13.0, *)) {
                 [_renderer renderFrame:frame toLayer:layer];
-            }
+            //}
         }
     } else {
         // When paused, we still dequeue frames to prevent accumulation

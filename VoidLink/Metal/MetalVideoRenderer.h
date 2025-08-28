@@ -24,7 +24,7 @@
 @property (nonatomic) BOOL hdrEnabled;
 
 - (nonnull instancetype)initWithMetalDevice:(nonnull id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate hdrEnabled:(BOOL)hdrEnabled;
-- (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
+- (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer;
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)shutdown;
