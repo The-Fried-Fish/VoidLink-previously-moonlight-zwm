@@ -404,11 +404,22 @@ CFStringRef __currentColorSpace;
                     } else {
                         newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
                     }
-                    newPixelFormat = MTLPixelFormatBGR10A2Unorm;
+                    // Only use BGR10A2Unorm if HDR is enabled and the initial format supports it
+                    if (_hdrEnabled && _colorPixelFormat == MTLPixelFormatBGR10A2Unorm) {
+                        newPixelFormat = MTLPixelFormatBGR10A2Unorm;
+                    } else {
+                        newPixelFormat = MTLPixelFormatBGRA8Unorm;
+                    }
                 } else {
                     // SDR 2020, I'm not sure it's possible to stream this though
                     newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
-                    newPixelFormat = MTLPixelFormatBGR10A2Unorm;
+                    // For SDR content, respect the initially configured pixel format
+                    // Don't force BGR10A2Unorm unless it was configured initially
+                    if (_hdrEnabled && _colorPixelFormat == MTLPixelFormatBGR10A2Unorm) {
+                        newPixelFormat = MTLPixelFormatBGR10A2Unorm;
+                    } else {
+                        newPixelFormat = MTLPixelFormatBGRA8Unorm;
+                    }
                 }
                 if (isHDR) {
                     paramBuffer.cscParams = (fullRange ? k_CscParams_Bt2020Full_10bit : k_CscParams_Bt2020Lim_10bit);
