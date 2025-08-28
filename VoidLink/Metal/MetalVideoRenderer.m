@@ -404,11 +404,11 @@ CFStringRef __currentColorSpace;
                     } else {
                         newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
                     }
-                    newPixelFormat = MTLPixelFormatBGR10A2Unorm;
+                    newPixelFormat = MTLPixelFormatBGRA10_XR;
                 } else {
                     // SDR 2020, I'm not sure it's possible to stream this though
                     newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
-                    newPixelFormat = MTLPixelFormatBGR10A2Unorm;
+                    newPixelFormat = MTLPixelFormatBGRA10_XR;
                 }
                 if (isHDR) {
                     paramBuffer.cscParams = (fullRange ? k_CscParams_Bt2020Full_10bit : k_CscParams_Bt2020Lim_10bit);
@@ -439,11 +439,11 @@ CFStringRef __currentColorSpace;
                 Log(LOG_I,
                     @"Frame pixel format %@ - changing MetalLayer's pixel format to %@",
                     layer.pixelFormat == MTLPixelFormatBGRA8Unorm         ? @"MTLPixelFormatBGRA8Unorm"
-                        : layer.pixelFormat == MTLPixelFormatBGR10A2Unorm ? @"MTLPixelFormatBGR10A2Unorm"
+                        : layer.pixelFormat == MTLPixelFormatBGRA10_XR ? @"MTLPixelFormatBGRA10_XR"
                                                                           : [NSString stringWithFormat:@"Unknown: %lu", layer.pixelFormat],
                     newPixelFormat == MTLPixelFormatBGRA8Unorm         ? @"MTLPixelFormatBGRA8Unorm"
-                        : newPixelFormat == MTLPixelFormatBGR10A2Unorm ? @"MTLPixelFormatBGR10A2Unorm"
-                                                                       : [NSString stringWithFormat:@"Unknown: %lu", (unsigned long)layer.pixelFormat]);
+                        : newPixelFormat == MTLPixelFormatBGRA10_XR ? @"MTLPixelFormatBGRA10_XR"
+                                                                       : [NSString stringWithFormat:@"Unknown: %lu", (unsigned long)newPixelFormat]);
             }
 
 #if TARGET_OS_TV
