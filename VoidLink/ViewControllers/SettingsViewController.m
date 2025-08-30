@@ -329,6 +329,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                 [self widget:self.bitrateSlider setEnabled:responseCode == 200];
             });
         }
+        else [self widget:self.bitrateSlider setEnabled:true];
     });
  }
 
