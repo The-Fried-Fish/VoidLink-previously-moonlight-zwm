@@ -12,6 +12,7 @@
 #import "ConnectionCallbacks.h"
 #import "Frame.h"
 #import "Plot.h"
+#import "TemporarySettings.h"
 
 @interface MetalVideoRenderer : NSObject
 
@@ -23,8 +24,10 @@
 @property (atomic) BOOL isStopping;
 @property (nonatomic) BOOL hdrEnabled;
 
-- (nonnull instancetype)initWithMetalDevice:(nonnull id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate hdrEnabled:(BOOL)hdrEnabled;
-- (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
+- (instancetype _Nonnull )initWithMetalDevice:(id<MTLDevice>_Nonnull)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat settings:(TemporarySettings* _Nonnull )currentSettings;
+
+
+- (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer;
 - (void)waitToRenderTo:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)shutdown;

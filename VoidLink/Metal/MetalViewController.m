@@ -14,20 +14,20 @@
 @implementation MetalViewController {
     FrameQueue *_frameQueue;
     float _framerate;
-    BOOL _enableHdr;
+    TemporarySettings* _currentSettings;
     MetalView *_metalView;
     MetalVideoRenderer *_renderer;
     MetricsHandler _metricsHandler;
     CADisplayLink *_displayLink;
 }
 
-- (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate enableHdr:(BOOL)enableHdr metricsHandler:(MetricsHandler)metricsHandler {
+- (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate settings:(TemporarySettings* )settings metricsHandler:(MetricsHandler)metricsHandler {
     self = [super init];
     if (self) {
         _bounds = bounds;
         _frameQueue = [FrameQueue sharedInstance];
         _framerate = framerate;
-        _enableHdr = enableHdr;
+        _currentSettings = settings;
         _metricsHandler = metricsHandler;
     }
     return self;
@@ -63,14 +63,14 @@
     // Use TARGET_OS_SIMULATOR to detect simulator environment
     MTLPixelFormat pixelFormat;
 #if TARGET_OS_SIMULATOR
-    // iOS Simulator doesn't support BGR10A2Unorm
+    // iOS Simulator doesn't support BGRA10_XR
     pixelFormat = MTLPixelFormatBGRA8Unorm;
     Log(LOG_W, @"Running on iOS Simulator, using BGRA8Unorm pixel format");
 #else
     // On real devices, check if we should enable HDR
-    if (_enableHdr) {
-        pixelFormat = MTLPixelFormatBGR10A2Unorm;
-        Log(LOG_I, @"HDR enabled, using BGR10A2Unorm pixel format");
+    if (_currentSettings.enableHdr) {
+        pixelFormat = MTLPixelFormatBGRA10_XR;
+        Log(LOG_I, @"HDR enabled, using BGRA10_XR pixel format");
     } else {
         pixelFormat = MTLPixelFormatBGRA8Unorm;
         Log(LOG_I, @"HDR disabled, using BGRA8Unorm pixel format");
@@ -80,8 +80,7 @@
     // Initialize the renderer.
     MetalVideoRenderer *renderer = [[MetalVideoRenderer alloc] initWithMetalDevice:device
                                                                drawablePixelFormat:pixelFormat
-                                                                         framerate:self->_framerate
-                                                                        hdrEnabled:self->_enableHdr];
+                                                                         settings:_currentSettings];
     if (!renderer) {
         Log(LOG_E, @"The renderer couldn't be initialized.");
         return;
@@ -131,9 +130,9 @@
     if (!_renderer.isStopping) {
         // Only render if not paused
         if (frame) {
-            if (@available(iOS 13.0, *)) {
+            //if (@available(iOS 13.0, *)) {
                 [_renderer renderFrame:frame toLayer:layer];
-            }
+            //}
         }
     } else {
         // When paused, we still dequeue frames to prevent accumulation

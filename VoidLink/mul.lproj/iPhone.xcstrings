@@ -2936,91 +2936,121 @@
       }
     },
     "tE5-Bm-4OB.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[1] = \"left button\"; ObjectID = \"tE5-Bm-4OB\";",
+      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[1] = \"left btn\"; ObjectID = \"tE5-Bm-4OB\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "left button"
+            "value" : "left btn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "左键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "左鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "左鍵"
           }
         }
       }
     },
     "tE5-Bm-4OB.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[2] = \"middle button\"; ObjectID = \"tE5-Bm-4OB\";",
+      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[2] = \"middle btn\"; ObjectID = \"tE5-Bm-4OB\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "middle button"
+            "value" : "middle btn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "中键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "中鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "中鍵"
           }
         }
       }
     },
     "tE5-Bm-4OB.segmentTitles[3]" : {
-      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[3] = \"right button\"; ObjectID = \"tE5-Bm-4OB\";",
+      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[3] = \"right btn\"; ObjectID = \"tE5-Bm-4OB\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "right button"
+            "value" : "right btn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "右键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "右鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "右鍵"
+          }
+        }
+      }
+    },
+    "tE5-Bm-4OB.segmentTitles[4]" : {
+      "comment" : "Class = \"UISegmentedControl\"; tE5-Bm-4OB.segmentTitles[4] = \"no click\"; ObjectID = \"tE5-Bm-4OB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "no click"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无点击"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無點擊"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無點擊"
           }
         }
       }
