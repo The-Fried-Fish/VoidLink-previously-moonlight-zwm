@@ -130,21 +130,24 @@ CFStringRef __currentColorSpace;
     size_t _lastDrawableHeight;
     id<MTLBuffer> _CscParamsBuffer;
     id<MTLBuffer> _VideoVertexBuffer;
+    
+    CFStringRef _nonFullHdrColorSpace;
+    MTLPixelFormat _nonFullHdrPixelFormat;
 
     // https://developer.apple.com/documentation/metal/synchronizing-cpu-and-gpu-work?language=objc
     dispatch_semaphore_t _inFlightSemaphore;
 }
 
-- (instancetype)initWithMetalDevice:(id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat framerate:(float)framerate hdrEnabled:(BOOL)hdrEnabled {
+- (instancetype)initWithMetalDevice:(id<MTLDevice>)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat settings:(TemporarySettings* )currentSettings {
     self = [super init];
     if (self) {
         _sq = dispatch_queue_create("com.moonlight.MetalVideoRenderer",
                                     dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0));
-        _averageGPUTime = (1.0f / framerate) / 2;
+        _averageGPUTime = (1.0f / currentSettings.framerate.floatValue) / 2;
         _device = device;
         _colorPixelFormat = drawablePixelFormat;
-        _framerate = framerate;
-        _hdrEnabled = hdrEnabled;
+        _framerate = currentSettings.framerate.floatValue;
+        _hdrEnabled = currentSettings.enableHdr;
         _commandQueue = [_device newCommandQueue];
         _currentEDRHeadroom = 1.0f;
         _lastColorSpace = -1;
@@ -170,6 +173,10 @@ CFStringRef __currentColorSpace;
         _renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
         _renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         
+        if (@available(iOS 14.0, *)) _nonFullHdrColorSpace = kCGColorSpaceITUR_2100_PQ;
+        else _nonFullHdrColorSpace =  kCGColorSpaceITUR_2020;
+        _nonFullHdrPixelFormat = MTLPixelFormatRGBA16Float;
+
         // Initialize texture array to NULL
         for (int i = 0; i < MAX_VIDEO_PLANES; i++) {
             _cvMetalTextures[i] = NULL;
@@ -399,16 +406,12 @@ CFStringRef __currentColorSpace;
                 CFStringRef frame_trc = CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey);
                 if (CFEqual(frame_trc, kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ)) {
                     isHDR = YES;
-                    if (@available(iOS 14.0, *)) {
-                        newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
-                    } else {
-                        newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
-                    }
-                    newPixelFormat = MTLPixelFormatBGRA10_XR;
+                    newColorSpace = CGColorSpaceCreateWithName(_nonFullHdrColorSpace);
+                    newPixelFormat = _nonFullHdrPixelFormat;
                 } else {
                     // SDR 2020, I'm not sure it's possible to stream this though
-                    newColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
-                    newPixelFormat = MTLPixelFormatBGRA10_XR;
+                    newColorSpace = CGColorSpaceCreateWithName(_nonFullHdrColorSpace);
+                    newPixelFormat = _nonFullHdrPixelFormat;
                 }
                 if (isHDR) {
                     paramBuffer.cscParams = (fullRange ? k_CscParams_Bt2020Full_10bit : k_CscParams_Bt2020Lim_10bit);
@@ -494,6 +497,10 @@ CFStringRef __currentColorSpace;
         _lastColorSpace = colorspace;
         _lastFullRange = fullRange;
     }
+    
+    
+    // NSLog(@"layer.pixelFormat %lu", (unsigned long)layer.pixelFormat);
+    
 
     return YES;
 }

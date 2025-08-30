@@ -714,7 +714,7 @@
         Log(LOG_I, @"StreamFrameViewController creating MetalViewController");
         self.metalViewController = [[MetalViewController alloc] initWithFrame:self.view.bounds
                                                                     framerate:[self->_settings.framerate floatValue]
-                                                                    enableHdr:self->_settings.enableHdr
+                                                                    settings:self->_settings
                                                                metricsHandler:self.imguiView.metricsHandler];
         self.metalViewController.view.userInteractionEnabled = NO;
         [self addChildViewController:self.metalViewController];
