@@ -12,15 +12,14 @@
 #import "ImGuiRenderer.h"
 #import "MetalVideoRenderer.h"
 #import "MetalView.h"
+#import "TemporarySettings.h"
 
 @interface MetalViewController : UIViewController <MetalViewDelegate>
 
 @property (nonatomic) CGRect bounds;
 
-- (nonnull instancetype)initWithFrame:(CGRect)bounds
-                            framerate:(float)framerate
-                            enableHdr:(BOOL)enableHdr
-                       metricsHandler:(MetricsHandler _Nonnull)metricsHandler;
+- (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate settings:(TemporarySettings* _Nonnull )settings metricsHandler:(MetricsHandler _Nonnull)metricsHandler;
+
 
 - (void)pauseRendering;
 - (void)resumeRendering;

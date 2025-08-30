@@ -42,6 +42,7 @@
     MenuSectionView *touchAndControlSection;
     MenuSectionView *videoSection;
     MenuSectionView *otherSection;
+    MenuSectionView *experimentalSection;
     NSMutableSet* hiddenStacks;
 }
 
@@ -570,7 +571,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
-    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
 
     [videoSection addToParentStack:_parentStack];
     [videoSection setExpanded:YES];
@@ -657,13 +657,16 @@ BOOL isCustomResolution(int resolutionSelected) {
     [otherSection setExpanded:YES];
     
     
-    MenuSectionView *experimentalSection = [[MenuSectionView alloc] init];
+   experimentalSection = [[MenuSectionView alloc] init];
     experimentalSection.delegate = self;
     experimentalSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Experimental"];
     if (@available(iOS 13.0, *)) {
         [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] andSize:20];
     }
     [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
+    
+    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+    
     [experimentalSection addToParentStack:_parentStack];
     [experimentalSection setExpanded:YES];
 }
@@ -1300,6 +1303,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)viewDidLoad {
     //[self updateTheme];
+    
     settingStackWillBeRelocatedToLowestPosition = false;
     hiddenStacks = [[NSMutableSet alloc] init];
 
@@ -1710,12 +1714,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     DataManager* dataMan = [[DataManager alloc] init];
     TemporarySettings* currentSettings = [dataMan getSettings];
     NSInteger previousBackend = [currentSettings.renderingBackend integerValue];
-    
 
     // Check if the rendering backend has actually changed
     if (previousBackend != sender.selectedSegmentIndex) {
         // Show alert to prompt user to restart the app
-        NSString *message = [LocalizationHelper localizedStringForKey:@"Rendering mode change requires app restart"];
+        NSString *message = [LocalizationHelper localizedStringForKey: sender.selectedSegmentIndex == 1 ? @"PerfModeTip" : @"Rendering mode change requires app restart"];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Restart Required"]
                                                                                  message:message

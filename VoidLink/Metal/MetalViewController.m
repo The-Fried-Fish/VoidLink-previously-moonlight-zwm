@@ -14,20 +14,20 @@
 @implementation MetalViewController {
     FrameQueue *_frameQueue;
     float _framerate;
-    BOOL _enableHdr;
+    TemporarySettings* _currentSettings;
     MetalView *_metalView;
     MetalVideoRenderer *_renderer;
     MetricsHandler _metricsHandler;
     CADisplayLink *_displayLink;
 }
 
-- (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate enableHdr:(BOOL)enableHdr metricsHandler:(MetricsHandler)metricsHandler {
+- (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate settings:(TemporarySettings* )settings metricsHandler:(MetricsHandler)metricsHandler {
     self = [super init];
     if (self) {
         _bounds = bounds;
         _frameQueue = [FrameQueue sharedInstance];
         _framerate = framerate;
-        _enableHdr = enableHdr;
+        _currentSettings = settings;
         _metricsHandler = metricsHandler;
     }
     return self;
@@ -68,7 +68,7 @@
     Log(LOG_W, @"Running on iOS Simulator, using BGRA8Unorm pixel format");
 #else
     // On real devices, check if we should enable HDR
-    if (_enableHdr) {
+    if (_currentSettings.enableHdr) {
         pixelFormat = MTLPixelFormatBGRA10_XR;
         Log(LOG_I, @"HDR enabled, using BGRA10_XR pixel format");
     } else {
@@ -80,8 +80,7 @@
     // Initialize the renderer.
     MetalVideoRenderer *renderer = [[MetalVideoRenderer alloc] initWithMetalDevice:device
                                                                drawablePixelFormat:pixelFormat
-                                                                         framerate:self->_framerate
-                                                                        hdrEnabled:self->_enableHdr];
+                                                                         settings:_currentSettings];
     if (!renderer) {
         Log(LOG_E, @"The renderer couldn't be initialized.");
         return;
