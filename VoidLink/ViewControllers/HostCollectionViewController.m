@@ -175,9 +175,10 @@ static const CGFloat cellOffsetY = 20;
         _collectionViewHeightConstraint.constant = contentHeight;
     }
     
-    if([self numberOfRowsInCollectionView]<=2 && !contentExceedsView) layout.sectionInset = UIEdgeInsetsMake(50, _horizontalPadding, 0, _horizontalPadding);
-    if([self numberOfRowsInCollectionView]>2 && !contentExceedsView) layout.sectionInset = UIEdgeInsetsMake(25, _horizontalPadding, 0, _horizontalPadding);
-    if(contentExceedsView) layout.sectionInset = UIEdgeInsetsMake(7, _horizontalPadding, 0, _horizontalPadding);
+    if([self numberOfRowsInCollectionView] == 1) layout.sectionInset = UIEdgeInsetsMake(50, _horizontalPadding, 0, _horizontalPadding);
+    else if([self numberOfRowsInCollectionView] == 2) layout.sectionInset = UIEdgeInsetsMake(17, _horizontalPadding, 0, _horizontalPadding);
+    else layout.sectionInset = UIEdgeInsetsMake(10, _horizontalPadding, 0, _horizontalPadding);
+    //if(contentExceedsView) layout.sectionInset = UIEdgeInsetsMake(7, _horizontalPadding, 0, _horizontalPadding);
 }
 
 #pragma mark - UICollectionView DataSource
