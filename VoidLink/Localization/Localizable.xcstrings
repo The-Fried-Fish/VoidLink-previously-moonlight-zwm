@@ -4275,25 +4275,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Performance rendering mode can handle higher bitrate (>200mbps) with lower latency, the battery usage can be higher and PiP is not supported in this mode. Use balanced mode when issues occurred."
+            "value" : "Performance rendering mode [may] handle higher bitrate with lower latency, the battery usage can be higher and PiP is not supported in this mode. Use balanced mode when issues occurred."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "性能渲染模式可以处理更高的比特率（>200mbps）和更低的延迟，但电池消耗可能更高，且该模式不支持画中画。如遇到问题请使用平衡模式。"
+            "state" : "needs_review",
+            "value" : "性能渲染模式 [或可] 以更低的延迟处理更高的比特率，但电池消耗可能更高，且该模式不支持画中画。如遇到问题请使用平衡模式。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能渲染模式可以處理更高的位元速率（>200mbps）和更低的延遲，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+            "state" : "needs_review",
+            "value" : "效能渲染模式 [或可] 以更低的延遲處理更高的位元速率，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能渲染模式可以處理更高的位元速率（>200mbps）和更低的延遲，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+            "state" : "needs_review",
+            "value" : "效能渲染模式 [或可] 以更低的延遲處理更高的位元速率，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
           }
         }
       }
