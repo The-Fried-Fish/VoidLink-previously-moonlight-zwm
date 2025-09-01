@@ -23,12 +23,13 @@
 @property (nonatomic) id<CAMetalDrawable> _Nullable nextDrawable;
 @property (atomic) BOOL isStopping;
 @property (nonatomic) BOOL hdrEnabled;
+@property (nonatomic, readonly, nonnull) dispatch_semaphore_t inFlightSemaphore;
 
 - (instancetype _Nonnull )initWithMetalDevice:(id<MTLDevice>_Nonnull)device drawablePixelFormat:(MTLPixelFormat)drawablePixelFormat settings:(TemporarySettings* _Nonnull )currentSettings;
 
 
 - (void)renderFrame:(nonnull Frame *)frame toLayer:(nonnull CAMetalLayer *)layer;
-- (void)waitToRenderTo:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
+- (BOOL)waitToRenderTo:(nonnull CAMetalLayer *)layer API_AVAILABLE(ios(13.0));
 - (void)drawableResize:(CGSize)drawableSize;
 - (void)shutdown;
 
