@@ -19,6 +19,7 @@
     MetalVideoRenderer *_renderer;
     MetricsHandler _metricsHandler;
     CADisplayLink *_displayLink;
+    BOOL _frameSlotAcquired;
 }
 
 - (nonnull instancetype)initWithFrame:(CGRect)bounds framerate:(float)framerate settings:(TemporarySettings* )settings metricsHandler:(MetricsHandler)metricsHandler {
@@ -113,17 +114,20 @@
         return;
     }
 
-    // Renderer obtains a nextDrawable, waiting if necessary
     if (@available(iOS 13.0, *)) {
-        [_renderer waitToRenderTo:layer];
+        _frameSlotAcquired = [_renderer waitToRenderTo:layer];
     }
 
-    // If we don't have a frame yet, wait on that too
-    [_frameQueue waitForEnqueue];
+    if (_frameSlotAcquired) {
+        [_frameQueue waitForEnqueue];
+    }
 }
 
 /// Draw frame (used by manual loop)
 - (void)renderTo:(nonnull CAMetalLayer *)layer {
+    if (!_frameSlotAcquired) {
+        return;
+    }
     CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
     Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
 
@@ -133,10 +137,13 @@
             //if (@available(iOS 13.0, *)) {
                 [_renderer renderFrame:frame toLayer:layer];
             //}
+        } else {
+            dispatch_semaphore_signal([_renderer inFlightSemaphore]);
         }
     } else {
         // When paused, we still dequeue frames to prevent accumulation
         // but don't render them. Also sleep a bit to reduce CPU usage
+        dispatch_semaphore_signal([_renderer inFlightSemaphore]);
         usleep(100000);
     }
 }
