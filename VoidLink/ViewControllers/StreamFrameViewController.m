@@ -23,9 +23,9 @@
 #import "MetalVideoRenderer.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "CustomTapGestureRecognizer.h"
+#import "OSCProfilesManager.h"
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
-#import "OSCProfilesManager.h"
 #import "ThemeManager.h"
 
 #include <sys/socket.h>
@@ -997,10 +997,15 @@
 }
 
 - (void) handleViewResize{
+    NSLog(@"🔄 StreamFrameViewController handleViewResize 开始");
     viewIsBeingResized = true;
     _streamView.bounds = _deviceWindow.bounds;
     _streamView.frame = _deviceWindow.frame;
-    if(![self isAirPlaying]){
+    
+    BOOL isAirPlaying = [self isAirPlaying];
+    NSLog(@"📺 AirPlay状态: %@", isAirPlaying ? @"正在AirPlay" : @"未使用AirPlay");
+    
+    if(!isAirPlaying){
         _streamVideoRenderView.bounds = _deviceWindow.bounds;
         _streamVideoRenderView.frame = _deviceWindow.frame;
 
@@ -1014,11 +1019,88 @@
         
         // Handle resize for AVSB renderer
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+        NSLog(@"📡 发送 ScreenChanged 通知");
         [nc postNotificationName:@"ScreenChanged" object:self];
+        
+        // 处理配对布局切换
+        BOOL didSwitchPairedLayout = [self handlePairedLayoutSwitching];
+        
+        // 如果切换了配对布局，延迟调用reConfigStreamViewRealtime以避免重叠
+        if (didSwitchPairedLayout) {
+            NSLog(@"🔄 配对布局已切换，延迟0.1秒后调用reConfigStreamViewRealtime");
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                NSLog(@"⏰ 延迟调用开始 - reConfigStreamViewRealtimeAndReloadSettings:NO");
+                
+                // 再次验证当前选中的布局
+                OSCProfilesManager *profilesManager = [OSCProfilesManager sharedManager:self.view.bounds];
+                OSCProfile *currentProfile = [profilesManager getSelectedProfile];
+                NSLog(@"🔍 延迟调用时的当前选中布局: %@", currentProfile ? currentProfile.name : @"无");
+                
+                [self reConfigStreamViewRealtimeAndReloadSettings:NO]; // 不重新加载设置，避免覆盖配对布局
+                NSLog(@"✅ 延迟调用完成");
+            });
+        } else {
+            [self reConfigStreamViewRealtime];
+        }
+    } else {
+        NSLog(@"⚠️ 因为AirPlay状态，跳过发送ScreenChanged通知");
+        [self reConfigStreamViewRealtime];
     }
-    [self reConfigStreamViewRealtime];
+    NSLog(@"✅ StreamFrameViewController handleViewResize 完成");
 }
 
+- (BOOL)handlePairedLayoutSwitching {
+    NSLog(@"=== StreamFrameViewController 配对布局切换处理开始 ===");
+    
+    // 获取OSCProfilesManager实例
+    OSCProfilesManager *profilesManager = [OSCProfilesManager sharedManager:self.view.bounds];
+    
+    // 检查当前布局是否已配对，如果是则切换到配对布局
+    OSCProfile *currentProfile = [profilesManager getSelectedProfile];
+    NSLog(@"当前选中布局: %@", currentProfile ? currentProfile.name : @"无");
+    
+    if (currentProfile) {
+        NSLog(@"当前布局是否已配对: %@", currentProfile.isPaired ? @"是" : @"否");
+        NSLog(@"当前布局方向标记: %@ (isLandscapeLayout=%@)", 
+              currentProfile.isLandscapeLayout ? @"横屏" : @"竖屏",
+              currentProfile.isLandscapeLayout ? @"YES" : @"NO");
+        NSLog(@"配对的布局名称: %@", currentProfile.pairedProfileName ?: @"无");
+        
+        if (currentProfile.isPaired) {
+            BOOL isCurrentLandscape = [profilesManager isCurrentOrientationLandscape];
+            NSLog(@"当前实际屏幕方向: %@", isCurrentLandscape ? @"横屏" : @"竖屏");
+            
+            OSCProfile *targetProfile = [profilesManager getProfileForCurrentOrientation:currentProfile.name isLandscape:isCurrentLandscape];
+            NSLog(@"目标布局: %@", targetProfile ? targetProfile.name : @"无");
+            
+            if (targetProfile && ![targetProfile.name isEqualToString:currentProfile.name]) {
+                // 切换到配对的布局
+                NSLog(@"🔄 执行布局切换：从 %@ 切换到 %@", currentProfile.name, targetProfile.name);
+                [profilesManager setProfileToSelected:targetProfile.name];
+                NSLog(@"✅ 布局切换完成");
+                
+                // 验证切换是否成功
+                OSCProfile *verifyProfile = [profilesManager getSelectedProfile];
+                NSLog(@"🔍 验证切换结果 - 当前选中布局: %@", verifyProfile ? verifyProfile.name : @"无");
+                
+                // 不在这里重新加载屏幕控件，让延迟的reConfigStreamViewRealtime来处理
+                NSLog(@"ℹ️ 跳过立即重新加载屏幕控件，等待延迟调用处理");
+                
+                NSLog(@"=== StreamFrameViewController 配对布局切换处理结束 ===");
+                return YES; // 返回YES表示进行了布局切换
+            } else {
+                NSLog(@"❌ 不需要切换布局 - 目标布局与当前布局相同或目标布局为空");
+            }
+        } else {
+            NSLog(@"ℹ️ 当前布局未配对，使用自适应逻辑");
+        }
+    } else {
+        NSLog(@"❌ 没有选中的布局");
+    }
+    
+    NSLog(@"=== StreamFrameViewController 配对布局切换处理结束 ===");
+    return NO; // 返回NO表示没有进行布局切换
+}
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
@@ -1553,13 +1635,16 @@
 #endif
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    NSLog(@"📱 StreamFrameViewController viewWillTransitionToSize: %@ -> %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     if (_isRestoringFromPiP) {
+        NSLog(@"⚠️ PiP恢复中，跳过重新配置");
         Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
         return;
     }
 
+    NSLog(@"🔄 准备在0.2秒后调用handleViewResize");
     Log(LOG_I, @"View size changed, terminating stream");
     
     double delayInSeconds = 0.2;

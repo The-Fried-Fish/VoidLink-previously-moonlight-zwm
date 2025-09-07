@@ -26,6 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSMutableArray <OnScreenButtonState *> *buttonStates;
 @property BOOL isSelected;
 
+// 配对布局相关属性
+@property (nullable) NSString *pairedProfileName;  // 配对的布局名称
+@property BOOL isLandscapeLayout;                  // 是否为横屏布局
+@property BOOL isPaired;                           // 是否已配对
+
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected;
 
 + (BOOL) supportsSecureCoding;

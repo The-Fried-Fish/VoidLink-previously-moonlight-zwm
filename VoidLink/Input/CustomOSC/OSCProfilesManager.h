@@ -72,6 +72,48 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) profileNameAlreadyExist:(NSString*)name;
 - (OSCProfile *) findProfileByName:(NSString*) name inProfileArray:(NSMutableArray*)profiles;
 
+#pragma mark - Pairing Management
+/**
+ * 创建两个布局之间的配对关系
+ */
+- (BOOL) pairProfile:(NSString*)profile1Name withProfile:(NSString*)profile2Name isProfile1Landscape:(BOOL)isLandscape;
+
+/**
+ * 解除配对关系
+ */
+- (BOOL) unpairProfile:(NSString*)profileName;
+
+/**
+ * 获取指定布局的配对布局
+ */
+- (OSCProfile *) getPairedProfile:(NSString*)profileName;
+
+/**
+ * 检查布局是否已配对
+ */
+- (BOOL) isProfilePaired:(NSString*)profileName;
+
+/**
+ * 根据当前屏幕方向获取应该使用的布局
+ */
+- (OSCProfile *) getProfileForCurrentOrientation:(NSString*)profileName isLandscape:(BOOL)isLandscape;
+
+/**
+ * 获取当前屏幕方向
+ */
+- (BOOL) isCurrentOrientationLandscape;
+
+/**
+ * 获取所有可用于配对的布局（排除当前选中和已配对的布局）
+ */
+- (NSMutableArray *) getAvailableProfilesForPairing:(NSString*)currentProfileName;
+
+#pragma mark - Template Management
+/**
+ * 检查指定名称的布局是否为模板布局（不可编辑、删除或配对）
+ */
+- (BOOL) isTemplateProfile:(NSString*)profileName;
+
 @end
 
 NS_ASSUME_NONNULL_END

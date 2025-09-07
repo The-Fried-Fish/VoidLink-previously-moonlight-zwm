@@ -399,9 +399,10 @@ import UIKit
     }
     
     private func denormalizeSize(sizeFactor:CGFloat) -> CGFloat {
-        let screenWidthInPoints = UIScreen.main.bounds.width
-        // return CGFloat(Int(sizeFactor/10000*screenWidthInPoints/2)*2);
-        return nearestEven(sizeFactor/10000*screenWidthInPoints);
+        // 使用固定的基准宽度(1194)来避免旋转时的累积变化
+        let baseScreenWidth: CGFloat = 1194.0
+        // return CGFloat(Int(sizeFactor/10000*baseScreenWidth/2)*2);
+        return nearestEven(sizeFactor/10000*baseScreenWidth);
     }
     
     private func changeAndActivateContraints(){

@@ -33,6 +33,17 @@ typedef NS_ENUM(NSUInteger, FileOperation) {
 @property (nonatomic, assign) CGRect layoutViewBounds;
 @property (weak, nonatomic) IBOutlet UINavigationBar *profileTableViewNavigationBar;
 
+// 配对相关UI组件
+@property (strong, nonatomic) UIView *bottomToolbarView;
+@property (strong, nonatomic) UIButton *pairingButton;
+@property (strong, nonatomic) UIButton *saveButton;
+@property (strong, nonatomic) UIButton *cancelButton;
+
+// 配对状态
+@property (nonatomic, assign) BOOL isPairingMode;
+@property (nonatomic, strong) NSString *selectedProfileForPairing;
+@property (nonatomic, assign) BOOL isProcessingOrientationChange;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -265,6 +265,12 @@
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
     
+    // 监听StreamFrameViewController发送的屏幕变化通知
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleScreenChanged:)
+                                                 name:@"ScreenChanged"
+                                               object:nil];
+    
     OnScreenWidgetView.editMode = true;
     [self handleMissingToolBarIcon:toolbarRootView];
     [self profileRefresh];
@@ -294,18 +300,95 @@
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
+    NSLog(@"📱 viewWillTransitionToSize: %@ -> %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        NSLog(@"⚠️ 应用不在活跃状态，跳过旋转处理");
+        return;
+    }
     viewWillBeResized = true;
+    NSLog(@"✅ 设置 viewWillBeResized = true");
     [self hideStickIndicators];
     if(!_quickSwitchEnabled) [self saveTapped:nil];
 }
 
 - (void)deviceOrientationDidChange{
+    NSLog(@"📱 deviceOrientationDidChange 被调用");
     [self performSelector:@selector(handleOrientationChangeForOnScreenWidgets) withObject:self afterDelay:0.0];
 }
 
+- (void)handleScreenChanged:(NSNotification *)notification {
+    NSLog(@"📺 handleScreenChanged 被调用 - 来自StreamFrameViewController");
+    
+    // 只有在非布局编辑模式下才处理（即在串流界面中）
+    // 如果quickSwitchEnabled为true，说明是在布局列表页，应该跳过
+    if (self.quickSwitchEnabled) {
+        NSLog(@"⚠️ 布局编辑模式中，跳过handleScreenChanged");
+        return;
+    }
+    
+    // 在串流界面中，直接处理配对布局切换，不需要等待viewWillBeResized标志
+    [self handlePairedLayoutSwitching];
+}
+
+- (void)handlePairedLayoutSwitching {
+    NSLog(@"=== 配对布局切换处理开始 ===");
+    
+    // 如果是快速切换模式（布局列表页），跳过自动切换
+    if (self.quickSwitchEnabled) {
+        NSLog(@"⚠️ 快速切换模式中，跳过配对布局自动切换");
+        return;
+    }
+    
+    // 检查当前布局是否已配对，如果是则切换到配对布局
+    OSCProfile *currentProfile = [profilesManager getSelectedProfile];
+    NSLog(@"当前选中布局: %@", currentProfile ? currentProfile.name : @"无");
+    
+    if (currentProfile) {
+        NSLog(@"当前布局是否已配对: %@", currentProfile.isPaired ? @"是" : @"否");
+        NSLog(@"当前布局方向标记: %@ (isLandscapeLayout=%@)", 
+              currentProfile.isLandscapeLayout ? @"横屏" : @"竖屏",
+              currentProfile.isLandscapeLayout ? @"YES" : @"NO");
+        NSLog(@"配对的布局名称: %@", currentProfile.pairedProfileName ?: @"无");
+        
+        if (currentProfile.isPaired) {
+            BOOL isCurrentLandscape = [profilesManager isCurrentOrientationLandscape];
+            NSLog(@"当前实际屏幕方向: %@", isCurrentLandscape ? @"横屏" : @"竖屏");
+            
+            OSCProfile *targetProfile = [profilesManager getProfileForCurrentOrientation:currentProfile.name isLandscape:isCurrentLandscape];
+            NSLog(@"目标布局: %@", targetProfile ? targetProfile.name : @"无");
+            
+            if (targetProfile && ![targetProfile.name isEqualToString:currentProfile.name]) {
+                // 切换到配对的布局
+                NSLog(@"🔄 执行布局切换：从 %@ 切换到 %@", currentProfile.name, targetProfile.name);
+                [profilesManager setProfileToSelected:targetProfile.name];
+                NSLog(@"✅ 布局切换完成");
+                
+                // 重新加载布局
+                [self reloadLegacyOnScreenControls];
+                [self reloadOnScreenWidgetViews];
+            } else {
+                NSLog(@"❌ 不需要切换布局 - 目标布局与当前布局相同或目标布局为空");
+            }
+        } else {
+            NSLog(@"ℹ️ 当前布局未配对，使用自适应逻辑");
+        }
+    } else {
+        NSLog(@"❌ 没有选中的布局");
+    }
+    
+    NSLog(@"=== 配对布局切换处理结束 ===");
+}
+
 - (void)handleOrientationChangeForOnScreenWidgets{
-    if(!viewWillBeResized) return;
+    NSLog(@"🔄 handleOrientationChangeForOnScreenWidgets 被调用，viewWillBeResized = %@", viewWillBeResized ? @"YES" : @"NO");
+    if(!viewWillBeResized) {
+        NSLog(@"❌ viewWillBeResized = NO，跳过处理");
+        return;
+    }
+    
+    // 处理配对布局切换
+    [self handlePairedLayoutSwitching];
+    
     [self setupWidgetPanel];
     [self updateViewBounds];
 }
@@ -679,7 +762,9 @@
         if(sender) [self presentViewController:savedAlertController animated:YES completion:nil];
     }
     else{
-        UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Profile Default can not be overwritten"] preferredStyle:UIAlertControllerStyleAlert];
+        OSCProfile *selectedProfile = [profilesManager getSelectedProfile];
+        NSString *message = [NSString stringWithFormat:@"模板布局'%@'不可被覆盖", selectedProfile.name];
+        UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: message preferredStyle:UIAlertControllerStyleAlert];
         [savedAlertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [self.oscProfilesTableViewController profileViewRefresh]; // execute this will reset layout in OSC tool!
         }]];
@@ -1364,9 +1449,11 @@
     }
     [self.layoutOSC touchesEnded:touches withEvent:event];
     
-    // in case of default profile OSC change, popup msgbox & remind user it's not allowed.
-    if([profilesManager getIndexOfSelectedProfile] == 0 && [self.layoutOSC.layoutChanges count] > 0){
-        UIAlertController * movedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Layout of the Default profile can not be changed"] preferredStyle:UIAlertControllerStyleAlert];
+    // 检查模板布局是否被修改，弹出提示
+    OSCProfile *currentProfile = [profilesManager getSelectedProfile];
+    if(currentProfile && [profilesManager isTemplateProfile:currentProfile.name] && [self.layoutOSC.layoutChanges count] > 0){
+        NSString *message = [NSString stringWithFormat:@"模板布局'%@'不可被修改", currentProfile.name];
+        UIAlertController * movedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: message preferredStyle:UIAlertControllerStyleAlert];
         [movedAlertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [self.oscProfilesTableViewController profileViewRefresh];
         }]];

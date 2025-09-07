@@ -68,10 +68,25 @@ static CGRect layoutViewBounds;
 - (NSMutableArray *) encodedProfilesFromArray:(NSMutableArray *)profiles {
     
     NSMutableArray *profilesEncoded = [[NSMutableArray alloc] init];
+    
+    if (profiles == nil) {
+        NSLog(@"警告：尝试编码nil profiles数组，返回空数组");
+        return profilesEncoded;
+    }
+    
     /* encode each profile and add them back into an array */
-    for (OSCProfile *profile in profiles) {   //
+    for (OSCProfile *profile in profiles) {
+        if (profile == nil) {
+            NSLog(@"警告：跳过nil profile对象");
+            continue;
+        }
+        
         NSData *profileEncoded = [NSKeyedArchiver archivedDataWithRootObject:profile requiringSecureCoding:YES error:nil];
-        [profilesEncoded addObject:profileEncoded];
+        if (profileEncoded != nil) {
+            [profilesEncoded addObject:profileEncoded];
+        } else {
+            NSLog(@"警告：profile编码失败，跳过该profile: %@", profile.name ?: @"未命名");
+        }
     }
     
     return profilesEncoded;
@@ -86,8 +101,20 @@ static CGRect layoutViewBounds;
     NSInteger selectedIndex = [self getIndexOfSelectedProfile];
     
     /* Remove the selected profile */
-    if(selectedIndex != 0) [profiles removeObjectAtIndex:selectedIndex]; //deleting default profile (index 0) is not allowed
-    else {
+    if(selectedIndex != 0) {
+        OSCProfile *profileToDelete = [profiles objectAtIndex:selectedIndex];
+        
+        // 如果要删除的布局已配对，需要清理配对关系
+        if (profileToDelete.isPaired) {
+            [self unpairProfile:profileToDelete.name];
+            // 重新获取profiles，因为unpairProfile会更新存储
+            profiles = [self getAllProfiles];
+            // 重新计算selectedIndex，因为profiles可能已经改变
+            selectedIndex = [self getIndexOfSelectedProfile];
+        }
+        
+        [profiles removeObjectAtIndex:selectedIndex];
+    } else {
         NSLog(@"Default profile!"); // to be updated here.
     }
     
@@ -189,9 +216,24 @@ static CGRect layoutViewBounds;
 - (NSMutableArray *) getAllProfiles {
     
     NSData *profilesArrayEncoded = [[NSUserDefaults standardUserDefaults] objectForKey: @"OSCProfiles"];    // Get the encoded array of encoded OSC profiles from persistent storage
+    
+    // 如果没有保存的配置文件数据，返回空数组
+    if (profilesArrayEncoded == nil) {
+        NSLog(@"没有找到保存的配置文件数据，返回空数组");
+        _currentProfiles = [[NSMutableArray alloc] init];
+        return _currentProfiles;
+    }
+    
     NSSet *classes = [NSSet setWithObjects:[NSString class], [NSMutableData class], [NSMutableArray class], [OSCProfile class], [OnScreenButtonState class], nil];
     
     NSMutableArray *profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:profilesArrayEncoded error:nil];    // Decode the encoded array itself, NOT the objects contained in the array
+    
+    // 如果解码失败，返回空数组
+    if (profilesEncoded == nil) {
+        NSLog(@"配置文件数据解码失败，返回空数组");
+        _currentProfiles = [[NSMutableArray alloc] init];
+        return _currentProfiles;
+    }
     
     /* Decode each of the encoded profiles, place them into an array, then return the array */
     NSMutableArray *profilesDecoded = [[NSMutableArray alloc] init];
@@ -199,7 +241,11 @@ static CGRect layoutViewBounds;
     for (NSData *profileEncoded in profilesEncoded) {
         
         profileDecoded = [NSKeyedUnarchiver unarchivedObjectOfClasses: classes fromData:profileEncoded error: nil];
-        [profilesDecoded addObject: profileDecoded];
+        if (profileDecoded != nil) {  // 添加nil检查，防止崩溃
+            [profilesDecoded addObject: profileDecoded];
+        } else {
+            NSLog(@"警告：配置文件解码失败，跳过该配置文件");
+        }
     }
     _currentProfiles = profilesDecoded;
     return profilesDecoded;
@@ -256,17 +302,31 @@ static CGRect layoutViewBounds;
 
 - (bool) updateSelectedProfile:(NSMutableArray *) oscButtonLayers {
     NSMutableArray* buttonStatesEncoded = [self convertOnScreenControllerAndWidgetsToButtonStates:oscButtonLayers];
-    if([self getIndexOfSelectedProfile]==0) return false;
-    OSCProfile *newProfile = [[OSCProfile alloc] initWithName:[self getSelectedProfile].name
+    
+    // 检查当前选中的布局是否为模板布局
+    OSCProfile *currentProfile = [self getSelectedProfile];
+    if (currentProfile && [self isTemplateProfile:currentProfile.name]) {
+        return false;
+    }
+    OSCProfile *newProfile = [[OSCProfile alloc] initWithName:currentProfile.name
                             buttonStates:buttonStatesEncoded isSelected:YES];        // create a new 'OSCProfile'. Set the array of encoded button states created above to the 'buttonStates' property of the new profile, along with a 'name'. Set 'isSelected' argument to YES which will set this saved profile as the one that will show up in the game stream view
 
+    // 保留原有的配对信息
+    newProfile.pairedProfileName = currentProfile.pairedProfileName;
+    newProfile.isLandscapeLayout = currentProfile.isLandscapeLayout;
+    newProfile.isPaired = currentProfile.isPaired;
+    
+    NSLog(@"🔄 updateSelectedProfile - 保留配对信息: %@ -> isPaired=%@, pairedWith=%@", 
+          newProfile.name, 
+          newProfile.isPaired ? @"YES" : @"NO",
+          newProfile.pairedProfileName ?: @"nil");
     
     /* set all saved OSCProfiles 'isSelected' property to NO since the new profile you're adding will be set as the selected profile */
     NSMutableArray *profiles = [self getAllProfiles];
     for (OSCProfile *profile in profiles) {
         profile.isSelected = NO;
     }
-    [self replaceProfile:[self getSelectedProfile] withProfile:newProfile];
+    [self replaceProfile:currentProfile withProfile:newProfile];
     return true;
 }
 
@@ -275,6 +335,22 @@ static CGRect layoutViewBounds;
     NSMutableArray* buttonStatesEncoded = [self convertOnScreenControllerAndWidgetsToButtonStates:oscButtonLayers];
     OSCProfile *newProfile = [[OSCProfile alloc] initWithName:name
                             buttonStates:buttonStatesEncoded isSelected:YES];        // create a new 'OSCProfile'. Set the array of encoded button states created above to the 'buttonStates' property of the new profile, along with a 'name'. Set 'isSelected' argument to YES which will set this saved profile as the one that will show up in the game stream view
+    
+    // 如果是覆盖现有配置，保留原有的配对信息
+    if ([self profileNameAlreadyExist:name]) {
+        OSCProfile *existingProfile = [self OSCProfileWithName:name];
+        if (existingProfile) {
+            newProfile.pairedProfileName = existingProfile.pairedProfileName;
+            newProfile.isLandscapeLayout = existingProfile.isLandscapeLayout;
+            newProfile.isPaired = existingProfile.isPaired;
+            
+            NSLog(@"🔄 saveProfileWithName - 保留现有配对信息: %@ -> isPaired=%@, pairedWith=%@", 
+                  newProfile.name, 
+                  newProfile.isPaired ? @"YES" : @"NO",
+                  newProfile.pairedProfileName ?: @"nil");
+        }
+    }
+    
     /* set all saved OSCProfiles 'isSelected' property to NO since the new profile you're adding will be set as the selected profile */
     NSMutableArray *profiles = [self getAllProfiles];
     for (OSCProfile *profile in profiles) {
@@ -397,13 +473,15 @@ static CGRect layoutViewBounds;
 }
 
 - (CGFloat)normalizeSizeWidthFactor:(OnScreenWidgetView* )widget{
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    return widget.bounds.size.width/screenWidthInPoints * 10000;
+    // 使用固定的基准宽度(1194)来避免旋转时的累积变化
+    static const CGFloat baseScreenWidth = 1194.0f;
+    return widget.bounds.size.width/baseScreenWidth * 10000;
 }
 
 - (CGFloat)normalizeSizeHeightFactor:(OnScreenWidgetView* )widget{
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    return widget.bounds.size.height/screenWidthInPoints * 10000;
+    // 使用固定的基准宽度(1194)来避免旋转时的累积变化
+    static const CGFloat baseScreenWidth = 1194.0f;
+    return widget.bounds.size.height/baseScreenWidth * 10000;
 }
 
 
@@ -431,11 +509,189 @@ static CGRect layoutViewBounds;
 }
 
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data {
+    if (data == nil) {
+        NSLog(@"警告：尝试解码nil数据，返回nil");
+        return nil;
+    }
+    
     OnScreenButtonState* buttonState;
-    buttonState = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [OnScreenButtonState class], nil]
+    NSSet *classes = [NSSet setWithObjects:[NSString class], [OnScreenButtonState class], nil];
+    buttonState = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
                                                     fromData:data
                                                     error:nil];
     return buttonState;
+}
+
+#pragma mark - Pairing Management
+
+- (BOOL) pairProfile:(NSString*)profile1Name withProfile:(NSString*)profile2Name isProfile1Landscape:(BOOL)isLandscape {
+    // 检查是否为模板布局
+    if ([self isTemplateProfile:profile1Name] || [self isTemplateProfile:profile2Name]) {
+        NSLog(@"配对失败：模板布局不允许配对");
+        return NO;
+    }
+    
+    NSMutableArray *profiles = [self getAllProfiles];
+    
+    OSCProfile *profile1 = [self findProfileByName:profile1Name inProfileArray:profiles];
+    OSCProfile *profile2 = [self findProfileByName:profile2Name inProfileArray:profiles];
+    
+    if (!profile1 || !profile2) {
+        NSLog(@"配对失败：找不到指定的布局");
+        return NO;
+    }
+    
+    if (profile1.isPaired || profile2.isPaired) {
+        NSLog(@"配对失败：布局已经配对");
+        return NO;
+    }
+    
+    // 设置配对关系
+    profile1.pairedProfileName = profile2Name;
+    profile1.isLandscapeLayout = isLandscape;
+    profile1.isPaired = YES;
+    
+    profile2.pairedProfileName = profile1Name;
+    profile2.isLandscapeLayout = !isLandscape;
+    profile2.isPaired = YES;
+    
+    // 保存更改
+    [self saveProfilesToStorage:profiles];
+    
+    NSLog(@"配对成功：%@ (%@) <-> %@ (%@)", 
+          profile1Name, isLandscape ? @"横屏" : @"竖屏",
+          profile2Name, !isLandscape ? @"横屏" : @"竖屏");
+    
+    return YES;
+}
+
+- (BOOL) unpairProfile:(NSString*)profileName {
+    NSMutableArray *profiles = [self getAllProfiles];
+    
+    OSCProfile *profile = [self findProfileByName:profileName inProfileArray:profiles];
+    if (!profile || !profile.isPaired) {
+        NSLog(@"解除配对失败：布局未配对");
+        return NO;
+    }
+    
+    // 找到配对的布局
+    OSCProfile *pairedProfile = [self findProfileByName:profile.pairedProfileName inProfileArray:profiles];
+    
+    // 清除配对关系
+    profile.pairedProfileName = nil;
+    profile.isLandscapeLayout = NO;
+    profile.isPaired = NO;
+    
+    if (pairedProfile) {
+        pairedProfile.pairedProfileName = nil;
+        pairedProfile.isLandscapeLayout = NO;
+        pairedProfile.isPaired = NO;
+    }
+    
+    // 保存更改
+    [self saveProfilesToStorage:profiles];
+    
+    NSLog(@"解除配对成功：%@", profileName);
+    return YES;
+}
+
+- (OSCProfile *) getPairedProfile:(NSString*)profileName {
+    NSMutableArray *profiles = [self getAllProfiles];
+    
+    OSCProfile *profile = [self findProfileByName:profileName inProfileArray:profiles];
+    if (!profile || !profile.isPaired) {
+        return nil;
+    }
+    
+    return [self findProfileByName:profile.pairedProfileName inProfileArray:profiles];
+}
+
+- (BOOL) isProfilePaired:(NSString*)profileName {
+    NSMutableArray *profiles = [self getAllProfiles];
+    OSCProfile *profile = [self findProfileByName:profileName inProfileArray:profiles];
+    return profile ? profile.isPaired : NO;
+}
+
+- (OSCProfile *) getProfileForCurrentOrientation:(NSString*)profileName isLandscape:(BOOL)isLandscape {
+    NSLog(@"🔍 getProfileForCurrentOrientation - 输入: profileName=%@, isLandscape=%@", 
+          profileName, isLandscape ? @"YES" : @"NO");
+    
+    NSMutableArray *profiles = [self getAllProfiles];
+    
+    OSCProfile *profile = [self findProfileByName:profileName inProfileArray:profiles];
+    if (!profile || !profile.isPaired) {
+        NSLog(@"🔍 布局未配对或不存在，返回原布局: %@", profile ? profile.name : @"nil");
+        return profile; // 如果未配对，返回原布局
+    }
+    
+    NSLog(@"🔍 找到配对布局 - 当前布局方向: %@, 请求方向: %@", 
+          profile.isLandscapeLayout ? @"横屏" : @"竖屏",
+          isLandscape ? @"横屏" : @"竖屏");
+    
+    // 如果当前布局的方向与请求的方向匹配，返回当前布局
+    if (profile.isLandscapeLayout == isLandscape) {
+        NSLog(@"🔍 方向匹配，返回当前布局: %@", profile.name);
+        return profile;
+    }
+    
+    // 否则返回配对的布局
+    OSCProfile *pairedProfile = [self getPairedProfile:profileName];
+    NSLog(@"🔍 方向不匹配，返回配对布局: %@", pairedProfile ? pairedProfile.name : @"nil");
+    return pairedProfile;
+}
+
+- (BOOL) isCurrentOrientationLandscape {
+    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
+    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
+    return screenWidthInPoints > screenHeightInPoints;
+}
+
+- (NSMutableArray *) getAvailableProfilesForPairing:(NSString*)currentProfileName {
+    NSMutableArray *allProfiles = [self getAllProfiles];
+    NSMutableArray *availableProfiles = [[NSMutableArray alloc] init];
+    
+    if (currentProfileName == nil) {
+        NSLog(@"警告：currentProfileName为nil，返回空数组");
+        return availableProfiles;
+    }
+    
+    for (OSCProfile *profile in allProfiles) {
+        if (profile == nil) {
+            NSLog(@"警告：发现nil profile，跳过");
+            continue;
+        }
+        
+        // 排除当前选中的布局、已配对的布局和模板布局
+        if (profile.name && 
+            ![profile.name isEqualToString:currentProfileName] && 
+            !profile.isPaired &&
+            ![self isTemplateProfile:profile.name]) {
+            [availableProfiles addObject:profile];
+        }
+    }
+    
+    return availableProfiles;
+}
+
+// 辅助方法：保存配置文件到存储
+- (void) saveProfilesToStorage:(NSMutableArray*)profiles {
+    NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:profilesEncoded requiringSecureCoding:YES error:nil];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+#pragma mark - Template Management
+
+- (BOOL) isTemplateProfile:(NSString*)profileName {
+    if (!profileName) {
+        return NO;
+    }
+    
+    // 检查是否为三个默认模板布局之一
+    return [profileName isEqualToString:@"Default"] ||
+           [profileName isEqualToString:DEFAULT_TEMPLATE_NAME1] ||
+           [profileName isEqualToString:DEFAULT_TEMPLATE_NAME2];
 }
 
 @end
