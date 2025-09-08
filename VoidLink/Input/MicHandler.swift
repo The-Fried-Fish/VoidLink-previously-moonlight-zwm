@@ -89,14 +89,7 @@ public class MicHandler: NSObject {
             }
         }
     }
-    
-    /// 配置音频会话
-    @objc static func configureAudioSession() throws {
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
-        try audioSession.setActive(true)
-    }
-    
+        
     /// 弹窗提示用户跳转系统设置（英文版）
     private static func showSettingsAlert() {
         guard let topVC = topViewController() else { return }
@@ -186,6 +179,9 @@ public class MicHandler: NSObject {
     private func configureSession() throws {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playAndRecord, mode: .videoRecording, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth])
+        if #available(iOS 13.0, *) {
+            try session.setAllowHapticsAndSystemSoundsDuringRecording(true)
+        }
         try session.setActive(true)
     }
     
