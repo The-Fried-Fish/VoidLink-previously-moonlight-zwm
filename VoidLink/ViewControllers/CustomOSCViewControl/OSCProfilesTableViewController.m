@@ -19,12 +19,15 @@
 
 const double NAV_BAR_HEIGHT = 50;
 
-@interface OSCProfilesTableViewController ()
+@interface OSCProfilesTableViewController () <UIGestureRecognizerDelegate>
 
 @end
 
 @implementation OSCProfilesTableViewController {
     OSCProfilesManager *profilesManager;
+    NSArray *storedLeftBarItems;
+    NSArray *storedRightBarItems;
+    NSString *storedNavTitle;
 }
 
 @synthesize tableView;
@@ -47,6 +50,11 @@ const double NAV_BAR_HEIGHT = 50;
     [super viewDidDisappear:animated];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"OSCProfilesOverlayRemove" object:nil];
+}
+
 
 - (void) viewDidLayoutSubviews {
     CGRect bounds = self.profileTableViewNavigationBar.bounds;
@@ -67,6 +75,17 @@ const double NAV_BAR_HEIGHT = 50;
     
     self.tableView.layer.cornerRadius = 15;  // 设置圆角半径
     self.tableView.layer.masksToBounds = true;  // 使圆角生效
+
+    // 恢复底部系统 UIToolbar 的圆角（下边两个角）
+    if (self.systemBottomToolbar) {
+        self.systemBottomToolbar.clipsToBounds = YES;
+        self.systemBottomToolbar.layer.cornerRadius = 15;
+#ifdef __IPHONE_11_0
+        if ([self.systemBottomToolbar.layer respondsToSelector:@selector(setMaskedCorners:)]) {
+            self.systemBottomToolbar.layer.maskedCorners = kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
+        }
+#endif
+    }
 }
 
 - (void) viewDidLoad {
@@ -83,22 +102,51 @@ const double NAV_BAR_HEIGHT = 50;
     
     [self.tableView registerNib:[UINib nibWithNibName:@"ProfileTableViewCell" bundle:nil]
          forCellReuseIdentifier:@"Cell"]; // Register the custom cell nib file with the table view
-    self.tableView.alpha = 0.7;
-    //self.tableView.backgroundColor = [[UIColor colorWithRed:0.5 green:0.7 blue:1.0 alpha:1.0] colorWithAlphaComponent:0.2]; // set background color & transparency
-    self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5]; // set background color & transparency
-    // self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2]; // set background color & transparency
+    self.view.backgroundColor = [UIColor clearColor];
+    self.tableView.alpha = 1.0;
+    // 列表主体使用白色 95% 透明背景
+    self.tableView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.95];
+    // 顶部文字按钮统一使用青色
+    if (self.navigationController) {
+        self.navigationController.navigationBar.tintColor = [UIColor systemTealColor];
+        // 移除顶部工具栏透明度
+        self.navigationController.navigationBar.translucent = NO;
+        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    }
+    if (self.profileTableViewNavigationBar) {
+        self.profileTableViewNavigationBar.tintColor = [UIColor systemTealColor];
+        self.profileTableViewNavigationBar.translucent = NO;
+        self.profileTableViewNavigationBar.barTintColor = [UIColor whiteColor];
+    }
+    
+    // 移除系统自带分隔线，避免与自定义分隔线叠加
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
+    // 添加点击背景关闭的手势（仅在点击 tableView 以外区域时生效）
+    UITapGestureRecognizer *bgTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleBackgroundTap:)];
+    bgTap.cancelsTouchesInView = NO;
+    bgTap.delegate = self;
+    [self.view addGestureRecognizer:bgTap];
+    
     // 初始化配对状态
     self.isPairingMode = NO;
     self.selectedProfileForPairing = nil;
     self.isProcessingOrientationChange = NO;
     
-    // 设置底部工具栏
-    [self setupBottomToolbar];
+    // 设置底部工具栏（自定义bar 与 系统UIToolbar 二选一，系统UIToolbar优先）
+    if (self.systemBottomToolbar) {
+        // 系统 Toolbar 存在：优先使用系统 Toolbar
+        [self updateSystemToolbarItems];
+    } else {
+        // 兼容旧版自定义工具栏
+        [self setupBottomToolbar];
+    }
     
-    // 调整tableView的底部边距，为工具栏留出空间
-    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0);  // 50(工具栏高度) + 16(底部间距) + 16(额外间距)
-    self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 80, 0);
+    // 调整tableView的底部边距，为工具栏留出空间（系统或自定义）
+    CGFloat tbHeight = self.systemBottomToolbar ? self.systemBottomToolbar.bounds.size.height : 50.0;
+    CGFloat bottomInset = MAX(64.0, tbHeight + 30.0);
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, bottomInset, 0);
+    self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, bottomInset, 0);
     
     // 监听设备方向变化
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -128,6 +176,9 @@ const double NAV_BAR_HEIGHT = 50;
      
      // 更新工具栏按钮状态
      [self updateToolbarButtons];
+    if (self.systemBottomToolbar) {
+        [self updateSystemToolbarItems];
+    }
 }
 
 
@@ -228,11 +279,11 @@ const double NAV_BAR_HEIGHT = 50;
     }
     
     // 删除确认弹窗
-    NSString *confirmMessage = [NSString stringWithFormat:@"确定要删除布局'%@'吗？", currentProfile.name];
-    UIAlertController *confirmController = [UIAlertController alertControllerWithTitle:@"确认删除" message:confirmMessage preferredStyle:UIAlertControllerStyleAlert];
+    NSString *confirmMessage = [LocalizationHelper localizedStringForKey:@"ConfirmDeleteProfile:%@", currentProfile.name];
+    UIAlertController *confirmController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"ConfirmDelete"] message:confirmMessage preferredStyle:UIAlertControllerStyleAlert];
     
-    [confirmController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
-    [confirmController addAction:[UIAlertAction actionWithTitle:@"删除" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+    [confirmController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"] style:UIAlertActionStyleCancel handler:nil]];
+    [confirmController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Delete"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         [self->profilesManager deleteCurrentSelectedProfile];
         [self profileViewRefresh];
     }]];
@@ -370,79 +421,161 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         return cell;
     }
     
-    // 构建显示文本，包含配对标识和模板标识
-    NSString *displayText = profile.name ?: @"未命名配置";  // 防止name为nil
-    
-    // 添加模板标识
-    if ([profilesManager isTemplateProfile:profile.name]) {
-        displayText = [NSString stringWithFormat:@"📋 %@", displayText];
-    }
-    
-    // 添加配对标识
-    if (profile.isPaired) {
-        NSString *orientationText = [self getOrientationDisplayText:profile.isLandscapeLayout];
-        displayText = [NSString stringWithFormat:@"%@ %@", orientationText, displayText];
-    }
-    
-    cell.name.text = displayText;
-    cell.name.backgroundColor = [UIColor clearColor];
-    cell.name.alpha = 1.0;
-    
-    // 根据配对模式设置文本颜色和可选择性
+    // 名称 + 可选“横屏/竖屏”胶囊
+    NSString *baseName = profile.name ?: @"未命名配置";  // 防止name为nil
+
+    // 模板布局不再添加 emoji
+
+    // 配对模式下的可选性与配色
     BOOL canSelect = [self canSelectProfileForPairing:profile];
-    if (self.isPairingMode && !canSelect) {
-        cell.name.textColor = [UIColor grayColor];  // 不可选择的布局显示为灰色
-        cell.userInteractionEnabled = NO;
+    BOOL isCurrentSelectedProfileRow = [[[profilesManager getSelectedProfile] name] isEqualToString:profile.name];
+    BOOL isPairSelectionRow = (self.isPairingMode && self.selectedProfileForPairing && [self.selectedProfileForPairing isEqualToString:profile.name]);
+    UIColor *nameColor = [UIColor blackColor];
+    if (self.isPairingMode) {
+        if (isPairSelectionRow) {
+            // 选中的配对目标：teal
+            nameColor = [UIColor systemTealColor];
+            cell.userInteractionEnabled = YES;
+            cell.contentView.alpha = 1.0;
+        } else if (isCurrentSelectedProfileRow) {
+            // 当前正在使用的布局：文字 teal，整体不降透明度
+            nameColor = [UIColor systemTealColor];
+            cell.userInteractionEnabled = NO;
+            cell.contentView.alpha = 1.0;
+        } else if (!canSelect) {
+            // 其它不可选：灰
+            nameColor = [UIColor colorWithWhite:0 alpha:0.3];
+            cell.userInteractionEnabled = NO;
+            cell.contentView.alpha = 0.7; // 整体降低 30% 透明度
+        } else {
+            nameColor = [UIColor blackColor];
+            cell.userInteractionEnabled = YES;
+            cell.contentView.alpha = 1.0;
+        }
     } else {
-        cell.name.textColor = [UIColor whiteColor];  // 正常白色文本
+        nameColor = isCurrentSelectedProfileRow ? [UIColor systemTealColor] : [UIColor blackColor];
         cell.userInteractionEnabled = YES;
+        cell.contentView.alpha = 1.0;
     }
-    
-    cell.name.font =[UIFont systemFontOfSize:20 weight:UIFontWeightMedium];
-    cell.name.shadowColor = [UIColor blackColor];  // Black shadow
-    // Set the shadow offset
-    cell.name.shadowOffset = CGSizeMake(1.0, 1.5);
+
+    UIFont *nameFont = [UIFont systemFontOfSize:20 weight:UIFontWeightMedium];
+    NSMutableAttributedString *line = [[NSMutableAttributedString alloc] initWithString:baseName attributes:@{NSFontAttributeName:nameFont, NSForegroundColorAttributeName:nameColor}];
+     
+     if (profile.isPaired) {
+         // 4pt 间距
+         NSAttributedString *space = [[NSAttributedString alloc] initWithString:@" " attributes:@{NSKernAttributeName:@(4)}];
+         [line appendAttributedString:space];
+         
+         NSString *pillText = profile.isLandscapeLayout ? @"横屏" : @"竖屏";
+         BOOL pillDisabled = (self.isPairingMode && (!canSelect || isCurrentSelectedProfileRow));
+         BOOL pillSelected = self.isPairingMode ? isPairSelectionRow : isCurrentSelectedProfileRow;
+         UIImage *pill = [self osc_makeOrientationPill:pillText selected:pillSelected disabled:pillDisabled];
+         if (pill) {
+             NSTextAttachment *att = [[NSTextAttachment alloc] init];
+             att.image = pill;
+             att.bounds = CGRectMake(0, -2, pill.size.width, pill.size.height);
+             [line appendAttributedString:[NSAttributedString attributedStringWithAttachment:att]];
+         }
+     }
+     
+     cell.name.attributedText = line;
+     cell.name.backgroundColor = [UIColor clearColor];
+     cell.name.alpha = 1.0;
+     cell.name.font = nameFont;
+     // 去掉阴影
+     cell.name.shadowColor = nil;
+     cell.name.shadowOffset = CGSizeZero;
 
     // Set cell and contentView background colors
-    cell.backgroundColor = [UIColor clearColor];
+    BOOL isCurrentRowInPairingMode = (self.isPairingMode && isCurrentSelectedProfileRow);
+    cell.backgroundColor = isCurrentRowInPairingMode ? [[UIColor systemTealColor] colorWithAlphaComponent:0.08] : [UIColor clearColor];
     cell.contentView.backgroundColor = [UIColor clearColor];
+
+    // 在配对模式下为“当前布局”行右侧添加 14pt 小字
+    UILabel *currentBadge = (UILabel *)[cell viewWithTag:201];
+    if (isCurrentRowInPairingMode) {
+        if (!currentBadge) {
+            currentBadge = [[UILabel alloc] init];
+            currentBadge.tag = 201;
+            currentBadge.font = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
+            currentBadge.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.3];
+            currentBadge.textAlignment = NSTextAlignmentRight;
+            currentBadge.backgroundColor = [UIColor clearColor];
+            currentBadge.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+            [cell addSubview:currentBadge];
+        }
+        currentBadge.hidden = NO;
+        currentBadge.text = [LocalizationHelper localizedStringForKey:@"CurrentLayoutShort"];
+        currentBadge.textColor = [[UIColor systemTealColor] colorWithAlphaComponent:0.9];
+        CGSize txt = [currentBadge.text sizeWithAttributes:@{NSFontAttributeName: currentBadge.font}];
+        CGFloat paddingRight = 16.0;
+        CGFloat x = cell.bounds.size.width - paddingRight - txt.width;
+        CGFloat y = floor((cell.bounds.size.height - txt.height) * 0.5);
+        currentBadge.frame = CGRectMake(x, y, txt.width, txt.height);
+    } else if (currentBadge) {
+        currentBadge.hidden = YES;
+    }
     
     // Configure the checkmark accessory
-    if ([profile.name isEqualToString:[profilesManager getSelectedProfile].name]) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    } else {
+    if (self.isPairingMode) {
+        // 配对模式：隐藏当前使用布局的小勾；仅对选中的配对目标显示小勾
         cell.accessoryType = UITableViewCellAccessoryNone;
+    } else {
+        if (isCurrentSelectedProfileRow) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
     }
     
     // Remove existing custom separators to avoid duplicates
-    UIView *existingSeparator = [cell.contentView viewWithTag:100];
+    UIView *existingSeparator = [cell viewWithTag:100];
     if (existingSeparator) {
         [existingSeparator removeFromSuperview];
     }
 
     // Add custom separator with increased height (thickness)
     CGFloat separatorHeight = 1.0; // Adjust this value for thicker line
-    UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, cell.contentView.frame.size.height - separatorHeight, cell.contentView.frame.size.width, separatorHeight)];
+    // 使用 cell 的宽度，确保分隔线在 accessory 区域下方也能显示完整
+    UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, cell.bounds.size.height - separatorHeight, cell.bounds.size.width, separatorHeight)];
     
-    separatorView.backgroundColor = [UIColor whiteColor];  // Set your desired color
+    // 分隔线：黑色 12% 透明度
+    separatorView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.12];
     separatorView.tag = 100;  // Assign a tag to identify the separator view
     separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 
-    [cell.contentView addSubview:separatorView];
-    [cell.contentView bringSubviewToFront:separatorView];
+    // 加到 cell 上以避免 contentView 宽度被 accessory 缩短导致分隔线变短
+    [cell addSubview:separatorView];
+    [cell bringSubviewToFront:separatorView];
 
 
     // Replace the default checkmark with a UILabel displaying a checkmark character
-    if ([profile.name isEqualToString:[profilesManager getSelectedProfile].name]) {
-        UILabel *checkmarkLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 20, 20)]; // Adjust size as needed
-        checkmarkLabel.text = @"✓";  // The checkmark character
-        checkmarkLabel.font = [UIFont systemFontOfSize:25]; // Adjust font size as needed
-        checkmarkLabel.textAlignment = NSTextAlignmentCenter;
-        checkmarkLabel.textColor = [UIColor greenColor];  // Set the color of the checkmark
-        cell.accessoryView = checkmarkLabel;
-        checkmarkLabel.layer.zPosition = 0; // Push checkmark to the back
+    if (self.isPairingMode) {
+        if (isPairSelectionRow) {
+            UILabel *checkmarkLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+            checkmarkLabel.text = @"✓";
+            checkmarkLabel.font = [UIFont systemFontOfSize:25];
+            checkmarkLabel.textAlignment = NSTextAlignmentCenter;
+            checkmarkLabel.textColor = [UIColor systemTealColor];
+            cell.accessoryView = checkmarkLabel;
+            checkmarkLabel.layer.zPosition = 0;
+        } else {
+            cell.accessoryView = nil;
+        }
+        // 当前布局：强制隐藏系统默认 accessoryType
+        cell.accessoryType = UITableViewCellAccessoryNone;
     } else {
-        cell.accessoryView = nil;  // Remove checkmark if not selected
+        if (isCurrentSelectedProfileRow) {
+            UILabel *checkmarkLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+            checkmarkLabel.text = @"✓";
+            checkmarkLabel.font = [UIFont systemFontOfSize:25];
+            checkmarkLabel.textAlignment = NSTextAlignmentCenter;
+            checkmarkLabel.textColor = [UIColor systemTealColor];
+            cell.accessoryView = checkmarkLabel;
+            checkmarkLabel.layer.zPosition = 0;
+        } else {
+            cell.accessoryView = nil;
+        }
     }
     [cell.contentView bringSubviewToFront:separatorView];
     separatorView.layer.zPosition = 1; // Bring separator to the top layer
@@ -491,7 +624,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         
         // 检查是否为模板布局
         if ([profilesManager isTemplateProfile:profileToDelete.name]) {
-            NSString *message = [NSString stringWithFormat:@"删除'%@'模板布局是不被允许的", profileToDelete.name];
+            NSString *message = [LocalizationHelper localizedStringForKey:@"DeleteTemplateNotAllowed:%@", profileToDelete.name];
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
             
             [alertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -502,11 +635,11 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         }
         
         // 删除确认弹窗
-        NSString *confirmMessage = [NSString stringWithFormat:@"确定要删除布局'%@'吗？", profileToDelete.name];
-        UIAlertController *confirmController = [UIAlertController alertControllerWithTitle:@"确认删除" message:confirmMessage preferredStyle:UIAlertControllerStyleAlert];
+        NSString *confirmMessage = [LocalizationHelper localizedStringForKey:@"ConfirmDeleteProfile:%@", profileToDelete.name];
+        UIAlertController *confirmController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"ConfirmDelete"] message:confirmMessage preferredStyle:UIAlertControllerStyleAlert];
         
-        [confirmController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
-        [confirmController addAction:[UIAlertAction actionWithTitle:@"删除" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [confirmController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"] style:UIAlertActionStyleCancel handler:nil]];
+        [confirmController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Delete"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [self performDeleteProfile:profileToDelete atIndexPath:indexPath];
         }]];
         
@@ -577,6 +710,17 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         if ([self canSelectProfileForPairing:profile]) {
             self.selectedProfileForPairing = profile.name;
             [self updateToolbarButtons];  // 更新保存按钮状态
+            if (self.systemBottomToolbar) {
+                [self updateSystemToolbarItems];
+            }
+            // 刷新整表以更新：
+            // 1) 选中配对目标行（小勾 + teal）
+            // 2) 当前使用的布局行（隐藏小勾 + 30% 黑）
+            // 3) 不可选项（变灰）
+            [self.tableView reloadData];
+            // 滚动确保选中项可见
+            NSIndexPath *visible = [NSIndexPath indexPathForRow:indexPath.row inSection:0];
+            [self.tableView scrollToRowAtIndexPath:visible atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
         }
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         return;
@@ -601,8 +745,9 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         
         /* Place checkmark on selected cell and set profile associated with cell as selected profile */
         UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath: selectedIndexPath];
-        selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;  // add checkmark to the cell the user tapped
-        selectedCell.accessoryView.tintColor = [[UIColor colorWithRed:0.5 green:0.5 blue:1.0 alpha:0.85] colorWithAlphaComponent:1.0];
+        selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        // 选中时的勾颜色统一为青色
+        selectedCell.accessoryView.tintColor = [UIColor systemTealColor];
         [profilesManager setProfileToSelected: profile.name];   // set the profile associated with this cell's 'isSelected' property to YES
         
         /* Remove checkmark on the previously selected cell  */
@@ -669,6 +814,11 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
 }
 
 - (void)updateToolbarButtons {
+    // 系统 UIToolbar 优先：如果 storyboard 连接了系统 toolbar，则同步系统 toolbar
+    if (self.systemBottomToolbar) {
+        [self updateSystemToolbarItems];
+        return;
+    }
     // 如果工具栏不存在，直接返回
     if (!self.bottomToolbarView) {
         return;
@@ -710,10 +860,106 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     }
 }
 
+#pragma mark - System UIToolbar Support
+
+- (void)updateSystemToolbarItems {
+    if (!self.systemBottomToolbar || !self.pairRotationalToolbarItem) {
+        return;
+    }
+
+    OSCProfile *selectedProfile = [profilesManager getSelectedProfile];
+    BOOL isTemplate = selectedProfile && [profilesManager isTemplateProfile:selectedProfile.name];
+    BOOL isCurrentProfilePaired = selectedProfile ? selectedProfile.isPaired : NO;
+    BOOL isLandscape = [profilesManager isCurrentOrientationLandscape];
+
+    if (self.isPairingMode) {
+        // 配对模式：主按钮=保存；右侧问号=取消
+        self.pairRotationalToolbarItem.title = [LocalizationHelper localizedStringForKey:@"Save"];
+        self.pairRotationalToolbarItem.enabled = (self.selectedProfileForPairing != nil);
+        self.pairRotationalToolbarItem.target = self;
+        self.pairRotationalToolbarItem.action = @selector(savePairingTapped:);
+        if (self.helpToolbarItem) {
+            self.helpToolbarItem.title = [LocalizationHelper localizedStringForKey:@"Cancel"];
+            self.helpToolbarItem.image = nil;
+            self.helpToolbarItem.target = self;
+            self.helpToolbarItem.action = @selector(cancelPairingTapped:);
+            self.helpToolbarItem.enabled = YES;
+        }
+        // 强制保持 items 排列：flexibleSpace + pair + help
+        UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        if (self.helpToolbarItem) {
+            [self.systemBottomToolbar setItems:@[flex, self.pairRotationalToolbarItem, self.helpToolbarItem] animated:NO];
+        }
+        return;
+    }
+
+    // 普通模式
+    self.pairRotationalToolbarItem.enabled = !isTemplate;
+    self.pairRotationalToolbarItem.target = self;
+    self.pairRotationalToolbarItem.action = @selector(pairRotationalToolbarTapped:);
+
+    if (isTemplate) {
+        NSString *opposite = isLandscape ? [LocalizationHelper localizedStringForKey:@"PortraitShort"] : [LocalizationHelper localizedStringForKey:@"LandscapeShort"];
+        self.pairRotationalToolbarItem.title = [LocalizationHelper localizedStringForKey:@"BindOrientationLayout:%@", opposite];
+        self.pairRotationalToolbarItem.enabled = NO;
+    } else if (isCurrentProfilePaired) {
+        self.pairRotationalToolbarItem.title = [LocalizationHelper localizedStringForKey:@"Unpair"];
+    } else {
+        NSString *opposite = isLandscape ? [LocalizationHelper localizedStringForKey:@"PortraitShort"] : [LocalizationHelper localizedStringForKey:@"LandscapeShort"];
+        self.pairRotationalToolbarItem.title = [LocalizationHelper localizedStringForKey:@"BindOrientationLayout:%@", opposite];
+    }
+
+    if (self.helpToolbarItem) {
+        // 正常模式：问号作为“帮助”，点击弹出说明
+        self.helpToolbarItem.title = nil; // 保持问号图标
+        // 退出配对模式后恢复问号图标
+        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        if (@available(iOS 13.0, *)) {
+            self.helpToolbarItem.image = [UIImage systemImageNamed:@"questionmark.circle"];
+        }
+        #endif
+        self.helpToolbarItem.target = self;
+        self.helpToolbarItem.action = @selector(helpToolbarTapped:);
+        self.helpToolbarItem.enabled = !isTemplate; // 模板布局置灰
+    }
+
+    // 强制保持 items 排列：flexibleSpace + pair + help
+    UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    if (self.helpToolbarItem) {
+        [self.systemBottomToolbar setItems:@[flex, self.pairRotationalToolbarItem, self.helpToolbarItem] animated:NO];
+    }
+}
+
+- (IBAction)pairRotationalToolbarTapped:(id)sender {
+    if (self.isPairingMode) {
+        if (self.selectedProfileForPairing) {
+            [self savePairingTapped:sender];
+        } else {
+            [self cancelPairingTapped:sender];
+        }
+        return;
+    }
+
+    OSCProfile *selectedProfile = [profilesManager getSelectedProfile];
+    if (selectedProfile && selectedProfile.isPaired) {
+        [self unpairTapped:sender];
+    } else {
+        [self startPairingTapped:sender];
+    }
+    [self updateSystemToolbarItems];
+}
+
+- (IBAction)helpToolbarTapped:(id)sender {
+    NSString *message = [LocalizationHelper localizedStringForKey:@"PairingHelpMessage"];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"PairingHelpTitle"] message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"] style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 - (void)createPairingModeButtons {
     // 创建取消按钮
     self.cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+    [self.cancelButton setTitle:[LocalizationHelper localizedStringForKey:@"Cancel"] forState:UIControlStateNormal];
     [self.cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.cancelButton addTarget:self action:@selector(cancelPairingTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -721,7 +967,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     
     // 创建保存按钮
     self.saveButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.saveButton setTitle:@"保存" forState:UIControlStateNormal];
+    [self.saveButton setTitle:[LocalizationHelper localizedStringForKey:@"Save"] forState:UIControlStateNormal];
     [self.saveButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
     [self.saveButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     [self.saveButton addTarget:self action:@selector(savePairingTapped:) forControlEvents:UIControlEventTouchUpInside];
@@ -763,6 +1009,21 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     self.isPairingMode = YES;
     self.selectedProfileForPairing = nil;
     [self updateToolbarButtons];
+    if (self.systemBottomToolbar) {
+        [self updateSystemToolbarItems];
+    }
+    // 隐藏顶部导航按钮并设置标题
+    UINavigationItem *navItem = self.navigationController ? self.navigationController.navigationBar.topItem : self.profileTableViewNavigationBar.topItem;
+    if (navItem) {
+        storedLeftBarItems = navItem.leftBarButtonItems;
+        storedRightBarItems = navItem.rightBarButtonItems;
+        storedNavTitle = navItem.title;
+        navItem.leftBarButtonItems = @[];
+        navItem.rightBarButtonItems = @[];
+        BOOL isLandscape = [profilesManager isCurrentOrientationLandscape];
+        NSString *dir = isLandscape ? [LocalizationHelper localizedStringForKey:@"LandscapeShort"] : [LocalizationHelper localizedStringForKey:@"PortraitShort"];
+        navItem.title = [LocalizationHelper localizedStringForKey:@"SelectLayoutToPair:%@", dir];
+    }
     [self.tableView reloadData];
 }
 
@@ -771,6 +1032,9 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     if (selectedProfile && selectedProfile.isPaired) {
         [profilesManager unpairProfile:selectedProfile.name];
         [self updateToolbarButtons];
+        if (self.systemBottomToolbar) {
+            [self updateSystemToolbarItems];
+        }
         [self.tableView reloadData];
     }
 }
@@ -793,6 +1057,16 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
             self.isPairingMode = NO;
             self.selectedProfileForPairing = nil;
             [self updateToolbarButtons];
+            if (self.systemBottomToolbar) {
+                [self updateSystemToolbarItems];
+            }
+            // 恢复导航按钮和标题
+            UINavigationItem *navItem = self.navigationController ? self.navigationController.navigationBar.topItem : self.profileTableViewNavigationBar.topItem;
+            if (navItem) {
+                navItem.leftBarButtonItems = storedLeftBarItems;
+                navItem.rightBarButtonItems = storedRightBarItems;
+                navItem.title = storedNavTitle;
+            }
             [self.tableView reloadData];
         } else {
             NSLog(@"配对失败");
@@ -804,6 +1078,16 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     self.isPairingMode = NO;
     self.selectedProfileForPairing = nil;
     [self updateToolbarButtons];
+    if (self.systemBottomToolbar) {
+        [self updateSystemToolbarItems];
+    }
+    // 恢复导航按钮和标题
+    UINavigationItem *navItem = self.navigationController ? self.navigationController.navigationBar.topItem : self.profileTableViewNavigationBar.topItem;
+    if (navItem) {
+        navItem.leftBarButtonItems = storedLeftBarItems;
+        navItem.rightBarButtonItems = storedRightBarItems;
+        navItem.title = storedNavTitle;
+    }
     [self.tableView reloadData];
 }
 
@@ -988,6 +1272,61 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         // 递归搜索子视图
         [self findAndUpdateDeleteButtonInView:subview isTemplate:isTemplate];
     }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    // 仅当点击在 tableView 之外时，才触发手势
+    CGPoint p = [touch locationInView:self.view];
+    if (CGRectContainsPoint(self.tableView.frame, p)) {
+        return NO;
+    }
+    return YES;
+}
+
+- (void)handleBackgroundTap:(UITapGestureRecognizer *)gr {
+    if (gr.state == UIGestureRecognizerStateEnded) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"OSCProfilesOverlayRemove" object:nil];
+    }
+}
+
+// 绘制“横屏/竖屏”胶囊
+- (UIImage *)osc_makeOrientationPill:(NSString *)text selected:(BOOL)selected disabled:(BOOL)disabled {
+    const CGFloat pillHeight = 18.0; // 调整为 18pt 高
+    const CGFloat cornerRadius = 3.0;
+    const CGFloat horizontalPadding = 4.0; // 左右各 4pt
+    UIFont *font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightRegular]; // 字号 13pt
+    UIColor *teal = [UIColor systemTealColor];
+    UIColor *fillColor;
+    UIColor *textColor;
+    if (disabled) {
+        fillColor = [[UIColor blackColor] colorWithAlphaComponent:0.08];
+        textColor = [[UIColor blackColor] colorWithAlphaComponent:0.3];
+    } else {
+        fillColor = selected ? [teal colorWithAlphaComponent:0.12] : [[UIColor blackColor] colorWithAlphaComponent:0.12];
+        textColor = selected ? [teal colorWithAlphaComponent:0.8] : [[UIColor blackColor] colorWithAlphaComponent:0.8];
+    }
+
+    NSDictionary *attrs = @{ NSFontAttributeName: font, NSForegroundColorAttributeName: textColor };
+    CGSize textSize = [text sizeWithAttributes:attrs];
+    CGFloat pillWidth = ceil(textSize.width) + horizontalPadding * 2.0;
+    CGSize canvas = CGSizeMake(pillWidth, pillHeight);
+
+    UIGraphicsBeginImageContextWithOptions(canvas, NO, 0);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    if (ctx) {
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, canvas.width, canvas.height) cornerRadius:cornerRadius];
+        [fillColor setFill];
+        [path fill];
+        
+        // 居中绘制文字
+        CGFloat tx = horizontalPadding;
+        CGFloat ty = floor((pillHeight - textSize.height) * 0.5);
+        [text drawAtPoint:CGPointMake(tx, ty) withAttributes:attrs];
+    }
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return img;
 }
 
 @end

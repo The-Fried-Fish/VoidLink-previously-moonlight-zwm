@@ -343,6 +343,18 @@
         }
       }
     },
+    "7rN-Nu-Vqg.title" : {
+      "comment" : "Class = \"UIBarButtonItem\"; title = \"Item\"; ObjectID = \"7rN-Nu-Vqg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item"
+          }
+        }
+      }
+    },
     "7tq-jU-C6l.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Gyro Mode\"; ObjectID = \"7tq-jU-C6l\";",
       "extractionState" : "extracted_with_value",
@@ -819,6 +831,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "啟用螢幕小工具與外設"
+          }
+        }
+      }
+    },
+    "aqk-2z-ycj.title" : {
+      "comment" : "Class = \"UIBarButtonItem\"; title = \"Pair Rotational Layout\"; ObjectID = \"aqk-2z-ycj\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pair Rotational Layout"
           }
         }
       }

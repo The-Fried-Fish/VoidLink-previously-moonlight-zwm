@@ -1317,7 +1317,27 @@
     
     // _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    [self presentViewController:_oscProfilesTableViewController animated:YES completion:nil];
+
+    // 添加半透明黑色 overlay 到当前控制器视图之上
+    UIView *overlay = [[UIView alloc] initWithFrame:self.view.bounds];
+    overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    overlay.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.3];
+    overlay.tag = 987654; // 识别用
+    [self.view addSubview:overlay];
+    [self.view bringSubviewToFront:overlay];
+
+    // 点击 overlay 关闭弹窗
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissProfilesByOverlayTap)];
+    [overlay addGestureRecognizer:tap];
+
+    // 监听移除 overlay 的通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeProfilesOverlay) name:@"OSCProfilesOverlayRemove" object:nil];
+
+    [self presentViewController:_oscProfilesTableViewController animated:YES completion:^{
+        // 确保 overlay 仍在最上面可点击
+        UIView *ov = [self.view viewWithTag:987654];
+        if (ov) [self.view bringSubviewToFront:ov];
+    }];
 }
 
 /* Presents the view controller that lists all OSC profiles the user can choose from */
@@ -1465,5 +1485,24 @@
     widgetPanelMovedByTouch = false;
 }
 
+// 点击 overlay 收起配置列表
+- (void)dismissProfilesByOverlayTap{
+    if (self->_oscProfilesTableViewController) {
+        [self->_oscProfilesTableViewController dismissViewControllerAnimated:YES completion:^{
+            [self removeProfilesOverlay];
+        }];
+    }
+    else {
+        [self removeProfilesOverlay];
+    }
+}
+
+- (void)removeProfilesOverlay{
+    UIView *overlay = [self.view viewWithTag:987654];
+    if (overlay) {
+        [overlay removeFromSuperview];
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"OSCProfilesOverlayRemove" object:nil];
+}
 
 @end

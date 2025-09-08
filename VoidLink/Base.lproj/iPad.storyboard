@@ -1730,40 +1730,55 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.5" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="BA3-hd-bDp">
-                                <rect key="frame" x="198.5" y="60" width="736" height="634"/>
+                                <rect key="frame" x="198.5" y="60" width="736" height="529"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
-                            <navigationBar clipsSubviews="YES" alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="62V-DN-FUk">
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vDc-Mf-i9f">
+                                <rect key="frame" x="198.5" y="539" width="736" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="HEm-3A-WOn"/>
+                                    <barButtonItem title="Pair Rotational Layout" id="aqk-2z-ycj">
+                                        <connections>
+                                            <action selector="pairRotationalToolbarTapped:" destination="Atv-Nj-0qv" id="Bb1-bt-lap"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem title="Item" image="questionmark.circle" catalog="system" id="7rN-Nu-Vqg"/>
+                                </items>
+                                <color key="tintColor" systemColor="systemTealColor"/>
+                            </toolbar>
+                            <navigationBar clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="62V-DN-FUk">
                                 <rect key="frame" x="198.5" y="60" width="736" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="lQr-5u-g05"/>
                                 </constraints>
+                                <color key="tintColor" systemColor="systemTealColor"/>
                                 <items>
                                     <navigationItem title="Widget Profiles" id="Q2V-XF-4jq">
                                         <leftBarButtonItems>
-                                            <barButtonItem title="Exit" width="45" style="plain" id="czn-mj-8d1">
+                                            <barButtonItem title="Exit" image="xmark" catalog="system" width="32" style="plain" id="czn-mj-8d1">
                                                 <connections>
                                                     <action selector="exitTapped:" destination="Atv-Nj-0qv" id="IvQ-c3-bmW"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="ExportAll" width="70" style="plain" id="Bhn-IO-Wlt" userLabel="Export Data">
+                                            <barButtonItem title="ExportAll" image="square.and.arrow.up" catalog="system" width="48" style="plain" id="Bhn-IO-Wlt" userLabel="Export Data">
                                                 <connections>
                                                     <action selector="exportDataTapped:" destination="Atv-Nj-0qv" id="pwG-sO-9he"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="Import" width="48" style="plain" id="CpY-Sb-BDc" userLabel="Import Data">
+                                            <barButtonItem title="Import" image="square.and.arrow.down" catalog="system" width="48" style="plain" id="CpY-Sb-BDc" userLabel="Import Data">
                                                 <connections>
                                                     <action selector="importDataTapped:" destination="Atv-Nj-0qv" id="Uq0-Ct-LbS"/>
                                                 </connections>
                                             </barButtonItem>
                                         </leftBarButtonItems>
                                         <rightBarButtonItems>
-                                            <barButtonItem title="Duplicate" width="80" style="plain" id="P34-hO-6cX">
+                                            <barButtonItem title="Duplicate" image="plus.square.on.square" catalog="system" width="32" style="plain" id="P34-hO-6cX">
                                                 <connections>
                                                     <action selector="duplicateTapped:" destination="Atv-Nj-0qv" id="Ymg-8q-iIc"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="Delete" width="80" style="plain" id="egC-9E-zS4" userLabel="Delete">
+                                            <barButtonItem title="Delete" image="trash" catalog="system" width="48" style="plain" id="egC-9E-zS4" userLabel="Delete">
                                                 <connections>
                                                     <action selector="deleteTapped:" destination="Atv-Nj-0qv" id="UpR-VB-qez"/>
                                                 </connections>
@@ -1776,11 +1791,15 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="62V-DN-FUk" firstAttribute="top" secondItem="BA3-hd-bDp" secondAttribute="top" id="600-lH-rte"/>
+                            <constraint firstItem="vDc-Mf-i9f" firstAttribute="centerX" secondItem="PlJ-LJ-d1p" secondAttribute="centerX" id="Eg1-Re-cZ3"/>
                             <constraint firstItem="62V-DN-FUk" firstAttribute="width" secondItem="PlJ-LJ-d1p" secondAttribute="width" multiplier="0.65" id="OWL-Yd-KfG"/>
+                            <constraint firstAttribute="bottom" secondItem="BA3-hd-bDp" secondAttribute="bottom" constant="155" id="XO8-5C-CfC"/>
                             <constraint firstItem="BA3-hd-bDp" firstAttribute="centerX" secondItem="PlJ-LJ-d1p" secondAttribute="centerX" id="Xte-bA-pFb"/>
+                            <constraint firstItem="vDc-Mf-i9f" firstAttribute="trailing" secondItem="BA3-hd-bDp" secondAttribute="trailing" id="Y2l-Ud-kez"/>
+                            <constraint firstItem="vDc-Mf-i9f" firstAttribute="leading" secondItem="BA3-hd-bDp" secondAttribute="leading" id="aGm-dh-mjs"/>
+                            <constraint firstItem="vDc-Mf-i9f" firstAttribute="bottom" secondItem="BA3-hd-bDp" secondAttribute="bottom" id="bPh-3D-nAB"/>
                             <constraint firstItem="BA3-hd-bDp" firstAttribute="width" secondItem="PlJ-LJ-d1p" secondAttribute="width" multiplier="0.65" id="eQf-gF-6kX"/>
                             <constraint firstItem="BA3-hd-bDp" firstAttribute="top" secondItem="PlJ-LJ-d1p" secondAttribute="top" constant="60" id="eje-7O-RaF"/>
-                            <constraint firstItem="BA3-hd-bDp" firstAttribute="bottom" secondItem="PlJ-LJ-d1p" secondAttribute="bottom" constant="-50" id="j96-Mz-xiG"/>
                             <constraint firstItem="62V-DN-FUk" firstAttribute="centerX" secondItem="PlJ-LJ-d1p" secondAttribute="centerX" id="qmh-Pp-B9S"/>
                         </constraints>
                     </view>
@@ -1788,13 +1807,16 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <size key="freeformSize" width="1133" height="744"/>
                     <connections>
+                        <outlet property="helpToolbarItem" destination="7rN-Nu-Vqg" id="OJo-qr-4zh"/>
+                        <outlet property="pairRotationalToolbarItem" destination="aqk-2z-ycj" id="nAg-87-HmM"/>
                         <outlet property="profileTableViewNavigationBar" destination="62V-DN-FUk" id="c3i-qa-4ix"/>
+                        <outlet property="systemBottomToolbar" destination="vDc-Mf-i9f" id="UJt-sa-JKG"/>
                         <outlet property="tableView" destination="BA3-hd-bDp" id="Jzl-sP-ANp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K4u-Tz-tXU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3742" y="955"/>
+            <point key="canvasLocation" x="3741.3669064748206" y="954.54545454545462"/>
         </scene>
     </scenes>
     <resources>
@@ -1804,11 +1826,17 @@
         <image name="arrow.left.square.fill" catalog="system" width="128" height="114"/>
         <image name="arrow.uturn.backward" width="19.06089973449707" height="18.594499588012695"/>
         <image name="plus.rectangle.fill.on.rectangle.fill" catalog="system" width="128" height="102"/>
+        <image name="plus.square.on.square" catalog="system" width="128" height="116"/>
+        <image name="questionmark.circle" catalog="system" width="128" height="123"/>
         <image name="rectangle.and.pencil.and.ellipsis" width="36.005599975585938" height="24.95680046081543"/>
+        <image name="square.and.arrow.down" catalog="system" width="114" height="128"/>
         <image name="square.and.arrow.down.fill" catalog="system" width="121" height="128"/>
+        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
+        <image name="trash" catalog="system" width="117" height="128"/>
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

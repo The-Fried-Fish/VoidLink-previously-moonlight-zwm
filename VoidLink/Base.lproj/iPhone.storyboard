@@ -682,37 +682,52 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zVw-SV-RKE">
+                                <rect key="frame" x="80" y="324" width="692" height="49"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="eSQ-dI-tRL"/>
+                                    <barButtonItem title="Pair Rotational Layout" id="BIT-3F-bXp">
+                                        <connections>
+                                            <action selector="pairRotationalToolbarTapped:" destination="0K8-kQ-xlN" id="He6-NS-IgX"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem title="Item" image="questionmark.circle" catalog="system" id="3bT-QF-0LO"/>
+                                </items>
+                                <color key="tintColor" systemColor="systemTealColor"/>
+                            </toolbar>
                             <navigationBar alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zsA-6X-Qc5">
                                 <rect key="frame" x="80" y="112" width="692" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="R90-2b-UrU"/>
                                 </constraints>
+                                <color key="tintColor" systemColor="systemTealColor"/>
                                 <items>
                                     <navigationItem title="Controller &amp; Widget Profiles" id="5pN-Sn-SCN">
                                         <leftBarButtonItems>
-                                            <barButtonItem title="Exit" id="sUC-Ur-7eI">
+                                            <barButtonItem title="Exit" image="xmark" catalog="system" id="sUC-Ur-7eI">
                                                 <connections>
                                                     <action selector="exitTapped:" destination="0K8-kQ-xlN" id="lAJ-eO-ez7"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="ExportAll" id="D9X-7p-9oc">
+                                            <barButtonItem title="ExportAll" image="square.and.arrow.up" catalog="system" id="D9X-7p-9oc">
                                                 <connections>
                                                     <action selector="exportDataTapped:" destination="0K8-kQ-xlN" id="Sam-Ct-kqC"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="Import" id="Z9M-yq-an2">
+                                            <barButtonItem title="Import" image="square.and.arrow.down" catalog="system" id="Z9M-yq-an2">
                                                 <connections>
                                                     <action selector="importDataTapped:" destination="0K8-kQ-xlN" id="OaF-8j-7Wy"/>
                                                 </connections>
                                             </barButtonItem>
                                         </leftBarButtonItems>
                                         <rightBarButtonItems>
-                                            <barButtonItem title="Duplicate" width="80" style="plain" id="bue-hp-CWD">
+                                            <barButtonItem title="Duplicate" image="plus.square.on.square" catalog="system" width="80" style="plain" id="bue-hp-CWD">
                                                 <connections>
                                                     <action selector="duplicateTapped:" destination="0K8-kQ-xlN" id="Gb7-bx-nxp"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="Delete" width="80" style="plain" id="ghM-zc-sr6">
+                                            <barButtonItem title="Delete" image="trash" catalog="system" width="80" style="plain" id="ghM-zc-sr6">
                                                 <connections>
                                                     <action selector="deleteTapped:" destination="0K8-kQ-xlN" id="h6N-Gl-oiW"/>
                                                 </connections>
@@ -727,15 +742,22 @@
                             <constraint firstItem="zsA-6X-Qc5" firstAttribute="leading" secondItem="bTO-bs-q93" secondAttribute="leading" constant="80" id="0Fi-vo-M6P"/>
                             <constraint firstAttribute="bottom" secondItem="kTH-ez-aKD" secondAttribute="bottom" constant="20" symbolic="YES" id="1FM-gO-6PR"/>
                             <constraint firstAttribute="trailing" secondItem="kTH-ez-aKD" secondAttribute="trailing" constant="80" id="ArS-pG-QUR"/>
+                            <constraint firstItem="zVw-SV-RKE" firstAttribute="centerX" secondItem="kTH-ez-aKD" secondAttribute="centerX" id="EFY-CF-949"/>
+                            <constraint firstItem="zVw-SV-RKE" firstAttribute="trailing" secondItem="kTH-ez-aKD" secondAttribute="trailing" id="KAw-L3-9lL"/>
                             <constraint firstItem="kTH-ez-aKD" firstAttribute="leading" secondItem="bTO-bs-q93" secondAttribute="leading" constant="80" id="Ujg-Sw-4hq"/>
                             <constraint firstAttribute="trailing" secondItem="zsA-6X-Qc5" secondAttribute="trailing" constant="80" id="YKK-qs-mZR"/>
+                            <constraint firstItem="zVw-SV-RKE" firstAttribute="leading" secondItem="kTH-ez-aKD" secondAttribute="leading" id="f7j-gx-dZY"/>
                             <constraint firstItem="zsA-6X-Qc5" firstAttribute="top" secondItem="bTO-bs-q93" secondAttribute="topMargin" constant="16" id="gZg-eJ-rnP"/>
+                            <constraint firstItem="zVw-SV-RKE" firstAttribute="bottom" secondItem="kTH-ez-aKD" secondAttribute="bottom" id="tF8-2N-HBS"/>
                             <constraint firstItem="kTH-ez-aKD" firstAttribute="top" secondItem="zsA-6X-Qc5" secondAttribute="top" id="txs-Df-ANQ"/>
                         </constraints>
                     </view>
                     <size key="freeformSize" width="852" height="393"/>
                     <connections>
+                        <outlet property="helpToolbarItem" destination="3bT-QF-0LO" id="SxA-se-l77"/>
+                        <outlet property="pairRotationalToolbarItem" destination="BIT-3F-bXp" id="y7a-7T-Bki"/>
                         <outlet property="profileTableViewNavigationBar" destination="zsA-6X-Qc5" id="13u-ks-fVC"/>
+                        <outlet property="systemBottomToolbar" destination="zVw-SV-RKE" id="QpS-Fx-fqe"/>
                         <outlet property="tableView" destination="kTH-ez-aKD" id="pqR-CC-Kfh"/>
                     </connections>
                 </viewController>
@@ -1838,10 +1860,16 @@
         <image name="arrow.left.square.fill" catalog="system" width="128" height="114"/>
         <image name="arrow.uturn.backward" catalog="system" width="128" height="113"/>
         <image name="plus.rectangle.fill.on.rectangle.fill" catalog="system" width="128" height="102"/>
+        <image name="plus.square.on.square" catalog="system" width="128" height="116"/>
+        <image name="questionmark.circle" catalog="system" width="128" height="123"/>
         <image name="rectangle.and.pencil.and.ellipsis" width="36.005599975585938" height="24.95680046081543"/>
+        <image name="square.and.arrow.down" catalog="system" width="114" height="128"/>
         <image name="square.and.arrow.down.fill" catalog="system" width="121" height="128"/>
+        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
+        <image name="trash" catalog="system" width="117" height="128"/>
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

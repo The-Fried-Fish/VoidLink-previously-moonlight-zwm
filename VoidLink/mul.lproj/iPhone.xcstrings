@@ -91,6 +91,18 @@
         }
       }
     },
+    "3bT-QF-0LO.title" : {
+      "comment" : "Class = \"UIBarButtonItem\"; title = \"Item\"; ObjectID = \"3bT-QF-0LO\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item"
+          }
+        }
+      }
+    },
     "3Hh-2q-gas.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Preferred Codec\"; ObjectID = \"3Hh-2q-gas\";",
       "extractionState" : "extracted_with_value",
@@ -963,6 +975,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "完整"
+          }
+        }
+      }
+    },
+    "BIT-3F-bXp.title" : {
+      "comment" : "Class = \"UIBarButtonItem\"; title = \"Pair Rotational Layout\"; ObjectID = \"BIT-3F-bXp\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pair Rotational Layout"
           }
         }
       }
