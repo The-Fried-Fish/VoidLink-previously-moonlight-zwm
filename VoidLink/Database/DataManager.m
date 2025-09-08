@@ -80,6 +80,7 @@
                  multiController:(BOOL)multiController
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
+                       redirectMic:(BOOL)redirectMic
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP
@@ -127,6 +128,7 @@
         settingsToSave.multiController = multiController;
         settingsToSave.swapABXYButtons = swapABXYButtons;
         settingsToSave.playAudioOnPC = audioOnPC;
+        settingsToSave.redirectMic = redirectMic;
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
         settingsToSave.enablePIP = enablePIP;

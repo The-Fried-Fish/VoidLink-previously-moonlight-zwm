@@ -31,6 +31,7 @@
 @property int gamepadMask;
 @property BOOL optimizeGameSettings;
 @property BOOL playAudioOnPC;
+@property BOOL redirectMic;
 @property BOOL swapABXYButtons;
 @property BOOL asyncNativeTouchPriority;
 @property int gyroMode;

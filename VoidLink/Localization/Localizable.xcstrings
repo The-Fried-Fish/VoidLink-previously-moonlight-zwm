@@ -2177,6 +2177,29 @@
         }
       }
     },
+    "Go to Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往系统设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往系統設定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往系統設定"
+          }
+        }
+      }
+    },
     "Got it!" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2784,6 +2807,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法連線到主機。\n\n如果您使用 GeForce Experience 進行託管，請確保您已在 SHIELD 標籤上啟用切換。\n\n如果您使用 Sunshine 進行託管，請確保其正常執行。如果您使用的是非預設連接埠，則需要在此處包含該連接埠。"
+          }
+        }
+      }
+    },
+    "micPermissionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Please grant microphone permission in your system settings, then re-enable “Redirect Mic.”\n\n- Currently, mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\nThis feature is experimental, and the microphone audio stream is NOT ENCRYPTED at this stage.\n\n- iOS 12 mic redirection has known audio quality issue that can’t be fixed due to technical reasons."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 请前往系统设置授予 App 麦克风权限，再回到此菜单启用麦克风重定向。\n\n- 目前麦克风重定向仅支持 Sunshine 基地版，且为实验性功能。 须注意，现阶段的 Mic 音频流 【未经加密】。\n\n- iOS 12 的麦克风重定向存在因技术原因无法解决的音质问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        }
+      }
+    },
+    "Microphone Permission" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风权限"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風權限"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風權限"
           }
         }
       }
@@ -4150,6 +4225,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在串流中修改"
+          }
+        }
+      }
+    },
+    "redirectMicStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Currently, mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\nThis feature is experimental, and the microphone audio stream is NOT ENCRYPTED at this stage.\n\n- iOS 12 mic redirection has known audio quality issue that can’t be fixed due to technical reasons."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 目前麦克风重定向仅支持 Sunshine 基地版，且为实验性功能。 须注意，现阶段的 Mic 音频流 【未经加密】。\n\n- iOS 12 的麦克风重定向存在因技术原因无法解决的音质问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
           }
         }
       }

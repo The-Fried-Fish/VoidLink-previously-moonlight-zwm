@@ -16,7 +16,8 @@
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "MenuSectionView.h"
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate>
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate>
+
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;
 @property (strong, nonatomic) IBOutlet UIStackView *resolutionStack;
@@ -124,6 +125,12 @@
 
 @property (strong, nonatomic) IBOutlet UIStackView *emulatedControllerTypeStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *emulatedControllerTypeSelector;
+
+@property (strong, nonatomic) IBOutlet UIStackView *redirectMicStack;
+@property (strong, nonatomic) IBOutlet UISwitch *redirectMicSwitch;
+
+
+@property (nonatomic, strong) MicHandler *micHandler;
 
 
 #pragma clang diagnostic push

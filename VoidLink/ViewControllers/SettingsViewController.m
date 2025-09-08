@@ -303,6 +303,21 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self updateResolutionDisplayLabel];
 }
 
+- (void)checkAndRequestMicPermission{
+    if(![MicHandler permissionGranted]) [MicHandler requestPermission:nil];
+/*
+    AVAudioSessionRecordPermission permission = [MicHandler permissionGranted];
+    switch (permission) {
+        case AVAudioSessionRecordPermissionGranted:
+            NSLog(@"AVAudioSessionRecordPermissionGranted");
+            break;
+        case AVAudioSessionRecordPermissionDenied:
+        default:
+            [MicHandler requestPermission:nil];
+            NSLog(@"AVAudioSessionRecordPermissionDenied");
+    }*/
+}
+ 
 // this will also be called back when device orientation changes
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -315,8 +330,25 @@ BOOL isCustomResolution(int resolutionSelected) {
     });
 }
 
+
+- (void)micHandlerDidFinishPlayback:(MicHandler *)handler {
+    NSLog(@"Playback finished");
+}
+
+- (void)micHandler:(MicHandler *)handler didFailWithError:(NSError *)error {
+    NSLog(@"Mic error: %@", error);
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:NO];
+    
+    /*
+    [self checkAndRequestMicPermission];
+    self.micHandler = [MicHandler new];
+    [self.micHandler startTapping];
+    */
+
+    
     [self updateParentStackHorizontalConstraints];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
@@ -634,6 +666,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
     [audioSection setExpanded:YES];
@@ -1098,8 +1131,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"framePacingStackTip"];
         showOnlineDocAction = false;
     }
-
-    
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"redirectMicStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"redirectMicStackTip"];
+        showOnlineDocAction = false;
+    }
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
@@ -1486,6 +1521,10 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 
     [self.audioOnPcSwitch setOn:currentSettings.playAudioOnPC];
+    [self.redirectMicSwitch setOn:currentSettings.redirectMic];
+    [self.redirectMicSwitch addTarget:self action:@selector(redirectMicSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+    [self redirectMicSwitchFlipped:self.redirectMicSwitch];
+    
     _lastSelectedResolutionIndex = resolution;
     [self.resolutionSelector setSelectedSegmentIndex:resolution];
     [self.resolutionSelector addTarget:self action:@selector(newResolutionChosen) forControlEvents:UIControlEventValueChanged];
@@ -1807,7 +1846,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     oswDynamicLabel.hidden = !customOscEnabled;
     NSLog(@"oswDynamicLabel.hidden %d", oswDynamicLabel.hidden);
     [self handleOswGestureChange];
-    if(customOscEnabled && !justEnteredSettingsView) {
+    if(customOscEnabled && !justEnteredSettingsView && !self.mainFrameViewController.settingsExpandedInStreamView) {
         // [self.keyboardToggleFingerNumSlider setValue:3.0];
         // [self keyboardToggleFingerNumSliderMoved];
       [self showCustomOswTip];
@@ -1957,6 +1996,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         stack.hidden = NO;
         [hiddenStacks removeObject:stack];
     }
+}
+
+- (void)redirectMicSwitchFlipped:(UISwitch* )sender{
+    if(sender.isOn) [self checkAndRequestMicPermission];
 }
 
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
@@ -2309,11 +2352,16 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_graphOpacityStack].text = [LocalizationHelper localizedStringForKey:@"  %d%% opacity  ",(int)sender.value];
 }
 
-- (void) saveSettings {
-
+- (void)preSavingActions{
     if(self.mainFrameViewController.settingsExpandedInStreamView){
         [self.mainFrameViewController requestForBitrate:(uint32_t)_bitrate];
     }
+    
+    if(![MicHandler permissionGranted]) [self.redirectMicSwitch setOn:false];
+}
+
+- (void) saveSettings {
+    [self preSavingActions];
 
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* currentSettings = [dataMan retrieveSettings];
@@ -2350,6 +2398,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger gyroMode = self.gyroModeSelector.selectedSegmentIndex;
     NSInteger emulatedControllerType = [self segmentIndexToControllerType:self.emulatedControllerTypeSelector.selectedSegmentIndex]; //self.emulatedControllerTypeSelector.selectedSegmentIndex;
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
+    BOOL redirectMic = self.redirectMicSwitch.isOn;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
@@ -2395,6 +2444,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                      multiController:multiController
                      swapABXYButtons:swapABXYButtons
                            audioOnPC:audioOnPC
+                           redirectMic:redirectMic
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP

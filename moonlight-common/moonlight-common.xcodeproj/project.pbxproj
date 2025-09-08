@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		180B87D62E65DF27007D9E22 /* MicrophoneStream.c in Sources */ = {isa = PBXBuildFile; fileRef = 180B87D42E65DF27007D9E22 /* MicrophoneStream.c */; };
+		180B87D72E65DF27007D9E22 /* RecorderCallbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 180B87D52E65DF27007D9E22 /* RecorderCallbacks.c */; };
+		180B87D82E65DF27007D9E22 /* MicrophoneStream.c in Sources */ = {isa = PBXBuildFile; fileRef = 180B87D42E65DF27007D9E22 /* MicrophoneStream.c */; };
+		180B87D92E65DF27007D9E22 /* RecorderCallbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 180B87D52E65DF27007D9E22 /* RecorderCallbacks.c */; };
 		983091DE24CEB69B00A0835D /* ConnectionTester.c in Sources */ = {isa = PBXBuildFile; fileRef = 983091DD24CEB69B00A0835D /* ConnectionTester.c */; };
 		983091DF24CEB69B00A0835D /* ConnectionTester.c in Sources */ = {isa = PBXBuildFile; fileRef = 983091DD24CEB69B00A0835D /* ConnectionTester.c */; };
 		9857AEF01EBE85E10084F99E /* rs.c in Sources */ = {isa = PBXBuildFile; fileRef = 9857AEEE1EBE85E10084F99E /* rs.c */; };
@@ -84,6 +88,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		180B87D42E65DF27007D9E22 /* MicrophoneStream.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = MicrophoneStream.c; sourceTree = "<group>"; };
+		180B87D52E65DF27007D9E22 /* RecorderCallbacks.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RecorderCallbacks.c; sourceTree = "<group>"; };
 		983091DD24CEB69B00A0835D /* ConnectionTester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ConnectionTester.c; sourceTree = "<group>"; };
 		9857AEEE1EBE85E10084F99E /* rs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rs.c; path = "moonlight-common-c/reedsolomon/rs.c"; sourceTree = "<group>"; };
 		9857AEEF1EBE85E10084F99E /* rs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rs.h; path = "moonlight-common-c/reedsolomon/rs.h"; sourceTree = "<group>"; };
@@ -269,6 +275,8 @@
 		98AB2E191CAD423B0089BB98 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				180B87D42E65DF27007D9E22 /* MicrophoneStream.c */,
+				180B87D52E65DF27007D9E22 /* RecorderCallbacks.c */,
 				98F1453A2667D852004018E3 /* RtpAudioQueue.h */,
 				98F145392667D852004018E3 /* RtpVideoQueue.h */,
 				98F145332667D847004018E3 /* RtpAudioQueue.c */,
@@ -415,6 +423,8 @@
 				98F145362667D847004018E3 /* RtpAudioQueue.c in Sources */,
 				FB1A67FA21324F4900507771 /* AudioStream.c in Sources */,
 				FB1A67FB21324F4900507771 /* ByteBuffer.c in Sources */,
+				180B87D62E65DF27007D9E22 /* MicrophoneStream.c in Sources */,
+				180B87D72E65DF27007D9E22 /* RecorderCallbacks.c in Sources */,
 				FB1A67FC21324F4900507771 /* Connection.c in Sources */,
 				FB1A67FD21324F4900507771 /* ControlStream.c in Sources */,
 				FB1A67FE21324F4900507771 /* FakeCallbacks.c in Sources */,
@@ -452,6 +462,8 @@
 				98F145352667D847004018E3 /* RtpAudioQueue.c in Sources */,
 				98AB2E401CAD425A0089BB98 /* AudioStream.c in Sources */,
 				98AB2E411CAD425A0089BB98 /* ByteBuffer.c in Sources */,
+				180B87D82E65DF27007D9E22 /* MicrophoneStream.c in Sources */,
+				180B87D92E65DF27007D9E22 /* RecorderCallbacks.c in Sources */,
 				98AB2E421CAD425A0089BB98 /* Connection.c in Sources */,
 				98AB2E431CAD425A0089BB98 /* ControlStream.c in Sources */,
 				98AB2E441CAD425A0089BB98 /* FakeCallbacks.c in Sources */,
