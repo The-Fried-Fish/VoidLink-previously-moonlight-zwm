@@ -1987,6 +1987,36 @@
         }
       }
     },
+    "jaM-yS-ldb.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Redirect Mic (Experimental)\"; ObjectID = \"jaM-yS-ldb\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Redirect Mic (Experimental)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "麦克风重定向(实验性)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風轉送(實驗性)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風轉送(實驗性)"
+          }
+        }
+      }
+    },
     "JaY-XA-1V6.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; JaY-XA-1V6.segmentTitles[0] = \"Xbox 360\"; ObjectID = \"JaY-XA-1V6\";",
       "extractionState" : "extracted_with_value",

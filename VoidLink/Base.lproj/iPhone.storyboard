@@ -1708,6 +1708,24 @@
                                     <constraint firstAttribute="width" constant="380" id="AUi-t1-5ej"/>
                                 </constraints>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="CKa-yk-GSi" userLabel="redirectMicStack">
+                                <rect key="frame" x="20" y="1895" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Redirect Mic (Experimental)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nz2-5g-YSQ" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="96j-Vl-kBM" userLabel="redirectMicSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="v0k-P3-FoU"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1769,6 +1787,8 @@
                         <outlet property="pointerVelocityDividerStack" destination="Jp2-5v-Zr0" id="0mB-RI-df8"/>
                         <outlet property="pointerVelocityFactorStack" destination="PAv-Ep-ZJo" id="fxb-uz-e1a"/>
                         <outlet property="pointerVelocityModeDividerSlider" destination="OMw-Ew-fBX" id="Yki-z6-7bh"/>
+                        <outlet property="redirectMicStack" destination="CKa-yk-GSi" id="fL6-aV-3Im"/>
+                        <outlet property="redirectMicSwitch" destination="96j-Vl-kBM" id="bHh-Qm-gsv"/>
                         <outlet property="renderingBackendSelector" destination="53H-ST-OtY" id="jhu-Pw-Ph2"/>
                         <outlet property="renderingBackendStack" destination="6hG-dw-YSr" id="qqz-lA-EO2"/>
                         <outlet property="resolutionSelector" destination="7Sl-WI-zyo" id="YMv-Xy-dF9"/>

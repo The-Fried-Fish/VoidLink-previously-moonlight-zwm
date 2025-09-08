@@ -820,6 +820,7 @@ static NSMutableSet* hostList;
     _streamConfig.bitRate = [streamSettings.bitrate intValue];
     _streamConfig.optimizeGameSettings = streamSettings.optimizeGames;
     _streamConfig.playAudioOnPC = streamSettings.playAudioOnPC;
+    _streamConfig.redirectMic = streamSettings.redirectMic;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
     _streamConfig.gyroMode = [streamSettings.gyroMode intValue];
@@ -1193,6 +1194,9 @@ static NSMutableSet* hostList;
     // Enable frame pacing mode selector only if not in stream view AND not in performance mode
     BOOL shouldEnableFramePacing = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
     [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacing];
+    // Disable mic switch if sunshine does not support mic redirection
+    [settingsViewController.redirectMicSwitch setEnabled:!_settingsExpandedInStreamView||streamFrameViewController.micStreamInitialized];
+    if(_settingsExpandedInStreamView && !streamFrameViewController.micStreamInitialized) [settingsViewController.redirectMicSwitch setOn:false];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
