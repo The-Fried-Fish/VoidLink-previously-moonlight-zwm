@@ -90,6 +90,7 @@
     self.enablePIP = settings.enablePIP;
     self.frameQueueSize = settings.frameQueueSize;
     self.playAudioOnPC = settings.playAudioOnPC;
+    self.redirectMic = settings.redirectMic;
     self.enableHdr = settings.enableHdr;
     self.optimizeGames = settings.optimizeGames;
     self.multiController = settings.multiController;

@@ -2107,6 +2107,36 @@
         }
       }
     },
+    "nz2-5g-YSQ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Redirect Mic (Experimental)\"; ObjectID = \"nz2-5g-YSQ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Redirect Mic (Experimental)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风重定向(实验性)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風轉送(實驗性)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風轉送(實驗性)"
+          }
+        }
+      }
+    },
     "o9I-Gt-YRd.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Slide Activated\"; ObjectID = \"o9I-Gt-YRd\";",
       "extractionState" : "extracted_with_value",

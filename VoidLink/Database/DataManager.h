@@ -79,6 +79,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
                  multiController:(BOOL)multiController
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
+                       redirectMic:(BOOL)redirectMic
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP

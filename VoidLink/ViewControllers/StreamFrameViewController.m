@@ -88,6 +88,7 @@
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
+    MicHandler* micHandler;
 #else
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
@@ -356,7 +357,12 @@
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
     [self.mainFrameViewcontroller reloadStreamConfig]; // reload streamconfig
     
-    NSLog(@"viewJustloaded: %d", viewJustLoaded);
+    if([MicHandler permissionGranted] && _settings.redirectMic){
+        [micHandler startTapping];
+    }
+    else [micHandler stopTappingWithStopEngine:false];
+    
+    NSLog(@"viewJustloaded: %d, redirectMic:%d", viewJustLoaded, _settings.redirectMic);
     if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
     else viewJustLoaded = false;
     // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
@@ -919,6 +925,8 @@
     
     _extWindow = nil;
     
+    if(_streamConfig.redirectMic) [micHandler stopTappingWithStopEngine:true];
+
     self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
 }
 
@@ -1111,7 +1119,6 @@
 - (void)disconnectRemoteSession {
     Log(LOG_I, @"Settings view disconnect the session in stream view");
     [self returnToMainFrame];
-    
 }
 
 - (void)disconnectAndQuitApp{
@@ -1250,6 +1257,22 @@
 }
 
 - (void) stageComplete:(const char*)stageName {
+    _micStreamInitialized = false;
+    if(strcmp(stageName, "mic stream establishment")==0){
+        if(_streamConfig.redirectMic){
+            dispatch_after((int64_t)(5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self->_micStreamInitialized = true;
+                    self->micHandler = [MicHandler new];
+                    [self->micHandler startTapping];
+                });
+            });
+        }
+    }
+    if(strcmp(stageName, "mic stream unsupported or unintialized")==0){
+        NSLog(@"blablablala");
+        _micStreamInitialized = false;
+    }
 }
 
 - (void) stageFailed:(const char*)stageName withError:(int)errorCode portTestFlags:(int)portTestFlags {

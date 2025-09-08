@@ -18,6 +18,7 @@
 
 #include "Limelight.h"
 #include "opus_multistream.h"
+#include "VoidLink-Swift.h"
 
 @implementation Connection {
     SERVER_INFORMATION _serverInfo;
@@ -468,6 +469,7 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _streamConfig.bitrate = config.bitRate;
     _streamConfig.supportedVideoFormats = config.supportedVideoFormats;
     _streamConfig.audioConfiguration = config.audioConfiguration;
+    _streamConfig.redirectMic = config.redirectMic && [MicHandler permissionGranted];
 
     // Since we require iOS 12 or above, we're guaranteed to be running
     // on a 64-bit device with ARMv8 crypto instructions, so we don't
