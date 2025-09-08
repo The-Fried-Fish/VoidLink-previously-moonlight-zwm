@@ -1654,17 +1654,28 @@ static NSMutableSet* hostList;
     }
     
     bool needSwapWidthAndHeight = appWindowWidth < appWindowHeight;
+    // 旧逻辑备份（仅注释保留，勿删除）：
+    // for(uint8_t i=0;i<6;i++){
+    //     CGFloat longSideLen = resolutionTable[i].height > resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
+    //     CGFloat shortSideLen = resolutionTable[i].height < resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
+    //     if(needSwapWidthAndHeight) resolutionTable[i] = CGSizeMake(shortSideLen, longSideLen);
+    //     else resolutionTable[i] = CGSizeMake(longSideLen, shortSideLen);
+    // }
     
     resolutionTable[0] = CGSizeMake(1280, 720);
     resolutionTable[1] = CGSizeMake(1920, 1080);
     resolutionTable[2] = CGSizeMake(3840, 2160);
     
-    for(uint8_t i=0;i<6;i++){
-        CGFloat longSideLen = resolutionTable[i].height > resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
-        CGFloat shortSideLen = resolutionTable[i].height < resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
-        if(needSwapWidthAndHeight) resolutionTable[i] = CGSizeMake(shortSideLen, longSideLen);
-        else resolutionTable[i] = CGSizeMake(longSideLen, shortSideLen);
+    // iPad：标准分辨率（0..2）始终保持横向（宽>=高），不随当前窗口方向纵向化
+    // iPhone：保持旧逻辑（随当前窗口方向可能纵向化）
+    if (![self isIPhone]) {
+        for(uint8_t i=0;i<3;i++){
+            CGFloat longSideLen = resolutionTable[i].height > resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
+            CGFloat shortSideLen = resolutionTable[i].height < resolutionTable[i].width ? resolutionTable[i].height : resolutionTable[i].width;
+            resolutionTable[i] = CGSizeMake(longSideLen, shortSideLen);
+        }
     }
+    // 自定义分辨率（索引5）保持用户输入的宽高顺序，不做纵横置换（保留原行为）
 
     // add app window resolution and not swap width and height
     resolutionTable[3] = CGSizeMake(safeAreaWidth, appWindowHeight);
@@ -1682,8 +1693,23 @@ static NSMutableSet* hostList;
     int selectedIndex = currentSettings.resolutionSelected.intValue;
     if (selectedIndex >= 0 && selectedIndex < 6) {
         CGSize selectedSize = tempResolutionTable[selectedIndex];
-        currentSettings.width = @(selectedSize.width);
-        currentSettings.height = @(selectedSize.height);
+        if ([self isIPhone]) {
+            // iPhone：保持旧逻辑（不强制横向），保留原始 selectedSize
+            // 原始实现如下（备份注释保留）：
+            // currentSettings.width = @(selectedSize.width);
+            // currentSettings.height = @(selectedSize.height);
+            currentSettings.width = @(selectedSize.width);
+            currentSettings.height = @(selectedSize.height);
+        } else {
+            // iPad：为保证竖屏启动后旋转到横屏仍有清晰度，统一按横向提交（宽>=高）
+            CGFloat submitW = selectedSize.width;
+            CGFloat submitH = selectedSize.height;
+            if (submitW < submitH) {
+                CGFloat t = submitW; submitW = submitH; submitH = t;
+            }
+            currentSettings.width = @(submitW);
+            currentSettings.height = @(submitH);
+        }
         NSLog(@"Updated resolution to: %@ x %@", currentSettings.width, currentSettings.height);
     }
 
