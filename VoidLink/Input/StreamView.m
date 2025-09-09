@@ -492,6 +492,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.widthFactor = buttonState.widthFactor;
                 widgetView.heightFactor = buttonState.heightFactor;
                 widgetView.borderWidth = buttonState.borderWidth;
+                widgetView.autoTapInterval = buttonState.autoTapInterval;
                 [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
                 widgetView.mouseButtonAction = buttonState.mouseButtonAction;
                 widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
@@ -507,6 +508,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [widgetView resizeWidgetView]; // resize must be called after relocation
                 [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];
+                [widgetView setupAutoTapTimer];
             }
         }
     }

@@ -379,6 +379,7 @@ static CGRect layoutViewBounds;
         buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView];
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.borderWidth = widgetView.borderWidth;
+        buttonState.autoTapInterval = widgetView.autoTapInterval;
         buttonState.vibrationStyle = widgetView.vibrationStyle;
         buttonState.mouseButtonAction = widgetView.mouseButtonAction;
         buttonState.sensitivityFactorX = widgetView.sensitivityFactorX;

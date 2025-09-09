@@ -823,6 +823,18 @@
         }
       }
     },
+    "And-W9-9NR.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Auto tap: 100ms\"; ObjectID = \"And-W9-9NR\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto tap: 100ms"
+          }
+        }
+      }
+    },
     "aup-5k-z6P.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Show Local Keyboard Toolbar                                                      \"; ObjectID = \"aup-5k-z6P\";",
       "extractionState" : "extracted_with_value",
@@ -1034,30 +1046,30 @@
       }
     },
     "c1r-Hf-b7t.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Down Button\"; ObjectID = \"c1r-Hf-b7t\";",
+      "comment" : "Class = \"UILabel\"; text = \"Down button\"; ObjectID = \"c1r-Hf-b7t\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Down Button"
+            "value" : "Down button"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "鼠标按下"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑鼠按下"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑鼠按下"
           }
         }
@@ -2804,13 +2816,13 @@
       }
     },
     "NZO-BM-nef.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"NZO-BM-nef\";",
+      "comment" : "Class = \"UILabel\"; text = \"SensitivityY\"; ObjectID = \"NZO-BM-nef\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "SensitivityY"
           }
         }
       }
@@ -2906,13 +2918,13 @@
       }
     },
     "Pbt-Tw-dnV.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"Pbt-Tw-dnV\";",
+      "comment" : "Class = \"UILabel\"; text = \"DecelerationRate\"; ObjectID = \"Pbt-Tw-dnV\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "DecelerationRate"
           }
         }
       }
@@ -2948,13 +2960,13 @@
       }
     },
     "Pwa-YK-6Q2.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"Pwa-YK-6Q2\";",
+      "comment" : "Class = \"UILabel\"; text = \"Alpha\"; ObjectID = \"Pwa-YK-6Q2\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "Alpha"
           }
         }
       }
@@ -3050,30 +3062,30 @@
       }
     },
     "qNQ-fB-jhY.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Slide Activated\"; ObjectID = \"qNQ-fB-jhY\";",
+      "comment" : "Class = \"UILabel\"; text = \"Slide activated\"; ObjectID = \"qNQ-fB-jhY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Slide Activated"
+            "value" : "Slide activated"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑动触发"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑動觸發"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑動觸發"
           }
         }
@@ -3260,13 +3272,13 @@
       }
     },
     "r8L-dl-yLZ.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"r8L-dl-yLZ\";",
+      "comment" : "Class = \"UILabel\"; text = \"BorderWidth\"; ObjectID = \"r8L-dl-yLZ\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "BorderWidth"
           }
         }
       }
@@ -3332,13 +3344,13 @@
       }
     },
     "sbd-0j-KWS.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"sbd-0j-KWS\";",
+      "comment" : "Class = \"UILabel\"; text = \"Height\"; ObjectID = \"sbd-0j-KWS\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "Height"
           }
         }
       }
@@ -3404,13 +3416,25 @@
       }
     },
     "tG7-oX-P9b.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"tG7-oX-P9b\";",
+      "comment" : "Class = \"UILabel\"; text = \"Stick Indicator\"; ObjectID = \"tG7-oX-P9b\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "Stick Indicator"
+          }
+        }
+      }
+    },
+    "toF-yb-f3V.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Tap any widget to load configuration (per widget)\\n\"; ObjectID = \"toF-yb-f3V\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tap any widget to load configuration (per widget)\n"
           }
         }
       }
@@ -3446,13 +3470,13 @@
       }
     },
     "vJs-pg-hHe.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"vJs-pg-hHe\";",
+      "comment" : "Class = \"UILabel\"; text = \"SensitivityX\"; ObjectID = \"vJs-pg-hHe\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "SensitivityX"
           }
         }
       }
@@ -3518,13 +3542,13 @@
       }
     },
     "xfv-K0-1CO.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Tap any widget to load configuration (per widget)\"; ObjectID = \"xfv-K0-1CO\";",
+      "comment" : "Class = \"UILabel\"; text = \"Tap any widget to load configuration (per widget)\\n\"; ObjectID = \"xfv-K0-1CO\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Tap any widget to load configuration (per widget)"
+            "value" : "Tap any widget to load configuration (per widget)\n"
           }
         },
         "zh-Hans" : {
@@ -3668,13 +3692,13 @@
       }
     },
     "ZuV-4A-0Zb.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"test\"; ObjectID = \"ZuV-4A-0Zb\";",
+      "comment" : "Class = \"UILabel\"; text = \"Size\"; ObjectID = \"ZuV-4A-0Zb\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "test"
+            "value" : "Size"
           }
         }
       }
