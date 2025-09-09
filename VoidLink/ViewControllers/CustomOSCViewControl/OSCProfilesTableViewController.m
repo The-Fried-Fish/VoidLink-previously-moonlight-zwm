@@ -248,6 +248,15 @@ const double NAV_BAR_HEIGHT = 50;
         }]];
 
         [self presentViewController:inputNameAlertController animated:YES completion:nil];
+        
+        // 复制流程创建后，可能从模板切换到新布局，需要同步底部 toolbar 状态
+        // 在下一个 runloop 刷新，确保 selectedProfile 已更新
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateToolbarButtons];
+            if (self.systemBottomToolbar) {
+                [self updateSystemToolbarItems];
+            }
+        });
 }
 
 /* basically the same with loadTapped */
@@ -256,6 +265,7 @@ const double NAV_BAR_HEIGHT = 50;
     //[selfparentLayoutOSCViewController]
     [self.tableView reloadData]; // table view will be refreshed by calling reloadData
     [self updateDeleteButtonState]; // 更新顶部删除按钮状态
+    [self updateToolbarButtons]; // 同步底部 toolbar（系统/自定义）状态
     if (self.needToUpdateOscLayoutTVC) {    // tells the presenting view controller to lay out the on screen buttons according to the selected profile's instructions
         self.needToUpdateOscLayoutTVC();
     }
