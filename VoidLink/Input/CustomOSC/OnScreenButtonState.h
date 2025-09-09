@@ -39,9 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString* widgetShape; // for OnScreenWidgetView
 
 @property (nonatomic, assign) CGFloat oscLayerSizeFactor; // for OnScreenController CALayer
-@property (nonatomic, assign) CGFloat backgroundAlpha; // for OnScreenController CALayer
-@property (nonatomic, assign) uint8_t vibrationStyle; // for OnScreenController CALayer
-@property (nonatomic, assign) uint8_t mouseButtonAction; // for OnScreenController CALayer
+@property (nonatomic, assign) CGFloat backgroundAlpha;
+@property (nonatomic, assign) uint8_t vibrationStyle;
+@property (nonatomic, assign) uint8_t mouseButtonAction;
+@property (nonatomic, assign) uint16_t autoTapInterval;
 
 // @property (nonatomic, assign) BOOL hasValidPosition;
 

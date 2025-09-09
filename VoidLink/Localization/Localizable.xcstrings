@@ -703,7 +703,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度"
+            "value" : "透明度"
           }
         },
         "zh-Hant" : {
@@ -726,7 +726,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度: %.2f"
+            "value" : "透明度: %.2f"
           }
         },
         "zh-Hant" : {
@@ -785,6 +785,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音訊"
+          }
+        }
+      }
+    },
+    "Auto tap disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连点已关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連點已關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連點已關閉"
+          }
+        }
+      }
+    },
+    "Auto tap: %dms" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动连点: %dms "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動連點: %dms "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動連點: %dms "
           }
         }
       }
@@ -933,7 +979,7 @@
         }
       }
     },
-    "Border Width" : {
+    "Border width" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -956,7 +1002,7 @@
         }
       }
     },
-    "Border Width: %.2f" : {
+    "Border width: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -2339,7 +2385,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度"
+            "value" : "高度"
           }
         },
         "zh-Hant" : {
@@ -2362,19 +2408,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度: %.2f"
+            "value" : "高度: %.2f "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高度：%.2f"
+            "value" : "高度: %.2f "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高度：%.2f"
+            "value" : "高度: %.2f "
           }
         }
       }
@@ -2471,7 +2517,30 @@
         }
       }
     },
-    "Indicator Offset: %.0f" : {
+    "Important Tips" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要提示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要提示"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要提示"
+          }
+        }
+      }
+    },
+    "Indicator offset: %.0f" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -2697,6 +2766,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加載"
+          }
+        }
+      }
+    },
+    "loadOswConfigTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Tap the drawer icon to duplicate the default profile, since it cannot be modified or overwritten.\n\n- Tap to load configs for each widget.\n\n- To ensure smooth gameplay without interference:\n   - Disable All gestures in: Settings → Multitasking & Gestures\n   - Disable Settings → Accessibility → Touch → AssistiveTouch\n   - Disable Settings → Accessibility → Zoom\n\n- We recommend using new widgets instead of legacy on-screen controls."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 请点击抽屉图标复制一份默认布局，因为默认布局无法修改或覆盖。\n\n- 点击以加载每个控件的配置。\n\n- 为避免游戏过程被干扰，请务必:\n   - 设置 → 多任务与手势 → 关闭所有手势\n   - 关闭: 设置 → 辅助功能 → 触控 → 辅助触控\n   - 关闭: 设置 → 辅助功能 → 缩放\n\n- 建议使用新版屏显控件，而非旧版屏显手柄。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請點擊抽屜圖示複製一份預設版面，因為預設版面無法修改或覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請點擊抽屜圖示複製一份預設版面，因為預設版面無法修改或覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
           }
         }
       }
@@ -4788,7 +4886,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小"
+            "value" : "大小"
           }
         },
         "zh-Hant" : {
@@ -4811,19 +4909,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小: %.2f"
+            "value" : "大小: %.2f "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大小：%.2f"
+            "value" : "大小: %.2f "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大小：%.2f"
+            "value" : "大小: %.2f "
           }
         }
       }

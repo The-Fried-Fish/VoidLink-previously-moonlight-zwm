@@ -31,6 +31,8 @@ import UIKit
         case touchPad
     }
     
+    @objc static public var tapGestureShallBeCancelled: Bool = false
+    
     @objc public var widgetType: WidgetTypeEnum = WidgetTypeEnum.uninitialized
     
     @objc static public var editMode: Bool = false
@@ -61,6 +63,10 @@ import UIKit
     @objc public var layoutChanges: [CGPoint] = []
     @objc public var mouseButtonAction: MouseButtonAction = .hovering;
     
+    //autoTapTimer
+    @objc public var autoTapInterval: Int = 49;
+    private var autoTapTimer: SafeTimer?
+
     private let appWindow: UIView
 
     private var displayLink: CADisplayLink?
@@ -153,6 +159,7 @@ import UIKit
     //slide buttons
     private var capturedTouches: NSMutableSet
     private let noTouch: UITouch = UITouch()
+    let setLock = NSLock()
     
     //controller touch pad
     private var pointerIdPool: Set<UInt32>
@@ -300,6 +307,19 @@ import UIKit
 
     
     // ======================================================================================================
+    @objc public func setupAutoTapTimer() {
+        if self.widgetType == WidgetTypeEnum.button {
+            self.autoTapTimer = SafeTimer(interval:0.001 * Double(autoTapInterval)) {
+                self.handleButtonDown()
+                    DispatchQueue.global(qos: .userInteractive).async {
+                        usleep(25000)
+                        DispatchQueue.main.async {
+                            self.handleButtonUp()
+                        }
+                    }
+                }
+            }
+        }
     
     @objc public func setVibration(style: Int) {
         if #available(iOS 13.0, *) {
@@ -1006,7 +1026,28 @@ import UIKit
      }
 
     
-    //==== wholeButtonPress visual effect=============================================
+    //==== Button actions =============================================
+    
+    //==== Button widget tap down=============================================
+    private func handleTapDownOrSlidein() {
+        if autoTapInterval < 50 {
+            handleButtonDown()
+        }
+        else{
+            self.autoTapTimer?.restart()
+        }
+    }
+    
+    private func handleFingerUpOrSlideout() {
+        if autoTapInterval < 50 {
+            handleButtonUp()
+        }
+        else{
+            self.autoTapTimer?.suspend()
+            self.handleButtonUp()
+        }
+    }
+    
     private func handleButtonDown() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
         CATransaction.begin()
@@ -1023,7 +1064,7 @@ import UIKit
         CATransaction.commit()
     }
     
-    private func handlebuttonUp() {
+    private func handleButtonUp() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -1183,6 +1224,7 @@ import UIKit
         
         self.touchBegan = true
         self.firstTouchMoved = false
+        OnScreenWidgetView.tapGestureShallBeCancelled = true
         super.touchesBegan(touches, with: event)
         // self.isMultipleTouchEnabled = self.touchPadString == "MOUSEPAD" // only enable multi-touch in mousePad mode
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
@@ -1271,8 +1313,10 @@ import UIKit
                         
             // this will also deal with button events
             if self.widgetType == WidgetTypeEnum.button && !self.comboButtonStrings.isEmpty {
-                self.handleButtonDown()
+                self.handleTapDownOrSlidein()
+                setLock.lock()
                 self.capturedTouches.union(touches)
+                setLock.unlock()
                 //self.handleButtonSliding(touches: touches)
             }
             
@@ -1281,7 +1325,7 @@ import UIKit
                 let keyboardCmdStrings = CommandManager.shared.extractKeyStringsFromComboCommand(from: self.cmdString)!
                 CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings) // send multi-key command
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { // reset shadow color immediately 50ms later
-                    self.handlebuttonUp()
+                    self.handleButtonUp()
                 }
             }
         }
@@ -1349,12 +1393,18 @@ import UIKit
     }
 
     
-    private func handleButtonSlidingUp(touches: Set<UITouch>) {
+    private func handleFingerUpAfterSliding(touches: Set<UITouch>) {
         for touch in touches {
             for subview in self.superview?.subviews ?? [] {
                 if let widget = subview as? OnScreenWidgetView{
-                    if !widget.capturedTouches.contains(touch) || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
-                    widget.handlebuttonUp()
+                    setLock.lock()
+                    let captured = widget.capturedTouches.contains(touch)
+                    setLock.unlock()
+                    if !captured || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                    widget.handleFingerUpOrSlideout()
+                    setLock.lock()
+                    widget.capturedTouches.remove(touch)
+                    setLock.unlock()
                 }
             }
         }
@@ -1368,17 +1418,27 @@ import UIKit
                     if widget.widgetType != WidgetTypeEnum.button {continue}
                     let pointInSubview = widget.convert(locationInSuperView, from: self.superview)
                     if widget.bounds.contains(pointInSubview){
-                        if widget.capturedTouches.contains(touch) || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        setLock.lock()
+                        let captured = widget.capturedTouches.contains(touch)
+                        setLock.unlock()
+                        if captured || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        setLock.lock()
                         widget.capturedTouches.add(touch)
-                        widget.handleButtonDown()
+                        setLock.unlock()
+                        widget.handleTapDownOrSlidein()
                         // print("UIButton: \(widget.buttonLabel) in, \(widget.touchPadString), \(CACurrentMediaTime())")
                     }
                     else{
-                        if !widget.capturedTouches.contains(touch) || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        setLock.lock()
+                        let captured = widget.capturedTouches.contains(touch)
+                        setLock.unlock()
+                        if !captured || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
                         // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
                         if(widget.slideMode == ButtonSlideMode.toggle.rawValue){
+                            widget.handleFingerUpOrSlideout()
+                            setLock.lock()
                             widget.capturedTouches.remove(touch)
-                            widget.handlebuttonUp()
+                            setLock.unlock()
                         }
                         if(widget.slideMode == ButtonSlideMode.slideAndHold.rawValue){
                             // do nothing here
@@ -1398,7 +1458,7 @@ import UIKit
                 handleTouchPadMoveEvent(touches, with: event)
             }
             
-            if !self.buttonString.isEmpty{
+            if self.widgetType == WidgetTypeEnum.button {
                 if self.slideMode != ButtonSlideMode.disabled.rawValue {self.handleButtonSliding(touches: touches)}
             }
             
@@ -1407,7 +1467,7 @@ import UIKit
                     NSLog("touchTapTimeStamp %f", self.touchTapTimeStamp)
                     if CACurrentMediaTime() - self.touchTapTimeStamp > 0.3 { // temporarily relocate special buttons
                         self.moveByTouch(touch: touch)
-                        self.handlebuttonUp()
+                        self.handleButtonUp()
                     }
                 }
             }
@@ -1491,10 +1551,14 @@ import UIKit
         }
     }
     
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touchesEnded(touches, with: event)
+    }
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = false
         super.touchesEnded(touches, with: event)
-        
+                
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
@@ -1598,8 +1662,10 @@ import UIKit
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
-            self.handleButtonSlidingUp(touches: touches)
+            self.handleFingerUpAfterSliding(touches: touches)
+            setLock.lock()
             self.capturedTouches.minus(touches)
+            setLock.unlock()
         }
         
         if !OnScreenWidgetView.editMode && CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
@@ -1651,8 +1717,7 @@ import UIKit
             }
         }
         
-        self.handlebuttonUp()
+        self.handleFingerUpOrSlideout()
     }
-    
 }
 

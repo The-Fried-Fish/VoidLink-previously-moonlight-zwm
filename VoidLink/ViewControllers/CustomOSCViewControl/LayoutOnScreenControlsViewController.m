@@ -116,6 +116,7 @@
             widgetView.widthFactor = buttonState.widthFactor;
             widgetView.heightFactor = buttonState.heightFactor;
             widgetView.borderWidth = buttonState.borderWidth;
+            widgetView.autoTapInterval = buttonState.autoTapInterval;
             [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
             widgetView.mouseButtonAction = buttonState.mouseButtonAction;
             widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
@@ -628,6 +629,7 @@
     newWidget.widthFactor = widget.widthFactor;
     newWidget.heightFactor = widget.heightFactor;
     newWidget.borderWidth = widget.borderWidth;
+    newWidget.autoTapInterval = widget.autoTapInterval;
     newWidget.sensitivityFactorX = widget.sensitivityFactorX;
     newWidget.sensitivityFactorY = widget.sensitivityFactorY;
     newWidget.trackballDecelerationRate = widget.trackballDecelerationRate;
@@ -698,7 +700,8 @@
 }
 
 - (void)enableCommonWidgetTools{
-    self.loadConfigTipLabel.hidden = YES;
+    self.tipTitleLabel.hidden = YES;
+    self.tipContentLabel.hidden = YES;
     self.widgetSizeStack.hidden = NO;
     self.widgetHeightStack.hidden = NO;
     self.borderWidthAlphaStack.hidden = NO;
@@ -735,13 +738,12 @@
     
     // receive the selected widgetView obj passed from the notification
     [self enableCommonWidgetTools];
-
     
     OnScreenWidgetView* widgetView = (OnScreenWidgetView* )notification.object;
     self->widgetViewSelected = true;
     self->controllerLayerSelected = false;
     self->selectedWidgetView = widgetView;
-    
+        
     [self autoFitLabel:self.currentProfileLabel];
     self.currentProfileLabel.textAlignment = NSTextAlignmentLeft;
     [self.currentProfileLabel setText:
@@ -752,14 +754,11 @@
     self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 ? 1.0 : 0.3;
     
     [self.layoutOSC updateGuidelinesForOnScreenWidget:self->selectedWidgetView]; // shows guideline immediately when widget is tapped
-    // setup slider values
-    [self.widgetSizeSlider setValue: self->selectedWidgetView.deNormalizedWidthFactor];
-    [self.widgetHeightSlider setValue: self->selectedWidgetView.deNormalizedHeightFactor];
-    [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
-    [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
-    
+
+
+    // hide irrelevant stacks
+    self.autoTapStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
     self.slidableStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    [self.slidableSelector setSelectedSegmentIndex:selectedWidgetView.slideMode];
     
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
@@ -770,6 +769,9 @@
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     
     [self autoFitStack:self.widgetPanelStack];
+
+    // setup values
+
 
     if(showSensitivityFactorStack){
         [self.sensitivityXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
@@ -785,28 +787,38 @@
         selectedWidgetView.touchBeganLocation = CGPointMake(CGRectGetWidth(selectedWidgetView.frame)/2, CGRectGetHeight(selectedWidgetView.frame)/4);
         [selectedWidgetView showStickIndicator];// this will create the indicator CAShapeLayers
         [self.stickIndicatorOffsetSlider setValue:self->selectedWidgetView.stickIndicatorOffset];
+        [self stickIndicatorOffsetSliderMoved:self.stickIndicatorOffsetSlider];
         [self autoFitLabel:self.stickIndicatorOffsetLabel];
-        [self.stickIndicatorOffsetLabel setText:[LocalizationHelper localizedStringForKey:@"Indicator Offset: %.0f", self->selectedWidgetView.stickIndicatorOffset]];
-        [self->selectedWidgetView updateStickIndicator];
+        /*[self.stickIndicatorOffsetLabel setText:[LocalizationHelper localizedStringForKey:@"Indicator offset: %.0f", self->selectedWidgetView.stickIndicatorOffset]];
+        [self->selectedWidgetView updateStickIndicator];*/
     }
+    
+    [self.widgetSizeSlider setValue: self->selectedWidgetView.deNormalizedWidthFactor];
     [self autoFitLabel:self.widgetSizeLabel];
+    [self widgetSizeSliderMoved:self.widgetSizeSlider];
     
-
-    [self.widgetSizeLabel setText:[LocalizationHelper localizedStringForKey:@"Size: %.2f", self->selectedWidgetView.deNormalizedWidthFactor]];
-    
+    [self.widgetHeightSlider setValue: self->selectedWidgetView.deNormalizedHeightFactor];
     [self autoFitLabel:self.widgetHeightLabel];
-    [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
+    [self widgetHeightSliderMoved:self.widgetHeightSlider];
     
+    [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
     [self autoFitLabel:self.widgetAlphaLabel];
-    [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", self->selectedWidgetView.backgroundAlpha]];
+    [self widgetAlphaSliderMoved:self.widgetAlphaSlider];
     
+    [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
     [self autoFitLabel:self.widgetBorderWidthLabel];
-    [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Border Width: %.2f", self->selectedWidgetView.borderWidth]];
+    [self widgetBorderWidthSliderMoved:self.widgetBorderWidthSlider];
     
+    [self.autoTapSlider setValue:self->selectedWidgetView.autoTapInterval];
+    [self autoFitLabel:self.autoTapLabel];
+    [self autoTapSliderMoved:self.autoTapSlider];
+
     [self.decelerationRateSlider setValue:selectedWidgetView.trackballDecelerationRate];
     [self autoFitLabel:self.decelerationRateLabel];
-    [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", selectedWidgetView.trackballDecelerationRate]];
+    [self decelerationRateSliderMoved:self.decelerationRateSlider];
+    
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
+    [self.slidableSelector setSelectedSegmentIndex:selectedWidgetView.slideMode];
 
     if([self isIPhone]){
         self.vibrationStyleStack.hidden =
@@ -820,11 +832,13 @@
 
 - (void)legacyOscLayerTapped: (NSNotification *)notification{
     [self enableCommonWidgetTools];
+    
     CALayer* controllerLayer = (CALayer* )notification.object;
     [self hideStickIndicators];
     self->widgetViewSelected = false;
     self->selectedWidgetView = nil;
     
+    self.autoTapStack.hidden = true; // won't implement auto tap for legacy buttons
     self.stickIndicatorOffsetStack.hidden = true;
     self.sensitivityXStack.hidden = self.sensitivityYStack.hidden = true;
     self.mouseDownButtonStack.hidden = true;
@@ -899,12 +913,21 @@
 }
 
 - (void)widgetBorderWidthSliderMoved:(UISlider* )sender{
-    [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Border Width: %.2f", sender.value]];
+    [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Border width: %.2f", sender.value]];
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         [self->selectedWidgetView adjustBorderWithWidth:sender.value];
     }
     return;
 }
+
+- (void)autoTapSliderMoved:(UISlider* )sender{
+    [self.autoTapLabel setText:(uint16_t)sender.value < 50 ? [LocalizationHelper localizedStringForKey: @"Auto tap disabled"] : [LocalizationHelper localizedStringForKey: @"Auto tap: %dms", (uint16_t)sender.value]];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        selectedWidgetView.autoTapInterval = (uint16_t)sender.value;
+    }
+    return;
+}
+
 
 - (void)mouseDownButtonChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
@@ -964,7 +987,7 @@
 
 
 - (void)stickIndicatorOffsetSliderMoved:(UISlider* )sender{
-    [self.stickIndicatorOffsetLabel setText:[LocalizationHelper localizedStringForKey:@"Indicator Offset: %.0f", sender.value]];
+    [self.stickIndicatorOffsetLabel setText:[LocalizationHelper localizedStringForKey:@"Indicator offset: %.0f", sender.value]];
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         self->selectedWidgetView.stickIndicatorOffset = sender.value;
         [self->selectedWidgetView updateStickIndicator];
@@ -1006,7 +1029,24 @@
 
 - (void)setupWidgetPanel{
     self.widgetPanelStack.hidden = _quickSwitchEnabled;
-    self.loadConfigTipLabel.hidden = NO;
+    
+    self.tipTitleLabel.textAlignment = NSTextAlignmentLeft;
+    self.tipTitleLabel.contentMode = UIViewContentModeTop;
+    self.tipTitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.tipTitleLabel.numberOfLines = 0;
+    self.tipTitleLabel.font = [UIFont systemFontOfSize:23 weight:UIFontWeightBold];
+    self.tipTitleLabel.text = [LocalizationHelper localizedStringForKey:@"Important Tips"];
+    self.tipTitleLabel.hidden = [self isIPhone];
+
+    self.tipContentLabel.textAlignment = NSTextAlignmentLeft;
+    self.tipContentLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.tipContentLabel.contentMode = UIViewContentModeTop;
+    self.tipContentLabel.numberOfLines = 0;
+    self.tipContentLabel.accessibilityIdentifier = @"tipContent";
+    self.tipContentLabel.font = [UIFont systemFontOfSize:[self isIPhone]?15:15];
+    self.tipContentLabel.text = [LocalizationHelper localizedStringForKey:@"loadOswConfigTip"];
+    self.tipContentLabel.hidden = NO;
+    // if([self isIPhone]) [self autoFitLabel:self.tipContentLabel];loadOswConfigTip
 
     self.widgetPanelStack.layoutMargins = UIEdgeInsetsMake(10, 10, 10, 10);
     self.widgetPanelStack.layoutMarginsRelativeArrangement = YES;
@@ -1023,7 +1063,7 @@
     self.widgetSizeStack.userInteractionEnabled = YES;
     for(UIView* view in _widgetPanelStack.subviews){
         view.userInteractionEnabled = YES;
-        if([view isKindOfClass:[UILabel class]]){
+        if([view isKindOfClass:[UILabel class]] && !view.accessibilityIdentifier){
             UILabel* label = (UILabel* )view;
             label.font = [UIFont systemFontOfSize:18];
             label.textColor = [UIColor whiteColor];
@@ -1035,7 +1075,6 @@
     self.widgetSizeStack.hidden = YES;
 
     [self.widgetHeightSlider addTarget:self action:@selector(widgetHeightSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
-
     self.widgetHeightLabel.text = [LocalizationHelper localizedStringForKey:@"Height"];
     self.widgetHeightStack.hidden = YES;
 
@@ -1043,8 +1082,12 @@
     self.widgetAlphaLabel.text = [LocalizationHelper localizedStringForKey:@"Alpha"];
    
     [self.widgetBorderWidthSlider addTarget:self action:@selector(widgetBorderWidthSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
-    self.widgetBorderWidthLabel.text = [LocalizationHelper localizedStringForKey:@"Border Width"];
+    self.widgetBorderWidthLabel.text = [LocalizationHelper localizedStringForKey:@"Border width"];
     self.borderWidthAlphaStack.hidden = YES;
+    
+    [self.autoTapSlider addTarget:self action:@selector(autoTapSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+    self.autoTapLabel.text = [LocalizationHelper localizedStringForKey:@"Autotap"];
+    self.autoTapStack.hidden = YES;
   
     [self.sensitivityXSlider addTarget:self action:@selector(sensitivityXSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.sensitivityXLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityX"];
@@ -1063,7 +1106,7 @@
     // stick indicator offset slider
     //self.stickIndicatorOffsetSlider.hidden = YES;
     [self.stickIndicatorOffsetSlider addTarget:self action:@selector(stickIndicatorOffsetSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
-    self.stickIndicatorOffsetLabel.text = [LocalizationHelper localizedStringForKey:@"Indicator Offset"];
+    self.stickIndicatorOffsetLabel.text = [LocalizationHelper localizedStringForKey:@"Indicator offset"];
     self.stickIndicatorOffsetStack.hidden = YES;
     
     NSDictionary *whiteFontAttributes = @{
