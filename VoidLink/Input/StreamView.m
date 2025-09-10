@@ -525,11 +525,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 
 - (CGSize) getVideoAreaSize {
-    if (self.bounds.size.width > self.bounds.size.height * streamAspectRatio) {
-        return CGSizeMake(self.bounds.size.height * streamAspectRatio, self.bounds.size.height);
-    } else {
-        return CGSizeMake(self.bounds.size.width, self.bounds.size.width / streamAspectRatio);
-    }
+    // 强制按屏宽等比，保持与显示层一致
+    return CGSizeMake(self.bounds.size.width, self.bounds.size.width / streamAspectRatio);
 }
 
 - (CGPoint) adjustCoordinatesForVideoArea:(CGPoint)point {
@@ -1017,11 +1014,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // This logic mimics what iOS does with AVLayerVideoGravityResizeAspect
     CGSize videoSize;
     CGPoint videoOrigin;
-    if (self.bounds.size.width > self.bounds.size.height * streamAspectRatio) {
-        videoSize = CGSizeMake(self.bounds.size.height * streamAspectRatio, self.bounds.size.height);
-    } else {
-        videoSize = CGSizeMake(self.bounds.size.width, self.bounds.size.width / streamAspectRatio);
-    }
+    // 与 getVideoAreaSize 保持一致：按屏宽等比
+    videoSize = CGSizeMake(self.bounds.size.width, self.bounds.size.width / streamAspectRatio);
     videoOrigin = CGPointMake(self.bounds.size.width / 2 - videoSize.width / 2,
                               self.bounds.size.height / 2 - videoSize.height / 2);
     
