@@ -95,7 +95,12 @@ import UIKit
     private let stickBallMaxOffset = 18.0
     @objc public var crossMarkLayer = CAShapeLayer()
     @objc public var stickBallLayer = CAShapeLayer()
-    
+    // ALT stick indicator (Genshin-like)
+    private var altPointerLayer = CALayer()
+    private var altBackgroundLayer = CALayer()
+    @objc public var altIndicatorSize: CGFloat = 160
+    private let altIndicatorMaxScale: CGFloat = 1.1
+    private var touchBeganPosInSuperLayer: CGPoint = .zero
     // this is for all stick pads and mouse Pad
     @objc public var sensitivityFactorX: CGFloat = 1.0
     @objc public var sensitivityFactorY: CGFloat = 1.0
@@ -197,18 +202,18 @@ import UIKit
                 self.touchPadString = touchPadString
                 self.buttonString = self.comboButtonStrings.first ?? ""
                 
-                //  let stickAndMouseTouchpads = ["LSPAD", "RSPAD", "LSVPAD", "RSVPAD", "MOUSEPAD"]
-                let nonVectorStickPads = ["LSPAD", "RSPAD"]
-                // if CommandManager.touchPadCmds.contains(self.touchPadString) {self.hasSensitivityTweak = true}
+               //  let stickAndMouseTouchpads = ["LSPAD", "RSPAD", "LSVPAD", "RSVPAD", "MOUSEPAD"]
+                let nonVectorStickPads = CommandManager.nonVectorStickPads
+               // if CommandManager.touchPadCmds.contains(self.touchPadString) {self.hasSensitivityTweak = true}
                 self.hasSensitivityTweak = CommandManager.touchPadCmds.contains(self.touchPadString)
                 
                 // if nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad {self.hasStickIndicator = true}
                 self.hasStickIndicator = nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
                 
                 switch self.cmdString {
-                case "LSPAD", "LSVPAD":
+                case "LSPAD", "LSPADALT", "LSVPAD":
                     self.comboButtonStrings = ["OSCL3"]
-                case "RSPAD", "RSVPAD":
+                case "RSPAD", "RSPADALT", "RSVPAD":
                     self.comboButtonStrings = ["OSCR3"]
                 case "DS4TOUCH":
                     self.comboButtonStrings = ["DS4TCHBTN"]
@@ -263,6 +268,7 @@ import UIKit
         }
         self.activePointerIds = []
         super.init(frame: .zero)
+        if self.touchPadString == "LSPADALT" || self.touchPadString == "RSPADALT" { self.stickIndicatorOffset = 0; self.hasStickIndicator = false }
         
         upIndicator = createLrudDirectionLayer()
         upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1)
@@ -630,8 +636,14 @@ import UIKit
             stickMarkerRelativeLocation = CGPointMake(touchBeganLocation.x, touchBeganLocation.y)
         }
         
-        showStickBall(at: stickMarkerRelativeLocation)
-        showCrossMarkOnTouchPoint(at: stickMarkerRelativeLocation)
+        if self.touchPadString == "LSPADALT" {
+            // ALT 自有指示器，不创建十字或小球
+            showStickBall(at: stickMarkerRelativeLocation)
+            self.crossMarkLayer.isHidden = true
+        } else {
+            showStickBall(at: stickMarkerRelativeLocation)
+            showCrossMarkOnTouchPoint(at: stickMarkerRelativeLocation)
+        }
     }
     
     // cross mark for left & right gamePad
@@ -697,16 +709,49 @@ import UIKit
     }
     
     private func showStickBall(at center: CGPoint) {
-        let path = UIBezierPath(arcCenter: center, radius: 8, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
-        
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        
-        // Create a CAShapeLayer
-        self.stickBallLayer.path = path.cgPath  // Assign the circular path to the shape layer
-        self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
-        self.stickBallLayer.isHidden = false
-        
+
+        // ALT 版不显示小球；普通版显示
+        if self.touchPadString == "LSPADALT" || self.touchPadString == "RSPADALT" {
+            self.stickBallLayer.isHidden = true
+        } else {
+            let path = UIBezierPath(arcCenter: center, radius: 8, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
+            self.stickBallLayer.path = path.cgPath
+            self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
+            self.stickBallLayer.isHidden = false
+        }
+
+        // ALT variant: add background + pointer at touch point (replacing cross)
+        if self.touchPadString == "LSPADALT" || self.touchPadString == "RSPADALT" {
+            altBackgroundLayer.bounds = CGRect(x: 0, y: 0, width: altIndicatorSize, height: altIndicatorSize)
+            altBackgroundLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            altBackgroundLayer.contentsScale = UIScreen.main.scale
+            altBackgroundLayer.contentsGravity = CALayerContentsGravity.resizeAspect
+            altBackgroundLayer.contents = UIImage(named: "StickOuterAlt")?.cgImage
+            altBackgroundLayer.position = self.touchBeganPosInSuperLayer
+            if altBackgroundLayer.superlayer == nil { self.layer.superlayer?.addSublayer(altBackgroundLayer) }
+
+            altPointerLayer.bounds = CGRect(x: 0, y: 0, width: altIndicatorSize, height: altIndicatorSize)
+            altPointerLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            altPointerLayer.contentsScale = UIScreen.main.scale
+            altPointerLayer.contentsGravity = CALayerContentsGravity.resizeAspect
+            altPointerLayer.contents = UIImage(named: "StickInnerAlt")?.cgImage
+            altPointerLayer.position = self.touchBeganPosInSuperLayer
+            altBackgroundLayer.setAffineTransform(.identity)
+            altPointerLayer.setAffineTransform(.identity)
+            if altPointerLayer.superlayer == nil { self.layer.superlayer?.addSublayer(altPointerLayer) }
+            altBackgroundLayer.isHidden = false
+            altPointerLayer.isHidden = false
+            altBackgroundLayer.opacity = 0.0
+            altPointerLayer.opacity = 0.0
+            // fade-in for background & pointer
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.2)
+            altBackgroundLayer.opacity = 1.0
+            altPointerLayer.opacity = 1.0
+            CATransaction.commit()
+        }
         CATransaction.commit()
     }
     
@@ -716,14 +761,48 @@ import UIKit
         CATransaction.setDisableActions(true)
         self.stickBallLayer.removeAllAnimations()
         if !OnScreenWidgetView.editMode {
-            let realOffsetX = touchInputToStickBallCoord(input: offSetX*sensitivityFactorX)
-            let realOffsetY = touchInputToStickBallCoord(input: offSetY*sensitivityFactorY)
-            self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame) + realOffsetX, CGRectGetMidY(self.crossMarkLayer.frame) + realOffsetY)
-            if fabs(realOffsetX) == stickBallMaxOffset || fabs(realOffsetY) == stickBallMaxOffset {
-                handleStickBallReachingBorder()
+            if self.touchPadString == "LSPADALT" || self.touchPadString == "RSPADALT" {
+                let k = CGFloat(18.0)/stickInputScale
+                var x = offSetX*sensitivityFactorX * k
+                var y = offSetY*sensitivityFactorY * k
+                let radius = CGFloat(stickBallMaxOffset)
+                let mag = hypot(x, y)
+                if mag > radius && mag > 0 {
+                    let scale = radius / mag
+                    x *= scale
+                    y *= scale
+                }
+                // ALT：每帧基于角度与幅度生成一次性变换，避免累积放大
+                if self.touchPadString == "LSPADALT" || self.touchPadString == "RSPADALT"{
+                    let angle = atan2(y, x) + .pi/2
+                    let normalized = min(hypot(x, y)/CGFloat(stickBallMaxOffset), 1.0)
+                    let scale = 1.0 + (altIndicatorMaxScale - 1.0) * normalized
+                    let transform = CGAffineTransform(rotationAngle: angle).scaledBy(x: scale, y: scale)
+                    altPointerLayer.setAffineTransform(transform)
+                    altBackgroundLayer.setAffineTransform(transform)
+                    let opacity = Float(0.75 + 0.25 * normalized)
+                    altBackgroundLayer.opacity = opacity
+                    altPointerLayer.opacity = opacity
+                }
+                altBackgroundLayer.position = self.touchBeganPosInSuperLayer
+                altPointerLayer.position = self.touchBeganPosInSuperLayer
+                if hypot(x, y) >= CGFloat(stickBallMaxOffset) {
+                    handleStickBallReachingBorder()
+                }
+                else{
+                    handleStickBallLeavingBorder()
+                }
             }
-            else{
-                handleStickBallLeavingBorder()
+            else {
+                let realOffsetX = touchInputToStickBallCoord(input: offSetX*sensitivityFactorX)
+                let realOffsetY = touchInputToStickBallCoord(input: offSetY*sensitivityFactorY)
+                self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame) + realOffsetX, CGRectGetMidY(self.crossMarkLayer.frame) + realOffsetY)
+                if fabs(realOffsetX) == stickBallMaxOffset || fabs(realOffsetY) == stickBallMaxOffset {
+                    handleStickBallReachingBorder()
+                }
+                else{
+                    handleStickBallLeavingBorder()
+                }
             }
         }
         else{
@@ -743,7 +822,26 @@ import UIKit
         
         CATransaction.begin()
         CATransaction.setAnimationDuration(0.15)
-        self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
+        if self.touchPadString == "LSPADALT" || self.touchPadString == "RSPADALT" {
+            self.stickBallLayer.position = CGPoint(x: CGRectGetMinX(self.frame) + self.touchBeganLocation.x,
+                                                   y: CGRectGetMinY(self.frame) + self.touchBeganLocation.y)
+            // fade out ALT indicator (background & pointer)
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.2)
+            altBackgroundLayer.opacity = 0.0
+            altPointerLayer.opacity = 0.0
+            CATransaction.setCompletionBlock {
+                self.altBackgroundLayer.isHidden = true
+                self.altPointerLayer.isHidden = true
+                self.altPointerLayer.opacity = 0.0
+                self.altBackgroundLayer.setAffineTransform(.identity)
+                self.altPointerLayer.setAffineTransform(.identity)
+            }
+            CATransaction.commit()
+        }
+        else{
+            self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
+        }
         CATransaction.setCompletionBlock {
             // 动画结束后执行的代码
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -1128,8 +1226,18 @@ import UIKit
     }
     
     private func sendRightStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
-        var targetX = self.touchInputToStickInput(input: inputX)
-        var targetY = -self.touchInputToStickInput(input: inputY)
+        var adjX = inputX
+        var adjY = inputY
+        if self.touchPadString == "RSPADALT" { // circular clamp for ALT variant
+            let mag = hypot(adjX, adjY)
+            if mag > stickInputScale && mag > 0 { // clamp in source domain to keep mapping consistent
+                let scale = stickInputScale / mag
+                adjX *= scale
+                adjY *= scale
+            }
+        }
+        var targetX = self.touchInputToStickInput(input: adjX)
+        var targetY = -self.touchInputToStickInput(input: adjY)
         // vertical input must be inverted
         targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
         targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
@@ -1137,8 +1245,18 @@ import UIKit
     }
     
     private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
-        var targetX = self.touchInputToStickInput(input: inputX)
-        var targetY = -self.touchInputToStickInput(input: inputY)
+        var adjX = inputX
+        var adjY = inputY
+        if self.touchPadString == "LSPADALT" { // circular clamp for ALT variant
+            let mag = hypot(adjX, adjY)
+            if mag > stickInputScale && mag > 0 {
+                let scale = stickInputScale / mag
+                adjX *= scale
+                adjY *= scale
+            }
+        }
+        var targetX = self.touchInputToStickInput(input: adjX)
+        var targetY = -self.touchInputToStickInput(input: adjY)
         targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
         targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
         self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
@@ -1235,6 +1353,14 @@ import UIKit
             if OnScreenWidgetView.editMode {self.touchBeganLocation = touch!.location(in: superview)}
             else {self.touchBeganLocation = touch!.location(in: self)}
             self.latestTouchLocation = touchBeganLocation
+            // Cache absolute position in the layer.superlayer coordinate to avoid initial offset
+            if let superLayer = self.layer.superlayer {
+                let pointInSelfLayer = OnScreenWidgetView.editMode ? (touch?.location(in: superview))! : (touch?.location(in: self))!
+                self.touchBeganPosInSuperLayer = superLayer.convert(pointInSelfLayer, from: self.layer)
+            } else {
+                self.touchBeganPosInSuperLayer = CGPoint(x: CGRectGetMinX(self.frame)+self.touchBeganLocation.x,
+                                                         y: CGRectGetMinY(self.frame)+self.touchBeganLocation.y)
+            }
         }
                 
         allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
@@ -1247,12 +1373,12 @@ import UIKit
         if !OnScreenWidgetView.editMode {
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
                 switch self.touchPadString {
-                case "LSPAD":
+                case "LSPAD", "LSPADALT":
                     self.showStickIndicator()
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "RSPAD":
+                case "RSPAD", "RSPADALT":
                     self.showStickIndicator()
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
@@ -1513,13 +1639,13 @@ import UIKit
                     self.stopTrackballMomentum()
                 }
                 break
-            case "LSPAD":
+            case "LSPAD", "LSPADALT":
                 self.updateTouchLocation(touch: touches.first!)
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.sendLeftStickTouchPadEvent(inputX: self.offSetX * self.sensitivityFactorX, inputY: self.offSetY * self.sensitivityFactorY)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
-            case "RSPAD":
+            case "RSPAD", "RSPADALT":
                 self.updateTouchLocation(touch: touches.first!)
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.sendRightStickTouchPadEvent(inputX: self.offSetX * self.sensitivityFactorX, inputY: self.offSetY * self.sensitivityFactorY)
@@ -1612,10 +1738,10 @@ import UIKit
         // then other types of pads or buttons with touchPad function
         if !OnScreenWidgetView.editMode && !self.touchPadString.isEmpty {
             switch self.touchPadString{
-            case "LSPAD":
+            case "LSPAD", "LSPADALT":
                 self.onScreenControls.clearLeftStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
-            case "RSPAD":
+            case "RSPAD", "RSPADALT":
                 self.onScreenControls.clearRightStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "LSVPAD":
@@ -1704,7 +1830,7 @@ import UIKit
             
             if self.widgetType == WidgetTypeEnum.touchPad{
                 switch self.touchPadString{
-                case "LSPAD", "RSPAD":
+                case "LSPAD", "LSPADALT", "RSPAD", "RSPADALT":
                     self.showStickIndicator()
                     self.updateStickIndicator()
                 default: break
