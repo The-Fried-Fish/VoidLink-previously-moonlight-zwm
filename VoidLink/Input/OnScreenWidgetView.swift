@@ -30,9 +30,7 @@ import UIKit
         case button
         case touchPad
     }
-    
-    @objc static public var tapGestureShallBeCancelled: Bool = false
-    
+        
     @objc public var widgetType: WidgetTypeEnum = WidgetTypeEnum.uninitialized
     
     @objc static public var editMode: Bool = false
@@ -1224,7 +1222,6 @@ import UIKit
         
         self.touchBegan = true
         self.firstTouchMoved = false
-        OnScreenWidgetView.tapGestureShallBeCancelled = true
         super.touchesBegan(touches, with: event)
         // self.isMultipleTouchEnabled = self.touchPadString == "MOUSEPAD" // only enable multi-touch in mousePad mode
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
