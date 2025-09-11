@@ -30,7 +30,7 @@ import UIKit
         case button
         case touchPad
     }
-        
+    
     @objc public var widgetType: WidgetTypeEnum = WidgetTypeEnum.uninitialized
     
     @objc static public var editMode: Bool = false
@@ -42,12 +42,12 @@ import UIKit
     // super combo key string set
     private var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
-
+    
     @objc public var pressed: Bool
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
     @objc public var slideMode: Int = 0
-
+    
     @objc public var deNormalizedWidthFactor: CGFloat = 1.0
     @objc public var deNormalizedHeightFactor: CGFloat = 1.0
     
@@ -65,12 +65,12 @@ import UIKit
     //autoTapTimer
     @objc public var autoTapInterval: Int = 49;
     private var autoTapTimer: SafeTimer?
-
+    
     private let appWindow: UIView
     
     private var vibrationGenerator = UIImpactFeedbackGenerator(style: .light)
     private var vibrationOn: Bool = false
-
+    
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasStickIndicator: Bool = false
     @objc public var hasSensitivityTweak: Bool = false
@@ -78,12 +78,12 @@ import UIKit
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
     public let stickMaxOffset: CGFloat = 0x7FFE
-
+    
     
     // for LSVPAD, RSVPAD
     @objc public var deltaX: CGFloat
     @objc public var deltaY: CGFloat
-
+    
     // for LSPAD, RSPAD
     @objc public var offSetX: CGFloat
     @objc public var offSetY: CGFloat
@@ -94,11 +94,11 @@ import UIKit
     private let stickBallMaxOffset = 18.0
     @objc public var crossMarkLayer = CAShapeLayer()
     @objc public var stickBallLayer = CAShapeLayer()
-
+    
     // this is for all stick pads and mouse Pad
     @objc public var sensitivityFactorX: CGFloat = 1.0
     @objc public var sensitivityFactorY: CGFloat = 1.0
-
+    
     // check quick double tap:
     private var quickDoubleTapDetected: Bool
     private var touchTapTimeInterval: TimeInterval
@@ -195,9 +195,9 @@ import UIKit
                 self.touchPadString = touchPadString
                 self.buttonString = self.comboButtonStrings.first ?? ""
                 
-               //  let stickAndMouseTouchpads = ["LSPAD", "RSPAD", "LSVPAD", "RSVPAD", "MOUSEPAD"]
+                //  let stickAndMouseTouchpads = ["LSPAD", "RSPAD", "LSVPAD", "RSVPAD", "MOUSEPAD"]
                 let nonVectorStickPads = ["LSPAD", "RSPAD"]
-               // if CommandManager.touchPadCmds.contains(self.touchPadString) {self.hasSensitivityTweak = true}
+                // if CommandManager.touchPadCmds.contains(self.touchPadString) {self.hasSensitivityTweak = true}
                 self.hasSensitivityTweak = CommandManager.touchPadCmds.contains(self.touchPadString)
                 
                 // if nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad {self.hasStickIndicator = true}
@@ -225,7 +225,7 @@ import UIKit
         for comboButtonString in comboButtonStrings {
             print("comboButtonString: \(comboButtonString)")
         }
-
+        
         self.buttonLabel = buttonLabel
         self.shape = shape
         self.label = UILabel()
@@ -235,7 +235,7 @@ import UIKit
         // self.heightFactor = 1.0
         // self.backgroundAlpha = 0.5
         // self.velocityFactor = 1.0
-
+        
         self.latestTouchLocation = CGPoint(x: 0, y: 0)
         self.deltaX = 0
         self.deltaY = 0
@@ -270,7 +270,7 @@ import UIKit
         leftIndicator.anchorPoint = CGPoint(x: 1, y: 0.5)
         rightIndicator = createLrudDirectionLayer()
         rightIndicator.anchorPoint = CGPoint(x: 0, y: 0.5)
-    
+        
         setupView()
     }
     
@@ -283,15 +283,12 @@ import UIKit
         if self.widgetType == WidgetTypeEnum.button {
             self.autoTapTimer = SafeTimer(interval:0.001 * Double(autoTapInterval)) {
                 self.handleButtonDown()
-                    DispatchQueue.global(qos: .userInteractive).async {
-                        usleep(25000)
-                        DispatchQueue.main.async {
-                            self.handleButtonUp()
-                        }
-                    }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.025) {
+                    self.handleButtonUp()
                 }
             }
         }
+    }
     
     @objc public func setVibration(style: Int) {
         if #available(iOS 13.0, *) {
@@ -312,10 +309,10 @@ import UIKit
     
     @objc public func setLocation(position: CGPoint) {
         /*
-        NSLayoutConstraint.activate([
-            self.centerXAnchor.constraint(equalTo: self.superview!.leadingAnchor, constant: xOffset),
-            self.centerYAnchor.constraint(equalTo: self.superview!.topAnchor, constant: yOffset),
-        ])
+         NSLayoutConstraint.activate([
+         self.centerXAnchor.constraint(equalTo: self.superview!.leadingAnchor, constant: xOffset),
+         self.centerYAnchor.constraint(equalTo: self.superview!.topAnchor, constant: yOffset),
+         ])
          */
         storedCenter = position
         center = storedCenter
@@ -335,7 +332,7 @@ import UIKit
         storedCenter = center
         layoutChanges.removeLast()
     }
-
+    
     @objc public func adjustTransparency(alpha: CGFloat){
         if alpha != 0 {
             self.backgroundAlpha = alpha
@@ -363,18 +360,18 @@ import UIKit
         
         // To resize the button, we must set this to false temporarily
         translatesAutoresizingMaskIntoConstraints = false
-                
+        
         // replace invalid factor values
         if self.widthFactor == 0 {self.widthFactor = 1.0}
         if self.heightFactor == 0 {self.heightFactor = 1.0}
         
         /*
-        NSLayoutConstraint.activate([
-            self.centerXAnchor.constraint(equalTo: self.superview!.leadingAnchor, constant: storedLocation.x),
-            self.centerYAnchor.constraint(equalTo: self.superview!.topAnchor, constant: storedLocation.y)])
+         NSLayoutConstraint.activate([
+         self.centerXAnchor.constraint(equalTo: self.superview!.leadingAnchor, constant: storedLocation.x),
+         self.centerYAnchor.constraint(equalTo: self.superview!.topAnchor, constant: storedLocation.y)])
          */
         
-
+        
         // Constraints for resizing
         self.changeAndActivateContraints()
         
@@ -391,14 +388,14 @@ import UIKit
         self.backgroundColor = UIColor(white: 0.2, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
         var borderAlpha = realBackgroundAlpha * 1.01
         if widgetType == WidgetTypeEnum.touchPad {
-           minimumBorderAlpha = 0.0
+            minimumBorderAlpha = 0.0
         }
         if borderAlpha < minimumBorderAlpha {
             borderAlpha = minimumBorderAlpha
         }
         defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
         self.layer.borderColor = defaultBorderColor
-
+        
         if widgetType == WidgetTypeEnum.touchPad {
             self.backgroundColor = UIColor.clear // make touchPad transparent
             self.layer.borderColor = UIColor(white: 0.2, alpha: borderAlpha - 0.15).cgColor // reduced border alpha for touchPad
@@ -446,7 +443,7 @@ import UIKit
             self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/170 : self.widthFactor;
             self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor)/150 : self.heightFactor;
         }
-
+        
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10), // set up label size contrain within UIView
             label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
@@ -476,7 +473,7 @@ import UIKit
         
         self.layer.cornerRadius = 16
         self.layer.borderWidth = self.borderWidth
-
+        
         self.tweakAlpha()
         
         if self.shape == "default" || self.shape.isEmpty {
@@ -497,11 +494,11 @@ import UIKit
                 label.text = self.buttonLabel
             }
         }
-
+        
         if CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
             self.layer.borderWidth = 0
         }
-
+        
         if self.shape == "round" {
             //setup round buttons
             self.layer.cornerRadius = self.frame.width/2
@@ -512,7 +509,7 @@ import UIKit
         if self.shape == "square" || self.shape == "largeSquare" {
             //just do nothing here
         }
-
+        
         
         // self.layer.shadowColor = UIColor.clear.cgColor
         // self.layer.shadowRadius = 8
@@ -551,10 +548,10 @@ import UIKit
         indicatorBorder.borderColor = UIColor.clear.cgColor
         
         self.layer.superlayer?.addSublayer(indicatorBorder)
-
+        
         return indicatorBorder
     }
-
+    
     private func showl3r3Indicator(){
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
@@ -571,7 +568,7 @@ import UIKit
             vibrationGenerator.impactOccurred()
         }
     }
-
+    
     
     //================================================================================================
     //Indicator overlay for on-screen game controller left or right sticks (non-vector mode)
@@ -585,7 +582,7 @@ import UIKit
         // stickBallLayer.shadowColor = stickBallLayer.strokeColor
         CATransaction.commit()
     }
-
+    
     private func handleStickBallLeavingBorder(){
         stickBallLayer.lineWidth = 0
         stickBallLayer.shadowOffset = CGSize(width: 0.5, height: 0.5)
@@ -649,13 +646,13 @@ import UIKit
         
         CATransaction.commit()
     }
-
+    
     
     private func createStickBall() -> CAShapeLayer {
         // Create a CAShapeLayer
         let stickBallLayer = CAShapeLayer()
         self.layer.superlayer?.addSublayer(stickBallLayer)
-                
+        
         // Set the stroke color and width (border of the circle)
         stickBallLayer.strokeColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 1.0).cgColor
         //stickBallLayer.
@@ -668,16 +665,16 @@ import UIKit
         stickBallLayer.fillColor = stickBallColor  // Light fill with some transparency
         
         stickBallLayer.isHidden = true
-                
+        
         return stickBallLayer
     }
-
+    
     private func showStickBall(at center: CGPoint) {
         let path = UIBezierPath(arcCenter: center, radius: 8, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
         
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-
+        
         // Create a CAShapeLayer
         self.stickBallLayer.path = path.cgPath  // Assign the circular path to the shape layer
         self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
@@ -685,7 +682,7 @@ import UIKit
         
         CATransaction.commit()
     }
-
+    
     
     @objc public func updateStickIndicator(){
         CATransaction.begin()
@@ -716,26 +713,21 @@ import UIKit
         CATransaction.setDisableActions(true)
         handleStickBallLeavingBorder()
         CATransaction.commit()
-
+        
         CATransaction.begin()
-        // CATransaction.setDisableActions(true)
         CATransaction.setAnimationDuration(0.15)
         self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
         CATransaction.setCompletionBlock {
-            DispatchQueue.global().async {
-                // 后台执行耗时操作
-                usleep(200000)
-                DispatchQueue.main.async { // switch to main thread to update UI
-                    if !self.touchBegan {
-                        CATransaction.begin()
-                        CATransaction.setDisableActions(true)
-                        self.crossMarkLayer.isHidden = true
-                        self.stickBallLayer.isHidden = true
-                        CATransaction.commit()
-                    }
+            // 动画结束后执行的代码
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if !self.touchBegan {
+                    CATransaction.begin()
+                    CATransaction.setDisableActions(true)
+                    self.crossMarkLayer.isHidden = true
+                    self.stickBallLayer.isHidden = true
+                    CATransaction.commit()
                 }
             }
-            // 动画结束后执行的代码
         }
         CATransaction.commit()
     }
@@ -750,7 +742,7 @@ import UIKit
         // Create a circular path using UIBezierPath
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-
+        
         let path = UIBezierPath(arcCenter: point, radius: 10, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
         
         // Create a CAShapeLayer
@@ -811,7 +803,7 @@ import UIKit
         
         // show the indicator based on the touchBeganLocation
         indicatorLayer.position = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
-
+        
         if vibrationOn {
             vibrationGenerator.prepare()
             vibrationGenerator.impactOccurred()
@@ -849,8 +841,8 @@ import UIKit
         
         if pressedButtonMask != previousButtonMask {
             if(pressedButtonMask & Direction.up.rawValue == Direction.up.rawValue) {
-            showLrudDirectionIndicator(with: upIndicator)
-            switch touchPadString {
+                showLrudDirectionIndicator(with: upIndicator)
+                switch touchPadString {
                 case "WASDPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_DOWN), 0)
                 case "ARROWPAD": LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_DOWN), 0)
                 case "DPAD": self.onScreenControls.pressDownControllerButton(UP_FLAG)
@@ -939,66 +931,65 @@ import UIKit
             // Logging the press event
             NSLog("Sending left mouse button press")
             LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
-
+            
             // Wait 200 ms to simulate a real button press
-            usleep(UInt32(self.QUICK_TAP_TIME_INTERVAL * 1000000))
-
-            // If quick tap is not detected, release the button
-            if !self.quickDoubleTapDetected {
-                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
-                // NSLog("double click: first long click release")
+            DispatchQueue.global().asyncAfter(deadline: .now() + self.QUICK_TAP_TIME_INTERVAL) {
+                // If quick tap is not detected, release the button
+                if !self.quickDoubleTapDetected {
+                    LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+                    // NSLog("double click: first long click release")
+                }
+                else{NSLog("Left mouse button release cancelled, keep pressing down, turning into dragging...")}
+                // Don't release the button if we're still dragging, this will prevent the dragging from being interrupted.
             }
-            else{NSLog("Left mouse button release cancelled, keep pressing down, turning into dragging...")}
-            // Don't release the button if we're still dragging, this will prevent the dragging from being interrupted.
         }
     }
-
+    
     private func sendShortMouseLeftButtonClickEvent() {
-        DispatchQueue.global(qos: .userInteractive).async {
-            NSLog("double click: sending short click")
-            usleep(UInt32(50 * 1000))
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
             LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
-            usleep(UInt32(50 * 1000))
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+            }
         }
     }
     
     private func sendMouseRightButtonClickEvent() {
-        DispatchQueue.global(qos: .userInteractive).async {
-            usleep(UInt32(50 * 1000))
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
             LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_RIGHT)
-            usleep(UInt32(50 * 1000))
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_RIGHT)
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_RIGHT)
+            }
         }
     }
     
     //mousepad-trackball behavior========================================================
-     private func startTrackballMomentum() {
-         stopTrackballMomentum()
-
-         trackballDecelerationTimer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { [weak self] _ in
-             guard let self = self else { return }
-
-             LiSendMouseMoveEvent(
-                 Int16(truncatingIfNeeded: Int(self.trackballVelocity.x)),
-                 Int16(truncatingIfNeeded: Int(self.trackballVelocity.y))
-             )
-
-             self.trackballVelocity.x *= self.trackballDecelerationRate
-             self.trackballVelocity.y *= self.trackballDecelerationRate
-
-             if abs(self.trackballVelocity.x) < self.trackballVelocityThreshold &&
+    private func startTrackballMomentum() {
+        stopTrackballMomentum()
+        
+        trackballDecelerationTimer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            
+            LiSendMouseMoveEvent(
+                Int16(truncatingIfNeeded: Int(self.trackballVelocity.x)),
+                Int16(truncatingIfNeeded: Int(self.trackballVelocity.y))
+            )
+            
+            self.trackballVelocity.x *= self.trackballDecelerationRate
+            self.trackballVelocity.y *= self.trackballDecelerationRate
+            
+            if abs(self.trackballVelocity.x) < self.trackballVelocityThreshold &&
                 abs(self.trackballVelocity.y) < self.trackballVelocityThreshold {
-                 self.stopTrackballMomentum()
-             }
-         }
-     }
-
-     private func stopTrackballMomentum() {
-         trackballDecelerationTimer?.invalidate()
-         trackballDecelerationTimer = nil
-     }
-
+                self.stopTrackballMomentum()
+            }
+        }
+    }
+    
+    private func stopTrackballMomentum() {
+        trackballDecelerationTimer?.invalidate()
+        trackballDecelerationTimer = nil
+    }
+    
     
     //==== Button actions =============================================
     
@@ -1138,7 +1129,7 @@ import UIKit
         default:break
         }}
     }
-
+    
     private func sendOscButtonUpEvent(oscString: String){
         let buttonFlag = CommandManager.oscButtonMappings[oscString]
         if buttonFlag != 0 {self.onScreenControls.releaseControllerButton(buttonFlag!)}
@@ -1151,7 +1142,7 @@ import UIKit
         }}
     }
     
-//==============================================================================
+    //==============================================================================
     private func sendComboButtonsDownEvent(comboStrings: [String]) {
         DispatchQueue.global(qos: .userInteractive).async {
             for comboString in comboStrings {
@@ -1170,7 +1161,7 @@ import UIKit
             }
         }
     }
-
+    
     private func sendComboButtonsUpEvent(comboStrings: [String]) {
         DispatchQueue.global(qos: .userInteractive).async {
             for comboString in comboStrings {
@@ -1190,14 +1181,18 @@ import UIKit
         }
     }
     
-//==============================================================================
+    //==============================================================================
     // Touch event handling
+    
+    private func getAllSpawnedTouchesCount(with event: UIEvent?)->Int{
+        return event?.allTouches?.filter({ $0.view == self }).count ?? 0
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = true
         self.firstTouchMoved = false
         super.touchesBegan(touches, with: event)
-        // self.isMultipleTouchEnabled = self.touchPadString == "MOUSEPAD" // only enable multi-touch in mousePad mode
-        self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
+        self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button || self.touchPadString == "MOUSEPAD";
 
         if !OnScreenWidgetView.editMode && self.touchPadString == "TRACKBALL" {
             stopTrackballMomentum()
@@ -1215,8 +1210,8 @@ import UIKit
             self.latestTouchLocation = touchBeganLocation
         }
                 
-        let allCapturedTouchesCount = event?.allTouches?.filter({ $0.view == self }).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
-        if allCapturedTouchesCount == 2 {
+        let allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
+        if allSpawnedTouchesCount == 2 {
             self.twoTouchesDetected = true
         }
         
@@ -1244,7 +1239,7 @@ import UIKit
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "DPAD", "WASDPAD", "ARROWPAD":
-                    if allCapturedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
+                    if allSpawnedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                         DispatchQueue.global(qos: .userInteractive).async {
@@ -1261,7 +1256,7 @@ import UIKit
                     break
                 }
                 
-                if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
+                if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
                     switch mouseButtonAction{
                     case .leftButtonDown:
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
@@ -1474,8 +1469,10 @@ import UIKit
             switch self.touchPadString{
             case "MOUSEPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.updateTouchLocation(touch: touches.first!)
-                    LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(self.deltaX * 1.7 * self.sensitivityFactorX)), Int16(truncatingIfNeeded: Int(self.deltaY * 1.7 * self.sensitivityFactorY)))
+                    if self.getAllSpawnedTouchesCount(with: event) == 1 {
+                        self.updateTouchLocation(touch: touches.first!)
+                        LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(self.deltaX * 1.7 * self.sensitivityFactorX)), Int16(truncatingIfNeeded: Int(self.deltaY * 1.7 * self.sensitivityFactorY)))
+                    }
                 }
                 break
             case "TRACKBALL":
@@ -1575,7 +1572,7 @@ import UIKit
         
         if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && twoTouchesDetected && touches.count == allCapturedTouchesCount { // need to enable multi-touch first
             // touches.count == allCapturedTouchesCount means allfingers are lifting
-            self.sendMouseRightButtonClickEvent()
+            if(self.mouseButtonAction == MouseButtonAction.hovering) {self.sendMouseRightButtonClickEvent()}
             twoTouchesDetected = false
         }
         
