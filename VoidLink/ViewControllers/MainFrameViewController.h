@@ -25,6 +25,7 @@
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *settingsButton;
 #if !TARGET_OS_TV
 @property (nonatomic, assign) bool settingsExpandedInStreamView;
+@property (nonatomic, assign) bool sessionLaunchedWithAbsoluteTouch;
 @property (nonatomic, strong) HostCollectionViewController *hostCollectionVC;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigationItem;
 
