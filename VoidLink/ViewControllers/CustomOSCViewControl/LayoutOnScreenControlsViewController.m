@@ -795,12 +795,12 @@
     
     [self.widgetSizeSlider setValue: self->selectedWidgetView.deNormalizedWidthFactor];
     [self autoFitLabel:self.widgetSizeLabel];
-    [self widgetSizeSliderMoved:self.widgetSizeSlider];
-    
+    [self.widgetSizeLabel setText:[LocalizationHelper localizedStringForKey:@"Size: %.2f", self->selectedWidgetView.deNormalizedWidthFactor]];
+
     [self.widgetHeightSlider setValue: self->selectedWidgetView.deNormalizedHeightFactor];
     [self autoFitLabel:self.widgetHeightLabel];
-    [self widgetHeightSliderMoved:self.widgetHeightSlider];
-    
+    [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
+
     [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
     [self autoFitLabel:self.widgetAlphaLabel];
     [self widgetAlphaSliderMoved:self.widgetAlphaSlider];
