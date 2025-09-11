@@ -825,11 +825,19 @@ BOOL isCustomResolution(int resolutionSelected) {
     view.backgroundColor = [UIColor colorWithRed:0.5 green:0.5 blue:1 alpha:0.35];
 }
 
-- (void)highlightedBackgroundForView:(UIView* )view{
-    view.layer.cornerRadius = 6;
-    view.layer.masksToBounds = YES;
-    view.clipsToBounds = YES;
-    view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
+- (void)clearBackgroundColorForView:(UIView* )view animateWithDuration:(CGFloat)duration{
+    [UIView animateWithDuration:duration animations:^{
+        view.backgroundColor = [UIColor clearColor];
+    }];
+}
+
+- (void)highlightedBackgroundForView:(UIView* )view animateWithDuration:(CGFloat)duration{
+    [UIView animateWithDuration:duration animations:^{
+        view.layer.cornerRadius = 6;
+        view.layer.masksToBounds = YES;
+        view.clipsToBounds = YES;
+        view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
+    }];
 }
 
 
@@ -847,7 +855,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                 settingStackWillBeRelocatedToLowestPosition = true;
             }
             else{
-                [self highlightedBackgroundForView:currentStack];
+                [self highlightedBackgroundForView:currentStack animateWithDuration:0];
                 snapshot.backgroundColor = [UIColor clearColor];
             }
         }
@@ -905,7 +913,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(currentSettingsMenuMode == AllSettings &&gesture.state == UIGestureRecognizerStateBegan) {
         [self findCapturedStackByTouchLocation:locationInParentStack];
         if(capturedStack == nil) return;
-        [self highlightedBackgroundForView:capturedStack];
+        [self highlightedBackgroundForView:capturedStack animateWithDuration:0];
         UIAlertController* actionSheet = [self prepareAddToFavoriteActionSheet];
         actionSheet.popoverPresentationController.sourceView = capturedStack;
         [self presentViewController:actionSheet animated:YES completion:nil];
@@ -1797,7 +1805,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
     // Hide frame queue size for Off and Legacy modes
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
-    [videoSection updateViewForFoldState];
 
     if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
@@ -1806,7 +1813,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.enableGraphsSwitch setEnabled:sender.selectedSegmentIndex == FramePacingModeQueue];
     [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.performanceGraphStack];
-    [otherSection updateViewForFoldState];
 
     /*
     if (sender.selectedSegmentIndex == FramePacingModeLegacy) {
@@ -1978,24 +1984,37 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
-
-    [touchAndControlSection updateViewForFoldState];
 }
 
 - (void)emulatedControllerTypeChanged:(UISegmentedControl* )sender{
     [self setHidden:sender.selectedSegmentIndex == 0 forStack:_gyroModeStack];
     [self setHidden:sender.selectedSegmentIndex == 0 forStack:_gyroSensitivityStack];
-    [touchAndControlSection updateViewForFoldState];
 }
+
 
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack{
     // CGFloat previousSpacing = stack.spacing;
     if(hidden){
         stack.hidden = YES;
-        [hiddenStacks addObject:stack];
+        [self->hiddenStacks addObject:stack];
+        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+            [section updateViewForFoldState];
+        }
     }
     else{
         stack.hidden = NO;
+        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+            [section updateViewForFoldState];
+        }
+        if([hiddenStacks containsObject:stack]){
+            [self highlightedBackgroundForView:stack animateWithDuration:0.2];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
+                           dispatch_get_main_queue(), ^{
+                [self clearBackgroundColorForView:stack animateWithDuration:0.2];
+            });
+        }
         [hiddenStacks removeObject:stack];
     }
 }
@@ -2008,7 +2027,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:!sender.isOn forStack:self.onScreenWidgetStack];
     [self setHidden:!sender.isOn forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
-    [touchAndControlSection updateViewForFoldState];
 }
 
 - (void) updateBitrate {
