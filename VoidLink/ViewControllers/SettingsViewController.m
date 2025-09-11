@@ -686,9 +686,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
 
-    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addDynamicLabelForStack:self.graphOpacityStack];
-
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     
@@ -702,7 +699,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
-    
+    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+    [self addDynamicLabelForStack:self.graphOpacityStack];
+
     [experimentalSection addToParentStack:_parentStack];
     [experimentalSection setExpanded:YES];
 }
