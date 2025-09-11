@@ -73,24 +73,25 @@
                  gyroSensitivity:(CGFloat)gyroSensitivity
           touchMoveEventInterval:(NSInteger)touchMoveEventInterval
       reverseMouseWheelDirection:(BOOL)reverseMouseWheelDirection
-                  asyncNativeTouchPriority:(NSInteger)asyncNativeTouchPriority
+        asyncNativeTouchPriority:(NSInteger)asyncNativeTouchPriority
        liftStreamViewForKeyboard:(BOOL)liftStreamViewForKeyboard
              showKeyboardToolbar:(BOOL)showKeyboardToolbar
                    optimizeGames:(BOOL)optimizeGames
                  multiController:(BOOL)multiController
+               buttonVisualFeedback:(BOOL)buttonVisualFeedback
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
-                       redirectMic:(BOOL)redirectMic
+                     redirectMic:(BOOL)redirectMic
                   preferredCodec:(uint32_t)preferredCodec
-                       enableYUV444:(BOOL)enableYUV444
+                    enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
                // absoluteTouchMode:(BOOL)absoluteTouchMode
                        touchMode:(NSInteger)touchMode
                statsOverlayLevel:(NSInteger)statsOverlayLevel
-                    statsOverlayEnabled:(BOOL)statsOverlayEnabled
-                   unlockDisplayOrientation:(BOOL)unlockDisplayOrientation
+             statsOverlayEnabled:(BOOL)statsOverlayEnabled
+        unlockDisplayOrientation:(BOOL)unlockDisplayOrientation
               resolutionSelected:(NSInteger)resolutionSelected
              externalDisplayMode:(NSInteger)externalDisplayMode
            localMousePointerMode:(NSInteger)localMousePointerMode
@@ -98,7 +99,7 @@
                     enableGraphs:(BOOL)enableGraphs
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
-                framePacingMode:(NSInteger)framePacingMode
+                 framePacingMode:(NSInteger)framePacingMode
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -126,6 +127,7 @@
         settingsToSave.showKeyboardToolbar = showKeyboardToolbar;
         settingsToSave.optimizeGames = optimizeGames;
         settingsToSave.multiController = multiController;
+        settingsToSave.buttonVisualFeedback = buttonVisualFeedback;
         settingsToSave.swapABXYButtons = swapABXYButtons;
         settingsToSave.playAudioOnPC = audioOnPC;
         settingsToSave.redirectMic = redirectMic;

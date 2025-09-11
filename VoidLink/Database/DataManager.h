@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, TouchMode) {
     RelativeTouch,
     NativeTouch,
     AbsoluteTouch,
+    TouchDisabled,
     NativeTouchOnly
 };
 
@@ -77,6 +78,7 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
              showKeyboardToolbar:(BOOL)showKeyboardToolbar
                    optimizeGames:(BOOL)optimizeGames
                  multiController:(BOOL)multiController
+               buttonVisualFeedback:(BOOL)buttonVisualFeedback
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
                        redirectMic:(BOOL)redirectMic

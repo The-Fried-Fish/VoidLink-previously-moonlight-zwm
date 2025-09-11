@@ -5514,24 +5514,24 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Touchpad: Dragging works exactly like on Windows laptop touchpad. A quick double-tap, starting from the second tap, enters drag mode.\n\n- Native Touch: Aka multi-touch passthrough, not supported on macOS.\n\n- Absolute Touch: Provides a touchscreen-like experience on macOS."
+            "value" : "- Touchpad: Dragging works exactly like on Windows laptop touchpad. A quick double-tap, starting from the second tap, enters drag mode.\n\n- Native Touch: Aka multi-touch passthrough, not supported on macOS.\n\n- Single Point: Provides a touchscreen-like experience on macOS."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "- 触控板: 拖移方式与Windows笔记本电脑触控板相同, 快速双击的第2下开始进入拖动状态.\n\n- 多点触控: 不支持macOS.\n\n- 单点鼠标: 可为macOS提供类触屏体验."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         }

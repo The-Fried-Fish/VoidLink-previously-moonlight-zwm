@@ -115,7 +115,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleTip.numberOfLines = 1;
     keyboardToggleTip.layer.cornerRadius = 10;
     keyboardToggleTip.clipsToBounds = true;
-    NSLog(@"setup streamView %f", CACurrentMediaTime());
     
     // if(settings.touchMode.intValue == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
     // else [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
@@ -144,7 +143,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self];
             keyboardToggleRecognizer.immediateTriggering = true; //triggers signal in touchesBegan callback stage
             break;
-            
+        case TouchDisabled:
+            self->touchHandler = nil;
+            keyboardToggleRecognizer.immediateTriggering = false;
+            break;
+
         default:
             break;
     }
@@ -416,8 +419,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
-- (bool) isOnScreenButtonEnabled{
-    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch) && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+- (bool) isOnScreenWidgetEnabled{
+    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch || settings.touchMode.intValue == TouchDisabled) && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void) reloadOnScreenControlsRealtimeWith:(ControllerSupport*)controllerSupport
@@ -474,12 +477,15 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
     
-    if(![self isOnScreenButtonEnabled]) return;
+    if(![self isOnScreenWidgetEnabled]) return;
+    
+    OnScreenWidgetView.buttonVisualFeedbackEnabled = settings.buttonVisualFeedback;
     
     OSCProfilesManager* profilesManager = [OSCProfilesManager sharedManager: self.bounds];
     OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
 
     if(!OnScreenWidgetView.editMode){ // in edit mode, keyboard widget view will be updated within layoutool view controller.
+        
         for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
             OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
             if(buttonState.buttonType == CustomOnScreenWidget){

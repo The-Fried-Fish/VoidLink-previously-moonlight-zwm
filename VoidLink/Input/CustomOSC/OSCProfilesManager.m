@@ -373,7 +373,7 @@ static CGRect layoutViewBounds;
     for(OnScreenWidgetView* widgetView in OnScreenWidgetViews){
         CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.center];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
-        buttonState.alias = widgetView.buttonLabel;
+        buttonState.alias = widgetView.widgetLabel;
         buttonState.widthFactor = [self normalizeSizeWidthFactor:widgetView];
         NSLog(@"logging widthFactor %f", buttonState.widthFactor);
         buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView];

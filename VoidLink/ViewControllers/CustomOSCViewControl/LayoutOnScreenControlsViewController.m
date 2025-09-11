@@ -541,7 +541,7 @@
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
-        textField.text = self->selectedWidgetView.buttonLabel;
+        textField.text = self->selectedWidgetView.widgetLabel;
     }];
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -749,7 +749,7 @@
     [self.currentProfileLabel setText:
      [LocalizationHelper localizedStringForKey:@"  Profile: %@     Widget: %@",
       [profilesManager getSelectedProfile].name,
-      selectedWidgetView.buttonLabel]];
+      selectedWidgetView.widgetLabel]];
     
     self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 ? 1.0 : 0.3;
     
@@ -763,7 +763,19 @@
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
         
-    self.sensitivityXStack.hidden = self.sensitivityYStack.hidden = !showSensitivityFactorStack;
+    self.sensitivityXStack.hidden = !showSensitivityFactorStack || [selectedWidgetView.cmdString containsString:@"MOUSEWHEEL"] || [selectedWidgetView.cmdString containsString:@"WHEEL"];
+    self.sensitivityYStack.hidden = !showSensitivityFactorStack;
+    if(showSensitivityFactorStack){
+        if([selectedWidgetView.cmdString containsString:@"MOUSEWHEEL"] || [selectedWidgetView.cmdString containsString:@"WHEEL"]){
+            [self.sensitivityYSlider setMinimumValue:-4];
+            [self.sensitivityYSlider setMaximumValue:4];
+        }
+        else{
+            [self.sensitivityYSlider setMinimumValue:0];
+            [self.sensitivityYSlider setMaximumValue:8];
+        }
+    }
+    
     self.stickIndicatorOffsetStack.hidden = !showStickIndicatorOffsetStack;
     self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
@@ -795,12 +807,12 @@
     
     [self.widgetSizeSlider setValue: self->selectedWidgetView.deNormalizedWidthFactor];
     [self autoFitLabel:self.widgetSizeLabel];
-    [self widgetSizeSliderMoved:self.widgetSizeSlider];
-    
+    [self.widgetSizeLabel setText:[LocalizationHelper localizedStringForKey:@"Size: %.2f", self->selectedWidgetView.deNormalizedWidthFactor]];
+
     [self.widgetHeightSlider setValue: self->selectedWidgetView.deNormalizedHeightFactor];
     [self autoFitLabel:self.widgetHeightLabel];
-    [self widgetHeightSliderMoved:self.widgetHeightSlider];
-    
+    [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
+
     [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
     [self autoFitLabel:self.widgetAlphaLabel];
     [self widgetAlphaSliderMoved:self.widgetAlphaSlider];

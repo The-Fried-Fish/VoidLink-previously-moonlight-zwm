@@ -818,31 +818,61 @@
       }
     },
     "A9r-dE-rT4.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; A9r-dE-rT4.segmentTitles[2] = \"Absolute Touch\"; ObjectID = \"A9r-dE-rT4\";",
+      "comment" : "Class = \"UISegmentedControl\"; A9r-dE-rT4.segmentTitles[2] = \"Single Point\"; ObjectID = \"A9r-dE-rT4\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Absolute Touch"
+            "value" : "Single Point"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "单点鼠标"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "單點滑鼠"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "單點滑鼠"
+          }
+        }
+      }
+    },
+    "A9r-dE-rT4.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; A9r-dE-rT4.segmentTitles[3] = \"Disabled\"; ObjectID = \"A9r-dE-rT4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
           }
         }
       }
@@ -2895,6 +2925,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "顯示本地軟鍵盤工具列"
+          }
+        }
+      }
+    },
+    "SQK-JJ-izW.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Button Visual Feedback\"; ObjectID = \"SQK-JJ-izW\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button Visual Feedback"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "按键视觉反馈"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "按鍵視覺回饋"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "按鍵視覺回饋"
           }
         }
       }

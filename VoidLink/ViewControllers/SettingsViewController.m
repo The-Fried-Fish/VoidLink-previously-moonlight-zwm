@@ -602,7 +602,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
 
@@ -620,7 +619,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.swapAbaxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
+    [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
+    [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
@@ -685,9 +685,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
 
-    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addDynamicLabelForStack:self.graphOpacityStack];
-
     [otherSection addToParentStack:_parentStack];
     [otherSection setExpanded:YES];
     
@@ -701,7 +698,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
-    
+    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+    [self addDynamicLabelForStack:self.graphOpacityStack];
+
     [experimentalSection addToParentStack:_parentStack];
     [experimentalSection setExpanded:YES];
 }
@@ -824,11 +823,19 @@ BOOL isCustomResolution(int resolutionSelected) {
     view.backgroundColor = [UIColor colorWithRed:0.5 green:0.5 blue:1 alpha:0.35];
 }
 
-- (void)highlightedBackgroundForView:(UIView* )view{
-    view.layer.cornerRadius = 6;
-    view.layer.masksToBounds = YES;
-    view.clipsToBounds = YES;
-    view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
+- (void)clearBackgroundColorForView:(UIView* )view animateWithDuration:(CGFloat)duration{
+    [UIView animateWithDuration:duration animations:^{
+        view.backgroundColor = [UIColor clearColor];
+    }];
+}
+
+- (void)highlightedBackgroundForView:(UIView* )view animateWithDuration:(CGFloat)duration{
+    [UIView animateWithDuration:duration animations:^{
+        view.layer.cornerRadius = 6;
+        view.layer.masksToBounds = YES;
+        view.clipsToBounds = YES;
+        view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
+    }];
 }
 
 
@@ -846,7 +853,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                 settingStackWillBeRelocatedToLowestPosition = true;
             }
             else{
-                [self highlightedBackgroundForView:currentStack];
+                [self highlightedBackgroundForView:currentStack animateWithDuration:0];
                 snapshot.backgroundColor = [UIColor clearColor];
             }
         }
@@ -904,7 +911,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(currentSettingsMenuMode == AllSettings &&gesture.state == UIGestureRecognizerStateBegan) {
         [self findCapturedStackByTouchLocation:locationInParentStack];
         if(capturedStack == nil) return;
-        [self highlightedBackgroundForView:capturedStack];
+        [self highlightedBackgroundForView:capturedStack animateWithDuration:0];
         UIAlertController* actionSheet = [self prepareAddToFavoriteActionSheet];
         actionSheet.popoverPresentationController.sourceView = capturedStack;
         [self presentViewController:actionSheet animated:YES completion:nil];
@@ -1500,7 +1507,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
     [self.multiControllerSwitch setOn:currentSettings.multiController];
     [self.swapAbxySwitch setOn:currentSettings.swapABXYButtons];
-    
+    [self.buttonVisualFeedbackSwitch setOn:currentSettings.buttonVisualFeedback];
+
     [self.gyroModeSelector setSelectedSegmentIndex:currentSettings.gyroMode.intValue];
     [self.gyroSensitivitySlider setValue: (uint16_t)(currentSettings.gyroSensitivity.floatValue * 100) animated:YES]; // Load old setting.
     [self.gyroSensitivitySlider addTarget:self action:@selector(gyroSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
@@ -1718,7 +1726,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (bool)isNotNativeTouchOnly{
-    return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector.selectedSegmentIndex == NativeTouch) || self.touchModeSelector.selectedSegmentIndex == RelativeTouch || self.touchModeSelector.selectedSegmentIndex == AbsoluteTouch;
+    return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector.selectedSegmentIndex == NativeTouch) || self.touchModeSelector.selectedSegmentIndex != NativeTouch;
 }
 
 - (void)handleOswGestureChange{
@@ -1795,7 +1803,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
     // Hide frame queue size for Off and Legacy modes
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
-    [videoSection updateViewForFoldState];
 
     if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
@@ -1804,7 +1811,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.enableGraphsSwitch setEnabled:sender.selectedSegmentIndex == FramePacingModeQueue];
     [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.performanceGraphStack];
-    [otherSection updateViewForFoldState];
 
     /*
     if (sender.selectedSegmentIndex == FramePacingModeLegacy) {
@@ -1974,26 +1980,39 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.mousePointerVelocityStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
-    [self setHidden:![self isNotNativeTouchOnly] forStack:self.swapAbaxyStack];
+    [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
-
-    [touchAndControlSection updateViewForFoldState];
 }
 
 - (void)emulatedControllerTypeChanged:(UISegmentedControl* )sender{
     [self setHidden:sender.selectedSegmentIndex == 0 forStack:_gyroModeStack];
     [self setHidden:sender.selectedSegmentIndex == 0 forStack:_gyroSensitivityStack];
-    [touchAndControlSection updateViewForFoldState];
 }
+
 
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack{
     // CGFloat previousSpacing = stack.spacing;
     if(hidden){
         stack.hidden = YES;
-        [hiddenStacks addObject:stack];
+        [self->hiddenStacks addObject:stack];
+        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+            [section updateViewForFoldState];
+        }
     }
     else{
         stack.hidden = NO;
+        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+            [section updateViewForFoldState];
+        }
+        if([hiddenStacks containsObject:stack]){
+            [self highlightedBackgroundForView:stack animateWithDuration:0.2];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
+                           dispatch_get_main_queue(), ^{
+                [self clearBackgroundColorForView:stack animateWithDuration:0.2];
+            });
+        }
         [hiddenStacks removeObject:stack];
     }
 }
@@ -2003,14 +2022,10 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
-    //self.onScreenWidgetStack.hidden = !sender.isOn;
-    [self setHidden:!sender.isOn forStack:_onScreenWidgetStack];
-    //[self setHidden:!sender.isOn forStack:_swapAbaxyStack];
+    [self setHidden:!sender.isOn forStack:self.onScreenWidgetStack];
+    [self setHidden:!sender.isOn forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
-    //self.swapAbaxyStack.hidden = !sender.isOn;
-    [touchAndControlSection updateViewForFoldState];
 }
-
 
 - (void) updateBitrate {
     NSInteger fps = [self getChosenFrameRate];
@@ -2395,6 +2410,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL optimizeGames = self.optimizeGamesSwitch.isOn;
     BOOL multiController = self.multiControllerSwitch.isOn;
     BOOL swapABXYButtons = self.swapAbxySwitch.isOn;
+    BOOL buttonVisualFeedback = self.buttonVisualFeedbackSwitch.isOn;
     NSInteger gyroMode = self.gyroModeSelector.selectedSegmentIndex;
     NSInteger emulatedControllerType = [self segmentIndexToControllerType:self.emulatedControllerTypeSelector.selectedSegmentIndex]; //self.emulatedControllerTypeSelector.selectedSegmentIndex;
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
@@ -2442,9 +2458,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                  showKeyboardToolbar:showKeyboardToolbar
                        optimizeGames:optimizeGames
                      multiController:multiController
+                buttonVisualFeedback:buttonVisualFeedback
                      swapABXYButtons:swapABXYButtons
                            audioOnPC:audioOnPC
-                           redirectMic:redirectMic
+                         redirectMic:redirectMic
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP
