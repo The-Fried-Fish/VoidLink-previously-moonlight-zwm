@@ -602,7 +602,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
 

@@ -763,7 +763,19 @@
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
         
-    self.sensitivityXStack.hidden = self.sensitivityYStack.hidden = !showSensitivityFactorStack;
+    self.sensitivityXStack.hidden = !showSensitivityFactorStack || [selectedWidgetView.cmdString containsString:@"MOUSEWHEEL"] || [selectedWidgetView.cmdString containsString:@"WHEEL"];
+    self.sensitivityYStack.hidden = !showSensitivityFactorStack;
+    if(showSensitivityFactorStack){
+        if([selectedWidgetView.cmdString containsString:@"MOUSEWHEEL"] || [selectedWidgetView.cmdString containsString:@"WHEEL"]){
+            [self.sensitivityYSlider setMinimumValue:-4];
+            [self.sensitivityYSlider setMaximumValue:4];
+        }
+        else{
+            [self.sensitivityYSlider setMinimumValue:0];
+            [self.sensitivityYSlider setMaximumValue:8];
+        }
+    }
+    
     self.stickIndicatorOffsetStack.hidden = !showStickIndicatorOffsetStack;
     self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);

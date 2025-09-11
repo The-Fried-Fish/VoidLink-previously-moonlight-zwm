@@ -1238,7 +1238,7 @@ import UIKit
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "DPAD", "WASDPAD", "ARROWPAD":
+                case "DPAD", "WASDPAD", "ARROWPAD", "MOUSEWHEEL", "WHEEL":
                     if allSpawnedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
@@ -1508,6 +1508,9 @@ import UIKit
             case "DPAD", "WASDPAD", "ARROWPAD":
                 self.updateTouchLocation(touch: touches.first!)
                 handleLrudTouchMove()
+            case "MOUSEWHEEL","WHEEL":
+                self.updateTouchLocation(touch: touches.first!)
+                LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))
             default:
                 break
             }
