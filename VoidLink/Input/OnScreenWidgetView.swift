@@ -35,7 +35,7 @@ import UIKit
     
     @objc static public var editMode: Bool = false
     @objc static public var buttonVisualFeedbackEnabled: Bool = true
-    @objc public var buttonLabel: String
+    @objc public var widgetLabel: String
     @objc public var cmdString: String
     private var buttonString: String = ""
     private var touchPadString: String = ""
@@ -226,7 +226,7 @@ import UIKit
             print("comboButtonString: \(comboButtonString)")
         }
         
-        self.buttonLabel = buttonLabel
+        self.widgetLabel = buttonLabel
         self.shape = shape
         self.label = UILabel()
         // self.originalBackgroundColor = UIColor(white: 0.2, alpha: 0.7)
@@ -457,7 +457,7 @@ import UIKit
     }
     
     private func setupView() {
-        label.text = self.buttonLabel
+        label.text = self.widgetLabel
         label.font = UIFont.boldSystemFont(ofSize: 19)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
@@ -489,9 +489,11 @@ import UIKit
             self.shape = "largeSquare" // override shape from user input
             if(self.borderWidth < 1) {self.layer.borderWidth = 1}
             else {self.layer.borderWidth = self.borderWidth}
-            label.text = "" // make touchPad display no text
             if OnScreenWidgetView.editMode { //display label in edit mode to make the pad more visible
-                label.text = self.buttonLabel
+                label.text = self.widgetLabel
+            }
+            else{
+                label.isHidden = self.widgetLabel.uppercased() == self.touchPadString // allow touchPad label to be display if it's different from touchPad cmdString
             }
         }
         

@@ -541,7 +541,7 @@
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
-        textField.text = self->selectedWidgetView.buttonLabel;
+        textField.text = self->selectedWidgetView.widgetLabel;
     }];
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -749,7 +749,7 @@
     [self.currentProfileLabel setText:
      [LocalizationHelper localizedStringForKey:@"  Profile: %@     Widget: %@",
       [profilesManager getSelectedProfile].name,
-      selectedWidgetView.buttonLabel]];
+      selectedWidgetView.widgetLabel]];
     
     self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 ? 1.0 : 0.3;
     
