@@ -213,7 +213,8 @@
                                         <segments>
                                             <segment title="Touchpad"/>
                                             <segment title="Native Touch"/>
-                                            <segment title="Absolute Touch"/>
+                                            <segment title="Single Point"/>
+                                            <segment title="Disabled"/>
                                         </segments>
                                         <color key="tintColor" systemColor="systemBrownColor"/>
                                         <color key="selectedSegmentTintColor" systemColor="linkColor"/>
@@ -241,309 +242,6 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="380" id="Yf1-gv-h0d"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="aP7-M9-psT" userLabel="asyncTouch stack">
-                                <rect key="frame" x="16" y="594" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Native Touch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2Bp-XZ-cCw">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="AXb-DO-LzB" userLabel="asyncNativeTouchPrioritySelector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="No"/>
-                                            <segment title="Yes"/>
-                                        </segments>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="q0h-IS-VR8"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="equalCentering" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="b1U-nD-gYE" userLabel="pointerVelocityDivider Stack">
-                                <rect key="frame" x="15" y="460" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Divider Position" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Qs9-iS-YoW" userLabel="touchPointerVelocityDividerPosition">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="100" id="AcZ-2i-GI4" userLabel="pointerVelocityModeDivider">
-                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                    </slider>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="RXd-vz-m6R"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="vdk-mK-ztu" userLabel="PointerVelocityFactor stack">
-                                <rect key="frame" x="15" y="524" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="egA-7n-Dpe" userLabel="touchPointerVelocityFactor">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" id="TVV-EU-Rw1" userLabel="touchPointerVelocityFactor">
-                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                    </slider>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="bsW-FT-A7X"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="iYl-5Z-ujb" userLabel="touchMoveEventInterval Stack">
-                                <rect key="frame" x="16" y="671" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Move Event Interval" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="FJv-HJ-UYJ" userLabel="touchMoveEventIntervalLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="150" minValue="0.0" maxValue="3600" id="4gD-tc-95I" userLabel="touchMoveEventIntervalSlider">
-                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                    </slider>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="F1i-tE-t0J"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="aQ8-4e-CQB" userLabel="mousePointerVelocity Stack">
-                                <rect key="frame" x="17" y="744" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mouse Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oPM-G6-u5O">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" id="Ei2-FJ-9oC" userLabel="mousePointerVelocityFactor">
-                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                    </slider>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="CnH-QX-ugs"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ziJ-RC-xkP" userLabel="onScreenWidget Stack">
-                                <rect key="frame" x="16" y="808" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="On-Screen Widgets   " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LGV-5y-piG">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="qSU-wh-tqA">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="Off"/>
-                                            <segment title="Simple"/>
-                                            <segment title="Full"/>
-                                            <segment title="Custom"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768741607666" green="0.61711704730987549" blue="0.99902987480163574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="RoD-rl-0Us"/>
-                                    <constraint firstAttribute="height" priority="999" constant="56.5" id="t3w-8N-xWr"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Tv6-pw-87l" userLabel="keyboardToggleFingerNum Stack">
-                                <rect key="frame" x="17" y="884" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Toggle Local Soft Keyboard" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nh6-cn-z23">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="kho-5R-daP" userLabel="localSoftKeyboardGestureSelector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <segments>
-                                            <segment title="3 Finger Tap"/>
-                                            <segment title="4 Finger Tap"/>
-                                            <segment title="5 Finger Tap"/>
-                                            <segment title="Disabled"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="1bX-IR-Vkj"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="kAD-mK-aP8" userLabel="gyroModeStack">
-                                <rect key="frame" x="15" y="973" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro Mode" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7tq-jU-C6l">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="aa5-3y-I4d" userLabel="gyroModeSelector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <segments>
-                                            <segment title="Off"/>
-                                            <segment title="Auto"/>
-                                            <segment title="Built-in"/>
-                                            <segment title="Controller"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="Lb7-hi-xph"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="T3L-Kz-2yA" userLabel="gyroSensitivityStack">
-                                <rect key="frame" x="15" y="1051" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9XL-xt-Q57">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" id="3Ge-IB-PBj" userLabel="mousePointerVelocityFactor">
-                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                    </slider>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="W3Y-QW-piG"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="mes-so-dfK" userLabel="liftStreamViewForKeyboard Stack">
-                                <rect key="frame" x="22" y="1239" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lift Stream View for Local Keyboard                                          " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="QYJ-84-bvc">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="MM5-O0-vK3" userLabel="liftStreamViewForKeyboardSelector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="No"/>
-                                            <segment title="Yes"/>
-                                        </segments>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="PUU-5U-2dC"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="tgA-05-vWV" userLabel="slideToSettingsScreenEdge Stack">
-                                <rect key="frame" x="20" y="1394" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open Settings in Streaming" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IvI-tw-APj">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Mm0-xf-9eh">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="Slide From Left Edge"/>
-                                            <segment title="Slide From Right Edge"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="WEi-Im-NuH"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="msN-pa-Kn3" userLabel="slideToToolboxScreenEdge Stack">
-                                <rect key="frame" x="20" y="1470" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open Toolbox in Streaming" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zp4-fA-IeL">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="yY7-Sf-Zes" userLabel="Command Sending Screen Edge Selector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <segments>
-                                            <segment title="Slide From Left Edge"/>
-                                            <segment title="Slide From Right Edge"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="UAl-Go-PQV"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="pN7-bs-8yu" userLabel="slideToSettingsDistance Stack">
-                                <rect key="frame" x="21" y="1544" width="380" height="55.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gesture Slide Distance" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pMN-6T-aYE" userLabel="Slide To Settings Distance UI Label">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="8p6-FP-UWP">
-                                        <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
-                                    </slider>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="w5M-ho-mWm"/>
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="YBu-VX-wpN" userLabel="externalDisplayMode Stack">
@@ -661,30 +359,6 @@
                                     <constraint firstAttribute="width" constant="380" id="7al-D7-HS5"/>
                                 </constraints>
                             </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="90g-DY-GKi" userLabel="showKeyboardToolbar Stack">
-                                <rect key="frame" x="20" y="1318" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Local Keyboard Toolbar                                                      " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="aup-5k-z6P">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="KJd-PE-5cS" userLabel="Show Local Keyboard Toolbar  Selector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="No"/>
-                                            <segment title="Yes"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="cHp-hJ-PUQ"/>
-                                </constraints>
-                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="5dA-cw-gOa" userLabel="unlockDisplayOrientation Stack">
                                 <rect key="frame" x="21" y="2421" width="380" height="56.5"/>
                                 <subviews>
@@ -765,42 +439,6 @@
                                     </switch>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="RrU-mx-9jP" userLabel="multiControllerStack">
-                                <rect key="frame" x="21" y="1611" width="280" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Multi-Controller Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SAQ-04-n4h" userLabel="Multi-Controller Mode">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8fR-vS-q3F" userLabel="multiControllerSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="pZs-Gv-ft8"/>
-                                        </constraints>
-                                    </switch>
-                                </subviews>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="EKY-6m-OBd" userLabel="softKeyboardToolbarStack">
-                                <rect key="frame" x="21" y="1650" width="280" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Soft Keyboard Toolbar" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QdG-9a-5AZ" userLabel="softKeyboardToolbarStack">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ztk-Xx-60P" userLabel="softKeyboardToolbarSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="z8D-ia-I3d"/>
-                                        </constraints>
-                                    </switch>
-                                </subviews>
-                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="qnG-5F-2YY" userLabel="audioConfig Stack">
                                 <rect key="frame" x="20" y="2150" width="380" height="56.5"/>
                                 <subviews>
@@ -823,29 +461,6 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="380" id="pkz-ek-bOk"/>
-                                </constraints>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackend Stack">
-                                <rect key="frame" x="20" y="1166" width="380" height="56.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rendering Mode (Experimental)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v8l-hf-kiR">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="53H-ST-OtY" userLabel="Rendering Mode Selector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="Balanced"/>
-                                            <segment title="Performance"/>
-                                        </segments>
-                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="50i-OF-DWd"/>
                                 </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" id="z5W-q6-Y1z" userLabel="backgroundSessionTimerStack">
@@ -891,24 +506,6 @@
                                 <constraints>
                                     <constraint firstAttribute="width" constant="380" id="G6i-GX-IiT"/>
                                 </constraints>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="2rP-Ui-wVU" userLabel="swapABXYStack">
-                                <rect key="frame" x="20" y="1121" width="280" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OXy-y4-yO4" userLabel="softKeyboardToolbarStack">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hv7-6b-rez" userLabel="swapABXYSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="IRh-Rr-kBF"/>
-                                        </constraints>
-                                    </switch>
-                                </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="12a-Wi-LlL" userLabel="pipStack">
                                 <rect key="frame" x="432" y="1860" width="280" height="31"/>
@@ -1030,6 +627,428 @@
                                     </switch>
                                 </subviews>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="aP7-M9-psT" userLabel="asyncTouch stack">
+                                <rect key="frame" x="16" y="566" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Native Touch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2Bp-XZ-cCw">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="AXb-DO-LzB" userLabel="asyncNativeTouchPrioritySelector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="No"/>
+                                            <segment title="Yes"/>
+                                        </segments>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="q0h-IS-VR8"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="equalCentering" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="b1U-nD-gYE" userLabel="pointerVelocityDivider Stack">
+                                <rect key="frame" x="15" y="432" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Divider Position" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Qs9-iS-YoW" userLabel="touchPointerVelocityDividerPosition">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="100" id="AcZ-2i-GI4" userLabel="pointerVelocityModeDivider">
+                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="RXd-vz-m6R"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="vdk-mK-ztu" userLabel="PointerVelocityFactor stack">
+                                <rect key="frame" x="15" y="496" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="egA-7n-Dpe" userLabel="touchPointerVelocityFactor">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" id="TVV-EU-Rw1" userLabel="touchPointerVelocityFactor">
+                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="bsW-FT-A7X"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="iYl-5Z-ujb" userLabel="touchMoveEventInterval Stack">
+                                <rect key="frame" x="16" y="643" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Move Event Interval" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="FJv-HJ-UYJ" userLabel="touchMoveEventIntervalLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="150" minValue="0.0" maxValue="3600" id="4gD-tc-95I" userLabel="touchMoveEventIntervalSlider">
+                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="F1i-tE-t0J"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="aQ8-4e-CQB" userLabel="mousePointerVelocity Stack">
+                                <rect key="frame" x="17" y="716" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mouse Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oPM-G6-u5O">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" id="Ei2-FJ-9oC" userLabel="mousePointerVelocityFactor">
+                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="CnH-QX-ugs"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ziJ-RC-xkP" userLabel="onScreenWidget Stack">
+                                <rect key="frame" x="16" y="780" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="On-Screen Widgets   " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LGV-5y-piG">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="qSU-wh-tqA">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Off"/>
+                                            <segment title="Simple"/>
+                                            <segment title="Full"/>
+                                            <segment title="Custom"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768741607666" green="0.61711704730987549" blue="0.99902987480163574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="RoD-rl-0Us"/>
+                                    <constraint firstAttribute="height" priority="999" constant="56.5" id="t3w-8N-xWr"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Tv6-pw-87l" userLabel="keyboardToggleFingerNum Stack">
+                                <rect key="frame" x="19" y="922" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Toggle Local Soft Keyboard" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nh6-cn-z23">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="kho-5R-daP" userLabel="localSoftKeyboardGestureSelector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="3 Finger Tap"/>
+                                            <segment title="4 Finger Tap"/>
+                                            <segment title="5 Finger Tap"/>
+                                            <segment title="Disabled"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="1bX-IR-Vkj"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="kAD-mK-aP8" userLabel="gyroModeStack">
+                                <rect key="frame" x="17" y="1011" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro Mode" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7tq-jU-C6l">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="aa5-3y-I4d" userLabel="gyroModeSelector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="Off"/>
+                                            <segment title="Auto"/>
+                                            <segment title="Built-in"/>
+                                            <segment title="Controller"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="Lb7-hi-xph"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="T3L-Kz-2yA" userLabel="gyroSensitivityStack">
+                                <rect key="frame" x="17" y="1089" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9XL-xt-Q57">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="18.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" id="3Ge-IB-PBj" userLabel="mousePointerVelocityFactor">
+                                        <rect key="frame" x="-2" y="23.5" width="384" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="W3Y-QW-piG"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="mes-so-dfK" userLabel="liftStreamViewForKeyboard Stack">
+                                <rect key="frame" x="24" y="1277" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lift Stream View for Local Keyboard                                          " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="QYJ-84-bvc">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="MM5-O0-vK3" userLabel="liftStreamViewForKeyboardSelector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="No"/>
+                                            <segment title="Yes"/>
+                                        </segments>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="PUU-5U-2dC"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="tgA-05-vWV" userLabel="slideToSettingsScreenEdge Stack">
+                                <rect key="frame" x="22" y="1432" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open Settings in Streaming" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IvI-tw-APj">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Mm0-xf-9eh">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Slide From Left Edge"/>
+                                            <segment title="Slide From Right Edge"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="WEi-Im-NuH"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="msN-pa-Kn3" userLabel="slideToToolboxScreenEdge Stack">
+                                <rect key="frame" x="22" y="1508" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open Toolbox in Streaming" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zp4-fA-IeL">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="yY7-Sf-Zes" userLabel="Command Sending Screen Edge Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="Slide From Left Edge"/>
+                                            <segment title="Slide From Right Edge"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="UAl-Go-PQV"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="pN7-bs-8yu" userLabel="slideToSettingsDistance Stack">
+                                <rect key="frame" x="23" y="1582" width="380" height="55.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gesture Slide Distance" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pMN-6T-aYE" userLabel="Slide To Settings Distance UI Label">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="8p6-FP-UWP">
+                                        <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="w5M-ho-mWm"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="90g-DY-GKi" userLabel="showKeyboardToolbar Stack">
+                                <rect key="frame" x="22" y="1356" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Local Keyboard Toolbar                                                      " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="aup-5k-z6P">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="KJd-PE-5cS" userLabel="Show Local Keyboard Toolbar  Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="No"/>
+                                            <segment title="Yes"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="cHp-hJ-PUQ"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="RrU-mx-9jP" userLabel="multiControllerStack">
+                                <rect key="frame" x="23" y="1649" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Multi-Controller Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SAQ-04-n4h" userLabel="Multi-Controller Mode">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8fR-vS-q3F" userLabel="multiControllerSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="pZs-Gv-ft8"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="EKY-6m-OBd" userLabel="softKeyboardToolbarStack">
+                                <rect key="frame" x="23" y="1688" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Soft Keyboard Toolbar" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QdG-9a-5AZ" userLabel="softKeyboardToolbarStack">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ztk-Xx-60P" userLabel="softKeyboardToolbarSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="z8D-ia-I3d"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackend Stack">
+                                <rect key="frame" x="22" y="1204" width="380" height="56.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rendering Mode (Experimental)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v8l-hf-kiR">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="53H-ST-OtY" userLabel="Rendering Mode Selector">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Balanced"/>
+                                            <segment title="Performance"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="50i-OF-DWd"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="HCm-Gl-8xi" userLabel="buttonVisualFeedbackStack">
+                                <rect key="frame" x="16" y="863" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Button Visual Feedback" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gmb-bu-KCv" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zG0-nQ-1uY" userLabel="buttonVisualFeedbackSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="4Sd-iJ-mE6"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="2rP-Ui-wVU" userLabel="swapABXYStack">
+                                <rect key="frame" x="19" y="1153" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OXy-y4-yO4" userLabel="softKeyboardToolbarStack">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hv7-6b-rez" userLabel="swapABXYSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="IRh-Rr-kBF"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1044,6 +1063,8 @@
                         <outlet property="bitrateLabel" destination="lMt-4H-fkV" id="mpE-bW-R48"/>
                         <outlet property="bitrateSlider" destination="JAY-nj-UNz" id="fHd-v5-9Vo"/>
                         <outlet property="bitrateStack" destination="2cV-yC-0QL" id="eHB-kH-hoF"/>
+                        <outlet property="buttonVisualFeedbackStack" destination="HCm-Gl-8xi" id="QnT-he-oei"/>
+                        <outlet property="buttonVisualFeedbackSwitch" destination="zG0-nQ-1uY" id="H0m-f9-exW"/>
                         <outlet property="citrixX1MouseStack" destination="gjX-s1-k61" id="8QP-No-ugv"/>
                         <outlet property="citrixX1MouseSwitch" destination="GQM-NR-WIO" id="RNm-18-mrK"/>
                         <outlet property="codecSelector" destination="aFy-0w-YPe" id="DlU-0l-gwz"/>
@@ -1115,7 +1136,7 @@
                         <outlet property="softKeyboardToolbarSwitch" destination="ztk-Xx-60P" id="A35-6y-cyp"/>
                         <outlet property="statsOverlaySelector" destination="NLH-qN-qCo" id="EF8-JF-O3S"/>
                         <outlet property="statsOverlayStack" destination="UcP-0b-nJD" id="UdI-NS-O6k"/>
-                        <outlet property="swapAbaxyStack" destination="2rP-Ui-wVU" id="gUR-Vz-ORP"/>
+                        <outlet property="swapAbxyStack" destination="2rP-Ui-wVU" id="gUR-Vz-ORP"/>
                         <outlet property="swapAbxySwitch" destination="hv7-6b-rez" id="iKX-qk-Dep"/>
                         <outlet property="touchModeLabel" destination="MUY-2Y-bHi" id="6jD-aq-rmE"/>
                         <outlet property="touchModeSelector" destination="bhC-da-VGd" id="hna-Cr-kyd"/>

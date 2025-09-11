@@ -34,6 +34,7 @@ import UIKit
     @objc public var widgetType: WidgetTypeEnum = WidgetTypeEnum.uninitialized
     
     @objc static public var editMode: Bool = false
+    @objc static public var buttonVisualFeedbackEnabled: Bool = true
     @objc public var buttonLabel: String
     @objc public var cmdString: String
     private var buttonString: String = ""
@@ -555,13 +556,15 @@ import UIKit
     }
 
     private func showl3r3Indicator(){
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
-        self.l3r3Indicator.borderColor = voidlinkPurple
-        self.l3r3Indicator.position = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
-        
-        CATransaction.commit()
+        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            
+            self.l3r3Indicator.borderColor = voidlinkPurple
+            self.l3r3Indicator.position = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
+            
+            CATransaction.commit()
+        }
         
         if vibrationOn {
             vibrationGenerator.prepare()
@@ -1021,28 +1024,32 @@ import UIKit
     
     private func handleButtonDown() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        // self.layer.borderWidth = 0
-        buttonDownVisualEffectLayer.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)) // update position every time we press down the button
-        buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
-        buttonDownVisualEffectLayer.borderColor = voidlinkPurple
+        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            // self.layer.borderWidth = 0
+            buttonDownVisualEffectLayer.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)) // update position every time we press down the button
+            buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
+            buttonDownVisualEffectLayer.borderColor = voidlinkPurple
+            CATransaction.commit()
+        }
         if vibrationOn {
             vibrationGenerator.prepare()
             vibrationGenerator.impactOccurred()
             // print("vibrationInstance: \(vibrationGenerator)")
         }
-        CATransaction.commit()
     }
     
     private func handleButtonUp() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        // self.layer.borderWidth = 1
-        buttonDownVisualEffectLayer.borderWidth = 0
-        buttonDownVisualEffectLayer.borderColor = defaultBorderColor
-        CATransaction.commit()
+        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            // self.layer.borderWidth = 1
+            buttonDownVisualEffectLayer.borderWidth = 0
+            buttonDownVisualEffectLayer.borderColor = defaultBorderColor
+            CATransaction.commit()
+        }
     }
     
     private func setupLrudDirectionIndicatorlayers() {

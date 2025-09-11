@@ -952,7 +952,8 @@
                                         <segments>
                                             <segment title="Touchpad"/>
                                             <segment title="Native Touch"/>
-                                            <segment title="Absolute Touch"/>
+                                            <segment title="Single Point"/>
+                                            <segment title="Disabled"/>
                                         </segments>
                                         <color key="tintColor" systemColor="systemBrownColor"/>
                                         <color key="selectedSegmentTintColor" systemColor="linkColor"/>
@@ -1632,7 +1633,7 @@
                                 <rect key="frame" x="15" y="1409" width="280" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cl0-Qm-3kW" userLabel="softKeyboardToolbarStack">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap A/B X/Y Buttons" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cl0-Qm-3kW" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -1768,6 +1769,24 @@
                                     </switch>
                                 </subviews>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="Kqc-3Y-QLf" userLabel="buttonVisualFeedbackStack">
+                                <rect key="frame" x="15" y="1448" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Button Visual Feedback" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SQK-JJ-izW" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Da-J0-mRI" userLabel="buttonVisualFeedbackSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="2qu-r0-0iU"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1782,6 +1801,8 @@
                         <outlet property="bitrateLabel" destination="HvT-Ek-DAx" id="qf7-hv-8EG"/>
                         <outlet property="bitrateSlider" destination="XZQ-na-T3z" id="pnz-sg-lgB"/>
                         <outlet property="bitrateStack" destination="pPC-vs-DwV" id="aNz-Fm-OFh"/>
+                        <outlet property="buttonVisualFeedbackStack" destination="Kqc-3Y-QLf" id="vyH-lu-OXJ"/>
+                        <outlet property="buttonVisualFeedbackSwitch" destination="1Da-J0-mRI" id="Rvg-x1-XlJ"/>
                         <outlet property="citrixX1MouseStack" destination="Htp-vm-hsa" id="Gfc-tx-uiW"/>
                         <outlet property="citrixX1MouseSwitch" destination="zw9-ok-nQC" id="5w4-2h-gCP"/>
                         <outlet property="codecSelector" destination="5Y7-To-ca2" id="Kmt-sp-eXj"/>
@@ -1852,7 +1873,7 @@
                         <outlet property="softKeyboardToolbarSwitch" destination="c4W-2p-R3A" id="gf6-pq-L8o"/>
                         <outlet property="statsOverlaySelector" destination="Bda-3L-Wtg" id="9kj-wY-VjF"/>
                         <outlet property="statsOverlayStack" destination="dby-k3-aiH" id="1Ha-Y3-su4"/>
-                        <outlet property="swapAbaxyStack" destination="reE-vr-Mdk" id="y3v-ac-LHy"/>
+                        <outlet property="swapAbxyStack" destination="reE-vr-Mdk" id="y3v-ac-LHy"/>
                         <outlet property="swapAbxySwitch" destination="T5q-1k-zB3" id="153-6O-0Pv"/>
                         <outlet property="touchModeLabel" destination="v5B-5J-veL" id="ewI-fd-FnI"/>
                         <outlet property="touchModeSelector" destination="A9r-dE-rT4" id="DBR-8D-QTL"/>

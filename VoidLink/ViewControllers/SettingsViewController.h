@@ -43,7 +43,7 @@
 @property (strong, nonatomic) IBOutlet UIStackView *optimizeGamesStack;
 @property (strong, nonatomic) IBOutlet UIStackView *multiControllerStack;
 @property (strong, nonatomic) IBOutlet UISwitch *multiControllerSwitch;
-@property (strong, nonatomic) IBOutlet UIStackView *swapAbaxyStack;
+@property (strong, nonatomic) IBOutlet UIStackView *swapAbxyStack;
 @property (strong, nonatomic) IBOutlet UIStackView *audioOnPcStack;
 @property (strong, nonatomic) IBOutlet UISwitch *audioOnPcSwitch;
 @property (strong, nonatomic) IBOutlet UIStackView *codecStack;
@@ -129,6 +129,8 @@
 @property (strong, nonatomic) IBOutlet UIStackView *redirectMicStack;
 @property (strong, nonatomic) IBOutlet UISwitch *redirectMicSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *buttonVisualFeedbackStack;
+@property (strong, nonatomic) IBOutlet UISwitch *buttonVisualFeedbackSwitch;
 
 @property (nonatomic, strong) MicHandler *micHandler;
 

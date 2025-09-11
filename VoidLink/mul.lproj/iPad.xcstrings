@@ -986,31 +986,61 @@
       }
     },
     "bhC-da-VGd.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bhC-da-VGd.segmentTitles[2] = \"Absolute Touch\"; ObjectID = \"bhC-da-VGd\";",
+      "comment" : "Class = \"UISegmentedControl\"; bhC-da-VGd.segmentTitles[2] = \"Single Point\"; ObjectID = \"bhC-da-VGd\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Absolute Touch"
+            "value" : "Single Point"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "单点鼠标"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "單點滑鼠"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "單點滑鼠"
+          }
+        }
+      }
+    },
+    "bhC-da-VGd.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bhC-da-VGd.segmentTitles[3] = \"Disabled\"; ObjectID = \"bhC-da-VGd\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
           }
         }
       }
@@ -1653,6 +1683,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "實體滑鼠滾輪方向"
+          }
+        }
+      }
+    },
+    "Gmb-bu-KCv.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Button Visual Feedback\"; ObjectID = \"Gmb-bu-KCv\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button Visual Feedback"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按键视觉反馈"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵視覺回饋"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵視覺回饋"
           }
         }
       }

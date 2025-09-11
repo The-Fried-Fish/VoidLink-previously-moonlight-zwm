@@ -620,7 +620,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.swapAbaxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
+    [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
+    [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
@@ -1500,7 +1501,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
     [self.multiControllerSwitch setOn:currentSettings.multiController];
     [self.swapAbxySwitch setOn:currentSettings.swapABXYButtons];
-    
+    [self.buttonVisualFeedbackSwitch setOn:currentSettings.buttonVisualFeedback];
+
     [self.gyroModeSelector setSelectedSegmentIndex:currentSettings.gyroMode.intValue];
     [self.gyroSensitivitySlider setValue: (uint16_t)(currentSettings.gyroSensitivity.floatValue * 100) animated:YES]; // Load old setting.
     [self.gyroSensitivitySlider addTarget:self action:@selector(gyroSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
@@ -1718,7 +1720,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (bool)isNotNativeTouchOnly{
-    return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector.selectedSegmentIndex == NativeTouch) || self.touchModeSelector.selectedSegmentIndex == RelativeTouch || self.touchModeSelector.selectedSegmentIndex == AbsoluteTouch;
+    return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector.selectedSegmentIndex == NativeTouch) || self.touchModeSelector.selectedSegmentIndex != NativeTouch;
 }
 
 - (void)handleOswGestureChange{
@@ -1974,7 +1976,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.mousePointerVelocityStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
-    [self setHidden:![self isNotNativeTouchOnly] forStack:self.swapAbaxyStack];
+    [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
 
     [touchAndControlSection updateViewForFoldState];
@@ -2003,14 +2005,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
-    //self.onScreenWidgetStack.hidden = !sender.isOn;
-    [self setHidden:!sender.isOn forStack:_onScreenWidgetStack];
-    //[self setHidden:!sender.isOn forStack:_swapAbaxyStack];
+    [self setHidden:!sender.isOn forStack:self.onScreenWidgetStack];
+    [self setHidden:!sender.isOn forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
-    //self.swapAbaxyStack.hidden = !sender.isOn;
     [touchAndControlSection updateViewForFoldState];
 }
-
 
 - (void) updateBitrate {
     NSInteger fps = [self getChosenFrameRate];
@@ -2395,6 +2394,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL optimizeGames = self.optimizeGamesSwitch.isOn;
     BOOL multiController = self.multiControllerSwitch.isOn;
     BOOL swapABXYButtons = self.swapAbxySwitch.isOn;
+    BOOL buttonVisualFeedback = self.buttonVisualFeedbackSwitch.isOn;
     NSInteger gyroMode = self.gyroModeSelector.selectedSegmentIndex;
     NSInteger emulatedControllerType = [self segmentIndexToControllerType:self.emulatedControllerTypeSelector.selectedSegmentIndex]; //self.emulatedControllerTypeSelector.selectedSegmentIndex;
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
@@ -2442,9 +2442,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                  showKeyboardToolbar:showKeyboardToolbar
                        optimizeGames:optimizeGames
                      multiController:multiController
+                buttonVisualFeedback:buttonVisualFeedback
                      swapABXYButtons:swapABXYButtons
                            audioOnPC:audioOnPC
-                           redirectMic:redirectMic
+                         redirectMic:redirectMic
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP
