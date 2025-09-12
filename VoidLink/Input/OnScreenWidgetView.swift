@@ -421,7 +421,8 @@ import UIKit
     
     private func changeAndActivateContraints(){
         let isNormalizedSizeFactor = self.widthFactor > 6;
-        
+        let isNormalizedHeightFactor = self.heightFactor > 6;
+
         if self.shape == "round"{ // we'll make custom osc buttons round & smaller
             NSLayoutConstraint.activate([
                 self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(60 * self.widthFactor / 2) * 2)),
@@ -432,16 +433,16 @@ import UIKit
         if self.shape == "square" {
             NSLayoutConstraint.activate([
                 self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(70 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(65 * self.heightFactor / 2) * 2)),])
+                self.heightAnchor.constraint(equalToConstant: isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(65 * self.heightFactor / 2) * 2)),])
             self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/70 : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor)/65 : self.heightFactor;
+            self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/65 : self.heightFactor;
         }
         if self.shape == "largeSquare" { // override all shape strings
             NSLayoutConstraint.activate([
                 self.widthAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(170 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(150 * self.heightFactor / 2) * 2)),])
+                self.heightAnchor.constraint(equalToConstant:isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(150 * self.heightFactor / 2) * 2)),])
             self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/170 : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.heightFactor)/150 : self.heightFactor;
+            self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/150 : self.heightFactor;
         }
         
         NSLayoutConstraint.activate([
