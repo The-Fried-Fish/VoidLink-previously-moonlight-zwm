@@ -1307,6 +1307,12 @@ import UIKit
         let currentLocation: CGPoint
         if OnScreenWidgetView.editMode {currentLocation = touch.location(in: superview)}
         else {currentLocation = touch.location(in: self)}
+        
+        if !firstTouchMoved {
+            // First move event
+            self.latestTouchLocation = currentLocation
+            self.firstTouchMoved = true
+        }
                 
         let offsetX = currentLocation.x - latestTouchLocation.x;
         let offsetY = currentLocation.y - latestTouchLocation.y;

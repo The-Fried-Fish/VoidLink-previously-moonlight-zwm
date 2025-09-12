@@ -579,6 +579,7 @@
         [widgetInitParams setObject: alertController.textFields[1].text forKey:@"buttonLabel"];
         [widgetInitParams setObject: alertController.textFields[2].text forKey:@"minStickOffsetString"];
         [widgetInitParams setObject: alertController.textFields[3].text forKey:@"shape"];
+        [self removeStickIndicators];
         [self updateWidget:self->selectedWidgetView byParams:widgetInitParams createNew:false];
     }];
     
@@ -720,6 +721,17 @@
             OnScreenWidgetView* widget = (OnScreenWidgetView* )view;
             [widget.crossMarkLayer setHidden:true];
             [widget.stickBallLayer setHidden:true];
+
+        }
+    }
+}
+
+- (void)removeStickIndicators{
+    for(UIView* view in self.view.subviews){
+        if([view isKindOfClass:[OnScreenWidgetView class]]){
+            OnScreenWidgetView* widget = (OnScreenWidgetView* )view;
+            [widget.crossMarkLayer removeFromSuperlayer];
+            [widget.stickBallLayer removeFromSuperlayer];
 
         }
     }
@@ -1390,7 +1402,7 @@
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
         [self->selectedWidgetView removeFromSuperview];
         [self.onScreenWidgetViews removeObject:self->selectedWidgetView];
-        [self hideStickIndicators];
+        [self removeStickIndicators];
         [selectedWidgetView.buttonDownVisualEffectLayer removeFromSuperlayer];
     }
     
