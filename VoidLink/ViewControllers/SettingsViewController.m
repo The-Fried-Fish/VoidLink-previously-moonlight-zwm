@@ -27,7 +27,7 @@
     
     NSInteger _bitrate;
     NSInteger _lastSelectedResolutionIndex;
-    bool justEnteredSettingsView;
+    bool settingsViewJustLoaded;
     uint16_t oswLayoutFingers;
     CustomEdgeSlideGestureRecognizer *slideToCloseSettingsViewRecognizer;
     NSMutableDictionary *_settingStackDict;
@@ -1377,7 +1377,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     slideToCloseSettingsViewRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:slideToCloseSettingsViewRecognizer];
 
-    justEnteredSettingsView = true;
+    settingsViewJustLoaded = true;
 
     // Always run settings in dark mode because we want the light fonts
     if (@available(iOS 13.0, tvOS 13.0, *)) {
@@ -1668,7 +1668,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
     
-    justEnteredSettingsView = false;
+    settingsViewJustLoaded = false;
 }
 
 - (void)slideToSettingsScreenEdgeChanged{
@@ -1730,7 +1730,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)handleOswGestureChange{
-    if(justEnteredSettingsView) return;
+    if(settingsViewJustLoaded) return;
     if([self isCustomOswEnabled] && oswLayoutFingers == self.softKeyboardGestureSelector.selectedSegmentIndex + 3 && oswLayoutFingers < 6){
         [_softKeyboardGestureSelector setSelectedSegmentIndex:_softKeyboardGestureSelector.selectedSegmentIndex-1];
     }
@@ -1852,7 +1852,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     oswDynamicLabel.hidden = !customOscEnabled;
     NSLog(@"oswDynamicLabel.hidden %d", oswDynamicLabel.hidden);
     [self handleOswGestureChange];
-    if(customOscEnabled && !justEnteredSettingsView && !self.mainFrameViewController.settingsExpandedInStreamView) {
+    if(customOscEnabled && !settingsViewJustLoaded && !self.mainFrameViewController.settingsExpandedInStreamView) {
         // [self.keyboardToggleFingerNumSlider setValue:3.0];
         // [self keyboardToggleFingerNumSliderMoved];
       [self showCustomOswTip];
@@ -1997,14 +1997,14 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self->hiddenStacks addObject:stack];
         if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
             MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
-            [section updateViewForFoldState];
+            if(!settingsViewJustLoaded) [section updateViewForFoldState];
         }
     }
     else{
         stack.hidden = NO;
         if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
             MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
-            [section updateViewForFoldState];
+            if(!settingsViewJustLoaded) [section updateViewForFoldState];
         }
         if([hiddenStacks containsObject:stack]){
             [self highlightedBackgroundForView:stack animateWithDuration:0.2];
