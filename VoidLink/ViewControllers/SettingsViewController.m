@@ -5,7 +5,6 @@
 //  Created by Diego Waxemberg on 10/27/14.
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
-//  Modified by True砖家 since 2024.6.1
 //  Copyright © 2024 True砖家 @ Bilibili. All rights reserved.
 //
 
@@ -1205,7 +1204,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 // 旧版本iOS兼容必要
 - (void)forceRestoreHeightTemporarilyForSettingStackParentView{
-    for(UIStackView* stack in hiddenStacks) stack.hidden = NO;
+    for(UIStackView* stack in hiddenStacks) {
+        stack.hidden = NO;
+    }
     if(currentSettingsMenuMode == AllSettings){
         for(UIView* view in _parentStack.arrangedSubviews){
             if([view isKindOfClass:[MenuSectionView class]]){
@@ -1239,6 +1240,18 @@ BOOL isCustomResolution(int resolutionSelected) {
     for(NSString* settingIdentifier in _favoriteSettingStackIdentifiers){
         [_parentStack addArrangedSubview:_settingStackDict[settingIdentifier]];
     }
+    
+    for(NSString* settingIdentifier in _favoriteSettingStackIdentifiers){
+        [_parentStack addArrangedSubview:_settingStackDict[settingIdentifier]];
+    }
+    // hidden Stacks that does not belong to favorite stacks shall also be added secretely to avoid stack restoring bug
+    for(UIStackView* stack in hiddenStacks){
+        if(![_favoriteSettingStackIdentifiers containsObject:stack.accessibilityIdentifier]){
+            [_parentStack addArrangedSubview:stack];
+            stack.hidden = YES;
+        }
+    }
+
     [self hideDynamicLabelsWhenOverlapped:self.parentStack];
     [self layoutSettingsView];
 }
@@ -1995,23 +2008,27 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(hidden){
         stack.hidden = YES;
         [self->hiddenStacks addObject:stack];
-        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
-            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
-            if(!settingsViewJustLoaded) [section updateViewForFoldState];
+        if(!settingsViewJustLoaded){
+            if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+                MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+                [section updateViewForFoldState];
+            }
         }
     }
     else{
         stack.hidden = NO;
-        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
-            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
-            if(!settingsViewJustLoaded) [section updateViewForFoldState];
-        }
-        if([hiddenStacks containsObject:stack]){
-            [self highlightedBackgroundForView:stack animateWithDuration:0.2];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
-                           dispatch_get_main_queue(), ^{
-                [self clearBackgroundColorForView:stack animateWithDuration:0.2];
-            });
+        if(!settingsViewJustLoaded){
+            if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+                MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+                [section updateViewForFoldState];
+            }
+            if([hiddenStacks containsObject:stack]){
+                [self highlightedBackgroundForView:stack animateWithDuration:0.2];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
+                               dispatch_get_main_queue(), ^{
+                    [self clearBackgroundColorForView:stack animateWithDuration:0.2];
+                });
+            }
         }
         [hiddenStacks removeObject:stack];
     }
