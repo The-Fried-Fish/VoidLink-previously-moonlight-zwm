@@ -228,25 +228,23 @@ static CGRect layoutViewBounds;
     return 0;   // if none of the profiles in the array have their 'isSelected' property set to YES (which should not be possible) return the 'Default' profile as the 'selected' profile
 }
 
+- (uint32_t) getIndexOfLastProfile {
+    NSMutableArray *profiles = [self getAllProfiles];
+    return (uint32_t)profiles.count-1;   // if none of the profiles in the array have their 'isSelected' property set to YES (which should not be possible) return the 'Default' profile as the 'selected' profile
+}
+
 
 #pragma mark - Setters
 
-- (void) setProfileToSelected:(NSString *)name {
+- (void) setProfileToSelected:(uint32_t)tableIndex {
     NSMutableArray *profiles = [self getAllProfiles];
-    
-    /* Iterate through each profile. If its name equals the value of the 'name' parameter passed into this method then set the profile's 'isSelected' property to YES, otherwise set the value to NO */
-    for (OSCProfile *profile in profiles) {
-                
-        if ([profile.name isEqualToString:name]) {
-            profile.isSelected = YES;
-        }
-        else {
-            profile.isSelected = NO;
-        }
-    }
+        
+    [profiles enumerateObjectsUsingBlock:^(OSCProfile* profile, NSUInteger idx, BOOL *stop) {
+        profile.isSelected = idx == tableIndex;
+    }];
     
     NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles]; // encode each 'profile' object in the array and add them to a new array
-        
+    
     /* Encode the array itself, NOT the objects inside the array, which have already been encoded by this point */
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:profilesEncoded requiringSecureCoding:YES error:nil];
     [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];

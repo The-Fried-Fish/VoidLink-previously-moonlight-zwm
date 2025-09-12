@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (OSCProfile *) getSelectedProfile;
 
+- (uint32_t) getIndexOfLastProfile;
+
 /**
  * Returns the index of the 'selected' profile within the array it's in
  */
@@ -50,9 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Setters
 /**
- * Sets the profile object with the particular 'name' as the selected profile to be displayed on screen during game streaming
+ * Sets the profile object with the particular index as the selected profile to be displayed on screen during game streaming
  */
-- (void) setProfileToSelected:(NSString *)name;
+- (void) setProfileToSelected:(uint32_t)index;
 
 /**
  * Saves a profile object with a particular 'name' and an array of button layers (the CALayer button layers are the objects currently visible on screen) to persistent storage
