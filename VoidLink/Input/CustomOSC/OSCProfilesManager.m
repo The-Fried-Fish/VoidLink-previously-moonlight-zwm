@@ -177,6 +177,7 @@ static CGRect layoutViewBounds;
             NSSet *classes = [NSSet setWithObjects: [NSMutableData class], [NSMutableArray class], nil];
             profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:&error];
             [self importEncodedProfiles:profilesEncoded];
+            [self setProfileToSelected:0];
         }
     }
 }
