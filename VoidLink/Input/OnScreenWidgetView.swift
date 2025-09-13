@@ -1424,7 +1424,6 @@ import UIKit
         }
     }
 
-    
     private func handleFingerUpAfterSliding(touches: Set<UITouch>) {
         for touch in touches {
             for subview in self.superview?.subviews ?? [] {
