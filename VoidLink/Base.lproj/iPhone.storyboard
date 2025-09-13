@@ -840,6 +840,7 @@
                                     </stackView>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="92.5" id="0iy-1K-QwY"/>
                                     <constraint firstAttribute="width" constant="380" id="SB6-UV-nXg"/>
                                 </constraints>
                             </stackView>
