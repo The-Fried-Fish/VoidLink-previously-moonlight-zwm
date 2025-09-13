@@ -76,6 +76,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     UILabel* keyboardToggleTip;
     
     UIKeyModifierFlags comboKeyModifierFlags;
+    
+    WidgetSizeTransition _widgetSizeTransition;
 }
 
 - (void) setupStreamView:(ControllerSupport*)controllerSupport
@@ -89,6 +91,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     self->interactionDelegate = interactionDelegate;
     self->streamAspectRatio = (float)streamConfig.width / (float)streamConfig.height;
     self.streamAspectRatio = self->streamAspectRatio;
+    _widgetSizeTransition = keepWidgetSize;
     
     settings = [[[DataManager alloc] init] getSettings];
     
@@ -468,6 +471,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     return position;
 }
 
+- (WidgetSizeReference)getCurrentWidgetSizeReference{
+    if(_widgetSizeTransition == keepWidgetSize) return longSide;
+    else if(_widgetSizeTransition == transitionWithOrientation) return self.bounds.size.width > self.bounds.size.height ? longSide : shortSide;
+    else return longSide;
+}
+
 - (void) reloadOnScreenWidgetViews{
     
     // NSLog(@"reload on screen keyboard buttons here");
@@ -511,6 +520,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [self->streamFrameTopLayerView addSubview:widgetView]; // add keyboard button to the stream frame view. must add it to the target view before setting location.
                 buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
                 [widgetView setLocationWithPosition:buttonState.position];
+                widgetView.sizeReference = [self getCurrentWidgetSizeReference];
+                // widgetView.sizeReference = buttonState.sizeReference;
+                //portrait markmarkmark
                 [widgetView resizeWidgetView]; // resize must be called after relocation
                 [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];

@@ -167,7 +167,7 @@
      
 }
 
-- (void) updateGuidelinesForLegacyOscButton{
+- (void) updateGuidelinesForLegacyOnScreenControls{
     /* have guidelines follow wherever the user is touching on the screen */
     horizontalGuideline.center = layerBeingDragged.position;
     verticalGuideline.center = layerBeingDragged.position;
@@ -297,7 +297,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"LegacyOscCALayerSelectedNotification" object:layerBeingDragged]; // inform that a CALayer of onScreen controller has being selected
         
         /* save the name, position, and visibility of button being touched in array in case user wants to undo the change later */
-        OnScreenButtonState *onScreenButtonState = [[OnScreenButtonState alloc] initWithButtonName:layerBeingDragged.name buttonType:LegacyOscButton andPosition:layerBeingDragged.position];
+        OnScreenButtonState *onScreenButtonState = [[OnScreenButtonState alloc] initWithButtonName:layerBeingDragged.name buttonType:LegacyOnScreenControls andPosition:layerBeingDragged.position];
         // add hidden attr here
         onScreenButtonState.isHidden = layerBeingDragged.isHidden;
         
@@ -307,7 +307,7 @@
         /* make guide lines visible and position them over the button the user is touching */
         horizontalGuideline.hidden = NO;
         verticalGuideline.hidden = NO;
-        [self updateGuidelinesForLegacyOscButton];
+        [self updateGuidelinesForLegacyOnScreenControls];
     }
 }
 
@@ -317,7 +317,7 @@
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     layerBeingDragged.position = touchLocation; // move object to touch location
-    [self updateGuidelinesForLegacyOscButton];
+    [self updateGuidelinesForLegacyOnScreenControls];
     [CATransaction commit];
 }
 

@@ -55,6 +55,11 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
     RemoveSettingItem,
 };
 
+typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
+    keepWidgetSize,
+    transitionWithOrientation,
+};
+
 - (void) saveSettingsWithBitrate:(NSInteger)bitrate
                        framerate:(NSInteger)framerate
                           height:(NSInteger)height

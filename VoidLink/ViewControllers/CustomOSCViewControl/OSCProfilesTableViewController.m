@@ -160,7 +160,7 @@ const double NAV_BAR_HEIGHT = 50;
             }
             else {  // if user entered a valid name that doesn't already exist then save the profile to persistent storage
                 [self->profilesManager saveProfileWithName: enteredProfileName andButtonLayers:self.currentOSCButtonLayers]; // the OSC layout here is passed from parent LayoutOSCViewController;
-                [self->profilesManager setProfileToSelected: enteredProfileName];
+                [self->profilesManager setProfileToSelected: [self->profilesManager getIndexOfLastProfile]];
                 
                 UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Profile %@ duplicated from current layout", enteredProfileName] preferredStyle:UIAlertControllerStyleAlert];  // Let user know this profile has been duplicated & saved
                 
@@ -320,7 +320,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     cell.contentView.backgroundColor = [UIColor clearColor];
     
     // Configure the checkmark accessory
-    if ([profile.name isEqualToString:[profilesManager getSelectedProfile].name]) {
+    if (indexPath.row == [profilesManager getIndexOfSelectedProfile]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -343,9 +343,8 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     [cell.contentView addSubview:separatorView];
     [cell.contentView bringSubviewToFront:separatorView];
 
-
     // Replace the default checkmark with a UILabel displaying a checkmark character
-    if ([profile.name isEqualToString:[profilesManager getSelectedProfile].name]) {
+    if (indexPath.row == [profilesManager getIndexOfSelectedProfile]) {
         UILabel *checkmarkLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 20, 20)]; // Adjust size as needed
         checkmarkLabel.text = @"✓";  // The checkmark character
         checkmarkLabel.font = [UIFont systemFontOfSize:25]; // Adjust font size as needed
@@ -428,8 +427,8 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
         UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath: selectedIndexPath];
         selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;  // add checkmark to the cell the user tapped
         selectedCell.accessoryView.tintColor = [[UIColor colorWithRed:0.5 green:0.5 blue:1.0 alpha:0.85] colorWithAlphaComponent:1.0];
-        OSCProfile *profile = [[profilesManager getAllProfiles] objectAtIndex:indexPath.row];
-        [profilesManager setProfileToSelected: profile.name];   // set the profile associated with this cell's 'isSelected' property to YES
+        
+        [profilesManager setProfileToSelected:(uint32_t)indexPath.row];   // set the profile associated with this cell's 'isSelected' property to YES
         
         /* Remove checkmark on the previously selected cell  */
         UITableViewCell *lastSelectedCell = [tableView cellForRowAtIndexPath: lastSelectedIndexPath];

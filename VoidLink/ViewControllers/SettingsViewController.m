@@ -5,7 +5,6 @@
 //  Created by Diego Waxemberg on 10/27/14.
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
-//  Modified by True砖家 since 2024.6.1
 //  Copyright © 2024 True砖家 @ Bilibili. All rights reserved.
 //
 
@@ -27,7 +26,7 @@
     
     NSInteger _bitrate;
     NSInteger _lastSelectedResolutionIndex;
-    bool justEnteredSettingsView;
+    bool settingsViewJustLoaded;
     uint16_t oswLayoutFingers;
     CustomEdgeSlideGestureRecognizer *slideToCloseSettingsViewRecognizer;
     NSMutableDictionary *_settingStackDict;
@@ -1205,7 +1204,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 // 旧版本iOS兼容必要
 - (void)forceRestoreHeightTemporarilyForSettingStackParentView{
-    for(UIStackView* stack in hiddenStacks) stack.hidden = NO;
+    for(UIStackView* stack in hiddenStacks) {
+        stack.hidden = NO;
+    }
     if(currentSettingsMenuMode == AllSettings){
         for(UIView* view in _parentStack.arrangedSubviews){
             if([view isKindOfClass:[MenuSectionView class]]){
@@ -1239,6 +1240,18 @@ BOOL isCustomResolution(int resolutionSelected) {
     for(NSString* settingIdentifier in _favoriteSettingStackIdentifiers){
         [_parentStack addArrangedSubview:_settingStackDict[settingIdentifier]];
     }
+    
+    for(NSString* settingIdentifier in _favoriteSettingStackIdentifiers){
+        [_parentStack addArrangedSubview:_settingStackDict[settingIdentifier]];
+    }
+    // hidden Stacks that does not belong to favorite stacks shall also be added secretely to avoid stack restoring bug
+    for(UIStackView* stack in hiddenStacks){
+        if(![_favoriteSettingStackIdentifiers containsObject:stack.accessibilityIdentifier]){
+            [_parentStack addArrangedSubview:stack];
+            stack.hidden = YES;
+        }
+    }
+
     [self hideDynamicLabelsWhenOverlapped:self.parentStack];
     [self layoutSettingsView];
 }
@@ -1377,7 +1390,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     slideToCloseSettingsViewRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:slideToCloseSettingsViewRecognizer];
 
-    justEnteredSettingsView = true;
+    settingsViewJustLoaded = true;
 
     // Always run settings in dark mode because we want the light fonts
     if (@available(iOS 13.0, tvOS 13.0, *)) {
@@ -1668,7 +1681,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
     
-    justEnteredSettingsView = false;
+    settingsViewJustLoaded = false;
 }
 
 - (void)slideToSettingsScreenEdgeChanged{
@@ -1730,7 +1743,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)handleOswGestureChange{
-    if(justEnteredSettingsView) return;
+    if(settingsViewJustLoaded) return;
     if([self isCustomOswEnabled] && oswLayoutFingers == self.softKeyboardGestureSelector.selectedSegmentIndex + 3 && oswLayoutFingers < 6){
         [_softKeyboardGestureSelector setSelectedSegmentIndex:_softKeyboardGestureSelector.selectedSegmentIndex-1];
     }
@@ -1852,7 +1865,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     oswDynamicLabel.hidden = !customOscEnabled;
     NSLog(@"oswDynamicLabel.hidden %d", oswDynamicLabel.hidden);
     [self handleOswGestureChange];
-    if(customOscEnabled && !justEnteredSettingsView && !self.mainFrameViewController.settingsExpandedInStreamView) {
+    if(customOscEnabled && !settingsViewJustLoaded && !self.mainFrameViewController.settingsExpandedInStreamView) {
         // [self.keyboardToggleFingerNumSlider setValue:3.0];
         // [self keyboardToggleFingerNumSliderMoved];
       [self showCustomOswTip];
@@ -1995,23 +2008,27 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(hidden){
         stack.hidden = YES;
         [self->hiddenStacks addObject:stack];
-        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
-            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
-            [section updateViewForFoldState];
+        if(!settingsViewJustLoaded){
+            if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+                MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+                [section updateViewForFoldState];
+            }
         }
     }
     else{
         stack.hidden = NO;
-        if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
-            MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
-            [section updateViewForFoldState];
-        }
-        if([hiddenStacks containsObject:stack]){
-            [self highlightedBackgroundForView:stack animateWithDuration:0.2];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
-                           dispatch_get_main_queue(), ^{
-                [self clearBackgroundColorForView:stack animateWithDuration:0.2];
-            });
+        if(!settingsViewJustLoaded){
+            if([stack.superview.superview isKindOfClass:[MenuSectionView class]]){
+                MenuSectionView* section = (MenuSectionView* )stack.superview.superview;
+                [section updateViewForFoldState];
+            }
+            if([hiddenStacks containsObject:stack]){
+                [self highlightedBackgroundForView:stack animateWithDuration:0.2];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
+                               dispatch_get_main_queue(), ^{
+                    [self clearBackgroundColorForView:stack animateWithDuration:0.2];
+                });
+            }
         }
         [hiddenStacks removeObject:stack];
     }
