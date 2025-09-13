@@ -143,6 +143,7 @@ import UIKit
     private var firstTouchMoved: Bool = false
     private var mousePointerMoved: Bool
     private var twoTouchesDetected: Bool
+    private var allSpawnedTouchesCount: Int = 0
     
     // trackball
     private var trackballVelocity: CGPoint = .zero
@@ -1270,7 +1271,7 @@ import UIKit
             self.latestTouchLocation = touchBeganLocation
         }
                 
-        let allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
+        allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         if allSpawnedTouchesCount == 2 {
             self.twoTouchesDetected = true
         }
@@ -1536,10 +1537,8 @@ import UIKit
             switch self.touchPadString{
             case "MOUSEPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    if self.getAllSpawnedTouchesCount(with: event) == 1 {
-                        self.updateTouchLocation(touch: touches.first!)
-                        LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(self.deltaX * 1.7 * self.sensitivityFactorX)), Int16(truncatingIfNeeded: Int(self.deltaY * 1.7 * self.sensitivityFactorY)))
-                    }
+                    self.updateTouchLocation(touch: touches.first!)
+                    LiSendMouseMoveEvent(Int16(truncatingIfNeeded: Int(self.deltaX * 1.7 * self.sensitivityFactorX)), Int16(truncatingIfNeeded: Int(self.deltaY * 1.7 * self.sensitivityFactorY)))
                 }
                 break
             case "TRACKBALL":
@@ -1602,15 +1601,16 @@ import UIKit
 
         if self.touchPadString != "MOUSEPAD" {quickDoubleTapDetected = false} //do not reset this flag here in mousePad mode
         
-        let allCapturedTouchesCount = event?.allTouches?.filter({ $0.view == self }).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
+        self.allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         
+
         // stop display refresh call back (for checking stationary touch points) when all touches are lifted
-        if touches.count == allCapturedTouchesCount {
+        if touches.count == allSpawnedTouchesCount {
             displayLink?.isPaused = true
         }
         
         // deal with pure MOUSPAD first
-        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
+        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
             
                 switch mouseButtonAction{
                 case .leftButtonDown:
@@ -1634,7 +1634,7 @@ import UIKit
                 }
         }
         
-        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "TRACKBALL" && allCapturedTouchesCount == 1 && !twoTouchesDetected {
+        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "TRACKBALL" && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
             if(mousePointerMoved){
                 self.startTrackballMomentum()
                 mousePointerMoved = false //reset flag
@@ -1644,7 +1644,7 @@ import UIKit
             }
         }
         
-        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && twoTouchesDetected && touches.count == allCapturedTouchesCount { // need to enable multi-touch first
+        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MOUSEPAD" && twoTouchesDetected && touches.count == allSpawnedTouchesCount { // need to enable multi-touch first
             // touches.count == allCapturedTouchesCount means allfingers are lifting
             if(self.mouseButtonAction == MouseButtonAction.hovering) {self.sendMouseRightButtonClickEvent()}
             twoTouchesDetected = false
