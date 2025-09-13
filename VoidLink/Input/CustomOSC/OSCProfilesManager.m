@@ -177,6 +177,7 @@ static CGRect layoutViewBounds;
             NSSet *classes = [NSSet setWithObjects: [NSMutableData class], [NSMutableArray class], nil];
             profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:&error];
             [self importEncodedProfiles:profilesEncoded];
+            [self setProfileToSelected:0];
         }
     }
 }
@@ -310,8 +311,7 @@ static CGRect layoutViewBounds;
         position.x = position.x / layoutViewBounds.size.width;
         position.y = position.y / layoutViewBounds.size.height;
     }
-    // asdfsda;
-    NSLog(@"sef.view bounds: %f, %f", layoutViewBounds.size.width, layoutViewBounds.size.height);
+    NSLog(@"layoutToolView bounds: %f, %f", layoutViewBounds.size.width, layoutViewBounds.size.height);
     NSLog(@"position: %f, %f, denormalized position: %f, %f", position.x, position.y, newPosition.x, newPosition.y);
     return position;
 }
