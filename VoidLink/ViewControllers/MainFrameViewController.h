@@ -38,5 +38,6 @@
 - (NSInteger)requestForBitrate:(NSInteger)bitrateKbps;
 #endif
 - (void)fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
+- (bool)isIPhone;
 
 @end

@@ -169,7 +169,7 @@
     uint32_t rtt, variance;
     NSString* latencyString;
     if (LiGetEstimatedRttInfo(&rtt, &variance)) {
-        latencyString = [LocalizationHelper localizedStringForKey:@"%u ms (variance: %u ms)", rtt, variance];
+        latencyString = [LocalizationHelper localizedStringForKey:@"%u ms (var: %u ms)", rtt, variance];
     }
     else {
         latencyString = @"N/A";
@@ -205,9 +205,10 @@
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
 
-    if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@",
+    if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"simplifiedOsdText",
                  fps,
                  stats.networkDroppedFrames / interval,
+                 avgVideoMbps,
                  latencyString];
     else {
         if (framePacingMode == FramePacingModeLegacy || framePacingMode == FramePacingModeOff) {

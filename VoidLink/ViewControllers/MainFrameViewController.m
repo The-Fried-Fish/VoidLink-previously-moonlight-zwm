@@ -1540,7 +1540,7 @@ static NSMutableSet* hostList;
     [self setupNavBar];
     
     // Set the gesture
-    if(![self isIPhonePortrait]) [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer]; // to prevent buggy settings view in iphone portrait mode;
+    [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     
     // Get callbacks associated with the viewController
     [self.revealViewController setDelegate:self];

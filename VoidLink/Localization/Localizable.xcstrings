@@ -375,25 +375,25 @@
         }
       }
     },
-    "[ Toggle stats overlay & graphs ]" : {
+    "[ Toggle stats overlay ]" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 切换统计覆盖层和图表 ]"
+            "value" : "[ 切换统计覆盖层 ]"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 切換統計覆蓋層和圖表 ]"
+            "value" : "[ 切換統計覆蓋層 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 切換統計覆蓋層和圖表 ]"
+            "value" : "[ 切換統計覆蓋層 ]"
           }
         }
       }
@@ -467,7 +467,7 @@
         }
       }
     },
-    "%u ms (variance: %u ms)" : {
+    "%u ms (var: %u ms)" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -2075,29 +2075,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟工具箱選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
-          }
-        }
-      }
-    },
-    "FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "帧率: %5.2f     网络丢帧: %.2f%%     网络延迟: %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "FPS：%5.2f 網路掉幀：%.2f%% 網路延遲：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "FPS：%5.2f 網路掉幀：%.2f%% 網路延遲：%@"
           }
         }
       }
@@ -4876,6 +4853,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示應用程式"
+          }
+        }
+      }
+    },
+    "simplifiedOsdText" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f    Dropped frames: %.1f%%    Bitrate: %5.1f Mbps    Latency: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帧率: %6.2f    丢帧: %.1f%%    码率: %5.1f Mbps   延迟: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f    掉幀: %.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f    掉幀: %.1f%%    位元速率: %5.1f Mbps   延遲: %@"
           }
         }
       }

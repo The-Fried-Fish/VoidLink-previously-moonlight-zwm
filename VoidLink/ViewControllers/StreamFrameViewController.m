@@ -354,6 +354,8 @@
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     }
     overlayLevel = _settings.statsOverlayLevel.intValue;
+    [self setupOverlayView];
+    
     if(viewIsBeingResized) viewIsBeingResized = false;
     else [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
@@ -870,13 +872,13 @@
     });
 }
 
-- (void)updateOverlayText:(NSString*)text {
+- (void)setupOverlayView{
     if (_overlayView == nil) {
         _overlayView = [[PaddedLabel alloc] initWithFrame:CGRectZero];
-        [_overlayView setTextInsets:UIEdgeInsetsMake(10, 15, 10, 15)];
+        [_overlayView setTextInsets:UIEdgeInsetsMake([_mainFrameViewcontroller isIPhone]?4:6, 12, [_mainFrameViewcontroller isIPhone]?4:6, 12)];
         [_overlayView setUserInteractionEnabled:NO];
         [_overlayView setNumberOfLines:100];
-        [_overlayView.layer setCornerRadius:12];
+        [_overlayView.layer setCornerRadius:[_mainFrameViewcontroller isIPhone]?7:10];
         [_overlayView.layer setMasksToBounds:YES];
         
         // HACK: If not using stats overlay, center the text
@@ -889,13 +891,19 @@
 #if TARGET_OS_TV
         [_overlayView setFont:[UIFont systemFontOfSize:24 weight:UIFontWeightMedium]];
 #else
-        [_overlayView setFont:[UIFont systemFontOfSize:12 weight:UIFontWeightMedium]];
-
+        [_overlayView setFont:[UIFont systemFontOfSize: [_mainFrameViewcontroller isIPhone]?10:12 weight:UIFontWeightMedium]];
 #endif
         [_overlayView setAlpha:(float)[_settings.graphOpacity intValue]/ 100.0];
         [self.view addSubview:_overlayView];
     }
+    if (@available(iOS 13.0, *)) {
+       if(overlayLevel == 1) _overlayView.font = [UIFont monospacedSystemFontOfSize:[_mainFrameViewcontroller isIPhone]?10:12 weight:UIFontWeightMedium];
+    }
     
+    [_overlayView setHidden:YES];
+}
+
+- (void)updateOverlayText:(NSString*)text {
     if (text != nil) {
         // We set our bounds to the maximum width in order to work around a bug where
         // sizeToFit interacts badly with the UITextView's line breaks, causing the
@@ -906,7 +914,7 @@
                                            _overlayView.frame.size.height)];
         [_overlayView setText:text];
         [_overlayView sizeToFit];
-        [_overlayView setCenter:CGPointMake(self.view.frame.size.width / 2, (12 + (_overlayView.frame.size.height / 2)))];
+        [_overlayView setCenter:CGPointMake(self.view.frame.size.width / 2, (4 + (_overlayView.frame.size.height / 2)))];
         [_overlayView setHidden:NO];
     }
     else {
@@ -1490,7 +1498,7 @@
 - (void)toggleStatsOverlay{
     // Toggle the values on the current in-memory settings object for a temporary effect
     _settings.statsOverlayEnabled = !_settings.statsOverlayEnabled;
-    _settings.enableGraphs = _settings.statsOverlayEnabled;
+    // _settings.enableGraphs = _settings.statsOverlayEnabled;
     
     // Reconfigure the UI using the current in-memory settings, without reloading from disk
     [self reConfigStreamViewRealtimeAndReloadSettings:NO];
