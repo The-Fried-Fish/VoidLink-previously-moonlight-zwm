@@ -108,6 +108,7 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="380" id="bn6-xc-xEZ"/>
+                                    <constraint firstAttribute="height" constant="92.5" id="iAa-vD-Whm"/>
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="TuR-H8-e2H" userLabel="FPS Stack">
