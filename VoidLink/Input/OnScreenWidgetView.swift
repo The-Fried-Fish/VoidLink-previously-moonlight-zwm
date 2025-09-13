@@ -48,6 +48,7 @@ import UIKit
     @objc public var heightFactor: CGFloat = 1.0
     @objc public var slideMode: Int = 0
     
+    @objc public var sizeReference: Int = WidgetSizeReference.longSide.rawValue
     @objc public var deNormalizedWidthFactor: CGFloat = 1.0
     @objc public var deNormalizedHeightFactor: CGFloat = 1.0
     
@@ -413,35 +414,57 @@ import UIKit
         }
     }
     
+    // 仅在加载控件时调用
     private func denormalizeSize(sizeFactor:CGFloat) -> CGFloat {
-        let screenWidthInPoints = UIScreen.main.bounds.width
+        let longSideLen = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let shortSideLen = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        
+        var referenceLen = UIScreen.main.bounds.width
+        if(self.sizeReference == WidgetSizeReference.longSide.rawValue) {referenceLen = longSideLen}
+        if(self.sizeReference == WidgetSizeReference.shortSide.rawValue) {referenceLen = shortSideLen}
+        
         // return CGFloat(Int(sizeFactor/10000*screenWidthInPoints/2)*2);
-        return nearestEven(sizeFactor/10000*screenWidthInPoints);
+        // print("referenceLen \(referenceLen), \(CACurrentMediaTime())")
+        return nearestEven(sizeFactor/10000*referenceLen);
     }
-    
+
     private func changeAndActivateContraints(){
         let isNormalizedSizeFactor = self.widthFactor > 6;
         let isNormalizedHeightFactor = self.heightFactor > 6;
+        
+        let longSideLen = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let shortSideLen = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        
+        let baselineDiameter:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 60 : 60*shortSideLen/longSideLen
+        print("baselineDiameter \(baselineDiameter), \(CACurrentMediaTime())")
+        
+        let baselineWidth:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 70 : 70*shortSideLen/longSideLen
+        let baselineHeight:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 65 : 65*shortSideLen/longSideLen
+        let baselineWidthLargeSquare:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 170 : 170*shortSideLen/longSideLen
+        let baselineHeightLargeSquare:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 150 : 150*shortSideLen/longSideLen
 
         if self.shape == "round"{ // we'll make custom osc buttons round & smaller
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(60 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(60 * self.widthFactor / 2) * 2)),])
-            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/60 : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/60 : self.widthFactor;
+                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(baselineDiameter * self.widthFactor / 2) * 2)),
+                self.heightAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(baselineDiameter * self.widthFactor / 2) * 2)),])
+            // 实时调整大小时isNormalized 为 false。加载数据时 isNormalized 为 true
+            // baselineDiameter 仅在 实时调整大小时生效，从存储恢复时总是会恢复denormalizeSize()尺寸
+            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineDiameter : self.widthFactor;
+            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineDiameter : self.widthFactor;
+            //此处的 deNormalized 用于slider显示值
         }
         if self.shape == "square" {
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(70 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(65 * self.heightFactor / 2) * 2)),])
-            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/70 : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/65 : self.heightFactor;
+                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(baselineWidth * self.widthFactor / 2) * 2)),
+                self.heightAnchor.constraint(equalToConstant: isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(baselineHeight * self.heightFactor / 2) * 2)),])
+            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineWidth : self.widthFactor;
+            self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/baselineHeight : self.heightFactor;
         }
         if self.shape == "largeSquare" { // override all shape strings
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(170 * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant:isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(150 * self.heightFactor / 2) * 2)),])
-            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/170 : self.widthFactor;
+                self.widthAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(baselineWidthLargeSquare * self.widthFactor / 2) * 2)),
+                self.heightAnchor.constraint(equalToConstant:isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(baselineHeightLargeSquare * self.heightFactor / 2) * 2)),])
+            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineWidthLargeSquare : self.widthFactor;
             self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/150 : self.heightFactor;
         }
         
@@ -520,7 +543,7 @@ import UIKit
         
         addSubview(label)
         
-        self.changeAndActivateContraints()
+        if(OnScreenWidgetView.editMode) {self.changeAndActivateContraints()}
         
         center = storedCenter //anchor the center while resizing self
         

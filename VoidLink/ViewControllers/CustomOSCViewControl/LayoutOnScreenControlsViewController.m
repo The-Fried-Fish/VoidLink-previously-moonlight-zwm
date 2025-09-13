@@ -17,6 +17,7 @@
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
 #import "ThemeManager.h"
+#import "DataManager.h"
 
 @interface LayoutOnScreenControlsViewController ()
 
@@ -39,6 +40,7 @@
     CGPoint widgetPanelStoredCenter;
     CGPoint latestTouchLocation;
     UIImpactFeedbackGenerator *vibrationGenerator;
+    WidgetSizeTransition _widgetSizeTransition;
 }
 
 @synthesize trashCanButton;
@@ -88,6 +90,20 @@
     [self OSCLayoutChanged];    // fades the 'Undo Button' out
 }
 
+/*
+- (SizeReference)getCurrentWidgetSizeReference{
+    return self.view.bounds.size.width > self.view.bounds.size.height ? longSide : shortSide;
+    // return longSide;
+}
+*/
+- (WidgetSizeReference)getCurrentWidgetSizeReference{
+    // widgetSizeTransition ENUM reserved for future functionality if necessary
+    if(_widgetSizeTransition == keepWidgetSize) return longSide;
+    else if(_widgetSizeTransition == transitionWithOrientation) return self.view.bounds.size.width > self.view.bounds.size.height ? longSide : shortSide;
+    else return longSide;
+}
+
+
 - (void)reloadOnScreenWidgetViews{
     NSLog(@"reloadOnScreenWidgets %f", CACurrentMediaTime());
     OnScreenWidgetView.editMode = true;
@@ -129,6 +145,7 @@
             [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
             [widgetView setLocationWithPosition:buttonState.position];
+            widgetView.sizeReference = [self getCurrentWidgetSizeReference];
             [widgetView resizeWidgetView]; // resize must be called after relocation
             [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
             [widgetView adjustBorderWithWidth:buttonState.borderWidth];
@@ -215,6 +232,8 @@
     self.toolbarRootView.layer.shadowRadius = 7;
     
     vibrationGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+    
+    _widgetSizeTransition = keepWidgetSize;
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -298,7 +317,7 @@
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
     viewWillBeResized = true;
     [self hideStickIndicators];
-    if(!_quickSwitchEnabled) [self saveTapped:nil];
+    // if(!_quickSwitchEnabled) [self saveTapped:nil];
 }
 
 - (void)deviceOrientationDidChange{
@@ -643,6 +662,7 @@
 
     if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
     else [newWidget setLocationWithPosition:widget.center];
+    newWidget.sizeReference = widget.sizeReference;
     [newWidget resizeWidgetView]; // resize must be called after relocation
     [newWidget adjustTransparencyWithAlpha:widget.backgroundAlpha];
     [newWidget adjustBorderWithWidth:widget.borderWidth];

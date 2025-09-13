@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import "OSCProfile.h"
+#import "DataManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OSCProfilesManager : NSObject
 @property NSMutableArray <OSCProfile *> *currentProfiles;
-
+@property (atomic, assign) WidgetSizeTransition widgetSizeTransition;
 
 + (OSCProfilesManager *)sharedManager:(CGRect)viewBounds;
 + (void)setOnScreenWidgetViewsSet:(NSMutableSet* )set;

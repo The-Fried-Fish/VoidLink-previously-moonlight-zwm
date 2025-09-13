@@ -347,7 +347,7 @@ static CGRect layoutViewBounds;
     // save on-screen game controller buttons & sticks as buttonstate:
     for (CALayer *oscButtonLayer in oscButtonLayers) {
         CGPoint normalizedPosition = [self normalizeWidgetPosition:oscButtonLayer.position];
-        OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:oscButtonLayer.name buttonType:LegacyOscButton andPosition:normalizedPosition];
+        OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:oscButtonLayer.name buttonType:LegacyOnScreenControls andPosition:normalizedPosition];
         // add hidden attr here
         buttonState.isHidden = oscButtonLayer.isHidden;
         buttonState.oscLayerSizeFactor = [OnScreenControls getControllerLayerSizeFactor:oscButtonLayer];
@@ -368,13 +368,17 @@ static CGRect layoutViewBounds;
     }
     
     // save on-screen widget views (keyboard & mouse command) as buttonstate:
+    _widgetSizeTransition = keepWidgetSize;
     for(OnScreenWidgetView* widgetView in OnScreenWidgetViews){
         CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.center];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.widgetLabel;
-        buttonState.widthFactor = [self normalizeSizeWidthFactor:widgetView];
-        NSLog(@"logging widthFactor %f", buttonState.widthFactor);
-        buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView];
+        // buttonState.sizeReference = layoutViewBounds.size.width > layoutViewBounds.size.height ? longSide : shortSide;
+        //widgetView.sizeReference = buttonState.sizeReference; //  testttttttttt ???
+        NSLog(@"sizeRef: %d", buttonState.sizeReference);
+        buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView and:buttonState];
+        // NSLog(@"logging widthFactor %f", buttonState.widthFactor);
+        buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView and:buttonState];
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.borderWidth = widgetView.borderWidth;
         buttonState.autoTapInterval = widgetView.autoTapInterval;
@@ -395,14 +399,22 @@ static CGRect layoutViewBounds;
     return buttonStatesEncoded;
 }
 
-- (CGFloat)normalizeSizeWidthFactor:(OnScreenWidgetView* )widget{
+- (CGFloat)getReferenceLen{
     CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    return widget.bounds.size.width/screenWidthInPoints * 10000;
+    CGFloat screenHeightInPoints = CGRectGetHeight([[UIScreen mainScreen] bounds]);
+    CGFloat longSideLen = fmax(screenWidthInPoints,screenHeightInPoints);
+    CGFloat referenceLen = longSideLen;
+    if(_widgetSizeTransition == keepWidgetSize) referenceLen = longSideLen;
+    if(_widgetSizeTransition == transitionWithOrientation) referenceLen = screenWidthInPoints;
+    return referenceLen;
 }
 
-- (CGFloat)normalizeSizeHeightFactor:(OnScreenWidgetView* )widget{
-    CGFloat screenWidthInPoints = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    return widget.bounds.size.height/screenWidthInPoints * 10000;
+- (CGFloat)normalizeSizeWidthFactorWith:(OnScreenWidgetView* )widget and:(OnScreenButtonState* )buttonstate{
+    return widget.bounds.size.width/[self getReferenceLen] * 10000;
+}
+
+- (CGFloat)normalizeSizeHeightFactor:(OnScreenWidgetView* )widget and:(OnScreenButtonState* )buttonstate{
+    return widget.bounds.size.height/[self getReferenceLen] * 10000;
 }
 
 

@@ -375,7 +375,7 @@ static float L3_Y;
             OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
             [OnScreenControls.layerVibrationStyleDic setObject:@(buttonState.vibrationStyle) forKey:buttonState.name];
-            if(!buttonState.isHidden && [validPositionButtonNames containsObject:buttonState.name] && (buttonState.buttonType == LegacyOscButton || [profilesManager getIndexOfSelectedProfile] == 0 ) ){
+            if(!buttonState.isHidden && [validPositionButtonNames containsObject:buttonState.name] && (buttonState.buttonType == LegacyOnScreenControls || [profilesManager getIndexOfSelectedProfile] == 0 ) ){
                 [_activeCustomOscButtonPositionDict setObject:[NSValue valueWithCGPoint:buttonState.position] forKey:buttonState.name]; // we got a buttonname -> position dict here
                 // NSLog(@"_activeCustomOscButtonPositionDict update, button name:%@,  position: %f, %f", buttonState.name, buttonState.position.x, buttonState.position.y);
             }

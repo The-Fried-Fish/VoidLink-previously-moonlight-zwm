@@ -33,6 +33,7 @@
     [encoder encodeObject:self.name forKey:@"name"];
     [encoder encodeObject:self.alias forKey:@"alias"];
     [encoder encodeInt:self.buttonType forKey:@"buttonType"];
+    [encoder encodeInt:self.sizeReference forKey:@"sizeReference"];
     [encoder encodeInt:self.vibrationStyle forKey:@"vibrationStyle"];
     [encoder encodeInt:self.mouseButtonAction forKey:@"mouseButtonAction"];
     [encoder encodeInt:self.slideMode forKey:@"slideMode"];
@@ -57,6 +58,7 @@
         self.name = [decoder decodeObjectForKey:@"name"];
         self.alias = [decoder decodeObjectForKey:@"alias"];
         self.buttonType = [decoder decodeIntForKey:@"buttonType"];
+        self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;
         self.vibrationStyle = [decoder decodeIntForKey:@"vibrationStyle"];
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
         self.slideMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
