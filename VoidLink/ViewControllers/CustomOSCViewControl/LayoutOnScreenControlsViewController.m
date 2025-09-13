@@ -298,6 +298,7 @@
     selectedControllerLayer = nil;
 
     _oscProfilesTableViewController.layoutViewBounds = self.view.bounds;
+    [OSCProfilesManager setLayoutViewBounds:self.view.bounds];
     [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
     [self reloadOnScreenWidgetViews];
     [self reloadLegacyOnScreenControls];
@@ -317,7 +318,7 @@
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
     viewWillBeResized = true;
     [self hideStickIndicators];
-    // if(!_quickSwitchEnabled) [self saveTapped:nil];
+    if(!_quickSwitchEnabled) [self saveTapped:nil];
 }
 
 - (void)deviceOrientationDidChange{
