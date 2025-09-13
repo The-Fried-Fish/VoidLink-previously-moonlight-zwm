@@ -73,6 +73,7 @@ static NSSet *validPositionButtonNames;
     VoidController *_controller;
     NSMutableArray* _deadTouches;
     BOOL _swapABXY;
+    BOOL _visualFeedbackEnabled;
     BOOL _largerStickLR1;
     CGFloat _oscTapExlusionAreaSizeFactor;
     OSCProfilesManager *profilesManager;
@@ -219,6 +220,7 @@ static float L3_Y;
     _deadTouches = [[NSMutableArray alloc] init];
     if (streamConfig) {
         _swapABXY = streamConfig.swapABXYButtons;
+        _visualFeedbackEnabled = streamConfig.buttonVisualFeedback;
     }
     
     _originalControllerLayerOpacityDict = [[NSMutableDictionary alloc] init];
@@ -1103,7 +1105,7 @@ static float L3_Y;
             // Allow the user to slide their finger to another d-pad button
             if ([_upButton.presentationLayer hitTest:touchLocation]) {
                 [_controllerSupport setButtonFlag:_controller flags:UP_FLAG];
-                [self oscButtonTouchDownFeedback:_upButton];
+                [self handleButtonFeedback:_upButton];
                 updated = true;
             } else {
                 _upButton.opacity = [_originalControllerLayerOpacityDict[_upButton.name] floatValue];
@@ -1112,7 +1114,7 @@ static float L3_Y;
 
             if ([_downButton.presentationLayer hitTest:touchLocation]) {
                 [_controllerSupport setButtonFlag:_controller flags:DOWN_FLAG];
-                [self oscButtonTouchDownFeedback:_downButton];
+                [self handleButtonFeedback:_downButton];
                 updated = true;
             } else {
                 _downButton.opacity = [_originalControllerLayerOpacityDict[_downButton.name] floatValue];
@@ -1121,7 +1123,7 @@ static float L3_Y;
 
             if ([_leftButton.presentationLayer hitTest:touchLocation]) {
                 [_controllerSupport setButtonFlag:_controller flags:LEFT_FLAG];
-                [self oscButtonTouchDownFeedback:_leftButton];
+                [self handleButtonFeedback:_leftButton];
                 updated = true;
             } else {
                 _leftButton.opacity = [_originalControllerLayerOpacityDict[_leftButton.name] floatValue];
@@ -1130,7 +1132,7 @@ static float L3_Y;
             
             if ([_rightButton.presentationLayer hitTest:touchLocation]) {
                 [_controllerSupport setButtonFlag:_controller flags:RIGHT_FLAG];
-                [self oscButtonTouchDownFeedback:_rightButton];
+                [self handleButtonFeedback:_rightButton];
                 updated = true;
             } else {
                 _rightButton.opacity = [_originalControllerLayerOpacityDict[_rightButton.name] floatValue];
@@ -1177,35 +1179,35 @@ static float L3_Y;
 }
 
 
-- (void)oscButtonTouchDownFeedback:(CALayer* )button{
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES]; 
-    
-    /*
-    if(![[_originalControllerLayerOpacityDict allKeys] containsObject:button.name]){
-        [_originalControllerLayerOpacityDict setObject:@(button.opacity) forKey:button.name];
+- (void)handleButtonFeedback:(CALayer* )button{
+    if(_visualFeedbackEnabled){
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+        
+        button.opacity = 0.9; // set a high opacity to ensure visibility of visual effect
+        button.borderColor = [UIColor clearColor].CGColor; // Color of the outline
+        button.borderWidth = 20; // Width of the outline
+        button.cornerRadius = button.bounds.size.width/2;
+        
+        // 使用 shadowPath 定义阴影形状和扩展范围
+        CGFloat spread = 15;  // 扩散的大小
+        if([button.name isEqualToString:@"leftStick"] || [button.name isEqualToString:@"rightStick"]) spread = 12;
+        CGRect largerRect = CGRectInset(button.bounds, -spread, -spread);
+        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRoundedRect:largerRect cornerRadius:button.cornerRadius];
+        button.shadowPath = shadowPath.CGPath;
+        
+        //button.shadowColor = [[UIColor colorWithRed:0/255.0 green:110/255.0 blue:255/255.0 alpha:1.0] colorWithAlphaComponent:0.7].CGColor;
+        button.shadowColor = [[UIColor colorWithRed:0.5 green:0.5 blue:1.0 alpha:1] colorWithAlphaComponent:1].CGColor;
+        //button.shadowColor = [UIColor colorWithRed:0/255.0 green:51/255.0 blue:102/255.0 alpha:0.6].CGColor;
+        button.shadowOffset = CGSizeZero;
+        button.shadowOpacity = 1.0;
+        button.shadowRadius = 0.0; // Adjust the radius to simulate border thickness
+        [CATransaction commit];
     }
-     */
-    
-    button.opacity = 0.9; // set a high opacity to ensure visibility of visual effect
-    button.borderColor = [UIColor clearColor].CGColor; // Color of the outline
-    button.borderWidth = 20; // Width of the outline
-    button.cornerRadius = button.bounds.size.width/2;
-    
-    // 使用 shadowPath 定义阴影形状和扩展范围
-    CGFloat spread = 15;  // 扩散的大小
-    if([button.name isEqualToString:@"leftStick"] || [button.name isEqualToString:@"rightStick"]) spread = 12;
-    CGRect largerRect = CGRectInset(button.bounds, -spread, -spread);
-    UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRoundedRect:largerRect cornerRadius:button.cornerRadius];
-    button.shadowPath = shadowPath.CGPath;
-    
-    //button.shadowColor = [[UIColor colorWithRed:0/255.0 green:110/255.0 blue:255/255.0 alpha:1.0] colorWithAlphaComponent:0.7].CGColor;
-    button.shadowColor = [[UIColor colorWithRed:0.5 green:0.5 blue:1.0 alpha:1] colorWithAlphaComponent:1].CGColor;
-    //button.shadowColor = [UIColor colorWithRed:0/255.0 green:51/255.0 blue:102/255.0 alpha:0.6].CGColor;
-    button.shadowOffset = CGSizeZero;
-    button.shadowOpacity = 1.0;
-    button.shadowRadius = 0.0; // Adjust the radius to simulate border thickness
-    
+    [self oscButtonHapticFeedback:button];
+}
+
+- (void)oscButtonHapticFeedback:(CALayer* )button{
     NSNumber *style = [OnScreenControls.layerVibrationStyleDic objectForKey:button.name];
     uint8_t vibrationStyle = [style unsignedCharValue];
     
@@ -1223,11 +1225,7 @@ static float L3_Y;
         [vibrationGenerator impactOccurred];
         NSLog(@"vibration instance: %@",vibrationGenerator);
     }
-
-    
-    [CATransaction commit];
 }
-
 
 // osc Button capturing here
 - (BOOL)handleTouchDownEvent:touches {
@@ -1242,28 +1240,28 @@ static float L3_Y;
         if ([_aButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:A_FLAG];
             _aTouch = touch;
-            [self oscButtonTouchDownFeedback:_aButton];
+            [self handleButtonFeedback:_aButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC A");
         } else if ([_bButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:B_FLAG];
             _bTouch = touch;
-            [self oscButtonTouchDownFeedback:_bButton];
+            [self handleButtonFeedback:_bButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC B");
         } else if ([_xButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:X_FLAG];
             _xTouch = touch;
-            [self oscButtonTouchDownFeedback:_xButton];
+            [self handleButtonFeedback:_xButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC X");
         } else if ([_yButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:Y_FLAG];
             _yTouch = touch;
-            [self oscButtonTouchDownFeedback:_yButton];
+            [self handleButtonFeedback:_yButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC Y");
@@ -1271,7 +1269,7 @@ static float L3_Y;
             [_controllerSupport setButtonFlag:_controller flags:UP_FLAG];
             _dpadTouch = touch;
             _upTouch = touch;
-            [self oscButtonTouchDownFeedback:_upButton];
+            [self handleButtonFeedback:_upButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC UP");
@@ -1279,14 +1277,14 @@ static float L3_Y;
             [_controllerSupport setButtonFlag:_controller flags:DOWN_FLAG];
             _dpadTouch = touch;
             _downTouch = touch;
-            [self oscButtonTouchDownFeedback:_downButton];
+            [self handleButtonFeedback:_downButton];
             updated = true;
             touchEventCapturedByOsc = true;
         } else if ([_leftButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:LEFT_FLAG];
             _dpadTouch = touch;
             _leftTouch = touch;
-            [self oscButtonTouchDownFeedback:_leftButton];
+            [self handleButtonFeedback:_leftButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC LEFT");
@@ -1294,49 +1292,49 @@ static float L3_Y;
             [_controllerSupport setButtonFlag:_controller flags:RIGHT_FLAG];
             _dpadTouch = touch;
             _rightTouch = touch;
-            [self oscButtonTouchDownFeedback:_rightButton];
+            [self handleButtonFeedback:_rightButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC RIGHT");
         } else if ([_startButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:PLAY_FLAG];
             _startTouch = touch;
-            [self oscButtonTouchDownFeedback:_startButton];
+            [self handleButtonFeedback:_startButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC PLAY");
         } else if ([_selectButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:BACK_FLAG];
             _selectTouch = touch;
-            [self oscButtonTouchDownFeedback:_selectButton];
+            [self handleButtonFeedback:_selectButton];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC BACK");
         } else if ([_l1Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:LB_FLAG];
             _l1Touch = touch;
-            [self oscButtonTouchDownFeedback:_l1Button];
+            [self handleButtonFeedback:_l1Button];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC LB");
         } else if ([_r1Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:RB_FLAG];
             _r1Touch = touch;
-            [self oscButtonTouchDownFeedback:_r1Button];
+            [self handleButtonFeedback:_r1Button];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC RB");
         } else if ([_l2Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport updateLeftTrigger:_controller left:0xFF];
             _l2Touch = touch;
-            [self oscButtonTouchDownFeedback:_l2Button];
+            [self handleButtonFeedback:_l2Button];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC LeftTrigger");
         } else if ([_r2Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport updateRightTrigger:_controller right:0xFF];
             _r2Touch = touch;
-            [self oscButtonTouchDownFeedback:_r2Button];
+            [self handleButtonFeedback:_r2Button];
             updated = true;
             touchEventCapturedByOsc = true;
             // NSLog(@"Captured OSC RightTrigger");
@@ -1376,7 +1374,7 @@ static float L3_Y;
                 double l3TouchTime = [l3TouchStart timeIntervalSinceNow] * -1000.0;
                 if (l3TouchTime < STICK_CLICK_RATE) {
                     [_controllerSupport setButtonFlag:_controller flags:LS_CLK_FLAG];
-                    [self oscButtonTouchDownFeedback:_leftStick];
+                    [self handleButtonFeedback:_leftStick];
                     updated = true;
                     touchEventCapturedByOsc = true;
                     // NSLog(@"Captured OSC LS_CLK3");
@@ -1394,7 +1392,7 @@ static float L3_Y;
                 double r3TouchTime = [r3TouchStart timeIntervalSinceNow] * -1000.0;
                 if (r3TouchTime < STICK_CLICK_RATE) {
                     [_controllerSupport setButtonFlag:_controller flags:RS_CLK_FLAG];
-                    [self oscButtonTouchDownFeedback:_rightStick];
+                    [self handleButtonFeedback:_rightStick];
                     updated = true;
                     touchEventCapturedByOsc = true;
                     // NSLog(@"Captured OSC LS_CLK4");
