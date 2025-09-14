@@ -1691,6 +1691,9 @@
                                                 </constraints>
                                             </switch>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="31" id="k5t-VK-bHy"/>
+                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Dfy-4R-t2l" userLabel="Graph Opacity Stack">
                                         <rect key="frame" x="0.0" y="36" width="380" height="32"/>
@@ -1699,9 +1702,13 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="380" height="32"/>
                                             </stepper>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="tiB-iA-VSc"/>
+                                        </constraints>
                                     </stackView>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="68" id="3OR-kV-fxJ"/>
                                     <constraint firstAttribute="width" constant="380" id="HMd-xt-94L"/>
                                 </constraints>
                             </stackView>
