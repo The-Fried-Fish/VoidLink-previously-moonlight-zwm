@@ -36,9 +36,11 @@ https://b23.tv/A0F9v7n
 [@All contributors from moonlight-iOS](https://github.com/moonlight-stream/moonlight-ios/graphs/contributors) <br>
 [@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) <br>
 [@Acaki](https://github.com/Acaki) <br>
+[@andygrundman](https://github.com/andygrundman) <br>
 [@seastwood](https://github.com/seastwood) <br>
 [@Danos0100](https://github.com/Danos0100) <br>
 [@xzzpig](https://github.com/xzzpig) <br>
+[@qiin2333](https://github.com/qiin2333) <br>
 [@King0fSpace](https://github.com/King0fSpace) <br>
 
 # 应用截图 ScreenShots
