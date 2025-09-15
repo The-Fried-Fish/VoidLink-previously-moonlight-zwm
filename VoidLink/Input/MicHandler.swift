@@ -195,8 +195,9 @@ public class MicHandler: NSObject {
                 guard let enc = self.opusEncoder else {return}
                 let outBytes = opus_encode(enc, chunk, 960, &packet, Int32(packet.count))
                 sendMicrophoneData(packet, outBytes)
-                if pcm16Buffer.count >= 960 {
-                    pcm16Buffer.removeFirst(960)
+                let removeCount = min(960, pcm16Buffer.count)
+                if removeCount > 0 {
+                    pcm16Buffer.removeFirst(removeCount)
                 }
             }
         }
