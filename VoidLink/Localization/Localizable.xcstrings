@@ -421,6 +421,29 @@
         }
       }
     },
+    "%3u ms (var: %3u ms)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%3u ms (抖动: %3u ms)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%3u ms (變異數：%3u ms)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%3u ms (變異數：%3u ms)"
+          }
+        }
+      }
+    },
     "%d finger tap" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -463,29 +486,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%d%%螢幕寬度"
-          }
-        }
-      }
-    },
-    "%u ms (var: %u ms)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%u ms (抖动: %u ms)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%u ms (變異數：%u ms)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%u ms (變異數：%u ms)"
           }
         }
       }
@@ -4863,25 +4863,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FPS: %6.2f    Dropped frames: %.1f%%    Bitrate: %5.1f Mbps    Latency: %@"
+            "value" : "FPS: %6.2f    Dropped frames: %4.1f%%    Bitrate: %5.1f Mbps    Latency: %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "帧率: %6.2f    丢帧: %.1f%%    码率: %5.1f Mbps   延迟: %@"
+            "value" : "帧率: %6.2f    丢帧: %4.1f%%    码率: %5.1f Mbps   延迟: %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FPS: %6.2f    掉幀: %.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+            "value" : "FPS: %6.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FPS: %6.2f    掉幀: %.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+            "value" : "FPS: %6.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
           }
         }
       }

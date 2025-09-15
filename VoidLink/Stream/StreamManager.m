@@ -169,7 +169,7 @@
     uint32_t rtt, variance;
     NSString* latencyString;
     if (LiGetEstimatedRttInfo(&rtt, &variance)) {
-        latencyString = [LocalizationHelper localizedStringForKey:@"%u ms (var: %u ms)", rtt, variance];
+        latencyString = [LocalizationHelper localizedStringForKey:@"%3u ms (var: %3u ms)", rtt, variance];
     }
     else {
         latencyString = @"N/A";
