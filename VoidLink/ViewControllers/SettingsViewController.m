@@ -2377,6 +2377,14 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void) enableGraphsChanged:(UISwitch* )sender {
     [self.graphOpacityStepper setEnabled:sender.isOn];
     [self findDynamicLabelFromStack:self.graphOpacityStack].hidden = !sender.isOn;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message: [LocalizationHelper localizedStringForKey:@"This is an experimental feature that may cause stuttering or freezing in the stream view."] preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"]
+                                                           style:UIAlertActionStyleDefault
+                                                     handler:nil];
+    [alertController addAction:okAction];
+    
+    if(sender.isOn && !settingsViewJustLoaded) [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void) graphOpacityStepperTapped:(UIStepper* )sender {

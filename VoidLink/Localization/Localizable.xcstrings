@@ -5278,6 +5278,29 @@
         }
       }
     },
+    "This is an experimental feature that may cause stuttering or freezing in the stream view." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是一项实验性功能，可能导致画面卡顿。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一項實驗性功能，可能導致畫面卡頓。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一項實驗性功能，可能導致畫面卡頓。"
+          }
+        }
+      }
+    },
     "Tips" : {
       "extractionState" : "manual",
       "localizations" : {
