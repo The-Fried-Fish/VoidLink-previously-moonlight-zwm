@@ -1274,18 +1274,17 @@
 - (void) stageComplete:(const char*)stageName {
     _micStreamInitialized = false;
     if(strcmp(stageName, "mic stream establishment")==0){
+        
         if(_streamConfig.redirectMic){
-            dispatch_after((int64_t)(5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    self->_micStreamInitialized = true;
-                    self->micHandler = [MicHandler new];
-                    [self->micHandler startTapping];
-                });
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                self->_micStreamInitialized = true;
+                self->micHandler = [MicHandler new];
+                [self->micHandler startTapping];
             });
         }
     }
+    
     if(strcmp(stageName, "mic stream unsupported or unintialized")==0){
-        NSLog(@"blablablala");
         _micStreamInitialized = false;
     }
 }

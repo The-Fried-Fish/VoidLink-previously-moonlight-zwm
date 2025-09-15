@@ -23,7 +23,7 @@ public class MicHandler: NSObject {
     
     private var pcm16Buffer: [Int16] = []
     private let bufferQueue = DispatchQueue(label: "pcm.buffer.queue")
-    private var timer: DispatchSourceTimer?
+    private var timer: SafeTimer?
 
     /*
     private var recordedBuffers: [AVAudioPCMBuffer] = []
@@ -157,6 +157,7 @@ public class MicHandler: NSObject {
     @objc public func startTapping() {
         // recordedBuffers.removeAll()
         isRecording = true
+        self.timer?.resume()
         /*
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { [weak self] in
             guard let self = self else { return }
@@ -169,6 +170,7 @@ public class MicHandler: NSObject {
 
     @objc public func stopTapping(stopEngine:Bool) {
         isRecording = false
+        self.timer?.suspend()
         // engine.inputNode.removeTap(onBus: 0)
         if(stopEngine){
             playerNode.stop()
@@ -243,13 +245,9 @@ public class MicHandler: NSObject {
             engine.connect(engine.inputNode, to: audioSink as! AVAudioNode, format: micInputFormat)
             
             // 开定时器，每 20ms 触发一次
-            self.timer = DispatchSource.makeTimerSource(queue: .global())
-            self.timer?.schedule(deadline: .now()+0.1, repeating: 0.02)
-            self.timer?.setEventHandler { [weak self] in
-                self?.sendOpusFrame()
+            self.timer = SafeTimer(interval:0.02, delay: 0.05) {
+                self.sendOpusFrame()
             }
-            self.timer?.resume()
-
         }
         else{
             engine.attach(playerNode)

@@ -11,12 +11,14 @@ class SafeTimer {
     private var timer: DispatchSourceTimer
     private(set) var isRunning = false
     private var interval: TimeInterval = 0
+    private var delay: TimeInterval = 0
     
-    init(interval: TimeInterval = 1.0, queue: DispatchQueue = .global(), handler: @escaping () -> Void) {
+    init(interval: TimeInterval = 1.0, queue: DispatchQueue = .global(), delay: TimeInterval = 0, handler: @escaping () -> Void) {
         timer = DispatchSource.makeTimerSource(queue: queue)
-        timer.schedule(deadline: .now(), repeating: interval)
+        timer.schedule(deadline: .now() + delay, repeating: interval)
         timer.setEventHandler(handler: handler)
         self.interval = interval
+        self.delay = delay
         // 注意：这里不调用 resume，保持 suspended，等 start() 时才运行
     }
     
@@ -37,7 +39,7 @@ class SafeTimer {
             timer.suspend()
             isRunning = false
         }
-        timer.schedule(deadline: .now(), repeating: self.interval) // 重置时间
+        timer.schedule(deadline: .now() + self.delay, repeating: self.interval) // 重置时间
         timer.resume()
         isRunning = true
     }
