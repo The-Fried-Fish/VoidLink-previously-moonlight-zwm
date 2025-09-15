@@ -35,14 +35,14 @@
     
     self.bitrate = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"bitrate"]];
     assert([self.bitrate intValue] != 0);
-    self.framerate = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"framerate"]];
-    assert([self.framerate intValue] != 0);
+    self.framerate = [NSNumber numberWithDouble:[[NSUserDefaults standardUserDefaults] doubleForKey:@"framerate"]];
+    assert([self.framerate doubleValue] != 0.0);
     self.audioConfig = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"audioConfig"]];
     assert([self.audioConfig intValue] != 0);
     self.preferredCodec = (typeof(self.preferredCodec))[[NSUserDefaults standardUserDefaults] integerForKey:@"preferredCodec"];
     self.enableYUV444 = [[NSUserDefaults standardUserDefaults] boolForKey:@"enableYUV444"];
     self.enablePIP = [[NSUserDefaults standardUserDefaults] boolForKey:@"enablePIP"];
-    self.useFramePacing = [[NSUserDefaults standardUserDefaults] integerForKey:@"useFramePacing"] != 0;
+    self.frameQueueSize = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"frameQueueSize"]];
     self.playAudioOnPC = [[NSUserDefaults standardUserDefaults] boolForKey:@"audioOnPC"];
     self.enableHdr = [[NSUserDefaults standardUserDefaults] boolForKey:@"enableHdr"];
     self.optimizeGames = [[NSUserDefaults standardUserDefaults] boolForKey:@"optimizeGames"];
@@ -50,7 +50,11 @@
     self.swapABXYButtons = [[NSUserDefaults standardUserDefaults] boolForKey:@"swapABXYButtons"];
     self.btMouseSupport = [[NSUserDefaults standardUserDefaults] boolForKey:@"btMouseSupport"];
     self.statsOverlay = [[NSUserDefaults standardUserDefaults] boolForKey:@"statsOverlay"];
-    
+    self.enableGraphs = [[NSUserDefaults standardUserDefaults] boolForKey:@"enableGraphs"];
+    self.graphOpacity = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"graphOpacity"]];
+    self.renderingBackend = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"renderingBackend"]];
+    self.framePacingMode = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"framePacingMode"]];
+
     NSInteger _screenSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"streamResolution"];
     switch (_screenSize) {
         case 0:
@@ -84,11 +88,13 @@
     self.preferredCodec = settings.preferredCodec;
     self.enableYUV444 = settings.enableYUV444;
     self.enablePIP = settings.enablePIP;
-    self.useFramePacing = settings.useFramePacing;
+    self.frameQueueSize = settings.frameQueueSize;
     self.playAudioOnPC = settings.playAudioOnPC;
+    self.redirectMic = settings.redirectMic;
     self.enableHdr = settings.enableHdr;
     self.optimizeGames = settings.optimizeGames;
     self.multiController = settings.multiController;
+    self.buttonVisualFeedback = settings.buttonVisualFeedback;
     self.swapABXYButtons = settings.swapABXYButtons;
     self.onscreenControls = settings.onscreenControls;
     self.gyroMode = settings.gyroMode;
@@ -115,6 +121,10 @@
     self.resolutionSelected = settings.resolutionSelected;
     self.externalDisplayMode = settings.externalDisplayMode;
     self.localMousePointerMode = settings.localMousePointerMode;
+    self.enableGraphs = settings.enableGraphs;
+    self.graphOpacity = settings.graphOpacity;
+    self.renderingBackend = settings.renderingBackend;
+    self.framePacingMode = settings.framePacingMode;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
 #endif
     self.uniqueId = settings.uniqueId;

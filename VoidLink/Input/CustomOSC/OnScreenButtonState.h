@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, assign) uint8_t slideMode;
 @property (nonatomic, assign) uint8_t buttonType;
+@property (nonatomic, assign) uint8_t sizeReference;
 @property (nonatomic, assign) CGFloat widthFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat heightFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat borderWidth; // for OnScreenWidgetView
@@ -39,22 +40,30 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString* widgetShape; // for OnScreenWidgetView
 
 @property (nonatomic, assign) CGFloat oscLayerSizeFactor; // for OnScreenController CALayer
-@property (nonatomic, assign) CGFloat backgroundAlpha; // for OnScreenController CALayer
-@property (nonatomic, assign) uint8_t vibrationStyle; // for OnScreenController CALayer
-@property (nonatomic, assign) uint8_t mouseButtonAction; // for OnScreenController CALayer
+@property (nonatomic, assign) CGFloat backgroundAlpha;
+@property (nonatomic, assign) uint8_t vibrationStyle;
+@property (nonatomic, assign) uint8_t mouseButtonAction;
+@property (nonatomic, assign) uint16_t autoTapInterval;
 
 // @property (nonatomic, assign) BOOL hasValidPosition;
 
-typedef NS_ENUM(NSInteger, OnScreenButtonType) {
-    LegacyOscButton,
+typedef NS_ENUM(NSInteger, OnScreenWidgetType) {
+    LegacyOnScreenControls,
     CustomOnScreenWidget
 };
+
+typedef NS_ENUM(NSInteger, WidgetSizeReference) {
+    longSide,
+    shortSide
+};
+
 
 typedef NS_ENUM(NSInteger, MouseButtonAction) {
     hovering,
     leftButtonDown,
     middleButtonDown,
     rightButtonDown,
+    noClick
 };
 
 typedef NS_ENUM(NSInteger, ButtonSlideMode) {
@@ -62,8 +71,6 @@ typedef NS_ENUM(NSInteger, ButtonSlideMode) {
     slideAndHold,
     disabled
 };
-
-
 
 - (id) initWithButtonName:(NSString*)name buttonType:(uint8_t)buttonType andPosition:(CGPoint)position;
 

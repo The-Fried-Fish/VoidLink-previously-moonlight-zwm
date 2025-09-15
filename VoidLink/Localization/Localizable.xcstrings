@@ -24,6 +24,29 @@
         }
       }
     },
+    "  %d%% opacity  " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  %d%%不透明度  "
+          }
+        }
+      }
+    },
     "  disconnect  " : {
       "extractionState" : "manual",
       "localizations" : {
@@ -260,6 +283,29 @@
         }
       }
     },
+    "[ Disconnect & quit app ]" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 断开连接并退出应用 ]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 斷開連線並退出應用程式 ]"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 斷開連線並退出應用程式 ]"
+          }
+        }
+      }
+    },
     "[ Enter picture-in-picture mode ]" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -329,6 +375,29 @@
         }
       }
     },
+    "[ Toggle stats overlay ]" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 切换统计覆盖层 ]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 切換統計覆蓋層 ]"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 切換統計覆蓋層 ]"
+          }
+        }
+      }
+    },
     "%@ is currently running" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -348,6 +417,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 目前正在執行"
+          }
+        }
+      }
+    },
+    "%3u ms (var: %3u ms)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%3u ms (抖动: %3u ms)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%3u ms (變異數：%3u ms)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%3u ms (變異數：%3u ms)"
           }
         }
       }
@@ -394,29 +486,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%d%%螢幕寬度"
-          }
-        }
-      }
-    },
-    "%u ms (variance: %u ms)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%u ms (抖动: %u ms)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%u ms (變異數：%u ms)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%u ms (變異數：%u ms)"
           }
         }
       }
@@ -634,7 +703,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度"
+            "value" : "透明度"
           }
         },
         "zh-Hant" : {
@@ -657,7 +726,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件透明度: %.2f"
+            "value" : "透明度: %.2f"
           }
         },
         "zh-Hant" : {
@@ -720,6 +789,52 @@
         }
       }
     },
+    "Auto tap disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连点已关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連點已關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連點已關閉"
+          }
+        }
+      }
+    },
+    "Auto tap: %dms" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动连点: %dms "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動連點: %dms "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動連點: %dms "
+          }
+        }
+      }
+    },
     "Back" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -739,6 +854,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "返回"
+          }
+        }
+      }
+    },
+    "Balanced" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平衡"
           }
         }
       }
@@ -841,7 +979,7 @@
         }
       }
     },
-    "Border Width" : {
+    "Border width" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -864,7 +1002,7 @@
         }
       }
     },
-    "Border Width: %.2f" : {
+    "Border width: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -1941,25 +2079,77 @@
         }
       }
     },
-    "FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@" : {
+    "framePacingStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Off = no frame pacing, previously “Lowest Latency”.\n\n- Legacy, previously “Smoothest Video” (though it’s not the smoothest option anymore)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "帧率: %5.2f     网络丢帧: %.2f%%     网络延迟: %@"
+            "value" : "- 关闭 = 无帧步进控制，即为之前的“最低延迟”.\n\n- 传统模式，相当于之前的“最高流畅度” (尽管已经不是最流畅的选项)."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FPS：%5.2f 網路掉幀：%.2f%% 網路延遲：%@"
+            "value" : "- 關閉 = 無影格步調控制，即為之前的“最低延遲”。\n\n- 傳統模式，相當於之前的“最高流暢度”（儘管已經不是最流暢的選項）。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FPS：%5.2f 網路掉幀：%.2f%% 網路延遲：%@"
+            "value" : "- 關閉 = 無影格步調控制，即為之前的“最低延遲”。\n\n- 傳統模式，相當於之前的“最高流暢度”（儘管已經不是最流暢的選項）。"
+          }
+        }
+      }
+    },
+    "Frames to Buffer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數"
+          }
+        }
+      }
+    },
+    "Frames to buffer: %ld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缓冲帧数：%ld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數：%ld"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緩衝影格數：%ld"
           }
         }
       }
@@ -2006,6 +2196,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手勢"
+          }
+        }
+      }
+    },
+    "Go to Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往系统设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往系統設定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往系統設定"
           }
         }
       }
@@ -2149,7 +2362,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度"
+            "value" : "高度"
           }
         },
         "zh-Hant" : {
@@ -2172,19 +2385,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件高度: %.2f"
+            "value" : "高度: %.2f "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高度：%.2f"
+            "value" : "高度: %.2f "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高度：%.2f"
+            "value" : "高度: %.2f "
           }
         }
       }
@@ -2281,7 +2494,30 @@
         }
       }
     },
-    "Indicator Offset: %.0f" : {
+    "Important Tips" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要提示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要提示"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要提示"
+          }
+        }
+      }
+    },
+    "Indicator offset: %.0f" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -2369,6 +2605,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加入我們"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍后"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍後"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍後"
           }
         }
       }
@@ -2488,6 +2747,35 @@
         }
       }
     },
+    "loadOswConfigTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Tap the drawer icon to duplicate the default profile, since it cannot be modified or overwritten.\n\n- Tap to load configs for each widget.\n\n- To ensure smooth gameplay without interference:\n   - Disable All gestures in: Settings → Multitasking & Gestures\n   - Disable Settings → Accessibility → Touch → AssistiveTouch\n   - Disable Settings → Accessibility → Zoom\n\n- We recommend using new widgets instead of legacy on-screen controls."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 请点击抽屉图标复制一份默认布局，因为默认布局无法修改或覆盖。\n\n- 点击以加载每个控件的配置。\n\n- 为避免游戏过程被干扰，请务必:\n   - 设置 → 多任务与手势 → 关闭所有手势\n   - 关闭: 设置 → 辅助功能 → 触控 → 辅助触控\n   - 关闭: 设置 → 辅助功能 → 缩放\n\n- 建议使用新版屏显控件，而非旧版屏显手柄。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請點擊抽屜圖示複製一份預設版面，因為預設版面無法修改或覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請點擊抽屜圖示複製一份預設版面，因為預設版面無法修改或覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
+          }
+        }
+      }
+    },
     "Local Keyboard Toggle Disabled" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2594,6 +2882,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法連線到主機。\n\n如果您使用 GeForce Experience 進行託管，請確保您已在 SHIELD 標籤上啟用切換。\n\n如果您使用 Sunshine 進行託管，請確保其正常執行。如果您使用的是非預設連接埠，則需要在此處包含該連接埠。"
+          }
+        }
+      }
+    },
+    "micPermissionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Please grant microphone permission in your system settings, then re-enable “Redirect Mic.”\n\n- Currently, mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\nThis feature is experimental, and the microphone audio stream is NOT ENCRYPTED at this stage.\n\n- iOS 12 mic redirection has known audio quality issue that can’t be fixed due to technical reasons."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 请前往系统设置授予 App 麦克风权限，再回到此菜单启用麦克风重定向。\n\n- 目前麦克风重定向仅支持 Sunshine 基地版，且为实验性功能。 须注意，现阶段的 Mic 音频流 【未经加密】。\n\n- iOS 12 的麦克风重定向存在因技术原因无法解决的音质问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        }
+      }
+    },
+    "Microphone Permission" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风权限"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風權限"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麥克風權限"
           }
         }
       }
@@ -3347,6 +3687,110 @@
         }
       }
     },
+    "PerfModeTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Changing the rendering mode requires restarting the application to ensure a clean start.\n\n- Performance mode is an experimental feature and cannot guarantee a positive impact on the streaming experience.\n\n- HDR under performance mode for devices of limited dynamic range like iPad mini(LCD display) could be broken.\n\n- Tapping “Quit Now” means I acknowledge the above information."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 更改渲染模式需要重启应用以确保干净启动。\n\n- 性能模式为实验性功能，无法保证开启后对串流体验产生正向优化。 \n\n- 有限动态范围设备，如采用LCD的iPad mini，开启性能模式后可能无法正常显示HDR画面。\n\n- 点击“立即退出”代表我已知悉以上内容。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 更改渲染模式需要重新啟動應用程式以確保乾淨啟動。\n\n- 效能模式為實驗性功能，無法保證開啟後對串流體驗產生正向優化。\n\n- 有限動態範圍裝置，如採用 LCD 的 iPad mini，開啟效能模式後可能無法正常顯示 HDR 畫面。\n\n- 點擊「立即退出」代表我已知悉以上內容。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 更改渲染模式需要重新啟動應用程式以確保乾淨啟動。\n\n- 效能模式為實驗性功能，無法保證開啟後對串流體驗產生正向優化。\n\n- 有限動態範圍裝置，如採用 LCD 的 iPad mini，開啟效能模式後可能無法正常顯示 HDR 畫面。\n\n- 點擊「立即退出」代表我已知悉以上內容。"
+          }
+        }
+      }
+    },
+    "Performance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能"
+          }
+        }
+      }
+    },
+    "Performance Graphs - Opacity: %ld%%" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性能图表 - 不透明度：%ld%%"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：%ld%%"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "效能圖表 - 不透明度：%ld%%"
+          }
+        }
+      }
+    },
+    "performanceGraphStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Displays frametime and buffer health metrics. Adjust the opacity if they obscure parts of the screen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示帧时间和缓冲区健康指标。如果它们遮挡了屏幕的部分内容，请调整透明度。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間和緩衝區健康指標。如果它們遮蓋了畫面部分內容，請調整透明度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影格時間和緩衝區健康指標。如果它們遮蓋了畫面部分內容，請調整透明度。"
+          }
+        }
+      }
+    },
     "Peripherals" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3699,6 +4143,29 @@
         }
       }
     },
+    "Quit Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即退出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即退出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即退出"
+          }
+        }
+      }
+    },
     "Quit Running App" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3837,6 +4304,35 @@
         }
       }
     },
+    "redirectMicStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Currently, mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\nThis feature is experimental, and the microphone audio stream is NOT ENCRYPTED at this stage.\n\n- iOS 12 mic redirection has known audio quality issue that can’t be fixed due to technical reasons."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 目前麦克风重定向仅支持 Sunshine 基地版，且为实验性功能。 须注意，现阶段的 Mic 音频流 【未经加密】。\n\n- iOS 12 的麦克风重定向存在因技术原因无法解决的音质问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。\n\n- iOS 12 的麥克風轉送因技術原因存在無法解決的音質問題。"
+          }
+        }
+      }
+    },
     "Remove" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3902,6 +4398,104 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除項目"
+          }
+        }
+      }
+    },
+    "Rendering Mode (Experimental)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（实验性）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "渲染模式（實驗性）"
+          }
+        }
+      }
+    },
+    "Rendering mode change requires app restart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改渲染模式需要重启应用以确保干净启动。您是否要立即退出应用？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+          }
+        }
+      }
+    },
+    "renderingBackendStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Performance rendering mode [may] handle higher bitrate with lower latency, the battery usage can be higher and PiP is not supported in this mode. Use balanced mode when issues occurred."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "性能渲染模式 [或可] 以更低的延迟处理更高的比特率，但电池消耗可能更高，且该模式不支持画中画。如遇到问题请使用平衡模式。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "效能渲染模式 [或可] 以更低的延遲處理更高的位元速率，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "效能渲染模式 [或可] 以更低的延遲處理更高的位元速率，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+          }
+        }
+      }
+    },
+    "Restart Required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重启App"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重新啟動App"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要重新啟動App"
           }
         }
       }
@@ -4263,13 +4857,42 @@
         }
       }
     },
+    "simplifiedOsdText" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f    Dropped frames: %4.1f%%    Bitrate: %5.1f Mbps    Latency: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帧率: %6.2f    丢帧: %4.1f%%    码率: %5.1f Mbps   延迟: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+          }
+        }
+      }
+    },
     "Size" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小"
+            "value" : "大小"
           }
         },
         "zh-Hant" : {
@@ -4292,19 +4915,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控件大小: %.2f"
+            "value" : "大小: %.2f "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大小：%.2f"
+            "value" : "大小: %.2f "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大小：%.2f"
+            "value" : "大小: %.2f "
           }
         }
       }
@@ -4655,25 +5278,25 @@
         }
       }
     },
-    "Tip: Swipe from screen edge to a certiain distance (configured by Swipe & Exit settings) to disconnect from your PC" : {
+    "This is an experimental feature that may cause stuttering or freezing in the stream view." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提示: 从屏幕连续滑动一定距离退出远程桌面. 滑动边缘和距离取决于菜单设置."
+            "value" : "这是一项实验性功能，可能导致画面卡顿。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提示：從螢幕邊緣滑動一段距離（由滑動和離開設定配置）以中斷與您電腦的連線"
+            "value" : "這是一項實驗性功能，可能導致畫面卡頓。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提示：從螢幕邊緣滑動一段距離（由滑動和離開設定配置）以中斷與您電腦的連線"
+            "value" : "這是一項實驗性功能，可能導致畫面卡頓。"
           }
         }
       }
@@ -4920,24 +5543,24 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Touchpad: Dragging works exactly like on Windows laptop touchpad. A quick double-tap, starting from the second tap, enters drag mode.\n\n- Native Touch: Aka multi-touch passthrough, not supported on macOS.\n\n- Absolute Touch: Provides a touchscreen-like experience on macOS."
+            "value" : "- Touchpad: Dragging works exactly like on Windows laptop touchpad. A quick double-tap, starting from the second tap, enters drag mode.\n\n- Native Touch: Aka multi-touch passthrough, not supported on macOS.\n\n- Single Point: Provides a touchscreen-like experience on macOS."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "- 触控板: 拖移方式与Windows笔记本电脑触控板相同, 快速双击的第2下开始进入拖动状态.\n\n- 多点触控: 不支持macOS.\n\n- 单点鼠标: 可为macOS提供类触屏体验."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
           }
         }

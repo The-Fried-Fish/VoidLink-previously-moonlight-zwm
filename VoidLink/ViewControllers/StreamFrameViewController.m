@@ -17,6 +17,10 @@
 #import "SceneDelegate.h"
 #import "ControllerSupport.h"
 #import "DataManager.h"
+#import "PaddedLabel.h"
+#import "ImGuiRenderer.h"
+#import "RelativeTouchHandler.h"
+#import "MetalVideoRenderer.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "CustomTapGestureRecognizer.h"
 #import "LocalizationHelper.h"
@@ -49,10 +53,10 @@
     TemporarySettings *_settings;
     NSTimer *_inactivityTimer;
     NSTimer *_statsUpdateTimer;
+    PaddedLabel *_overlayView;
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
-    UITextView *_overlayView;
     uint16_t overlayLevel;
     UILabel *_stageLabel;
     UILabel *_tipLabel;
@@ -63,6 +67,9 @@
     bool viewJustLoaded;
     bool viewIsBeingResized;
     CGSize _keyboardSize;
+    PlotMetrics _decodeMetrics;
+    PlotMetrics _frameDropMetrics;
+    PlotMetrics _frameQueueMetrics;
     UIWindow *_extWindow;
     UIView *_streamVideoRenderView;
     /*
@@ -81,12 +88,21 @@
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
+    MicHandler* micHandler;
+#else
+    UITapGestureRecognizer *_menuTapGestureRecognizer;
+    UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
+    UITapGestureRecognizer *_playPauseTapGestureRecognizer;
 #endif
 
 }
 
 - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = YES;
+    if (self.imguiView) {
+        self.imguiView.mtkView.hidden = YES;
+        Log(LOG_I, @"Hiding ImGui view for PiP start.");
+    }
 }
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
@@ -102,15 +118,23 @@
 
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
     _streamView.hidden = NO;
+    if (self.imguiView) {
+        self.imguiView.mtkView.hidden = NO;
+        Log(LOG_I, @"Showing ImGui view after PiP stop.");
+    }
+
     if (!_isRestoringFromPiP) {
         [self returnToMainFrame];
     }
-    _isRestoringFromPiP = NO;
 }
 
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
     _isRestoringFromPiP = YES;
     _streamView.hidden = NO;
+    if (self.imguiView) {
+        self.imguiView.mtkView.hidden = NO;
+        Log(LOG_I, @"Showing ImGui view for PiP restore.");
+    }
     completionHandler(YES);
 }
 
@@ -153,7 +177,7 @@
 
 
 - (bool)isOscLayoutToolEnabled{
-    return (_settings.touchMode.intValue == RelativeTouch || _settings.touchMode.intValue == NativeTouch || _settings.touchMode.intValue == AbsoluteTouch) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+    return (_settings.touchMode.intValue == RelativeTouch || _settings.touchMode.intValue == NativeTouch || _settings.touchMode.intValue == NativeTouch || _settings.touchMode.intValue == TouchDisabled) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {    // Ensure we have the renderer and its layer
@@ -284,7 +308,7 @@
 
 - (void)configZoomGestureAndAddStreamView{
     if (_settings.touchMode.intValue == AbsoluteTouch) {
-        _scrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
+        if(!_scrollView) _scrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
 #if !TARGET_OS_TV
         [_scrollView.panGestureRecognizer setMinimumNumberOfTouches:2];
         [_scrollView.panGestureRecognizer setMaximumNumberOfTouches:2]; // reduce competing with keyboardToggleRecognizer in StreamView.
@@ -293,19 +317,30 @@
         [_scrollView setShowsVerticalScrollIndicator:NO];
         [_scrollView setDelegate:self];
         [_scrollView setMaximumZoomScale:10.0f];
-        
-        // Add StreamView inside a UIScrollView for absolute mode
-        [_scrollView addSubview:_streamView];
-        [self.view addSubview:_scrollView];
+        if(!_mainFrameViewcontroller.settingsExpandedInStreamView){
+            // Add StreamView inside a UIScrollView for absolute mode
+            [_scrollView addSubview:_streamView];
+            // Insert at index 0 to ensure it doesn't cover OSC controls (CALayers)
+            [self.view insertSubview:_scrollView atIndex:0];
+        }
     }
     else{
         // Add streamView directly to self.view in other touch modes
-        [self.view addSubview:_streamView];
+        // Insert at index 0 to ensure it doesn't cover OSC controls (CALayers)
+        if([_streamView.superview isKindOfClass:[UIScrollView class]]){
+            [_streamView removeFromSuperview];
+        }
+        
+        [self.view insertSubview:_streamView atIndex:0];
     }
 }
 
+- (void)reConfigStreamViewRealtime {
+    [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+}
+
 // key implementation of reconfiguring streamview after realtime setting menu is closed.
-- (void)reConfigStreamViewRealtime{
+- (void)reConfigStreamViewRealtimeAndReloadSettings:(BOOL)reloadSettings{
     //[self.view removeGestureRecognizer:]
     //first, remove all gesture recognizers:
     for (UIGestureRecognizer *recognizer in _streamView.gestureRecognizers) {
@@ -315,8 +350,12 @@
         [self.view removeGestureRecognizer:recognizer];
     }
     
-    _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
+    if (reloadSettings) {
+        _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
+    }
     overlayLevel = _settings.statsOverlayLevel.intValue;
+    [self setupOverlayView];
+    
     if(viewIsBeingResized) viewIsBeingResized = false;
     else [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
@@ -325,7 +364,12 @@
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
     [self.mainFrameViewcontroller reloadStreamConfig]; // reload streamconfig
     
-    NSLog(@"viewJustloaded: %d", viewJustLoaded);
+    if([MicHandler permissionGranted] && _settings.redirectMic){
+        [micHandler startTapping];
+    }
+    else [micHandler stopTappingWithStopEngine:false];
+    
+    NSLog(@"viewJustloaded: %d, redirectMic:%d", viewJustLoaded, _settings.redirectMic);
     if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
     else viewJustLoaded = false;
     // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
@@ -337,13 +381,50 @@
     [self reloadAirPlayConfig];
     [self mousePresenceChanged];
     
-    //reconfig statsOverlay
-    self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
-                                                               target:self
-                                                             selector:@selector(updateStatsOverlay)
-                                                             userInfo:nil
-                                                              repeats:_settings.statsOverlayEnabled];
+    // Invalidate the old timer to prevent duplicates
+    if (self->_statsUpdateTimer) {
+        [self->_statsUpdateTimer invalidate];
+        self->_statsUpdateTimer = nil;
+    }
+    // Re-schedule the timer only if the overlay is enabled
+    if (_settings.statsOverlayEnabled) {
+        self->_statsUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                                                 target:self
+                                                               selector:@selector(updateStatsOverlay)
+                                                               userInfo:nil
+                                                                repeats:YES];
+    } else {
+        // Ensure the overlay is removed when disabled
+        [_overlayView removeFromSuperview];
+    }
     
+    // Re-create the ImGui view to properly apply the 'enableGraphs' setting
+    if (self.imguiView && self.imguiView.mtkView) {
+        [self.imguiView stop];
+        [self.imguiView.mtkView removeFromSuperview];
+        self.imguiView = nil;
+    }
+    self.imguiView = [[ImGuiRenderer alloc] initWithFrame:self.view.bounds
+                                                streamFps:[_settings.framerate intValue]
+                                             enableGraphs:_settings.enableGraphs
+                                             graphOpacity:[_settings.graphOpacity intValue]];
+    self.imguiView.mtkView.userInteractionEnabled = NO;
+    [self.view addSubview:self.imguiView.mtkView];
+
+    // Ensure views are layered correctly
+    // Metal view should be at the bottom for video rendering
+    if (self.metalViewController && self.metalViewController.view.superview) {
+        [self.view sendSubviewToBack:self.metalViewController.view];
+    }
+    // StreamView should also be at the back so OSC CALayers on self.view show
+    if (self->_streamView && self->_streamView.superview) {
+        [self.view sendSubviewToBack:self->_streamView];
+    }
+    // ImGui view should be on top for debug graphs
+    if (self.imguiView && self.imguiView.mtkView.superview) {
+        [self.view bringSubviewToFront:self.imguiView.mtkView];
+    }
+
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
@@ -579,7 +660,7 @@
 #if TARGET_OS_TV
     [_tipLabel setText:@"Tip: Tap the Play/Pause button on the Apple TV Remote to disconnect from your PC"];
 #else
-    [_tipLabel setText:[LocalizationHelper localizedStringForKey:@"Tip: Swipe from screen edge to a certiain distance (configured by Swipe & Exit settings) to disconnect from your PC"]];
+    // [_tipLabel setText:[LocalizationHelper localizedStringForKey:@"Tip: Swipe from screen edge to a certiain distance (configured by Swipe & Exit settings) to disconnect from your PC"]];
 #endif
     
     [_tipLabel sizeToFit];
@@ -640,6 +721,22 @@
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];
     [self.view addSubview:_tipLabel];
+
+    if ([_settings.renderingBackend intValue] == RENDER_METAL) {
+        // Metal view for video
+        Log(LOG_I, @"StreamFrameViewController creating MetalViewController");
+        self.metalViewController = [[MetalViewController alloc] initWithFrame:self.view.bounds
+                                                                    framerate:[self->_settings.framerate floatValue]
+                                                                    settings:self->_settings
+                                                               metricsHandler:self.imguiView.metricsHandler];
+        self.metalViewController.view.userInteractionEnabled = NO;
+        [self addChildViewController:self.metalViewController];
+        // Insert Metal view at the bottom of the view hierarchy
+        [self.view insertSubview:self.metalViewController.view atIndex:0];
+        [self.metalViewController didMoveToParentViewController:self];
+    }
+    
+    _mainFrameViewcontroller.sessionLaunchedWithAbsoluteTouch = _settings.touchMode.intValue == AbsoluteTouch;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
@@ -718,6 +815,12 @@
             [_inactivityTimer invalidate];
             _inactivityTimer = nil;
         }
+        if (self.metalViewController) {
+            [self.metalViewController.view removeFromSuperview];
+            [self.metalViewController removeFromParentViewController];
+            self.metalViewController = nil;
+            NSLog(@"Metal renderer stopped and cleaned up.");
+        }
         [[NSNotificationCenter defaultCenter] removeObserver:self];
     }
 }
@@ -749,25 +852,34 @@
 - (void)updateStatsOverlay {
     if(!_settings.statsOverlayEnabled){
         [_overlayView removeFromSuperview];
+        // Invalidate the timer when stats overlay is disabled
+        if (_statsUpdateTimer) {
+            [_statsUpdateTimer invalidate];
+            _statsUpdateTimer = nil;
+        }
         return; // add this for realtime streamview reconfig
     }
-    else [self.view addSubview:_overlayView]; // don't know why but this is necessary for reactivating overlay.
+    
+    // Only add the overlay if it's not already in the view hierarchy
+    if (_overlayView.superview == nil) {
+        [self.view addSubview:_overlayView];
+    }
 
     NSString* overlayText = [self->_streamMan getStatsOverlayText:overlayLevel];
+                             
     dispatch_async(dispatch_get_main_queue(), ^{
         [self updateOverlayText:overlayText];
     });
 }
 
-- (void)updateOverlayText:(NSString*)text {
+- (void)setupOverlayView{
     if (_overlayView == nil) {
-        _overlayView = [[UITextView alloc] init];
-#if !TARGET_OS_TV
-        [_overlayView setEditable:NO];
-#endif
+        _overlayView = [[PaddedLabel alloc] initWithFrame:CGRectZero];
+        [_overlayView setTextInsets:UIEdgeInsetsMake([_mainFrameViewcontroller isIPhone]?4:6, 12, [_mainFrameViewcontroller isIPhone]?4:6, 12)];
         [_overlayView setUserInteractionEnabled:NO];
-        [_overlayView setSelectable:NO];
-        [_overlayView setScrollEnabled:NO];
+        [_overlayView setNumberOfLines:100];
+        [_overlayView.layer setCornerRadius:[_mainFrameViewcontroller isIPhone]?7:10];
+        [_overlayView.layer setMasksToBounds:YES];
         
         // HACK: If not using stats overlay, center the text
         if (_statsUpdateTimer == nil) {
@@ -777,20 +889,21 @@
         [_overlayView setTextColor:[UIColor lightGrayColor]];
         [_overlayView setBackgroundColor:[UIColor blackColor]];
 #if TARGET_OS_TV
-        [_overlayView setFont:[UIFont systemFontOfSize:24]];
+        [_overlayView setFont:[UIFont systemFontOfSize:24 weight:UIFontWeightMedium]];
 #else
-        if (@available(iOS 13.0, *)) {
-            [_overlayView setFont:[UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular]];
-        } else {
-            [_overlayView setFont:[UIFont systemFontOfSize:12]];// Fallback on earlier versions
-        }
-        //[_overlayView setFont:[UIFont fontWithName:@"Menlo" size:12]];
-
+        [_overlayView setFont:[UIFont systemFontOfSize: [_mainFrameViewcontroller isIPhone]?10:12 weight:UIFontWeightMedium]];
 #endif
-        [_overlayView setAlpha:0.5];
+        [_overlayView setAlpha:(float)[_settings.graphOpacity intValue]/ 100.0];
         [self.view addSubview:_overlayView];
     }
+    if (@available(iOS 13.0, *)) {
+       if(overlayLevel == 1) _overlayView.font = [UIFont monospacedSystemFontOfSize:[_mainFrameViewcontroller isIPhone]?10:12 weight:UIFontWeightMedium];
+    }
     
+    [_overlayView setHidden:YES];
+}
+
+- (void)updateOverlayText:(NSString*)text {
     if (text != nil) {
         // We set our bounds to the maximum width in order to work around a bug where
         // sizeToFit interacts badly with the UITextView's line breaks, causing the
@@ -801,7 +914,7 @@
                                            _overlayView.frame.size.height)];
         [_overlayView setText:text];
         [_overlayView sizeToFit];
-        [_overlayView setCenter:CGPointMake(self.view.frame.size.width / 2, _overlayView.frame.size.height / 2)];
+        [_overlayView setCenter:CGPointMake(self.view.frame.size.width / 2, (4 + (_overlayView.frame.size.height / 2)))];
         [_overlayView setHidden:NO];
     }
     else {
@@ -827,6 +940,8 @@
     
     _extWindow = nil;
     
+    if(_streamConfig.redirectMic) [micHandler stopTappingWithStopEngine:true];
+
     self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
 }
 
@@ -903,6 +1018,16 @@
     if(![self isAirPlaying]){
         _streamVideoRenderView.bounds = _deviceWindow.bounds;
         _streamVideoRenderView.frame = _deviceWindow.frame;
+
+        // Handle resize for meetal renderer
+        if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+            self.metalViewController.view.frame = _deviceWindow.bounds;
+            [self.metalViewController.view setNeedsLayout];
+            [self.metalViewController.view layoutIfNeeded];
+            Log(LOG_I, @"Updated Metal view bounds after resize");
+        }
+        
+        // Handle resize for AVSB renderer
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc postNotificationName:@"ScreenChanged" object:self];
     }
@@ -912,17 +1037,16 @@
 
 // This will fire if the user opens control center or gets a low battery message
 - (void)applicationWillResignActive:(NSNotification *)notification {
-    
     //[self.pipController startPictureInPicture];
     //sleep(1);
-    
+
 #if !TARGET_OS_TV
 #endif
 }
 
 - (void)inactiveTimerExpired:(NSTimer*)timer {
     Log(LOG_I, @"Terminating stream after inactivity");
-    
+
     [self returnToMainFrame];
     
     _inactivityTimer = nil;
@@ -935,9 +1059,25 @@
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
+
+    // Check if we were in PiP
     if (self.pipController && self.pipController.isPictureInPictureActive) {
         [self.pipController stopPictureInPicture];
     }
+    
+    if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+        Log(LOG_I, @"Resuming Metal renderer on foreground");
+        [self.metalViewController resumeRendering];
+    }
+    
+    if (self.imguiView && self.imguiView.mtkView && _settings.enableGraphs) {
+        self.imguiView.mtkView.enableSetNeedsDisplay = YES;
+        self.imguiView.mtkView.paused = NO;
+        Log(LOG_I, @"Resuming ImGui renderer on foreground");
+    }
+    
+    [self->_streamMan.videoRenderer resetFramePacing];
+    _isRestoringFromPiP = NO;
 }
 
 // This fires when the home button is pressed
@@ -946,13 +1086,24 @@
     NSLog(@"did enter background, %d, %@, %d", _settings.enablePIP, self.pipController, self.pipController.isPictureInPictureActive);
     if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
         //Log(LOG_I, @"PIP is active, not terminating stream");
+    } else {
+        if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+            Log(LOG_I, @"Pausing Metal renderer on background");
+            [self.metalViewController pauseRendering];
+        }
+        
+        if (self.imguiView && self.imguiView.mtkView) {
+            self.imguiView.mtkView.paused = YES;
+            self.imguiView.mtkView.enableSetNeedsDisplay = NO;
+            Log(LOG_I, @"Pausing ImGui renderer on background");
+        }
     }
-    
+
     if (_inactivityTimer != nil) {
         [_inactivityTimer invalidate];
         _inactivityTimer = nil;
     }
-    
+
     // Terminate the stream if the app is inactive for ...
     Log(LOG_I, @"Starting inactivity termination timer with %d min", _settings.backgroundSessionTimer.intValue);
     _inactivityTimer = [NSTimer scheduledTimerWithTimeInterval:60*(double)_settings.backgroundSessionTimer.intValue
@@ -985,6 +1136,16 @@
     [self returnToMainFrame];
 }
 
+- (void)disconnectAndQuitApp{
+    [self returnToMainFrame];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        sleep(1.5);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.mainFrameViewcontroller quitRunningApp];
+        });
+    });
+}
+
 - (void) connectionStarted {
     Log(LOG_I, @"Connection started");
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -993,6 +1154,15 @@
         self->_stageLabel.hidden = YES;
         self->_tipLabel.hidden = YES;
         self->_spinner.hidden = YES;
+        
+        // Ensure correct view hierarchy before showing OSC
+        if ([self->_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+            [self.view sendSubviewToBack:self.metalViewController.view];
+        }
+        // For AVSB renderer, ensure streamView is at the back so OSC layers show
+        if (self->_streamView && self->_streamView.superview) {
+            [self.view sendSubviewToBack:self->_streamView];
+        }
         
         [self->_streamView showOnScreenControls];
         
@@ -1102,6 +1272,21 @@
 }
 
 - (void) stageComplete:(const char*)stageName {
+    _micStreamInitialized = false;
+    if(strcmp(stageName, "mic stream establishment")==0){
+        
+        if(_streamConfig.redirectMic){
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                self->_micStreamInitialized = true;
+                self->micHandler = [MicHandler new];
+                [self->micHandler startTapping];
+            });
+        }
+    }
+    
+    if(strcmp(stageName, "mic stream unsupported or unintialized")==0){
+        _micStreamInitialized = false;
+    }
 }
 
 - (void) stageFailed:(const char*)stageName withError:(int)errorCode portTestFlags:(int)portTestFlags {
@@ -1310,13 +1495,12 @@
 }
 
 - (void)toggleStatsOverlay{
-    DataManager* dataMan = [[DataManager alloc] init];
-    Settings *currentSettings = [dataMan retrieveSettings];
+    // Toggle the values on the current in-memory settings object for a temporary effect
+    _settings.statsOverlayEnabled = !_settings.statsOverlayEnabled;
+    // _settings.enableGraphs = _settings.statsOverlayEnabled;
     
-    currentSettings.statsOverlayEnabled = !currentSettings.statsOverlayEnabled;
-    
-    [dataMan saveData];
-    [self reConfigStreamViewRealtime];
+    // Reconfigure the UI using the current in-memory settings, without reloading from disk
+    [self reConfigStreamViewRealtimeAndReloadSettings:NO];
 }
 
 - (void)toggleMouseCapture{
@@ -1385,6 +1569,11 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
+    if (_isRestoringFromPiP) {
+        Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
+        return;
+    }
+
     Log(LOG_I, @"View size changed, terminating stream");
     
     double delayInSeconds = 0.2;

@@ -42,10 +42,11 @@ static CGFloat screenWidthInPoints;
     if ([[event allTouches] count] == _numberOfTouchesRequired) {
         _gestureCapturedTime = CACurrentMediaTime();
         _gestureCaptured = true;
+        lowestTouchPointYCoord = 0;
         for(UITouch *touch in [event allTouches]){
             if(lowestTouchPointYCoord < [touch locationInView:self.view].y) lowestTouchPointYCoord = [touch locationInView:self.view].y;
+            // NSLog(@"lowest point coord: %f, %f", lowestTouchPointYCoord, CACurrentMediaTime());
         }
-        
         // this mechanism is deprecated.
         /* if(_numberOfTouchesRequired == 2){
             NSArray *twoTouches = [[event allTouches] allObjects];
@@ -55,7 +56,7 @@ static CGFloat screenWidthInPoints;
         _lowestTouchPointHeight = screenHeightInPoints - lowestTouchPointYCoord;
         // NSLog(@"gen _lowestTouchPointHeight %f markmark", _lowestTouchPointHeight);
         if(_immediateTriggering){
-            lowestTouchPointYCoord = 0.0; //reset for next recoginition
+            // lowestTouchPointYCoord = 0.0; //reset for next recoginition
             self.state = UIGestureRecognizerStateRecognized;
             return;
         }
@@ -79,7 +80,7 @@ static CGFloat screenWidthInPoints;
     else if(_gestureCaptured && allTouchesCount == [touches count] && !_isOnScreenControllerBeingPressed && ![self isOnScreenWidgetViewBeingPressed]){  //must exclude virtual controller & onscreen button taps here to prevent stucked button, _areVirtualControllerTaps flag is set by onscreencontrols, containOnScreenButtonsTaps will be returned by iterating all widget views in streamframeview
         _gestureCaptured = false; //reset for next recognition
         if((CACurrentMediaTime() - _gestureCapturedTime) < _tapDownTimeThreshold){
-            lowestTouchPointYCoord = 0.0; //reset for next recognition
+            // lowestTouchPointYCoord = 0.0; //reset for next recognition
             self.state = UIGestureRecognizerStateRecognized;
             // NSLog(@"gen _lowestTouchPointHeight %f markmark touchesEnd", _lowestTouchPointHeight);
         }

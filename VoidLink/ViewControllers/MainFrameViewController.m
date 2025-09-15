@@ -28,6 +28,7 @@
 #import "IdManager.h"
 #import "ConnectionHelper.h"
 #import "LocalizationHelper.h"
+#import "Plot.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "DataManager.h"
 #import "ThemeManager.h"
@@ -74,7 +75,8 @@
     StreamFrameViewController* streamFrameViewController;
     id navBarAppearanceStandard;
     bool _viewJustAppeared;
-    
+    TemporaryApp * launchedApp;
+
     NSTimer *_foregroundHostUpdateTimer;
 
 #if TARGET_OS_TV
@@ -771,6 +773,7 @@ static NSMutableSet* hostList;
 }
 
 - (void) prepareToStreamApp:(TemporaryApp *)app {
+    launchedApp = app;
     [self updateResolutionAccordingly];
     self.revealViewController.isStreaming = true; // tell the revealViewController streaming is started.
     _streamConfig = [[StreamConfiguration alloc] init];
@@ -817,8 +820,9 @@ static NSMutableSet* hostList;
     _streamConfig.bitRate = [streamSettings.bitrate intValue];
     _streamConfig.optimizeGameSettings = streamSettings.optimizeGames;
     _streamConfig.playAudioOnPC = streamSettings.playAudioOnPC;
-    _streamConfig.useFramePacing = streamSettings.useFramePacing;
+    _streamConfig.redirectMic = streamSettings.redirectMic;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
+    _streamConfig.buttonVisualFeedback = streamSettings.buttonVisualFeedback;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
     _streamConfig.gyroMode = [streamSettings.gyroMode intValue];
     _streamConfig.emulatedControllerType = streamSettings.emulatedControllerType.intValue;
@@ -913,6 +917,64 @@ static NSMutableSet* hostList;
 #endif
 }
 
+- (NSInteger)requestForBitrate:(NSInteger)bitrateKbps{
+    HttpManager* hMan = [[HttpManager alloc] initWithHost:launchedApp.host];
+    HttpResponse* bitrateResponse = [[HttpResponse alloc] init];
+    HttpRequest* bitrateRequest = [HttpRequest requestForResponse: bitrateResponse withUrlRequest:[hMan newBirateRequest:bitrateKbps forClient:@"unknown"]];
+    [hMan executeRequestSynchronously:bitrateRequest];
+    NSLog(@"bitrate request status code: %ld", (long)bitrateResponse.statusCode);
+    return bitrateResponse.statusCode;
+}
+
+- (HttpResponse* )requestToQuitApp:(TemporaryApp* )app{
+    HttpManager* hMan = [[HttpManager alloc] initWithHost:app.host];
+    HttpResponse* quitResponse = [[HttpResponse alloc] init];
+    HttpRequest* quitRequest = [HttpRequest requestForResponse: quitResponse withUrlRequest:[hMan newQuitAppRequest]];
+
+    // Exempt this host from discovery while handling the quit operation
+    [self->_discMan pauseDiscoveryForHost:app.host];
+    [hMan executeRequestSynchronously:quitRequest];
+    if (quitResponse.statusCode == 200) {
+        ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
+        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
+                                                            fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
+        if (![serverInfoResp isStatusOk] || [[serverInfoResp getStringTag:@"state"] hasSuffix:@"_SERVER_BUSY"]) {
+            // On newer GFE versions, the quit request succeeds even though the app doesn't
+            // really quit if another client tries to kill your app. We'll patch the response
+            // to look like the old error in that case, so the UI behaves.
+            quitResponse.statusCode = 599;
+        }
+        else if ([serverInfoResp isStatusOk]) {
+            // Update the host object with this info
+            [serverInfoResp populateHost:app.host];
+        }
+    }
+    [self->_discMan resumeDiscoveryForHost:app.host];
+    return quitResponse;
+}
+
+- (void)quitRunningApp{
+    [self showLoadingFrame: ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            HttpResponse* quitResponse = [self requestToQuitApp:self->launchedApp];
+            // If it fails, display an error and stop the current operation
+            if (quitResponse.statusCode != 200) {
+                UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
+                                                                               message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
+                                                     preferredStyle:UIAlertControllerStyleAlert];
+                [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self updateAppsForHost:self->launchedApp.host];
+                    [self hideLoadingFrame: ^{
+                        [[self activeViewController] presentViewController:alert animated:YES completion:nil];
+                    }];
+                });
+            }
+            else dispatch_async(dispatch_get_main_queue(), ^{[self hideLoadingFrame:nil];});
+        });
+    }];
+}
+
 - (void)appLongClicked:(TemporaryApp *)app view:(UIView *)view {
     Log(LOG_D, @"Long clicked app: %@", app.name);
     
@@ -968,30 +1030,7 @@ static NSMutableSet* hostList;
                                         Log(LOG_I, @"Quitting application: %@", currentApp.name);
                                         [self showLoadingFrame: ^{
                                             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                                HttpManager* hMan = [[HttpManager alloc] initWithHost:app.host];
-                                                HttpResponse* quitResponse = [[HttpResponse alloc] init];
-                                                HttpRequest* quitRequest = [HttpRequest requestForResponse: quitResponse withUrlRequest:[hMan newQuitAppRequest]];
-                                                
-                                                // Exempt this host from discovery while handling the quit operation
-                                                [self->_discMan pauseDiscoveryForHost:app.host];
-                                                [hMan executeRequestSynchronously:quitRequest];
-                                                if (quitResponse.statusCode == 200) {
-                                                    ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
-                                                    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
-                                                                                                        fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
-                                                    if (![serverInfoResp isStatusOk] || [[serverInfoResp getStringTag:@"state"] hasSuffix:@"_SERVER_BUSY"]) {
-                                                        // On newer GFE versions, the quit request succeeds even though the app doesn't
-                                                        // really quit if another client tries to kill your app. We'll patch the response
-                                                        // to look like the old error in that case, so the UI behaves.
-                                                        quitResponse.statusCode = 599;
-                                                    }
-                                                    else if ([serverInfoResp isStatusOk]) {
-                                                        // Update the host object with this info
-                                                        [serverInfoResp populateHost:app.host];
-                                                    }
-                                                }
-                                                [self->_discMan resumeDiscoveryForHost:app.host];
-
+                                                HttpResponse* quitResponse = [self requestToQuitApp:app];
                                                 // If it fails, display an error and stop the current operation
                                                 if (quitResponse.statusCode != 200) {
                                                     UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
@@ -1140,19 +1179,26 @@ static NSMutableSet* hostList;
     [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.resolutionStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.fpsStack];
-    [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
+    // [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.optimizeGamesStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
+    [settingsViewController.touchModeSelector setEnabled:!_settingsExpandedInStreamView || !_sessionLaunchedWithAbsoluteTouch];
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView && [settingsViewController hdrSupported]];
     [settingsViewController.gyroModeSelector setEnabled:!_settingsExpandedInStreamView || ![streamFrameViewController shallDisableGyroHotSwitch]];
     [settingsViewController.emulatedControllerTypeSelector setEnabled:!_settingsExpandedInStreamView];
-    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.framepacingStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.pipStack];
+    [settingsViewController.renderingBackendSelector setEnabled:!_settingsExpandedInStreamView];
+    // Enable frame pacing mode selector only if not in stream view AND not in performance mode
+    BOOL shouldEnableFramePacing = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
+    [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacing];
+    // Disable mic switch if sunshine does not support mic redirection
+    [settingsViewController.redirectMicSwitch setEnabled:!_settingsExpandedInStreamView||streamFrameViewController.micStreamInitialized];
+    if(_settingsExpandedInStreamView && !streamFrameViewController.micStreamInitialized) [settingsViewController.redirectMicSwitch setOn:false];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
@@ -1494,7 +1540,7 @@ static NSMutableSet* hostList;
     [self setupNavBar];
     
     // Set the gesture
-    if(![self isIPhonePortrait]) [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer]; // to prevent buggy settings view in iphone portrait mode;
+    [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     
     // Get callbacks associated with the viewController
     [self.revealViewController setDelegate:self];
@@ -1672,9 +1718,9 @@ static NSMutableSet* hostList;
 {
     if (!_background || _viewJustAppeared) {
         // This will kick off box art caching
-        
+
         _viewJustAppeared = false;
-        
+
         [_foregroundHostUpdateTimer invalidate];
         _foregroundHostUpdateTimer = nil;
         
@@ -1742,11 +1788,11 @@ static NSMutableSet* hostList;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:NO];
-    
+
     _viewJustAppeared = true;
-    
+
     [self beginForegroundRefresh];
-    
+
     // [self setupHostViewTitle];
     // [self reloadScrollHostView]; //remove this for proper test
     [self attachWaterMark];

@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, TouchMode) {
     RelativeTouch,
     NativeTouch,
     AbsoluteTouch,
+    TouchDisabled,
     NativeTouchOnly
 };
 
@@ -42,11 +43,21 @@ typedef NS_ENUM(NSInteger, GyroMode) {
     AlwaysController
 };
 
+typedef NS_ENUM(NSInteger, FramePacingMode) {
+    FramePacingModeOff,
+    FramePacingModeLegacy,
+    FramePacingModeQueue
+};
 
 typedef NS_ENUM(NSInteger, SettingsMenuMode) {
     AllSettings,
     FavoriteSettings,
     RemoveSettingItem,
+};
+
+typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
+    keepWidgetSize,
+    transitionWithOrientation,
 };
 
 - (void) saveSettingsWithBitrate:(NSInteger)bitrate
@@ -72,12 +83,13 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
              showKeyboardToolbar:(BOOL)showKeyboardToolbar
                    optimizeGames:(BOOL)optimizeGames
                  multiController:(BOOL)multiController
+               buttonVisualFeedback:(BOOL)buttonVisualFeedback
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
+                       redirectMic:(BOOL)redirectMic
                   preferredCodec:(uint32_t)preferredCodec
                        enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP
-                  useFramePacing:(BOOL)useFramePacing
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
                // absoluteTouchMode:(BOOL)absoluteTouchMode
@@ -88,6 +100,11 @@ typedef NS_ENUM(NSInteger, SettingsMenuMode) {
               resolutionSelected:(NSInteger)resolutionSelected
              externalDisplayMode:(NSInteger)externalDisplayMode
            localMousePointerMode:(NSInteger)localMousePointerMode
+                  frameQueueSize:(NSInteger)frameQueueSize
+                    enableGraphs:(BOOL)enableGraphs
+                    graphOpacity:(NSInteger)graphOpacity
+                renderingBackend:(NSInteger)renderingBackend
+                framePacingMode:(NSInteger)framePacingMode
            backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

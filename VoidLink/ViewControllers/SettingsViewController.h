@@ -16,7 +16,8 @@
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "MenuSectionView.h"
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate>
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate>
+
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;
 @property (strong, nonatomic) IBOutlet UIStackView *resolutionStack;
@@ -42,14 +43,13 @@
 @property (strong, nonatomic) IBOutlet UIStackView *optimizeGamesStack;
 @property (strong, nonatomic) IBOutlet UIStackView *multiControllerStack;
 @property (strong, nonatomic) IBOutlet UISwitch *multiControllerSwitch;
-@property (strong, nonatomic) IBOutlet UIStackView *swapAbaxyStack;
+@property (strong, nonatomic) IBOutlet UIStackView *swapAbxyStack;
 @property (strong, nonatomic) IBOutlet UIStackView *audioOnPcStack;
 @property (strong, nonatomic) IBOutlet UISwitch *audioOnPcSwitch;
 @property (strong, nonatomic) IBOutlet UIStackView *codecStack;
 @property (strong, nonatomic) IBOutlet UIStackView *yuv444Stack;
 @property (strong, nonatomic) IBOutlet UIStackView *pipStack;
 @property (strong, nonatomic) IBOutlet UIStackView *hdrStack;
-@property (strong, nonatomic) IBOutlet UIStackView *framepacingStack;
 @property (strong, nonatomic) IBOutlet UIStackView *reverseMouseWheelDirectionStack;
 @property (strong, nonatomic) IBOutlet UIStackView *citrixX1MouseStack;
 @property (strong, nonatomic) IBOutlet UISwitch *citrixX1MouseSwitch;
@@ -57,6 +57,10 @@
 @property (strong, nonatomic) IBOutlet UIStackView *unlockDisplayOrientationStack;
 @property (strong, nonatomic) IBOutlet UIStackView *externalDisplayModeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *localMousePointerModeStack;
+@property (strong, nonatomic) IBOutlet UIStackView *renderingBackendStack;
+@property (strong, nonatomic) IBOutlet UIStackView *framePacingStack;
+@property (strong, nonatomic) IBOutlet UIStackView *frameQueueSizeStack;
+@property (strong, nonatomic) IBOutlet UIStackView *performanceGraphStack;
 
 @property (strong, nonatomic) IBOutlet UILabel *bitrateLabel;
 @property (strong, nonatomic) IBOutlet UISlider *bitrateSlider;
@@ -74,7 +78,6 @@
 @property (strong, nonatomic) IBOutlet UISwitch *hdrSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *yuv444Switch;
 @property (strong, nonatomic) IBOutlet UISwitch *pipSwitch;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *framePacingSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *reverseMouseWheelDirectionSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *statsOverlaySelector;
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
@@ -107,11 +110,29 @@
 @property (strong, nonatomic) IBOutlet UIStackView *audioConfigStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioConfigSelector;
 
+@property (strong, nonatomic) IBOutlet UILabel *frameQueueSizeLabel;
+@property (strong, nonatomic) IBOutlet UISlider *frameQueueSizeSlider;
+
+@property (strong, nonatomic) IBOutlet UILabel *enableGraphsLabel;
+@property (strong, nonatomic) IBOutlet UISwitch *enableGraphsSwitch;
+@property (strong, nonatomic) IBOutlet UIStepper *graphOpacityStepper;
+@property (strong, nonatomic) IBOutlet UIStackView *graphOpacityStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *framePacingModeSelector;
+
 @property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
 @property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;
 
 @property (strong, nonatomic) IBOutlet UIStackView *emulatedControllerTypeStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *emulatedControllerTypeSelector;
+
+@property (strong, nonatomic) IBOutlet UIStackView *redirectMicStack;
+@property (strong, nonatomic) IBOutlet UISwitch *redirectMicSwitch;
+
+@property (strong, nonatomic) IBOutlet UIStackView *buttonVisualFeedbackStack;
+@property (strong, nonatomic) IBOutlet UISwitch *buttonVisualFeedbackSwitch;
+
+@property (nonatomic, strong) MicHandler *micHandler;
 
 
 #pragma clang diagnostic push

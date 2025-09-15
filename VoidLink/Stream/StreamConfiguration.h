@@ -24,20 +24,22 @@
 @property int width;
 @property int height;
 @property int frameRate;
+@property int frameRateX100;
 @property int bitRate;
 @property int riKeyId;
 @property NSData* riKey;
 @property int gamepadMask;
 @property BOOL optimizeGameSettings;
 @property BOOL playAudioOnPC;
+@property BOOL redirectMic;
 @property BOOL swapABXYButtons;
+@property BOOL buttonVisualFeedback;
 @property BOOL asyncNativeTouchPriority;
 @property int gyroMode;
 @property int emulatedControllerType;
 @property int audioConfiguration;
 @property int supportedVideoFormats;
 @property BOOL multiController;
-@property BOOL useFramePacing;
 @property NSData* serverCert;
 @property int localMousePointerMode;
 

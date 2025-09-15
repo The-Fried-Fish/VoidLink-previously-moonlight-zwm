@@ -10,6 +10,9 @@
 //
 
 #import "Connection.h"
+#import "FloatBuffer.h"
+#import "ImGuiRenderer.h"
+#import "MetalViewController.h"
 #import "StreamConfiguration.h"
 #import "StreamView.h"
 #import "LayoutOnScreenControlsViewController.h"
@@ -32,10 +35,13 @@
 @property (nonatomic, strong) AVPictureInPictureController *pipController API_AVAILABLE(ios(9.0));
 @property (nonatomic, strong) AVPictureInPictureControllerContentSource *pipContentSource API_AVAILABLE(ios(15.0)); // Needed for iOS 15+ layer-based PiP
 @property (nonatomic, assign) MainFrameViewController *mainFrameViewcontroller;
+@property (nonatomic, assign) bool micStreamInitialized;
 
+@property (nonatomic, strong) MetalViewController *metalViewController;
+@property (nonatomic, strong) ImGuiRenderer *imguiView;
 
 -(void)updatePreferredDisplayMode:(BOOL)streamActive;
--(void)reConfigStreamViewRealtime;
+-(void)reConfigStreamViewRealtime:(BOOL)reloadSettings;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 - (bool)shallDisableGyroHotSwitch;
 

@@ -88,13 +88,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UISegmentedControl *vibrationStyleSelector;
 @property (strong, nonatomic) IBOutlet UIStackView *vibrationStyleStack;
 
-@property (strong, nonatomic) IBOutlet UILabel *loadConfigTipLabel;
+@property (strong, nonatomic) IBOutlet UILabel *tipContentLabel;
+@property (strong, nonatomic) IBOutlet UILabel *tipTitleLabel;
 
 @property (strong, nonatomic) IBOutlet UIStackView *mouseDownButtonStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *mouseButtonDownSelector;
 
 @property (strong, nonatomic) IBOutlet UIStackView *slidableStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *slidableSelector;
+
+@property (strong, nonatomic) IBOutlet UIStackView *autoTapStack;
+@property (strong, nonatomic) IBOutlet UILabel *autoTapLabel;
+@property (strong, nonatomic) IBOutlet UISlider *autoTapSlider;
 
 
 

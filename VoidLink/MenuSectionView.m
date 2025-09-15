@@ -49,7 +49,7 @@
     _sectionTitle = @"Section";
     _expanded = YES;
     _backgroundColor = [UIColor clearColor];
-    _rootStackViewSpacing = [self isIPhone] ? 10 : 18;
+    _rootStackViewSpacing = [self isIPhone] ? 10 : 13.8;
     _subStackViews = [NSMutableArray array];
     _headerViewHeight = 37;
     _headerViewVerticalSpacing = 25;

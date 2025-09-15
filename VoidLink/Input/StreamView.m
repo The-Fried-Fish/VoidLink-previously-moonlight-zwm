@@ -12,6 +12,8 @@
 #import "StreamView.h"
 #include <Limelight.h>
 #import "DataManager.h"
+#import "TemporarySettings.h"
+#import "Plot.h"
 #import "ControllerSupport.h"
 #import "KeyboardSupport.h"
 #import "VoidLink-Swift.h"
@@ -74,6 +76,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     UILabel* keyboardToggleTip;
     
     UIKeyModifierFlags comboKeyModifierFlags;
+    
+    WidgetSizeTransition _widgetSizeTransition;
 }
 
 - (void) setupStreamView:(ControllerSupport*)controllerSupport
@@ -87,6 +91,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     self->interactionDelegate = interactionDelegate;
     self->streamAspectRatio = (float)streamConfig.width / (float)streamConfig.height;
     self.streamAspectRatio = self->streamAspectRatio;
+    _widgetSizeTransition = keepWidgetSize;
     
     settings = [[[DataManager alloc] init] getSettings];
     
@@ -113,7 +118,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleTip.numberOfLines = 1;
     keyboardToggleTip.layer.cornerRadius = 10;
     keyboardToggleTip.clipsToBounds = true;
-    NSLog(@"setup streamView %f", CACurrentMediaTime());
     
     // if(settings.touchMode.intValue == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
     // else [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
@@ -142,7 +146,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self];
             keyboardToggleRecognizer.immediateTriggering = true; //triggers signal in touchesBegan callback stage
             break;
-            
+        case TouchDisabled:
+            self->touchHandler = nil;
+            keyboardToggleRecognizer.immediateTriggering = false;
+            break;
+
         default:
             break;
     }
@@ -244,6 +252,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         CGRect liftedStreamFrame = self.frame;
         liftedStreamFrame.origin.y -= HeightViewLiftedTo;
         self.frame = liftedStreamFrame;
+        
+        // Also lift Metal video view if using Metal rendering backend
+        [self liftMetalVideoViewIfNeeded:HeightViewLiftedTo];
+        
         isInputingText = true;
         [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
         [keyboardToggleTip removeFromSuperview];
@@ -258,7 +270,46 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleRecognizer.numberOfTouchesRequired = settings.keyboardToggleFingers.intValue; // reset this number
     if(isInputingText){
         self.frame = _originalFrame;
+        
+        // Also restore Metal video view if using Metal rendering backend
+        [self liftMetalVideoViewIfNeeded:0];
+        
         isInputingText = NO;
+    }
+}
+
+- (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight {
+    // Check if we're using Metal rendering backend
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* currentSettings = [dataMan getSettings];
+    
+    if ([currentSettings.renderingBackend intValue] == RENDER_METAL) {
+        // Find the StreamFrameViewController that contains the MetalViewController
+        UIViewController* parentVC = nil;
+        UIResponder* responder = self.streamFrameTopLayerView;
+        while (responder && ![responder isKindOfClass:[UIViewController class]]) {
+            responder = [responder nextResponder];
+        }
+        
+        if ([responder isKindOfClass:[UIViewController class]]) {
+            parentVC = (UIViewController*)responder;
+            
+            // Check if this is StreamFrameViewController with metalViewController property
+            if ([parentVC respondsToSelector:@selector(metalViewController)]) {
+                id metalViewController = [parentVC performSelector:@selector(metalViewController)];
+                
+                if (metalViewController && [metalViewController respondsToSelector:@selector(view)]) {
+                    UIView* metalView = [metalViewController performSelector:@selector(view)];
+                    
+                    if (metalView) {
+                        CGRect metalFrame = metalView.frame;
+                        metalFrame.origin.y = liftHeight > 0 ? -liftHeight : 0;
+                        metalView.frame = metalFrame;
+                        NSLog(@"Lifted Metal video view by %f pixels", liftHeight);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -371,8 +422,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
-- (bool) isOnScreenButtonEnabled{
-    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch) && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+- (bool) isOnScreenWidgetEnabled{
+    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch || settings.touchMode.intValue == TouchDisabled) && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void) reloadOnScreenControlsRealtimeWith:(ControllerSupport*)controllerSupport
@@ -420,6 +471,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     return position;
 }
 
+- (WidgetSizeReference)getCurrentWidgetSizeReference{
+    if(_widgetSizeTransition == keepWidgetSize) return longSide;
+    else if(_widgetSizeTransition == transitionWithOrientation) return self.bounds.size.width > self.bounds.size.height ? longSide : shortSide;
+    else return longSide;
+}
+
 - (void) reloadOnScreenWidgetViews{
     
     // NSLog(@"reload on screen keyboard buttons here");
@@ -429,12 +486,15 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
     
-    if(![self isOnScreenButtonEnabled]) return;
+    if(![self isOnScreenWidgetEnabled]) return;
+    
+    OnScreenWidgetView.buttonVisualFeedbackEnabled = settings.buttonVisualFeedback;
     
     OSCProfilesManager* profilesManager = [OSCProfilesManager sharedManager: self.bounds];
     OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
 
     if(!OnScreenWidgetView.editMode){ // in edit mode, keyboard widget view will be updated within layoutool view controller.
+        
         for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
             OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
             if(buttonState.buttonType == CustomOnScreenWidget){
@@ -447,6 +507,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.widthFactor = buttonState.widthFactor;
                 widgetView.heightFactor = buttonState.heightFactor;
                 widgetView.borderWidth = buttonState.borderWidth;
+                widgetView.autoTapInterval = buttonState.autoTapInterval;
                 [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
                 widgetView.mouseButtonAction = buttonState.mouseButtonAction;
                 widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
@@ -459,9 +520,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [self->streamFrameTopLayerView addSubview:widgetView]; // add keyboard button to the stream frame view. must add it to the target view before setting location.
                 buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
                 [widgetView setLocationWithPosition:buttonState.position];
+                widgetView.sizeReference = [self getCurrentWidgetSizeReference];
+                // widgetView.sizeReference = buttonState.sizeReference;
+                //portrait markmarkmark
                 [widgetView resizeWidgetView]; // resize must be called after relocation
                 [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];
+                [widgetView setupAutoTapTimer];
             }
         }
     }

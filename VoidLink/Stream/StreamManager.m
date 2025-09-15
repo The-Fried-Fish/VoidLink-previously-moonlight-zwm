@@ -12,7 +12,9 @@
 #import "StreamManager.h"
 #import "CryptoManager.h"
 #import "HttpManager.h"
+#import "Plot.h"
 #import "Utils.h"
+#import "DataManager.h"
 
 #import "StreamView.h"
 #import "ServerInfoResponse.h"
@@ -104,10 +106,7 @@
     
     // Initializing the renderer must be done on the main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        self->_videoRenderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView
-                                                               callbacks:self->_callbacks
-                                                       streamAspectRatio:(float)self->_config.width / (float)self->_config.height
-                                                          useFramePacing:self->_config.useFramePacing];
+        self->_videoRenderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height];
 
         self->_connection = [[Connection alloc] initWithConfig:self->_config renderer:self->_videoRenderer connectionCallbacks:self->_callbacks];
         NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
@@ -158,9 +157,7 @@
 
 - (NSString*) getStatsOverlayText: (uint16_t) overlayLevel {
     video_stats_t stats;
-    
-    // NSLog(@"overlayLevel: %d", overlayLevel);
-    
+
     if (!_connection) {
         return nil;
     }
@@ -172,37 +169,99 @@
     uint32_t rtt, variance;
     NSString* latencyString;
     if (LiGetEstimatedRttInfo(&rtt, &variance)) {
-        latencyString = [LocalizationHelper localizedStringForKey:@"%u ms (variance: %u ms)", rtt, variance];
+        latencyString = [LocalizationHelper localizedStringForKey:@"%3u ms (var: %3u ms)", rtt, variance];
     }
     else {
         latencyString = @"N/A";
     }
     
     NSString* hostProcessingString;
-    // overlayLevel 2: detailed
     if (stats.framesWithHostProcessingLatency != 0) {
-        hostProcessingString = [LocalizationHelper localizedStringForKey:@"\nHost processing latency min/max/avg: %.1f/%.1f/%.1f ms",
+        hostProcessingString = [LocalizationHelper localizedStringForKey:@"Host processing latency min/max/avg: %.1f/%.1f/%.1f ms\n",
                                 stats.minHostProcessingLatency / 10.f,
                                 stats.maxHostProcessingLatency / 10.f,
                                 (float)stats.totalHostProcessingLatency / stats.framesWithHostProcessingLatency / 10.f];
     }
     else {
-        hostProcessingString = @"";
+        // If all frames are duplicates this can happen, but let's avoid having the whole stats area change height
+        hostProcessingString = @"Host processing latency min/max/avg: -/-/- ms\n";
     }
     
     float interval = stats.endTime - stats.startTime;
-    if(overlayLevel == 2) return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\nNetwork dropped frames: %.2f%%\nAverage network latency: %@%@",
-            _config.width,
-            _config.height,
-            stats.totalFrames / interval,
-            [_connection getActiveCodecName],
-            stats.networkDroppedFrames / interval,
-            latencyString,
-            hostProcessingString];
-    else return [LocalizationHelper localizedStringForKey:@"FPS: %5.2f     Network dropped frames: %.2f%%     Network latency: %@",
-                 stats.totalFrames / interval,
+    
+    // Get frame pacing mode
+    DataManager* dataMan = [[DataManager alloc] init];
+    FramePacingMode framePacingMode = [[dataMan getSettings].framePacingMode integerValue];
+
+    // Calculate FPS differently based on pacing mode
+    float fps;
+    if (framePacingMode == FramePacingModeLegacy || framePacingMode == FramePacingModeOff) {
+        fps = stats.totalFrames / interval;
+    } else {
+        float scalePlotMetrics = stats.frameDropMetrics.nsamples > 0 ? ((float)stats.frameDropMetrics.nsamples / stats.totalFrames) : 1.0f;
+        fps = (stats.totalFrames - stats.networkDroppedFrames - (stats.frameDropMetrics.total / scalePlotMetrics)) / interval;
+    }
+
+    double avgVideoMbps = [_connection getBwTracker].averageMbps;
+    double peakVideoMbps = [_connection getBwTracker].peakMbps;
+
+    if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"simplifiedOsdText",
+                 fps,
                  stats.networkDroppedFrames / interval,
+                 avgVideoMbps,
                  latencyString];
+    else {
+        if (framePacingMode == FramePacingModeLegacy || framePacingMode == FramePacingModeOff) {
+            NSString* rendererWithPacing = stats.renderingBackendString;
+            if ([stats.renderingBackendString isEqualToString:@"AVSampleBuffer"]) {
+                if (framePacingMode == FramePacingModeOff) {
+                    rendererWithPacing = @"AVSampleBuffer (No Pacing)";
+                } else {
+                    rendererWithPacing = @"AVSampleBuffer (Legacy Pacing)";
+                }
+            }
+            
+            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+                     "Bitrate: %.1f Mbps, Peak: %.1f\n"
+                     "%@"
+                     "Renderer: %@\n"
+                     "Frames dropped by network: %.1f%%\n"
+                     "Average network latency: %@",
+                     _config.width,
+                     _config.height,
+                     fps,
+                     [_connection getActiveCodecName],
+                     avgVideoMbps, peakVideoMbps,
+                     hostProcessingString,
+                     rendererWithPacing,
+                     (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
+                     latencyString];
+        } else {
+            NSString* rendererWithPacing = stats.renderingBackendString;
+            if ([stats.renderingBackendString isEqualToString:@"AVSampleBuffer"]) {
+                rendererWithPacing = @"AVSampleBuffer (Queue Pacing)";
+            }
+            
+            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+                     "Bitrate: %.1f Mbps, Peak: %.1f, Frames buffered: %.1f\n"
+                     "%@"
+                     "Renderer: %@\n"
+                     "Frames dropped by network/pacing jitter: %.1f%% / %.1f%%\n"
+                     "Average network latency: %@\n"
+                     "Decode time: %.2f/%.2f/%.2f ms",
+                     _config.width,
+                     _config.height,
+                     fps,
+                     [_connection getActiveCodecName],
+                     avgVideoMbps, peakVideoMbps, stats.frameQueueMetrics.avg,
+                     hostProcessingString,
+                     rendererWithPacing,
+                     (stats.networkDroppedFrames / stats.totalFrames) * 100.0,
+                     stats.frameDropMetrics.nsamples > 0 ? (stats.frameDropMetrics.total / stats.frameDropMetrics.nsamples) * 100.0 : 0.0f,
+                     latencyString,
+                     stats.decodeMetrics.min, stats.decodeMetrics.max, stats.decodeMetrics.avg];
+        }
+    }
 }
 
 @end

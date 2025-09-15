@@ -1672,7 +1672,7 @@ const int FrontViewPositionNone = 0xff;
             break;
             
         case UIGestureRecognizerStateChanged:
-            [self _handleRevealGestureStateChangedWithRecognizer:recognizer];
+            //[self _handleRevealGestureStateChangedWithRecognizer:recognizer];
             break;
             
         case UIGestureRecognizerStateEnded:
