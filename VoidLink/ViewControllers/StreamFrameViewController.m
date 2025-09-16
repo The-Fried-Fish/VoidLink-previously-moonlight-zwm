@@ -1274,14 +1274,14 @@
 - (void) stageComplete:(const char*)stageName {
     _micStreamInitialized = false;
     if(strcmp(stageName, "mic stream establishment")==0){
-        
-        if(_streamConfig.redirectMic){
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                self->_micStreamInitialized = true;
-                self->micHandler = [MicHandler new];
-                [self->micHandler startTapping];
-            });
-        }
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
+        dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if(self->_streamConfig.redirectMic){
+                    self->_micStreamInitialized = true;
+                    self->micHandler = [MicHandler new];
+                    [self->micHandler startTapping];
+            }
+        });
     }
     
     if(strcmp(stageName, "mic stream unsupported or unintialized")==0){
