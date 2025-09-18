@@ -580,11 +580,6 @@
     _spinner.color = [ThemeManager textColor];
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-
 - (void)viewDidLoad
 {
     viewJustLoaded = true;
@@ -594,12 +589,7 @@
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
     [UIApplication sharedApplication].idleTimerDisabled = YES;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(updateTheme)
-                                                 name:@"ThemeDidChangeNotification"
-                                               object:nil];
-    
+        
     _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     
     _stageLabel = [[UILabel alloc] init];

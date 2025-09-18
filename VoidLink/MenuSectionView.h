@@ -29,6 +29,8 @@
 @property (nonatomic, assign) CGFloat headerViewHeight;
 @property (nonatomic, assign) CGFloat headerViewVerticalSpacing;
 @property (nonatomic, strong) NSMutableArray<UIStackView *> *subStackViews;
+@property (nonatomic, strong) UIImageView *iconImageView;
+@property (nonatomic, strong) UIView *separatorLine;
 @property (nonatomic, weak) id<MenuSectionDelegate> delegate; // Delegate property
 
 // 方法

@@ -832,11 +832,6 @@ const int FrontViewPositionNone = 0xff;
     
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    
-}
-
-
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -907,6 +902,7 @@ const int FrontViewPositionNone = 0xff;
     }
 
     if(_frontViewPosition != FrontViewPositionLeft){
+        [self updateTheme];
         [self setupMoreButtonMenu];
         [self layoutSettingsView]; //注意， 该方法在菜单展开前又运行了一次， 会执行按清单隐藏stack的任务,此时直接使用.hidden = false 的方式，将stack从hiddenstacks清单中移除，导致stack保持隐藏无法恢复;
         //而此willMoveToPosition内部方法，发生在 delegate的willMoveToPosition之后（由mainFrameVC执行的委托）

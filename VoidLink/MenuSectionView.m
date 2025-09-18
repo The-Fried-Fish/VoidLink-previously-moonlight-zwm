@@ -15,12 +15,10 @@
 
 @property (nonatomic, strong) UIStackView *rootStackView;
 @property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) UIImageView *iconImageView;
 @property (nonatomic, strong) UIButton *toggleButton;
 @property (nonatomic, strong) UIButton *toggleArea;
 @property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 @property (nonatomic, strong) UIView *headerView;
-@property (nonatomic, strong) UIView *separatorLine;
 
 @end
 

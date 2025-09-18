@@ -1,5 +1,5 @@
 //
-//  SettingsViewControllerSettingsViewController.m
+//  SettingsViewController.m
 //  Moonlight
 //
 //  Created by Diego Waxemberg on 10/27/14.
@@ -353,6 +353,11 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         if(self.mainFrameViewController.settingsExpandedInStreamView){
@@ -404,7 +409,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (CGFloat)getStandardNavBarHeight{
     return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
 }
-
 
 - (void)initParentStack{
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
@@ -1358,16 +1362,7 @@ BOOL isCustomResolution(int resolutionSelected) {
      */
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)viewDidLoad {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(updateTheme)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
-    
     settingStackWillBeRelocatedToLowestPosition = false;
     hiddenStacks = [[NSMutableSet alloc] init];
 
@@ -2325,6 +2320,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             if(label.accessibilityIdentifier != nil) break;
             if (@available(iOS 13.0, *)) {
                 label.layer.filters = nil;
+                label.textColor = [UIColor clearColor];
                 label.textColor = [ThemeManager textColor];
             } else {
                 UIView *view = label;
@@ -2348,6 +2344,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         if ([subview isKindOfClass:[UISegmentedControl class]]) {
             UISegmentedControl *selector = (UISegmentedControl *)subview;
             if (@available(iOS 13.0, *)) {
+                selector.selectedSegmentTintColor = [UIColor clearColor];
                 selector.selectedSegmentTintColor = [ThemeManager appSecondaryColor];
             } else {
                 selector.tintColor = [ThemeManager appSecondaryColor];
@@ -2361,16 +2358,30 @@ BOOL isCustomResolution(int resolutionSelected) {
     for (UIView *subview in view.subviews) {
         if ([subview isKindOfClass:[UISlider class]]) {
             UISlider *slider = (UISlider *)subview;
+            slider.tintColor = [UIColor clearColor];
             slider.tintColor = [ThemeManager appSecondaryColor];
-
         }
         [self updateThemeForSliders:subview];
     }
 }
 
+- (void)updateThemeForMenuSections:(UIView *)view {
+    for (UIView *subview in view.subviews) {
+        if ([subview isKindOfClass:[MenuSectionView class]]) {
+            MenuSectionView *section = (MenuSectionView *)subview;
+            section.iconImageView.tintColor = [UIColor clearColor];
+            section.iconImageView.tintColor = [ThemeManager textColor];
+            section.separatorLine.backgroundColor = [UIColor clearColor];
+            section.separatorLine.backgroundColor = [ThemeManager separatorColor];
+        }
+        [self updateThemeForMenuSections:subview];
+    }
+}
 
 - (void)updateTheme{
+    self.view.backgroundColor = [UIColor clearColor];
     self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    [self updateThemeForMenuSections:self.view];
     [self updateThemeForLabels:self.view];
     [self updateThemeForSelectors:self.view];
     [self updateThemeForSliders:self.view];

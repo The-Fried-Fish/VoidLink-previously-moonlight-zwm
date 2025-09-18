@@ -1548,6 +1548,7 @@ static NSMutableSet* hostList;
 }
 
 // Called when the system's theme (light/dark mode) changes
+// will not be active if the app is streaming
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     if (@available(iOS 13.0, *)) {
