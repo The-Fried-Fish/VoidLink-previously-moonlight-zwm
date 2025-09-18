@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString * const ThemeDidChangeNotification;
+
 @interface ThemeManager:NSObject
 
 @property (class, nonatomic, assign) UIUserInterfaceStyle userInterfaceStyle;
@@ -23,4 +25,3 @@
 + (UIColor *)textTintColorWithAlpha;
 
 @end
-

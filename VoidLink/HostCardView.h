@@ -28,6 +28,6 @@
 - (void)resizeBySizeFactor:(CGFloat)factor;
 - (id) initWithHost:(TemporaryHost*)host;
 - (id) initWithHost:(TemporaryHost*)host andSizeFactor:(CGFloat)sizeFactor;
+- (void)updateTheme;
 
 @end
-

@@ -574,6 +574,16 @@
 
 }
 
+- (void)updateTheme {
+    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
+    _spinner.color = [ThemeManager textColor];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 
 - (void)viewDidLoad
 {
@@ -584,6 +594,11 @@
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
     [UIApplication sharedApplication].idleTimerDisabled = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:@"ThemeDidChangeNotification"
+                                               object:nil];
     
     _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     
@@ -715,9 +730,7 @@
     _stageLabel.textColor = [UIColor systemGrayColor];
     _spinner.color = [UIColor systemGrayColor];
     
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
-    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
-    _spinner.color = [ThemeManager textColor];
+    [self updateTheme];
     
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];

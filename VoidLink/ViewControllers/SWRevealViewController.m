@@ -837,9 +837,36 @@ const int FrontViewPositionNone = 0xff;
 }
 
 
-- (void)viewDidLoad{
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)updateTheme {
+    _contentView.backgroundColor = [ThemeManager appBackgroundColor];
+    _contentView.rearNavView.backgroundColor = [ThemeManager appBackgroundColor];
+    _separatorLine.backgroundColor = [ThemeManager separatorColor];
     
+    if (@available(iOS 13.0, *)) {
+        UINavigationBarAppearance *navBarAppearanceStandard = _dockedNavBar.standardAppearance;
+        navBarAppearanceStandard.backgroundColor = [ThemeManager appBackgroundColor];
+        navBarAppearanceStandard.titleTextAttributes = @{
+            NSForegroundColorAttributeName: [ThemeManager textColor]
+        };
+        _dockedNavBar.standardAppearance = navBarAppearanceStandard;
+        _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
+    } else {
+        _dockedNavBar.barTintColor = [ThemeManager appBackgroundColor];
+    }
+}
+
+- (void)viewDidLoad{
     self.isStreaming = false; //init this flag
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+    [self updateTheme];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -2426,5 +2453,3 @@ NSString * const SWSegueRightIdentifier = @"sw_right";
 //}
 //
 //@end
-
-
