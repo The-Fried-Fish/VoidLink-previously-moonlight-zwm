@@ -704,6 +704,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
 
+    [self addSetting:self.sendDummyEventStack ofId:@"sendDummyEventStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+    
     [experimentalSection addToParentStack:_parentStack];
     [experimentalSection setExpanded:YES];
 }
@@ -1143,6 +1145,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"redirectMicStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"redirectMicStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"sendDummyEventStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"sendDummyEventStackTip"];
         showOnlineDocAction = false;
     }
 
@@ -1682,6 +1688,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
+    
+    [self.sendDummyEventSwitch setOn:currentSettings.sendDummyEvent];// Load old setting
     
     settingsViewJustLoaded = false;
 }
@@ -2476,6 +2484,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     NSInteger externalDisplayMode = [self.externalDisplayModeSelector selectedSegmentIndex];
     NSInteger localMousePointerMode = [self.localMousePointerModeSelector selectedSegmentIndex];
+    BOOL sendDummyEvent = self.sendDummyEventSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2522,6 +2531,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                         graphOpacity:graphOpacity
                     renderingBackend:renderingBackend
                      framePacingMode:framePacingMode
+                      sendDummyEvent:sendDummyEvent
               backgroundSessionTimer:backgroundSessionTimer];
 }
 
