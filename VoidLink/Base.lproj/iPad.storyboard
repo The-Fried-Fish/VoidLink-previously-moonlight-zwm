@@ -998,7 +998,7 @@
                                     </switch>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackend Stack">
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6hG-dw-YSr" userLabel="renderingBackend Stack">
                                 <rect key="frame" x="22" y="1204" width="380" height="56.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rendering Mode (Experimental)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v8l-hf-kiR">
@@ -1053,6 +1053,24 @@
                                         <rect key="frame" x="150" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="IRh-Rr-kBF"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="RGd-TV-mkU" userLabel="sendDummyEvent">
+                                <rect key="frame" x="432" y="2264" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Send Dummy Event" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gus-CK-wpc" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eE4-oT-Gzb" userLabel="sendDummyEventSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="bOP-xq-rYt"/>
                                         </constraints>
                                     </switch>
                                 </subviews>
@@ -1130,6 +1148,8 @@
                         <outlet property="reverseMouseWheelDirectionSelector" destination="mTM-NL-CcF" id="EYZ-Qg-OLu"/>
                         <outlet property="reverseMouseWheelDirectionStack" destination="2P0-Tg-zWd" id="Zz1-VC-0hC"/>
                         <outlet property="scrollView" destination="WRy-3f-gEP" id="V8B-oF-27B"/>
+                        <outlet property="sendDummyEventStack" destination="RGd-TV-mkU" id="87h-08-4Og"/>
+                        <outlet property="sendDummyEventSwitch" destination="eE4-oT-Gzb" id="q51-ds-zJC"/>
                         <outlet property="slideToMenuDistanceSlider" destination="8p6-FP-UWP" id="8z3-2I-oPd"/>
                         <outlet property="slideToSettingsDistanceStack" destination="pN7-bs-8yu" id="azp-qU-GnS"/>
                         <outlet property="slideToSettingsDistanceUILabel" destination="pMN-6T-aYE" id="If8-fO-rya"/>

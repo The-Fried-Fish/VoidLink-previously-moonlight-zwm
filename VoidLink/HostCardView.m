@@ -431,11 +431,10 @@ static const float REFRESH_CYCLE = 2.0f;
     
     _size = CGSizeMake(_widthConstraint.constant, _heightConstraint.constant);
     
-    [self updateTheme:ThemeManager.userInterfaceStyle];
+    [self updateTheme];
 }
 
-- (void)createBackgroundLayer{
-    backgroundLayer = [CAGradientLayer layer];
+- (void)updateBackgroundLayerTheme{
     UIColor *gradientColorDark = [UIColor colorWithRed:0.0 green:0.319 blue:0.64 alpha:1.0];
     UIColor *gradientColorLight = [gradientColorDark colorWithAlphaComponent:0.52];
     CGColorRef gradientColorRef = ThemeManager.userInterfaceStyle == UIUserInterfaceStyleDark ? gradientColorDark.CGColor : gradientColorLight.CGColor;
@@ -445,7 +444,11 @@ static const float REFRESH_CYCLE = 2.0f;
         (__bridge id)[UIColor clearColor].CGColor,
         (__bridge id)gradientColorRef
     ];
-    
+}
+
+- (void)createBackgroundLayer{
+    backgroundLayer = [CAGradientLayer layer];
+    [self updateBackgroundLayerTheme];
     backgroundLayer.locations = @[@0, @0.18, @0.5, @1];
     backgroundLayer.startPoint = CGPointMake(0.25, 0.5);
     backgroundLayer.endPoint = CGPointMake(0.75, 0.5);
@@ -469,12 +472,15 @@ static const float REFRESH_CYCLE = 2.0f;
 }
 
 
-- (void)updateTheme:(UIUserInterfaceStyle)userIterfaceStyle{
+- (void)updateTheme {
     self.backgroundColor = [ThemeManager widgetBackgroundColor];
     _hostNameLabel.textColor = [ThemeManager textColor];
     [_appButton setTitleColor:[ThemeManager appPrimaryColor] forState:UIControlStateNormal];
     _separatorLine.backgroundColor = [ThemeManager separatorColor];
+    
     backgroundLayer.hidden = NO;
+    [self updateBackgroundLayerTheme];
+    
     [self updateContentsForHost:_host];
 }
 

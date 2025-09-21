@@ -100,6 +100,7 @@
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
                  framePacingMode:(NSInteger)framePacingMode
+               sendDummyEvent:(BOOL)sendDummyEvent
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -151,6 +152,7 @@
         settingsToSave.graphOpacity = [NSNumber numberWithInteger:graphOpacity];
         settingsToSave.renderingBackend = [NSNumber numberWithInteger:renderingBackend];
         settingsToSave.framePacingMode = [NSNumber numberWithInteger:framePacingMode];
+        settingsToSave.sendDummyEvent = sendDummyEvent;
         [self saveData];
     }];
 }

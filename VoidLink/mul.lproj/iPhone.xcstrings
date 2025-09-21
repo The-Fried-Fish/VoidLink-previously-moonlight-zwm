@@ -3631,6 +3631,36 @@
         }
       }
     },
+    "Vgl-rL-Ppi.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Send Dummy Event\"; ObjectID = \"Vgl-rL-Ppi\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send Dummy Event"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发送假事件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發送假事件"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發送假事件"
+          }
+        }
+      }
+    },
     "wOV-Sp-UUE.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; wOV-Sp-UUE.segmentTitles[0] = \"Slide From Left Edge\"; ObjectID = \"wOV-Sp-UUE\";",
       "extractionState" : "extracted_with_value",

@@ -353,6 +353,11 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         if(self.mainFrameViewController.settingsExpandedInStreamView){
@@ -404,7 +409,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (CGFloat)getStandardNavBarHeight{
     return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
 }
-
 
 - (void)initParentStack{
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
@@ -700,6 +704,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
 
+    [self addSetting:self.sendDummyEventStack ofId:@"sendDummyEventStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+    
     [experimentalSection addToParentStack:_parentStack];
     [experimentalSection setExpanded:YES];
 }
@@ -1141,6 +1147,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"redirectMicStackTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"sendDummyEventStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"sendDummyEventStackTip"];
+        showOnlineDocAction = false;
+    }
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
@@ -1359,8 +1369,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)viewDidLoad {
-    //[self updateTheme];
-    
     settingStackWillBeRelocatedToLowestPosition = false;
     hiddenStacks = [[NSMutableSet alloc] init];
 
@@ -1680,6 +1688,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
     [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
+    
+    [self.sendDummyEventSwitch setOn:currentSettings.sendDummyEvent];// Load old setting
     
     settingsViewJustLoaded = false;
 }
@@ -2318,6 +2328,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             if(label.accessibilityIdentifier != nil) break;
             if (@available(iOS 13.0, *)) {
                 label.layer.filters = nil;
+                label.textColor = [UIColor clearColor];
                 label.textColor = [ThemeManager textColor];
             } else {
                 UIView *view = label;
@@ -2341,6 +2352,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         if ([subview isKindOfClass:[UISegmentedControl class]]) {
             UISegmentedControl *selector = (UISegmentedControl *)subview;
             if (@available(iOS 13.0, *)) {
+                selector.selectedSegmentTintColor = [UIColor clearColor];
                 selector.selectedSegmentTintColor = [ThemeManager appSecondaryColor];
             } else {
                 selector.tintColor = [ThemeManager appSecondaryColor];
@@ -2354,16 +2366,30 @@ BOOL isCustomResolution(int resolutionSelected) {
     for (UIView *subview in view.subviews) {
         if ([subview isKindOfClass:[UISlider class]]) {
             UISlider *slider = (UISlider *)subview;
+            slider.tintColor = [UIColor clearColor];
             slider.tintColor = [ThemeManager appSecondaryColor];
-
         }
         [self updateThemeForSliders:subview];
     }
 }
 
+- (void)updateThemeForMenuSections:(UIView *)view {
+    for (UIView *subview in view.subviews) {
+        if ([subview isKindOfClass:[MenuSectionView class]]) {
+            MenuSectionView *section = (MenuSectionView *)subview;
+            section.iconImageView.tintColor = [UIColor clearColor];
+            section.iconImageView.tintColor = [ThemeManager textColor];
+            section.separatorLine.backgroundColor = [UIColor clearColor];
+            section.separatorLine.backgroundColor = [ThemeManager separatorColor];
+        }
+        [self updateThemeForMenuSections:subview];
+    }
+}
 
 - (void)updateTheme{
+    self.view.backgroundColor = [UIColor clearColor];
     self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    [self updateThemeForMenuSections:self.view];
     [self updateThemeForLabels:self.view];
     [self updateThemeForSelectors:self.view];
     [self updateThemeForSliders:self.view];
@@ -2458,6 +2484,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     NSInteger externalDisplayMode = [self.externalDisplayModeSelector selectedSegmentIndex];
     NSInteger localMousePointerMode = [self.localMousePointerModeSelector selectedSegmentIndex];
+    BOOL sendDummyEvent = self.sendDummyEventSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2504,6 +2531,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                         graphOpacity:graphOpacity
                     renderingBackend:renderingBackend
                      framePacingMode:framePacingMode
+                      sendDummyEvent:sendDummyEvent
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

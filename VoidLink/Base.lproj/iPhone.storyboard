@@ -1795,6 +1795,24 @@
                                     </switch>
                                 </subviews>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" id="6yl-Mb-0o6" userLabel="sendDummyEventStack">
+                                <rect key="frame" x="437" y="1880" width="280" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Send Dummy Event" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vgl-rL-Ppi" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OlN-GM-xLT" userLabel="sendDummyEventSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="hZt-X1-KU1"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1867,6 +1885,8 @@
                         <outlet property="reverseMouseWheelDirectionSelector" destination="Uca-fD-4AC" id="gLa-40-suX"/>
                         <outlet property="reverseMouseWheelDirectionStack" destination="iS2-99-oox" id="dl2-8e-idU"/>
                         <outlet property="scrollView" destination="Xq6-9l-Oey" id="nif-2O-JNf"/>
+                        <outlet property="sendDummyEventStack" destination="6yl-Mb-0o6" id="KN5-ty-oTQ"/>
+                        <outlet property="sendDummyEventSwitch" destination="OlN-GM-xLT" id="DQ8-Un-c5b"/>
                         <outlet property="slideToMenuDistanceSlider" destination="XNA-Kx-vqV" id="8oD-Sy-6k7"/>
                         <outlet property="slideToSettingsDistanceStack" destination="eom-7m-dH2" id="m43-tx-nAT"/>
                         <outlet property="slideToSettingsDistanceUILabel" destination="cti-T5-cSE" id="8Xz-vc-bO5"/>
