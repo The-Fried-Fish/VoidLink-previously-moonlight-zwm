@@ -1293,7 +1293,7 @@
 					"$(PROJECT_DIR)/libs/SDL2/lib/iOS-Sim",
 					"$(PROJECT_DIR)/libs/FFmpeg/lib/iOS-Sim",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.voidlink.tf.debug10.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -1359,7 +1359,7 @@
 					"$(PROJECT_DIR)/libs/SDL2/lib/iOS-Sim",
 					"$(PROJECT_DIR)/libs/FFmpeg/lib/iOS-Sim",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.voidlink.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
