@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		180345E12E819877004AF36F /* libopus-sim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 180345E02E819877004AF36F /* libopus-sim.a */; };
 		1817B61E2E6FD04D000D938D /* SafeTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817B61D2E6FD04D000D938D /* SafeTimer.swift */; };
 		1829CE3F2E2154DF0074A99A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1829CE3E2E2154DF0074A99A /* SceneDelegate.m */; };
 		18341A042DEB662C0094E5F2 /* FixedTintImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18341A032DEB662C0094E5F2 /* FixedTintImageView.m */; };
@@ -153,6 +154,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		180345E02E819877004AF36F /* libopus-sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopus-sim.a"; sourceTree = "<group>"; };
 		1817B61D2E6FD04D000D938D /* SafeTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeTimer.swift; sourceTree = "<group>"; };
 		1829CE3D2E2154DF0074A99A /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		1829CE3E2E2154DF0074A99A /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
@@ -391,6 +393,7 @@
 				98CFB82F1CAD481B0048EF74 /* libmoonlight-common.a in Frameworks */,
 				FB8946ED19F6AFE800339C8A /* libopus.a in Frameworks */,
 				98882A082AF60F7400C5A11C /* libavutil.a in Frameworks */,
+				180345E12E819877004AF36F /* libopus-sim.a in Frameworks */,
 				FB290CF419B2C406004C83CF /* CoreGraphics.framework in Frameworks */,
 				FB290CF819B2C406004C83CF /* CoreData.framework in Frameworks */,
 				98181BED2791281100E43572 /* CoreMotion.framework in Frameworks */,
@@ -815,6 +818,7 @@
 		FB8946E919F6AFB800339C8A /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				180345E02E819877004AF36F /* libopus-sim.a */,
 				FB8946EA19F6AFB800339C8A /* libopus.a */,
 			);
 			path = lib;
