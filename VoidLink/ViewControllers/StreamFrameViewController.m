@@ -429,10 +429,12 @@
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
     
+    [self stopDisplayLink];
     if(_settings.sendDummyEvent){
         [self setupDisplayLink];
         [self startDisplayLink];
     }
+    
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
@@ -1139,7 +1141,6 @@
 
 - (void)expandSettingsView{
     self.mainFrameViewcontroller.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
-    [self stopDisplayLink];
     [self.mainFrameViewcontroller expandSettingsView];
 }
 
