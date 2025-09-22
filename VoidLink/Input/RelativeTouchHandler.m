@@ -111,12 +111,14 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
 
 - (void)mouseRightClick {
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        Log(LOG_D, @"Sending right mouse button press");
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_RIGHT);
+        Log(LOG_D, @"Sending right mouse button press");
         // Wait 100 ms to simulate a real button press
-        usleep(100 * 1000);
-        LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
+        dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
+        });
     });
 }
 
@@ -266,30 +268,32 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     });
 }
 
-
 // this will turn into a dragging anytime...
 - (void)sendLongMouseLeftButtonClickEvent{
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         // if (!self->isDragging){
         Log(LOG_D, @"Sending left mouse button press");
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);
+        
         // Wait 100 ms to simulate a real button press
-        usleep(QUICK_TAP_TIME_INTERVAL * 1000000);
-        if(!self->quickTapDetected){
-            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
-        }
-        // else NSLog(@"Left mouse button release cancelled, keep pressing down, turning into dragging...");
-
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(QUICK_TAP_TIME_INTERVAL * NSEC_PER_SEC));
+        dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if(!self->quickTapDetected){
+                LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+            }
+            // else NSLog(@"Left mouse button release cancelled, keep pressing down, turning into dragging...");
+        });
         // do not release the button if we're still dragging, this will prevent the dragging from being interrupted.
     });
 }
 
 - (void)sendShortMouseLeftButtonClickEvent{
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        usleep(50 * 1000);
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
+    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);
-        usleep(50 * 1000);
-        LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+        dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+        });
     });
 }
 
