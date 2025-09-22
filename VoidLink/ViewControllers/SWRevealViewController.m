@@ -832,14 +832,36 @@ const int FrontViewPositionNone = 0xff;
     
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)updateTheme {
+    _contentView.backgroundColor = [ThemeManager appBackgroundColor];
+    _contentView.rearNavView.backgroundColor = [ThemeManager appBackgroundColor];
+    _separatorLine.backgroundColor = [ThemeManager separatorColor];
+    
+    if (@available(iOS 13.0, *)) {
+        UINavigationBarAppearance *navBarAppearanceStandard = _dockedNavBar.standardAppearance;
+        navBarAppearanceStandard.backgroundColor = [ThemeManager appBackgroundColor];
+        navBarAppearanceStandard.titleTextAttributes = @{
+            NSForegroundColorAttributeName: [ThemeManager textColor]
+        };
+        _dockedNavBar.standardAppearance = navBarAppearanceStandard;
+        _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
+    } else {
+        _dockedNavBar.barTintColor = [ThemeManager appBackgroundColor];
+    }
+}
 
 - (void)viewDidLoad{
-    
     self.isStreaming = false; //init this flag
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateTheme)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+    [self updateTheme];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -880,6 +902,7 @@ const int FrontViewPositionNone = 0xff;
     }
 
     if(_frontViewPosition != FrontViewPositionLeft){
+        [self updateTheme];
         [self setupMoreButtonMenu];
         [self layoutSettingsView]; //注意， 该方法在菜单展开前又运行了一次， 会执行按清单隐藏stack的任务,此时直接使用.hidden = false 的方式，将stack从hiddenstacks清单中移除，导致stack保持隐藏无法恢复;
         //而此willMoveToPosition内部方法，发生在 delegate的willMoveToPosition之后（由mainFrameVC执行的委托）
@@ -2426,5 +2449,3 @@ NSString * const SWSegueRightIdentifier = @"sw_right";
 //}
 //
 //@end
-
-

@@ -70,6 +70,7 @@
 @property (nonatomic, retain) NSNumber * frameQueueSize;
 @property (nonatomic, retain) NSNumber * graphOpacity;
 @property (nonatomic, retain) NSNumber * renderingBackend;
+@property (nonatomic) BOOL sendDummyEvent;
 @property (nonatomic, retain) NSNumber * framePacingMode;
 
 - (id) initFromSettings:(Settings*)settings;

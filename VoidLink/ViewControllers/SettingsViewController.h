@@ -132,6 +132,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *buttonVisualFeedbackStack;
 @property (strong, nonatomic) IBOutlet UISwitch *buttonVisualFeedbackSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *sendDummyEventStack;
+@property (strong, nonatomic) IBOutlet UISwitch *sendDummyEventSwitch;
+
 @property (nonatomic, strong) MicHandler *micHandler;
 
 

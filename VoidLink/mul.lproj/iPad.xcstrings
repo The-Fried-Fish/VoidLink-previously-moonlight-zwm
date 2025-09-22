@@ -1717,6 +1717,36 @@
         }
       }
     },
+    "Gus-CK-wpc.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Send Dummy Event\"; ObjectID = \"Gus-CK-wpc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send Dummy Event"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发送假事件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發送假事件"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發送假事件"
+          }
+        }
+      }
+    },
     "H8S-aI-EBo.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; H8S-aI-EBo.segmentTitles[0] = \"hovering\"; ObjectID = \"H8S-aI-EBo\";",
       "extractionState" : "extracted_with_value",

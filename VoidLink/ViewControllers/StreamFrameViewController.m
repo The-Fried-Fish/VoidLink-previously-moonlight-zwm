@@ -82,6 +82,8 @@
     dispatch_block_t _delayedRemoveExtScreen;
     VideoDecoderRenderer *_videoRenderer;
     BOOL _isRestoringFromPiP;
+    CADisplayLink *_displayLink;
+
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
     CustomEdgeSlideGestureRecognizer *_slideToCmdToolRecognizer;
@@ -89,6 +91,7 @@
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
     MicHandler* micHandler;
+
 #else
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
@@ -424,9 +427,22 @@
     if (self.imguiView && self.imguiView.mtkView.superview) {
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
-
+    
+    if(_settings.sendDummyEvent){
+        [self setupDisplayLink];
+        [self startDisplayLink];
+    }
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    if(_settings.sendDummyEvent) [self startDisplayLink];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self stopDisplayLink];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -573,6 +589,11 @@
 
 }
 
+- (void)updateTheme {
+    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
+    _spinner.color = [ThemeManager textColor];
+}
 
 - (void)viewDidLoad
 {
@@ -583,7 +604,7 @@
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
     [UIApplication sharedApplication].idleTimerDisabled = YES;
-    
+        
     _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     
     _stageLabel = [[UILabel alloc] init];
@@ -714,9 +735,7 @@
     _stageLabel.textColor = [UIColor systemGrayColor];
     _spinner.color = [UIColor systemGrayColor];
     
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
-    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
-    _spinner.color = [ThemeManager textColor];
+    [self updateTheme];
     
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];
@@ -1119,6 +1138,7 @@
 
 - (void)expandSettingsView{
     self.mainFrameViewcontroller.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
+    [self stopDisplayLink];
     [self.mainFrameViewcontroller expandSettingsView];
 }
 
@@ -1587,5 +1607,31 @@
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), block);
 }
+
+- (void)dealloc {
+    [self stopDisplayLink];
+}
+
+- (void)setupDisplayLink {
+    if (_displayLink != nil) return;
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTick:)];
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+- (void)startDisplayLink {
+    _displayLink.paused = NO;
+}
+
+- (void)stopDisplayLink {
+    [_displayLink invalidate];
+    _displayLink = nil;
+}
+
+- (void)displayLinkTick:(CADisplayLink *)link {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        LiSendKeyboardEvent(0xFF, KEY_ACTION_UP, 0);
+    });
+}
+
 
 @end

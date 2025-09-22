@@ -4719,6 +4719,35 @@
         }
       }
     },
+    "sendDummyEventStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This fixes stuttering on some devices, particularly those on iPadOS 26."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该选项解决了部分设备的串流卡顿问题， 尤其是升级了iPadOS 26的设备。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該選項解決了部分裝置的串流卡頓問題，尤其是升級了 iPadOS 26 的裝置。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該選項解決了部分裝置的串流卡頓問題，尤其是升級了 iPadOS 26 的裝置。"
+          }
+        }
+      }
+    },
     "SensitivityX: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {

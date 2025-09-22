@@ -125,6 +125,7 @@
     self.graphOpacity = settings.graphOpacity;
     self.renderingBackend = settings.renderingBackend;
     self.framePacingMode = settings.framePacingMode;
+    self.sendDummyEvent = settings.sendDummyEvent;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
 #endif
     self.uniqueId = settings.uniqueId;
