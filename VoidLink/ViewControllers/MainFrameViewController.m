@@ -821,6 +821,7 @@ static NSMutableSet* hostList;
     _streamConfig.optimizeGameSettings = streamSettings.optimizeGames;
     _streamConfig.playAudioOnPC = streamSettings.playAudioOnPC;
     _streamConfig.redirectMic = streamSettings.redirectMic;
+    _streamConfig.localVolume = streamSettings.localVolume.floatValue;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.buttonVisualFeedback = streamSettings.buttonVisualFeedback;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
@@ -1208,7 +1209,6 @@ static NSMutableSet* hostList;
 
     if (position == FrontViewPositionLeft) {
         [settingsViewController saveSettings];
-        [self setNeedsUpdateAllowedOrientation]; // handle allow portratit on & off
         _settingsButton.enabled = YES; // make sure these 2 buttons are enabled after closing setting view.
         _upButton.enabled = YES; // here is the select new host button
     }

@@ -39,5 +39,6 @@
 #endif
 - (void)fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
 - (bool)isIPhone;
+- (void)setNeedsUpdateAllowedOrientation;
 
 @end

@@ -22,5 +22,6 @@
 -(BandwidthTracker *) getBwTracker;
 -(BOOL) getVideoStats:(video_stats_t*)stats;
 -(NSString*) getActiveCodecName;
++ (void)setVolume:(float)newVolume;
 
 @end

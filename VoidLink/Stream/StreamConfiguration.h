@@ -42,5 +42,6 @@
 @property BOOL multiController;
 @property NSData* serverCert;
 @property int localMousePointerMode;
+@property CGFloat localVolume;
 
 @end

@@ -44,6 +44,7 @@ static NSLock* videoStatsLock;
 static SDL_AudioDeviceID audioDevice;
 static OPUS_MULTISTREAM_CONFIGURATION audioConfig;
 static void* audioBuffer;
+static float volume = 1.0;
 static int audioFrameSize;
 
 static VideoDecoderRenderer* renderer;
@@ -302,6 +303,13 @@ void ArCleanup(void)
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
++ (void)setVolume:(float)linearVolume{
+    if (linearVolume <= 0.0f) linearVolume = 0.0f;
+    if (linearVolume >= 1.0f) linearVolume = 1.0f;
+    CGFloat exponent = 2.5;
+    volume = powf(linearVolume, exponent);
+}
+
 void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
 {
     int decodeLen;
@@ -318,9 +326,20 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
                                               (float*)audioBuffer,
                                               audioConfig.samplesPerFrame,
                                               0);
+    
     if (decodeLen > 0) {
         // Provide backpressure on the queue to ensure too many frames don't build up
         // in SDL's audio queue.
+        
+        float* fbuf = (float*)audioBuffer;
+        
+        if(volume != 1.0){
+            int totalSamples = decodeLen * audioConfig.channelCount;
+            for (int i = 0; i < totalSamples; i++) {
+                fbuf[i] *= volume;
+            }
+        }
+        
         while (SDL_GetQueuedAudioSize(audioDevice) / audioFrameSize > 10) {
             [NSThread sleepForTimeInterval:0.001f];
         }
@@ -470,6 +489,8 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _streamConfig.supportedVideoFormats = config.supportedVideoFormats;
     _streamConfig.audioConfiguration = config.audioConfiguration;
     _streamConfig.redirectMic = config.redirectMic && [MicHandler permissionGranted];
+    NSLog(@"config.localVolume %f", config.localVolume);
+    [Connection setVolume:config.localVolume];
 
     // Since we require iOS 12 or above, we're guaranteed to be running
     // on a 64-bit device with ARMv8 crypto instructions, so we don't

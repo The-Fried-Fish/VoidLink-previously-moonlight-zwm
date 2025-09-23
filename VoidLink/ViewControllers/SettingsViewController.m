@@ -12,6 +12,7 @@
 #import "TemporarySettings.h"
 #import "DataManager.h"
 #import "ThemeManager.h"
+#import "Connection.h"
 #import "Plot.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -21,6 +22,9 @@
 #import "LocalizationHelper.h"
 
 @implementation SettingsViewController {
+    TemporarySettings* tempSettings;
+    DataManager* dataMan;
+    
     NSLayoutConstraint *parentStackLeadingConstraint;
     NSLayoutConstraint *parentStackWidthConstraint;
     
@@ -375,11 +379,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self updateResolutionTable];
     [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
     
-    DataManager* dataMan = [[DataManager alloc] init];
-    TemporarySettings *currentSettings = [dataMan getSettings];
+    tempSettings = [dataMan getSettings];
 
     //CGSize currentResolution = CGSizeMake(currentSettings.width.intValue, currentSettings.height.intValue);
-    [self.customResolutionSwitch setOn: isCustomResolution(currentSettings.resolutionSelected.intValue)];
+    [self.customResolutionSwitch setOn: isCustomResolution(tempSettings.resolutionSelected.intValue)];
     [self.resolutionSelector setEnabled:!self.customResolutionSwitch.isOn];
 }
 
@@ -391,6 +394,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SettingsViewClosedNotification" object:self]; // notify other view that settings view just closed
+    
+    bool unlockDisplayOrientationFlipped = tempSettings.unlockDisplayOrientation != (_unlockDisplayOrientationSelector.selectedSegmentIndex == 1);
+    if(unlockDisplayOrientationFlipped) [_mainFrameViewController setNeedsUpdateAllowedOrientation]; // handle allow portratit on & off
 }
 
 
@@ -669,6 +675,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.localVolumeStack ofId:@"localVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
     [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
@@ -1239,7 +1246,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     currentSettingsMenuMode = FavoriteSettings;
     [self initParentStack];
     [self updateTheme];
-    DataManager* dataMan = [[DataManager alloc] init];
     Settings *currentSettings = [dataMan retrieveSettings];
     currentSettings.settingsMenuMode = [NSNumber numberWithInteger:currentSettingsMenuMode];
     [dataMan saveData];
@@ -1274,7 +1280,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self layoutSections];
     [self updateTheme];
         //[self doneRemoveSettingItem];
-    DataManager* dataMan = [[DataManager alloc] init];
     Settings *currentSettings = [dataMan retrieveSettings];
     currentSettings.settingsMenuMode = [NSNumber numberWithInteger:currentSettingsMenuMode];
     [dataMan saveData];
@@ -1405,15 +1410,15 @@ BOOL isCustomResolution(int resolutionSelected) {
         self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     }
 
-    DataManager* dataMan = [[DataManager alloc] init];
-    TemporarySettings* currentSettings = [dataMan getSettings];
+    dataMan = [[DataManager alloc] init];
+    tempSettings = [dataMan getSettings];
 
-    currentSettingsMenuMode = currentSettings.settingsMenuMode.intValue;
+    currentSettingsMenuMode = tempSettings.settingsMenuMode.intValue;
     [self loadFavoriteSettingStackIdentifiers];
-    if(currentSettings.settingsMenuMode.intValue == FavoriteSettings) [self switchToFavoriteSettings];
+    if(tempSettings.settingsMenuMode.intValue == FavoriteSettings) [self switchToFavoriteSettings];
 
     // Ensure we pick a bitrate that falls exactly onto a slider notch
-    _bitrate = bitrateTable[[self getSliderValueForBitrate:[currentSettings.bitrate intValue]]];
+    _bitrate = bitrateTable[[self getSliderValueForBitrate:[tempSettings.bitrate intValue]]];
 
     // Get the size of the screen with and without safe area insets
     // UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
@@ -1428,12 +1433,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     self.resolutionSelector.selectedSegmentIndex = 3;
     [self.resolutionSelector setNeedsLayout];
 
-    resolutionTable[5] = CGSizeMake([currentSettings.width integerValue], [currentSettings.height integerValue]); // custom initial value
+    resolutionTable[5] = CGSizeMake([tempSettings.width integerValue], [tempSettings.height integerValue]); // custom initial value
     [self updateResolutionTable];
 
 
     NSInteger framerate;
-    switch ([currentSettings.framerate integerValue]) {
+    switch ([tempSettings.framerate integerValue]) {
         case 30:
             framerate = 0;
             break;
@@ -1446,7 +1451,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             break;
     }
 
-    NSInteger resolution = currentSettings.resolutionSelected.integerValue;
+    NSInteger resolution = tempSettings.resolutionSelected.integerValue;
     if(resolution >= RESOLUTION_TABLE_SIZE){
         resolution = 0;
     }
@@ -1476,7 +1481,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         // they support HEVC decoding (A9 or later).
         [self.resolutionSelector setEnabled:NO forSegmentAtIndex:2];
     }
-    switch (currentSettings.preferredCodec) {
+    switch (tempSettings.preferredCodec) {
         case CODEC_PREF_AUTO:
             [self.codecSelector setSelectedSegmentIndex:self.codecSelector.numberOfSegments - 1];
             break;
@@ -1499,39 +1504,39 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.hdrSwitch setEnabled:NO];
     }
     else {
-        [self.hdrSwitch setOn:currentSettings.enableHdr];
+        [self.hdrSwitch setOn:tempSettings.enableHdr];
     }
 
-    [self.yuv444Switch setOn:currentSettings.enableYUV444];
+    [self.yuv444Switch setOn:tempSettings.enableYUV444];
     
-    [self.pipSwitch setOn:currentSettings.enablePIP];
+    [self.pipSwitch setOn:tempSettings.enablePIP];
     if(@available(iOS 15.0, *)) [self.pipSwitch setEnabled:true];
     else{
         [self.pipSwitch setOn:false];
         [self.pipSwitch setEnabled:false];
     }
     
-    [self.statsOverlaySelector setSelectedSegmentIndex:currentSettings.statsOverlayLevel.intValue];
+    [self.statsOverlaySelector setSelectedSegmentIndex:tempSettings.statsOverlayLevel.intValue];
 
-    NSInteger renderingBackend = [currentSettings.renderingBackend integerValue];
+    NSInteger renderingBackend = [tempSettings.renderingBackend integerValue];
     [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
     [self.renderingBackendSelector addTarget:self action:@selector(renderingBackendChanged:) forControlEvents:UIControlEventValueChanged];
 
-    NSInteger framePacingMode = [currentSettings.framePacingMode integerValue];
+    NSInteger framePacingMode = [tempSettings.framePacingMode integerValue];
     [self.framePacingModeSelector setSelectedSegmentIndex:framePacingMode];
     [self.framePacingModeSelector addTarget:self action:@selector(framePacingModeChanged:) forControlEvents:UIControlEventValueChanged];
     [self framePacingModeChanged:self.framePacingModeSelector];
 
     [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
-    [self.citrixX1MouseSwitch setOn:currentSettings.btMouseSupport];
-    [self.optimizeGamesSwitch setOn: currentSettings.optimizeGames];
-    [self.multiControllerSwitch setOn:currentSettings.multiController];
-    [self.swapAbxySwitch setOn:currentSettings.swapABXYButtons];
-    [self.buttonVisualFeedbackSwitch setOn:currentSettings.buttonVisualFeedback];
+    [self.citrixX1MouseSwitch setOn:tempSettings.btMouseSupport];
+    [self.optimizeGamesSwitch setOn: tempSettings.optimizeGames];
+    [self.multiControllerSwitch setOn:tempSettings.multiController];
+    [self.swapAbxySwitch setOn:tempSettings.swapABXYButtons];
+    [self.buttonVisualFeedbackSwitch setOn:tempSettings.buttonVisualFeedback];
 
-    [self.gyroModeSelector setSelectedSegmentIndex:currentSettings.gyroMode.intValue];
-    [self.gyroSensitivitySlider setValue: (uint16_t)(currentSettings.gyroSensitivity.floatValue * 100) animated:YES]; // Load old setting.
+    [self.gyroModeSelector setSelectedSegmentIndex:tempSettings.gyroMode.intValue];
+    [self.gyroSensitivitySlider setValue: (uint16_t)(tempSettings.gyroSensitivity.floatValue * 100) animated:YES]; // Load old setting.
     [self.gyroSensitivitySlider addTarget:self action:@selector(gyroSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self gyroSensitivitySliderMoved:self.gyroSensitivitySlider];
     
@@ -1543,14 +1548,17 @@ BOOL isCustomResolution(int resolutionSelected) {
     CMMotionManager *motionManager = [[CMMotionManager alloc] init];
     [self.gyroModeSelector setEnabled:[motionManager isGyroAvailable] forSegmentAtIndex:2];
     
-    [self.emulatedControllerTypeSelector setSelectedSegmentIndex:[self controllerTypeToSegmentIndex:currentSettings.emulatedControllerType.intValue]];
+    [self.emulatedControllerTypeSelector setSelectedSegmentIndex:[self controllerTypeToSegmentIndex:tempSettings.emulatedControllerType.intValue]];
     [self.emulatedControllerTypeSelector addTarget:self action:@selector(emulatedControllerTypeChanged:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self emulatedControllerTypeChanged:self.emulatedControllerTypeSelector];
+  
+    [self.audioOnPcSwitch setOn:tempSettings.playAudioOnPC];
     
-
-
-    [self.audioOnPcSwitch setOn:currentSettings.playAudioOnPC];
-    [self.redirectMicSwitch setOn:currentSettings.redirectMic];
+    [self.localVolumeSlider setValue:tempSettings.localVolume.floatValue*100];
+    [self.localVolumeSlider addTarget:self action:@selector(localVolumeSliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self localVolumeSliderMoved:self.localVolumeSlider];
+    
+    [self.redirectMicSwitch setOn:tempSettings.redirectMic];
     [self.redirectMicSwitch addTarget:self action:@selector(redirectMicSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self redirectMicSwitchFlipped:self.redirectMicSwitch];
     
@@ -1569,16 +1577,16 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self.frameQueueSizeSlider setMinimumValue:1];
     [self.frameQueueSizeSlider setMaximumValue:5];
-    [self.frameQueueSizeSlider setValue:currentSettings.frameQueueSize.intValue];
+    [self.frameQueueSizeSlider setValue:tempSettings.frameQueueSize.intValue];
     [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved:) forControlEvents:UIControlEventValueChanged];
     [self frameQueueSizeSliderMoved:self.frameQueueSizeSlider];
 
-    [self.enableGraphsSwitch setOn:currentSettings.enableGraphs animated:NO]; // Add this line
+    [self.enableGraphsSwitch setOn:tempSettings.enableGraphs animated:NO]; // Add this line
     [self.enableGraphsSwitch addTarget:self action:@selector(enableGraphsChanged:) forControlEvents:UIControlEventValueChanged];
     [self enableGraphsChanged:self.enableGraphsSwitch];
     [self.graphOpacityStepper setMinimumValue:0];
     [self.graphOpacityStepper setMaximumValue:100];
-    [self.graphOpacityStepper setValue:(int)currentSettings.graphOpacity.intValue];
+    [self.graphOpacityStepper setValue:(int)tempSettings.graphOpacity.intValue];
     [self.graphOpacityStepper addTarget:self action:@selector(graphOpacityStepperTapped:) forControlEvents:UIControlEventValueChanged];
     [self graphOpacityStepperTapped:self.graphOpacityStepper];
 
@@ -1588,7 +1596,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.audioConfigSelector setTitle:[LocalizationHelper localizedStringForKey:@"Stereo (surround sound available for iOS18+)"] forSegmentAtIndex:0];
         [self.audioConfigSelector setEnabled:NO];
     }
-    switch ([currentSettings.audioConfig integerValue]) {
+    switch ([tempSettings.audioConfig integerValue]) {
         case 2:
             [self.audioConfigSelector setSelectedSegmentIndex:0];
             break;
@@ -1602,31 +1610,31 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     // Unlock Display Orientation setting
     bool unlockDisplayOrientationSelectorEnabled = [self isFullScreenRequired] || [self isIPhone];//need "requires fullscreen" enabled in the app bunddle to make runtime orientation limitation working
-    if(unlockDisplayOrientationSelectorEnabled) [self.unlockDisplayOrientationSelector setSelectedSegmentIndex:currentSettings.unlockDisplayOrientation ? 1 : 0];
+    if(unlockDisplayOrientationSelectorEnabled) [self.unlockDisplayOrientationSelector setSelectedSegmentIndex:tempSettings.unlockDisplayOrientation ? 1 : 0];
     else [self.unlockDisplayOrientationSelector setSelectedSegmentIndex:1]; // can't lock screen orientation in this mode = Display Orientation always unlocked
     [self.unlockDisplayOrientationSelector setEnabled:unlockDisplayOrientationSelectorEnabled];
 
-    [self.backgroundSessionTimerSlider setValue:(uint32_t)currentSettings.backgroundSessionTimer.floatValue];
+    [self.backgroundSessionTimerSlider setValue:(uint32_t)tempSettings.backgroundSessionTimer.floatValue];
     [self.backgroundSessionTimerSlider addTarget:self action:@selector(backgroundSessionTimerSliderMoved:) forControlEvents:UIControlEventValueChanged];
     [self backgroundSessionTimerSliderMoved:self.backgroundSessionTimerSlider];
 
     // lift streamview setting
-    [self.liftStreamViewForKeyboardSelector setSelectedSegmentIndex:currentSettings.liftStreamViewForKeyboard ? 1 : 0];// Load old setting
+    [self.liftStreamViewForKeyboardSelector setSelectedSegmentIndex:tempSettings.liftStreamViewForKeyboard ? 1 : 0];// Load old setting
 
     // showkeyboard toolbar setting
-    [self.softKeyboardToolbarSwitch setOn:currentSettings.showKeyboardToolbar];// Load old setting
+    [self.softKeyboardToolbarSwitch setOn:tempSettings.showKeyboardToolbar];// Load old setting
 
     // reverse mouse wheel direction setting
-    [self.reverseMouseWheelDirectionSelector setSelectedSegmentIndex:currentSettings.reverseMouseWheelDirection ? 1 : 0];// Load old setting
+    [self.reverseMouseWheelDirectionSelector setSelectedSegmentIndex:tempSettings.reverseMouseWheelDirection ? 1 : 0];// Load old setting
 
     //  slide to menu settings
-    [self.slideToSettingsScreenEdgeSelector setSelectedSegmentIndex:[self getSelectorIndexFromScreenEdge:(uint32_t)currentSettings.slideToSettingsScreenEdge.integerValue]];
+    [self.slideToSettingsScreenEdgeSelector setSelectedSegmentIndex:[self getSelectorIndexFromScreenEdge:(uint32_t)tempSettings.slideToSettingsScreenEdge.integerValue]];
     // Load old setting
     [self.slideToToolboxScreenEdgeSelector setEnabled:false];
     [self.slideToSettingsScreenEdgeSelector addTarget:self action:@selector(slideToSettingsScreenEdgeChanged) forControlEvents:UIControlEventValueChanged];
     [self slideToSettingsScreenEdgeChanged];
 
-    [self.slideToMenuDistanceSlider setValue:currentSettings.slideToSettingsDistance.floatValue];
+    [self.slideToMenuDistanceSlider setValue:tempSettings.slideToSettingsDistance.floatValue];
     [self.slideToMenuDistanceSlider addTarget:self action:@selector(slideToMenuDistanceSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self slideToMenuDistanceSliderMoved:self.slideToMenuDistanceSlider];
 
@@ -1635,12 +1643,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     //TouchMode & OSC Related Settings:
 
     // pointer veloc setting, will be enable/disabled by touchMode
-    [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(currentSettings.pointerVelocityModeDivider.floatValue * 100) animated:YES]; // Load old setting.
+    [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(tempSettings.pointerVelocityModeDivider.floatValue * 100) animated:YES]; // Load old setting.
     [self.pointerVelocityModeDividerSlider addTarget:self action:@selector(pointerVelocityModeDividerSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self pointerVelocityModeDividerSliderMoved:self.pointerVelocityModeDividerSlider];
 
     // init pointer veloc setting,  will be enable/disabled by touchMode
-    [self.touchPointerVelocityFactorSlider setValue: [self map_SliderValue_fromVelocFactor: currentSettings.touchPointerVelocityFactor.floatValue] animated:YES]; // Load old setting.
+    [self.touchPointerVelocityFactorSlider setValue: [self map_SliderValue_fromVelocFactor: tempSettings.touchPointerVelocityFactor.floatValue] animated:YES]; // Load old setting.
     [self.touchPointerVelocityFactorSlider addTarget:self action:@selector(touchPointerVelocityFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self touchPointerVelocityFactorSliderMoved:self.touchPointerVelocityFactorSlider];
 
@@ -1649,48 +1657,48 @@ BOOL isCustomResolution(int resolutionSelected) {
     // [self.asyncNativeTouchPrioritySelector addTarget:self action:@selector(asyncNativeTouchPriorityChanged) forControlEvents:UIControlEventValueChanged];
 
     // init relative touch mouse pointer veloc setting,  will be enable/disabled by touchMode
-    [self.mousePointerVelocityFactorSlider setValue:[self map_SliderValue_fromVelocFactor: currentSettings.mousePointerVelocityFactor.floatValue] animated:YES]; // Load old setting.
+    [self.mousePointerVelocityFactorSlider setValue:[self map_SliderValue_fromVelocFactor: tempSettings.mousePointerVelocityFactor.floatValue] animated:YES]; // Load old setting.
     [self.mousePointerVelocityFactorSlider addTarget:self action:@selector(mousePointerVelocityFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self mousePointerVelocityFactorSliderMoved:self.mousePointerVelocityFactorSlider];
 
 
     // these settings will be affected by onscreenControl & touchMode, must be loaded before them.
     // NSLog(@"osc tool fingers setting test: %d", currentSettings.oscLayoutToolFingers.intValue);
-    self->oswLayoutFingers = (uint16_t)currentSettings.oscLayoutToolFingers.intValue; // load old setting of oscLayoutFingers
-    uint8_t keyboardToggleFingers = currentSettings.keyboardToggleFingers.intValue;
+    self->oswLayoutFingers = (uint16_t)tempSettings.oscLayoutToolFingers.intValue; // load old setting of oscLayoutFingers
+    uint8_t keyboardToggleFingers = tempSettings.keyboardToggleFingers.intValue;
 
     [self.softKeyboardGestureSelector setSelectedSegmentIndex:keyboardToggleFingers>=5 ? 3 : keyboardToggleFingers-3];
 
 
 
     // this setting will be affected by touchMode, must be loaded before them.
-    NSInteger onscreenControlsLevel = [currentSettings.onscreenControls integerValue];
+    NSInteger onscreenControlsLevel = [tempSettings.onscreenControls integerValue];
     [self.onScreenWidgetSelector setSelectedSegmentIndex:onscreenControlsLevel];
     [self.onScreenWidgetSelector addTarget:self action:@selector(onScreenWidgetChanged) forControlEvents:UIControlEventValueChanged];
     [self onScreenWidgetChanged];
 
     // touch move event interval for native-touch.
-    [self.touchMoveEventIntervalSlider setValue:currentSettings.touchMoveEventInterval.intValue animated:YES]; // Load old setting.
+    [self.touchMoveEventIntervalSlider setValue:tempSettings.touchMoveEventInterval.intValue animated:YES]; // Load old setting.
     [self.touchMoveEventIntervalSlider addTarget:self action:@selector(touchMoveEventIntervalSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
 
 
     // this part will enable/disable oscSelector & the asyncNativeTouchPriority selector
-    uint8_t touchModeSelectorIndex = currentSettings.touchMode.intValue == NativeTouchOnly ? NativeTouch : currentSettings.touchMode.intValue;
+    uint8_t touchModeSelectorIndex = tempSettings.touchMode.intValue == NativeTouchOnly ? NativeTouch : tempSettings.touchMode.intValue;
     [self.touchModeSelector setSelectedSegmentIndex:touchModeSelectorIndex]; //Load old touchMode setting
     [self.touchModeSelector addTarget:self action:@selector(touchModeChanged:) forControlEvents:UIControlEventValueChanged];
     [self touchModeChanged:self.touchModeSelector];
 
-    self.enableOswSwitchStack.hidden = !(currentSettings.touchMode.intValue == NativeTouch || currentSettings.touchMode.intValue == NativeTouchOnly); // do not use setHidden to stack wrapped by a settingStack
+    self.enableOswSwitchStack.hidden = !(tempSettings.touchMode.intValue == NativeTouch || tempSettings.touchMode.intValue == NativeTouchOnly); // do not use setHidden to stack wrapped by a settingStack
     
-    [self.enableOswForNativeTouchSwitch setOn:currentSettings.touchMode.intValue != NativeTouchOnly];
+    [self.enableOswForNativeTouchSwitch setOn:tempSettings.touchMode.intValue != NativeTouchOnly];
     [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self enableOswForNativeTouchSwitchFlipped:self.enableOswForNativeTouchSwitch];
 
-    [self.externalDisplayModeSelector setSelectedSegmentIndex:currentSettings.externalDisplayMode.integerValue];
-    [self.localMousePointerModeSelector setSelectedSegmentIndex:currentSettings.localMousePointerMode.integerValue];
+    [self.externalDisplayModeSelector setSelectedSegmentIndex:tempSettings.externalDisplayMode.integerValue];
+    [self.localMousePointerModeSelector setSelectedSegmentIndex:tempSettings.localMousePointerMode.integerValue];
     
-    [self.sendDummyEventSwitch setOn:currentSettings.sendDummyEvent];// Load old setting
+    [self.sendDummyEventSwitch setOn:tempSettings.sendDummyEvent];// Load old setting
     
     settingsViewJustLoaded = false;
 }
@@ -1784,9 +1792,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 
     // Get the current settings to compare with the new selection
-    DataManager* dataMan = [[DataManager alloc] init];
-    TemporarySettings* currentSettings = [dataMan getSettings];
-    NSInteger previousBackend = [currentSettings.renderingBackend integerValue];
+    NSInteger previousBackend = [tempSettings.renderingBackend integerValue];
 
     // Check if the rendering backend has actually changed
     if (previousBackend != sender.selectedSegmentIndex) {
@@ -1902,7 +1908,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
 }
 
-
 - (void) pointerVelocityModeDividerSliderMoved:(UISlider* )sender {
     [self findDynamicLabelFromStack:self.pointerVelocityDividerStack].text = [NSString stringWithFormat:@"  | %d%% | %d%% |  ", (uint8_t)sender.value, 100-(uint8_t)sender.value];
 }
@@ -1913,6 +1918,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void) gyroSensitivitySliderMoved:(UISlider* )sender {
     [self findDynamicLabelFromStack:self.gyroSensitivityStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)sender.value]; // Update label display
+}
+
+- (void) localVolumeSliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:self.localVolumeStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)sender.value]; // Update label display
+    if(_mainFrameViewController.settingsExpandedInStreamView) [Connection setVolume:sender.value/100];
 }
 
 - (void) backgroundSessionTimerSliderMoved:(UISlider* )sender {
@@ -2443,7 +2453,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void) saveSettings {
     [self preSavingActions];
 
-    DataManager* dataMan = [[DataManager alloc] init];
     Settings* currentSettings = [dataMan retrieveSettings];
     
     NSInteger height = self.mainFrameViewController.settingsExpandedInStreamView ? currentSettings.height.intValue : [self getChosenStreamHeight];
@@ -2464,6 +2473,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat touchPointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.touchPointerVelocityFactorSlider.value]/100;
     CGFloat mousePointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.mousePointerVelocityFactorSlider.value]/100;
     CGFloat gyroSensitivity = (CGFloat)(uint16_t)self.gyroSensitivitySlider.value/100;
+    
+    CGFloat localVolume = self.localVolumeSlider.value/100;
 
     uint16_t touchMoveEventInterval = (uint16_t)self.touchMoveEventIntervalSlider.value;
 
@@ -2517,6 +2528,7 @@ BOOL isCustomResolution(int resolutionSelected) {
           touchPointerVelocityFactor:touchPointerVelocityFactor
           mousePointerVelocityFactor:mousePointerVelocityFactor
                      gyroSensitivity:gyroSensitivity
+                         localVolume:localVolume
               touchMoveEventInterval:touchMoveEventInterval
           reverseMouseWheelDirection:reverseMouseWheelDirection
             asyncNativeTouchPriority:asyncNativeTouchPriority

@@ -135,6 +135,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *sendDummyEventStack;
 @property (strong, nonatomic) IBOutlet UISwitch *sendDummyEventSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *localVolumeStack;
+@property (strong, nonatomic) IBOutlet UISlider *localVolumeSlider;
+
 @property (nonatomic, strong) MicHandler *micHandler;
 
 
