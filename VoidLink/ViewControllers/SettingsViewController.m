@@ -12,6 +12,7 @@
 #import "TemporarySettings.h"
 #import "DataManager.h"
 #import "ThemeManager.h"
+#import "Connection.h"
 #import "Plot.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -674,6 +675,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.localVolumeStack ofId:@"localVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
     [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
@@ -1549,10 +1551,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.emulatedControllerTypeSelector setSelectedSegmentIndex:[self controllerTypeToSegmentIndex:tempSettings.emulatedControllerType.intValue]];
     [self.emulatedControllerTypeSelector addTarget:self action:@selector(emulatedControllerTypeChanged:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
     [self emulatedControllerTypeChanged:self.emulatedControllerTypeSelector];
-    
-
-
+  
     [self.audioOnPcSwitch setOn:tempSettings.playAudioOnPC];
+    
+    [self.localVolumeSlider setValue:tempSettings.localVolume.floatValue*100];
+    [self.localVolumeSlider addTarget:self action:@selector(localVolumeSliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self localVolumeSliderMoved:self.localVolumeSlider];
+    
     [self.redirectMicSwitch setOn:tempSettings.redirectMic];
     [self.redirectMicSwitch addTarget:self action:@selector(redirectMicSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self redirectMicSwitchFlipped:self.redirectMicSwitch];
@@ -1903,7 +1908,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
 }
 
-
 - (void) pointerVelocityModeDividerSliderMoved:(UISlider* )sender {
     [self findDynamicLabelFromStack:self.pointerVelocityDividerStack].text = [NSString stringWithFormat:@"  | %d%% | %d%% |  ", (uint8_t)sender.value, 100-(uint8_t)sender.value];
 }
@@ -1914,6 +1918,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void) gyroSensitivitySliderMoved:(UISlider* )sender {
     [self findDynamicLabelFromStack:self.gyroSensitivityStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)sender.value]; // Update label display
+}
+
+- (void) localVolumeSliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:self.localVolumeStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)sender.value]; // Update label display
+    if(_mainFrameViewController.settingsExpandedInStreamView) [Connection setVolume:sender.value/100];
 }
 
 - (void) backgroundSessionTimerSliderMoved:(UISlider* )sender {
@@ -2464,6 +2473,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat touchPointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.touchPointerVelocityFactorSlider.value]/100;
     CGFloat mousePointerVelocityFactor = (CGFloat)(uint16_t)[self map_velocFactorDisplay_fromSliderValue:self.mousePointerVelocityFactorSlider.value]/100;
     CGFloat gyroSensitivity = (CGFloat)(uint16_t)self.gyroSensitivitySlider.value/100;
+    
+    CGFloat localVolume = self.localVolumeSlider.value/100;
 
     uint16_t touchMoveEventInterval = (uint16_t)self.touchMoveEventIntervalSlider.value;
 
@@ -2517,6 +2528,7 @@ BOOL isCustomResolution(int resolutionSelected) {
           touchPointerVelocityFactor:touchPointerVelocityFactor
           mousePointerVelocityFactor:mousePointerVelocityFactor
                      gyroSensitivity:gyroSensitivity
+                         localVolume:localVolume
               touchMoveEventInterval:touchMoveEventInterval
           reverseMouseWheelDirection:reverseMouseWheelDirection
             asyncNativeTouchPriority:asyncNativeTouchPriority

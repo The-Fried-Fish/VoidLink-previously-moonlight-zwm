@@ -116,6 +116,7 @@
     self.touchPointerVelocityFactor = settings.touchPointerVelocityFactor;
     self.mousePointerVelocityFactor = settings.mousePointerVelocityFactor;
     self.gyroSensitivity = settings.gyroSensitivity;
+    self.localVolume = settings.localVolume;
     self.pointerVelocityModeDivider = settings.pointerVelocityModeDivider;
     self.unlockDisplayOrientation = settings.unlockDisplayOrientation;
     self.resolutionSelected = settings.resolutionSelected;

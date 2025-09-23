@@ -821,6 +821,7 @@ static NSMutableSet* hostList;
     _streamConfig.optimizeGameSettings = streamSettings.optimizeGames;
     _streamConfig.playAudioOnPC = streamSettings.playAudioOnPC;
     _streamConfig.redirectMic = streamSettings.redirectMic;
+    _streamConfig.localVolume = streamSettings.localVolume.floatValue;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.buttonVisualFeedback = streamSettings.buttonVisualFeedback;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment

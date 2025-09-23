@@ -679,6 +679,36 @@
         }
       }
     },
+    "AeU-kl-XFa.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Local Volume\"; ObjectID = \"AeU-kl-XFa\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Local Volume"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地音量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地音量"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地音量"
+          }
+        }
+      }
+    },
     "aFy-0w-YPe.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; aFy-0w-YPe.segmentTitles[0] = \"H.264\"; ObjectID = \"aFy-0w-YPe\";",
       "extractionState" : "extracted_with_value",
