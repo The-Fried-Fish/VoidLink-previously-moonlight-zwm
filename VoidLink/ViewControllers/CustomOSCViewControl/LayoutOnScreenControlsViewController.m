@@ -205,25 +205,14 @@
     /* This will animate the toolbar with a subtle up and down motion intended to telegraph to the user that they can hide the toolbar if they wish*/
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        [UIView animateWithDuration:0.3
+        [UIView animateWithDuration:0.2
                               delay:0.25
-             usingSpringWithDamping:0.8
+             usingSpringWithDamping:0.9
               initialSpringVelocity:0.5
                             options:UIViewAnimationOptionCurveEaseInOut animations:^{ // Animate toolbar up a a very small distance. Note the 0.35 time delay is necessary to avoid a bug that keeps animations from playing if the animation is presented immediately on a modally presented VC
-            self.toolbarRootView.frame = CGRectMake(self.toolbarRootView.frame.origin.x, self.toolbarRootView.frame.origin.y - 25, self.toolbarRootView.frame.size.width, self.toolbarRootView.frame.size.height);
+            self.toolbarRootView.frame = CGRectMake(self.toolbarRootView.frame.origin.x, self.toolbarRootView.frame.origin.y, self.toolbarRootView.frame.size.width, self.toolbarRootView.frame.size.height);
         }
-                         completion:^(BOOL finished) {
-            [UIView animateWithDuration:0.3
-                                  delay:0
-                 usingSpringWithDamping:0.7
-                  initialSpringVelocity:1.0
-                                options:UIViewAnimationOptionCurveEaseIn animations:^{ // Animate the toolbar back down that same distance
-                self.toolbarRootView.frame = CGRectMake(self.toolbarRootView.frame.origin.x, self.toolbarRootView.frame.origin.y + 25, self.toolbarRootView.frame.size.width, self.toolbarRootView.frame.size.height);
-            }
-                             completion:^(BOOL finished) {
-                NSLog (@"done");
-            }];
-        }];
+                         completion:nil];
     });
     trashCanStoryBoardColor = trashCanButton.tintColor;
     self.toolbarRootView.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -245,6 +234,7 @@
     selectedWidgetView = nil;
     widgetPanelStoredCenter = self.widgetPanelStack.center;
     [super viewDidAppear:animated];
+    [self profileRefresh];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -287,7 +277,7 @@
     
     OnScreenWidgetView.editMode = true;
     [self handleMissingToolBarIcon:toolbarRootView];
-    [self profileRefresh];
+    self.widgetPanelStack.hidden = YES;
 }
 
 #pragma mark - Class Helper Functions

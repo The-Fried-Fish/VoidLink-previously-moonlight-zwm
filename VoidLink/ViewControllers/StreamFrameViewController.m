@@ -340,6 +340,7 @@
 }
 
 - (void)reConfigStreamViewRealtime {
+    //if(!viewJustLoaded) [self handleViewResize];
     [self reConfigStreamViewRealtimeAndReloadSettings:YES];
 }
 
@@ -373,15 +374,14 @@
     }
     else [micHandler stopTappingWithStopEngine:false];
     
-    NSLog(@"viewJustloaded: %d, redirectMic:%d", viewJustLoaded, _settings.redirectMic);
     if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
-    else viewJustLoaded = false;
     // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
     [_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig streamFrameTopLayerView:self.view]; //reinitiate setupStreamView process.
         // we got self.view passed to streamView class as the topLayerView, will be useful in many cases
     [self->_streamView reloadOnScreenControlsRealtimeWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig]; //reload OSC here.
     [self->_streamView reloadOnScreenWidgetViews]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    
     [self reloadAirPlayConfig];
     [self mousePresenceChanged];
     
@@ -451,7 +451,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    viewJustLoaded = false;
     _deviceWindow = self.view.window;
     if (@available(iOS 13.0, *)) {
         UIScreen *currentScreen = self.view.window.windowScene.screen;
@@ -998,6 +998,7 @@
             if (_streamVideoRenderView && _streamView) {
                 [_streamView insertSubview:_streamVideoRenderView atIndex:0];
                 [self handleViewResize]; // Adjust frames as needed
+                [self reConfigStreamViewRealtimeAndReloadSettings:YES];
             }
         }
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
@@ -1035,8 +1036,10 @@
 
 - (void) handleViewResize{
     viewIsBeingResized = true;
+    
     _streamView.bounds = _deviceWindow.bounds;
     _streamView.frame = _deviceWindow.frame;
+    
     if(![self isAirPlaying]){
         _streamVideoRenderView.bounds = _deviceWindow.bounds;
         _streamVideoRenderView.frame = _deviceWindow.frame;
@@ -1053,7 +1056,6 @@
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc postNotificationName:@"ScreenChanged" object:self];
     }
-    [self reConfigStreamViewRealtime];
 }
 
 
@@ -1528,7 +1530,6 @@
 - (void)toggleMouseCapture{
     DataManager* dataMan = [[DataManager alloc] init];
     Settings *currentSettings = [dataMan retrieveSettings];
-    
     if(currentSettings.localMousePointerMode.intValue == 0){
         currentSettings.localMousePointerMode = @1;
     }else{
@@ -1604,6 +1605,7 @@
     }
     dispatch_block_t block = dispatch_block_create(0, ^{
         [self handleViewResize];
+        [self reConfigStreamViewRealtimeAndReloadSettings:YES];
     });
     _delayedRemoveExtScreen = block;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));

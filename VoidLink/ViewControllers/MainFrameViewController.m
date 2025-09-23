@@ -1208,7 +1208,6 @@ static NSMutableSet* hostList;
 
     if (position == FrontViewPositionLeft) {
         [settingsViewController saveSettings];
-        [self setNeedsUpdateAllowedOrientation]; // handle allow portratit on & off
         _settingsButton.enabled = YES; // make sure these 2 buttons are enabled after closing setting view.
         _upButton.enabled = YES; // here is the select new host button
     }
