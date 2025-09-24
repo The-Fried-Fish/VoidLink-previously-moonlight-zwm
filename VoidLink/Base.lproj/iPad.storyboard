@@ -1155,6 +1155,26 @@
                                     <constraint firstAttribute="width" constant="380" id="Oij-e2-w81"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="jCF-si-KLC" userLabel="useBuiltinMicStack">
+                                <rect key="frame" x="432" y="2310" width="270" height="31"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Built-in Mic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bfV-QT-eKw" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="120" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H3f-qy-ySA" userLabel="useBuiltinMicSwitch">
+                                        <rect key="frame" x="140" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="e7s-Xg-mNQ"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="GWg-Dx-N44"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1258,6 +1278,8 @@
                         <outlet property="touchPointerVelocityFactorUILabel" destination="egA-7n-Dpe" id="QGf-uN-5Io"/>
                         <outlet property="unlockDisplayOrientationSelector" destination="KNe-bN-CDb" id="C8u-Ro-HDy"/>
                         <outlet property="unlockDisplayOrientationStack" destination="5dA-cw-gOa" id="HHx-qM-BZi"/>
+                        <outlet property="useBuiltinMicStack" destination="jCF-si-KLC" id="AnY-Ob-jE9"/>
+                        <outlet property="useBuiltinMicSwitch" destination="H3f-qy-ySA" id="O76-df-ich"/>
                         <outlet property="yuv444Stack" destination="Qfd-bG-FSa" id="kpm-TK-Ngg"/>
                         <outlet property="yuv444Switch" destination="jIQ-jh-tvP" id="Qru-gO-haR"/>
                     </connections>

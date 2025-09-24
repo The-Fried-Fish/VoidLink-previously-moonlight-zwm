@@ -88,6 +88,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
                      redirectMic:(BOOL)redirectMic
+                   useBuiltinMic:(BOOL)useBuiltinMic
                   preferredCodec:(uint32_t)preferredCodec
                     enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP

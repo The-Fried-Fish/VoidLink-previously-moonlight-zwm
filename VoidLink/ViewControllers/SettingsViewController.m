@@ -677,9 +677,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [self addSetting:self.localVolumeStack ofId:@"localVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
     [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.useBuiltinMicStack ofId:@"useBuiltinMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
-    [audioSection setExpanded:YES];
+    [audioSection setExpanded:YES]; 
 
     
     otherSection = [[MenuSectionView alloc] init];
@@ -1158,6 +1159,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"sendDummyEventStackTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"useBuiltinMicStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"useBuiltinMicStackTip"];
+        showOnlineDocAction = false;
+    }
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
@@ -1561,6 +1566,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.redirectMicSwitch setOn:tempSettings.redirectMic];
     [self.redirectMicSwitch addTarget:self action:@selector(redirectMicSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self redirectMicSwitchFlipped:self.redirectMicSwitch];
+    
+    [self.useBuiltinMicSwitch setOn:tempSettings.useBuiltinMic];
     
     _lastSelectedResolutionIndex = resolution;
     [self.resolutionSelector setSelectedSegmentIndex:resolution];
@@ -2070,6 +2077,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)redirectMicSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn) [self checkAndRequestMicPermission];
+    [self setHidden:!sender.isOn forStack:_useBuiltinMicStack];
 }
 
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
@@ -2491,6 +2499,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger emulatedControllerType = [self segmentIndexToControllerType:self.emulatedControllerTypeSelector.selectedSegmentIndex]; //self.emulatedControllerTypeSelector.selectedSegmentIndex;
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
     BOOL redirectMic = self.redirectMicSwitch.isOn;
+    BOOL useBuiltinMic = self.useBuiltinMicSwitch.isOn;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
@@ -2540,6 +2549,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                      swapABXYButtons:swapABXYButtons
                            audioOnPC:audioOnPC
                          redirectMic:redirectMic
+                       useBuiltinMic:useBuiltinMic
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP

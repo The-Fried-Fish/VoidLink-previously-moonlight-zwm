@@ -1302,7 +1302,7 @@
         dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             if(self->_streamConfig.redirectMic){
                     self->_micStreamInitialized = true;
-                    self->micHandler = [MicHandler new];
+                self->micHandler = [[MicHandler alloc] initWithUseBuiltinMic:self->_settings.useBuiltinMic];
                     [self->micHandler startTapping];
             }
         });

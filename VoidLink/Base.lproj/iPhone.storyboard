@@ -1869,7 +1869,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="zmq-ah-Vfh" userLabel="localVolumeStack">
-                                <rect key="frame" x="437" y="1235" width="380" height="55.5"/>
+                                <rect key="frame" x="437" y="1238" width="380" height="55.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Local Volume" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GbY-52-itv" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1886,6 +1886,26 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55.5" id="Y3K-cU-wGj"/>
                                     <constraint firstAttribute="width" constant="380" id="wiK-dT-C4c"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="lbL-2m-AO2" userLabel="useBuiltinMicStack">
+                                <rect key="frame" x="437" y="1189" width="270" height="31"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Built-in Mic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GiW-tl-1GX" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="120" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YR4-0Z-D5Z" userLabel="useBuiltinMicSwitch">
+                                        <rect key="frame" x="140" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="CO9-K5-BX6"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="kKP-q4-TzC"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -1990,6 +2010,8 @@
                         <outlet property="touchPointerVelocityFactorUILabel" destination="ECJ-bg-fRJ" id="9dF-Th-ARj"/>
                         <outlet property="unlockDisplayOrientationSelector" destination="0gh-fD-6V5" id="Zwv-rN-soS"/>
                         <outlet property="unlockDisplayOrientationStack" destination="FKE-J4-bZB" id="Loj-SR-3XK"/>
+                        <outlet property="useBuiltinMicStack" destination="lbL-2m-AO2" id="ZDm-aL-1cC"/>
+                        <outlet property="useBuiltinMicSwitch" destination="YR4-0Z-D5Z" id="rMI-TK-FGJ"/>
                         <outlet property="yuv444Stack" destination="hnG-J3-IuI" id="whR-kg-UmO"/>
                         <outlet property="yuv444Switch" destination="OZK-ba-DD9" id="SZA-F4-eo3"/>
                     </connections>
@@ -2011,19 +2033,19 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

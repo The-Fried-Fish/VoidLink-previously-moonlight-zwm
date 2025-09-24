@@ -83,6 +83,7 @@
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
                      redirectMic:(BOOL)redirectMic
+                   useBuiltinMic:(BOOL)useBuiltinMic
                   preferredCodec:(uint32_t)preferredCodec
                     enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP
@@ -134,6 +135,7 @@
         settingsToSave.swapABXYButtons = swapABXYButtons;
         settingsToSave.playAudioOnPC = audioOnPC;
         settingsToSave.redirectMic = redirectMic;
+        settingsToSave.useBuiltinMic = useBuiltinMic;
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
         settingsToSave.enablePIP = enablePIP;

@@ -20,6 +20,7 @@ public class MicHandler: NSObject {
     private var audioSink: Any?
     private var micInputFormat: AVAudioFormat!
     private var isRecording = false
+    private var useBuiltinMic = false
     
     private var pcm16Buffer: [Int16] = []
     private let bufferQueue = DispatchQueue(label: "pcm.buffer.queue")
@@ -42,8 +43,9 @@ public class MicHandler: NSObject {
 
     public weak var delegate: MicHandlerDelegate?
 
-    public override init() {
+    @objc public init(useBuiltinMic:Bool) {
         super.init()
+        self.useBuiltinMic = useBuiltinMic
         do {
             try configureSession()
             try configureEngine()
@@ -185,6 +187,17 @@ public class MicHandler: NSObject {
             try session.setAllowHapticsAndSystemSoundsDuringRecording(true)
         }
         try session.setActive(true)
+        
+        // 列出所有可用输入
+        if self.useBuiltinMic, let inputs = session.availableInputs {
+            for port in inputs {
+                if port.portType == .builtInMic {
+                    try session.setPreferredInput(port)
+                    print("Set preferred input to built-in mic")
+                    break
+                }
+            }
+        }
     }
     
     private func sendOpusFrame() {

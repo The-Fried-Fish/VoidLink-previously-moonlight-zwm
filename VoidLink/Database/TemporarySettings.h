@@ -57,6 +57,7 @@
 @property (nonatomic) BOOL swapABXYButtons;
 @property (nonatomic) BOOL playAudioOnPC;
 @property (nonatomic) BOOL redirectMic;
+@property (nonatomic) BOOL useBuiltinMic;
 @property (nonatomic) BOOL optimizeGames;
 @property (nonatomic) BOOL enableHdr;
 @property (nonatomic) BOOL btMouseSupport;

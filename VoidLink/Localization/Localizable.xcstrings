@@ -5670,6 +5670,35 @@
         }
       }
     },
+    "useBuiltinMicStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, app will use built-in mic when Bluetooth headset is connected, which benefits audio quality."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启后, App将在蓝牙耳机接入状态下使用设备内置麦克风, 以维持蓝牙耳机最佳音质。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟後，App 在藍牙耳機連接時將使用裝置內建麥克風，以維持藍牙耳機的最佳音質。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟後，App 在藍牙耳機連接時將使用裝置內建麥克風，以維持藍牙耳機的最佳音質。"
+          }
+        }
+      }
+    },
     "Version %@" : {
 
     },

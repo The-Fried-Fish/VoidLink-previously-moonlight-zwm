@@ -1621,6 +1621,36 @@
         }
       }
     },
+    "GiW-tl-1GX.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Use Built-in Mic\"; ObjectID = \"GiW-tl-1GX\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Use Built-in Mic"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用内置Mic"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用內建Mic"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用內建Mic"
+          }
+        }
+      }
+    },
     "hfR-K8-Ti4.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; hfR-K8-Ti4.segmentTitles[0] = \"Stereo\"; ObjectID = \"hfR-K8-Ti4\";",
       "extractionState" : "extracted_with_value",

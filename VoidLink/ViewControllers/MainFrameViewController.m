@@ -1200,6 +1200,8 @@ static NSMutableSet* hostList;
     // Disable mic switch if sunshine does not support mic redirection
     [settingsViewController.redirectMicSwitch setEnabled:!_settingsExpandedInStreamView||streamFrameViewController.micStreamInitialized];
     if(_settingsExpandedInStreamView && !streamFrameViewController.micStreamInitialized) [settingsViewController.redirectMicSwitch setOn:false];
+    [settingsViewController setHidden:!settingsViewController.redirectMicSwitch.isOn forStack:settingsViewController.useBuiltinMicStack];
+    [settingsViewController.useBuiltinMicSwitch setEnabled:!_settingsExpandedInStreamView];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
