@@ -680,7 +680,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.useBuiltinMicStack ofId:@"useBuiltinMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
-    [audioSection setExpanded:YES]; 
+    [audioSection setExpanded:YES];
 
     
     otherSection = [[MenuSectionView alloc] init];

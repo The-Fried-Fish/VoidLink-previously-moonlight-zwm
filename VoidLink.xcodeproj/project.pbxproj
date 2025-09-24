@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		180345E12E819877004AF36F /* libopus-sim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 180345E02E819877004AF36F /* libopus-sim.a */; };
 		1817B61E2E6FD04D000D938D /* SafeTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817B61D2E6FD04D000D938D /* SafeTimer.swift */; };
+		182760F72E83E2EA00EC1C5C /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 182760F62E83E2EA00EC1C5C /* DequeModule */; };
+		182760FA2E83E57D00EC1C5C /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 182760F92E83E57D00EC1C5C /* DequeModule */; };
+		182760FD2E83E68B00EC1C5C /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 182760FC2E83E68B00EC1C5C /* Collections */; };
 		1829CE3F2E2154DF0074A99A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1829CE3E2E2154DF0074A99A /* SceneDelegate.m */; };
 		18341A042DEB662C0094E5F2 /* FixedTintImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18341A032DEB662C0094E5F2 /* FixedTintImageView.m */; };
 		1850C82A2E667E4000845308 /* MicHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1850C8292E667E4000845308 /* MicHandler.swift */; };
@@ -394,6 +397,8 @@
 				FB8946ED19F6AFE800339C8A /* libopus.a in Frameworks */,
 				98882A082AF60F7400C5A11C /* libavutil.a in Frameworks */,
 				180345E12E819877004AF36F /* libopus-sim.a in Frameworks */,
+				182760F72E83E2EA00EC1C5C /* DequeModule in Frameworks */,
+				182760FD2E83E68B00EC1C5C /* Collections in Frameworks */,
 				FB290CF419B2C406004C83CF /* CoreGraphics.framework in Frameworks */,
 				FB290CF819B2C406004C83CF /* CoreData.framework in Frameworks */,
 				98181BED2791281100E43572 /* CoreMotion.framework in Frameworks */,
@@ -402,6 +407,7 @@
 				FB290CF619B2C406004C83CF /* UIKit.framework in Frameworks */,
 				FB290CF219B2C406004C83CF /* Foundation.framework in Frameworks */,
 				FB4679011A57048000377732 /* CoreFoundation.framework in Frameworks */,
+				182760FA2E83E57D00EC1C5C /* DequeModule in Frameworks */,
 				98181BE92791277400E43572 /* libSDL2.a in Frameworks */,
 				98882A062AF60F7000C5A11C /* libavcodec.a in Frameworks */,
 			);
@@ -932,6 +938,7 @@
 			mainGroup = FB290CE519B2C406004C83CF;
 			packageReferences = (
 				F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */,
+				182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = FB290CEF19B2C406004C83CF /* Products */;
 			projectDirPath = "";
@@ -1402,6 +1409,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.4;
+			};
+		};
 		F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/OpenSSL-Package.git";
@@ -1413,6 +1428,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		182760F62E83E2EA00EC1C5C /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+		182760F92E83E57D00EC1C5C /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+		182760FC2E83E68B00EC1C5C /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
 		F74BEF9B2C1A705600224667 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */;

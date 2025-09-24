@@ -6,6 +6,7 @@
 //  Copyright © 2025 True砖家 on Bilibili. All rights reserved.
 
 import AVFoundation
+import Collections
 
 @objc public protocol MicHandlerDelegate: AnyObject {
     @objc optional func micHandlerDidFinishPlayback(_ handler: MicHandler)
@@ -22,7 +23,7 @@ public class MicHandler: NSObject {
     private var isRecording = false
     private var useBuiltinMic = false
     
-    private var pcm16Buffer: [Int16] = []
+    private var pcm16Buffer = Deque<Int16>()
     private let bufferQueue = DispatchQueue(label: "pcm.buffer.queue")
     private var timer: SafeTimer?
 
