@@ -1650,6 +1650,8 @@ static NSMutableSet* hostList;
     // [settingsViewController updateResolutionTable];
     
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleMenuResize:)];
+    longPress.delaysTouchesBegan = false;
+    longPress.delaysTouchesEnded = false;
     [self.view addGestureRecognizer:longPress];
 
 
@@ -1657,6 +1659,8 @@ static NSMutableSet* hostList;
     SettingsViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"settingsViewController"];
     // 强制加载视图
     __unused UIView *view = viewController.view;
+    
+    snapshot = nil;
 }
 
 -(void)viewDidLayoutSubviews{
@@ -2221,15 +2225,17 @@ static NSMutableSet* hostList;
         }
         return;
     }
-
+    
     bool isPortrait = screenHeight>screenWidth;
 
     CGFloat limitedWidth = MIN(MAX(locationInSuperView.x, isPortrait ? 200 : 280),isPortrait ? screenWidth*0.75 : screenWidth/2);
     if(gesture.state == UIGestureRecognizerStateChanged){
         if(snapshot) snapshot.center = CGPointMake(limitedWidth, snapshot.center.y);
     }
-    if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
+    if(gesture.state == UIGestureRecognizerStateEnded){
+        if(!snapshot) return;
         [snapshot removeFromSuperview];
+        snapshot = nil;
         self.revealViewController.rearViewRevealWidth = limitedWidth;
         [self.revealViewController setupNavigationBar];
         if(self.revealViewController.isStreaming) [self.revealViewController buttonsInStreaming];
