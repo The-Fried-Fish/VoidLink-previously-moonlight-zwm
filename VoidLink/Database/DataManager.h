@@ -77,6 +77,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
       mousePointerVelocityFactor:(CGFloat)mousePointerVelocityFactor
                  gyroSensitivity:(CGFloat)gyroSensitivity
                      localVolume:(CGFloat)localVolume
+                       micVolume:(CGFloat)micVolume
           touchMoveEventInterval:(NSInteger)touchMoveEventInterval
       reverseMouseWheelDirection:(BOOL)reverseMouseWheelDirection
         asyncNativeTouchPriority:(NSInteger)asyncNativeTouchPriority

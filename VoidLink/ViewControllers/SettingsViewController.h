@@ -141,6 +141,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *useBuiltinMicStack;
 @property (strong, nonatomic) IBOutlet UISwitch *useBuiltinMicSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *micVolumeStack;
+@property (strong, nonatomic) IBOutlet UISlider *micVolumeSlider;
+
 @property (nonatomic, strong) MicHandler *micHandler;
 
 

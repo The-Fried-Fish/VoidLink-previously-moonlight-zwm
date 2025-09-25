@@ -678,6 +678,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.localVolumeStack ofId:@"localVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
     [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.useBuiltinMicStack ofId:@"useBuiltinMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.micVolumeStack ofId:@"micVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
     [audioSection setExpanded:YES];
@@ -1563,6 +1564,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.localVolumeSlider addTarget:self action:@selector(localVolumeSliderMoved:) forControlEvents:UIControlEventValueChanged];
     [self localVolumeSliderMoved:self.localVolumeSlider];
     
+    [self.micVolumeSlider setValue:tempSettings.micVolume.floatValue*100];
+    [self.micVolumeSlider addTarget:self action:@selector(micVolumeSliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self micVolumeSliderMoved:self.self.micVolumeSlider];
+    
     [self.redirectMicSwitch setOn:tempSettings.redirectMic];
     [self.redirectMicSwitch addTarget:self action:@selector(redirectMicSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     [self redirectMicSwitchFlipped:self.redirectMicSwitch];
@@ -1932,6 +1937,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(_mainFrameViewController.settingsExpandedInStreamView) [Connection setVolume:sender.value/100];
 }
 
+- (void) micVolumeSliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:self.micVolumeStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)sender.value]; // Update label display
+    if(_mainFrameViewController.settingsExpandedInStreamView) [MicHandler setVolume:sender.value/100];
+}
+
 - (void) backgroundSessionTimerSliderMoved:(UISlider* )sender {
     NSString* labelString;
     labelString = [LocalizationHelper localizedStringForKey:@"  keep %d min  ", (uint16_t)sender.value];
@@ -2078,6 +2088,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)redirectMicSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn) [self checkAndRequestMicPermission];
     [self setHidden:!sender.isOn forStack:_useBuiltinMicStack];
+    [self setHidden:!sender.isOn forStack:_micVolumeStack];
 }
 
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
@@ -2483,6 +2494,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat gyroSensitivity = (CGFloat)(uint16_t)self.gyroSensitivitySlider.value/100;
     
     CGFloat localVolume = self.localVolumeSlider.value/100;
+    CGFloat micVolume = self.micVolumeSlider.value/100;
 
     uint16_t touchMoveEventInterval = (uint16_t)self.touchMoveEventIntervalSlider.value;
 
@@ -2538,6 +2550,7 @@ BOOL isCustomResolution(int resolutionSelected) {
           mousePointerVelocityFactor:mousePointerVelocityFactor
                      gyroSensitivity:gyroSensitivity
                          localVolume:localVolume
+                           micVolume:micVolume
               touchMoveEventInterval:touchMoveEventInterval
           reverseMouseWheelDirection:reverseMouseWheelDirection
             asyncNativeTouchPriority:asyncNativeTouchPriority

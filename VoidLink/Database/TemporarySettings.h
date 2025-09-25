@@ -34,6 +34,7 @@
 @property (nonatomic, retain) NSNumber * touchPointerVelocityFactor;
 @property (nonatomic, retain) NSNumber * gyroSensitivity;
 @property (nonatomic, retain) NSNumber * localVolume;
+@property (nonatomic, retain) NSNumber * micVolume;
 @property (nonatomic, retain) NSNumber * emulatedControllerType;
 @property (nonatomic, retain) NSNumber * mousePointerVelocityFactor;
 @property (nonatomic, retain) NSNumber * pointerVelocityModeDivider;

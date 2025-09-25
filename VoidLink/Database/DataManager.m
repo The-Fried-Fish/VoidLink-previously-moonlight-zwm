@@ -72,6 +72,7 @@
       mousePointerVelocityFactor:(CGFloat)mousePointerVelocityFactor
                  gyroSensitivity:(CGFloat)gyroSensitivity
                      localVolume:(CGFloat)localVolume
+                       micVolume:(CGFloat)micVolume
           touchMoveEventInterval:(NSInteger)touchMoveEventInterval
       reverseMouseWheelDirection:(BOOL)reverseMouseWheelDirection
         asyncNativeTouchPriority:(NSInteger)asyncNativeTouchPriority
@@ -124,6 +125,7 @@
         settingsToSave.mousePointerVelocityFactor = [NSNumber numberWithFloat:mousePointerVelocityFactor];
         settingsToSave.gyroSensitivity = [NSNumber numberWithFloat:gyroSensitivity];
         settingsToSave.localVolume = [NSNumber numberWithFloat:localVolume];
+        settingsToSave.micVolume = [NSNumber numberWithFloat:micVolume];
         settingsToSave.touchMoveEventInterval = [NSNumber numberWithInteger:touchMoveEventInterval];
         settingsToSave.reverseMouseWheelDirection = reverseMouseWheelDirection;
         settingsToSave.asyncNativeTouchPriority = [NSNumber numberWithInteger:asyncNativeTouchPriority];

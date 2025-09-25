@@ -118,6 +118,7 @@
     self.mousePointerVelocityFactor = settings.mousePointerVelocityFactor;
     self.gyroSensitivity = settings.gyroSensitivity;
     self.localVolume = settings.localVolume;
+    self.micVolume = settings.micVolume;
     self.pointerVelocityModeDivider = settings.pointerVelocityModeDivider;
     self.unlockDisplayOrientation = settings.unlockDisplayOrientation;
     self.resolutionSelected = settings.resolutionSelected;

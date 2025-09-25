@@ -27,6 +27,7 @@ public class MicHandler: NSObject {
     private var pcm16BufferArray: [Int16] = []
     private let bufferQueue = DispatchQueue(label: "pcm.buffer.queue")
     private var timer: SafeTimer?
+    private static var volume: Float = 1.0
 
     /*
     private var recordedBuffers: [AVAudioPCMBuffer] = []
@@ -234,18 +235,18 @@ public class MicHandler: NSObject {
         }
     }
 
-
+    @objc public static func setVolume(_ linearVolume: Float) {
+        let clamped = max(0.0, min(1.5, linearVolume))
+        let exponent: Float = 1.7
+        MicHandler.volume = powf(clamped, exponent)
+    }
+    
     private func configureEngine() throws {
         let input = engine.inputNode
         micInputFormat = input.inputFormat(forBus: 0)
         
         try self.configureOpus(sampleRate: Int32(micInputFormat.sampleRate), channels: Int(micInputFormat.channelCount))
 
-        
-        let pcm16Format = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: micInputFormat.sampleRate, channels: micInputFormat.channelCount, interleaved: true)
-
-        let converter = AVAudioConverter(from: micInputFormat, to: pcm16Format!)
-        
         if #available(iOS 13.0, tvOS 13.0, *) {
             try AVAudioSession.sharedInstance().setPreferredIOBufferDuration(0.02)
             
@@ -260,12 +261,14 @@ public class MicHandler: NSObject {
                 // 转 float32 -> int16
                 var chunk = [Int16](repeating: 0, count: samples.count)
                 for i in 0..<samples.count {
-                    let clamped = max(min(samples[i], 1.0), -1.0)
+                    let clamped = max(min(samples[i] * MicHandler.volume, 1.0), -1.0)
                     chunk[i] = Int16(clamped * Float(Int16.max))
                 }
 
                 // 追加到缓冲区
-                self.pcm16BufferDeque.append(contentsOf: chunk)
+                self.bufferQueue.sync {
+                    self.pcm16BufferDeque.append(contentsOf: chunk)
+                }
                 
                 return noErr
             }
@@ -285,9 +288,6 @@ public class MicHandler: NSObject {
             input.installTap(onBus: 0, bufferSize: 5760, format: micInputFormat) { [weak self] buffer, _ in
                 guard let self = self, self.isRecording else { return }
                 
-                let pcm16Buffer = AVAudioPCMBuffer(pcmFormat: pcm16Format!, frameCapacity: buffer.frameCapacity)
-                try? converter?.convert(to: pcm16Buffer!, from: buffer)
-                
                 // ===============================
                 // 把 buffer 转成 PCM16 并保存
                 let frameLength = Int(buffer.frameLength)
@@ -298,7 +298,7 @@ public class MicHandler: NSObject {
                     for ch in 0..<channels {
                         let floatPtr = floatPtrs[ch]
                         for i in 0..<frameLength {
-                            let f = floatPtr[i]
+                            let f = floatPtr[i] * MicHandler.volume
                             // 把 float 转到 Int16 范围：假设 float 在 -1…+1 之间
                             // 乘以 Int16.max (32767)，再做裁剪
                             let scaled = f * Float(Int16.max)
@@ -314,8 +314,11 @@ public class MicHandler: NSObject {
                         }
                     }
                 }
+
                 // 现在 pcm16InterleavedBuffer 里就是转换后的 Int16 数据
-                self.pcm16BufferArray.append(contentsOf: pcm16InterleavedBuffer)
+                self.bufferQueue.sync {
+                    self.pcm16BufferArray.append(contentsOf: pcm16InterleavedBuffer)
+                }
             }
             
             // 开定时器，每 20ms 触发一次
