@@ -3824,7 +3824,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "称点移动事件间隔"
+            "value" : "触控移动事件间隔"
           }
         },
         "zh-Hant" : {
