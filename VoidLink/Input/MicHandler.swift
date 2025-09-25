@@ -6,6 +6,7 @@
 //  Copyright © 2025 True砖家 on Bilibili. All rights reserved.
 
 import AVFoundation
+import Collections
 
 @objc public protocol MicHandlerDelegate: AnyObject {
     @objc optional func micHandlerDidFinishPlayback(_ handler: MicHandler)
@@ -20,10 +21,13 @@ public class MicHandler: NSObject {
     private var audioSink: Any?
     private var micInputFormat: AVAudioFormat!
     private var isRecording = false
+    private var useBuiltinMic = false
     
-    private var pcm16Buffer: [Int16] = []
+    private var pcm16BufferDeque = Deque<Int16>()
+    private var pcm16BufferArray: [Int16] = []
     private let bufferQueue = DispatchQueue(label: "pcm.buffer.queue")
     private var timer: SafeTimer?
+    private static var volume: Float = 1.0
 
     /*
     private var recordedBuffers: [AVAudioPCMBuffer] = []
@@ -42,8 +46,9 @@ public class MicHandler: NSObject {
 
     public weak var delegate: MicHandlerDelegate?
 
-    public override init() {
+    @objc public init(useBuiltinMic:Bool) {
         super.init()
+        self.useBuiltinMic = useBuiltinMic
         do {
             try configureSession()
             try configureEngine()
@@ -185,42 +190,67 @@ public class MicHandler: NSObject {
             try session.setAllowHapticsAndSystemSoundsDuringRecording(true)
         }
         try session.setActive(true)
+        
+        // 列出所有可用输入
+        if self.useBuiltinMic, let inputs = session.availableInputs {
+            for port in inputs {
+                if port.portType == .builtInMic {
+                    try session.setPreferredInput(port)
+                    print("Set preferred input to built-in mic")
+                    break
+                }
+            }
+        }
     }
     
-    private func sendOpusFrame() {
+    private func sendOpusFrameFromDequeBuffer() {
         bufferQueue.sync {
-            if pcm16Buffer.count >= 960 {
-                let chunk = Array(pcm16Buffer.prefix(960))
+            if pcm16BufferDeque.count >= 960 {
+                let chunk = Array(pcm16BufferDeque.prefix(960))
                 var packet = [UInt8](repeating: 0, count: 4000)
                 guard let enc = self.opusEncoder else {return}
                 let outBytes = opus_encode(enc, chunk, 960, &packet, Int32(packet.count))
                 sendMicrophoneData(packet, outBytes)
-                let removeCount = min(960, pcm16Buffer.count)
+                let removeCount = min(960, pcm16BufferDeque.count)
                 if removeCount > 0 {
-                    pcm16Buffer.removeFirst(removeCount)
+                    pcm16BufferDeque.removeFirst(removeCount)
+                }
+            }
+        }
+    }
+    
+    private func sendOpusFrameFromArrayBuffer() {
+        bufferQueue.sync {
+            if pcm16BufferArray.count >= 960 {
+                let chunk = Array(pcm16BufferArray.prefix(960))
+                var packet = [UInt8](repeating: 0, count: 4000)
+                guard let enc = self.opusEncoder else {return}
+                let outBytes = opus_encode(enc, chunk, 960, &packet, Int32(packet.count))
+                sendMicrophoneData(packet, outBytes)
+                let removeCount = min(960, pcm16BufferArray.count)
+                if removeCount > 0 {
+                    pcm16BufferArray.removeFirst(removeCount)
                 }
             }
         }
     }
 
+    @objc public static func setVolume(_ linearVolume: Float) {
+        let clamped = max(0.0, min(1.5, linearVolume))
+        let exponent: Float = 1.7
+        MicHandler.volume = powf(clamped, exponent)
+    }
+    
     private func configureEngine() throws {
         let input = engine.inputNode
         micInputFormat = input.inputFormat(forBus: 0)
         
         try self.configureOpus(sampleRate: Int32(micInputFormat.sampleRate), channels: Int(micInputFormat.channelCount))
 
-        
-        let pcm16Format = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: micInputFormat.sampleRate, channels: micInputFormat.channelCount, interleaved: true)
-
-        let converter = AVAudioConverter(from: micInputFormat, to: pcm16Format!)
-        
         if #available(iOS 13.0, tvOS 13.0, *) {
             try AVAudioSession.sharedInstance().setPreferredIOBufferDuration(0.02)
             
             let sinkNode = AVAudioSinkNode { timestamp, frameCount, audioBufferList -> OSStatus in
-                // 访问 AudioBufferList 数据
-                // print("sink interval: \((CACurrentMediaTime()-self.globalTimestamp)*1000)，frameCount: \(frameCount)")
-                // self.globalTimestamp = CACurrentMediaTime()
                 
                 guard self.isRecording else { return noErr}
                 
@@ -231,12 +261,14 @@ public class MicHandler: NSObject {
                 // 转 float32 -> int16
                 var chunk = [Int16](repeating: 0, count: samples.count)
                 for i in 0..<samples.count {
-                    let clamped = max(min(samples[i], 1.0), -1.0)
+                    let clamped = max(min(samples[i] * MicHandler.volume, 1.0), -1.0)
                     chunk[i] = Int16(clamped * Float(Int16.max))
                 }
 
                 // 追加到缓冲区
-                self.pcm16Buffer.append(contentsOf: chunk)
+                self.bufferQueue.sync {
+                    self.pcm16BufferDeque.append(contentsOf: chunk)
+                }
                 
                 return noErr
             }
@@ -247,44 +279,54 @@ public class MicHandler: NSObject {
             
             // 开定时器，每 20ms 触发一次
             self.timer = SafeTimer(interval:0.02, delay: 0.05) {
-                self.sendOpusFrame()
+                self.sendOpusFrameFromDequeBuffer()
             }
         }
         else{
             engine.attach(playerNode)
             engine.connect(playerNode, to: engine.mainMixerNode, format: micInputFormat)
-
             input.installTap(onBus: 0, bufferSize: 5760, format: micInputFormat) { [weak self] buffer, _ in
                 guard let self = self, self.isRecording else { return }
                 
-                DispatchQueue.global().async {
-                    let pcm16Buffer = AVAudioPCMBuffer(pcmFormat: pcm16Format!, frameCapacity: buffer.frameCapacity)
-                    try? converter?.convert(to: pcm16Buffer!, from: buffer)
-                    // 处理转换后的 outputBuffer
-                    
-                    // ===============================
-                    // 🔹 改动 1：把 buffer 转成 PCM16 并保存
-                    let frameLength = Int(buffer.frameLength)
-                    let channels = Int(buffer.format.channelCount)
-                    var pcm16InterleavedBuffer = [Int16](repeating: 0, count: frameLength * channels)
-                    
+                // ===============================
+                // 把 buffer 转成 PCM16 并保存
+                let frameLength = Int(buffer.frameLength)
+                let channels = Int(buffer.format.channelCount)
+                var pcm16InterleavedBuffer = [Int16](repeating: 0, count: frameLength * channels)
+
+                if let floatPtrs = buffer.floatChannelData {
                     for ch in 0..<channels {
-                        if let pcm16Data = pcm16Buffer?.int16ChannelData?[ch] {
-                            for i in 0..<frameLength {
-                                pcm16InterleavedBuffer[i * channels + ch] = pcm16Data[i]
+                        let floatPtr = floatPtrs[ch]
+                        for i in 0..<frameLength {
+                            let f = floatPtr[i] * MicHandler.volume
+                            // 把 float 转到 Int16 范围：假设 float 在 -1…+1 之间
+                            // 乘以 Int16.max (32767)，再做裁剪
+                            let scaled = f * Float(Int16.max)
+                            let clipped: Float
+                            if scaled > Float(Int16.max) {
+                                clipped = Float(Int16.max)
+                            } else if scaled < Float(Int16.min) {
+                                clipped = Float(Int16.min)
+                            } else {
+                                clipped = scaled
                             }
+                            pcm16InterleavedBuffer[i * channels + ch] = Int16(clipped)
                         }
                     }
-                    // 🔹 新增：Opus 编码并存入缓存
-                    if let enc = self.opusEncoder {
-                        var packet = [UInt8](repeating: 0, count: 8000)
-                        let outBytes = opus_encode(enc, pcm16InterleavedBuffer, Int32(frameLength), &packet, Int32(packet.count))
-                        sendMicrophoneData(packet, outBytes)
-                    }
+                }
+
+                // 现在 pcm16InterleavedBuffer 里就是转换后的 Int16 数据
+                self.bufferQueue.sync {
+                    self.pcm16BufferArray.append(contentsOf: pcm16InterleavedBuffer)
                 }
             }
+            
+            // 开定时器，每 20ms 触发一次
+            self.timer = SafeTimer(interval:0.02, delay: 0.05) {
+                self.sendOpusFrameFromArrayBuffer()
+            }
         }
-
+        
         engine.prepare()
         try engine.start()
     }
