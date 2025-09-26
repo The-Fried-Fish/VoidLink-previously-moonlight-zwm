@@ -1328,31 +1328,79 @@ import UIKit
         }
     }
     
-    private func moveByTouch(touch: UITouch){
-        let currentLocation: CGPoint
-        if OnScreenWidgetView.editMode {currentLocation = touch.location(in: superview)}
-        else {currentLocation = touch.location(in: self)}
-        
-        if !firstTouchMoved {
-            // First move event
-            self.latestTouchLocation = currentLocation
-            self.firstTouchMoved = true
-        }
-                
-        let offsetX = currentLocation.x - latestTouchLocation.x;
-        let offsetY = currentLocation.y - latestTouchLocation.y;
-        
-        let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
-        let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
+    private func moveByTouch(touch: UITouch) {
+        // --- 取得當幀觸點 ---
+        let touchLocation: CGPoint = OnScreenWidgetView.editMode
+            ? touch.location(in: superview)   // 編輯模式用 superview 座標
+            : touch.location(in: self)        // 非編輯模式維持原行為
 
-        center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
-        
-        latestTouchLocation = currentLocation
-        // center = currentLocation;
-        //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
-        if OnScreenWidgetView.editMode {
-            guidelineDelegate?.updateGuidelinesForOnScreenWidget(self)
+        // ========== 非編輯模式：維持原 offset 手感（含第一次觸控避跳） ==========
+        if !OnScreenWidgetView.editMode {
+            if !firstTouchMoved {
+                // 第一次 move：記錄基準，避免從 (0,0) 算出巨大 offset 造成「跳一下」
+                self.latestTouchLocation = touchLocation
+                self.firstTouchMoved = true
+                return
+            }
+            // 正常位移：上一幀 → 這一幀
+            let offset = CGPoint(x: touchLocation.x - latestTouchLocation.x,
+                                 y: touchLocation.y - latestTouchLocation.y)
+            center = CGPoint(x: center.x + offset.x, y: center.y + offset.y)
+            latestTouchLocation = touchLocation
+            return
         }
+
+        // ========== 編輯模式：每幀以手指位置為基準 + 中心線吸附 ==========
+        let threshold: CGFloat = 5.0
+
+        // 1) 以手指位置為初始目標
+        var snapX = touchLocation.x
+        var snapY = touchLocation.y
+        var bestDX = threshold + 1.0
+        var bestDY = threshold + 1.0
+
+        // 2) 同容器內其它 Widget 的中心（與 touchLocation 同座標系）
+        if let container = self.superview {
+            for sub in container.subviews {
+                guard let w = sub as? OnScreenWidgetView, w !== self, !w.isHidden else { continue }
+                let dx = abs(touchLocation.x - w.center.x)
+                if dx <= bestDX { bestDX = dx; snapX = w.center.x }
+                let dy = abs(touchLocation.y - w.center.y)
+                if dy <= bestDY { bestDY = dy; snapY = w.center.y }
+            }
+        }
+
+        // 3) 同容器 layer 樹上的 CALayer（例如舊式 OSC 的按鍵）
+        if let containerLayer = self.superview?.layer {
+            func walk(_ layers: [CALayer]?) {
+                guard let layers = layers else { return }
+                for L in layers {
+                    if L === self.layer || L.isHidden { continue }
+                    // 轉成與 touchLocation 相同的容器座標系
+                    let posInContainer = containerLayer.convert(L.position, from: L.superlayer)
+                    let dx = abs(touchLocation.x - posInContainer.x)
+                    if dx <= bestDX { bestDX = dx; snapX = posInContainer.x }
+                    let dy = abs(touchLocation.y - posInContainer.y)
+                    if dy <= bestDY { bestDY = dy; snapY = posInContainer.y }
+                    if let subs = L.sublayers, !subs.isEmpty { walk(subs) }
+                }
+            }
+            walk(containerLayer.sublayers)
+        }
+
+        // 4) 套用（X/Y 各自獨立），並做容器邊界夾制
+        var finalCenter = CGPoint(x: snapX, y: snapY)
+        if let container = superview {
+            let halfW = bounds.width * 0.5
+            let halfH = bounds.height * 0.5
+            finalCenter.x = min(max(finalCenter.x, halfW), max(halfW, container.bounds.width  - halfW))
+            finalCenter.y = min(max(finalCenter.y, halfH), max(halfH, container.bounds.height - halfH))
+        }
+        self.center = finalCenter
+
+        // 5) 更新觸點與指引線（下一幀只要手指離開閾值就會立刻脫離吸附）
+        latestTouchLocation = touchLocation
+        guidelineDelegate?.updateGuidelinesForOnScreenWidget(self)
     }
     
     private func handleControllerTouchesDown(touches: Set<UITouch>) {
