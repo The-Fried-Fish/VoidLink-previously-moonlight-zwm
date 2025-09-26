@@ -224,7 +224,7 @@ import UIKit
         alert.textFields?[0].keyboardType = .asciiCapable
         alert.textFields?[0].autocorrectionType = .no
         alert.textFields?[0].spellCheckingType = .no
-        alert.textFields?[1].keyboardType = .asciiCapable
+        alert.textFields?[1].keyboardType = .default
         alert.textFields?[1].autocorrectionType = .no
         alert.textFields?[1].spellCheckingType = .no
 

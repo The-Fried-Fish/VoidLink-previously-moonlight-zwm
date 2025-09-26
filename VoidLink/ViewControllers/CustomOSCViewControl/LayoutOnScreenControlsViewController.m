@@ -477,7 +477,7 @@
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = [LocalizationHelper localizedStringForKey:@"Alias label (optional)"];
-        textField.keyboardType = UIKeyboardTypeASCIICapable;
+        textField.keyboardType = UIKeyboardTypeDefault;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
     }];
@@ -548,7 +548,7 @@
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = [LocalizationHelper localizedStringForKey:@"Alias label (optional)"];
-        textField.keyboardType = UIKeyboardTypeASCIICapable;
+        textField.keyboardType = UIKeyboardTypeDefault;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
         textField.text = self->selectedWidgetView.widgetLabel;
