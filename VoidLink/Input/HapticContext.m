@@ -100,6 +100,10 @@
             Log(LOG_W, @"Controller %d falls back to use iPhone Haptics for locality: %@", gamepad.playerIndex, locality);
             NSError *error = nil;
             _hapticEngine = [[CHHapticEngine alloc] initAndReturnError:&error];
+            if (error != nil) {
+                Log(LOG_W, @"Controller %d: iPhone Haptic engine failed to start: %@", gamepad.playerIndex, error);
+                return nil;
+            }
         }
         else {
             return nil;
