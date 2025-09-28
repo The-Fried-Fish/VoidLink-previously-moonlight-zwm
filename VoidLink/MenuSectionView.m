@@ -24,6 +24,17 @@
 
 @implementation MenuSectionView
 
+static BOOL overridePersistedFoldState = YES;
+
++ (BOOL)overridePersistedFoldState {
+    return overridePersistedFoldState;
+}
+
++ (void)setOverridePersistedFoldState:(BOOL)val {
+    overridePersistedFoldState = val;
+}
+
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -45,7 +56,7 @@
     _leadingTrailingPadding = 0;
     _separatorLinePadding = 40;
     _sectionTitle = @"Section";
-    _expanded = YES;
+    _isExpanded = YES;
     _backgroundColor = [UIColor clearColor];
     _rootStackViewSpacing = [self isIPhone] ? 10 : 13.8;
     _subStackViews = [NSMutableArray array];
@@ -224,9 +235,10 @@
 }
 
 - (void)setExpanded:(BOOL)isExpanded {
-    if (_expanded != isExpanded) {
-        _expanded = isExpanded;}
-        [self updateViewForFoldState];
+    self.isExpanded = isExpanded;
+    [self updateViewForFoldState];
+    [[NSUserDefaults standardUserDefaults] setBool:self.isExpanded forKey:self.identifier];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
@@ -262,6 +274,11 @@
         [self.leadingAnchor constraintEqualToAnchor:parentStack.leadingAnchor constant:0],
         [self.trailingAnchor constraintEqualToAnchor:parentStack.trailingAnchor constant:0],
     ]];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL persistedFoldState = [defaults objectForKey:self.identifier] ? [defaults boolForKey:self.identifier] : YES;
+
+    [self setExpanded: MenuSectionView.overridePersistedFoldState ? YES : persistedFoldState];
 }
 
 - (void)removeSubStackView:(UIStackView *)stackView {
@@ -306,8 +323,10 @@
 }
 
 - (void)toggleFold {
-    self.expanded = !self.expanded;
+    self.isExpanded = !self.isExpanded;
     [self updateViewForFoldState];
+    [[NSUserDefaults standardUserDefaults] setBool:self.isExpanded forKey:self.identifier];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (SettingsMenuMode)getSettingsMenuMode {
@@ -326,7 +345,7 @@
         }
     }
     self.hidden = visibleCount == 0;
-    if (_expanded) {
+    if (_isExpanded) {
         _rootStackView.hidden = NO;
         _separatorLine.hidden = NO;
         CGSize fittingSize = [self.rootStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];

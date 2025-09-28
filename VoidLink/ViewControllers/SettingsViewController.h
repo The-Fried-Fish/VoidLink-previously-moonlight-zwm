@@ -144,6 +144,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *micVolumeStack;
 @property (strong, nonatomic) IBOutlet UISlider *micVolumeSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *rememberFoldStateStack;
+@property (strong, nonatomic) IBOutlet UISwitch *rememberFoldStateSwitch;
+
 @property (nonatomic, strong) MicHandler *micHandler;
 
 
