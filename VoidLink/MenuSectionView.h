@@ -19,11 +19,14 @@
 
 @interface MenuSectionView : UIView
 
+@property (class, nonatomic, assign) BOOL overridePersistedFoldState;
+
 // 外部可访问属性
 @property (nonatomic, assign) CGFloat leadingTrailingPadding;
 @property (nonatomic, assign) CGFloat separatorLinePadding;
 @property (nonatomic, copy) NSString *sectionTitle;
-@property (nonatomic, assign) BOOL expanded;
+@property (nonatomic, copy) NSString *identifier;
+@property (nonatomic, assign) BOOL isExpanded;
 @property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, assign) CGFloat rootStackViewSpacing;
 @property (nonatomic, assign) CGFloat headerViewHeight;
@@ -40,6 +43,7 @@
 - (void)removeSubStackView:(UIStackView *)stackView;
 - (void)updateLayout;
 - (void)updateViewForFoldState;
+- (void)setExpanded:(BOOL)overridePersistedState;
 
 
 @end

@@ -108,7 +108,8 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
                  framePacingMode:(NSInteger)framePacingMode
-               sendDummyEvent:(BOOL)sendDummyEvent
+                  sendDummyEvent:(BOOL)sendDummyEvent
+               rememberFoldState:(BOOL)rememberFoldState
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

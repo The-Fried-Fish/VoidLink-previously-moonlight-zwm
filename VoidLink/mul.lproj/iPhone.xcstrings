@@ -697,6 +697,36 @@
         }
       }
     },
+    "9Kq-ys-dnF.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Remember Menu Fold/Expand\"; ObjectID = \"9Kq-ys-dnF\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Remember Menu Fold/Expand"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记住菜单折叠状态"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記住選單摺疊狀態"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記住選單摺疊狀態"
+          }
+        }
+      }
+    },
     "53H-ST-OtY.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",

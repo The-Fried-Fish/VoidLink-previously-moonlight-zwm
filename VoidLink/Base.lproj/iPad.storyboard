@@ -1181,6 +1181,26 @@
                                     <constraint firstAttribute="width" constant="380" id="yZo-WR-6FC"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="FX8-Uc-2jx" userLabel="rememberFoldStateStack">
+                                <rect key="frame" x="432" y="2175" width="379" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Remember Menu Fold/Expand" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="shy-hG-9wY" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="229" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="reE-RV-kFe" userLabel="rememberFoldStateSwitch">
+                                        <rect key="frame" x="249" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="wtJ-aO-s2n"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="ucg-xc-5Iy"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1251,6 +1271,8 @@
                         <outlet property="pointerVelocityModeDividerSlider" destination="AcZ-2i-GI4" id="dGf-ZU-w3S"/>
                         <outlet property="redirectMicStack" destination="hcl-DT-peO" id="g8Y-dq-CiW"/>
                         <outlet property="redirectMicSwitch" destination="9Gg-3U-Oa7" id="39M-xy-hl8"/>
+                        <outlet property="rememberFoldStateStack" destination="FX8-Uc-2jx" id="TwW-2H-LU0"/>
+                        <outlet property="rememberFoldStateSwitch" destination="reE-RV-kFe" id="jiA-Wq-gqH"/>
                         <outlet property="renderingBackendSelector" destination="53H-ST-OtY" id="jhu-Pw-Phg"/>
                         <outlet property="renderingBackendStack" destination="6hG-dw-YSr" id="qqz-lA-EOE"/>
                         <outlet property="resolutionSelector" destination="ckc-Dm-8ex" id="rl6-rx-wd3"/>
