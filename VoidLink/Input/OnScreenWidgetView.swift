@@ -273,6 +273,13 @@ import UIKit
         rightIndicator = createLrudDirectionLayer()
         rightIndicator.anchorPoint = CGPoint(x: 0, y: 0.5)
         
+        if self.widgetType == WidgetTypeEnum.button {
+            if !self.touchPadString.isEmpty {
+                self.mouseButtonAction = MouseButtonAction.noClick
+                self.slideMode = ButtonSlideMode.disabled.rawValue
+            }
+        }
+
         setupView()
     }
     
