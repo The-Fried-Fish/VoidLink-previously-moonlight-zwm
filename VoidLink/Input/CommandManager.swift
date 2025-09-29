@@ -119,7 +119,7 @@ import UIKit
     @objc public static let directionPads: [String] = ["DPAD", "WASDPAD", "ARROWPAD"]
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]
-    @objc public static let specialOverlayButtonCmds: [String] = ["SETTINGS"]
+    @objc public static let specialOverlayButtonCmds: [String] = ["SETTINGS","GYRO"]
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]
     
@@ -384,7 +384,7 @@ import UIKit
         let defaults = UserDefaults.standard
         //if true {  // save default entries if the data is empty.
         if defaults.data(forKey: "savedCommands") == nil {  // save default entries if the data is empty.
-            var defaultCommands: [RemoteCommand] = [
+            let defaultCommands: [RemoteCommand] = [
                 RemoteCommand(cmdString: "WIN", alias: "WIN"),
                 RemoteCommand(cmdString: "F11", alias: "F11"),
                 RemoteCommand(cmdString: "ESC", alias: "ESC"),
@@ -463,6 +463,7 @@ import UIKit
         let combinedStrings =  [CommandManager.keyboardButtonMappings.keys.map { $0 as String },
                                 CommandManager.oscButtonMappings.keys.map { $0 as String },
                                 CommandManager.mouseButtonMappings.keys.map { $0 as String },
+                                CommandManager.specialOverlayButtonCmds.map { $0 as String },
                                 CommandManager.touchPadCmds.map { $0 as String }
                                 ]
                                 .lazy
@@ -603,6 +604,4 @@ import UIKit
         }
         return
     }
-    
-    
 }
