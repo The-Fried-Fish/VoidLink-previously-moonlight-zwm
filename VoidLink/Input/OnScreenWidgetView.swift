@@ -46,7 +46,9 @@ import UIKit
     @objc public var pressed: Bool
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
-    @objc public var slideMode: Int = 0
+    
+    @objc public var buttonTriggerMode: Int = 0
+    @objc private var tapToToggleFlag: Bool = true
     
     @objc public var sizeReference: Int = WidgetSizeReference.longSide.rawValue
     @objc public var deNormalizedWidthFactor: CGFloat = 1.0
@@ -276,6 +278,16 @@ import UIKit
         rightIndicator = createLrudDirectionLayer()
         rightIndicator.anchorPoint = CGPoint(x: 0, y: 0.5)
         
+        if self.widgetType == WidgetTypeEnum.button {
+            if !self.touchPadString.isEmpty {
+                self.mouseButtonAction = MouseButtonAction.noClick
+                self.buttonTriggerMode = ButtonTriggerMode.regular.rawValue
+            }
+            if !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {
+                self.buttonTriggerMode = ButtonTriggerMode.regular.rawValue
+            }
+        }
+
         setupView()
         
         setupDisplayLink()
@@ -549,7 +561,7 @@ import UIKit
             }
         }
         
-        if CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
+        if !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)){
             self.layer.borderWidth = 0
         }
         
@@ -1266,7 +1278,7 @@ import UIKit
             quickDoubleTapDetected = touchTapTimeInterval < QUICK_TAP_TIME_INTERVAL
             
             let touch = touches.first
-            if OnScreenWidgetView.editMode {self.touchBeganLocation = touch!.location(in: superview)}
+            if OnScreenWidgetView.editMode || !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {self.touchBeganLocation = touch!.location(in: superview)}
             else {self.touchBeganLocation = touch!.location(in: self)}
             self.latestTouchLocation = touchBeganLocation
         }
@@ -1339,11 +1351,17 @@ import UIKit
                         
             // this will also deal with button events
             if self.widgetType == WidgetTypeEnum.button && !self.comboButtonStrings.isEmpty {
-                self.handleTapDownOrSlidein()
-                setLock.lock()
-                self.capturedTouches.union(touches)
-                setLock.unlock()
-                //self.handleButtonSliding(touches: touches)
+                if self.buttonTriggerMode != ButtonTriggerMode.tapToToggle.rawValue {
+                    self.handleTapDownOrSlidein()
+                    setLock.lock()
+                    self.capturedTouches.union(touches)
+                    setLock.unlock()
+                }
+                else{
+                    if(self.tapToToggleFlag) {self.handleTapDownOrSlidein()}
+                    else {self.handleFingerUpOrSlideout()}
+                    self.tapToToggleFlag = !self.tapToToggleFlag
+                }
             }
             
             // legacy keyboard button combo connected by "+"
@@ -1364,7 +1382,7 @@ import UIKit
     
     private func moveByTouch(touch: UITouch){
         let currentLocation: CGPoint
-        if OnScreenWidgetView.editMode {currentLocation = touch.location(in: superview)}
+        if OnScreenWidgetView.editMode || !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {currentLocation = touch.location(in: superview)}
         else {currentLocation = touch.location(in: self)}
         
         if !firstTouchMoved {
@@ -1431,7 +1449,7 @@ import UIKit
                     setLock.lock()
                     let captured = widget.capturedTouches.contains(touch)
                     setLock.unlock()
-                    if !captured || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                    if !captured || widget.buttonTriggerMode == ButtonTriggerMode.regular.rawValue {continue}
                     widget.handleFingerUpOrSlideout()
                     setLock.lock()
                     widget.capturedTouches.remove(touch)
@@ -1447,12 +1465,14 @@ import UIKit
             for subview in self.superview?.subviews ?? [] {
                 if let widget = subview as? OnScreenWidgetView{
                     if widget.widgetType != WidgetTypeEnum.button {continue}
+                    let isSlidableButton = widget.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue || widget.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue
                     let pointInSubview = widget.convert(locationInSuperView, from: self.superview)
                     if widget.bounds.contains(pointInSubview){
                         setLock.lock()
                         let captured = widget.capturedTouches.contains(touch)
                         setLock.unlock()
-                        if captured || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        if captured || !isSlidableButton
+                            {continue}
                         setLock.lock()
                         widget.capturedTouches.add(touch)
                         setLock.unlock()
@@ -1463,15 +1483,15 @@ import UIKit
                         setLock.lock()
                         let captured = widget.capturedTouches.contains(touch)
                         setLock.unlock()
-                        if !captured || widget.slideMode == ButtonSlideMode.disabled.rawValue {continue}
+                        if !captured || !isSlidableButton {continue}
                         // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
-                        if(widget.slideMode == ButtonSlideMode.toggle.rawValue){
+                        if(widget.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue){
                             widget.handleFingerUpOrSlideout()
                             setLock.lock()
                             widget.capturedTouches.remove(touch)
                             setLock.unlock()
                         }
-                        if(widget.slideMode == ButtonSlideMode.slideAndHold.rawValue){
+                        if(widget.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue){
                             // do nothing here
                         }
                     }
@@ -1490,10 +1510,10 @@ import UIKit
             }
             
             if self.widgetType == WidgetTypeEnum.button {
-                if self.slideMode != ButtonSlideMode.disabled.rawValue {self.handleButtonSliding(touches: touches)}
+                if self.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue || self.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue  {self.handleButtonSliding(touches: touches)}
             }
             
-            if CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
+            if !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)){
                 if let touch = touches.first {
                     NSLog("touchTapTimeStamp %f", self.touchTapTimeStamp)
                     if CACurrentMediaTime() - self.touchTapTimeStamp > 0.3 { // temporarily relocate special buttons
@@ -1697,13 +1717,15 @@ import UIKit
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
-            self.handleFingerUpAfterSliding(touches: touches)
-            setLock.lock()
-            self.capturedTouches.minus(touches)
-            setLock.unlock()
+            if self.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue || self.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue {
+                self.handleFingerUpAfterSliding(touches: touches)
+                setLock.lock()
+                self.capturedTouches.minus(touches)
+                setLock.unlock()
+            }
         }
         
-        if !OnScreenWidgetView.editMode && CommandManager.specialOverlayButtonCmds.contains(self.cmdString){
+        if !OnScreenWidgetView.editMode && !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)){
             if CACurrentMediaTime() - self.touchTapTimeStamp < 0.3 {
                 switch self.cmdString {
                 case "SETTINGS":
@@ -1752,7 +1774,16 @@ import UIKit
             }
         }
         
-        self.handleFingerUpOrSlideout()
+        if self.buttonTriggerMode != ButtonTriggerMode.tapToToggle.rawValue {self.handleFingerUpOrSlideout()}
+    }
+    
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if superview == nil {
+            self.handleFingerUpOrSlideout()
+            crossMarkLayer.removeFromSuperlayer()
+            stickBallLayer.removeFromSuperlayer()
+        }
     }
 }
 

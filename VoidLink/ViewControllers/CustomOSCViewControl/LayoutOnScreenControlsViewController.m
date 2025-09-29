@@ -140,7 +140,7 @@
             widgetView.trackballDecelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
-            widgetView.slideMode = buttonState.slideMode;
+            widgetView.buttonTriggerMode = buttonState.buttonTriggerMode;
             // Add the widgetView to the view controller's view
             [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
@@ -589,7 +589,6 @@
         [widgetInitParams setObject: alertController.textFields[1].text forKey:@"buttonLabel"];
         [widgetInitParams setObject: alertController.textFields[2].text forKey:@"minStickOffsetString"];
         [widgetInitParams setObject: alertController.textFields[3].text forKey:@"shape"];
-        [self removeStickIndicators];
         [self updateWidget:self->selectedWidgetView byParams:widgetInitParams createNew:false];
     }];
     
@@ -648,7 +647,7 @@
     newWidget.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
     [newWidget setVibrationWithStyle:widget.vibrationStyle];
     newWidget.mouseButtonAction = widget.mouseButtonAction;
-    newWidget.slideMode = widget.slideMode;
+    newWidget.buttonTriggerMode = widget.buttonTriggerMode;
     [self.view insertSubview:newWidget belowSubview:self.widgetPanelStack];
 
     if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
@@ -732,18 +731,6 @@
             OnScreenWidgetView* widget = (OnScreenWidgetView* )view;
             [widget.crossMarkLayer setHidden:true];
             [widget.stickBallLayer setHidden:true];
-
-        }
-    }
-}
-
-- (void)removeStickIndicators{
-    for(UIView* view in self.view.subviews){
-        if([view isKindOfClass:[OnScreenWidgetView class]]){
-            OnScreenWidgetView* widget = (OnScreenWidgetView* )view;
-            [widget.crossMarkLayer removeFromSuperlayer];
-            [widget.stickBallLayer removeFromSuperlayer];
-
         }
     }
 }
@@ -781,7 +768,7 @@
 
     // hide irrelevant stacks
     self.autoTapStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    self.slidableStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
+    self.triggerModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
     
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
@@ -853,7 +840,7 @@
     [self decelerationRateSliderMoved:self.decelerationRateSlider];
     
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
-    [self.slidableSelector setSelectedSegmentIndex:selectedWidgetView.slideMode];
+    [self.triggerModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonTriggerMode];
 
     if([self isIPhone]){
         self.vibrationStyleStack.hidden =
@@ -972,7 +959,7 @@
 
 - (void)slideModeChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        selectedWidgetView.slideMode = _slidableSelector.selectedSegmentIndex;
+        selectedWidgetView.buttonTriggerMode = _triggerModeSelector.selectedSegmentIndex;
     }
 }
 
@@ -1152,9 +1139,9 @@
     [self.mouseButtonDownSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.mouseDownButtonStack.hidden = YES;
 
-    [self.slidableSelector addTarget:self action:@selector(slideModeChanged:) forControlEvents:(UIControlEventValueChanged)];
-    [self.slidableSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
-    self.slidableStack.hidden = YES;
+    [self.triggerModeSelector addTarget:self action:@selector(slideModeChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.triggerModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
+    self.triggerModeStack.hidden = YES;
 
     
     if([self isIPhone]){
@@ -1413,7 +1400,6 @@
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
         [self->selectedWidgetView removeFromSuperview];
         [self.onScreenWidgetViews removeObject:self->selectedWidgetView];
-        [self removeStickIndicators];
         [selectedWidgetView.buttonDownVisualEffectLayer removeFromSuperlayer];
     }
     

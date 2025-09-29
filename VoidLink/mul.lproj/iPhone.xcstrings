@@ -697,6 +697,36 @@
         }
       }
     },
+    "9Kq-ys-dnF.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Remember Menu Fold/Expand\"; ObjectID = \"9Kq-ys-dnF\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Remember Menu Fold/Expand"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记住菜单折叠状态"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記住選單摺疊狀態"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記住選單摺疊狀態"
+          }
+        }
+      }
+    },
     "53H-ST-OtY.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",
@@ -2282,13 +2312,13 @@
       }
     },
     "o9I-Gt-YRd.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Slide activated\"; ObjectID = \"o9I-Gt-YRd\";",
+      "comment" : "Class = \"UILabel\"; text = \"Trigger Mode\"; ObjectID = \"o9I-Gt-YRd\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Slide activated"
+            "value" : "Trigger Mode"
           }
         },
         "zh-Hans" : {
@@ -2372,13 +2402,13 @@
       }
     },
     "ojp-aS-m8w.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"slide to release\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"slide to toggle\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "slide to release"
+            "value" : "slide to toggle"
           }
         },
         "zh-Hans" : {
@@ -2432,31 +2462,61 @@
       }
     },
     "ojp-aS-m8w.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[2] = \"disabled\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[2] = \"regular\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "disabled"
+            "value" : "regular"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "常规模式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉"
+            "value" : "一般模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉"
+            "value" : "一般模式"
+          }
+        }
+      }
+    },
+    "ojp-aS-m8w.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[3] = \"tap to toggle\"; ObjectID = \"ojp-aS-m8w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "tap to toggle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点按切换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點按切換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點按切換"
           }
         }
       }

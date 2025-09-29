@@ -36,7 +36,7 @@
     [encoder encodeInt:self.sizeReference forKey:@"sizeReference"];
     [encoder encodeInt:self.vibrationStyle forKey:@"vibrationStyle"];
     [encoder encodeInt:self.mouseButtonAction forKey:@"mouseButtonAction"];
-    [encoder encodeInt:self.slideMode forKey:@"slideMode"];
+    [encoder encodeInt:self.buttonTriggerMode forKey:@"slideMode"];  // triggerMode: previously slideMode
     [encoder encodeInt:self.autoTapInterval forKey:@"autoTapInterval"];
     [encoder encodeCGPoint:self.position forKey:@"position"];
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
@@ -61,7 +61,7 @@
         self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;
         self.vibrationStyle = [decoder decodeIntForKey:@"vibrationStyle"];
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
-        self.slideMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
+        self.buttonTriggerMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
         self.autoTapInterval = [decoder containsValueForKey:@"autoTapInterval"] ? [decoder decodeIntForKey:@"autoTapInterval"] : 45;
         self.position = [decoder decodeCGPointForKey:@"position"];
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];

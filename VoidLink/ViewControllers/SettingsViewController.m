@@ -372,6 +372,15 @@ BOOL isCustomResolution(int resolutionSelected) {
         }
         else dispatch_async(dispatch_get_main_queue(), ^{[self widget:self.bitrateSlider setEnabled:true];});
     });
+    
+    if(currentSettingsMenuMode == AllSettings && MenuSectionView.overridePersistedFoldState){
+        for(UIView *subview in _parentStack.arrangedSubviews){
+            if([subview isKindOfClass:[MenuSectionView class]]){
+                MenuSectionView* section = (MenuSectionView* )subview;
+                [section setExpanded:YES];
+            }
+        }
+    }
  }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -601,6 +610,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     videoSection = [[MenuSectionView alloc] init];
     videoSection.delegate = self;
     videoSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Video"];
+    videoSection.identifier = @"SettingsSectionVideo";
     if (@available(iOS 13.0, *)) {
         [videoSection setSectionWithIcon:[UIImage systemImageNamed:@"waveform"] andSize:20];
     }
@@ -615,11 +625,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
 
     [videoSection addToParentStack:_parentStack];
-    [videoSection setExpanded:YES];
+    // [videoSection setExpanded:NO];
 
     touchAndControlSection = [[MenuSectionView alloc] init];
     touchAndControlSection.delegate = self;
     touchAndControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch & Controller"];
+    touchAndControlSection.identifier = @"SettingsSectionTouch&Controller";
     if (@available(iOS 13.0, *)) {
         [touchAndControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] andSize:20.5];
     }
@@ -634,11 +645,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [touchAndControlSection addToParentStack:_parentStack];
-    [touchAndControlSection setExpanded:YES];
+    // [touchAndControlSection setExpanded:NO];
 
     MenuSectionView *gesturesSection = [[MenuSectionView alloc] init];
     gesturesSection.delegate = self;
     gesturesSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Gestures"];
+    gesturesSection.identifier = @"SettingsSectionGestures";
     if (@available(iOS 13.0, *)) {
         [gesturesSection setSectionWithIcon:[UIImage systemImageNamed:@"hand.draw"] andSize:23];
     }
@@ -648,11 +660,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.slideToToolboxScreenEdgeStack ofId:@"slideToToolboxScreenEdgeStack" withInfoTag:NO withDynamicLabel:NO to:gesturesSection];
     [self addSetting:self.slideToSettingsDistanceStack ofId:@"slideToSettingsDistanceStack" withInfoTag:YES withDynamicLabel:YES to:gesturesSection];
     [gesturesSection addToParentStack:_parentStack];
-    [gesturesSection setExpanded:YES];
+    // [gesturesSection setExpanded:NO];
 
     MenuSectionView *peripheralSection = [[MenuSectionView alloc] init];
     peripheralSection.delegate = self;
     peripheralSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Peripherals"];
+    peripheralSection.identifier = @"SettingsSectionPeripherals";
     if (@available(iOS 13.0, *)) {
         [peripheralSection setSectionWithIcon:[UIImage imageNamed:@"cable.connector.video"] andSize:20];
     }
@@ -663,13 +676,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.reverseMouseWheelDirectionStack ofId:@"reverseMouseWheelDirectionStack" withInfoTag:NO withDynamicLabel:NO to:peripheralSection];
     [self addSetting:self.citrixX1MouseStack ofId:@"citrixX1MouseStack" withInfoTag:NO withDynamicLabel:NO to:peripheralSection];
     [peripheralSection addToParentStack:_parentStack];
-    [peripheralSection setExpanded:YES];
+    // [peripheralSection setExpanded:NO];
 
     
     
     MenuSectionView *audioSection = [[MenuSectionView alloc] init];
     audioSection.delegate = self;
     audioSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Audio"];
+    audioSection.identifier = @"SettingsSectionAudio";
     if (@available(iOS 13.0, *)) {
         [audioSection setSectionWithIcon:[UIImage imageNamed:@"speaker.wave.2"] andSize:20];
     }
@@ -681,12 +695,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.micVolumeStack ofId:@"micVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
-    [audioSection setExpanded:YES];
+    // [audioSection setExpanded:NO];
 
     
     otherSection = [[MenuSectionView alloc] init];
     otherSection.delegate = self;
     otherSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Others"];
+    otherSection.identifier = @"SettingsSectionOthers";
     if (@available(iOS 13.0, *)) {
         [otherSection setSectionWithIcon:[UIImage systemImageNamed:@"cube"] andSize:20.5];
     }
@@ -696,14 +711,16 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.rememberFoldStateStack ofId:@"rememberFoldStateStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
 
     [otherSection addToParentStack:_parentStack];
-    [otherSection setExpanded:YES];
+    // [otherSection setExpanded:NO];
     
     
-   experimentalSection = [[MenuSectionView alloc] init];
+    experimentalSection = [[MenuSectionView alloc] init];
     experimentalSection.delegate = self;
     experimentalSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Experimental"];
+    experimentalSection.identifier = @"SettingsSectionExperimental";
     if (@available(iOS 13.0, *)) {
         [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] andSize:20];
     }
@@ -716,7 +733,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.sendDummyEventStack ofId:@"sendDummyEventStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     
     [experimentalSection addToParentStack:_parentStack];
-    [experimentalSection setExpanded:YES];
+    // [experimentalSection setExpanded:NO];
 }
 
 
@@ -1394,7 +1411,16 @@ BOOL isCustomResolution(int resolutionSelected) {
     for(UIView* view in self.view.subviews){
         [view removeFromSuperview];
     }
+    
     [self initParentStack];
+    
+    // load rememberFoldState before section layout
+    dataMan = [[DataManager alloc] init];
+    tempSettings = [dataMan getSettings];
+    [self.rememberFoldStateSwitch setOn:tempSettings.rememberFoldState];// Load old setting
+    MenuSectionView.overridePersistedFoldState = !tempSettings.rememberFoldState;
+    [self.rememberFoldStateSwitch addTarget:self action:@selector(rememberFoldStateSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+    
     [self layoutSections];
 
 
@@ -1416,8 +1442,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     }
 
-    dataMan = [[DataManager alloc] init];
-    tempSettings = [dataMan getSettings];
 
     currentSettingsMenuMode = tempSettings.settingsMenuMode.intValue;
     [self loadFavoriteSettingStackIdentifiers];
@@ -1819,11 +1843,9 @@ BOOL isCustomResolution(int resolutionSelected) {
                                                               style:UIAlertActionStyleDestructive
                                                             handler:^(UIAlertAction * _Nonnull action) {
 
-            DataManager* directDataMan = [[DataManager alloc] init];
-            Settings* directSettings = [directDataMan retrieveSettings];
+            Settings* directSettings = [self->dataMan retrieveSettings];
             directSettings.renderingBackend = [NSNumber numberWithInteger:sender.selectedSegmentIndex];
-            [directDataMan saveData];
-            
+            [self->dataMan saveData];
             [self saveSettings];
             
             exit(0);
@@ -2089,6 +2111,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(sender.isOn) [self checkAndRequestMicPermission];
     [self setHidden:!sender.isOn forStack:_useBuiltinMicStack];
     [self setHidden:!sender.isOn forStack:_micVolumeStack];
+}
+
+- (void)rememberFoldStateSwitchFlipped:(UISwitch* )sender{
+    MenuSectionView.overridePersistedFoldState = !sender.isOn;
+    Settings* currentSettings = [self->dataMan retrieveSettings];
+    currentSettings.rememberFoldState = sender.isOn;
+    [self->dataMan saveData];
 }
 
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
@@ -2531,6 +2560,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger externalDisplayMode = [self.externalDisplayModeSelector selectedSegmentIndex];
     NSInteger localMousePointerMode = [self.localMousePointerModeSelector selectedSegmentIndex];
     BOOL sendDummyEvent = self.sendDummyEventSwitch.isOn;
+    BOOL rememberFoldState = self.rememberFoldStateSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2581,6 +2611,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                     renderingBackend:renderingBackend
                      framePacingMode:framePacingMode
                       sendDummyEvent:sendDummyEvent
+                   rememberFoldState:rememberFoldState
               backgroundSessionTimer:backgroundSessionTimer];
 }
 
