@@ -64,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *addButton;
 @property (weak, nonatomic) IBOutlet UIButton *editButton;
 
+@property (weak, nonatomic) IBOutlet UIButton *magnetButton;
+
 
 
 

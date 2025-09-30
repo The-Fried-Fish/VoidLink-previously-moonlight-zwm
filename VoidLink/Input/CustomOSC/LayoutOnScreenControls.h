@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)updateGuidelinesForOnScreenWidget:(OnScreenWidgetView* )widget;
+- (CGPoint)snappedCenterForOnScreenWidget:(OnScreenWidgetView *)widget
+                            touchLocation:(CGPoint)touchLocation;
 
 @end
 

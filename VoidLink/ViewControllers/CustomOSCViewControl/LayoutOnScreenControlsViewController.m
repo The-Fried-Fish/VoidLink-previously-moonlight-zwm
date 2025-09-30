@@ -19,6 +19,8 @@
 #import "ThemeManager.h"
 #import "DataManager.h"
 
+#define OSC_CENTERLINE_SNAP_THRESHOLD @"OSC_CENTERLINE_SNAP_THRESHOLD"
+
 @interface LayoutOnScreenControlsViewController ()
 
 @end
@@ -191,6 +193,11 @@
     [self addInnerAnalogSticksToOuterAnalogLayers]; // allows inner and analog sticks to be dragged together around the screen together as one unit which is the expected behavior
     
     self.undoButton.alpha = 0.3;    // no changes to undo yet, so fade out the undo button a bit
+    
+    // 設定預設值：第一次啟動沒有設定時給 5
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:OSC_CENTERLINE_SNAP_THRESHOLD] == nil) {
+        [[NSUserDefaults standardUserDefaults] setInteger:5 forKey:OSC_CENTERLINE_SNAP_THRESHOLD];
+    }
     
     NSMutableArray* allProfiles = [profilesManager getAllProfiles];
     /*
@@ -1054,6 +1061,7 @@
                 if(button==_loadButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Load"] forState:UIControlStateNormal];
                 if(button==_addButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Add"] forState:UIControlStateNormal];
                 if(button==_editButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Edit"] forState:UIControlStateNormal];
+                if(button==_magnetButton) [button setTitle:[LocalizationHelper localizedStringForKey:@"Snap"] forState:UIControlStateNormal];
 
             }
         }
@@ -1318,6 +1326,76 @@
     [self presentProfilesTableView];
 }
 
+- (IBAction)magnetButtonTapped:(id)sender {
+    NSInteger current = [[NSUserDefaults standardUserDefaults] integerForKey:OSC_CENTERLINE_SNAP_THRESHOLD];
+    NSInteger normalized = (current == 0 ? 0 : (current >= 15 ? 15 : 5));
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Center Line Snapping"]
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+
+    // 內容 VC：用來放 segmented control，避免和標題重疊，並能加內距
+    UIViewController *contentVC = [[UIViewController alloc] init];
+    contentVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+    contentVC.preferredContentSize = CGSizeMake(270, 48); // 讓 alert 有合適高度
+
+    // 容器：用 layoutMargins 提供與視窗邊緣的空間
+    UIView *container = [[UIView alloc] init];
+    container.translatesAutoresizingMaskIntoConstraints = NO;
+    container.layoutMargins = UIEdgeInsetsMake(0, 8, 16, 8); // 上下左右留白
+    [contentVC.view addSubview:container];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [container.topAnchor constraintEqualToAnchor:contentVC.view.topAnchor],
+        [container.leadingAnchor constraintEqualToAnchor:contentVC.view.leadingAnchor],
+        [container.trailingAnchor constraintEqualToAnchor:contentVC.view.trailingAnchor],
+        [container.bottomAnchor constraintEqualToAnchor:contentVC.view.bottomAnchor],
+    ]];
+
+    // Segmented control：禁用 / 弱磁鐵 / 強磁鐵 -> 0 / 5 / 15
+    UISegmentedControl *seg = [[UISegmentedControl alloc] initWithItems:@[
+        [LocalizationHelper localizedStringForKey:@"Off"],
+        [LocalizationHelper localizedStringForKey:@"Weak Snap"],
+        [LocalizationHelper localizedStringForKey:@"Strong Snap"]
+    ]];
+    seg.translatesAutoresizingMaskIntoConstraints = NO;
+    seg.selectedSegmentIndex = (normalized == 0 ? 0 : (normalized >= 15 ? 2 : 1));
+    seg.apportionsSegmentWidthsByContent = NO;
+
+    [container addSubview:seg];
+
+    // 讓 segmented control 依 margins 置中並留白
+    UILayoutGuide *m = container.layoutMarginsGuide;
+    [NSLayoutConstraint activateConstraints:@[
+        [seg.topAnchor constraintEqualToAnchor:m.topAnchor],
+        [seg.leadingAnchor constraintEqualToAnchor:m.leadingAnchor],
+        [seg.trailingAnchor constraintEqualToAnchor:m.trailingAnchor],
+        [seg.bottomAnchor constraintEqualToAnchor:m.bottomAnchor],
+        // 最小高度，避免過扁
+        [seg.heightAnchor constraintGreaterThanOrEqualToConstant:32.0]
+    ]];
+
+    // 把內容 VC 正式放進 Alert（這招可避免與標題重疊）
+    [alert setValue:contentVC forKey:@"contentViewController"];
+
+    [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+
+    [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"]
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(__unused UIAlertAction *action) {
+        NSInteger value = 5;
+        switch (seg.selectedSegmentIndex) {
+            case 0: value = 0;  break; // 禁用
+            case 1: value = 5;  break; // 弱磁鐵
+            case 2: value = 15; break; // 強磁鐵
+        }
+        [[NSUserDefaults standardUserDefaults] setInteger:value forKey:OSC_CENTERLINE_SNAP_THRESHOLD];
+    }]];
+
+    [self presentViewController:alert animated:YES completion:nil];
+}
 
 #pragma mark - Touch
 

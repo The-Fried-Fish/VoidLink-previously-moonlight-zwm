@@ -216,6 +216,79 @@
     }
 }
 
+- (CGPoint)snappedCenterForLegacyOnScreenControls:(CGPoint)touchLocation{
+    // 讀取閾值（0~15；0=關閉）
+    NSInteger v = [[NSUserDefaults standardUserDefaults] integerForKey:@"OSC_CENTERLINE_SNAP_THRESHOLD"];
+    CGFloat threshold = (CGFloat)MIN(15, MAX(0, v));
+    if (threshold <= 0.0f) {
+        // 不啟用吸附：直接回傳手指位置（已是 superview 座標）
+        return touchLocation;
+    }
+    CGFloat bestDx = threshold + 1.0;
+    CGFloat bestDy = threshold + 1.0;
+    CGFloat snapX = touchLocation.x;
+    CGFloat snapY = touchLocation.y;
+
+    // OSC CALayer
+    for (CALayer *button in self.OSCButtonLayers) {
+        if (!button || button == layerBeingDragged || button.isHidden) continue;
+        CGFloat dx = fabs(touchLocation.x - button.position.x);
+        if (dx <= bestDx) { bestDx = dx; snapX = button.position.x; }
+        CGFloat dy = fabs(touchLocation.y - button.position.y);
+        if (dy <= bestDy) { bestDy = dy; snapY = button.position.y; }
+    }
+
+    // OnScreenWidgetView
+    for (UIView *view in self.layoutToolVC.view.subviews) {
+        if (![view isKindOfClass:[OnScreenWidgetView class]] || view.isHidden) continue;
+        CGFloat dx = fabs(touchLocation.x - view.center.x);
+        if (dx <= bestDx) { bestDx = dx; snapX = view.center.x; }
+        CGFloat dy = fabs(touchLocation.y - view.center.y);
+        if (dy <= bestDy) { bestDy = dy; snapY = view.center.y; }
+    }
+
+    // 套用位置
+    CGPoint snapped = CGPointMake(snapX, snapY);
+    return snapped;
+}
+
+- (CGPoint)snappedCenterForOnScreenWidget:(OnScreenWidgetView *)widget
+                            touchLocation:(CGPoint)touchLocation
+{
+    // 讀取閾值（0~15；0=關閉）
+    NSInteger v = [[NSUserDefaults standardUserDefaults] integerForKey:@"OSC_CENTERLINE_SNAP_THRESHOLD"];
+    CGFloat threshold = (CGFloat)MIN(15, MAX(0, v));
+    if (threshold <= 0.0f) {
+        // 不啟用吸附：直接回傳手指位置（已是 superview 座標）
+        return touchLocation;
+    }
+    CGFloat bestDx = threshold + 1.0;
+    CGFloat bestDy = threshold + 1.0;
+    CGFloat snapX = touchLocation.x;
+    CGFloat snapY = touchLocation.y;
+    
+    // OSC CALayer
+    for (CALayer *button in self.OSCButtonLayers) {
+        if (!button || button.isHidden) continue;
+        CGFloat dx = fabs(touchLocation.x - button.position.x);
+        if (dx <= bestDx) { bestDx = dx; snapX = button.position.x; }
+        CGFloat dy = fabs(touchLocation.y - button.position.y);
+        if (dy <= bestDy) { bestDy = dy; snapY = button.position.y; }
+    }
+
+    // OnScreenWidgetView
+    for(UIView* view in self.layoutToolVC.view.subviews){
+        if (![view isKindOfClass:[OnScreenWidgetView class]] || view == widget || view.isHidden) continue;
+        CGFloat dx = fabs(touchLocation.x - view.center.x);
+        if (dx <= bestDx) { bestDx = dx; snapX = view.center.x; }
+        CGFloat dy = fabs(touchLocation.y - view.center.y);
+        if (dy <= bestDy) { bestDy = dy; snapY = view.center.y; }
+    }
+
+    // 套用位置
+    CGPoint snapped = CGPointMake(snapX, snapY);
+    return snapped;
+}
 
 #pragma mark - Queries
 
@@ -311,48 +384,13 @@
     }
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *touch = [touches anyObject];
-    if (!touch) return;
-
-    // 1) 以 _view 為座標系（舊式 OSC 原行為）
     CGPoint touchLocation = [touch locationInView:_view];
-
-    // 2) 中心線吸附：
-    //    候選目標 = 其它 OSC CALayer（self.OSCButtonLayers） + 畫面上的 OnScreenWidgetView
-    CGFloat threshold = 5.0;
-    CGFloat bestDx = threshold + 1.0;
-    CGFloat bestDy = threshold + 1.0;
-    CGFloat snapX = touchLocation.x;
-    CGFloat snapY = touchLocation.y;
-
-    // 2-1) 其它 OSC CALayer
-    for (CALayer *candidate in self.OSCButtonLayers) {
-        if (!candidate || candidate == layerBeingDragged || candidate.isHidden) continue;
-        CGFloat dx = fabs(touchLocation.x - candidate.position.x);
-        if (dx <= bestDx) { bestDx = dx; snapX = candidate.position.x; }
-        CGFloat dy = fabs(touchLocation.y - candidate.position.y);
-        if (dy <= bestDy) { bestDy = dy; snapY = candidate.position.y; }
-    }
-
-    // 2-2) OnScreenWidgetView（從 layoutToolVC.view.subviews 走訪）
-    for (UIView *v in self.layoutToolVC.view.subviews) {
-        if (![v isKindOfClass:[OnScreenWidgetView class]] || v.isHidden) continue;
-        OnScreenWidgetView *w = (OnScreenWidgetView *)v;
-        // 將 widget 的中心轉成 _view 座標（保守處理：若不在同一層，確保座標一致）
-        CGPoint widgetCenterInView = [w.superview convertPoint:w.center toView:_view];
-
-        CGFloat dx = fabs(touchLocation.x - widgetCenterInView.x);
-        if (dx <= bestDx) { bestDx = dx; snapX = widgetCenterInView.x; }
-        CGFloat dy = fabs(touchLocation.y - widgetCenterInView.y);
-        if (dy <= bestDy) { bestDy = dy; snapY = widgetCenterInView.y; }
-    }
-
-    // 3) 套用位置
-    CGPoint snapped = CGPointMake(snapX, snapY);
+    CGPoint snapped = [self snappedCenterForLegacyOnScreenControls:touchLocation];
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    layerBeingDragged.position = snapped;
+    layerBeingDragged.position = snapped; // move object to touch location
     [self updateGuidelinesForLegacyOnScreenControls];
     [CATransaction commit];
 }
