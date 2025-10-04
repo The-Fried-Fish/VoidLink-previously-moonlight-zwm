@@ -100,7 +100,7 @@ import CoreMotion
     }
 
     @objc public func startAccelUpdate() {
-        gyroControlStarted = true
+        accelControlStarted = true
         if motionManager.isAccelerometerAvailable {
             motionManager.startAccelerometerUpdates(to: .main) { [weak self] accelData, _ in
                 guard let self = self, let data = accelData else { return }
@@ -114,8 +114,8 @@ import CoreMotion
     /// 停止更新
     @objc public func stopGyroUpdate() {
         gyroControlStarted = false
-        if motionManager.isAccelerometerActive {
-            motionManager.stopAccelerometerUpdates()
+        if motionManager.isGyroActive{
+            motionManager.stopGyroUpdates()
         }
         self.onScreenControls.clearLeftStickTouchPadFlag()
         self.onScreenControls.clearRightStickTouchPadFlag()
