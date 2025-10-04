@@ -1714,7 +1714,7 @@ import UIKit
             self.onScreenControls.clearLeftStickTouchPadFlag()
         }
         else{
-            self.mixInputDelegate?.mixRightStickAndGyroInput(x: 0, y: 0)
+            self.mixInputDelegate?.mixLeftStickAndGyroInput(x: 0, y: 0)
         }
     }
     
