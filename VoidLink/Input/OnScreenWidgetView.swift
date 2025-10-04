@@ -25,6 +25,15 @@ import UIKit
         func updateGuidelinesForOnScreenWidget(_ sender: Any)
     }
     
+    @objc public weak var snapDelegate: OnScreenWidgetSnapDelegate?
+    
+    @objc public protocol OnScreenWidgetSnapDelegate: AnyObject {
+        /// 根據手指位置計算吸附中心（以 superview 座標系）
+        @objc(snappedCenterForOnScreenWidget:touchLocation:)
+        func snappedCenterForOnScreenWidget(_ widget: OnScreenWidgetView,
+                                            touchLocation: CGPoint) -> CGPoint
+    }
+    
     @objc enum WidgetTypeEnum: UInt8 {
         case uninitialized
         case button
@@ -1351,24 +1360,37 @@ import UIKit
         if OnScreenWidgetView.editMode || !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {currentLocation = touch.location(in: superview)}
         else {currentLocation = touch.location(in: self)}
         
-        if !firstTouchMoved {
-            // First move event
-            self.latestTouchLocation = currentLocation
-            self.firstTouchMoved = true
-        }
-                
-        let offsetX = currentLocation.x - latestTouchLocation.x;
-        let offsetY = currentLocation.y - latestTouchLocation.y;
-        
-        let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
-        let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
+        if !OnScreenWidgetView.editMode {
+            if !firstTouchMoved {
+                // First move event
+                self.latestTouchLocation = currentLocation
+                self.firstTouchMoved = true
+            }
+                    
+            let offsetX = currentLocation.x - latestTouchLocation.x;
+            let offsetY = currentLocation.y - latestTouchLocation.y;
+            
+            let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
+            let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
 
-        center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
-        
-        latestTouchLocation = currentLocation
-        // center = currentLocation;
-        //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
-        if OnScreenWidgetView.editMode {
+            center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
+            
+            latestTouchLocation = currentLocation
+            // center = currentLocation;
+            //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
+            return
+        }
+
+        // 容器邊界夾制與中心線吸附
+        if var finalCenter = snapDelegate?.snappedCenterForOnScreenWidget(self, touchLocation: currentLocation) {
+            if let container = superview {
+                let halfW = bounds.width * 0.5
+                let halfH = bounds.height * 0.5
+                finalCenter.x = min(max(finalCenter.x, halfW), max(halfW, container.bounds.width  - halfW))
+                finalCenter.y = min(max(finalCenter.y, halfH), max(halfH, container.bounds.height - halfH))
+            }
+            self.center = finalCenter
+            latestTouchLocation = currentLocation
             guidelineDelegate?.updateGuidelinesForOnScreenWidget(self)
         }
     }
