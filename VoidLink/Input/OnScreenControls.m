@@ -197,8 +197,8 @@ static float L3_Y;
 // sending self as an instance to OnScreenWidgetView
 - (void)sendInstance{
     NSLog(@"OnScreenControls is sending its instance...");
-    if ([self.delegate respondsToSelector:@selector(getOnScreenControlsInstance:)]) {
-        [self.delegate getOnScreenControlsInstance:self];
+    if ([self.instanceReceiverDelegate respondsToSelector:@selector(getOnScreenControlsInstance:)]) {
+        [self.instanceReceiverDelegate getOnScreenControlsInstance:self];
     } else {
         NSLog(@"Delegate not set or does not respond to getOnScreenControlsInstance:");
     }
@@ -373,11 +373,11 @@ static float L3_Y;
         OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
         [_activeCustomOscButtonPositionDict removeAllObjects]; //reset the Dict.
         // NSLog(@"_activeCustomOscButtonPositionDict update: STARTOVER");
-        for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
+        for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
             OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
             [OnScreenControls.layerVibrationStyleDic setObject:@(buttonState.vibrationStyle) forKey:buttonState.name];
-            if(!buttonState.isHidden && [validPositionButtonNames containsObject:buttonState.name] && (buttonState.buttonType == LegacyOnScreenControls || [profilesManager getIndexOfSelectedProfile] == 0 ) ){
+            if(!buttonState.isHidden && [validPositionButtonNames containsObject:buttonState.name] && (buttonState.widgetType == LegacyOnScreenControls || [profilesManager getIndexOfSelectedProfile] == 0 ) ){
                 [_activeCustomOscButtonPositionDict setObject:[NSValue valueWithCGPoint:buttonState.position] forKey:buttonState.name]; // we got a buttonname -> position dict here
                 // NSLog(@"_activeCustomOscButtonPositionDict update, button name:%@,  position: %f, %f", buttonState.name, buttonState.position.x, buttonState.position.y);
             }
@@ -730,7 +730,7 @@ static float L3_Y;
 - (void) setDPadCenter {
     OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
     
-    for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
+    for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
         OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
         if ([buttonState.name isEqualToString:@"dPad"]) {
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
@@ -746,7 +746,7 @@ static float L3_Y;
 - (void) setAnalogStickPositions {
     OSCProfile *oscProfile = [profilesManager getSelectedProfile]; // returns the currently selected OSCProfile
     
-    for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
+    for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
         OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
         buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
         if ([buttonState.name isEqualToString:@"leftStickBackground"]) {
@@ -770,7 +770,7 @@ static float L3_Y;
     OSCProfile *oscProfile = [profilesManager getSelectedProfile];
     bool defaultProfileSelected = [profilesManager getIndexOfSelectedProfile] == 0;
     
-    for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
+    for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
         
         OnScreenButtonState *buttonStateDecoded = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
 
@@ -832,7 +832,7 @@ static float L3_Y;
     OSCProfile *oscProfile = [profilesManager getSelectedProfile];
     // bool defaultProfileSelected = [profilesManager getIndexOfSelectedProfile] == 0;
     
-    for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
+    for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
         OnScreenButtonState* buttonStateDecoded = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
 
         for (CALayer *buttonLayer in self.OSCButtonLayers) {    // iterate through each button layer on screen

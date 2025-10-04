@@ -27,7 +27,7 @@
 
 @interface StreamFrameViewController : GCEventViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, AVPictureInPictureControllerDelegate>
 #else
-@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate>
+@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate, OnScreenFunctionalButtonDelegate>
 
 #endif
 @property (nonatomic) StreamManager* streamMan;
@@ -40,8 +40,8 @@
 @property (nonatomic, strong) MetalViewController *metalViewController;
 @property (nonatomic, strong) ImGuiRenderer *imguiView;
 
--(void)updatePreferredDisplayMode:(BOOL)streamActive;
--(void)reConfigStreamViewRealtime:(BOOL)reloadSettings;
+
+- (void)updatePreferredDisplayMode:(BOOL)streamActive;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 - (bool)shallDisableGyroHotSwitch;
 

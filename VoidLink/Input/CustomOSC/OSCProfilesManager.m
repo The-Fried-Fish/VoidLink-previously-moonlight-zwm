@@ -105,6 +105,21 @@ static CGRect layoutViewBounds;
     
 }
 
+- (void)replaceSelectedProfileWith:(OSCProfile*)newProfile{
+    NSInteger index = 0;
+    NSMutableArray *profiles = [self getAllProfiles];
+    for (OSCProfile *profile in profiles) {
+        if (profile.isSelected == YES) {
+            index = [profiles indexOfObject:profile];
+        }
+    }
+    if(index>0) profiles[index] = newProfile;
+
+    NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:profilesEncoded requiringSecureCoding:YES error:nil];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
 
 /**
  * Replaces one 'OSCProfile' object for another in the 'OSCProfile' objects array stored in persistent storage
@@ -139,8 +154,11 @@ static CGRect layoutViewBounds;
 }
 
 - (NSMutableArray *) getEncodedProfiles {
-    NSMutableArray *profiles = [self getAllProfiles];
-    NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles]; // encode each 'profile' object in the array and add them to a new array
+    NSData *profilesArrayEncoded = [[NSUserDefaults standardUserDefaults] objectForKey: @"OSCProfiles"];    // Get the encoded array of encoded OSC profiles from persistent storage
+    NSSet *classes = [NSSet setWithObjects:[NSString class], [NSMutableData class], [NSMutableArray class], [OSCProfile class], [OnScreenButtonState class], nil];
+    
+    NSMutableArray *profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:profilesArrayEncoded error:nil];    // Decode the encoded array itself, NOT the objects contained in the array
+
     return profilesEncoded;
 }
 
@@ -260,12 +278,7 @@ static CGRect layoutViewBounds;
                             buttonStates:buttonStatesEncoded isSelected:YES];        // create a new 'OSCProfile'. Set the array of encoded button states created above to the 'buttonStates' property of the new profile, along with a 'name'. Set 'isSelected' argument to YES which will set this saved profile as the one that will show up in the game stream view
 
     
-    /* set all saved OSCProfiles 'isSelected' property to NO since the new profile you're adding will be set as the selected profile */
-    NSMutableArray *profiles = [self getAllProfiles];
-    for (OSCProfile *profile in profiles) {
-        profile.isSelected = NO;
-    }
-    [self replaceProfile:[self getSelectedProfile] withProfile:newProfile];
+    [self replaceSelectedProfileWith:newProfile];
     return true;
 }
 
@@ -373,11 +386,8 @@ static CGRect layoutViewBounds;
         CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.center];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.widgetLabel;
-        // buttonState.sizeReference = layoutViewBounds.size.width > layoutViewBounds.size.height ? longSide : shortSide;
-        //widgetView.sizeReference = buttonState.sizeReference; //  testttttttttt ???
-        NSLog(@"sizeRef: %d", buttonState.sizeReference);
+        buttonState.identifier = widgetView.identifier;
         buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView and:buttonState];
-        // NSLog(@"logging widthFactor %f", buttonState.widthFactor);
         buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView and:buttonState];
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.borderWidth = widgetView.borderWidth;
@@ -390,7 +400,7 @@ static CGRect layoutViewBounds;
         buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
         buttonState.widgetShape = widgetView.shape;
         buttonState.minStickOffset = widgetView.minStickOffset;
-        buttonState.buttonTriggerMode = widgetView.buttonTriggerMode;
+        buttonState.buttonMode = widgetView.buttonMode;
         
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
         [buttonStatesEncoded addObject: buttonStateEncoded];

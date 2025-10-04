@@ -1453,6 +1453,36 @@
         }
       }
     },
+    "cKS-fy-Zpg.segmentTitles[4]" : {
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[4] = \"movable\"; ObjectID = \"cKS-fy-Zpg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "movable"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可移动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可移動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可移動"
+          }
+        }
+      }
+    },
     "CpY-Sb-BDc.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Import\"; ObjectID = \"CpY-Sb-BDc\";",
       "extractionState" : "extracted_with_value",
@@ -3272,31 +3302,31 @@
       }
     },
     "qNQ-fB-jhY.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Trigger mode\"; ObjectID = \"qNQ-fB-jhY\";",
+      "comment" : "Class = \"UILabel\"; text = \"Button mode\"; ObjectID = \"qNQ-fB-jhY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Trigger mode"
+            "value" : "Button mode"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触发模式"
+            "value" : "按键模式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸發模式"
+            "value" : "按鍵模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸發模式"
+            "value" : "按鍵模式"
           }
         }
       }

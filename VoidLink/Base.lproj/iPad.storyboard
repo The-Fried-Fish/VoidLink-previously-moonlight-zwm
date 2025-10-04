@@ -746,7 +746,7 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="150" minValue="0.0" maxValue="3600" translatesAutoresizingMaskIntoConstraints="NO" id="4gD-tc-95I" userLabel="touchMoveEventIntervalSlider">
+                                    <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2667" minValue="0.0" maxValue="20000" translatesAutoresizingMaskIntoConstraints="NO" id="4gD-tc-95I" userLabel="touchMoveEventIntervalSlider">
                                         <rect key="frame" x="-2" y="25.5" width="384" height="32"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
@@ -1426,7 +1426,7 @@
                         <viewControllerLayoutGuide type="bottom" id="eaS-aj-VtA"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Acw-S4-f8a">
-                        <rect key="frame" x="0.0" y="0.0" width="1300" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fZU-G0-fgM" userLabel="Toolbar Root View" customClass="ToolBarContainerView">
@@ -1838,7 +1838,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LGW-oJ-5Zf" userLabel="triggerModeStack">
                                         <rect key="frame" x="0.0" y="518" width="650" height="31"/>
                                         <subviews>
-                                            <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Trigger mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qNQ-fB-jhY" userLabel="uiLabel">
+                                            <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Button mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qNQ-fB-jhY" userLabel="uiLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="130" id="P7b-Jz-LEK"/>
@@ -1848,21 +1848,22 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" alpha="0.76999998092651367" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="cKS-fy-Zpg">
-                                                <rect key="frame" x="130" y="0.0" width="385" height="32"/>
+                                                <rect key="frame" x="130" y="0.0" width="420" height="32"/>
                                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <segments>
                                                     <segment title="slide to toggle"/>
                                                     <segment title="slide &amp; hold"/>
                                                     <segment title="regular"/>
                                                     <segment title="tap to toggle"/>
+                                                    <segment title="movable"/>
                                                 </segments>
                                                 <color key="tintColor" systemColor="systemGray3Color"/>
                                                 <color key="selectedSegmentTintColor" red="0.23087820410000001" green="0.4576539993" blue="0.51765710119999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             </segmentedControl>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="                                    " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dOF-FW-cBU" userLabel="uiLabel">
-                                                <rect key="frame" x="515" y="0.0" width="135" height="31"/>
+                                                <rect key="frame" x="550" y="0.0" width="100" height="31"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="135" id="hfV-um-PjK"/>
+                                                    <constraint firstAttribute="width" constant="100" id="hfV-um-PjK"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1893,6 +1894,8 @@
                         <outlet property="autoTapSlider" destination="ksz-Dq-bUf" id="nbG-ye-X7e"/>
                         <outlet property="autoTapStack" destination="e4b-0v-36Z" id="PZd-KE-lPb"/>
                         <outlet property="borderWidthAlphaStack" destination="9ZS-28-txW" id="qxV-2E-g8m"/>
+                        <outlet property="buttonModeSelector" destination="cKS-fy-Zpg" id="uIq-60-t7E"/>
+                        <outlet property="buttonModeStack" destination="LGW-oJ-5Zf" id="Jn6-Mu-XYp"/>
                         <outlet property="chevronImageView" destination="iVZ-Fd-dY7" id="403-Nj-wRx"/>
                         <outlet property="chevronView" destination="hKp-ds-86I" id="Og9-aT-zNH"/>
                         <outlet property="currentProfileLabel" destination="iel-xl-xd9" id="PJ0-FX-z6w"/>
@@ -1920,8 +1923,6 @@
                         <outlet property="toolbarStackView" destination="YLK-IE-ajS" id="j4o-Kp-7Z8"/>
                         <outlet property="toolbarTopConstraintiPad" destination="Ppb-J1-lXg" id="laN-Zh-lHm"/>
                         <outlet property="trashCanButton" destination="qJs-n8-eV7" id="ubK-qm-Cox"/>
-                        <outlet property="triggerModeSelector" destination="cKS-fy-Zpg" id="uIq-60-t7E"/>
-                        <outlet property="triggerModeStack" destination="LGW-oJ-5Zf" id="Jn6-Mu-XYp"/>
                         <outlet property="undoButton" destination="F7X-l4-cl3" id="vAI-XQ-hZw"/>
                         <outlet property="widgetAlphaLabel" destination="Pwa-YK-6Q2" id="IPF-Es-yTr"/>
                         <outlet property="widgetAlphaSlider" destination="ii1-Iq-jI4" id="Rev-dn-n3F"/>
@@ -2033,7 +2034,7 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2042,13 +2043,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

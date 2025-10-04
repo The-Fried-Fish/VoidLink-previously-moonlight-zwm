@@ -381,6 +381,8 @@ BOOL isCustomResolution(int resolutionSelected) {
             }
         }
     }
+    
+    if(![self manuallyChangedFPS]) [self framerateChanged];
  }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -1603,7 +1605,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.resolutionSelector addTarget:self action:@selector(newResolutionChosen) forControlEvents:UIControlEventValueChanged];
 
     [self.framerateSelector setSelectedSegmentIndex:framerate];
-    [self.framerateSelector addTarget:self action:@selector(updateBitrate) forControlEvents:UIControlEventValueChanged];
+    [self.framerateSelector addTarget:self action:@selector(framerateChanged) forControlEvents:UIControlEventValueChanged];
+    
     [self.bitrateSlider setMinimumValue:0];
     [self.bitrateSlider setMaximumValue:(sizeof(bitrateTable) / sizeof(*bitrateTable)) - 1];
     [self.bitrateSlider setValue:[self getSliderValueForBitrate:_bitrate] animated:YES];
@@ -2124,6 +2127,23 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:!sender.isOn forStack:self.onScreenWidgetStack];
     [self setHidden:!sender.isOn forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
+}
+
+- (BOOL)manuallyChangedFPS {
+    NSString *key = @"manuallyChangedFPS";
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults objectForKey:key] ? [defaults boolForKey:key] : NO;
+}
+
+- (void)framerateChanged{
+    NSString *key = @"manuallyChangedFPS";
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    NSInteger fps = [self getChosenFrameRate];
+    [self.touchMoveEventIntervalSlider setValue: fps>60 ? 1/((CGFloat)fps)*0.5*1000000-1500 : 3530];
+    [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
+    [self updateBitrate];
 }
 
 - (void) updateBitrate {

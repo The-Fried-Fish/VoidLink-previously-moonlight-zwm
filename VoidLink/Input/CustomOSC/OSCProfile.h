@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OSCProfile : NSObject <NSCoding, NSSecureCoding>
 
 @property NSString *name;
-@property NSMutableArray <OnScreenButtonState *> *buttonStates;
+@property NSMutableArray <NSData *> *buttonStatesEncoded;
 @property BOOL isSelected;
 
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected;

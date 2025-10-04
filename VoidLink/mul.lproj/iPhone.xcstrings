@@ -1580,13 +1580,13 @@
       }
     },
     "fcy-zp-LGa.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Stick Indicator\"; ObjectID = \"fcy-zp-LGa\";",
+      "comment" : "Class = \"UILabel\"; text = \"Stick indicator\"; ObjectID = \"fcy-zp-LGa\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Stick Indicator"
+            "value" : "Stick indicator"
           }
         }
       }
@@ -2312,31 +2312,31 @@
       }
     },
     "o9I-Gt-YRd.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Trigger Mode\"; ObjectID = \"o9I-Gt-YRd\";",
+      "comment" : "Class = \"UILabel\"; text = \"Button mode\"; ObjectID = \"o9I-Gt-YRd\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Trigger Mode"
+            "value" : "Button mode"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "滑动触发"
+            "state" : "translated",
+            "value" : "按键模式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "滑動觸發"
+            "state" : "translated",
+            "value" : "按鍵模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "滑動觸發"
+            "state" : "translated",
+            "value" : "按鍵模式"
           }
         }
       }
@@ -2517,6 +2517,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "點按切換"
+          }
+        }
+      }
+    },
+    "ojp-aS-m8w.segmentTitles[4]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[4] = \"movable\"; ObjectID = \"ojp-aS-m8w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "movable"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可移动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可移動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可移動"
           }
         }
       }

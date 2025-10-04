@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objc class OnScreenWidgetView: UIView, InstanceProviderDelegate {
+@objc class OnScreenWidgetView: UIView, OscInstanceProviderDelegate {
     // receiving the OnScreenControls instance from delegate
     @objc func getOnScreenControlsInstance(_ sender: Any) {
         if let controls = sender as? OnScreenControls {
@@ -20,9 +20,29 @@ import UIKit
     }
     
     @objc public weak var guidelineDelegate: OnScreenWidgetGuidelineUpdateDelegate?
-    
     @objc protocol OnScreenWidgetGuidelineUpdateDelegate: AnyObject {
         func updateGuidelinesForOnScreenWidget(_ sender: Any)
+    }
+    
+    @objc public weak var mixInputDelegate: OnScreenWidgetStickMixedInputDelegate?
+    @objc protocol OnScreenWidgetStickMixedInputDelegate: AnyObject {
+        func mixRightStickAndGyroInput(x: CGFloat, y: CGFloat)
+        func mixLeftStickAndGyroInput(x: CGFloat, y: CGFloat)
+        func gyroMixInputStarted()->Bool
+    }
+    
+    @objc public weak var functionalButtonDelegate: OnScreenFunctionalButtonDelegate?
+    @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
+        func startGyroUpdate()
+        func startAccelUpdate()
+        func stopGyroUpdate()
+        func stopAccelUpdate()
+        func openWidgetLayoutTool()
+        func switchWidgetProfile()
+        func bringUpSoftKeyboard()
+        func enterPip()
+        func toggleStatsOverlay()
+        func disconnectAndQuitApp()
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -37,17 +57,19 @@ import UIKit
     @objc static public var buttonVisualFeedbackEnabled: Bool = true
     @objc public var widgetLabel: String
     @objc public var cmdString: String
+    @objc public var identifier: String = ""
     private var buttonString: String = ""
+    private var functionalButtonString: String = ""
     private var touchPadString: String = ""
     // super combo key string set
-    private var comboButtonStrings: [String] = []
+    @objc public var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
     
     @objc public var pressed: Bool
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
     
-    @objc public var buttonTriggerMode: Int = 0
+    @objc public var buttonMode: Int = 0
     @objc private var tapToToggleFlag: Bool = true
     
     @objc public var sizeReference: Int = WidgetSizeReference.longSide.rawValue
@@ -74,6 +96,9 @@ import UIKit
     private var vibrationGenerator = UIImpactFeedbackGenerator(style: .light)
     private var vibrationOn: Bool = false
     
+    // for movable buttons during streaming
+    @objc public var relocatedDuringStreaming: Bool = false
+
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasStickIndicator: Bool = false
     @objc public var hasSensitivityTweak: Bool = false
@@ -198,7 +223,8 @@ import UIKit
                 self.comboButtonStrings = comboStrings.filter{$0 != touchPadString}
                 self.touchPadString = touchPadString
                 self.buttonString = self.comboButtonStrings.first ?? ""
-                
+                self.functionalButtonString = Set(self.comboButtonStrings).intersection(Set(CommandManager.functionalButtonCmds)).first ?? ""
+                                
                 //  let stickAndMouseTouchpads = ["LSPAD", "RSPAD", "LSVPAD", "RSVPAD", "MOUSEPAD"]
                 let nonVectorStickPads = ["LSPAD", "RSPAD"]
                 // if CommandManager.touchPadCmds.contains(self.touchPadString) {self.hasSensitivityTweak = true}
@@ -278,19 +304,25 @@ import UIKit
         if self.widgetType == WidgetTypeEnum.button {
             if !self.touchPadString.isEmpty {
                 self.mouseButtonAction = MouseButtonAction.noClick
-                self.buttonTriggerMode = ButtonTriggerMode.regular.rawValue
+                self.buttonMode = ButtonMode.regular.rawValue
             }
-            if !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {
-                self.buttonTriggerMode = ButtonTriggerMode.regular.rawValue
+            if !self.functionalButtonString.isEmpty {
+                self.buttonMode = ButtonMode.movable.rawValue
+                if (self.functionalButtonString == "GYRO" ||
+                    self.functionalButtonString == "ACCEL" ||
+                    self.functionalButtonString == "MOTION")
+                    {self.buttonMode = ButtonMode.tapToToggle.rawValue}
             }
         }
 
         setupView()
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     
     // ======================================================================================================
     @objc public func setupAutoTapTimer() {
@@ -488,9 +520,13 @@ import UIKit
             label.centerYAnchor.constraint(equalTo: centerYAnchor),])
         
         if self.shape != "round"{
-            let shortSideLen = min(self.layer.bounds.size.width, self.layer.bounds.size.height)
-            self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
+            self.setSquareWidgetCornerRadius()
         }
+    }
+    
+    private func setSquareWidgetCornerRadius(){
+        let shortSideLen = min(self.layer.bounds.size.width, self.layer.bounds.size.height)
+        self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
     }
     
     private func setupView() {
@@ -508,7 +544,7 @@ import UIKit
         
         self.translatesAutoresizingMaskIntoConstraints = true // this is mandatory to prevent unexpected key view location change
         
-        self.layer.cornerRadius = 16
+        self.setSquareWidgetCornerRadius()
         self.layer.borderWidth = self.borderWidth
         
         self.tweakAlpha()
@@ -534,8 +570,8 @@ import UIKit
             }
         }
         
-        if !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)){
-            self.layer.borderWidth = 0
+        if !self.functionalButtonString.isEmpty{
+            self.layer.borderWidth = self.borderWidth
         }
         
         if self.shape == "round" {
@@ -1054,6 +1090,11 @@ import UIKit
     
     private func handleButtonDown() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
+        
+        if !OnScreenWidgetView.editMode, !self.functionalButtonString.isEmpty {self.handleFunctionalButtonDown()}
+
+        // sadflkasdfl;
+        
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
@@ -1072,6 +1113,11 @@ import UIKit
     
     private func handleButtonUp() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
+        
+        if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
+            self.handleFunctionalButtonUp()
+        }
+        
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
@@ -1123,10 +1169,8 @@ import UIKit
     
     //=========================================send on screen controller stick events
     private func touchInputToStickInput(input: CGFloat) -> CGFloat{
-        var target = stickMaxOffset * input / stickInputScale
-        if target > stickMaxOffset {target = stickMaxOffset}
-        if target < -stickMaxOffset {target = -stickMaxOffset}
-        return target
+        let target = stickMaxOffset * input / stickInputScale
+        return fmax(fmin(target, stickMaxOffset),-stickMaxOffset)
     }
     
     private func touchInputToStickBallCoord(input: CGFloat) -> CGFloat {
@@ -1145,7 +1189,12 @@ import UIKit
         // vertical input must be inverted
         targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
         targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
-        self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
+        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+            self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
+        }
+        else{
+            self.mixInputDelegate?.mixRightStickAndGyroInput(x: targetX, y: targetY)
+        }
     }
     
     private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
@@ -1153,7 +1202,12 @@ import UIKit
         var targetY = -self.touchInputToStickInput(input: inputY)
         targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
         targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
-        self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
+        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+            self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
+        }
+        else{
+            self.mixInputDelegate?.mixLeftStickAndGyroInput(x: targetX, y: targetY)
+        }
     }
     //==========================================================================================================
     
@@ -1228,6 +1282,7 @@ import UIKit
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         self.touchBegan = true
         self.firstTouchMoved = false
         super.touchesBegan(touches, with: event)
@@ -1244,8 +1299,13 @@ import UIKit
             quickDoubleTapDetected = touchTapTimeInterval < QUICK_TAP_TIME_INTERVAL
             
             let touch = touches.first
-            if OnScreenWidgetView.editMode || !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {self.touchBeganLocation = touch!.location(in: superview)}
-            else {self.touchBeganLocation = touch!.location(in: self)}
+            // get touchBeganLocation
+            
+            if OnScreenWidgetView.editMode {self.touchBeganLocation = touch!.location(in: superview)}
+            else {
+                if self.buttonMode == ButtonMode.movable.rawValue {self.touchBeganLocation = touch!.location(in: superview)}
+                else {self.touchBeganLocation = touch!.location(in: self)}
+            }
             self.latestTouchLocation = touchBeganLocation
         }
                 
@@ -1317,7 +1377,7 @@ import UIKit
                         
             // this will also deal with button events
             if self.widgetType == WidgetTypeEnum.button && !self.comboButtonStrings.isEmpty {
-                if self.buttonTriggerMode != ButtonTriggerMode.tapToToggle.rawValue {
+                if self.buttonMode != ButtonMode.tapToToggle.rawValue {
                     self.handleTapDownOrSlidein()
                     setLock.lock()
                     self.capturedTouches.union(touches)
@@ -1348,8 +1408,11 @@ import UIKit
     
     private func moveByTouch(touch: UITouch){
         let currentLocation: CGPoint
-        if OnScreenWidgetView.editMode || !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)) {currentLocation = touch.location(in: superview)}
-        else {currentLocation = touch.location(in: self)}
+        if OnScreenWidgetView.editMode {currentLocation = touch.location(in: superview)}
+        else {
+            if self.buttonMode == ButtonMode.movable.rawValue {currentLocation = touch.location(in: superview)}
+            else {return}
+        }
         
         if !firstTouchMoved {
             // First move event
@@ -1366,6 +1429,8 @@ import UIKit
         center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
         
         latestTouchLocation = currentLocation
+        
+        relocatedDuringStreaming = true
         // center = currentLocation;
         //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
         if OnScreenWidgetView.editMode {
@@ -1415,7 +1480,7 @@ import UIKit
                     setLock.lock()
                     let captured = widget.capturedTouches.contains(touch)
                     setLock.unlock()
-                    if !captured || widget.buttonTriggerMode == ButtonTriggerMode.regular.rawValue {continue}
+                    if !captured || widget.buttonMode == ButtonMode.regular.rawValue {continue}
                     widget.handleFingerUpOrSlideout()
                     setLock.lock()
                     widget.capturedTouches.remove(touch)
@@ -1431,7 +1496,7 @@ import UIKit
             for subview in self.superview?.subviews ?? [] {
                 if let widget = subview as? OnScreenWidgetView{
                     if widget.widgetType != WidgetTypeEnum.button {continue}
-                    let isSlidableButton = widget.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue || widget.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue
+                    let isSlidableButton = widget.buttonMode == ButtonMode.slideToToggle.rawValue || widget.buttonMode == ButtonMode.slideAndHold.rawValue
                     let pointInSubview = widget.convert(locationInSuperView, from: self.superview)
                     if widget.bounds.contains(pointInSubview){
                         setLock.lock()
@@ -1451,13 +1516,13 @@ import UIKit
                         setLock.unlock()
                         if !captured || !isSlidableButton {continue}
                         // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
-                        if(widget.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue){
+                        if(widget.buttonMode == ButtonMode.slideToToggle.rawValue){
                             widget.handleFingerUpOrSlideout()
                             setLock.lock()
                             widget.capturedTouches.remove(touch)
                             setLock.unlock()
                         }
-                        if(widget.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue){
+                        if(widget.buttonMode == ButtonMode.slideAndHold.rawValue){
                             // do nothing here
                         }
                     }
@@ -1468,6 +1533,7 @@ import UIKit
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
+
         if !OnScreenWidgetView.editMode {
             
             if !self.touchPadString.isEmpty{
@@ -1475,15 +1541,14 @@ import UIKit
             }
             
             if self.widgetType == WidgetTypeEnum.button {
-                if self.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue || self.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue  {self.handleButtonSliding(touches: touches)}
+                if self.buttonMode == ButtonMode.slideToToggle.rawValue || self.buttonMode == ButtonMode.slideAndHold.rawValue  {self.handleButtonSliding(touches: touches)}
             }
             
-            if !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)){
+            if self.buttonMode == ButtonMode.movable.rawValue{
                 if let touch = touches.first {
                     NSLog("touchTapTimeStamp %f", self.touchTapTimeStamp)
                     if CACurrentMediaTime() - self.touchTapTimeStamp > 0.3 { // temporarily relocate special buttons
                         self.moveByTouch(touch: touch)
-                        self.handleButtonUp()
                     }
                 }
             }
@@ -1570,6 +1635,56 @@ import UIKit
         }
     }
     
+    private func handleFunctionalButtonDown(){
+        switch self.functionalButtonString {
+        case "GYRO":
+            self.functionalButtonDelegate?.startGyroUpdate()
+        case "ACCEL":
+            self.functionalButtonDelegate?.startAccelUpdate()
+        case "MOTION":
+            self.functionalButtonDelegate?.startGyroUpdate()
+            self.functionalButtonDelegate?.startAccelUpdate()
+        default:
+            break
+        }
+    }
+    
+    private func handleFunctionalButtonUp(){
+        let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
+        switch self.functionalButtonString {
+        case "SETTINGS":
+            if longPressed, buttonMode == ButtonMode.movable.rawValue {break}
+            NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
+        case "GYRO":
+            self.functionalButtonDelegate?.stopGyroUpdate()
+        case "ACCEL":
+            self.functionalButtonDelegate?.stopAccelUpdate()
+        case "MOTION":
+            self.functionalButtonDelegate?.stopGyroUpdate()
+            self.functionalButtonDelegate?.stopAccelUpdate()
+        default:
+            break
+        }
+    }
+    
+    private func clearRightStickTouchPadFlag(){
+        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+            self.onScreenControls.clearRightStickTouchPadFlag()
+        }
+        else{
+            self.mixInputDelegate?.mixRightStickAndGyroInput(x: 0, y: 0)
+        }
+    }
+    
+    private func clearLeftStickTouchPadFlag(){
+        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+            self.onScreenControls.clearLeftStickTouchPadFlag()
+        }
+        else{
+            self.mixInputDelegate?.mixRightStickAndGyroInput(x: 0, y: 0)
+        }
+    }
+    
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         touchesEnded(touches, with: event)
     }
@@ -1633,15 +1748,15 @@ import UIKit
         if !OnScreenWidgetView.editMode && !self.touchPadString.isEmpty {
             switch self.touchPadString{
             case "LSPAD":
-                self.onScreenControls.clearLeftStickTouchPadFlag()
+                self.clearLeftStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "RSPAD":
-                self.onScreenControls.clearRightStickTouchPadFlag()
+                self.clearRightStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "LSVPAD":
-                self.onScreenControls.clearLeftStickTouchPadFlag()
+                self.clearLeftStickTouchPadFlag()
             case "RSVPAD":
-                self.onScreenControls.clearRightStickTouchPadFlag()
+                self.clearRightStickTouchPadFlag()
             case "WASDPAD":
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
@@ -1677,22 +1792,11 @@ import UIKit
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
-            if self.buttonTriggerMode == ButtonTriggerMode.slideToToggle.rawValue || self.buttonTriggerMode == ButtonTriggerMode.slideAndHold.rawValue {
+            if self.buttonMode == ButtonMode.slideToToggle.rawValue || self.buttonMode == ButtonMode.slideAndHold.rawValue {
                 self.handleFingerUpAfterSliding(touches: touches)
                 setLock.lock()
                 self.capturedTouches.minus(touches)
                 setLock.unlock()
-            }
-        }
-        
-        if !OnScreenWidgetView.editMode && !Set(CommandManager.specialOverlayButtonCmds).isDisjoint(with: Set(self.comboButtonStrings)){
-            if CACurrentMediaTime() - self.touchTapTimeStamp < 0.3 {
-                switch self.cmdString {
-                case "SETTINGS":
-                    NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
-                default:
-                    break
-                }
             }
         }
         
@@ -1734,13 +1838,20 @@ import UIKit
             }
         }
         
-        if self.buttonTriggerMode != ButtonTriggerMode.tapToToggle.rawValue {self.handleFingerUpOrSlideout()}
+        if self.buttonMode != ButtonMode.tapToToggle.rawValue {self.handleFingerUpOrSlideout()}
     }
     
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         if superview == nil {
-            self.handleFingerUpOrSlideout()
+            if self.functionalButtonString == "GYRO" {self.functionalButtonDelegate?.stopGyroUpdate()}
+            if self.functionalButtonString == "ACCEL" {self.functionalButtonDelegate?.stopAccelUpdate()}
+            if self.functionalButtonString == "MOTION" {
+                self.functionalButtonDelegate?.stopGyroUpdate()
+                self.functionalButtonDelegate?.stopAccelUpdate()
+            }
+            buttonDownVisualEffectLayer.borderWidth = 0
+            buttonDownVisualEffectLayer.borderColor = defaultBorderColor
             crossMarkLayer.removeFromSuperlayer()
             stickBallLayer.removeFromSuperlayer()
         }

@@ -10,6 +10,7 @@
 //
 
 #import "OnScreenButtonState.h"
+#import "VoidLink-Swift.h"
 
 @implementation OnScreenButtonState
 
@@ -19,7 +20,7 @@
         self.name = name;
         //self.isHidden = isHidden;
         self.position = position;
-        self.buttonType = buttonType;
+        self.widgetType = buttonType;
     }
     
     return self;
@@ -31,12 +32,13 @@
 
 - (void) encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:self.name forKey:@"name"];
+    [encoder encodeObject:([self.identifier isEqualToString:@""]||!self.identifier) ? [UUIDHelper newUUID] : self.identifier forKey:@"identifier"];
     [encoder encodeObject:self.alias forKey:@"alias"];
-    [encoder encodeInt:self.buttonType forKey:@"buttonType"];
+    [encoder encodeInt:self.widgetType forKey:@"buttonType"]; // keep original key
     [encoder encodeInt:self.sizeReference forKey:@"sizeReference"];
     [encoder encodeInt:self.vibrationStyle forKey:@"vibrationStyle"];
     [encoder encodeInt:self.mouseButtonAction forKey:@"mouseButtonAction"];
-    [encoder encodeInt:self.buttonTriggerMode forKey:@"slideMode"];  // triggerMode: previously slideMode
+    [encoder encodeInt:self.buttonMode forKey:@"slideMode"];  // buttonMode: previously slideMode, keep it for consistency
     [encoder encodeInt:self.autoTapInterval forKey:@"autoTapInterval"];
     [encoder encodeCGPoint:self.position forKey:@"position"];
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
@@ -56,12 +58,13 @@
 - (id) initWithCoder:(NSCoder*)decoder {
     if (self = [super init]) {
         self.name = [decoder decodeObjectForKey:@"name"];
+        self.identifier = [decoder containsValueForKey:@"identifier"] ? [decoder decodeObjectForKey:@"identifier"] : [UUIDHelper newUUID];
         self.alias = [decoder decodeObjectForKey:@"alias"];
-        self.buttonType = [decoder decodeIntForKey:@"buttonType"];
+        self.widgetType = [decoder decodeIntForKey:@"buttonType"];
         self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;
         self.vibrationStyle = [decoder decodeIntForKey:@"vibrationStyle"];
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
-        self.buttonTriggerMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
+        self.buttonMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
         self.autoTapInterval = [decoder containsValueForKey:@"autoTapInterval"] ? [decoder decodeIntForKey:@"autoTapInterval"] : 45;
         self.position = [decoder decodeCGPointForKey:@"position"];
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];

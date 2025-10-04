@@ -37,7 +37,7 @@
 @property (assign, nonatomic) CGFloat streamAspectRatio;
 @property (assign, nonatomic) CGRect originalFrame;
 @property (assign, nonatomic) bool widgetToolOpened;
-
+@property (strong, nonatomic) OnScreenControls* onScreenControls;
 
 - (void) setupStreamView:(ControllerSupport*)controllerSupport
      interactionDelegate:(id<UserInteractionDelegate>)interactionDelegate
@@ -53,6 +53,7 @@
                           andConfig:(StreamConfiguration*)streamConfig;
 - (void) clearOnScreenWidgets;
 - (void) reloadOnScreenWidgetViews;
+- (void) saveRelocatedWidgetViews;
 
 - (CGSize) getVideoAreaSize;
 - (CGPoint) adjustCoordinatesForVideoArea:(CGPoint)point;
