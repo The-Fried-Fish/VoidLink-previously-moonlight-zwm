@@ -45,8 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
  * Returns the index of the 'selected' profile within the array it's in
  */
 - (NSInteger) getIndexOfSelectedProfile;
+- (void)replaceSelectedProfileWith:(OSCProfile*)newProfile;
 
 - (NSMutableArray *) getEncodedProfiles;
+- (NSData* )getSelectedEncodedProfile;
 - (void) importEncodedProfiles:(NSMutableArray* )profilesEncoded;
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data;
 - (void) importDefaultTemplates;
@@ -74,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL) profileNameAlreadyExist:(NSString*)name;
 - (OSCProfile *) findProfileByName:(NSString*) name inProfileArray:(NSMutableArray*)profiles;
+- (CGPoint)normalizeWidgetPosition:(CGPoint)position;
 
 @end
 

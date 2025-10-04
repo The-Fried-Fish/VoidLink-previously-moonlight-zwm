@@ -16,7 +16,7 @@
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected {
     if ((self = [self init])) {
         self.name = name;
-        self.buttonStates = buttonStates;
+        self.buttonStatesEncoded = buttonStates;
         self.isSelected = isSelected;
     }
     
@@ -29,14 +29,14 @@
 
 - (void) encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:self.name forKey:@"name"];
-    [encoder encodeObject:self.buttonStates forKey:@"buttonStates"];
+    [encoder encodeObject:self.buttonStatesEncoded forKey:@"buttonStates"];
     [encoder encodeBool:self.isSelected forKey:@"isSelected"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
     if (self = [super init]) {
         self.name = [decoder decodeObjectForKey:@"name"];
-        self.buttonStates = [decoder decodeObjectForKey:@"buttonStates"];
+        self.buttonStatesEncoded = [decoder decodeObjectForKey:@"buttonStates"];
         self.isSelected = [decoder decodeBoolForKey:@"isSelected"];
     }
     

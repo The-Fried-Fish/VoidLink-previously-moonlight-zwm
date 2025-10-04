@@ -19,7 +19,7 @@
 @class StreamConfiguration;
 
 // sending self as an instance to OnScreenWidgetView or other related classes
-@protocol InstanceProviderDelegate <NSObject>
+@protocol OscInstanceProviderDelegate <NSObject>
 - (void)getOnScreenControlsInstance:(id)sender; // Renamed delegate method
 @end
 
@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, OnScreenControlsLevel) {
 
 
 
-@property (nonatomic, weak) id<InstanceProviderDelegate> delegate; // Delegate property
+@property (nonatomic, weak) id<OscInstanceProviderDelegate> instanceReceiverDelegate; // Delegate property
 - (void)sendInstance;
 
 // @property (nonatomic, assign) CustomTapGestureRecognizer* mouseRightClickTapRecognizer; // this object will be passed to onscreencontrols class for areVirtualControllerTaps flag setting

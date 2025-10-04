@@ -24,10 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property NSString *name;
 @property NSString *alias;
+@property NSString *identifier;
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
-@property (nonatomic, assign) uint8_t buttonTriggerMode;
-@property (nonatomic, assign) uint8_t buttonType;
+@property (nonatomic, assign) uint8_t buttonMode;
+@property (nonatomic, assign) uint8_t widgetType;
 @property (nonatomic, assign) uint8_t sizeReference;
 @property (nonatomic, assign) CGFloat widthFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat heightFactor; // for OnScreenWidgetView
@@ -66,11 +67,12 @@ typedef NS_ENUM(NSInteger, MouseButtonAction) {
     noClick
 };
 
-typedef NS_ENUM(NSInteger, ButtonTriggerMode) {
+typedef NS_ENUM(NSInteger, ButtonMode) {
     slideToToggle,
     slideAndHold,
     regular,
-    tapToToggle
+    tapToToggle,
+    movable
 };
 
 - (id) initWithButtonName:(NSString*)name buttonType:(uint8_t)buttonType andPosition:(CGPoint)position;

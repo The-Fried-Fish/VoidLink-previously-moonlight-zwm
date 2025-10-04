@@ -122,11 +122,13 @@
     
     // _activeCustomOscButtonPositionDict will be updated every time when the osc profile is reloaded
     OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
-    for (NSData *buttonStateEncoded in oscProfile.buttonStates) {
+    for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
         // OnScreenButtonState* buttonState = [NSKeyedUnarchiver unarchivedObjectOfClass:[OnScreenButtonState class] fromData:buttonStateEncoded error:nil];
         OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
-        if(buttonState.buttonType == CustomOnScreenWidget){
+        if(buttonState.widgetType == CustomOnScreenWidget){
             OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape]; //reconstruct widgetView
+            widgetView.identifier = buttonState.identifier;
+            NSLog(@"cmd: %@, id: %@", buttonState.name, widgetView.identifier);
             widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
             widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
             widgetView.widthFactor = buttonState.widthFactor;
@@ -140,7 +142,7 @@
             widgetView.trackballDecelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
-            widgetView.buttonTriggerMode = buttonState.buttonTriggerMode;
+            widgetView.buttonMode = buttonState.buttonMode;
             // Add the widgetView to the view controller's view
             [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
             buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
@@ -609,8 +611,8 @@
     bool noValidMouseButtonString = ![CommandManager.mouseButtonMappings.allKeys containsObject:cmdString];
     bool noValidTouchPadString = ![CommandManager.touchPadCmds containsObject:cmdString];
     bool noValidOscButtonString = ![CommandManager.oscButtonMappings.allKeys containsObject:cmdString];
-    bool noValidSpecialButtonString = ![CommandManager.specialOverlayButtonCmds containsObject:cmdString];
-    bool paramInvalid = noValidKeyboardString && noValidMouseButtonString && noValidTouchPadString && noValidOscButtonString && noValidSpecialButtonString && noValidSuperComboButtonString;
+    bool noValidFunctionalButtonString = ![CommandManager.functionalButtonCmds containsObject:cmdString];
+    bool paramInvalid = noValidKeyboardString && noValidMouseButtonString && noValidTouchPadString && noValidOscButtonString && noValidFunctionalButtonString && noValidSuperComboButtonString;
     
     if([buttonLabel isEqualToString:@""]) widgetInitParams[@"buttonLabel"] = [[cmdString lowercaseString] capitalizedString];
 
@@ -634,6 +636,7 @@
 - (void) updateWidget:(OnScreenWidgetView* )widget byParams:(NSMutableDictionary* )widgetInitParams createNew:(bool)createNew{
     if(![self isWidgetParamsValid:widgetInitParams]) return;
     OnScreenWidgetView* newWidget = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"]]; //reconstruct widgetView
+    newWidget.identifier = createNew ? [UUIDHelper newUUID] : widget.identifier;
     newWidget.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     newWidget.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     newWidget.widthFactor = widget.widthFactor;
@@ -647,7 +650,7 @@
     newWidget.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
     [newWidget setVibrationWithStyle:widget.vibrationStyle];
     newWidget.mouseButtonAction = widget.mouseButtonAction;
-    newWidget.buttonTriggerMode = widget.buttonTriggerMode;
+    newWidget.buttonMode = widget.buttonMode;
     [self.view insertSubview:newWidget belowSubview:self.widgetPanelStack];
 
     if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
@@ -669,6 +672,7 @@
     if(![self isWidgetParamsValid:widgetInitParams]) return;
     //saving & present the keyboard button:
     OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"]];
+    widgetView.identifier = [UUIDHelper newUUID];
     widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     widgetView.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
@@ -768,7 +772,7 @@
 
     // hide irrelevant stacks
     self.autoTapStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    self.triggerModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
+    self.buttonModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
     
     bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
     bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
@@ -790,8 +794,6 @@
     self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
     
-    [self autoFitStack:self.widgetPanelStack];
-
     // setup values
 
 
@@ -840,8 +842,17 @@
     [self decelerationRateSliderMoved:self.decelerationRateSlider];
     
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
-    [self.triggerModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonTriggerMode];
+    
+    NSSet *specialCmds = [NSSet setWithArray:CommandManager.functionalButtonCmds];
+    NSSet *comboButtonStrings = [NSSet setWithArray:widgetView.comboButtonStrings];
+    bool isFuncationalButton = [specialCmds intersectsSet:comboButtonStrings];
+    [self.buttonModeSelector setEnabled:!isFuncationalButton forSegmentAtIndex:0];
+    [self.buttonModeSelector setEnabled:!isFuncationalButton forSegmentAtIndex:1];
+    if(isFuncationalButton) [self.autoTapStack setHidden:YES];
+    [self.buttonModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonMode];
 
+    [self autoFitStack:self.widgetPanelStack];
+    
     if([self isIPhone]){
         self.vibrationStyleStack.hidden =
         [widgetView.cmdString containsString:@"MOUSEPAD"] ||
@@ -959,7 +970,7 @@
 
 - (void)slideModeChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        selectedWidgetView.buttonTriggerMode = _triggerModeSelector.selectedSegmentIndex;
+        selectedWidgetView.buttonMode = _buttonModeSelector.selectedSegmentIndex;
     }
 }
 
@@ -1139,9 +1150,9 @@
     [self.mouseButtonDownSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.mouseDownButtonStack.hidden = YES;
 
-    [self.triggerModeSelector addTarget:self action:@selector(slideModeChanged:) forControlEvents:(UIControlEventValueChanged)];
-    [self.triggerModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
-    self.triggerModeStack.hidden = YES;
+    [self.buttonModeSelector addTarget:self action:@selector(slideModeChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.buttonModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
+    self.buttonModeStack.hidden = YES;
 
     
     if([self isIPhone]){

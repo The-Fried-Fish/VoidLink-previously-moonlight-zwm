@@ -45,8 +45,6 @@
 - (id)initWithRefreshRate:(float)arg1 videoDynamicRange:(int)arg2;
 @end
 
-
-
 @implementation StreamFrameViewController {
     ControllerSupport *_controllerSupport;
     StreamManager *_streamMan;
@@ -91,6 +89,7 @@
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
     MicHandler* micHandler;
+    MotionHandler *_motionHandler;
 
 #else
     UITapGestureRecognizer *_menuTapGestureRecognizer;
@@ -434,6 +433,10 @@
         [self startDisplayLink];
     }
     
+    _motionHandler = [MotionHandler sharedInstance];
+    _streamView.onScreenControls.instanceReceiverDelegate = _motionHandler;
+    [_streamView.onScreenControls sendInstance];
+    
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
@@ -774,6 +777,7 @@
 }
 
 - (void)openWidgetLayoutTool{
+    [_streamView saveRelocatedWidgetViews];
     _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
     [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
@@ -784,6 +788,7 @@
 }
 
 - (void)switchWidgetProfile{
+    [_streamView saveRelocatedWidgetViews];
     _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
     [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
@@ -1062,6 +1067,7 @@
 - (void)applicationWillResignActive:(NSNotification *)notification {
     //[self.pipController startPictureInPicture];
     //sleep(1);
+    [_streamView saveRelocatedWidgetViews];
 
 #if !TARGET_OS_TV
 #endif
@@ -1142,6 +1148,7 @@
 
 - (void)expandSettingsView{
     self.mainFrameViewcontroller.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
+    [_streamView saveRelocatedWidgetViews];
     [self.mainFrameViewcontroller expandSettingsView];
 }
 
@@ -1553,6 +1560,14 @@
     
     [dataMan saveData];
     [self reConfigStreamViewRealtime];
+}
+
+- (void)startGyroUpdate{
+    [_motionHandler startGyroUpdate];
+}
+
+- (void)stopMotionUpdate{
+    [_motionHandler stopUpdate];
 }
 
 #if !TARGET_OS_TV

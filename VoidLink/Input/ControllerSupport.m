@@ -327,7 +327,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 }
 
 - (void) setMotionEventState:(uint16_t)controllerNumber motionType:(uint8_t)motionType reportRateHz:(uint16_t)reportRateHz {
-    if (@available(iOS 14.0, tvOS 14.0, *)) {
+    //if (@available(iOS 14.0, tvOS 14.0, *)) {
         NSLog(@"gyroMode: %ld", (long)_gyroMode);
         
         VoidController* voidController = [_voidControllers objectForKey:[NSNumber numberWithInteger:controllerNumber]];
@@ -348,7 +348,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
         voidController.controllerNumber = controllerNumber;
 
         if(voidController == _oscController) [self updateTimerStateForController:voidController];
-    }
+    //}
 }
 
 -(void) setControllerLed:(uint16_t)controllerNumber r:(uint8_t)r g:(uint8_t)g b:(uint8_t)b {
