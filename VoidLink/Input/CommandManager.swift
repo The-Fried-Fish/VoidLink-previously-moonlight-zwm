@@ -119,7 +119,7 @@ import UIKit
     @objc public static let directionPads: [String] = ["DPAD", "WASDPAD", "ARROWPAD"]
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]
-    @objc public static let functionalButtonCmds: [String] = ["SETTINGS","GYRO"]
+    @objc public static let functionalButtonCmds: [String] = ["SETTINGS","GYRO","ACCEL","MOTION"]
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]
     

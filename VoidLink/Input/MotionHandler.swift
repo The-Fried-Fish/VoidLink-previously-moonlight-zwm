@@ -10,25 +10,24 @@ import Foundation
 import CoreMotion
 
 @objc public protocol OnScreenWidgetStickMixedInputDelegate: AnyObject {
-    func mixStickInput(x: CGFloat, y: CGFloat)
-    func mixLeftStickInput(x: CGFloat, y: CGFloat)
-    func mixInputStarted() -> Bool
+    func mixRightStickAndGyroInput(x: CGFloat, y: CGFloat)
+    func mixLeftStickAndGyroInput(x: CGFloat, y: CGFloat)
+    func gyroMixInputStarted() -> Bool
 }
 
 @objc class MotionHandler: NSObject, OscInstanceProviderDelegate, OnScreenWidgetStickMixedInputDelegate{
-    func mixStickInput(x: CGFloat, y: CGFloat) {
-        touchInputX = x
-        touchInputY = y
-        print("mix Input delegate working x: \(touchInputX) y: \(touchInputY), instance: \(Unmanaged.passUnretained(self).toOpaque())")
+    func mixRightStickAndGyroInput(x: CGFloat, y: CGFloat) {
+        rightStickTouchInputX = x
+        rightStickTouchInputY = y
     }
     
-    func mixLeftStickInput(x: CGFloat, y: CGFloat) {
-        touchInputX = x
-        touchInputY = y
+    func mixLeftStickAndGyroInput(x: CGFloat, y: CGFloat) {
+        leftStickTouchInputX = x
+        leftStickTouchInputY = y
     }
     
-    func mixInputStarted() -> Bool {
-        return motionControlStarted
+    func gyroMixInputStarted() -> Bool {
+        return gyroControlStarted
     }
     
     func getOnScreenControlsInstance(_ sender: Any!) {
@@ -46,10 +45,12 @@ import CoreMotion
         return MotionHandler.shared
     }
  
-    private var motionControlStarted: Bool = false
+    private var gyroControlStarted: Bool = false
+    private var accelControlStarted: Bool = false
     private let motionManager = CMMotionManager()
     public var sensitvityYaw:CGFloat = 1.0
     public var sensitvityPitch:CGFloat = 1.0
+    public var sensitvityRoll:CGFloat = 1.0
     private var windowScene: Any?
     
     private var onScreenControls: OnScreenControls = OnScreenControls.init()
@@ -60,8 +61,11 @@ import CoreMotion
     var pitch:Double = 0
     var roll:Double = 0
     
-    var touchInputX:Double = 0
-    var touchInputY:Double = 0
+    var rightStickTouchInputX:Double = 0
+    var rightStickTouchInputY:Double = 0
+    
+    var leftStickTouchInputX:Double = 0
+    var leftStickTouchInputY:Double = 0
 
     var updateInterval: TimeInterval = 1.0 / 120.0 {
         didSet {
@@ -84,7 +88,7 @@ import CoreMotion
     
     /// 启动传感器数据更新
     @objc public func startGyroUpdate() {
-        motionControlStarted = true
+        gyroControlStarted = true
         if motionManager.isGyroAvailable {
             motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
                 guard let self = self, let data = gyroData else { return }
@@ -96,7 +100,7 @@ import CoreMotion
     }
 
     @objc public func startAccelUpdate() {
-        motionControlStarted = true
+        gyroControlStarted = true
         if motionManager.isAccelerometerAvailable {
             motionManager.startAccelerometerUpdates(to: .main) { [weak self] accelData, _ in
                 guard let self = self, let data = accelData else { return }
@@ -106,16 +110,21 @@ import CoreMotion
             }
         }
     }
-
     
     /// 停止更新
-    @objc public func stopUpdate() {
-        motionControlStarted = false
+    @objc public func stopGyroUpdate() {
+        gyroControlStarted = false
         if motionManager.isAccelerometerActive {
             motionManager.stopAccelerometerUpdates()
         }
-        if motionManager.isGyroActive {
-            motionManager.stopGyroUpdates()
+        self.onScreenControls.clearLeftStickTouchPadFlag()
+        self.onScreenControls.clearRightStickTouchPadFlag()
+    }
+    
+    @objc public func stopAccelUpdate() {
+        accelControlStarted = false
+        if motionManager.isAccelerometerActive {
+            motionManager.stopAccelerometerUpdates()
         }
         self.onScreenControls.clearLeftStickTouchPadFlag()
         self.onScreenControls.clearRightStickTouchPadFlag()
@@ -164,7 +173,7 @@ import CoreMotion
             rollSource = z
         }
         
-        if !motionControlStarted {
+        if !gyroControlStarted {
             self.onScreenControls.clearLeftStickTouchPadFlag()
             self.onScreenControls.clearRightStickTouchPadFlag()
             print("Gyro: stopped")
@@ -172,13 +181,19 @@ import CoreMotion
         }
         
         if true {
-            yaw = touchInputX + gyroInputToStickInput(input:yawSource*sensitvityYaw*10)
+            yaw = rightStickTouchInputX + gyroInputToStickInput(input:yawSource*sensitvityYaw*10)
             yaw = self.clampStickInput(input: yaw)
-            pitch = touchInputY - gyroInputToStickInput(input:pitchSource*sensitvityPitch*10)
+            pitch = rightStickTouchInputY - gyroInputToStickInput(input:pitchSource*sensitvityPitch*10)
             pitch = self.clampStickInput(input: pitch)
             self.onScreenControls.sendRightStickTouchPadEvent(yaw, pitch)
         }
-                
+             
+        if true {
+            roll = leftStickTouchInputX + gyroInputToStickInput(input:rollSource*sensitvityRoll*10)
+            roll = self.clampStickInput(input: roll)
+            self.onScreenControls.sendLeftStickTouchPadEvent(roll, leftStickTouchInputY)
+        }
+        
         if false {
             yaw = yawSource*sensitvityYaw*30
             pitch = pitchSource*sensitvityPitch*30

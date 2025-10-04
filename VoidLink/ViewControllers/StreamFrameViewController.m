@@ -1566,8 +1566,16 @@
     [_motionHandler startGyroUpdate];
 }
 
-- (void)stopMotionUpdate{
-    [_motionHandler stopUpdate];
+- (void)startAccelUpdate{
+    [_motionHandler startAccelUpdate];
+}
+
+- (void)stopGyroUpdate{
+    [_motionHandler stopGyroUpdate];
+}
+
+- (void)stopAccelUpdate{
+    [_motionHandler stopAccelUpdate];
 }
 
 #if !TARGET_OS_TV
