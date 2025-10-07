@@ -61,6 +61,96 @@
         }
       }
     },
+    "0OC-rX-CHK.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 0OC-rX-CHK.segmentTitles[0] = \"Mouse\"; ObjectID = \"0OC-rX-CHK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mouse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠"
+          }
+        }
+      }
+    },
+    "0OC-rX-CHK.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 0OC-rX-CHK.segmentTitles[1] = \"Controller Stick\"; ObjectID = \"0OC-rX-CHK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller Stick"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把搖桿"
+          }
+        }
+      }
+    },
+    "0OC-rX-CHK.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 0OC-rX-CHK.segmentTitles[2] = \"Drift Correction\"; ObjectID = \"0OC-rX-CHK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Drift Correction"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂移修正"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂移修正"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂移修正"
+          }
+        }
+      }
+    },
     "3av-lc-tcF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Enable On-Screen Widget & Peripherals\"; ObjectID = \"3av-lc-tcF\";",
       "extractionState" : "extracted_with_value",
@@ -117,6 +207,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "視訊編解碼"
+          }
+        }
+      }
+    },
+    "3LT-qb-ZEB.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Roll → Left Stick\"; ObjectID = \"3LT-qb-ZEB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Roll → Left Stick"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滚转→左摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滾轉→左搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滾轉→左搖桿"
           }
         }
       }
@@ -907,6 +1027,66 @@
         }
       }
     },
+    "AN9-U4-nUG.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Yaw&Pitch → Right Stick\"; ObjectID = \"AN9-U4-nUG\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yaw&Pitch → Right Stick"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/俯仰→右摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/俯仰→右搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/俯仰→右搖桿"
+          }
+        }
+      }
+    },
+    "aSq-2H-FPk.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Yaw Sensitivity\"; ObjectID = \"aSq-2H-FPk\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yaw Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航靈敏度"
+          }
+        }
+      }
+    },
     "awK-Ei-T9i.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Open Toolbox in Streaming\"; ObjectID = \"awK-Ei-T9i\";",
       "extractionState" : "extracted_with_value",
@@ -1435,6 +1615,36 @@
         }
       }
     },
+    "dxk-33-Nbx.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Roll Sensitivity\"; ObjectID = \"dxk-33-Nbx\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Roll Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滚转灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滾轉靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滾轉靈敏度"
+          }
+        }
+      }
+    },
     "E7F-vx-pnM.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frame Rate\"; ObjectID = \"E7F-vx-pnM\";",
       "extractionState" : "extracted_with_value",
@@ -1677,6 +1887,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用內建麥克風"
+          }
+        }
+      }
+    },
+    "GX4-zV-pQ8.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Map Gyro to\"; ObjectID = \"GX4-zV-pQ8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Map Gyro to"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪映射为"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀映射為"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀映射為"
           }
         }
       }
@@ -3927,6 +4167,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸控移動事件間隔"
+          }
+        }
+      }
+    },
+    "yJv-xb-5HL.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pitch Sensitivity\"; ObjectID = \"yJv-xb-5HL\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pitch Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯仰灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯仰靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯仰靈敏度"
           }
         }
       }

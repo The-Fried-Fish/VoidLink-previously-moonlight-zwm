@@ -1025,6 +1025,29 @@
         }
       }
     },
+    "Calibrating..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在校准…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在校準…"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在校準…"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1583,6 +1606,29 @@
         }
       }
     },
+    "Drift Correction" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂移修正"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂移修正"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "漂移修正"
+          }
+        }
+      }
+    },
     "Edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2023,6 +2069,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "我的最愛設定"
+          }
+        }
+      }
+    },
+    "Finished!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成！"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成！"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成！"
           }
         }
       }
@@ -3013,6 +3082,29 @@
         }
       }
     },
+    "Motion Control" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "体感控制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "體感控制"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "體感控制"
+          }
+        }
+      }
+    },
     "Mouse Pointer Velocity: %d%%" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3839,6 +3931,29 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "- App 切到背景時會自動啟用子母畫面，需開啟 iOS 「設定」→「多工與手勢」→「自動啟用子母畫面」。\n\n- 子母畫面也可透過工具箱選單手動啟用。\n\n- 子母畫面顯示時長由「其他」→「背景執行」設定項目控制。\n\n- 子母畫面功能自 iOS 15 起支援。"
+          }
+        }
+      }
+    },
+    "Place the device flat on a surface and keep it still, then tap ‘Start’." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将设备静置于平面上，再点“开始”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將裝置靜置於平面上，然後點「開始」。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將裝置靜置於平面上，然後點「開始」。"
           }
         }
       }
@@ -5094,6 +5209,29 @@
         }
       }
     },
+    "Start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始"
+          }
+        }
+      }
+    },
     "Stereo (surround sound available for iOS18+)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5165,6 +5303,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fdi4rxkxykhl5zpp"
+          }
+        }
+      }
+    },
+    "Tap 'OK' to set on-screen widget to 'Custom' and enable motion control." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点选 ‘确定’ 开启自定义屏显控件与体感控制。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選「確定」以開啟自訂螢幕小工具與體感控制。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選「確定」以開啟自訂螢幕小工具與體感控制。"
           }
         }
       }

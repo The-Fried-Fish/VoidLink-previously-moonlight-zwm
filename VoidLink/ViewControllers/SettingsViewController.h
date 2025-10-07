@@ -147,6 +147,24 @@
 @property (strong, nonatomic) IBOutlet UIStackView *rememberFoldStateStack;
 @property (strong, nonatomic) IBOutlet UISwitch *rememberFoldStateSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *mapGyroToStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *mapGyroToSelector;
+
+@property (strong, nonatomic) IBOutlet UIStackView *gyroToStickSwitchStack;
+@property (strong, nonatomic) IBOutlet UISwitch *yawPitchToRightStickSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *rollToLeftStickSwitch;
+
+@property (strong, nonatomic) IBOutlet UIStackView *yawPitchSensitivityStack;
+@property (strong, nonatomic) IBOutlet UIStackView *yawSensitivityStack;
+@property (strong, nonatomic) IBOutlet UISlider *yawSensitivitySlider;
+@property (strong, nonatomic) IBOutlet UIStackView *pitchSensitivityStack;
+@property (strong, nonatomic) IBOutlet UISlider *pitchSensitivitySlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *rollSensitivityStack;
+@property (strong, nonatomic) IBOutlet UISlider *rollSensitivitySlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *testStack;
+
 @property (nonatomic, strong) MicHandler *micHandler;
 
 

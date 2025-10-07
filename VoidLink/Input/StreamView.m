@@ -76,7 +76,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     UIKeyModifierFlags comboKeyModifierFlags;
     
     WidgetSizeTransition _widgetSizeTransition;
-    OSCProfilesManager* profilesManager;
+    OSCProfilesManager* oscProfileMan;
 }
 
 - (void) setupStreamView:(ControllerSupport*)controllerSupport
@@ -499,21 +499,21 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     if(relocatedWidgetDict.allKeys.count == 0) return;
     
-    profilesManager = [OSCProfilesManager sharedManager:self->streamFrameTopLayerView.bounds];
-    OSCProfile *newProfile = [profilesManager getSelectedProfile];
+    oscProfileMan = [OSCProfilesManager sharedManager:self->streamFrameTopLayerView.bounds];
+    OSCProfile *newProfile = [oscProfileMan getSelectedProfile];
     
     for (NSInteger i = 0; i < newProfile.buttonStatesEncoded.count; i++) {
         NSData* buttonStateEncoded = newProfile.buttonStatesEncoded[i];
-        OnScreenButtonState *newButtonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
+        OnScreenButtonState *newButtonState = [oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
         if([relocatedWidgetDict.allKeys containsObject:newButtonState.identifier]){
             OnScreenWidgetView* widget = [relocatedWidgetDict objectForKey:newButtonState.identifier];
-            newButtonState.position = [profilesManager normalizeWidgetPosition:widget.center];
+            newButtonState.position = [oscProfileMan normalizeWidgetPosition:widget.center];
             NSData *newButtonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:newButtonState requiringSecureCoding:YES error:nil];
             newProfile.buttonStatesEncoded[i] = newButtonStateEncoded;
         }
     }
     
-    [profilesManager replaceSelectedProfileWith:newProfile];
+    [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:NO];
 }
 
 - (void) reloadOnScreenWidgetViews{
@@ -532,13 +532,14 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     OnScreenWidgetView.buttonVisualFeedbackEnabled = settings.buttonVisualFeedback;
     
-    if(!profilesManager) profilesManager = [OSCProfilesManager sharedManager:self->streamFrameTopLayerView.bounds];
-    OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
-
+    if(!oscProfileMan) oscProfileMan = [OSCProfilesManager sharedManager:self->streamFrameTopLayerView.bounds];
+    OSCProfile *oscProfile = [oscProfileMan getSelectedProfile]; //returns the currently selected OSCProfile
+    MotionHandler* motionHandler = [MotionHandler sharedInstance];
+    
     if(!OnScreenWidgetView.editMode){ // in edit mode, keyboard widget view will be updated within layoutool view controller.
                 
         for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
-            OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
+            OnScreenButtonState* buttonState = [oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
             if(buttonState.widgetType == CustomOnScreenWidget){
                 OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape]; //reconstruct widgetView
                 //--------------------------------------------------
@@ -547,7 +548,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 //--------------------------------------------------
                 
                 widgetView.functionalButtonDelegate = (id<OnScreenFunctionalButtonDelegate>)streamFrameVC;
-                widgetView.mixInputDelegate = (id<OnScreenWidgetStickMixedInputDelegate>) [MotionHandler sharedInstance];
+                widgetView.mixInputDelegate = (id<OnScreenWidgetStickMixedInputDelegate>)motionHandler;
                 
                 widgetView.identifier = buttonState.identifier;
                 widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place

@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objc class OnScreenWidgetView: UIView, OscInstanceProviderDelegate {
+@objc class OnScreenWidgetView: UIView, OscInstanceReceiverDelegate {
     // receiving the OnScreenControls instance from delegate
     @objc func getOnScreenControlsInstance(_ sender: Any) {
         if let controls = sender as? OnScreenControls {
@@ -35,8 +35,8 @@ import UIKit
     @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
         func startGyroUpdate()
         func startAccelUpdate()
-        func stopGyroUpdate()
-        func stopAccelUpdate()
+        func stopGyroUpdate(interruption:Bool)
+        func stopAccelUpdate(interruption:Bool)
         func openWidgetLayoutTool()
         func switchWidgetProfile()
         func bringUpSoftKeyboard()
@@ -50,6 +50,9 @@ import UIKit
         case button
         case touchPad
     }
+    
+    private let oscProfileMan: OSCProfilesManager = OSCProfilesManager.sharedManager(CGRectZero)
+    private var oscProfile: OSCProfile
     
     @objc public var widgetType: WidgetTypeEnum = WidgetTypeEnum.uninitialized
     
@@ -293,6 +296,7 @@ import UIKit
             self.pointerIdPool.insert(UInt32(i))
         }
         self.activePointerIds = []
+        self.oscProfile = oscProfileMan.getSelectedProfile()
         super.init(frame: .zero)
         
         upIndicator = createLrudDirectionLayer()
@@ -1213,12 +1217,13 @@ import UIKit
         // vertical input must be inverted
         targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
         targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
-        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+        
+        let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+                                       && oscProfile.yawPitchToRightStick)
+        if !mixRightStickInputToGyro || (self.mixInputDelegate?.gyroMixInputStarted() != true) {
             self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
         }
-        else{
-            self.mixInputDelegate?.mixRightStickAndGyroInput(x: targetX, y: targetY)
-        }
+        self.mixInputDelegate?.mixRightStickAndGyroInput(x: targetX, y: targetY)
     }
     
     private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
@@ -1226,12 +1231,13 @@ import UIKit
         var targetY = -self.touchInputToStickInput(input: inputY)
         targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
         targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
-        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+        
+        let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+                                       && oscProfile.rollToLeftStick)
+        if !mixLeftStickInputToGyro || (self.mixInputDelegate?.gyroMixInputStarted() != true) {
             self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
         }
-        else{
-            self.mixInputDelegate?.mixLeftStickAndGyroInput(x: targetX, y: targetY)
-        }
+        self.mixInputDelegate?.mixLeftStickAndGyroInput(x: targetX, y: targetY)
     }
     //==========================================================================================================
     
@@ -1689,33 +1695,33 @@ import UIKit
             if longPressed, buttonMode == ButtonMode.movable.rawValue {break}
             NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
         case "GYRO":
-            self.functionalButtonDelegate?.stopGyroUpdate()
+            self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
         case "ACCEL":
-            self.functionalButtonDelegate?.stopAccelUpdate()
+            self.functionalButtonDelegate?.stopAccelUpdate(interruption: false)
         case "MOTION":
-            self.functionalButtonDelegate?.stopGyroUpdate()
-            self.functionalButtonDelegate?.stopAccelUpdate()
+            self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
+            self.functionalButtonDelegate?.stopAccelUpdate(interruption: false)
         default:
             break
         }
     }
     
     private func clearRightStickTouchPadFlag(){
-        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+        let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+                                       && oscProfile.yawPitchToRightStick)
+        if !mixRightStickInputToGyro || self.mixInputDelegate?.gyroMixInputStarted() != true {
             self.onScreenControls.clearRightStickTouchPadFlag()
         }
-        else{
-            self.mixInputDelegate?.mixRightStickAndGyroInput(x: 0, y: 0)
-        }
+        self.mixInputDelegate?.mixRightStickAndGyroInput(x: 0, y: 0)
     }
     
     private func clearLeftStickTouchPadFlag(){
-        if self.mixInputDelegate?.gyroMixInputStarted() != true {
+        let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+                                       && oscProfile.rollToLeftStick)
+        if !mixLeftStickInputToGyro || self.mixInputDelegate?.gyroMixInputStarted() != true {
             self.onScreenControls.clearLeftStickTouchPadFlag()
         }
-        else{
-            self.mixInputDelegate?.mixLeftStickAndGyroInput(x: 0, y: 0)
-        }
+        self.mixInputDelegate?.mixLeftStickAndGyroInput(x: 0, y: 0)
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -1882,11 +1888,11 @@ import UIKit
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         if superview == nil {
-            if self.functionalButtonString == "GYRO" {self.functionalButtonDelegate?.stopGyroUpdate()}
-            if self.functionalButtonString == "ACCEL" {self.functionalButtonDelegate?.stopAccelUpdate()}
+            if self.functionalButtonString == "GYRO" {self.functionalButtonDelegate?.stopGyroUpdate(interruption: true)}
+            if self.functionalButtonString == "ACCEL" {self.functionalButtonDelegate?.stopAccelUpdate(interruption: true)}
             if self.functionalButtonString == "MOTION" {
-                self.functionalButtonDelegate?.stopGyroUpdate()
-                self.functionalButtonDelegate?.stopAccelUpdate()
+                self.functionalButtonDelegate?.stopGyroUpdate(interruption: true)
+                self.functionalButtonDelegate?.stopAccelUpdate(interruption: true)
             }
             buttonDownVisualEffectLayer.borderWidth = 0
             buttonDownVisualEffectLayer.borderColor = defaultBorderColor

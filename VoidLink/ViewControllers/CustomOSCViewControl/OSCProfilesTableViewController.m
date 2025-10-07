@@ -159,8 +159,8 @@ const double NAV_BAR_HEIGHT = 50;
                 [self presentViewController:savedAlertController animated:YES completion:nil];
             }
             else {  // if user entered a valid name that doesn't already exist then save the profile to persistent storage
-                [self->profilesManager saveProfileWithName: enteredProfileName andButtonLayers:self.currentOSCButtonLayers]; // the OSC layout here is passed from parent LayoutOSCViewController;
-                [self->profilesManager setProfileToSelected: [self->profilesManager getIndexOfLastProfile]];
+                [self->profilesManager duplicateSelectedProfileWithName:enteredProfileName]; // the OSC layout here is passed from parent LayoutOSCViewController;
+                // [self->profilesManager setProfileToSelected: [self->profilesManager getIndexOfLastProfile]];
                 
                 UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Profile %@ duplicated from current layout", enteredProfileName] preferredStyle:UIAlertControllerStyleAlert];  // Let user know this profile has been duplicated & saved
                 

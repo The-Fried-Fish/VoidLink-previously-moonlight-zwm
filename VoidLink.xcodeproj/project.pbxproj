@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		180345E12E819877004AF36F /* libopus-sim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 180345E02E819877004AF36F /* libopus-sim.a */; };
+		180E6E372E93BFDB0067C73A /* CountdownAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180E6E362E93BFDB0067C73A /* CountdownAlertController.swift */; };
 		1817B61E2E6FD04D000D938D /* SafeTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817B61D2E6FD04D000D938D /* SafeTimer.swift */; };
 		182760F72E83E2EA00EC1C5C /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 182760F62E83E2EA00EC1C5C /* DequeModule */; };
 		182760FA2E83E57D00EC1C5C /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 182760F92E83E57D00EC1C5C /* DequeModule */; };
@@ -160,6 +161,7 @@
 
 /* Begin PBXFileReference section */
 		180345E02E819877004AF36F /* libopus-sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopus-sim.a"; sourceTree = "<group>"; };
+		180E6E362E93BFDB0067C73A /* CountdownAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAlertController.swift; sourceTree = "<group>"; };
 		1817B61D2E6FD04D000D938D /* SafeTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeTimer.swift; sourceTree = "<group>"; };
 		1829CE3D2E2154DF0074A99A /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		1829CE3E2E2154DF0074A99A /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
@@ -635,6 +637,7 @@
 				847D2FDA2DDA015F00937A62 /* MenuSectionView.m */,
 				FBDE86E419F82297001C18A8 /* UIAppView.h */,
 				FBDE86E519F82297001C18A8 /* UIAppView.m */,
+				180E6E362E93BFDB0067C73A /* CountdownAlertController.swift */,
 				1888C1902E24C2C800108730 /* AboutView.swift */,
 				1888C1912E24C33100108730 /* AboutViewController.swift */,
 				FB89463719F6473800339C8A /* Launch Screen.xib */,
@@ -1054,6 +1057,7 @@
 				840751B32BF49C050096B657 /* CustomTapGestureRecognizer.m in Sources */,
 				187F4B282E04658A00EECC59 /* WidgetPanelStackView.m in Sources */,
 				FB4678FA1A55FFAD00377732 /* DiscoveryManager.m in Sources */,
+				180E6E372E93BFDB0067C73A /* CountdownAlertController.swift in Sources */,
 				841BAC922DE35D6B00DA639E /* ThemeManager.m in Sources */,
 				98D5856D1C0EA79600F6CC00 /* TemporaryHost.m in Sources */,
 				FB89463519F646E200339C8A /* MainFrameViewController.m in Sources */,

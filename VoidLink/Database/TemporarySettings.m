@@ -130,6 +130,9 @@
     self.framePacingMode = settings.framePacingMode;
     self.sendDummyEvent = settings.sendDummyEvent;
     self.rememberFoldState = settings.rememberFoldState;
+    self.gyroBiasX = settings.gyroBiasX;
+    self.gyroBiasY = settings.gyroBiasY;
+    self.gyroBiasZ = settings.gyroBiasZ;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
 #endif
     self.uniqueId = settings.uniqueId;

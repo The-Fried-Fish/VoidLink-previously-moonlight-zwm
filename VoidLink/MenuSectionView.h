@@ -22,11 +22,14 @@
 @property (class, nonatomic, assign) BOOL overridePersistedFoldState;
 
 // 外部可访问属性
+@property (nonatomic, strong) UIStackView *rootStackView;
 @property (nonatomic, assign) CGFloat leadingTrailingPadding;
 @property (nonatomic, assign) CGFloat separatorLinePadding;
 @property (nonatomic, copy) NSString *sectionTitle;
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, assign) BOOL isExpanded;
+@property (nonatomic, assign) BOOL expandable;
+@property (nonatomic, copy) void (^lockedSectionHandler)(void);
 @property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, assign) CGFloat rootStackViewSpacing;
 @property (nonatomic, assign) CGFloat headerViewHeight;

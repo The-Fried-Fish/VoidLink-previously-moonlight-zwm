@@ -42,6 +42,9 @@
 @property (nonatomic, retain) NSNumber * resolutionSelected;
 @property (nonatomic, retain) NSNumber * externalDisplayMode;
 @property (nonatomic, retain) NSNumber * localMousePointerMode;
+@property (nonatomic, retain) NSNumber * gyroBiasX;
+@property (nonatomic, retain) NSNumber * gyroBiasY;
+@property (nonatomic, retain) NSNumber * gyroBiasZ;
 @property (nonatomic, retain) NSNumber * backgroundSessionTimer;
 @property (nonatomic) enum {
     CODEC_PREF_AUTO,
