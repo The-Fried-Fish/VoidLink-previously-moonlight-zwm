@@ -45,10 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
  * Returns the index of the 'selected' profile within the array it's in
  */
 - (NSInteger) getIndexOfSelectedProfile;
-- (void)replaceSelectedProfileWith:(OSCProfile*)newProfile;
+- (void)replaceSelectedProfileWith:(OSCProfile*)newProfile overwriteDefault:(bool)overwriteDefault;
 
 - (NSMutableArray *) getEncodedProfiles;
-- (NSData* )getSelectedEncodedProfile;
+// - (NSData* )getSelectedEncodedProfile;
 - (void) importEncodedProfiles:(NSMutableArray* )profilesEncoded;
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data;
 - (void) importDefaultTemplates;
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Saves a profile object with a particular 'name' and an array of button layers (the CALayer button layers are the objects currently visible on screen) to persistent storage
  */
-- (void) saveProfileWithName:(NSString*)name andButtonLayers:(NSMutableArray *)buttonLayers;
+- (void) duplicateSelectedProfileWithName:(NSString*)name;
 
 - (bool) updateSelectedProfile:(NSMutableArray *) oscButtonLayers;
 /**

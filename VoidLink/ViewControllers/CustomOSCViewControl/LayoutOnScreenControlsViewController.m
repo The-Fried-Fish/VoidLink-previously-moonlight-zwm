@@ -1270,10 +1270,12 @@
     self->_oscProfilesTableViewController = [storyboard instantiateViewControllerWithIdentifier:@"OSCProfilesTableViewController"];
     
     //this part is just for registration, will not be immediately executed.
+    __weak typeof(self) weakSelf = self;
     self->_oscProfilesTableViewController.needToUpdateOscLayoutTVC = ^() {   // a block that will be called when the modally presented 'OSCProfilesTableViewController' VC is dismissed. By the time the 'OSCProfilesTableViewController' VC is dismissed the user would have potentially selected a different OSC profile with a different layout and they want to see this layout on this 'LayoutOnScreenControlsViewController.' This block of code will load the profile and then hide/show and move each OSC button to their appropriate position
-        NSLog(@"profile profile");
-        [self reloadLegacyOnScreenControls];
-        self->_oscProfilesTableViewController.currentOSCButtonLayers = self.layoutOSC.OSCButtonLayers; //pass updated OSCLayout to OSCProfileTableView again
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [weakSelf reloadLegacyOnScreenControls];
+        strongSelf->_oscProfilesTableViewController.currentOSCButtonLayers = weakSelf.layoutOSC.OSCButtonLayers; //pass updated OSCLayout to OSCProfileTableView again
     };
     
     [self.oscProfilesTableViewController profileViewRefresh]; // execute this will make sure OSCLayout is updated from persisted profile, not any cache.
@@ -1298,8 +1300,9 @@
     _oscProfilesTableViewController = [storyboard instantiateViewControllerWithIdentifier:@"OSCProfilesTableViewController"];
     _oscProfilesTableViewController.layoutViewBounds = self.view.bounds;
     
+    __weak typeof(self) weakSelf = self;
     _oscProfilesTableViewController.needToUpdateOscLayoutTVC = ^() {   // a block that will be called when the modally presented 'OSCProfilesTableViewController' VC is dismissed. By the time the 'OSCProfilesTableViewController' VC is dismissed the user would have potentially selected a different OSC ofile with a different layout and they want to see this layout on this 'LayoutOnScreenControlsViewController.' This block of code will load the proffile and then hide/show and move each OSC button to their appropriate position
-        [self reloadLegacyOnScreenControls];
+        [weakSelf reloadLegacyOnScreenControls];
     };
 
     self.widgetPanelStack.hidden = YES;

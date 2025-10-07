@@ -13,7 +13,6 @@
 
 @interface MenuSectionView ()
 
-@property (nonatomic, strong) UIStackView *rootStackView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *toggleButton;
 @property (nonatomic, strong) UIButton *toggleArea;
@@ -57,6 +56,7 @@ static BOOL overridePersistedFoldState = YES;
     _separatorLinePadding = 40;
     _sectionTitle = @"Section";
     _isExpanded = YES;
+    _expandable = true;
     _backgroundColor = [UIColor clearColor];
     _rootStackViewSpacing = [self isIPhone] ? 10 : 13.8;
     _subStackViews = [NSMutableArray array];
@@ -235,7 +235,7 @@ static BOOL overridePersistedFoldState = YES;
 }
 
 - (void)setExpanded:(BOOL)isExpanded {
-    self.isExpanded = isExpanded;
+    self.isExpanded = !_expandable ? false : isExpanded;
     [self updateViewForFoldState];
     [[NSUserDefaults standardUserDefaults] setBool:self.isExpanded forKey:self.identifier];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -323,8 +323,9 @@ static BOOL overridePersistedFoldState = YES;
 }
 
 - (void)toggleFold {
-    self.isExpanded = !self.isExpanded;
+    self.isExpanded = !_expandable ? false : !self.isExpanded;
     [self updateViewForFoldState];
+    if(!_expandable) self.lockedSectionHandler();
     [[NSUserDefaults standardUserDefaults] setBool:self.isExpanded forKey:self.identifier];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }

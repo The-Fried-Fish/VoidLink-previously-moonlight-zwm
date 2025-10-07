@@ -434,6 +434,10 @@
     }
     
     _motionHandler = [MotionHandler sharedInstance];
+    _motionHandler.gyroBiasX = _settings.gyroBiasX.doubleValue;
+    _motionHandler.gyroBiasY = _settings.gyroBiasY.doubleValue;
+    _motionHandler.gyroBiasZ = _settings.gyroBiasZ.doubleValue;
+
     _streamView.onScreenControls.instanceReceiverDelegate = _motionHandler;
     [_streamView.onScreenControls sendInstance];
     
@@ -534,64 +538,22 @@
 
 - (void)popFirstStreamingTip {
     // 初始化倒计时秒数
-    __block NSInteger remainingSeconds = 16;
-
+    
     NSString* settingsEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
     NSString* cmdToolEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"right"] : [LocalizationHelper localizedStringForKey:@"left"];
     uint8_t slideDist = (uint8_t)(_settings.slideToSettingsDistance.floatValue * 100);
     // 创建弹窗
-    
     NSString* tipText = [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist];
     
-    UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"First Launch Tips"] message: [LocalizationHelper localizedStringForKey:@"%@", tipText] preferredStyle:UIAlertControllerStyleAlert];
-
+    [CountdownAlertController showAlertIn:self
+                                    title:[LocalizationHelper localizedStringForKey:@"First Launch Tips"]
+                                  message:tipText
+                               withCancel:NO
+                              buttonTitle:[LocalizationHelper localizedStringForKey:@"Got it!"]
+                                countdown:16
+                               completion:^{}];
     
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.alignment = NSTextAlignmentLeft;
-
-    NSDictionary *attributes = @{
-        NSParagraphStyleAttributeName: paragraphStyle,
-        NSFontAttributeName: [UIFont systemFontOfSize:14]
-    };
-
-    NSAttributedString *attributedMessage = [[NSAttributedString alloc] initWithString:tipText
-                                                                             attributes:attributes];
-
-    // 使用 KVC 设置 attributedMessage（注意审核风险）
-    [tipsAlertController setValue:attributedMessage forKey:@"attributedMessage"];
-
-    // 添加确认按钮（初始禁用）
-    UIAlertAction *confirmAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Got it! (15)"]
-                                                           style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * _Nonnull action) {
-    }];
-    confirmAction.enabled = NO;
-    [tipsAlertController addAction:confirmAction];
-
-    // 显示弹窗
-    [self presentViewController:tipsAlertController animated:YES completion:nil];
-
-    // 使用dispatch_source_t实现精确倒计时
-    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC, 0.1 * NSEC_PER_SEC);
-
-    dispatch_source_set_event_handler(timer, ^{
-        remainingSeconds--;
-
-        if (remainingSeconds <= 0) {
-            // 倒计时结束
-            dispatch_source_cancel(timer);
-            // 启用确认按钮
-            confirmAction.enabled = YES;
-            [confirmAction setValue:[LocalizationHelper localizedStringForKey:@"Got it!"] forKey:@"title"];
-        } else {
-            // 更新按钮标题和消息
-            [confirmAction setValue:[NSString stringWithFormat:[LocalizationHelper localizedStringForKey:@"Got it! (%ld)", remainingSeconds], (long)remainingSeconds] forKey:@"title"];
-        }
-    });
-
-    dispatch_resume(timer);
-
+    return;
 }
 
 - (void)updateTheme {
@@ -1570,8 +1532,8 @@
     [_motionHandler startAccelUpdate];
 }
 
-- (void)stopGyroUpdate{
-    [_motionHandler stopGyroUpdate];
+- (void)stopGyroUpdateWithInterruption:(BOOL)interruption{
+    [_motionHandler stopGyroUpdateWithInterruption:interruption];
 }
 
 - (void)stopAccelUpdate{

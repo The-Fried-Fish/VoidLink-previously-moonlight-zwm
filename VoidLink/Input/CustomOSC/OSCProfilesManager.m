@@ -25,7 +25,7 @@ static CGRect layoutViewBounds;
 + (OSCProfilesManager *) sharedManager:(CGRect)viewBounds {
     static OSCProfilesManager *_sharedManager = nil;
     static dispatch_once_t onceToken;
-    layoutViewBounds = viewBounds;
+    if(!CGRectEqualToRect(viewBounds, CGRectZero)) layoutViewBounds = viewBounds;
     // NSLog(@"bounds width: %f, height: %f", layoutViewBounds.size.width, layoutViewBounds.size.height);
     dispatch_once(&onceToken, ^{
         _sharedManager = [[self alloc] init];
@@ -105,7 +105,7 @@ static CGRect layoutViewBounds;
     
 }
 
-- (void)replaceSelectedProfileWith:(OSCProfile*)newProfile{
+- (void)replaceSelectedProfileWith:(OSCProfile*)newProfile overwriteDefault:(bool)overwriteDefault{
     NSInteger index = 0;
     NSMutableArray *profiles = [self getAllProfiles];
     for (OSCProfile *profile in profiles) {
@@ -114,6 +114,7 @@ static CGRect layoutViewBounds;
         }
     }
     if(index>0) profiles[index] = newProfile;
+    else if(overwriteDefault) profiles[index] = newProfile;
 
     NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles];
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:profilesEncoded requiringSecureCoding:YES error:nil];
@@ -226,14 +227,16 @@ static CGRect layoutViewBounds;
 
 - (OSCProfile *) getSelectedProfile {
     NSMutableArray *profiles = [self getAllProfiles];
-
+    if(profiles.count == 0){
+        [self importDefaultTemplates];
+        profiles = [self getAllProfiles];
+    }
     for (OSCProfile *profile in profiles) {
-                
         if (profile.isSelected) {
             return profile;
         }
     }
-    return nil;
+    return profiles[0];
 }
 
 - (NSInteger) getIndexOfSelectedProfile {
@@ -274,47 +277,40 @@ static CGRect layoutViewBounds;
 - (bool) updateSelectedProfile:(NSMutableArray *) oscButtonLayers {
     NSMutableArray* buttonStatesEncoded = [self convertOnScreenControllerAndWidgetsToButtonStates:oscButtonLayers];
     if([self getIndexOfSelectedProfile]==0) return false;
+    /*
     OSCProfile *newProfile = [[OSCProfile alloc] initWithName:[self getSelectedProfile].name
                             buttonStates:buttonStatesEncoded isSelected:YES];        // create a new 'OSCProfile'. Set the array of encoded button states created above to the 'buttonStates' property of the new profile, along with a 'name'. Set 'isSelected' argument to YES which will set this saved profile as the one that will show up in the game stream view
-
-    
-    [self replaceSelectedProfileWith:newProfile];
+     */
+    OSCProfile *selectedProfile = [self getSelectedProfile];
+    selectedProfile.buttonStatesEncoded = buttonStatesEncoded;
+    [self replaceSelectedProfileWith:selectedProfile overwriteDefault:NO];
     return true;
 }
 
 
-- (void) saveProfileWithName:(NSString*)name andButtonLayers:(NSMutableArray *)oscButtonLayers {
-    NSMutableArray* buttonStatesEncoded = [self convertOnScreenControllerAndWidgetsToButtonStates:oscButtonLayers];
-    OSCProfile *newProfile = [[OSCProfile alloc] initWithName:name
-                            buttonStates:buttonStatesEncoded isSelected:YES];        // create a new 'OSCProfile'. Set the array of encoded button states created above to the 'buttonStates' property of the new profile, along with a 'name'. Set 'isSelected' argument to YES which will set this saved profile as the one that will show up in the game stream view
-    /* set all saved OSCProfiles 'isSelected' property to NO since the new profile you're adding will be set as the selected profile */
-    NSMutableArray *profiles = [self getAllProfiles];
-    for (OSCProfile *profile in profiles) {
-        
-        profile.isSelected = NO;
-    }
-    
-    if ([self profileNameAlreadyExist:name]) {  // if a saved profile with the same 'name' already exists in persistent storage then overwrite it and save the change to persistent storage
-        [self replaceProfile:[self OSCProfileWithName:name] withProfile:newProfile];
-    }
+- (void) duplicateSelectedProfileWithName:(NSString*)name {
+    if ([self profileNameAlreadyExist:name]) return;
     else {  // otherwise encode then add the new profile to the end of the OSCProfiles array
-        NSData *newProfileEncoded = [NSKeyedArchiver archivedDataWithRootObject:newProfile requiringSecureCoding:YES error:nil];
-        NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles];
-        [profilesEncoded addObject:newProfileEncoded];
-        
-        /* Encode the 'profilesEncoded' array itself, NOT the objects in the 'profilesEncoded' array, all of which are already encoded by this point */
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:profilesEncoded requiringSecureCoding:YES error:nil];
-        [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        // saving test:
-        /*
-        NSString *documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-        NSString *path = [documentsPath stringByAppendingPathComponent:@"newDefault.bin"];
-        
-        [profiles writeToFile:path atomically:YES];
-        NSLog(@"默认 Profile 数据已保存到: %@", path);
-         */
+        NSMutableArray *profiles = [self getAllProfiles];
+        OSCProfile* newProfile = nil;
+        for(OSCProfile* profile in profiles){
+            if(profile.isSelected){
+                profile.isSelected = false;
+                newProfile = [profile mutableCopy];
+                newProfile.isSelected = true;
+                newProfile.name = name;
+            }
+        }
+        if(newProfile){
+            NSData *newProfileEncoded = [NSKeyedArchiver archivedDataWithRootObject:newProfile requiringSecureCoding:YES error:nil];
+            NSMutableArray *profilesEncoded = [self encodedProfilesFromArray:profiles];
+            [profilesEncoded addObject:newProfileEncoded];
+            
+            /* Encode the 'profilesEncoded' array itself, NOT the objects in the 'profilesEncoded' array, all of which are already encoded by this point */
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:profilesEncoded requiringSecureCoding:YES error:nil];
+            [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
     }
 }
 

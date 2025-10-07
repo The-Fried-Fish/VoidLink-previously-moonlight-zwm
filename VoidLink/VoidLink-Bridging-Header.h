@@ -5,6 +5,8 @@
 #include <Limelight.h>
 #import "OnScreenControls.h"
 #import "OnScreenButtonState.h"
+#import "OSCProfile.h"
+#import "OSCProfilesManager.h"
 #import "opus.h"
 #import "opus_defines.h"
 // #import "RelativeTouchHandler.h"
