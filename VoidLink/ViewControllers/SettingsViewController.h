@@ -163,6 +163,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *rollSensitivityStack;
 @property (strong, nonatomic) IBOutlet UISlider *rollSensitivitySlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *gyroToStickMinOffsetStack;
+@property (strong, nonatomic) IBOutlet UISlider *gyroToStickMinOffsetSlider;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

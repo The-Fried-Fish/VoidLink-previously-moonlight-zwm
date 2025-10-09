@@ -47,6 +47,7 @@ import CoreMotion
         sharedInstance.sensitvityYaw = sharedInstance.oscProfile.gyroSensitivityYaw
         sharedInstance.sensitvityPitch = sharedInstance.oscProfile.gyroSensitivityPitch
         sharedInstance.sensitvityRoll = sharedInstance.oscProfile.gyroSensitivityRoll
+        sharedInstance.gyroToStickMinOffset =  sharedInstance.oscProfile.gyroToStickMinOffset
         return sharedInstance
     }
 
@@ -77,6 +78,7 @@ import CoreMotion
     @objc public var gyroBiasX: Double = 0
     @objc public var gyroBiasY: Double = 0
     @objc public var gyroBiasZ: Double = 0
+    @objc public var gyroToStickMinOffset:Double = 0
     private var yawBias:Double = 0
     private var pitchBias:Double = 0
     private var rollBias:Double = 0
@@ -242,18 +244,24 @@ import CoreMotion
             pitch = pitchSource*sensitvityPitch*30
             LiSendMouseMoveEvent(Int16(yaw),Int16(pitch))
         }
-        
+                
         if oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick {
             if oscProfile.yawPitchToRightStick {
                 yaw = rightStickTouchInputX + gyroInputToStickInput(input:yawSource*sensitvityYaw*10)
                 yaw = self.clampStickInput(input: yaw)
+                yaw = (yaw >= 0 ? 1.0 : -1.0) * gyroToStickMinOffset + (self.stickMaxOffset - gyroToStickMinOffset) * (yaw/self.stickMaxOffset)
+                
                 pitch = rightStickTouchInputY - gyroInputToStickInput(input:pitchSource*sensitvityPitch*10)
                 pitch = self.clampStickInput(input: pitch)
+                pitch = (pitch >= 0 ? 1.0 : -1.0) * gyroToStickMinOffset + (self.stickMaxOffset - gyroToStickMinOffset) * (pitch/self.stickMaxOffset)
+
                 self.onScreenControls.sendRightStickTouchPadEvent(yaw, pitch)
             }
             if oscProfile.rollToLeftStick {
                 roll = leftStickTouchInputX + gyroInputToStickInput(input:rollSource*sensitvityRoll*10)
                 roll = self.clampStickInput(input: roll)
+                roll = (roll >= 0 ? 1.0 : -1.0) * gyroToStickMinOffset + (self.stickMaxOffset - gyroToStickMinOffset) * (roll/self.stickMaxOffset)
+                
                 self.onScreenControls.sendLeftStickTouchPadEvent(roll, leftStickTouchInputY)
             }
         }

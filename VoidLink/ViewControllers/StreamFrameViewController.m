@@ -436,7 +436,7 @@
     _motionHandler = [MotionHandler sharedInstance];
     _motionHandler.gyroBiasX = _settings.gyroBiasX.doubleValue;
     _motionHandler.gyroBiasY = _settings.gyroBiasY.doubleValue;
-    _motionHandler.gyroBiasZ = _settings.gyroBiasZ.doubleValue;
+    _motionHandler.gyroBiasZ = _settings.gyroBiasZ.doubleValue;    
 
     _streamView.onScreenControls.instanceReceiverDelegate = _motionHandler;
     [_streamView.onScreenControls sendInstance];

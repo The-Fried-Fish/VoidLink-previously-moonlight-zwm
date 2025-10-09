@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property (nonatomic, assign) CGFloat accelSensitivityX;
 @property (nonatomic, assign) CGFloat accelSensitivityY;
 @property (nonatomic, assign) CGFloat accelSensitivityZ;
+@property (nonatomic, assign) double gyroToStickMinOffset;
 
 
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected;
