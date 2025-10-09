@@ -1191,12 +1191,13 @@ import UIKit
         var targetX = self.touchInputToStickInput(input: inputX)
         var targetY = -self.touchInputToStickInput(input: inputY)
         // vertical input must be inverted
-        targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
-        targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
+
         
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
         if !mixRightStickInputToGyro || (self.mixInputDelegate?.gyroMixInputStarted() != true) {
+            targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
+            targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
             self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
         }
         self.mixInputDelegate?.mixRightStickAndGyroInput(x: targetX, y: targetY)

@@ -847,6 +847,36 @@
         }
       }
     },
+    "52u-T9-1Hv.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Minimum Stick Offset\"; ObjectID = \"52u-T9-1Hv\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Minimum Stick Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆输出最小偏移量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆输出最小偏移量"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆输出最小偏移量"
+          }
+        }
+      }
+    },
     "53H-ST-OtY.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",

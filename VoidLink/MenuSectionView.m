@@ -278,7 +278,7 @@ static BOOL overridePersistedFoldState = YES;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     BOOL persistedFoldState = [defaults objectForKey:self.identifier] ? [defaults boolForKey:self.identifier] : YES;
 
-    [self setExpanded: MenuSectionView.overridePersistedFoldState ? YES : persistedFoldState];
+    [self setExpanded: MenuSectionView.overridePersistedFoldState ? _expandable : persistedFoldState];
 }
 
 - (void)removeSubStackView:(UIStackView *)stackView {

@@ -2071,6 +2071,26 @@
                                     <constraint firstAttribute="height" constant="55.5" id="9ho-dq-LZS"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Orr-Nz-gJS" userLabel="gyroMinStickOffsetStack">
+                                <rect key="frame" x="20" y="2782" width="380" height="55.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Minimum Stick Offset" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="52u-T9-1Hv" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="32766" translatesAutoresizingMaskIntoConstraints="NO" id="45X-gK-1ez">
+                                        <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="B9Q-sl-emx"/>
+                                    <constraint firstAttribute="height" constant="55.5" id="fI1-bQ-oWk"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -2112,6 +2132,8 @@
                         <outlet property="gyroModeStack" destination="5Ep-SA-IBh" id="2qw-Sb-8O6"/>
                         <outlet property="gyroSensitivitySlider" destination="mHC-z4-AWQ" id="GHN-po-QYw"/>
                         <outlet property="gyroSensitivityStack" destination="Nd5-0L-wpv" id="Qo0-Z3-gkm"/>
+                        <outlet property="gyroToStickMinOffsetSlider" destination="45X-gK-1ez" id="McO-cA-MQc"/>
+                        <outlet property="gyroToStickMinOffsetStack" destination="Orr-Nz-gJS" id="R0p-0J-nKz"/>
                         <outlet property="gyroToStickSwitchStack" destination="xMx-7R-pmH" id="LbK-ie-Hsl"/>
                         <outlet property="hdrStack" destination="kFw-d7-BTn" id="3aT-Gh-bDO"/>
                         <outlet property="hdrSwitch" destination="Kgb-YU-AFW" id="ksG-A4-HhS"/>
@@ -2212,19 +2234,19 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

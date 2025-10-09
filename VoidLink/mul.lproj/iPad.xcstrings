@@ -2257,6 +2257,36 @@
         }
       }
     },
+    "HqA-an-KEe.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Minimum Stick Offset\"; ObjectID = \"HqA-an-KEe\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Minimum Stick Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆输出最小偏移量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆输出最小偏移量"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆输出最小偏移量"
+          }
+        }
+      }
+    },
     "iel-xl-xd9.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Profile:\"; ObjectID = \"iel-xl-xd9\";",
       "extractionState" : "extracted_with_value",

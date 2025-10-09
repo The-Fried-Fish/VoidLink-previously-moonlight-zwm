@@ -41,6 +41,7 @@
     [encoder encodeFloat:self.accelSensitivityX forKey:@"accelSensitivityX"];
     [encoder encodeFloat:self.accelSensitivityY forKey:@"accelSensitivityY"];
     [encoder encodeFloat:self.accelSensitivityZ forKey:@"accelSensitivityZ"];
+    [encoder encodeDouble:self.gyroToStickMinOffset forKey:@"gyroToStickMinOffset"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
@@ -57,6 +58,7 @@
         self.accelSensitivityX = [decoder containsValueForKey:@"accelSensitivityX"] ? [decoder decodeFloatForKey:@"accelSensitivityX"] : 1.0;
         self.accelSensitivityY = [decoder containsValueForKey:@"accelSensitivityY"] ? [decoder decodeFloatForKey:@"accelSensitivityY"] : 1.0;
         self.accelSensitivityZ = [decoder containsValueForKey:@"accelSensitivityZ"] ? [decoder decodeFloatForKey:@"accelSensitivityZ"] : 1.0;
+        self.gyroToStickMinOffset = [decoder containsValueForKey:@"gyroToStickMinOffset"] ? [decoder decodeDoubleForKey:@"gyroToStickMinOffset"] : 0;
     }
     
     return self;
@@ -76,6 +78,7 @@
     copy.accelSensitivityX = self.accelSensitivityX;
     copy.accelSensitivityY = self.accelSensitivityY;
     copy.accelSensitivityZ = self.accelSensitivityZ;
+    copy.gyroToStickMinOffset = self.gyroToStickMinOffset;
     return copy;
 }
 

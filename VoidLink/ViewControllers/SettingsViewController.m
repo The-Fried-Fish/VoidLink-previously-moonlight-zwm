@@ -362,6 +362,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self pitchSensitivitySliderMoved:self.pitchSensitivitySlider];
     [self.rollSensitivitySlider setValue:[self map_SliderValue_fromVelocFactor:oscProfile.gyroSensitivityRoll]];
     [self rollSensitivitySliderMoved:self.rollSensitivitySlider];
+    [self.gyroToStickMinOffsetSlider setValue:(uint16_t)oscProfile.gyroToStickMinOffset];
+    [self gyroMinStickOffsetSliderMoved:self.gyroToStickMinOffsetSlider];
 }
 
 - (void)saveMotionControlConfigs{
@@ -375,7 +377,9 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.rollToLeftStick == self.rollToLeftStickSwitch.isOn
                              && (int16_t)(oscProfile.gyroSensitivityYaw*100) == (int16_t)yawSensitivityPercent
                              && (int16_t)(oscProfile.gyroSensitivityPitch*100) == (int16_t)pitchSensitivityPercent
-                             && (int16_t)(oscProfile.gyroSensitivityRoll*100) == (int16_t)rollSensitivityPercent);
+                             && (int16_t)(oscProfile.gyroSensitivityRoll*100) == (int16_t)rollSensitivityPercent
+                             && (int16_t)(oscProfile.gyroToStickMinOffset) == (int16_t)self.gyroToStickMinOffsetSlider.value);
+
     if(!configNotChanged){
         oscProfile.mapGyroTo = self.mapGyroToSelector.selectedSegmentIndex;
         oscProfile.yawPitchToRightStick = self.yawPitchToRightStickSwitch.isOn;
@@ -383,6 +387,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.gyroSensitivityYaw = yawSensitivityPercent/100;
         oscProfile.gyroSensitivityPitch = pitchSensitivityPercent/100;
         oscProfile.gyroSensitivityRoll = rollSensitivityPercent/100;
+        oscProfile.gyroToStickMinOffset = (int16_t)self.gyroToStickMinOffsetSlider.value;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
     }
 }
@@ -714,6 +719,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addDynamicLabelForStack:self.yawSensitivityStack];
     [self addDynamicLabelForStack:self.pitchSensitivityStack];
     [self addSetting:self.rollSensitivityStack ofId:@"rollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
+    [self addSetting:self.gyroToStickMinOffsetStack ofId:@"gyroToStickMinOffsetStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
     [motionControlSection addToParentStack:_parentStack];
 
     MenuSectionView *gesturesSection = [[MenuSectionView alloc] init];
@@ -1816,6 +1822,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         
         self->motionControlSection.expandable = [self isCustomOswEnabled];
+        [self->motionControlSection setExpanded:[self isCustomOswEnabled]];
         __weak typeof(self) weakSelf = self;
         self->motionControlSection.lockedSectionHandler = ^{
             [CountdownAlertController showAlertIn:weakSelf
@@ -1841,6 +1848,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.yawSensitivitySlider addTarget:self action:@selector(yawSensitivitySliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self.pitchSensitivitySlider addTarget:self action:@selector(pitchSensitivitySliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self.rollSensitivitySlider addTarget:self action:@selector(rollSensitivitySliderMoved:) forControlEvents:UIControlEventValueChanged];
+        
+        [self.gyroToStickMinOffsetSlider addTarget:self action:@selector(gyroMinStickOffsetSliderMoved:) forControlEvents:UIControlEventValueChanged];
 
         //Motion control settings
         
@@ -2045,10 +2054,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self setHidden:false forStack:_yawPitchSensitivityStack];
         [self setHidden:true forStack:_rollSensitivityStack];
     }
+    
+    [self setHidden:!mapGyroToControllerStickEnabled forStack:self.gyroToStickMinOffsetStack];
     if(mapGyroToControllerStickEnabled){
         [self yawPitchToRightStickSwitchFlipped:self.yawPitchToRightStickSwitch];
         [self rollToLeftStickSwitchFlipped:self.rollToLeftStickSwitch];
     }
+    
     if(sender.selectedSegmentIndex == driftCorrection){
 
         [CountdownAlertController showAlertIn:self
@@ -2060,7 +2072,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                    completion:^{
             if(CountdownAlertController.actionCancelled){
                 [self.mapGyroToSelector setSelectedSegmentIndex:self->oscProfile.mapGyroTo];
-                NSLog(@"actionCancelled");
+                [self mapGyroToChanged:self.mapGyroToSelector];
             }
             else{
                 MotionHandler* motionHandler = [MotionHandler sharedInstance];
@@ -2079,6 +2091,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                             countdown:6
                                            completion:^{
                     [self.mapGyroToSelector setSelectedSegmentIndex:self->oscProfile.mapGyroTo];
+                    [self mapGyroToChanged:self.mapGyroToSelector];
                 }];
             }
         }];
@@ -2105,6 +2118,10 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)rollSensitivitySliderMoved:(UISlider* )sender{
     [self findDynamicLabelFromStack:_rollSensitivityStack].text = [NSString stringWithFormat:@"  %d%%  ", (int16_t)[self map_velocFactorDisplay_fromSliderValue:sender.value]];
+}
+
+- (void)gyroMinStickOffsetSliderMoved:(UISlider* )sender{
+    [self findDynamicLabelFromStack:_gyroToStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
 }
 
 - (void)invokeOscLayout{
