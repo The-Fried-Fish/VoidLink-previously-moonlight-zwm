@@ -110,6 +110,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                  framePacingMode:(NSInteger)framePacingMode
                   sendDummyEvent:(BOOL)sendDummyEvent
                rememberFoldState:(BOOL)rememberFoldState
+              singleTapSensitivy:(CGFloat)singleTapSensitivy
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

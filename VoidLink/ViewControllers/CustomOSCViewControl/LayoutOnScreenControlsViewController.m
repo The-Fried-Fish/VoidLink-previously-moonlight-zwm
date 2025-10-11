@@ -612,7 +612,8 @@
     bool noValidTouchPadString = ![CommandManager.touchPadCmds containsObject:cmdString];
     bool noValidOscButtonString = ![CommandManager.oscButtonMappings.allKeys containsObject:cmdString];
     bool noValidFunctionalButtonString = ![CommandManager.functionalButtonCmds containsObject:cmdString];
-    bool paramInvalid = noValidKeyboardString && noValidMouseButtonString && noValidTouchPadString && noValidOscButtonString && noValidFunctionalButtonString && noValidSuperComboButtonString;
+    bool noValidMotionControlButtonString = ![CommandManager.motionControlButtonCmds containsObject:cmdString];
+    bool paramInvalid = noValidKeyboardString && noValidMouseButtonString && noValidTouchPadString && noValidOscButtonString && noValidFunctionalButtonString && noValidSuperComboButtonString && noValidMotionControlButtonString;
     
     if([buttonLabel isEqualToString:@""]) widgetInitParams[@"buttonLabel"] = [[cmdString lowercaseString] capitalizedString];
 
@@ -761,51 +762,37 @@
     [self autoFitLabel:self.currentProfileLabel];
     self.currentProfileLabel.textAlignment = NSTextAlignmentLeft;
     [self.currentProfileLabel setText:
-     [LocalizationHelper localizedStringForKey:@"  Profile: %@     Widget: %@",
+     [LocalizationHelper localizedStringForKey:@"  Profile: %@    Alias: %@    Command: %@",
       [profilesManager getSelectedProfile].name,
-      selectedWidgetView.widgetLabel]];
+      selectedWidgetView.widgetLabel, selectedWidgetView.cmdString]];
     
     self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 ? 1.0 : 0.3;
     
     [self.layoutOSC updateGuidelinesForOnScreenWidget:self->selectedWidgetView]; // shows guideline immediately when widget is tapped
-
-
-    // hide irrelevant stacks
-    self.autoTapStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    self.buttonModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    
-    bool showSensitivityFactorStack = selectedWidgetView.hasSensitivityTweak;
-    bool showStickIndicatorOffsetStack = selectedWidgetView.hasStickIndicator;
         
-    self.sensitivityXStack.hidden = !showSensitivityFactorStack || [selectedWidgetView.cmdString containsString:@"MOUSEWHEEL"] || [selectedWidgetView.cmdString containsString:@"WHEEL"];
-    self.sensitivityYStack.hidden = !showSensitivityFactorStack;
-    if(showSensitivityFactorStack){
-        if([selectedWidgetView.cmdString containsString:@"MOUSEWHEEL"] || [selectedWidgetView.cmdString containsString:@"WHEEL"]){
-            [self.sensitivityYSlider setMinimumValue:-4];
-            [self.sensitivityYSlider setMaximumValue:4];
-        }
-        else{
-            [self.sensitivityYSlider setMinimumValue:0];
-            [self.sensitivityYSlider setMaximumValue:8];
-        }
-    }
+    // stack & values
+    [selectedWidgetView accessWidgetAttributes];
     
-    self.stickIndicatorOffsetStack.hidden = !showStickIndicatorOffsetStack;
-    self.mouseDownButtonStack.hidden = !([selectedWidgetView.cmdString containsString:@"MOUSEPAD"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
-    self.decelerationRateStack.hidden = !([selectedWidgetView.cmdString containsString:@"TRACKBALL"] && selectedWidgetView.widgetType == WidgetTypeEnumTouchPad);
-    
-    // setup values
-
-
-    if(showSensitivityFactorStack){
+    self.sensitivityXStack.hidden = !selectedWidgetView.hasSensitivityX;
+    if(selectedWidgetView.hasSensitivityX){
+        [self.sensitivityXSlider setMinimumValue:selectedWidgetView.sensitivityXMin];
+        [self.sensitivityXSlider setMaximumValue:selectedWidgetView.sensitivityXMAX];
         [self.sensitivityXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
         [self autoFitLabel:self.sensitivityXLabel];
+    }
+    
+    self.sensitivityYStack.hidden = !selectedWidgetView.hasSensitivityY;
+    if(selectedWidgetView.hasSensitivityY){
+        [self.sensitivityYSlider setMinimumValue:selectedWidgetView.sensitivityYMin];
+        [self.sensitivityYSlider setMaximumValue:selectedWidgetView.sensitivityYMAX];
         [self.sensitivityXLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityX: %.2f", self->selectedWidgetView.sensitivityFactorX]];
         [self autoFitLabel:self.sensitivityYLabel];
         [self.sensitivityYSlider setValue:self->selectedWidgetView.sensitivityFactorY];
         [self.sensitivityYLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityY: %.2f", self->selectedWidgetView.sensitivityFactorY]];
     }
-    if(showStickIndicatorOffsetStack){
+    
+    self.stickIndicatorOffsetStack.hidden = !selectedWidgetView.hasStickIndicator;
+    if(selectedWidgetView.hasStickIndicator){
         // illustrating the indicator offset,
         [self hideStickIndicators];
         selectedWidgetView.touchBeganLocation = CGPointMake(CGRectGetWidth(selectedWidgetView.frame)/2, CGRectGetHeight(selectedWidgetView.frame)/4);
@@ -833,30 +820,28 @@
     [self autoFitLabel:self.widgetBorderWidthLabel];
     [self widgetBorderWidthSliderMoved:self.widgetBorderWidthSlider];
     
+    self.autoTapStack.hidden = !selectedWidgetView.hasAutoTap;
     [self.autoTapSlider setValue:self->selectedWidgetView.autoTapInterval];
     [self autoFitLabel:self.autoTapLabel];
     [self autoTapSliderMoved:self.autoTapSlider];
 
+    self.decelerationRateStack.hidden = !selectedWidgetView.hasTrackBall;
     [self.decelerationRateSlider setValue:selectedWidgetView.trackballDecelerationRate];
     [self autoFitLabel:self.decelerationRateLabel];
     [self decelerationRateSliderMoved:self.decelerationRateSlider];
     
+    self.mouseDownButtonStack.hidden = !selectedWidgetView.isMousePad;
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
     
-    NSSet *specialCmds = [NSSet setWithArray:CommandManager.functionalButtonCmds];
-    NSSet *comboButtonStrings = [NSSet setWithArray:widgetView.comboButtonStrings];
-    bool isFuncationalButton = [specialCmds intersectsSet:comboButtonStrings];
-    [self.buttonModeSelector setEnabled:!isFuncationalButton forSegmentAtIndex:0];
-    [self.buttonModeSelector setEnabled:!isFuncationalButton forSegmentAtIndex:1];
-    if(isFuncationalButton) [self.autoTapStack setHidden:YES];
+    self.buttonModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
+    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:0];
+    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:1];
     [self.buttonModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonMode];
 
     [self autoFitStack:self.widgetPanelStack];
     
     if([self isIPhone]){
-        self.vibrationStyleStack.hidden =
-        [widgetView.cmdString containsString:@"MOUSEPAD"] ||
-        [widgetView.cmdString containsString:@"TRACKBALL"];
+        self.vibrationStyleStack.hidden = !selectedWidgetView.hasHapticFeedback;
         [self autoFitStack:self.widgetPanelStack];
         self.vibrationStyleSelector.selectedSegmentIndex = self->selectedWidgetView.vibrationStyle;
     }
@@ -884,7 +869,7 @@
     [self autoFitLabel:self.currentProfileLabel];
     self.currentProfileLabel.textAlignment = NSTextAlignmentLeft;
     [self.currentProfileLabel setText:
-     [LocalizationHelper localizedStringForKey:@"  Profile: %@     Widget: %@",
+     [LocalizationHelper localizedStringForKey:@"  Profile: %@    Widget: %@",
       [profilesManager getSelectedProfile].name,
       selectedControllerLayer.name]];
 

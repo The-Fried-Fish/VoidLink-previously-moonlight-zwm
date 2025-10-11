@@ -84,18 +84,36 @@
 }
 
 -(id) initWithGamepad:(GCController*)gamepad locality:(GCHapticsLocality)locality API_AVAILABLE(ios(14.0), tvos(14.0)) {
+    bool needFallBackToPhoneHaptics = false;
+    
     if (gamepad.haptics == nil) {
         Log(LOG_W, @"Controller %d does not support haptics", gamepad.playerIndex);
-        return nil;
+        needFallBackToPhoneHaptics = true;
+    }
+    else if (![[gamepad.haptics supportedLocalities] containsObject:locality]) {
+        Log(LOG_W, @"Controller %d does not support haptic locality: %@", gamepad.playerIndex, locality);
+        needFallBackToPhoneHaptics = true;
     }
     
-    if (![[gamepad.haptics supportedLocalities] containsObject:locality]) {
-        Log(LOG_W, @"Controller %d does not support haptic locality: %@", gamepad.playerIndex, locality);
-        return nil;
+    if (needFallBackToPhoneHaptics) {
+        if (@available(iOS 13.0, *)) {
+            Log(LOG_W, @"Controller %d falls back to use iPhone Haptics for locality: %@", gamepad.playerIndex, locality);
+            NSError *error = nil;
+            _hapticEngine = [[CHHapticEngine alloc] initAndReturnError:&error];
+            if (error != nil) {
+                Log(LOG_W, @"Controller %d: iPhone Haptic engine failed to start: %@", gamepad.playerIndex, error);
+                return nil;
+            }
+        }
+        else {
+            return nil;
+        }
+    }
+    else {
+        _hapticEngine = [gamepad.haptics createEngineWithLocality:locality];
     }
     
     _playerIndex = gamepad.playerIndex;
-    _hapticEngine = [gamepad.haptics createEngineWithLocality:locality];
     
     NSError* error;
     [_hapticEngine startAndReturnError:&error];

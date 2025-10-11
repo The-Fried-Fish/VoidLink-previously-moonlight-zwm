@@ -133,6 +133,7 @@
     self.gyroBiasX = settings.gyroBiasX;
     self.gyroBiasY = settings.gyroBiasY;
     self.gyroBiasZ = settings.gyroBiasZ;
+    self.singleTapSensitivity = settings.singleTapSensitivity;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
 #endif
     self.uniqueId = settings.uniqueId;
