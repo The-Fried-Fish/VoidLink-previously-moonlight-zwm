@@ -63,6 +63,7 @@ import UIKit
     @objc public var identifier: String = ""
     private var buttonString: String = ""
     private var functionalButtonString: String = ""
+    private var motionControlButtonString: String = ""
     private var touchPadString: String = ""
     // super combo key string set
     @objc public var comboButtonStrings: [String] = []
@@ -104,8 +105,18 @@ import UIKit
 
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasStickIndicator: Bool = false
-    @objc public var hasSensitivityTweak: Bool = false
-    
+    @objc public var hasSensitivityX: Bool = false
+    @objc public var sensitivityXMin: CGFloat = 0
+    @objc public var sensitivityXMAX: CGFloat = 8
+    @objc public var hasSensitivityY: Bool = false
+    @objc public var sensitivityYMin: CGFloat = 0
+    @objc public var sensitivityYMAX: CGFloat = 8
+    @objc public var hasAutoTap: Bool = false
+    @objc public var isMousePad: Bool = false
+    @objc public var hasTrackBall: Bool = false
+    @objc public var isFuncationalButton: Bool = false
+    @objc public var hasHapticFeedback: Bool = false
+
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
     public let stickMaxOffset: CGFloat = 0x7FFE
@@ -200,7 +211,7 @@ import UIKit
     
     
     @objc init(cmdString: String, buttonLabel: String, shape:String) {
-        
+
         self.cmdString = cmdString
         self.touchPadString = ""
         
@@ -223,19 +234,13 @@ import UIKit
                 else {self.widgetType = WidgetTypeEnum.button}
                 
                 let touchPadString = Set(comboStrings).intersection(Set(CommandManager.touchPadCmds)).first ?? ""
+                
                 self.comboButtonStrings = comboStrings.filter{$0 != touchPadString}
                 self.touchPadString = touchPadString
                 self.buttonString = self.comboButtonStrings.first ?? ""
                 self.functionalButtonString = Set(self.comboButtonStrings).intersection(Set(CommandManager.functionalButtonCmds)).first ?? ""
-                                
-                //  let stickAndMouseTouchpads = ["LSPAD", "RSPAD", "LSVPAD", "RSVPAD", "MOUSEPAD"]
-                let nonVectorStickPads = ["LSPAD", "RSPAD"]
-                // if CommandManager.touchPadCmds.contains(self.touchPadString) {self.hasSensitivityTweak = true}
-                self.hasSensitivityTweak = CommandManager.touchPadCmds.contains(self.touchPadString)
-                
-                // if nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad {self.hasStickIndicator = true}
-                self.hasStickIndicator = nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
-                
+                self.motionControlButtonString = Set(self.comboButtonStrings).intersection(Set(CommandManager.motionControlButtonCmds)).first ?? ""
+
                 switch self.cmdString {
                 case "LSPAD", "LSVPAD":
                     self.comboButtonStrings = ["OSCL3"]
@@ -251,8 +256,7 @@ import UIKit
         else {
             self.widgetType = WidgetTypeEnum.button // legacy combo button connected by "+"
         }
-        
-        
+    
         print("widgetType: \(self.widgetType)")
         print("touchPadString: \(self.touchPadString)")
         for comboButtonString in comboButtonStrings {
@@ -296,6 +300,9 @@ import UIKit
         self.oscProfile = oscProfileMan.getSelectedProfile()
         super.init(frame: .zero)
         
+        // helps widget panel to hide/show stacks
+        self.accessWidgetAttributes()
+        
         upIndicator = createLrudDirectionLayer()
         upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1)
         downIndicator = createLrudDirectionLayer()
@@ -310,12 +317,11 @@ import UIKit
                 self.mouseButtonAction = MouseButtonAction.noClick
                 self.buttonMode = ButtonMode.regular.rawValue
             }
+            if !self.motionControlButtonString.isEmpty {
+                self.buttonMode = ButtonMode.tapToToggle.rawValue
+            }
             if !self.functionalButtonString.isEmpty {
                 self.buttonMode = ButtonMode.movable.rawValue
-                if (self.functionalButtonString == "GYRO" ||
-                    self.functionalButtonString == "ACCEL" ||
-                    self.functionalButtonString == "MOTION")
-                    {self.buttonMode = ButtonMode.tapToToggle.rawValue}
             }
         }
 
@@ -327,6 +333,20 @@ import UIKit
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc public func accessWidgetAttributes(){
+        self.hasStickIndicator = CommandManager.nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
+        self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
+        self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString)
+        if CommandManager.bidirectionalVerticalTouchPads.contains(self.touchPadString){
+            self.sensitivityYMin = -4
+            self.sensitivityYMAX = 4
+        }
+        self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString != ""
+        self.isMousePad = self.touchPadString == "MOUSEPAD" && widgetType == WidgetTypeEnum.touchPad
+        self.hasTrackBall = self.touchPadString == "TRACKBALL"
+        self.isFuncationalButton = self.functionalButtonString != ""
+        self.hasHapticFeedback = !self.comboButtonStrings.isEmpty
+    }
     
     // ======================================================================================================
     @objc public func setupAutoTapTimer() {
@@ -1095,8 +1115,8 @@ import UIKit
     private func handleButtonDown() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
         
-        if !OnScreenWidgetView.editMode, !self.functionalButtonString.isEmpty {self.handleFunctionalButtonDown()}
-
+        if !OnScreenWidgetView.editMode, !self.motionControlButtonString.isEmpty {self.handleMotionControlButtonDown()}
+        
         // sadflkasdfl;
         
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
@@ -1117,6 +1137,10 @@ import UIKit
     
     private func handleButtonUp() {
         if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
+        
+        if !OnScreenWidgetView.editMode && !self.motionControlButtonString.isEmpty{
+            self.handleMotionControlButtonUp()
+        }
         
         if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
             self.handleFunctionalButtonUp()
@@ -1171,7 +1195,7 @@ import UIKit
     //==========================================================================================================
     
     
-    //=========================================send on screen controller stick events
+    //=========================================send on screen controller stick/trigger events
     private func touchInputToStickInput(input: CGFloat) -> CGFloat{
         let target = stickMaxOffset * input / stickInputScale
         return fmax(fmin(target, stickMaxOffset),-stickMaxOffset)
@@ -1216,6 +1240,15 @@ import UIKit
         }
         self.mixInputDelegate?.mixLeftStickAndGyroInput(x: targetX, y: targetY)
     }
+    
+    private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
+        self.onScreenControls.updateLeftTrigger(UInt8(max(min(inputY,255),0)))
+    }
+    
+    private func sendRightTriggerTouchPadEvent(inputY: CGFloat){
+        self.onScreenControls.updateRightTrigger(UInt8(max(min(inputY,255),0)))
+    }
+
     //==========================================================================================================
     
     private func sendOscButtonDownEvent(oscString: String){
@@ -1627,6 +1660,17 @@ import UIKit
                     self.updateTouchLocation(touch: touches.first!)
                     self.sendRightStickTouchPadEvent(inputX: self.deltaX*1.5167*self.sensitivityFactorX, inputY: self.deltaY*1.5167*self.sensitivityFactorY)
                 }
+            case "LTPAD":
+                DispatchQueue.global(qos: .userInteractive).async {
+                    self.updateTouchLocation(touch: touches.first!)
+                    self.sendLeftTriggerTouchPadEvent(inputY: (-self.offSetY*4.5*self.sensitivityFactorY))
+                }
+            case "RTPAD":
+                DispatchQueue.global(qos: .userInteractive).async {
+                    self.updateTouchLocation(touch: touches.first!)
+                    self.sendRightTriggerTouchPadEvent(inputY: (-self.offSetY*4.5*self.sensitivityFactorY))
+                }
+                break
             case "DPAD", "WASDPAD", "ARROWPAD":
                 self.updateTouchLocation(touch: touches.first!)
                 handleLrudTouchMove()
@@ -1642,8 +1686,8 @@ import UIKit
         }
     }
     
-    private func handleFunctionalButtonDown(){
-        switch self.functionalButtonString {
+    private func handleMotionControlButtonDown(){
+        switch self.motionControlButtonString {
         case "GYRO":
             self.functionalButtonDelegate?.startGyroUpdate()
         case "ACCEL":
@@ -1656,12 +1700,9 @@ import UIKit
         }
     }
     
-    private func handleFunctionalButtonUp(){
+    private func handleMotionControlButtonUp(){
         let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
-        switch self.functionalButtonString {
-        case "SETTINGS":
-            if longPressed, buttonMode == ButtonMode.movable.rawValue {break}
-            NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
+        switch self.motionControlButtonString {
         case "GYRO":
             self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
         case "ACCEL":
@@ -1673,6 +1714,18 @@ import UIKit
             break
         }
     }
+    
+    private func handleFunctionalButtonUp(){
+        let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
+        switch self.functionalButtonString {
+        case "SETTINGS":
+            if longPressed, buttonMode == ButtonMode.movable.rawValue {break}
+            NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
+        default:
+            break
+        }
+    }
+
     
     private func clearRightStickTouchPadFlag(){
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
@@ -1764,6 +1817,10 @@ import UIKit
                 self.clearLeftStickTouchPadFlag()
             case "RSVPAD":
                 self.clearRightStickTouchPadFlag()
+            case "LTPAD":
+                self.onScreenControls.updateLeftTrigger(0x00)
+            case "RTPAD":
+                self.onScreenControls.updateRightTrigger(0x00)
             case "WASDPAD":
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)

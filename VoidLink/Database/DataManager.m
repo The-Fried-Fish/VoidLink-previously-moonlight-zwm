@@ -105,6 +105,7 @@
                  framePacingMode:(NSInteger)framePacingMode
                   sendDummyEvent:(BOOL)sendDummyEvent
                rememberFoldState:(BOOL)rememberFoldState
+              singleTapSensitivy:(CGFloat)singleTapSensitivy
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -160,6 +161,7 @@
         settingsToSave.renderingBackend = [NSNumber numberWithInteger:renderingBackend];
         settingsToSave.framePacingMode = [NSNumber numberWithInteger:framePacingMode];
         settingsToSave.sendDummyEvent = sendDummyEvent;
+        settingsToSave.singleTapSensitivity = [NSNumber numberWithDouble:singleTapSensitivy];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

@@ -696,6 +696,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
+    [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
@@ -1649,7 +1650,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.buttonVisualFeedbackSwitch setOn:self->tempSettings.buttonVisualFeedback];
 
         [self.gyroModeSelector setSelectedSegmentIndex:self->tempSettings.gyroMode.intValue];
-        [self.gyroSensitivitySlider setValue: (uint16_t)(self->tempSettings.gyroSensitivity.floatValue * 100) animated:YES]; // Load old setting.
+        [self.gyroSensitivitySlider setValue: (uint16_t)(self->tempSettings.gyroSensitivity.floatValue * 100) animated:NO]; // Load old setting.
         [self.gyroSensitivitySlider addTarget:self action:@selector(gyroSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self gyroSensitivitySliderMoved:self.gyroSensitivitySlider];
         
@@ -1690,7 +1691,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         [self.bitrateSlider setMinimumValue:0];
         [self.bitrateSlider setMaximumValue:(sizeof(bitrateTable) / sizeof(*bitrateTable)) - 1];
-        [self.bitrateSlider setValue:[self getSliderValueForBitrate:self->_bitrate] animated:YES];
+        [self.bitrateSlider setValue:[self getSliderValueForBitrate:self->_bitrate] animated:NO];
         [self.bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
         [self updateBitrateText];
         [self updateResolutionDisplayLabel];
@@ -1763,12 +1764,12 @@ BOOL isCustomResolution(int resolutionSelected) {
         //TouchMode & OSC Related Settings:
 
         // pointer veloc setting, will be enable/disabled by touchMode
-        [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(self->tempSettings.pointerVelocityModeDivider.floatValue * 100) animated:YES]; // Load old setting.
+        [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(self->tempSettings.pointerVelocityModeDivider.floatValue * 100) animated:NO]; // Load old setting.
         [self.pointerVelocityModeDividerSlider addTarget:self action:@selector(pointerVelocityModeDividerSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self pointerVelocityModeDividerSliderMoved:self.pointerVelocityModeDividerSlider];
 
         // init pointer veloc setting,  will be enable/disabled by touchMode
-        [self.touchPointerVelocityFactorSlider setValue: [self map_SliderValue_fromVelocFactor: self->tempSettings.touchPointerVelocityFactor.floatValue] animated:YES]; // Load old setting.
+        [self.touchPointerVelocityFactorSlider setValue: [self map_SliderValue_fromVelocFactor: self->tempSettings.touchPointerVelocityFactor.floatValue] animated:NO]; // Load old setting.
         [self.touchPointerVelocityFactorSlider addTarget:self action:@selector(touchPointerVelocityFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self touchPointerVelocityFactorSliderMoved:self.touchPointerVelocityFactorSlider];
 
@@ -1777,10 +1778,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         // [self.asyncNativeTouchPrioritySelector addTarget:self action:@selector(asyncNativeTouchPriorityChanged) forControlEvents:UIControlEventValueChanged];
 
         // init relative touch mouse pointer veloc setting,  will be enable/disabled by touchMode
-        [self.mousePointerVelocityFactorSlider setValue:[self map_SliderValue_fromVelocFactor: self->tempSettings.mousePointerVelocityFactor.floatValue] animated:YES]; // Load old setting.
+        [self.mousePointerVelocityFactorSlider setValue:[self map_SliderValue_fromVelocFactor: self->tempSettings.mousePointerVelocityFactor.floatValue] animated:NO]; // Load old setting.
         [self.mousePointerVelocityFactorSlider addTarget:self action:@selector(mousePointerVelocityFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self mousePointerVelocityFactorSliderMoved:self.mousePointerVelocityFactorSlider];
-
+        
+        [self.singleTapSensitivitySlider setValue:self->tempSettings.singleTapSensitivity.doubleValue animated:NO];
+        [self.singleTapSensitivitySlider addTarget:self action:@selector(singleTapSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+        [self singleTapSensitivitySliderMoved:self.singleTapSensitivitySlider];
 
         // these settings will be affected by onscreenControl & touchMode, must be loaded before them.
         // NSLog(@"osc tool fingers setting test: %d", currentSettings.oscLayoutToolFingers.intValue);
@@ -1798,7 +1802,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self onScreenWidgetChanged];
 
         // touch move event interval for native-touch.
-        [self.touchMoveEventIntervalSlider setValue:self->tempSettings.touchMoveEventInterval.intValue animated:YES]; // Load old setting.
+        [self.touchMoveEventIntervalSlider setValue:self->tempSettings.touchMoveEventInterval.intValue animated:NO]; // Load old setting.
         [self.touchMoveEventIntervalSlider addTarget:self action:@selector(touchMoveEventIntervalSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
 
@@ -1895,7 +1899,7 @@ BOOL isCustomResolution(int resolutionSelected) {
          if (!self->_mainFrameViewController.settingsExpandedInStreamView) {
              [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
          }
-                                                         
+                                                            
         [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
         [self handleOswGestureChange];}];
     
@@ -2195,6 +2199,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_mousePointerVelocityStack].text = [NSString stringWithFormat:@"  %d%%  ",(uint16_t)[self map_velocFactorDisplay_fromSliderValue:sender.value]];
 }
 
+- (void) singleTapSensitivitySliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:_singleTapSensitivityStack].text = [NSString stringWithFormat:@"  %.1f  ",sender.value];
+}
+
+
 - (uint32_t) getScreenEdgeFromSelector {
     switch (self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex) {
         case 0: return UIRectEdgeLeft;
@@ -2254,6 +2263,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityFactorStack];
 
     [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.mousePointerVelocityStack];
+    [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.singleTapSensitivityStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
     [self handleOswGestureChange];
@@ -2401,7 +2411,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     defaultBitrate = round(resolutionFactor * frameRateFactor) * 1000;
     _bitrate = MIN(defaultBitrate, 100000);
-    [self.bitrateSlider setValue:[self getSliderValueForBitrate:_bitrate] animated:YES];
+    [self.bitrateSlider setValue:[self getSliderValueForBitrate:_bitrate] animated:NO];
     
     [self updateBitrateText];
 }
@@ -2781,6 +2791,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger localMousePointerMode = [self.localMousePointerModeSelector selectedSegmentIndex];
     BOOL sendDummyEvent = self.sendDummyEventSwitch.isOn;
     BOOL rememberFoldState = self.rememberFoldStateSwitch.isOn;
+    CGFloat singleTapSensitivity = self.singleTapSensitivitySlider.value;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2832,6 +2843,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                      framePacingMode:framePacingMode
                       sendDummyEvent:sendDummyEvent
                    rememberFoldState:rememberFoldState
+                  singleTapSensitivy:singleTapSensitivity
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

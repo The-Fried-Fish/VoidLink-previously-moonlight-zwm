@@ -162,25 +162,48 @@
         }
       }
     },
-    "  Profile: %@     Widget: %@" : {
+    "  Profile: %@    Alias: %@    Command: %@" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  当前布局: %@     当前组件: %@"
+            "value" : "  当前布局: %@    别名: %@    命令: %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  版面配置：%@ 小工具：%@"
+            "value" : "  版面配置: %@    别名: %@    命令: %@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  版面配置：%@ 小工具：%@"
+            "value" : "  版面配置: %@    别名: %@    命令: %@"
+          }
+        }
+      }
+    },
+    "  Profile: %@    Widget: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  当前布局: %@    控件: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  版面配置: %@    小工具: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  版面配置: %@    小工具: %@"
           }
         }
       }

@@ -2672,60 +2672,60 @@
       }
     },
     "ojp-aS-m8w.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"slide to toggle\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[0] = \"slide-toggle\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "slide to toggle"
+            "value" : "slide-toggle"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑出时松开"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑出時鬆開"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑出時鬆開"
           }
         }
       }
     },
     "ojp-aS-m8w.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[1] = \"slide & hold\"; ObjectID = \"ojp-aS-m8w\";",
+      "comment" : "Class = \"UISegmentedControl\"; ojp-aS-m8w.segmentTitles[1] = \"slide-hold\"; ObjectID = \"ojp-aS-m8w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "slide & hold"
+            "value" : "slide-hold"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑动时按下"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑動時按下"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "滑動時按下"
           }
         }
@@ -4167,6 +4167,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "從右側邊緣滑動"
+          }
+        }
+      }
+    },
+    "WzD-wo-Wum.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Single Tap Sensitivity\"; ObjectID = \"WzD-wo-Wum\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Single Tap Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单击灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單擊靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單擊靈敏度"
           }
         }
       }
