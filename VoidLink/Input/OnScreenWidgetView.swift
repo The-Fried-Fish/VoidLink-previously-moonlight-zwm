@@ -178,6 +178,7 @@ import UIKit
     // for mousePad
     private var touchLockedForMoveEvent: UITouch
     private var touchBegan: Bool = false
+    private var directionPadTouchBegan: Bool = false
     private var firstTouchMoved: Bool = false
     private var mousePointerMoved: Bool
     private var twoTouchesDetected: Bool
@@ -938,7 +939,8 @@ import UIKit
         }
         if nearZeroPoint {pressedButtonMask = 0}
         
-        if pressedButtonMask != previousButtonMask {
+        if pressedButtonMask != previousButtonMask || directionPadTouchBegan {
+            directionPadTouchBegan = false
             if(pressedButtonMask & Direction.up.rawValue == Direction.up.rawValue) {
                 showLrudDirectionIndicator(with: upIndicator)
                 switch touchPadString {
@@ -1175,7 +1177,7 @@ import UIKit
             else {self.buttonDownVisualEffectWidth = 9}
         }
         
-        if self.motionControlButtonString != "" {self.buttonDownVisualEffectWidth = 4}
+        if self.motionControlButtonString != "" {self.buttonDownVisualEffectWidth = 3}
         
         // Set the frame to be larger than the view to expand outward
         buttonDownVisualEffectLayer.borderWidth = 0 // set this 0 to hide the visual effect first
@@ -1326,6 +1328,7 @@ import UIKit
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         self.touchBegan = true
+        self.directionPadTouchBegan = true
         self.firstTouchMoved = false
         super.touchesBegan(touches, with: event)
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button || self.touchPadString == "MOUSEPAD";
