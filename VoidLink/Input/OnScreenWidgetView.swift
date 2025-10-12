@@ -1695,7 +1695,7 @@ import UIKit
         switch self.motionControlButtonString {
         case "GYRO":
             self.functionalButtonDelegate?.startGyroUpdate()
-        case "GYROOFF":
+        case "GYROPAUSE":
             self.functionalButtonDelegate?.stopGyroUpdate(interruption:false)
         case "ACCEL":
             self.functionalButtonDelegate?.startAccelUpdate()
@@ -1711,7 +1711,7 @@ import UIKit
         switch self.motionControlButtonString {
         case "GYRO":
             self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
-        case "GYROOFF":
+        case "GYROPAUSE":
             self.functionalButtonDelegate?.startGyroUpdate()
         case "ACCEL":
             self.functionalButtonDelegate?.stopAccelUpdate(interruption: false)

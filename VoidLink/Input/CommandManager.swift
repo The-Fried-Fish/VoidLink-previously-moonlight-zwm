@@ -122,7 +122,7 @@ import UIKit
     @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL"]
     @objc public static let bidirectionalVerticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL"]
     @objc public static let functionalButtonCmds: [String] = ["SETTINGS"]
-    @objc public static let motionControlButtonCmds: [String] = ["GYRO","GYROOFF","ACCEL","MOTION"]
+    @objc public static let motionControlButtonCmds: [String] = ["GYRO","GYROPAUSE","ACCEL","MOTION"]
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]
     
