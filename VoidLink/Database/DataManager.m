@@ -106,6 +106,7 @@
                   sendDummyEvent:(BOOL)sendDummyEvent
                rememberFoldState:(BOOL)rememberFoldState
               singleTapSensitivy:(CGFloat)singleTapSensitivy
+                    hapticEngine:(NSInteger)hapticEngine
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -162,6 +163,7 @@
         settingsToSave.framePacingMode = [NSNumber numberWithInteger:framePacingMode];
         settingsToSave.sendDummyEvent = sendDummyEvent;
         settingsToSave.singleTapSensitivity = [NSNumber numberWithDouble:singleTapSensitivy];
+        settingsToSave.hapticEngine = [NSNumber numberWithInteger:hapticEngine];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

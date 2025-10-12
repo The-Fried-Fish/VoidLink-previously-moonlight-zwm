@@ -700,6 +700,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
+    [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
@@ -1648,6 +1649,18 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.multiControllerSwitch setOn:self->tempSettings.multiController];
         [self.swapAbxySwitch setOn:self->tempSettings.swapABXYButtons];
         [self.buttonVisualFeedbackSwitch setOn:self->tempSettings.buttonVisualFeedback];
+        
+        [self.hapticEngineSelector setSelectedSegmentIndex:self->tempSettings.hapticEngine.intValue];
+        bool hideHapticEngineStack = false;
+        if(@available(iOS 13.0, tvOS 13.0, *)) hideHapticEngineStack = false;
+        else hideHapticEngineStack = true;
+        [self setHidden:hideHapticEngineStack forStack:self.hapticEngineStack];
+        bool disableControllerRumble = false;
+        if(@available(iOS 14.0, tvOS 14.0, *)) nil;
+        else disableControllerRumble = true;
+        [self.hapticEngineSelector setEnabled:!disableControllerRumble forSegmentAtIndex:LeftRightSwapped];
+        [self.hapticEngineSelector setEnabled:!disableControllerRumble forSegmentAtIndex:HapticEngineAuto];
+        [self.hapticEngineSelector setEnabled:[self isIPhone] forSegmentAtIndex:RumbleDevice];
 
         [self.gyroModeSelector setSelectedSegmentIndex:self->tempSettings.gyroMode.intValue];
         [self.gyroSensitivitySlider setValue: (uint16_t)(self->tempSettings.gyroSensitivity.floatValue * 100) animated:NO]; // Load old setting.
@@ -1838,6 +1851,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                                        completion:^{
                 if(!CountdownAlertController.actionCancelled){
                     [weakSelf.onScreenWidgetSelector setSelectedSegmentIndex:OnScreenControlsLevelCustom];
+                    if(weakSelf.touchModeSelector.selectedSegmentIndex == NativeTouch){
+                        [weakSelf.enableOswForNativeTouchSwitch setOn:true];
+                        [weakSelf enableOswForNativeTouchSwitchFlipped:weakSelf.enableOswForNativeTouchSwitch];
+                    }
                     __strong typeof(weakSelf) strongSelf = weakSelf;
                     if (!strongSelf) return;
                     strongSelf->motionControlSection.expandable = true;
@@ -2792,6 +2809,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL sendDummyEvent = self.sendDummyEventSwitch.isOn;
     BOOL rememberFoldState = self.rememberFoldStateSwitch.isOn;
     CGFloat singleTapSensitivity = self.singleTapSensitivitySlider.value;
+    NSInteger hapticEngine = self.hapticEngineSelector.selectedSegmentIndex;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2844,6 +2862,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                       sendDummyEvent:sendDummyEvent
                    rememberFoldState:rememberFoldState
                   singleTapSensitivy:singleTapSensitivity
+                        hapticEngine:hapticEngine
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

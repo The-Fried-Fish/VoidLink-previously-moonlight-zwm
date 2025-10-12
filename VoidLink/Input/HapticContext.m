@@ -7,6 +7,7 @@
 //
 
 #import "HapticContext.h"
+#import "DataManager.h"
 
 @import CoreHaptics;
 @import GameController;
@@ -83,29 +84,66 @@
     }
 }
 
+-(id) initDeviceEngineContextWithGamepad:(GCController*)gamepad API_AVAILABLE(ios(13.0), tvos(13.0)) {
+    NSError *error = nil;
+    _hapticEngine = [[CHHapticEngine alloc] initAndReturnError:&error];
+    if (error != nil) {
+        Log(LOG_W, @"Controller %d: iPhone Haptic engine failed to start: %@", gamepad.playerIndex, error);
+        return nil;
+    }
+    _playerIndex = gamepad.playerIndex;
+    
+    [_hapticEngine startAndReturnError:&error];
+    if (error != nil) {
+        Log(LOG_W, @"Controller %d: Haptic engine failed to start: %@", gamepad.playerIndex, error);
+        return nil;
+    }
+
+    __weak typeof(self) weakSelf = self;
+    _hapticEngine.stoppedHandler = ^(CHHapticEngineStoppedReason stoppedReason) {
+        HapticContext* me = weakSelf;
+        if (me == nil) {
+            return;
+        }
+        
+        Log(LOG_W, @"Controller %d: Haptic engine stopped: %p", me->_playerIndex, stoppedReason);
+        me->_hapticPlayer = nil;
+        me->_hapticEngine = nil;
+        me->_playing = NO;
+    };
+    _hapticEngine.resetHandler = ^{
+        HapticContext* me = weakSelf;
+        if (me == nil) {
+            return;
+        }
+        
+        Log(LOG_W, @"Controller %d: Haptic engine reset", me->_playerIndex);
+        me->_hapticPlayer = nil;
+        me->_playing = NO;
+        [me->_hapticEngine startAndReturnError:nil];
+    };
+    
+    return self;
+}
+
 -(id) initWithGamepad:(GCController*)gamepad locality:(GCHapticsLocality)locality API_AVAILABLE(ios(14.0), tvos(14.0)) {
-    bool needFallBackToPhoneHaptics = false;
+    bool fallBackToPhoneHaptics = false;
     
     if (gamepad.haptics == nil) {
         Log(LOG_W, @"Controller %d does not support haptics", gamepad.playerIndex);
-        needFallBackToPhoneHaptics = true;
+        fallBackToPhoneHaptics = true;
     }
     else if (![[gamepad.haptics supportedLocalities] containsObject:locality]) {
         Log(LOG_W, @"Controller %d does not support haptic locality: %@", gamepad.playerIndex, locality);
-        needFallBackToPhoneHaptics = true;
+        fallBackToPhoneHaptics = true;
     }
-    
-    if (needFallBackToPhoneHaptics) {
-        if (@available(iOS 13.0, *)) {
-            Log(LOG_W, @"Controller %d falls back to use iPhone Haptics for locality: %@", gamepad.playerIndex, locality);
-            NSError *error = nil;
-            _hapticEngine = [[CHHapticEngine alloc] initAndReturnError:&error];
-            if (error != nil) {
-                Log(LOG_W, @"Controller %d: iPhone Haptic engine failed to start: %@", gamepad.playerIndex, error);
-                return nil;
-            }
-        }
-        else {
+
+    if (fallBackToPhoneHaptics) {
+        Log(LOG_W, @"Controller %d falls back to use iPhone Haptics for locality: %@", gamepad.playerIndex, locality);
+        NSError *error = nil;
+        _hapticEngine = [[CHHapticEngine alloc] initAndReturnError:&error];
+        if (error != nil) {
+            Log(LOG_W, @"Controller %d: iPhone Haptic engine failed to start: %@", gamepad.playerIndex, error);
             return nil;
         }
     }
@@ -154,7 +192,9 @@
         return [[HapticContext alloc] initWithGamepad:gamepad locality:GCHapticsLocalityRightHandle];
     }
     else {
-        return nil;
+        if (@available(iOS 13.0, *)) {
+            return [[HapticContext alloc] initDeviceEngineContextWithGamepad:gamepad];
+        } else return nil;
     }
 }
 
@@ -163,7 +203,9 @@
         return [[HapticContext alloc] initWithGamepad:gamepad locality:GCHapticsLocalityLeftHandle];
     }
     else {
-        return nil;
+        if (@available(iOS 13.0, *)) {
+            return [[HapticContext alloc] initDeviceEngineContextWithGamepad:gamepad];
+        } else return nil;
     }
 }
 
@@ -172,7 +214,9 @@
         return [[HapticContext alloc] initWithGamepad:gamepad locality:GCHapticsLocalityLeftTrigger];
     }
     else {
-        return nil;
+        if (@available(iOS 13.0, *)) {
+            return [[HapticContext alloc] initDeviceEngineContextWithGamepad:gamepad];
+        } else return nil;
     }
 }
 
@@ -181,7 +225,9 @@
         return [[HapticContext alloc] initWithGamepad:gamepad locality:GCHapticsLocalityRightTrigger];
     }
     else {
-        return nil;
+        if (@available(iOS 13.0, *)) {
+            return [[HapticContext alloc] initDeviceEngineContextWithGamepad:gamepad];
+        } else return nil;
     }
 }
 
