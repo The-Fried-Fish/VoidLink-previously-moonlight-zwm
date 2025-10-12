@@ -324,8 +324,8 @@ static BOOL overridePersistedFoldState = YES;
 
 - (void)toggleFold {
     self.isExpanded = !_expandable ? false : !self.isExpanded;
-    [self updateViewForFoldState];
     if(!_expandable) self.lockedSectionHandler();
+    [self updateViewForFoldState];
     [[NSUserDefaults standardUserDefaults] setBool:self.isExpanded forKey:self.identifier];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }

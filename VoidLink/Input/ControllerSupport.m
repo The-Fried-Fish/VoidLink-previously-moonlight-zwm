@@ -53,6 +53,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     OnScreenControls *_osc;
     VoidController *_oscController;
     NSMutableSet* _activeGCControllers;
+    TemporarySettings* tempSettings;
     
 #define EMULATING_SELECT     0x1
 #define EMULATING_SPECIAL    0x2
@@ -75,16 +76,40 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 -(void) rumble:(unsigned short)controllerNumber lowFreqMotor:(unsigned short)lowFreqMotor highFreqMotor:(unsigned short)highFreqMotor
 {
     VoidController* voidController = [_voidControllers objectForKey:[NSNumber numberWithInteger:controllerNumber]];
+    
+    HapticEnginePreference preference = tempSettings.hapticEngine.intValue;
+        
     if (voidController == nil && controllerNumber == 0 && _oscEnabled) {
-        // TODO: Rumble emulation for OSC
+        // no physical controller connected:
+        if(preference != RumbleOff){
+            [_oscController.lowFreqMotor setMotorAmplitude:lowFreqMotor];
+            [_oscController.highFreqMotor setMotorAmplitude:highFreqMotor];
+        }
     }
+    
     if (voidController == nil) {
         // No connected controller for this player
         return;
     }
     
-    [voidController.lowFreqMotor setMotorAmplitude:lowFreqMotor];
-    [voidController.highFreqMotor setMotorAmplitude:highFreqMotor];
+    // physical controller connected:
+    switch (preference) {
+        case HapticEngineAuto:
+            // if controller has no haptic profile, it already falled bakc to device engine
+            [voidController.lowFreqMotor setMotorAmplitude:lowFreqMotor];
+            [voidController.highFreqMotor setMotorAmplitude:highFreqMotor];
+            break;
+        case RumbleDevice:
+            [_oscController.lowFreqMotor setMotorAmplitude:lowFreqMotor];
+            [_oscController.highFreqMotor setMotorAmplitude:highFreqMotor];
+        case LeftRightSwapped:
+            [voidController.lowFreqMotor setMotorAmplitude:highFreqMotor];
+            [voidController.highFreqMotor setMotorAmplitude:lowFreqMotor];
+        case RumbleOff:
+            break;
+        default:
+            break;
+    }
 }
 
 -(void) rumbleTriggers:(uint16_t)controllerNumber leftTrigger:(uint16_t)leftTrigger rightTrigger:(uint16_t)rightTrigger
@@ -1387,9 +1412,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     _oscController.playerIndex = 0;
 
     DataManager* dataMan = [[DataManager alloc] init];
-    TemporarySettings* currentSettings = [dataMan getSettings];
-    _oscEnabled = _oscEnabled || (OnScreenControlsLevel)[currentSettings.onscreenControls integerValue] != OnScreenControlsLevelOff || streamConfig.gyroMode != GyroModeOff;
-    _gyroSensitivity = currentSettings.gyroSensitivity.floatValue;
+    tempSettings = [dataMan getSettings];
+
+    _oscEnabled = _oscEnabled || (OnScreenControlsLevel)[tempSettings.onscreenControls integerValue] != OnScreenControlsLevelOff || streamConfig.gyroMode != GyroModeOff;
+    _gyroSensitivity = tempSettings.gyroSensitivity.floatValue;
 }
 
 - (void)resetGyroInputForController:(VoidController* )voidController{
@@ -1435,7 +1461,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     self = [super init];
     
     NSLog(@"controller support init");
-    
+        
     _delegate = delegate;
     _controllerStreamLock = [[NSLock alloc] init];
     _voidControllers = [[NSMutableDictionary alloc] init];
@@ -1579,6 +1605,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
     
     _oscController = [[VoidController alloc] init];
+    [self initializeControllerHaptics:_oscController];
     _gyroMode = AlwaysDevice;
 
     [self updateCommonConfig:streamConfig];

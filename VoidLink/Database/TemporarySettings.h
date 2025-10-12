@@ -79,6 +79,7 @@
 @property (nonatomic) BOOL sendDummyEvent;
 @property (nonatomic) BOOL rememberFoldState;
 @property (nonatomic, retain) NSNumber * singleTapSensitivity;
+@property (nonatomic, retain) NSNumber * hapticEngine;
 @property (nonatomic, retain) NSNumber * framePacingMode;
 
 - (id) initFromSettings:(Settings*)settings;

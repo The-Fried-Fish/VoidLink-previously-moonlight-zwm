@@ -3145,6 +3145,126 @@
         }
       }
     },
+    "MzN-ZR-qyM.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; MzN-ZR-qyM.segmentTitles[0] = \"Auto\"; ObjectID = \"MzN-ZR-qyM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動"
+          }
+        }
+      }
+    },
+    "MzN-ZR-qyM.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; MzN-ZR-qyM.segmentTitles[1] = \"Built-in\"; ObjectID = \"MzN-ZR-qyM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Built-in"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内建"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内建"
+          }
+        }
+      }
+    },
+    "MzN-ZR-qyM.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; MzN-ZR-qyM.segmentTitles[2] = \"L/R Swapped\"; ObjectID = \"MzN-ZR-qyM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "L/R Swapped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右交换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右交換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右交換"
+          }
+        }
+      }
+    },
+    "MzN-ZR-qyM.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; MzN-ZR-qyM.segmentTitles[3] = \"Disabled\"; ObjectID = \"MzN-ZR-qyM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
     "nh6-cn-z23.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Toggle Local Soft Keyboard\"; ObjectID = \"nh6-cn-z23\";",
       "extractionState" : "extracted_with_value",
@@ -4197,6 +4317,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "建議值為2。1影格提供最低延遲，但可能需要乙太網路連線。"
+          }
+        }
+      }
+    },
+    "YM8-us-6sh.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Haptic Engine\"; ObjectID = \"YM8-us-6sh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Haptic Engine"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "振动引擎"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "振動引擎"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "振動引擎"
           }
         }
       }
