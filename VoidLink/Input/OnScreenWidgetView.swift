@@ -341,7 +341,7 @@ import UIKit
             self.sensitivityYMin = -4
             self.sensitivityYMAX = 4
         }
-        self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString != ""
+        self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePad = self.touchPadString == "MOUSEPAD" && widgetType == WidgetTypeEnum.touchPad
         self.hasTrackBall = self.touchPadString == "TRACKBALL"
         self.isFuncationalButton = self.functionalButtonString != ""
@@ -1175,6 +1175,8 @@ import UIKit
             else {self.buttonDownVisualEffectWidth = 9}
         }
         
+        if self.motionControlButtonString != "" {self.buttonDownVisualEffectWidth = 4}
+        
         // Set the frame to be larger than the view to expand outward
         buttonDownVisualEffectLayer.borderWidth = 0 // set this 0 to hide the visual effect first
         buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -self.buttonDownVisualEffectWidth, dy: -self.buttonDownVisualEffectWidth) // Adjust the inset as needed
@@ -1690,6 +1692,8 @@ import UIKit
         switch self.motionControlButtonString {
         case "GYRO":
             self.functionalButtonDelegate?.startGyroUpdate()
+        case "GYROOFF":
+            self.functionalButtonDelegate?.stopGyroUpdate(interruption:false)
         case "ACCEL":
             self.functionalButtonDelegate?.startAccelUpdate()
         case "MOTION":
@@ -1701,10 +1705,11 @@ import UIKit
     }
     
     private func handleMotionControlButtonUp(){
-        let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
         switch self.motionControlButtonString {
         case "GYRO":
             self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
+        case "GYROOFF":
+            self.functionalButtonDelegate?.startGyroUpdate()
         case "ACCEL":
             self.functionalButtonDelegate?.stopAccelUpdate(interruption: false)
         case "MOTION":
