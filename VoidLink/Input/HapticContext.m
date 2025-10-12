@@ -5,6 +5,9 @@
 //  Created by Cameron Gutman on 9/17/20.
 //  Copyright © 2020 Moonlight Game Streaming Project. All rights reserved.
 //
+//  Modified by True砖家 on 2025.10.12
+//  Copyright © 2025 True砖家 @ Bilibili. All rights reserved.
+//
 
 #import "HapticContext.h"
 #import "DataManager.h"
