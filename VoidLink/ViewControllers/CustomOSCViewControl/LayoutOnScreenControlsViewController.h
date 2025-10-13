@@ -78,6 +78,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UISlider *sensitivityYSlider;
 @property (strong, nonatomic) IBOutlet UIStackView *sensitivityYStack;
 
+@property (strong, nonatomic) IBOutlet UILabel *yawFactorLabel;
+@property (strong, nonatomic) IBOutlet UISlider *yawFactorSlider;
+@property (strong, nonatomic) IBOutlet UIStackView *yawFactorStack;
+@property (strong, nonatomic) IBOutlet UILabel *pitchFactorLabel;
+@property (strong, nonatomic) IBOutlet UISlider *pitchFactorSlider;
+@property (strong, nonatomic) IBOutlet UIStackView *pitchFactorStack;
+
+
 @property (strong, nonatomic) IBOutlet UIStackView *decelerationRateStack;
 @property (strong, nonatomic) IBOutlet UILabel *decelerationRateLabel;
 @property (strong, nonatomic) IBOutlet UISlider *decelerationRateSlider;

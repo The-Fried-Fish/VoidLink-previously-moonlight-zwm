@@ -1524,16 +1524,45 @@
     [self reConfigStreamViewRealtime];
 }
 
-- (void)startGyroUpdate{
+- (NSMutableDictionary *)startGyroUpdate:(OnScreenWidgetView *)sender yawFactor:(CGFloat)yawFactor pitchFactor:(CGFloat)pitchFactor rollFactor:(CGFloat)rollFactor{
+    NSMutableDictionary* gyroControlPreviousStatus = [NSMutableDictionary dictionary];
+
+    if(!_motionHandler.gyroControlStarted) [gyroControlPreviousStatus setObject:sender forKey:@"gyroControlStarter"];
+    [gyroControlPreviousStatus setObject:@(_motionHandler.widgetYawFactor) forKey:@"previousYawFactor"];
+    [gyroControlPreviousStatus setObject:@(_motionHandler.widgetPitchFactor) forKey:@"previousPitchFactor"];
+    [gyroControlPreviousStatus setObject:@(_motionHandler.widgetRollFactor) forKey:@"previousRollFactor"];
+    _motionHandler.widgetYawFactor = yawFactor;
+    _motionHandler.widgetPitchFactor = pitchFactor;
+    _motionHandler.widgetRollFactor = rollFactor;
     [_motionHandler startGyroUpdate];
+
+    return gyroControlPreviousStatus;
+}
+
+
+- (NSMutableDictionary*)start:(CGFloat)yawFactor pitchFactor:(CGFloat)pitchFactor rollFactor:(CGFloat)rollFactor{
+    NSMutableDictionary* gyroControlPreviousStatus = [NSMutableDictionary dictionary];
+    if(!_motionHandler.gyroControlStarted){
+        [gyroControlPreviousStatus setObject:@(_motionHandler.gyroControlStarted) forKey:@"gyroStarted"];
+    }
+    [gyroControlPreviousStatus setObject:@(_motionHandler.widgetYawFactor) forKey:@"previousYawFactor"];
+    [gyroControlPreviousStatus setObject:@(_motionHandler.widgetPitchFactor) forKey:@"previousPitchFactor"];
+    [gyroControlPreviousStatus setObject:@(_motionHandler.widgetRollFactor) forKey:@"previousRollFactor"];
+
+    _motionHandler.widgetYawFactor = yawFactor;
+    _motionHandler.widgetPitchFactor = pitchFactor;
+    _motionHandler.widgetRollFactor = rollFactor;
+    [_motionHandler startGyroUpdate];
+    
+    return gyroControlPreviousStatus;
 }
 
 - (void)startAccelUpdate{
     [_motionHandler startAccelUpdate];
 }
 
-- (void)stopGyroUpdateWithInterruption:(BOOL)interruption{
-    [_motionHandler stopGyroUpdateWithInterruption:interruption];
+- (void)stopGyroUpdateWithInterruptTouchInput:(BOOL)interruption{
+    [_motionHandler stopGyroUpdateWithInterruptTouchInput:interruption];
 }
 
 - (void)stopAccelUpdate{

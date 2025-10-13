@@ -139,6 +139,8 @@
             widgetView.mouseButtonAction = buttonState.mouseButtonAction;
             widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
             widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
+            widgetView.yawFactor = buttonState.yawFactor;
+            widgetView.pitchFactor = buttonState.pitchFactor;
             widgetView.trackballDecelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
@@ -646,6 +648,8 @@
     newWidget.autoTapInterval = widget.autoTapInterval;
     newWidget.sensitivityFactorX = widget.sensitivityFactorX;
     newWidget.sensitivityFactorY = widget.sensitivityFactorY;
+    newWidget.yawFactor = widget.yawFactor;
+    newWidget.pitchFactor = widget.pitchFactor;
     newWidget.trackballDecelerationRate = widget.trackballDecelerationRate;
     newWidget.stickIndicatorOffset = widget.stickIndicatorOffset;
     newWidget.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
@@ -776,20 +780,39 @@
     self.sensitivityXStack.hidden = !selectedWidgetView.hasSensitivityX;
     if(selectedWidgetView.hasSensitivityX){
         [self.sensitivityXSlider setMinimumValue:selectedWidgetView.sensitivityXMin];
-        [self.sensitivityXSlider setMaximumValue:selectedWidgetView.sensitivityXMAX];
+        [self.sensitivityXSlider setMaximumValue:selectedWidgetView.sensitivityXMax];
         [self.sensitivityXSlider setValue:self->selectedWidgetView.sensitivityFactorX];
+        [self.sensitivityXLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityX: %.2f", self->selectedWidgetView.sensitivityFactorX]];
         [self autoFitLabel:self.sensitivityXLabel];
     }
     
     self.sensitivityYStack.hidden = !selectedWidgetView.hasSensitivityY;
     if(selectedWidgetView.hasSensitivityY){
         [self.sensitivityYSlider setMinimumValue:selectedWidgetView.sensitivityYMin];
-        [self.sensitivityYSlider setMaximumValue:selectedWidgetView.sensitivityYMAX];
-        [self.sensitivityXLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityX: %.2f", self->selectedWidgetView.sensitivityFactorX]];
-        [self autoFitLabel:self.sensitivityYLabel];
+        [self.sensitivityYSlider setMaximumValue:selectedWidgetView.sensitivityYMax];
         [self.sensitivityYSlider setValue:self->selectedWidgetView.sensitivityFactorY];
         [self.sensitivityYLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityY: %.2f", self->selectedWidgetView.sensitivityFactorY]];
+        [self autoFitLabel:self.sensitivityYLabel];
     }
+    
+    self.yawFactorStack.hidden = !selectedWidgetView.hasYawFactor;
+    if(selectedWidgetView.hasYawFactor){
+        [self.yawFactorSlider setMinimumValue:selectedWidgetView.yawFactorMin];
+        [self.yawFactorSlider setMaximumValue:selectedWidgetView.yawFactorMax];
+        [self.yawFactorSlider setValue:self->selectedWidgetView.yawFactor];
+        [self.yawFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Yaw factor: %.2f", self->selectedWidgetView.yawFactor]];
+        [self autoFitLabel:self.yawFactorLabel];
+    }
+
+    self.pitchFactorStack.hidden = !selectedWidgetView.hasPitchFactor;
+    if(selectedWidgetView.hasPitchFactor){
+        [self.pitchFactorSlider setMinimumValue:selectedWidgetView.pitchFactorMin];
+        [self.pitchFactorSlider setMaximumValue:selectedWidgetView.pitchFactorMax];
+        [self.pitchFactorSlider setValue:self->selectedWidgetView.pitchFactor];
+        [self.pitchFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Pitch factor: %.2f", self->selectedWidgetView.pitchFactor]];
+        [self autoFitLabel:self.pitchFactorLabel];
+    }
+
     
     self.stickIndicatorOffsetStack.hidden = !selectedWidgetView.hasStickIndicator;
     if(selectedWidgetView.hasStickIndicator){
@@ -946,7 +969,6 @@
     return;
 }
 
-
 - (void)mouseDownButtonChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         selectedWidgetView.mouseButtonAction = _mouseButtonDownSelector.selectedSegmentIndex;
@@ -994,6 +1016,24 @@
 - (void)sensitivityYSliderMoved:(UISlider* )sender{
     [self.sensitivityYLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityY: %.2f", sender.value]];
     if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.sensitivityFactorY = sender.value;
+    return;
+}
+
+- (void)yawFactorSliderMoved:(UISlider* )sender{;
+    [self.yawFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Yaw factor: %.2f", sender.value]];
+    [self.pitchFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Pitch factor: %.2f", sender.value]];
+    [self.pitchFactorSlider setValue:sender.value];
+
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        self->selectedWidgetView.yawFactor = sender.value;
+        self->selectedWidgetView.pitchFactor = sender.value;
+    }
+    return;
+}
+
+- (void)pitchFactorSliderMoved:(UISlider* )sender{
+    [self.pitchFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Pitch factor: %.2f", sender.value]];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.pitchFactor = sender.value;
     return;
 }
 
@@ -1114,7 +1154,14 @@
     [self.sensitivityYSlider addTarget:self action:@selector(sensitivityYSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.sensitivityYLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityY"];
     self.sensitivityYStack.hidden = YES;
-
+    
+    [self.yawFactorSlider addTarget:self action:@selector(yawFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+    self.yawFactorLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityYaw"];
+    self.yawFactorStack.hidden = YES;
+    
+    [self.pitchFactorSlider addTarget:self action:@selector(pitchFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+    self.pitchFactorLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityPitch"];
+    self.pitchFactorStack.hidden = YES;
     
     [self.decelerationRateSlider addTarget:self action:@selector(decelerationRateSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.decelerationRateLabel.text = [LocalizationHelper localizedStringForKey:@"Deceleration Rate"];

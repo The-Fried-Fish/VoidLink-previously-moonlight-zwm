@@ -548,7 +548,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 //--------------------------------------------------
                 
                 widgetView.functionalButtonDelegate = (id<OnScreenFunctionalButtonDelegate>)streamFrameVC;
-                widgetView.mixInputDelegate = (id<OnScreenWidgetStickMixedInputDelegate>)motionHandler;
+                widgetView.motionHandler = motionHandler;
                 
                 widgetView.identifier = buttonState.identifier;
                 widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
@@ -560,6 +560,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.mouseButtonAction = buttonState.mouseButtonAction;
                 widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
                 widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
+                widgetView.yawFactor = buttonState.yawFactor;
+                widgetView.pitchFactor = buttonState.pitchFactor;
                 widgetView.trackballDecelerationRate = buttonState.decelerationRate;
                 widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
                 widgetView.minStickOffset = buttonState.minStickOffset;
