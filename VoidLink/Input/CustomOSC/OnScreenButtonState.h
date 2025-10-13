@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat borderWidth; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat sensitivityFactorX; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat sensitivityFactorY; // for OnScreenWidgetView
+@property (nonatomic, assign) CGFloat yawFactor; // for OnScreenWidgetView
+@property (nonatomic, assign) CGFloat pitchFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat decelerationRate; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat stickIndicatorOffset; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat minStickOffset; // for OnScreenWidgetView

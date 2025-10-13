@@ -1867,6 +1867,36 @@
         }
       }
     },
+    "fq3-ie-8by.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pitch factor\"; ObjectID = \"fq3-ie-8by\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pitch factor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯仰系数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯仰係數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯仰係數"
+          }
+        }
+      }
+    },
     "FwK-oG-vuz.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Physical Mouse Wheel Scroll\"; ObjectID = \"FwK-oG-vuz\";",
       "extractionState" : "extracted_with_value",
@@ -2325,6 +2355,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "串流中開啟設定選單"
+          }
+        }
+      }
+    },
+    "iZc-Xt-NaK.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Yaw factor\"; ObjectID = \"iZc-Xt-NaK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yaw factor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航系数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航係數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航係數"
           }
         }
       }

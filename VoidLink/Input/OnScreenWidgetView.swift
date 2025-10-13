@@ -24,19 +24,10 @@ import UIKit
         func updateGuidelinesForOnScreenWidget(_ sender: Any)
     }
     
-    @objc public weak var mixInputDelegate: OnScreenWidgetStickMixedInputDelegate?
-    @objc protocol OnScreenWidgetStickMixedInputDelegate: AnyObject {
-        func mixRightStickAndGyroInput(x: CGFloat, y: CGFloat)
-        func mixLeftStickAndGyroInput(x: CGFloat, y: CGFloat)
-        func gyroMixInputStarted()->Bool
-    }
+    @objc public var motionHandler: MotionHandler = MotionHandler.shared
     
     @objc public weak var functionalButtonDelegate: OnScreenFunctionalButtonDelegate?
     @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
-        func startGyroUpdate()
-        func startAccelUpdate()
-        func stopGyroUpdate(interruption:Bool)
-        func stopAccelUpdate(interruption:Bool)
         func openWidgetLayoutTool()
         func switchWidgetProfile()
         func bringUpSoftKeyboard()
@@ -63,13 +54,14 @@ import UIKit
     @objc public var identifier: String = ""
     private var buttonString: String = ""
     private var functionalButtonString: String = ""
-    private var motionControlButtonString: String = ""
+    public var motionControlButtonString: String = ""
     private var touchPadString: String = ""
     // super combo key string set
     @objc public var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
     
     @objc public var pressed: Bool
+    @objc public var logicallyDown: Bool = false
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
     
@@ -107,10 +99,17 @@ import UIKit
     @objc public var hasStickIndicator: Bool = false
     @objc public var hasSensitivityX: Bool = false
     @objc public var sensitivityXMin: CGFloat = 0
-    @objc public var sensitivityXMAX: CGFloat = 8
+    @objc public var sensitivityXMax: CGFloat = 8
     @objc public var hasSensitivityY: Bool = false
     @objc public var sensitivityYMin: CGFloat = 0
-    @objc public var sensitivityYMAX: CGFloat = 8
+    @objc public var sensitivityYMax: CGFloat = 8
+    @objc public var hasYawFactor: Bool = false
+    @objc public var yawFactorMin: CGFloat = 0
+    @objc public var yawFactorMax: CGFloat = 1
+    @objc public var hasPitchFactor: Bool = false
+    @objc public var pitchFactorMin: CGFloat = 0
+    @objc public var pitchFactorMax: CGFloat = 1
+
     @objc public var hasAutoTap: Bool = false
     @objc public var isMousePad: Bool = false
     @objc public var hasTrackBall: Bool = false
@@ -140,7 +139,11 @@ import UIKit
     // this is for all stick pads and mouse Pad
     @objc public var sensitivityFactorX: CGFloat = 1.0
     @objc public var sensitivityFactorY: CGFloat = 1.0
-    
+    @objc public var yawFactor: CGFloat = 1.0
+    @objc public var pitchFactor: CGFloat = 1.0
+    @objc public var rollFactor: CGFloat = 1.0
+    private var gyroControlPreviousStatus: NSMutableDictionary = NSMutableDictionary()
+
     // check quick double tap:
     private var quickDoubleTapDetected: Bool
     private var touchTapTimeInterval: TimeInterval
@@ -338,10 +341,19 @@ import UIKit
         self.hasStickIndicator = CommandManager.nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString)
+        
         if CommandManager.bidirectionalVerticalTouchPads.contains(self.touchPadString){
-            self.sensitivityYMin = -4
-            self.sensitivityYMAX = 4
+            self.sensitivityYMin = -4.0
+            self.sensitivityYMax = 4.0
         }
+
+        self.hasYawFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == MapGyroTo.mapGyroToMouse || oscProfile.yawPitchToRightStick)
+        self.hasPitchFactor = self.hasYawFactor
+        self.yawFactorMin = 0
+        self.yawFactorMax = 1.0
+        self.pitchFactorMin = 0
+        self.pitchFactorMax = 1.0
+        
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePad = self.touchPadString == "MOUSEPAD" && widgetType == WidgetTypeEnum.touchPad
         self.hasTrackBall = self.touchPadString == "TRACKBALL"
@@ -1120,20 +1132,33 @@ import UIKit
         if !OnScreenWidgetView.editMode, !self.motionControlButtonString.isEmpty {self.handleMotionControlButtonDown()}
         
         // sadflkasdfl;
-        
+        print("666 buttonDownVisualEffectLayer.borderColor: \(CACurrentMediaTime())")
+
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             // self.layer.borderWidth = 0
             buttonDownVisualEffectLayer.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)) // update position every time we press down the button
-            buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
+            // buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
             buttonDownVisualEffectLayer.borderColor = voidlinkPurple
+            logicallyDown = true
             CATransaction.commit()
         }
         if vibrationOn {
             vibrationGenerator.prepare()
             vibrationGenerator.impactOccurred()
-            // print("vibrationInstance: \(vibrationGenerator)")
+        }
+    }
+    
+    private func buttonUpVisualEffect(){
+        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            // self.layer.borderWidth = 1
+            // buttonDownVisualEffectLayer.borderWidth = 0
+            buttonDownVisualEffectLayer.borderColor = UIColor.clear.cgColor
+            logicallyDown = false
+            CATransaction.commit()
         }
     }
     
@@ -1148,14 +1173,7 @@ import UIKit
             self.handleFunctionalButtonUp()
         }
         
-        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-            // self.layer.borderWidth = 1
-            buttonDownVisualEffectLayer.borderWidth = 0
-            buttonDownVisualEffectLayer.borderColor = defaultBorderColor
-            CATransaction.commit()
-        }
+        self.buttonUpVisualEffect()
     }
     
     private func setupLrudDirectionIndicatorlayers() {
@@ -1180,7 +1198,8 @@ import UIKit
         if self.motionControlButtonString != "" {self.buttonDownVisualEffectWidth = 3}
         
         // Set the frame to be larger than the view to expand outward
-        buttonDownVisualEffectLayer.borderWidth = 0 // set this 0 to hide the visual effect first
+        buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // set this 0 to hide the visual effect first
+        buttonDownVisualEffectLayer.borderColor = UIColor.clear.cgColor
         buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -self.buttonDownVisualEffectWidth, dy: -self.buttonDownVisualEffectWidth) // Adjust the inset as needed
         buttonDownVisualEffectLayer.cornerRadius = self.layer.cornerRadius + self.buttonDownVisualEffectWidth
         buttonDownVisualEffectLayer.backgroundColor = UIColor.clear.cgColor;
@@ -1223,12 +1242,12 @@ import UIKit
         
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
-        if !mixRightStickInputToGyro || (self.mixInputDelegate?.gyroMixInputStarted() != true) {
+        if !mixRightStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
             targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
             targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
             self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
         }
-        self.mixInputDelegate?.mixRightStickAndGyroInput(x: targetX, y: targetY)
+        self.motionHandler.mixRightStickAndGyroInput(x: targetX, y: targetY)
     }
     
     private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
@@ -1239,10 +1258,10 @@ import UIKit
         
         let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
-        if !mixLeftStickInputToGyro || (self.mixInputDelegate?.gyroMixInputStarted() != true) {
+        if !mixLeftStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
             self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
         }
-        self.mixInputDelegate?.mixLeftStickAndGyroInput(x: targetX, y: targetY)
+        self.motionHandler.mixLeftStickAndGyroInput(x: targetX, y: targetY)
     }
     
     private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
@@ -1534,42 +1553,49 @@ import UIKit
             }
         }
     }
+    
+    private func forEachWidget(_ action: (OnScreenWidgetView) -> Void) {
+        // 遍历 superview 的 subviews，如果 superview 为 nil，则遍历空数组
+        for subview in self.superview?.subviews ?? [] {
+            if let widget = subview as? OnScreenWidgetView {
+                action(widget)
+            }
+        }
+    }
 
     private func handleButtonSliding(touches: Set<UITouch>) {
         for touch in touches {
             let locationInSuperView = touch.location(in: self.superview)
-            for subview in self.superview?.subviews ?? [] {
-                if let widget = subview as? OnScreenWidgetView{
-                    if widget.widgetType != WidgetTypeEnum.button {continue}
-                    let isSlidableButton = widget.buttonMode == ButtonMode.slideToToggle.rawValue || widget.buttonMode == ButtonMode.slideAndHold.rawValue
-                    let pointInSubview = widget.convert(locationInSuperView, from: self.superview)
-                    if widget.bounds.contains(pointInSubview){
+            self.forEachWidget{ widget in
+                if widget.widgetType != WidgetTypeEnum.button {return}
+                let isSlidableButton = widget.buttonMode == ButtonMode.slideToToggle.rawValue || widget.buttonMode == ButtonMode.slideAndHold.rawValue
+                let pointInSubview = widget.convert(locationInSuperView, from: self.superview)
+                if widget.bounds.contains(pointInSubview){
+                    setLock.lock()
+                    let captured = widget.capturedTouches.contains(touch)
+                    setLock.unlock()
+                    if captured || !isSlidableButton
+                        {return}
+                    setLock.lock()
+                    widget.capturedTouches.add(touch)
+                    setLock.unlock()
+                    widget.handleTapDownOrSlidein()
+                    // print("UIButton: \(widget.buttonLabel) in, \(widget.touchPadString), \(CACurrentMediaTime())")
+                }
+                else{
+                    setLock.lock()
+                    let captured = widget.capturedTouches.contains(touch)
+                    setLock.unlock()
+                    if !captured || !isSlidableButton {return}
+                    // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
+                    if(widget.buttonMode == ButtonMode.slideToToggle.rawValue){
+                        widget.handleFingerUpOrSlideout()
                         setLock.lock()
-                        let captured = widget.capturedTouches.contains(touch)
+                        widget.capturedTouches.remove(touch)
                         setLock.unlock()
-                        if captured || !isSlidableButton
-                            {continue}
-                        setLock.lock()
-                        widget.capturedTouches.add(touch)
-                        setLock.unlock()
-                        widget.handleTapDownOrSlidein()
-                        // print("UIButton: \(widget.buttonLabel) in, \(widget.touchPadString), \(CACurrentMediaTime())")
                     }
-                    else{
-                        setLock.lock()
-                        let captured = widget.capturedTouches.contains(touch)
-                        setLock.unlock()
-                        if !captured || !isSlidableButton {continue}
-                        // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
-                        if(widget.buttonMode == ButtonMode.slideToToggle.rawValue){
-                            widget.handleFingerUpOrSlideout()
-                            setLock.lock()
-                            widget.capturedTouches.remove(touch)
-                            setLock.unlock()
-                        }
-                        if(widget.buttonMode == ButtonMode.slideAndHold.rawValue){
-                            // do nothing here
-                        }
+                    if(widget.buttonMode == ButtonMode.slideAndHold.rawValue){
+                        // do nothing here
                     }
                 }
             }
@@ -1694,14 +1720,14 @@ import UIKit
     private func handleMotionControlButtonDown(){
         switch self.motionControlButtonString {
         case "GYRO":
-            self.functionalButtonDelegate?.startGyroUpdate()
+            self.motionHandler.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
         case "GYROPAUSE":
-            self.functionalButtonDelegate?.stopGyroUpdate(interruption:false)
+            self.motionHandler.stopGyroUpdate(interruptTouchInput:false)
+            break
         case "ACCEL":
-            self.functionalButtonDelegate?.startAccelUpdate()
+            break
         case "MOTION":
-            self.functionalButtonDelegate?.startGyroUpdate()
-            self.functionalButtonDelegate?.startAccelUpdate()
+            break
         default:
             break
         }
@@ -1710,14 +1736,32 @@ import UIKit
     private func handleMotionControlButtonUp(){
         switch self.motionControlButtonString {
         case "GYRO":
-            self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
+            if let gyroStarter = motionHandler.gyroStarter as? OnScreenWidgetView, self === gyroStarter {
+                self.forEachWidget{ widget in
+                    if widget.motionControlButtonString != "GYRO" || widget === self {return}
+                    if(widget.buttonMode == ButtonMode.tapToToggle.rawValue && widget.logicallyDown) {
+                        widget.buttonUpVisualEffect()
+                        widget.tapToToggleFlag = !widget.tapToToggleFlag
+                    }
+                }
+                self.motionHandler.stopGyroUpdate(interruptTouchInput: false)
+                self.motionHandler.gyroStarter = nil
+            }
+            else {
+                if self.motionHandler.gyroStarter != nil {
+                    if let gyroStarter = motionHandler.gyroStarter as? OnScreenWidgetView {
+                        self.motionHandler.startGyroByOnScreenButton(self, yawFactor: gyroStarter.yawFactor, pitchFactor: gyroStarter.pitchFactor, rollFactor: gyroStarter.rollFactor)
+                    }
+                }
+            }
         case "GYROPAUSE":
-            self.functionalButtonDelegate?.startGyroUpdate()
+            if self.motionHandler.gyroStarter != nil {
+                self.motionHandler.startGyroByOnScreenButton(self, yawFactor: motionHandler.widgetYawFactor, pitchFactor: motionHandler.widgetPitchFactor, rollFactor: motionHandler.widgetRollFactor)
+            }
         case "ACCEL":
-            self.functionalButtonDelegate?.stopAccelUpdate(interruption: false)
+            break
         case "MOTION":
-            self.functionalButtonDelegate?.stopGyroUpdate(interruption: false)
-            self.functionalButtonDelegate?.stopAccelUpdate(interruption: false)
+            break
         default:
             break
         }
@@ -1738,19 +1782,19 @@ import UIKit
     private func clearRightStickTouchPadFlag(){
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
-        if !mixRightStickInputToGyro || self.mixInputDelegate?.gyroMixInputStarted() != true {
+        if !mixRightStickInputToGyro || self.motionHandler.gyroMixInputStarted() != true {
             self.onScreenControls.clearRightStickTouchPadFlag()
         }
-        self.mixInputDelegate?.mixRightStickAndGyroInput(x: 0, y: 0)
+        self.motionHandler.mixRightStickAndGyroInput(x: 0, y: 0)
     }
     
     private func clearLeftStickTouchPadFlag(){
         let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
-        if !mixLeftStickInputToGyro || self.mixInputDelegate?.gyroMixInputStarted() != true {
+        if !mixLeftStickInputToGyro || self.motionHandler.gyroMixInputStarted() != true {
             self.onScreenControls.clearLeftStickTouchPadFlag()
         }
-        self.mixInputDelegate?.mixLeftStickAndGyroInput(x: 0, y: 0)
+        self.motionHandler.mixLeftStickAndGyroInput(x: 0, y: 0)
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -1916,14 +1960,14 @@ import UIKit
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         if superview == nil {
-            if self.functionalButtonString == "GYRO" {self.functionalButtonDelegate?.stopGyroUpdate(interruption: true)}
-            if self.functionalButtonString == "ACCEL" {self.functionalButtonDelegate?.stopAccelUpdate(interruption: true)}
-            if self.functionalButtonString == "MOTION" {
-                self.functionalButtonDelegate?.stopGyroUpdate(interruption: true)
-                self.functionalButtonDelegate?.stopAccelUpdate(interruption: true)
+            if self.motionControlButtonString == "GYRO" {
+                self.motionHandler.stopGyroUpdate(interruptTouchInput: true)
+                self.motionHandler.gyroStarter = nil
             }
-            buttonDownVisualEffectLayer.borderWidth = 0
-            buttonDownVisualEffectLayer.borderColor = defaultBorderColor
+            if self.motionControlButtonString == "ACCEL" {}
+            if self.motionControlButtonString == "MOTION" {}
+            buttonDownVisualEffectLayer.borderColor = UIColor.clear.cgColor
+            buttonDownVisualEffectLayer.removeFromSuperlayer()
             crossMarkLayer.removeFromSuperlayer()
             stickBallLayer.removeFromSuperlayer()
         }

@@ -1603,6 +1603,18 @@
         }
       }
     },
+    "dEy-ER-Mb3.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pitch factor\"; ObjectID = \"dEy-ER-Mb3\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pitch factor"
+          }
+        }
+      }
+    },
     "dJh-Ck-ugh.text" : {
       "comment" : "Class = \"UILabel\"; text = \"SensitivityX\"; ObjectID = \"dJh-Ck-ugh\";",
       "extractionState" : "extracted_with_value",
@@ -2295,6 +2307,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "    "
+          }
+        }
+      }
+    },
+    "kzC-ut-7DI.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Yaw factor\"; ObjectID = \"kzC-ut-7DI\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Yaw factor"
           }
         }
       }
