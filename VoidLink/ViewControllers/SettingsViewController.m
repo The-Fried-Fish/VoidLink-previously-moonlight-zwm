@@ -402,7 +402,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.micHandler startTapping];
     */
     
-    [self updateParentStackHorizontalConstraints];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
@@ -444,6 +443,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:NO];
+    
+    [self updateParentStackHorizontalConstraints];
+    
     [self updateResolutionTable];
     [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
     
@@ -532,7 +534,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     if (@available(iOS 13.0, *)) {
         if(parentStackWidthConstraint && parentStackLeadingConstraint) [NSLayoutConstraint deactivateConstraints:@[parentStackLeadingConstraint, parentStackWidthConstraint]];
-        UIInterfaceOrientation currentOrientation = keyWindow.windowScene.interfaceOrientation;
+        
+        UIWindowScene *activeScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
+        UIInterfaceOrientation currentOrientation;
+        if (activeScene.activationState == UISceneActivationStateForegroundActive) {
+            currentOrientation = activeScene.interfaceOrientation;
+        }
+        else currentOrientation = keyWindow.windowScene.interfaceOrientation;
+
         switch (currentOrientation) {
             case UIInterfaceOrientationLandscapeRight:
                 parentStackLeadingConstraint = [_parentStack.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:0];
