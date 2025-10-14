@@ -636,6 +636,8 @@ import UIKit
         setupButtonDownVisualEffectLayer();
         if CommandManager.directionPads.contains(touchPadString) {setupLrudDirectionIndicatorlayers()}
         if CommandManager.stickTouchPads.contains(touchPadString) {self.l3r3Indicator = createl3r3Indicator()}
+        if CommandManager.verticalTouchPads.contains(touchPadString) {self.l3r3Indicator = createl3r3Indicator()}
+        if self.touchPadString == "MOUSEPAD" {self.l3r3Indicator = createl3r3Indicator()}
         if self.hasStickIndicator {
             if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
             if self.stickBallLayer.superlayer == nil {self.stickBallLayer = createStickBall()}
@@ -1383,25 +1385,16 @@ import UIKit
         if !OnScreenWidgetView.editMode {
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
                 switch self.touchPadString {
-                case "LSPAD":
+                case "LSPAD","RSPAD":
                     self.showStickIndicator()
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "RSPAD":
-                    self.showStickIndicator()
+                case "LSVPAD","RSVPAD","DS4TOUCH":
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "LSVPAD":
-                    if quickDoubleTapDetected {
-                        self.showl3r3Indicator()
-                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "RSVPAD":
-                    if quickDoubleTapDetected {
-                        self.showl3r3Indicator()
-                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "DPAD", "WASDPAD", "ARROWPAD", "MOUSEWHEEL", "WHEEL":
+                case "DPAD", "WASDPAD", "ARROWPAD":
                     if allSpawnedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
@@ -1410,8 +1403,8 @@ import UIKit
                             self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
                         }
                     }
-                case "DS4TOUCH":
-                    if quickDoubleTapDetected {
+                case "LTPAD", "RTPAD","MOUSEWHEEL", "WHEEL":
+                    if quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                     }
@@ -1427,7 +1420,12 @@ import UIKit
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_MIDDLE)
                     case .rightButtonDown:
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_RIGHT)
-                    case .hovering,.noClick:
+                    case .noClick:
+                        if quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
+                            self.showl3r3Indicator()
+                            self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+                        }
+                    case .hovering:
                         break
                     default:
                         break
@@ -1539,17 +1537,15 @@ import UIKit
 
     private func handleFingerUpAfterSliding(touches: Set<UITouch>) {
         for touch in touches {
-            for subview in self.superview?.subviews ?? [] {
-                if let widget = subview as? OnScreenWidgetView{
-                    setLock.lock()
-                    let captured = widget.capturedTouches.contains(touch)
-                    setLock.unlock()
-                    if !captured || widget.buttonMode == ButtonMode.regular.rawValue {continue}
-                    widget.handleFingerUpOrSlideout()
-                    setLock.lock()
-                    widget.capturedTouches.remove(touch)
-                    setLock.unlock()
-                }
+            self.forEachWidget(){ widget in
+                setLock.lock()
+                let captured = widget.capturedTouches.contains(touch)
+                setLock.unlock()
+                if !captured || widget.buttonMode == ButtonMode.regular.rawValue {return}
+                widget.handleFingerUpOrSlideout()
+                setLock.lock()
+                widget.capturedTouches.remove(touch)
+                setLock.unlock()
             }
         }
     }
@@ -1808,10 +1804,9 @@ import UIKit
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
-        // for checking stationary touch points
 
-        if self.touchPadString != "MOUSEPAD" {quickDoubleTapDetected = false} //do not reset this flag here in mousePad mode
-        
+        if !(self.touchPadString == "MOUSEPAD" && self.mouseButtonAction != .noClick) {quickDoubleTapDetected = false} //do not reset this flag here in mousePad mode with button actions
+
         self.allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         
         
@@ -1834,6 +1829,7 @@ import UIKit
                     }
                     mousePointerMoved = false // reset this flag
                 case .noClick:
+                    // quickDoubleTapDetected = false
                     break
                 default:
                     break
@@ -1905,6 +1901,14 @@ import UIKit
             self.leftIndicator.borderColor = UIColor.clear.cgColor
             self.rightIndicator.borderColor = UIColor.clear.cgColor
             self.lrudIndicatorBall.isHidden = true
+        }
+        
+        if CommandManager.verticalTouchPads.contains(touchPadString){
+            self.l3r3Indicator.borderColor = UIColor.clear.cgColor
+        }
+        
+        if self.touchPadString == "MOUSEPAD" && self.mouseButtonAction == .noClick {
+            self.l3r3Indicator.borderColor = UIColor.clear.cgColor
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
