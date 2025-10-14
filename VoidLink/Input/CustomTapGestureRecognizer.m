@@ -77,7 +77,10 @@ static CGFloat screenWidthInPoints;
         _gestureCaptured = false;
         self.state = UIGestureRecognizerStateFailed;
     }
-    else if(_gestureCaptured && allTouchesCount == [touches count] && !_isOnScreenControllerBeingPressed && ![self isOnScreenWidgetViewBeingPressed]){  //must exclude virtual controller & onscreen button taps here to prevent stucked button, _areVirtualControllerTaps flag is set by onscreencontrols, containOnScreenButtonsTaps will be returned by iterating all widget views in streamframeview
+    else if(_gestureCaptured
+            && allTouchesCount == [touches count]
+            && !_isOnScreenControllerBeingPressed
+            && (![self isOnScreenWidgetViewBeingPressed] || _numberOfTouchesRequired ==1)){  //must exclude virtual controller & onscreen button taps here to prevent stucked button, _areVirtualControllerTaps flag is set by onscreencontrols, containOnScreenButtonsTaps will be returned by iterating all widget views in streamframeview
         _gestureCaptured = false; //reset for next recognition
         if((CACurrentMediaTime() - _gestureCapturedTime) < _tapDownTimeThreshold){
             // lowestTouchPointYCoord = 0.0; //reset for next recognition
@@ -89,10 +92,7 @@ static CGFloat screenWidthInPoints;
 }
 
 
-// it was a not a perfect choice to code OnScreenWidgetView in Swift...
-// we're unable to import this class to swift codebase by the bridging header,and have to exlucde the onscreen button taps here
-// by iterating every widget view instances. but it's basically ok since the number of widgetViews are always limited.
-// and this method will only be called when the recognizer is active & and the taps passes all the checks and is about to ge triggered.
+// this method will only be called when the recognizer is active & and the taps passes all the checks and is about to ge triggered.
 - (bool)isOnScreenWidgetViewBeingPressed {
     NSTimeInterval allFingersTapDownTime = CACurrentMediaTime() - _gestureCapturedTime; //RIGHTCLICK_TAP_DOWN_TIME_THRESHOLD_S has been passed to this recognizer as _tapDownTimeShreshold, we'll decide how to deal with pressed flag of on-screen widget views based on tapDownTime
     bool gotOneWidgetPressed = false;
@@ -101,12 +101,12 @@ static CGFloat screenWidthInPoints;
         if ([view isKindOfClass:[OnScreenWidgetView class]]) {
             OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
             if(gotOneWidgetPressed && allFingersTapDownTime <= _tapDownTimeThreshold){ // once we have just 1 button pressed already,& the tapDownTime has not exceeded the threshold, we'll reset pressed flag for the all the widgetViews.
-                widgetView.pressed = false; //reset the flag for widgetView
+                widgetView.pressedFlagForTapGesture = false; //reset the flag for widgetView
                 continue;
             }
-            if(widgetView.pressed){
+            if(widgetView.pressedFlagForTapGesture){
                 gotOneWidgetPressed = true; //got one button pressed
-                if(allFingersTapDownTime <= _tapDownTimeThreshold) widgetView.pressed = false; // reset the flag for current widgetView if tapDowntime is still within the threshold, if not, leave the flag for mouse scroller gesture in relative touch mode.
+                if(allFingersTapDownTime <= _tapDownTimeThreshold) widgetView.pressedFlagForTapGesture = false; // reset the flag for current widgetView if tapDowntime is still within the threshold, if not, leave the flag for mouse scroller gesture in relative touch mode.
             }
         }
     }

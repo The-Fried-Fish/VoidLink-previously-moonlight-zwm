@@ -97,7 +97,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     for(UIView* view in self->streamView.superview.subviews){  // iterates all on-screen widget views in StreamFrameView
         if ([view isKindOfClass:[OnScreenWidgetView class]]) {
             OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
-            if(widgetView.pressed){
+            if(widgetView.pressedFlagForTapGesture){
                 gotOneButtonPressed = true; //got one button pressed
             }
         }
@@ -109,7 +109,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     for(UIView* view in self->streamView.superview.subviews){  // iterates all on-screen widget views in StreamFrameView
         if ([view isKindOfClass:[OnScreenWidgetView class]]) {
             OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
-            widgetView.pressed = false;
+            widgetView.pressedFlagForTapGesture = false;
         }
     }
 }

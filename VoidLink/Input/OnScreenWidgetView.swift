@@ -28,12 +28,11 @@ import UIKit
     
     @objc public weak var functionalButtonDelegate: OnScreenFunctionalButtonDelegate?
     @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
+        func expandSettingsView()
+        func bringUpToolboxMenu()
         func openWidgetLayoutTool()
         func switchWidgetProfile()
         func bringUpSoftKeyboard()
-        func enterPip()
-        func toggleStatsOverlay()
-        func disconnectAndQuitApp()
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -60,7 +59,7 @@ import UIKit
     @objc public var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
     
-    @objc public var pressed: Bool
+    @objc public var pressedFlagForTapGesture: Bool
     @objc public var logicallyDown: Bool = false
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
@@ -271,7 +270,7 @@ import UIKit
         self.shape = shape
         self.label = UILabel()
         // self.originalBackgroundColor = UIColor(white: 0.2, alpha: 0.7)
-        self.pressed = false
+        self.pressedFlagForTapGesture = false
         // self.widthFactor = 1.0
         // self.heightFactor = 1.0
         // self.backgroundAlpha = 0.5
@@ -1133,9 +1132,16 @@ import UIKit
         
         if !OnScreenWidgetView.editMode, !self.motionControlButtonString.isEmpty {self.handleMotionControlButtonDown()}
         
-        // sadflkasdfl;
-        print("666 buttonDownVisualEffectLayer.borderColor: \(CACurrentMediaTime())")
-
+        self.buttonDownVisualEffect()
+        
+        if vibrationOn {
+            vibrationGenerator.prepare()
+            vibrationGenerator.impactOccurred()
+        }
+    }
+    
+    private func buttonDownVisualEffect(){
+        logicallyDown = true
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
@@ -1143,23 +1149,18 @@ import UIKit
             buttonDownVisualEffectLayer.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)) // update position every time we press down the button
             // buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
             buttonDownVisualEffectLayer.borderColor = voidlinkPurple
-            logicallyDown = true
             CATransaction.commit()
-        }
-        if vibrationOn {
-            vibrationGenerator.prepare()
-            vibrationGenerator.impactOccurred()
         }
     }
     
     private func buttonUpVisualEffect(){
+        logicallyDown = false
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             // self.layer.borderWidth = 1
             // buttonDownVisualEffectLayer.borderWidth = 0
             buttonDownVisualEffectLayer.borderColor = UIColor.clear.cgColor
-            logicallyDown = false
             CATransaction.commit()
         }
     }
@@ -1171,11 +1172,11 @@ import UIKit
             self.handleMotionControlButtonUp()
         }
         
+        self.buttonUpVisualEffect()
+
         if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
             self.handleFunctionalButtonUp()
         }
-        
-        self.buttonUpVisualEffect()
     }
     
     private func setupLrudDirectionIndicatorlayers() {
@@ -1380,7 +1381,7 @@ import UIKit
             self.twoTouchesDetected = true
         }
         
-        self.pressed = true
+        self.pressedFlagForTapGesture = true
 
         if !OnScreenWidgetView.editMode {
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
@@ -1765,10 +1766,18 @@ import UIKit
     
     private func handleFunctionalButtonUp(){
         let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
+        if longPressed, buttonMode == ButtonMode.movable.rawValue {return}
         switch self.functionalButtonString {
         case "SETTINGS":
-            if longPressed, buttonMode == ButtonMode.movable.rawValue {break}
-            NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
+            self.functionalButtonDelegate?.expandSettingsView()
+        case "TOOLBOX":
+            self.functionalButtonDelegate?.bringUpToolboxMenu()
+        case "WIDGETTOOL":
+            self.functionalButtonDelegate?.openWidgetLayoutTool()
+        case "PROFILES","WIDGETPROFILES":
+            self.functionalButtonDelegate?.switchWidgetProfile()
+        case "SOFTKEYBOARD":
+            self.functionalButtonDelegate?.bringUpSoftKeyboard()
         default:
             break
         }
