@@ -38,7 +38,7 @@
 
     CGFloat slideGestureVerticalThreshold;
     CGFloat screenWidthWithThreshold;
-    CGFloat EDGE_TOLERANCE;
+    CGFloat _edgeTolerance;
     
     CGRect streamViewBounds;
     
@@ -85,9 +85,9 @@
     
     self->pointerObjDict = [NSMutableDictionary dictionary];
     
-    EDGE_TOLERANCE = 10.0;
+    _edgeTolerance = settings.edgeSlidingSensitivity.floatValue;
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
-    screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - EDGE_TOLERANCE;
+    screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
 
     self->pointerVelocityDividerLocationByPoints = self->streamView.bounds.size.width * settings.pointerVelocityModeDivider.floatValue;
     
@@ -164,7 +164,7 @@
     
     //check if touch point is spawned on the left or right upper half screen edges, event to remote PC. this is for better handling in-stream slide gesture
     CGPoint initialPoint = [touch locationInView:self->streamView];
-    if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < EDGE_TOLERANCE || initialPoint.x > screenWidthWithThreshold)) {
+    if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < _edgeTolerance || initialPoint.x > screenWidthWithThreshold)) {
         [blacklistedTouches addObject:touchAddrObj];
     }
 }

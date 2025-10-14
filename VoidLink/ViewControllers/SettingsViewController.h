@@ -172,6 +172,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *hapticEngineStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *hapticEngineSelector;
 
+@property (strong, nonatomic) IBOutlet UIStackView *edgeSlidingSensitivityStack;
+@property (strong, nonatomic) IBOutlet UISlider *edgeSlidingSensitivitySlider;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

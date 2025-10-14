@@ -14,6 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PureNativeTouchHandler : UIResponder
+
+
 - (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings;
 
 

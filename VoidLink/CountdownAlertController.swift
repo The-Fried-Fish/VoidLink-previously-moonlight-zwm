@@ -47,8 +47,15 @@ import UIKit
         
         if withCancel {alert.addAction(cancelAction)}
         alert.addAction(confirmAction)
+        
+        if(countdown == 0) {
+            confirmAction.setValue(buttonTitle, forKey: "title")
+            confirmAction.isEnabled = true
+        }
 
         viewController.present(alert, animated: true, completion: nil)
+        
+        if(countdown == 0) {return}
 
         // 倒计时
         let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)

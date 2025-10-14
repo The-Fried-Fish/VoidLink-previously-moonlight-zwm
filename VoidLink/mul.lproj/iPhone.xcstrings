@@ -577,6 +577,36 @@
         }
       }
     },
+    "6PG-vr-boy.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Edge Trigger Sensitivity\"; ObjectID = \"6PG-vr-boy\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Edge Trigger Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "边缘触发灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邊緣觸發靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邊緣觸發靈敏度"
+          }
+        }
+      }
+    },
     "7nX-ra-hKS.text" : {
       "comment" : "Class = \"UILabel\"; text = \"HDR\"; ObjectID = \"7nX-ra-hKS\";",
       "extractionState" : "extracted_with_value",

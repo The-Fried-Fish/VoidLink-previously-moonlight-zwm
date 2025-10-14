@@ -38,18 +38,17 @@
     bool touchPointSpawnedAtUpperScreenEdge;
     CGFloat slideGestureVerticalThreshold;
     CGFloat screenWidthWithThreshold;
-    CGFloat EDGE_TOLERANCE;
-
+    CGFloat _edgeTolerance;
 }
 
-- (id)initWithView:(StreamView*)view {
+- (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings {
     self = [self init];
     self->streamView = view;
     
     // upper screen check
-    EDGE_TOLERANCE = 10.0;
+    _edgeTolerance = settings.edgeSlidingSensitivity.floatValue;
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
-    screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - EDGE_TOLERANCE;
+    screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
     self->touchPointSpawnedAtUpperScreenEdge = false;
     
     return self;
@@ -64,7 +63,7 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
     CGPoint initialPoint = [[touches anyObject] locationInView:streamView];
-    if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < EDGE_TOLERANCE || initialPoint.x > screenWidthWithThreshold)) {
+    if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < _edgeTolerance || initialPoint.x > screenWidthWithThreshold)) {
         self->touchPointSpawnedAtUpperScreenEdge = true;
         return; // we're done here. this touch event will not be sent to the remote PC.
     }

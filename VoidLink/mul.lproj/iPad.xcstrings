@@ -823,6 +823,36 @@
         }
       }
     },
+    "aGg-ET-e9F.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Edge Trigger Sensitivity\"; ObjectID = \"aGg-ET-e9F\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Edge Trigger Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "边缘触发灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "邊緣觸發靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "邊緣觸發靈敏度"
+          }
+        }
+      }
+    },
     "Aiv-r8-9k2.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frame Rate\"; ObjectID = \"Aiv-r8-9k2\";",
       "extractionState" : "extracted_with_value",
@@ -3560,13 +3590,13 @@
       }
     },
     "pMN-6T-aYE.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Gesture Slide Distance\"; ObjectID = \"pMN-6T-aYE\";",
+      "comment" : "Class = \"UILabel\"; text = \"Gesture Sliding Distance\"; ObjectID = \"pMN-6T-aYE\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Gesture Slide Distance"
+            "value" : "Gesture Sliding Distance"
           }
         },
         "zh-Hans" : {

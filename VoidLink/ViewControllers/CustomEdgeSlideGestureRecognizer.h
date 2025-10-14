@@ -16,7 +16,7 @@
 @property (nonatomic, assign) UIRectEdge edges; // Specify the edge(s) you want to recognize the swipe gesture on
 @property (nonatomic, assign) CGFloat normalizedThresholdDistance; // Distance from the edge to start recognizing the gesture
 @property (nonatomic, assign) bool immediateTriggering;
-@property (nonatomic, assign) CGFloat EDGE_TOLERANCE;
+@property (nonatomic, assign) CGFloat edgeTolerance;
 
 @end
 #endif /* CustomEdgeSlideGestureRecognizer_h */

@@ -1266,7 +1266,7 @@ import UIKit
         }
         self.motionHandler.mixLeftStickAndGyroInput(x: targetX, y: targetY)
     }
-    
+     
     private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
         self.onScreenControls.updateLeftTrigger(UInt8(max(min(inputY,255),0)))
     }
@@ -1477,7 +1477,7 @@ import UIKit
             else {return}
         }
         
-        if !firstTouchMoved {
+        if !firstTouchMoved, !self.isAdjacentPoints(currentLocation, from: latestTouchLocation, tolerance: 0.5) {
             // First move event
             self.latestTouchLocation = currentLocation
             self.firstTouchMoved = true
@@ -1489,7 +1489,7 @@ import UIKit
         let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
         let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
 
-        center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
+        if firstTouchMoved {center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)}
         
         latestTouchLocation = currentLocation
         
@@ -1632,11 +1632,20 @@ import UIKit
         }
     }
     
+    func isAdjacentPoints(_ currentPoint: CGPoint, from originalPoint: CGPoint, tolerance: CGFloat) -> Bool {
+        let distance = hypot(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y)
+        let threshold = hypot(tolerance, tolerance)
+        return distance <= threshold
+    }
+    
     private func updateTouchLocation (touch: UITouch) {
-        self.mousePointerMoved = true
         let currentTouchLocation: CGPoint = (touch.location(in: self))
         
-        if !firstTouchMoved {
+        if !self.mousePointerMoved, !self.isAdjacentPoints(currentTouchLocation, from: latestTouchLocation, tolerance: 2.0){
+            self.mousePointerMoved = true
+        }
+
+        if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: latestTouchLocation, tolerance: 0.5) {
             // First move event
             self.latestTouchLocation = currentTouchLocation
             self.firstTouchMoved = true
@@ -1704,7 +1713,7 @@ import UIKit
                 handleLrudTouchMove()
             case "MOUSEWHEEL","WHEEL":
                 self.updateTouchLocation(touch: touches.first!)
-                LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))
+                if firstTouchMoved {LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))}
             default:
                 break
             }
