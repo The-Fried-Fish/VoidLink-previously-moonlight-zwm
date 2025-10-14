@@ -135,6 +135,7 @@
     self.gyroBiasZ = settings.gyroBiasZ;
     self.singleTapSensitivity = settings.singleTapSensitivity;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
+    self.edgeSlidingSensitivity = settings.edgeSlidingSensitivity;
     self.hapticEngine = settings.hapticEngine;
 #endif
     self.uniqueId = settings.uniqueId;

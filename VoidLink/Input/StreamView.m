@@ -132,7 +132,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     switch (settings.touchMode.intValue) {
         case NativeTouch:
             keyboardToggleRecognizer.immediateTriggering = false;
-            self->touchHandler = [[NativeTouchHandler alloc] initWithView:self andSettings:settings];break;
+            self->touchHandler = [[NativeTouchHandler alloc] initWithView:self andSettings:settings];
+            break;
         case NativeTouchOnly:
             keyboardToggleRecognizer.immediateTriggering = false;
             self->touchHandler = [[PureNativeTouchHandler alloc] initWithView:self andSettings:settings];break;
@@ -142,7 +143,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             // if(settings.onscreenControls.intValue == OnScreenControlsLevelCustom) keyboardToggleRecognizer.numberOfTouchesRequired = 3; //deprecated: fixing keyboard taps to 3, in order to invoke OSC rebase in stream view by 4-finger tap.
             break;
         case AbsoluteTouch:
-            self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self];
+            self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self andSettings:settings];
             keyboardToggleRecognizer.immediateTriggering = true; //triggers signal in touchesBegan callback stage
             break;
         case TouchDisabled:

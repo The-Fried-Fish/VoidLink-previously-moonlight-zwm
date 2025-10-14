@@ -84,7 +84,7 @@
 
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
-    CustomEdgeSlideGestureRecognizer *_slideToCmdToolRecognizer;
+    CustomEdgeSlideGestureRecognizer *_slideToToolboxRecognizer;
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
     ToolboxViewController* toolBoxViewController;
@@ -267,7 +267,7 @@
     //NSLog(@"in osc streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }
 
-- (void)presentToolboxViewController{
+- (void)bringUpToolboxMenu{
     [self configOscLayoutTool];
     ToolboxViewController* oldToolboxVC = toolBoxViewController;
     toolBoxViewController = [[ToolboxViewController alloc] init];
@@ -281,6 +281,7 @@
 
 - (void)configGestures{
     _slideToSettingsRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
+    _slideToSettingsRecognizer.edgeTolerance = _settings.edgeSlidingSensitivity.floatValue;
     _slideToSettingsRecognizer.edges = _settings.slideToSettingsScreenEdge.intValue;
     _slideToSettingsRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
     _slideToSettingsRecognizer.delaysTouchesBegan = NO;
@@ -288,13 +289,14 @@
     [self.view addGestureRecognizer:_slideToSettingsRecognizer];
     
     
-    _slideToCmdToolRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(presentToolboxViewController)];
-    if(_settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft) _slideToCmdToolRecognizer.edges = UIRectEdgeRight;
-    else _slideToCmdToolRecognizer.edges = UIRectEdgeLeft;  // _commandManager triggered by sliding from another side.
-    _slideToCmdToolRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
-    _slideToCmdToolRecognizer.delaysTouchesBegan = NO;
-    _slideToCmdToolRecognizer.delaysTouchesEnded = NO;
-    [self.view addGestureRecognizer:_slideToCmdToolRecognizer];
+    _slideToToolboxRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(bringUpToolboxMenu)];
+    _slideToToolboxRecognizer.edgeTolerance = _settings.edgeSlidingSensitivity.floatValue;
+    if(_settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft) _slideToToolboxRecognizer.edges = UIRectEdgeRight;
+    else _slideToToolboxRecognizer.edges = UIRectEdgeLeft;  // _commandManager triggered by sliding from another side.
+    _slideToToolboxRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
+    _slideToToolboxRecognizer.delaysTouchesBegan = NO;
+    _slideToToolboxRecognizer.delaysTouchesEnded = NO;
+    [self.view addGestureRecognizer:_slideToToolboxRecognizer];
     
     if([self isOscLayoutToolEnabled]){
         _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleWidgetLayoutGesture)];

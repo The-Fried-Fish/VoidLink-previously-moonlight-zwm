@@ -29,7 +29,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     bool touchPointSpawnedAtUpperScreenEdge;
     CGFloat slideGestureVerticalThreshold;
     CGFloat screenWidthWithThreshold;
-    CGFloat EDGE_TOLERANCE;
+    CGFloat _edgeTolerance;
 
     UITouch* touchLockedForMouseMove;
     
@@ -62,9 +62,9 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     mousePointerTimestamp = 0;
     
     // upper screen check
-    EDGE_TOLERANCE = 10.0;
+    _edgeTolerance = settings.edgeSlidingSensitivity.floatValue;
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
-    screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - EDGE_TOLERANCE;
+    screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
     self->touchPointSpawnedAtUpperScreenEdge = false;
     
     // self->displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallback:)];
@@ -97,7 +97,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     for(UIView* view in self->streamView.superview.subviews){  // iterates all on-screen widget views in StreamFrameView
         if ([view isKindOfClass:[OnScreenWidgetView class]]) {
             OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
-            if(widgetView.pressed){
+            if(widgetView.pressedFlagForTapGesture){
                 gotOneButtonPressed = true; //got one button pressed
             }
         }
@@ -109,7 +109,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     for(UIView* view in self->streamView.superview.subviews){  // iterates all on-screen widget views in StreamFrameView
         if ([view isKindOfClass:[OnScreenWidgetView class]]) {
             OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
-            widgetView.pressed = false;
+            widgetView.pressedFlagForTapGesture = false;
         }
     }
 }
@@ -137,8 +137,8 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     return hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= 300;
 }
 
-- (BOOL)isAdjacentPoints:(CGPoint)currentPoint from:(CGPoint)originalPoint {
-    bool isAdjacent = hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= hypot(currentSettings.singleTapSensitivity.doubleValue, currentSettings.singleTapSensitivity.doubleValue);
+- (BOOL)isAdjacentPoints:(CGPoint)currentPoint from:(CGPoint)originalPoint tolerance:(CGFloat)tolerance {
+    bool isAdjacent = hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= hypot(tolerance, tolerance);
     return isAdjacent;
 }
 
@@ -147,7 +147,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     
     //check if touch point is spawned on the left or right upper half screen edges, this is the highest priority
     CGPoint initialPoint = [[touches anyObject] locationInView:streamView];
-    if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < EDGE_TOLERANCE || initialPoint.x > screenWidthWithThreshold)) {
+    if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < _edgeTolerance || initialPoint.x > screenWidthWithThreshold)) {
         self->touchPointSpawnedAtUpperScreenEdge = true;
         return;
     }
@@ -215,10 +215,12 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     // NSLog(@"%f touchesMoved callback, locked touch: %llu", CACurrentMediaTime(), (uintptr_t)touchLockedForMouseMove);
     
     if([touches containsObject:touchLockedForMouseMove]){
-        if(!mousePointerMoved && ![self isAdjacentPoints:initialMousePointerLocation from:[touchLockedForMouseMove locationInView:streamView]]){
+        CGPoint currentLocation = [touchLockedForMouseMove locationInView:streamView];
+        bool isAdjacentPoints = [self isAdjacentPoints:initialMousePointerLocation from:currentLocation tolerance:currentSettings.singleTapSensitivity.doubleValue];
+        if(!mousePointerMoved && !isAdjacentPoints){
             mousePointerMoved = true;
         }
-        [self sendMouseMoveEvent:touchLockedForMouseMove];
+        [self sendMouseMoveEvent:currentLocation];
     }
 }
 
@@ -263,12 +265,12 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     });
 }
 
-- (void)sendMouseMoveEvent:(UITouch* )touch{
+- (void)sendMouseMoveEvent:(CGPoint)currentLocation{
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         
-        CGPoint currentLocation = [touch locationInView:self->streamView];
-        
-        if (!self->firstTouchMoved) {
+        bool isAdjacentPoints = [self isAdjacentPoints:self->initialMousePointerLocation from:currentLocation tolerance:0.5];
+    
+        if (!self->firstTouchMoved && !isAdjacentPoints) {
             self->latestMousePointerLocation = currentLocation;
             self->firstTouchMoved = true;
         }
@@ -282,7 +284,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
             if (deltaX != 0 || deltaY != 0) {
                 self->latestMousePointerLocation = currentLocation;
                 if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
-                LiSendMouseMoveEvent(deltaX, deltaY);
+                if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);
             }
         }
     });

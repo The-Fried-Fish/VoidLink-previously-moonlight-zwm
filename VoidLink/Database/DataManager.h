@@ -119,6 +119,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                rememberFoldState:(BOOL)rememberFoldState
               singleTapSensitivy:(CGFloat)singleTapSensitivy
                     hapticEngine:(NSInteger)hapticEngine
+          edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

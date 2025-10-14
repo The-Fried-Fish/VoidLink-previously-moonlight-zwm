@@ -107,6 +107,7 @@
                rememberFoldState:(BOOL)rememberFoldState
               singleTapSensitivy:(CGFloat)singleTapSensitivy
                     hapticEngine:(NSInteger)hapticEngine
+          edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -164,6 +165,7 @@
         settingsToSave.sendDummyEvent = sendDummyEvent;
         settingsToSave.singleTapSensitivity = [NSNumber numberWithDouble:singleTapSensitivy];
         settingsToSave.hapticEngine = [NSNumber numberWithInteger:hapticEngine];
+        settingsToSave.edgeSlidingSensitivity = [NSNumber numberWithFloat:edgeSlidingSensitivity];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

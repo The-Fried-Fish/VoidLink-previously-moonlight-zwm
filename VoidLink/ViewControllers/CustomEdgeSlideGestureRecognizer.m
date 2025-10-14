@@ -20,7 +20,7 @@ CGFloat startPointX;
     self = [super initWithTarget:target action:action];
 //    screenWidthInPoints = CGRectGetWidth([UIApplication.sharedApplication.windows.firstObject.screen bounds]); // Get the screen's bounds (in points)
     _immediateTriggering = false;
-    _EDGE_TOLERANCE = 10.0f;
+    _edgeTolerance = 10.0f;
     return self;
 }
 
@@ -33,13 +33,13 @@ CGFloat startPointX;
     if(_immediateTriggering){
         
         if(self.edges & UIRectEdgeLeft){
-            if(startPointX < _EDGE_TOLERANCE){
+            if(startPointX < _edgeTolerance){
                 self.state = UIGestureRecognizerStateEnded;
             }
             // NSLog(@"startPointX  %f , normalizedGestureDeltaX %f", startPointX,  normalizedGestureDistance);
         }
         if(self.edges & UIRectEdgeRight){
-            if(startPointX > streamFrameViewWidthInPoints - _EDGE_TOLERANCE){
+            if(startPointX > streamFrameViewWidthInPoints - _edgeTolerance){
                 self.state = UIGestureRecognizerStateEnded;
             }
            // NSLog(@"startPointX  %f , normalizedGestureDeltaX %f", startPointX,  normalizedGestureDistance);
@@ -57,13 +57,13 @@ CGFloat startPointX;
         CGFloat normalizedGestureDistance = fabs(_endPointX - startPointX)/screenWidthInPoints;
         
         if(self.edges & UIRectEdgeLeft){
-            if(startPointX < _EDGE_TOLERANCE && normalizedGestureDistance > _normalizedThresholdDistance){
+            if(startPointX < _edgeTolerance && normalizedGestureDistance > _normalizedThresholdDistance){
                 self.state = UIGestureRecognizerStateEnded;
             }
             // NSLog(@"startPointX  %f , normalizedGestureDeltaX %f", startPointX,  normalizedGestureDistance);
         }
         if(self.edges & UIRectEdgeRight){
-            if((startPointX > (screenWidthInPoints - _EDGE_TOLERANCE)) && normalizedGestureDistance > _normalizedThresholdDistance){
+            if((startPointX > (screenWidthInPoints - _edgeTolerance)) && normalizedGestureDistance > _normalizedThresholdDistance){
                 self.state = UIGestureRecognizerStateEnded;
             }
            // NSLog(@"startPointX  %f , normalizedGestureDeltaX %f", startPointX,  normalizedGestureDistance);

@@ -28,12 +28,11 @@ import UIKit
     
     @objc public weak var functionalButtonDelegate: OnScreenFunctionalButtonDelegate?
     @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
+        func expandSettingsView()
+        func bringUpToolboxMenu()
         func openWidgetLayoutTool()
         func switchWidgetProfile()
         func bringUpSoftKeyboard()
-        func enterPip()
-        func toggleStatsOverlay()
-        func disconnectAndQuitApp()
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -60,7 +59,7 @@ import UIKit
     @objc public var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
     
-    @objc public var pressed: Bool
+    @objc public var pressedFlagForTapGesture: Bool
     @objc public var logicallyDown: Bool = false
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
@@ -274,7 +273,7 @@ import UIKit
         self.shape = shape
         self.label = UILabel()
         // self.originalBackgroundColor = UIColor(white: 0.2, alpha: 0.7)
-        self.pressed = false
+        self.pressedFlagForTapGesture = false
         // self.widthFactor = 1.0
         // self.heightFactor = 1.0
         // self.backgroundAlpha = 0.5
@@ -660,6 +659,8 @@ import UIKit
         setupButtonDownVisualEffectLayer();
         if CommandManager.directionPads.contains(touchPadString) {setupLrudDirectionIndicatorlayers()}
         if CommandManager.stickTouchPads.contains(touchPadString) {self.l3r3Indicator = createl3r3Indicator()}
+        if CommandManager.verticalTouchPads.contains(touchPadString) {self.l3r3Indicator = createl3r3Indicator()}
+        if self.touchPadString == "MOUSEPAD" {self.l3r3Indicator = createl3r3Indicator()}
         if self.hasStickIndicator {
             if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
             if self.stickBallLayer.superlayer == nil {self.stickBallLayer = createStickBall()}
@@ -1155,9 +1156,16 @@ import UIKit
         
         if !OnScreenWidgetView.editMode, !self.motionControlButtonString.isEmpty {self.handleMotionControlButtonDown()}
         
-        // sadflkasdfl;
-        print("666 buttonDownVisualEffectLayer.borderColor: \(CACurrentMediaTime())")
-
+        self.buttonDownVisualEffect()
+        
+        if vibrationOn {
+            vibrationGenerator.prepare()
+            vibrationGenerator.impactOccurred()
+        }
+    }
+    
+    private func buttonDownVisualEffect(){
+        logicallyDown = true
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
@@ -1165,23 +1173,18 @@ import UIKit
             buttonDownVisualEffectLayer.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)) // update position every time we press down the button
             // buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // this will show the visual effect
             buttonDownVisualEffectLayer.borderColor = voidlinkPurple
-            logicallyDown = true
             CATransaction.commit()
-        }
-        if vibrationOn {
-            vibrationGenerator.prepare()
-            vibrationGenerator.impactOccurred()
         }
     }
     
     private func buttonUpVisualEffect(){
+        logicallyDown = false
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             // self.layer.borderWidth = 1
             // buttonDownVisualEffectLayer.borderWidth = 0
             buttonDownVisualEffectLayer.borderColor = UIColor.clear.cgColor
-            logicallyDown = false
             CATransaction.commit()
         }
     }
@@ -1193,11 +1196,11 @@ import UIKit
             self.handleMotionControlButtonUp()
         }
         
+        self.buttonUpVisualEffect()
+
         if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
             self.handleFunctionalButtonUp()
         }
-        
-        self.buttonUpVisualEffect()
     }
     
     private func setupLrudDirectionIndicatorlayers() {
@@ -1287,7 +1290,7 @@ import UIKit
         }
         self.motionHandler.mixLeftStickAndGyroInput(x: targetX, y: targetY)
     }
-    
+     
     private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
         self.onScreenControls.updateLeftTrigger(UInt8(max(min(inputY,255),0)))
     }
@@ -1409,30 +1412,21 @@ import UIKit
             self.twoTouchesDetected = true
         }
         
-        self.pressed = true
+        self.pressedFlagForTapGesture = true
 
         if !OnScreenWidgetView.editMode {
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
                 switch self.touchPadString {
-                case "LSPAD":
+                case "LSPAD","RSPAD":
                     self.showStickIndicator()
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "RSPAD":
-                    self.showStickIndicator()
+                case "LSVPAD","RSVPAD","DS4TOUCH":
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "LSVPAD":
-                    if quickDoubleTapDetected {
-                        self.showl3r3Indicator()
-                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "RSVPAD":
-                    if quickDoubleTapDetected {
-                        self.showl3r3Indicator()
-                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "DPAD", "WASDPAD", "ARROWPAD", "MOUSEWHEEL", "WHEEL":
+                case "DPAD", "WASDPAD", "ARROWPAD":
                     if allSpawnedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
@@ -1441,8 +1435,8 @@ import UIKit
                             self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
                         }
                     }
-                case "DS4TOUCH":
-                    if quickDoubleTapDetected {
+                case "LTPAD", "RTPAD","MOUSEWHEEL", "WHEEL":
+                    if quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                     }
@@ -1458,7 +1452,12 @@ import UIKit
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_MIDDLE)
                     case .rightButtonDown:
                         LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_RIGHT)
-                    case .hovering,.noClick:
+                    case .noClick:
+                        if quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
+                            self.showl3r3Indicator()
+                            self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+                        }
+                    case .hovering:
                         break
                     default:
                         break
@@ -1509,7 +1508,7 @@ import UIKit
             else {return}
         }
         
-        if !firstTouchMoved {
+        if !firstTouchMoved, !self.isAdjacentPoints(currentLocation, from: latestTouchLocation, tolerance: 0.5) {
             // First move event
             self.latestTouchLocation = currentLocation
             self.firstTouchMoved = true
@@ -1521,7 +1520,7 @@ import UIKit
         let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
         let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
 
-        center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
+        if firstTouchMoved {center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)}
         
         latestTouchLocation = currentLocation
         
@@ -1570,17 +1569,15 @@ import UIKit
 
     private func handleFingerUpAfterSliding(touches: Set<UITouch>) {
         for touch in touches {
-            for subview in self.superview?.subviews ?? [] {
-                if let widget = subview as? OnScreenWidgetView{
-                    setLock.lock()
-                    let captured = widget.capturedTouches.contains(touch)
-                    setLock.unlock()
-                    if !captured || widget.buttonMode == ButtonMode.regular.rawValue {continue}
-                    widget.handleFingerUpOrSlideout()
-                    setLock.lock()
-                    widget.capturedTouches.remove(touch)
-                    setLock.unlock()
-                }
+            self.forEachWidget(){ widget in
+                setLock.lock()
+                let captured = widget.capturedTouches.contains(touch)
+                setLock.unlock()
+                if !captured || widget.buttonMode == ButtonMode.regular.rawValue {return}
+                widget.handleFingerUpOrSlideout()
+                setLock.lock()
+                widget.capturedTouches.remove(touch)
+                setLock.unlock()
             }
         }
     }
@@ -1668,11 +1665,20 @@ import UIKit
         }
     }
     
+    func isAdjacentPoints(_ currentPoint: CGPoint, from originalPoint: CGPoint, tolerance: CGFloat) -> Bool {
+        let distance = hypot(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y)
+        let threshold = hypot(tolerance, tolerance)
+        return distance <= threshold
+    }
+    
     private func updateTouchLocation (touch: UITouch) {
-        self.mousePointerMoved = true
         let currentTouchLocation: CGPoint = (touch.location(in: self))
         
-        if !firstTouchMoved {
+        if !self.mousePointerMoved, !self.isAdjacentPoints(currentTouchLocation, from: latestTouchLocation, tolerance: 2.0){
+            self.mousePointerMoved = true
+        }
+
+        if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: latestTouchLocation, tolerance: 0.5) {
             // First move event
             self.latestTouchLocation = currentTouchLocation
             self.firstTouchMoved = true
@@ -1740,7 +1746,7 @@ import UIKit
                 handleLrudTouchMove()
             case "MOUSEWHEEL","WHEEL":
                 self.updateTouchLocation(touch: touches.first!)
-                LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))
+                if firstTouchMoved {LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))}
             default:
                 break
             }
@@ -1802,10 +1808,18 @@ import UIKit
     
     private func handleFunctionalButtonUp(){
         let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
+        if longPressed, buttonMode == ButtonMode.movable.rawValue {return}
         switch self.functionalButtonString {
         case "SETTINGS":
-            if longPressed, buttonMode == ButtonMode.movable.rawValue {break}
-            NotificationCenter.default.post(name: Notification.Name("SettingsOverlayButtonPressedNotification"), object:nil) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
+            self.functionalButtonDelegate?.expandSettingsView()
+        case "TOOLBOX":
+            self.functionalButtonDelegate?.bringUpToolboxMenu()
+        case "WIDGETTOOL":
+            self.functionalButtonDelegate?.openWidgetLayoutTool()
+        case "PROFILES","WIDGETPROFILES":
+            self.functionalButtonDelegate?.switchWidgetProfile()
+        case "SOFTKEYBOARD":
+            self.functionalButtonDelegate?.bringUpSoftKeyboard()
         default:
             break
         }
@@ -1841,10 +1855,9 @@ import UIKit
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
-        // for checking stationary touch points
 
-        if self.touchPadString != "MOUSEPAD" {quickDoubleTapDetected = false} //do not reset this flag here in mousePad mode
-        
+        if !(self.touchPadString == "MOUSEPAD" && self.mouseButtonAction != .noClick) {quickDoubleTapDetected = false} //do not reset this flag here in mousePad mode with button actions
+
         self.allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         
 
@@ -1872,6 +1885,7 @@ import UIKit
                     }
                     mousePointerMoved = false // reset this flag
                 case .noClick:
+                    // quickDoubleTapDetected = false
                     break
                 default:
                     break
@@ -1943,6 +1957,14 @@ import UIKit
             self.leftIndicator.borderColor = UIColor.clear.cgColor
             self.rightIndicator.borderColor = UIColor.clear.cgColor
             self.lrudIndicatorBall.isHidden = true
+        }
+        
+        if CommandManager.verticalTouchPads.contains(touchPadString){
+            self.l3r3Indicator.borderColor = UIColor.clear.cgColor
+        }
+        
+        if self.touchPadString == "MOUSEPAD" && self.mouseButtonAction == .noClick {
+            self.l3r3Indicator.borderColor = UIColor.clear.cgColor
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command

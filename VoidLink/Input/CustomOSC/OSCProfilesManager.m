@@ -227,8 +227,15 @@ static CGRect layoutViewBounds;
 
 - (OSCProfile *) getSelectedProfile {
     NSMutableArray *profiles = [self getAllProfiles];
-    if(profiles.count == 0){
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSString* persistedKey = @"widgetProfileUpdated-20251015";
+    BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
+    
+    if(profiles.count == 0 || needImportDefaultTemplates){
         [self importDefaultTemplates];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:persistedKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         profiles = [self getAllProfiles];
     }
     for (OSCProfile *profile in profiles) {

@@ -402,7 +402,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.micHandler startTapping];
     */
     
-    [self updateParentStackHorizontalConstraints];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange:) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification
@@ -444,6 +443,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:NO];
+    
+    [self updateParentStackHorizontalConstraints];
+    
     [self updateResolutionTable];
     [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
     
@@ -532,7 +534,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     if (@available(iOS 13.0, *)) {
         if(parentStackWidthConstraint && parentStackLeadingConstraint) [NSLayoutConstraint deactivateConstraints:@[parentStackLeadingConstraint, parentStackWidthConstraint]];
-        UIInterfaceOrientation currentOrientation = keyWindow.windowScene.interfaceOrientation;
+        
+        UIWindowScene *activeScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
+        UIInterfaceOrientation currentOrientation;
+        if (activeScene.activationState == UISceneActivationStateForegroundActive) {
+            currentOrientation = activeScene.interfaceOrientation;
+        }
+        else currentOrientation = keyWindow.windowScene.interfaceOrientation;
+
         switch (currentOrientation) {
             case UIInterfaceOrientationLandscapeRight:
                 parentStackLeadingConstraint = [_parentStack.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:0];
@@ -737,6 +746,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.slideToSettingsScreenEdgeStack ofId:@"slideToSettingsScreenEdgeStack" withInfoTag:NO withDynamicLabel:NO to:gesturesSection];
     [self addSetting:self.slideToToolboxScreenEdgeStack ofId:@"slideToToolboxScreenEdgeStack" withInfoTag:NO withDynamicLabel:NO to:gesturesSection];
     [self addSetting:self.slideToSettingsDistanceStack ofId:@"slideToSettingsDistanceStack" withInfoTag:YES withDynamicLabel:YES to:gesturesSection];
+    [self addSetting:self.edgeSlidingSensitivityStack ofId:@"edgeSlidingSensitivityStack" withInfoTag:YES withDynamicLabel:YES to:gesturesSection];
     [gesturesSection addToParentStack:_parentStack];
     // [gesturesSection setExpanded:NO];
 
@@ -1512,7 +1522,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         self->slideToCloseSettingsViewRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
         self->slideToCloseSettingsViewRecognizer.edges = UIRectEdgeLeft;
         self->slideToCloseSettingsViewRecognizer.normalizedThresholdDistance = 0.0;
-        self->slideToCloseSettingsViewRecognizer.EDGE_TOLERANCE = 10;
+        self->slideToCloseSettingsViewRecognizer.edgeTolerance = 10;
         self->slideToCloseSettingsViewRecognizer.immediateTriggering = true;
         self->slideToCloseSettingsViewRecognizer.delaysTouchesBegan = NO;
         self->slideToCloseSettingsViewRecognizer.delaysTouchesEnded = NO;
@@ -1773,7 +1783,9 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.slideToMenuDistanceSlider addTarget:self action:@selector(slideToMenuDistanceSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self slideToMenuDistanceSliderMoved:self.slideToMenuDistanceSlider];
 
-
+        [self.edgeSlidingSensitivitySlider setValue:self->tempSettings.edgeSlidingSensitivity.floatValue];
+        [self.edgeSlidingSensitivitySlider addTarget:self action:@selector(edgeSlidingSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
+        [self edgeSlidingSensitivitySliderMoved:self.edgeSlidingSensitivitySlider];
 
         //TouchMode & OSC Related Settings:
 
@@ -2549,6 +2561,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     displayLabel.text = [NSString stringWithFormat:@"  %@  ", labelText];
 }
 
+- (void) edgeSlidingSensitivitySliderMoved:(UISlider* )sender{
+    UILabel* displayLabel = [self findDynamicLabelFromStack:_edgeSlidingSensitivityStack];
+    // displayLabel.font = [UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
+    NSString* labelText = [LocalizationHelper localizedStringForKey:@"  %d  ", (uint8_t)sender.value];
+    displayLabel.text = [NSString stringWithFormat:@"  %@  ", labelText];
+}
+
+
 - (void) bitrateSliderMoved {
     assert(self.bitrateSlider.value < (sizeof(bitrateTable) / sizeof(*bitrateTable)));
     _bitrate = bitrateTable[(int)self.bitrateSlider.value];
@@ -2811,6 +2831,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL rememberFoldState = self.rememberFoldStateSwitch.isOn;
     CGFloat singleTapSensitivity = self.singleTapSensitivitySlider.value;
     NSInteger hapticEngine = self.hapticEngineSelector.selectedSegmentIndex;
+    CGFloat edgeSlidingSensitivity = self.edgeSlidingSensitivitySlider.value;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2864,6 +2885,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                    rememberFoldState:rememberFoldState
                   singleTapSensitivy:singleTapSensitivity
                         hapticEngine:hapticEngine
+              edgeSlidingSensitivity:edgeSlidingSensitivity
               backgroundSessionTimer:backgroundSessionTimer];
 }
 
