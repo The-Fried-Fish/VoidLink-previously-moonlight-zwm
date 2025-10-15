@@ -128,6 +128,10 @@ static BOOL overridePersistedFoldState = YES;
     // 布局
     [self setupConstraints];
     [self updateViewForFoldState];
+    
+    self.lockedSectionHandler = ^{
+        NSLog(@"Null execution of lockedSectionHandler");
+    };
 }
 
 - (void)setupConstraints {
@@ -324,7 +328,7 @@ static BOOL overridePersistedFoldState = YES;
 
 - (void)toggleFold {
     self.isExpanded = !_expandable ? false : !self.isExpanded;
-    if(!_expandable) self.lockedSectionHandler();
+    if(!_expandable && self.lockedSectionHandler) self.lockedSectionHandler();
     [self updateViewForFoldState];
     [[NSUserDefaults standardUserDefaults] setBool:self.isExpanded forKey:self.identifier];
     [[NSUserDefaults standardUserDefaults] synchronize];
