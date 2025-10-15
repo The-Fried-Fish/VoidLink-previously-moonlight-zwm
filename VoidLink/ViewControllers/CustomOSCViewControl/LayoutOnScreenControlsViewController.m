@@ -819,7 +819,7 @@
         // illustrating the indicator offset,
         [self hideStickIndicators];
         selectedWidgetView.touchBeganLocation = CGPointMake(CGRectGetWidth(selectedWidgetView.frame)/2, CGRectGetHeight(selectedWidgetView.frame)/4);
-        [selectedWidgetView showStickIndicator];// this will create the indicator CAShapeLayers
+        [selectedWidgetView showStickIndicator];
         [self.stickIndicatorOffsetSlider setValue:self->selectedWidgetView.stickIndicatorOffset];
         [self stickIndicatorOffsetSliderMoved:self.stickIndicatorOffsetSlider];
         [self autoFitLabel:self.stickIndicatorOffsetLabel];
