@@ -351,12 +351,15 @@ BOOL isCustomResolution(int resolutionSelected) {
     oscProfile = [oscProfileMan getSelectedProfile];
     [self.mapGyroToSelector setSelectedSegmentIndex:oscProfile.mapGyroTo];
     [self mapGyroToChanged:self.mapGyroToSelector];
+    
+    [self.yawPitchToRightStickSwitch setOn:oscProfile.yawPitchToRightStick];
+    [self.rollToLeftStickSwitch setOn:oscProfile.rollToLeftStick];
+    
     if(self.mapGyroToSelector.selectedSegmentIndex == mapGyroToControllerStick){
-        [self.yawPitchToRightStickSwitch setOn:oscProfile.yawPitchToRightStick];
         [self yawPitchToRightStickSwitchFlipped:self.yawPitchToRightStickSwitch];
-        [self.rollToLeftStickSwitch setOn:oscProfile.rollToLeftStick];
         [self rollToLeftStickSwitchFlipped:self.rollToLeftStickSwitch];
     }
+    
     [self.yawSensitivitySlider setValue:[self map_SliderValue_fromVelocFactor:oscProfile.gyroSensitivityYaw]];
     [self yawSensitivitySliderMoved:self.yawSensitivitySlider];
     [self.pitchSensitivitySlider setValue:[self map_SliderValue_fromVelocFactor:oscProfile.gyroSensitivityPitch]];
