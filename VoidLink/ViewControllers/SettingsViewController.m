@@ -457,6 +457,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     //CGSize currentResolution = CGSizeMake(currentSettings.width.intValue, currentSettings.height.intValue);
     [self.customResolutionSwitch setOn: isCustomResolution(self->tempSettings.resolutionSelected.intValue)];
     [self.resolutionSelector setEnabled:!self.customResolutionSwitch.isOn];
+    [self touchModeChanged:self.touchModeSelector]; // a special fix for iOS 14 to set hidden for the "enableOswStack"
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -1842,7 +1843,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.touchModeSelector addTarget:self action:@selector(touchModeChanged:) forControlEvents:UIControlEventValueChanged];
         [self touchModeChanged:self.touchModeSelector];
 
-        self.enableOswSwitchStack.hidden = !(self->tempSettings.touchMode.intValue == NativeTouch || self->tempSettings.touchMode.intValue == NativeTouchOnly); // do not use setHidden to stack wrapped by a settingStack
+        // self.enableOswSwitchStack.hidden = !(self->tempSettings.touchMode.intValue == NativeTouch || self->tempSettings.touchMode.intValue == NativeTouchOnly); // do not use setHidden to stack wrapped by a settingStack
         
         [self.enableOswForNativeTouchSwitch setOn:self->tempSettings.touchMode.intValue != NativeTouchOnly];
         [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
