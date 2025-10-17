@@ -73,6 +73,7 @@ import UIKit
     
     @objc public var borderWidth: CGFloat = 0.0
     @objc public var backgroundAlpha: CGFloat = 0.5
+    @objc public var labelAlpha: CGFloat = 0.82
     @objc public var vibrationStyle: Int = 6
     @objc public var latestTouchLocation: CGPoint
     @objc public var selfViewOnTheRight: Bool = false
@@ -479,6 +480,11 @@ import UIKit
         setupView()
     }
     
+    @objc public func tweakLabelAlpha(alpha:CGFloat){
+        labelAlpha = alpha
+        label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+    }
+    
     private func tweakAlpha(){
         // setup default border from self.backgroundAlpha
         let realBackgroundAlpha = self.backgroundAlpha - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
@@ -587,7 +593,7 @@ import UIKit
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.1  // Adjust the scale factor as needed
         
-        label.textColor = UIColor(white: 1.0, alpha: 0.82)
+        label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
         label.textAlignment = .center
         label.shadowColor = .black
         label.shadowOffset = CGSize(width: 1, height: 1)

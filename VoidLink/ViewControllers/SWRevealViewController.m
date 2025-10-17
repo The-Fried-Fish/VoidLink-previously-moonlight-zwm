@@ -61,6 +61,7 @@ static CGFloat statusBarAdjustment( UIView* view )
 
 @property (nonatomic, readonly) UIView *rearView;
 @property (nonatomic, strong) UIView *rearNavView;
+@property (nonatomic, strong) UIView *safeAreaPadding;
 @property (nonatomic, readonly) UIView *rightView;
 @property (nonatomic, readonly) UIView *frontView;
 @property (nonatomic, assign) BOOL disableLayout;
@@ -76,7 +77,6 @@ static CGFloat statusBarAdjustment( UIView* view )
 
 
 @implementation SWRevealView{
-    UIView *_safeAreaPadding;
     UIView* _separatorLine;
 }
 
@@ -839,6 +839,7 @@ const int FrontViewPositionNone = 0xff;
 - (void)updateTheme {
     _contentView.backgroundColor = [ThemeManager appBackgroundColor];
     _contentView.rearNavView.backgroundColor = [ThemeManager appBackgroundColor];
+    _contentView.safeAreaPadding.backgroundColor = [ThemeManager appBackgroundColor];
     _separatorLine.backgroundColor = [ThemeManager separatorColor];
     
     if (@available(iOS 13.0, *)) {
