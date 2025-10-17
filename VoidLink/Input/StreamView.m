@@ -577,6 +577,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [widgetView resizeWidgetView]; // resize must be called after relocation
                 [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];
+                [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
                 [widgetView setupAutoTapTimer];
             }
         }

@@ -28,6 +28,7 @@
     BOOL isToolbarHidden;
     OSCProfilesManager* profilesManager;
     OnScreenWidgetView* selectedWidgetView;
+    bool labelAlphaLoaded;
     CALayer* selectedControllerLayer;
     CGRect controllerLoadedBounds;
     bool widgetViewSelected;
@@ -152,6 +153,7 @@
             widgetView.sizeReference = [self getCurrentWidgetSizeReference];
             [widgetView resizeWidgetView]; // resize must be called after relocation
             [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
+            [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
             [widgetView adjustBorderWithWidth:buttonState.borderWidth];
             [self.onScreenWidgetViews addObject:widgetView];
         }
@@ -333,6 +335,14 @@
     else {
         self.undoButton.alpha = 0.3;
     }
+}
+
+- (void)switchAlphaSlider:(UISwipeGestureRecognizer *)sender {
+    if(!widgetViewSelected) return;
+    labelAlphaLoaded = !labelAlphaLoaded;
+    if(labelAlphaLoaded) [self.widgetAlphaSlider setValue: self->selectedWidgetView.labelAlpha];
+    else [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
+    [self widgetAlphaSliderMoved:self.widgetAlphaSlider];
 }
 
 /* animates the toolbar up and off the screen or back down onto the screen */
@@ -663,6 +673,7 @@
     newWidget.sizeReference = widget.sizeReference;
     [newWidget resizeWidgetView]; // resize must be called after relocation
     [newWidget adjustTransparencyWithAlpha:widget.backgroundAlpha];
+    [newWidget tweakLabelAlphaWithAlpha:widget.labelAlpha];
     [newWidget adjustBorderWithWidth:widget.borderWidth];
     [self.onScreenWidgetViews addObject:newWidget];
     self->selectedWidgetView = newWidget;
@@ -753,6 +764,8 @@
 
 - (void)widgetViewTapped: (NSNotification *)notification{
     //self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 && !CGPointEqualToPoint(selectedWidgetView.layoutChanges.lastObject.CGPointValue, selectedWidgetView.initialCenter)? 1.0 : 0.3;
+    // labelAlphaLoaded = false;
+    
     [self hideStickIndicators];
     
     // receive the selected widgetView obj passed from the notification
@@ -834,8 +847,9 @@
     [self.widgetHeightSlider setValue: self->selectedWidgetView.deNormalizedHeightFactor];
     [self autoFitLabel:self.widgetHeightLabel];
     [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
-
-    [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
+    
+    if(labelAlphaLoaded) [self.widgetAlphaSlider setValue: self->selectedWidgetView.labelAlpha];
+    else [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
     [self autoFitLabel:self.widgetAlphaLabel];
     [self widgetAlphaSliderMoved:self.widgetAlphaSlider];
     
@@ -942,13 +956,19 @@
 }
 
 - (void)widgetAlphaSliderMoved:(UISlider* )sender{
-    [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", sender.value]];
-    if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        [self->selectedWidgetView adjustTransparencyWithAlpha:sender.value];
+    if(labelAlphaLoaded){
+        [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Label alpha: %.2f", sender.value]];
+        [selectedWidgetView tweakLabelAlphaWithAlpha:sender.value];
     }
-
-    if(self->selectedControllerLayer != nil && self->controllerLayerSelected){
-        [self.layoutOSC adjustControllerLayerOpacityWith:self->selectedControllerLayer and:sender.value];
+    else{
+        [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", sender.value]];
+        if(self->selectedWidgetView != nil && self->widgetViewSelected){
+            [self->selectedWidgetView adjustTransparencyWithAlpha:sender.value];
+        }
+        
+        if(self->selectedControllerLayer != nil && self->controllerLayerSelected){
+            [self.layoutOSC adjustControllerLayerOpacityWith:self->selectedControllerLayer and:sender.value];
+        }
     }
     return;
 }
@@ -1138,6 +1158,12 @@
 
     [self.widgetAlphaSlider addTarget:self action:@selector(widgetAlphaSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.widgetAlphaLabel.text = [LocalizationHelper localizedStringForKey:@"Alpha"];
+    self.widgetAlphaLabel.userInteractionEnabled = true;
+    UITapGestureRecognizer *alphaSwitchTapGesture =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(switchAlphaSlider:)];
+    [self.widgetAlphaLabel addGestureRecognizer:alphaSwitchTapGesture];
+
    
     [self.widgetBorderWidthSlider addTarget:self action:@selector(widgetBorderWidthSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.widgetBorderWidthLabel.text = [LocalizationHelper localizedStringForKey:@"Border width"];

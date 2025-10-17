@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) CGFloat oscLayerSizeFactor; // for OnScreenController CALayer
 @property (nonatomic, assign) CGFloat backgroundAlpha;
+@property (nonatomic, assign) CGFloat labelAlpha;
 @property (nonatomic, assign) uint8_t vibrationStyle;
 @property (nonatomic, assign) uint8_t mouseButtonAction;
 @property (nonatomic, assign) uint16_t autoTapInterval;
