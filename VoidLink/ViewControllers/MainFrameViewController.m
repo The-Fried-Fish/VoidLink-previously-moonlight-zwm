@@ -1193,6 +1193,7 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.pipStack];
+    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.appThemeStack];
     [settingsViewController.renderingBackendSelector setEnabled:!_settingsExpandedInStreamView];
     // Enable frame pacing mode selector only if not in stream view AND not in performance mode
     BOOL shouldEnableFramePacing = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
@@ -1554,6 +1555,9 @@ static NSMutableSet* hostList;
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     if (@available(iOS 13.0, *)) {
+        DataManager* dataMan = [[DataManager alloc] init];
+        TemporarySettings* tempSettings = [dataMan getSettings];
+        if(tempSettings.appTheme.intValue != UIUserInterfaceStyleUnspecified) return;
         if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
             [ThemeManager setUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
         }
@@ -1563,8 +1567,10 @@ static NSMutableSet* hostList;
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-    //[OrientationHelper updateOrientationToLandscape];
-    // self.navigationController.delegate = self;
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* tempSettings = [dataMan getSettings];
+    [ThemeManager setUserInterfaceStyle:tempSettings.appTheme.intValue];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange) // handle orientation change since i made portrait mode available
                                                  name:UIDeviceOrientationDidChangeNotification

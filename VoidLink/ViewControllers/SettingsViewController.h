@@ -175,6 +175,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *edgeSlidingSensitivityStack;
 @property (strong, nonatomic) IBOutlet UISlider *edgeSlidingSensitivitySlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *appThemeStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *appThemeSelector;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;
