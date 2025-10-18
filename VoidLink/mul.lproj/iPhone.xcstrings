@@ -2264,13 +2264,13 @@
       }
     },
     "IuG-44-1Je.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Autotap: 100ms\"; ObjectID = \"IuG-44-1Je\";",
+      "comment" : "Class = \"UILabel\"; text = \"Autotap\"; ObjectID = \"IuG-44-1Je\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Autotap: 100ms"
+            "value" : "Autotap"
           }
         }
       }

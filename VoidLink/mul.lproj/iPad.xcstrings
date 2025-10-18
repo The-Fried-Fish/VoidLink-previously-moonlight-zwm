@@ -914,13 +914,13 @@
       }
     },
     "And-W9-9NR.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Auto tap: 100ms\"; ObjectID = \"And-W9-9NR\";",
+      "comment" : "Class = \"UILabel\"; text = \"Auto tap\"; ObjectID = \"And-W9-9NR\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Auto tap: 100ms"
+            "value" : "Auto tap"
           }
         }
       }

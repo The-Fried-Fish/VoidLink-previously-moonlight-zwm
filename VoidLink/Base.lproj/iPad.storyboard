@@ -1360,16 +1360,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Oyk-L5-WTt" userLabel="singleTapSensitivityStack">
-                                <rect key="frame" x="440" y="307" width="524" height="55.5"/>
+                                <rect key="frame" x="440" y="307" width="532" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single Tap Sensitivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SuN-S2-8hj">
-                                        <rect key="frame" x="0.0" y="0.0" width="524" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="532" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="5" minimumValueImage="0.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="j4n-De-TRX" userLabel="Single Tap Sensitivity Slider">
-                                        <rect key="frame" x="-2" y="25.5" width="528" height="31"/>
+                                        <rect key="frame" x="-2" y="25.5" width="536" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="qOF-42-hPO"/>
                                         </constraints>
@@ -1847,7 +1847,7 @@
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="z5Q-bW-WQ8" userLabel="widgetPanelStack" customClass="WidgetPanelStackView">
-                                <rect key="frame" x="325" y="156" width="650" height="619"/>
+                                <rect key="frame" x="325" y="156" width="650" height="623"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile:" textAlignment="center" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iel-xl-xd9">
                                         <rect key="frame" x="0.0" y="0.0" width="650" height="37"/>
@@ -1883,8 +1883,28 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="e4b-0v-36Z" userLabel="autoTapStack">
+                                        <rect key="frame" x="0.0" y="202" width="650" height="34"/>
+                                        <subviews>
+                                            <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto tap" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="And-W9-9NR" userLabel="autoTapLabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="105" height="34"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="105" id="GyN-qS-EHz"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" alpha="0.77000000000000002" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yLM-jp-jMl">
+                                                <rect key="frame" x="105" y="0.0" width="545" height="34"/>
+                                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GOp-1e-oUF" userLabel="widgetSizeStack">
-                                        <rect key="frame" x="0.0" y="202" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="241" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZuV-4A-0Zb" userLabel="widgetSizeLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="105" height="30"/>
@@ -1903,7 +1923,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Zz-kb-7Ej" userLabel="widgetHeightStack">
-                                        <rect key="frame" x="0.0" y="237" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="276" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Height" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sbd-0j-KWS" userLabel="widgetHeightLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="105" height="30"/>
@@ -1922,7 +1942,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="9ZS-28-txW" userLabel="borderWidthAlphaStack">
-                                        <rect key="frame" x="0.0" y="272" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="311" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Alpha" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pwa-YK-6Q2" userLabel="widgetAlphaLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="101" height="30"/>
@@ -1957,27 +1977,8 @@
                                             </slider>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="e4b-0v-36Z" userLabel="autoTapStack">
-                                        <rect key="frame" x="0.0" y="307" width="650" height="30"/>
-                                        <subviews>
-                                            <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto tap: 100ms" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="And-W9-9NR" userLabel="autoTapLabel">
-                                                <rect key="frame" x="0.0" y="0.0" width="145" height="30"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="145" id="GyN-qS-EHz"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <slider verifyAmbiguity="off" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="200" minValue="0.0" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="ksz-Dq-bUf" userLabel="autoTapSlider">
-                                                <rect key="frame" x="143" y="0.0" width="509" height="31"/>
-                                                <color key="tintColor" red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <color key="maximumTrackTintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </slider>
-                                        </subviews>
-                                    </stackView>
                                     <stackView contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="zfD-bd-GEN" userLabel="stickIndicatorOffsetStack">
-                                        <rect key="frame" x="0.0" y="342" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="346" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stick Indicator" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tG7-oX-P9b" userLabel="stickIndicatorOffsetLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
@@ -1996,7 +1997,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="80D-qe-E5D" userLabel="sensitivityFactorXStack">
-                                        <rect key="frame" x="0.0" y="377" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="381" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SensitivityX" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJs-pg-hHe" userLabel="sensitivityFactorLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
@@ -2015,7 +2016,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CT5-Ap-Gh0" userLabel="sensitivityFactorYStack">
-                                        <rect key="frame" x="0.0" y="412" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="416" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SensitivityY" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NZO-BM-nef" userLabel="sensitivityFactorYLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
@@ -2034,7 +2035,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2KY-v5-YJv" userLabel="yawFactorStack">
-                                        <rect key="frame" x="0.0" y="447" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="451" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Yaw factor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iZc-Xt-NaK" userLabel="yawFactorLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
@@ -2053,7 +2054,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JNt-eT-HCs" userLabel="pitchFactorStack">
-                                        <rect key="frame" x="0.0" y="482" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="486" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pitch factor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fq3-ie-8by" userLabel="pitchFactorLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
@@ -2072,7 +2073,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KXB-uJ-onx" userLabel="decelerationRateStack">
-                                        <rect key="frame" x="0.0" y="517" width="650" height="30"/>
+                                        <rect key="frame" x="0.0" y="521" width="650" height="30"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DecelerationRate" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pbt-Tw-dnV" userLabel="decelerationRateLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
@@ -2091,7 +2092,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GMQ-EQ-Hum" userLabel="mouseDownButtonStack">
-                                        <rect key="frame" x="0.0" y="552" width="650" height="31"/>
+                                        <rect key="frame" x="0.0" y="556" width="650" height="31"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Down button" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c1r-Hf-b7t" userLabel="mouseDownButtonLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
@@ -2118,7 +2119,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LGW-oJ-5Zf" userLabel="triggerModeStack">
-                                        <rect key="frame" x="0.0" y="588" width="650" height="31"/>
+                                        <rect key="frame" x="0.0" y="592" width="650" height="31"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Button mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qNQ-fB-jhY" userLabel="uiLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
@@ -2172,8 +2173,8 @@
                     <size key="freeformSize" width="1300" height="1194"/>
                     <connections>
                         <outlet property="addButton" destination="fKN-ja-TRi" id="R2n-QF-aSj"/>
+                        <outlet property="autoTapField" destination="yLM-jp-jMl" id="t0v-tj-IZ3"/>
                         <outlet property="autoTapLabel" destination="And-W9-9NR" id="r5A-4a-XZP"/>
-                        <outlet property="autoTapSlider" destination="ksz-Dq-bUf" id="nbG-ye-X7e"/>
                         <outlet property="autoTapStack" destination="e4b-0v-36Z" id="PZd-KE-lPb"/>
                         <outlet property="borderWidthAlphaStack" destination="9ZS-28-txW" id="qxV-2E-g8m"/>
                         <outlet property="buttonModeSelector" destination="cKS-fy-Zpg" id="uIq-60-t7E"/>
@@ -2323,7 +2324,7 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2332,13 +2333,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -774,6 +774,9 @@
     OnScreenWidgetView* widgetView = (OnScreenWidgetView* )notification.object;
     self->widgetViewSelected = true;
     self->controllerLayerSelected = false;
+    
+    if(widgetView != selectedWidgetView) [selectedWidgetView setAutoTapIntervalByTextWithStr:_autoTapField.text];
+    
     self->selectedWidgetView = widgetView;
         
     [self autoFitLabel:self.currentProfileLabel];
@@ -858,9 +861,17 @@
     [self widgetBorderWidthSliderMoved:self.widgetBorderWidthSlider];
     
     self.autoTapStack.hidden = !selectedWidgetView.hasAutoTap;
-    [self.autoTapSlider setValue:self->selectedWidgetView.autoTapInterval];
+    // [self.autoTapSlider setValue:self->selectedWidgetView.autoTapInterval];
+    [self.autoTapField setText:[self->selectedWidgetView getAutoTapIntervalStr]];
+    self.autoTapField.textColor = [UIColor whiteColor];
+    self.autoTapField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    self.autoTapField.attributedPlaceholder =
+        [[NSAttributedString alloc] initWithString:[LocalizationHelper localizedStringForKey:@"Minimum: 50ms. 0 to disable. ms(milliSec),s(sec),m(min). ⏎ to save"]
+                                        attributes:@{
+                    NSForegroundColorAttributeName:[[UIColor whiteColor] colorWithAlphaComponent:0.77]
+                                        }];
     [self autoFitLabel:self.autoTapLabel];
-    [self autoTapSliderMoved:self.autoTapSlider];
+    // [self autoTapSliderMoved:self.autoTapSlider];
 
     self.decelerationRateStack.hidden = !selectedWidgetView.hasTrackBall;
     [self.decelerationRateSlider setValue:selectedWidgetView.trackballDecelerationRate];
@@ -981,13 +992,14 @@
     return;
 }
 
+/*
 - (void)autoTapSliderMoved:(UISlider* )sender{
     [self.autoTapLabel setText:(uint16_t)sender.value < 50 ? [LocalizationHelper localizedStringForKey: @"Auto tap disabled"] : [LocalizationHelper localizedStringForKey: @"Auto tap: %dms", (uint16_t)sender.value]];
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         selectedWidgetView.autoTapInterval = (uint16_t)sender.value;
     }
     return;
-}
+} */
 
 - (void)mouseDownButtonChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
@@ -1169,8 +1181,9 @@
     self.widgetBorderWidthLabel.text = [LocalizationHelper localizedStringForKey:@"Border width"];
     self.borderWidthAlphaStack.hidden = YES;
     
-    [self.autoTapSlider addTarget:self action:@selector(autoTapSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
-    self.autoTapLabel.text = [LocalizationHelper localizedStringForKey:@"Autotap"];
+    // [self.autoTapSlider addTarget:self action:@selector(autoTapSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+    self.autoTapLabel.text = [LocalizationHelper localizedStringForKey:@"Autotap timer   "];
+    self.autoTapField.delegate = self;
     self.autoTapStack.hidden = YES;
   
     [self.sensitivityXSlider addTarget:self action:@selector(sensitivityXSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
@@ -1254,6 +1267,12 @@
             [self.vibrationStyleSelector removeSegmentAtIndex:3 animated:NO];
         }
     }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder]; // 收起键盘
+    [selectedWidgetView setAutoTapIntervalByTextWithStr:textField.text];
+    return YES;
 }
 
 - (void)applyShadowForiOS13:(UIStackView* )stack {

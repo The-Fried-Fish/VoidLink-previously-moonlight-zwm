@@ -858,6 +858,29 @@
         }
       }
     },
+    "Autotap timer   " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连点定时器   "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連點定時器   "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連點定時器   "
+          }
+        }
+      }
+    },
     "Back" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3072,6 +3095,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搖桿最小偏移量 (0~32766)"
+          }
+        }
+      }
+    },
+    "Minimum: 50ms. 0 to disable. ms(milliSec),s(sec),m(min). ⏎ to save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低: 50ms, 输入0关闭. 单位: ms毫秒, s秒, m分钟. 按 ⏎ 保存设定值."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. 按 ⏎ 儲存設定值."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. 按 ⏎ 儲存設定值."
           }
         }
       }
