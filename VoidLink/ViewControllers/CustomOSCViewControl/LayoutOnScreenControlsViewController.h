@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  This view controller provides the user interface which allows the user to position on screen controller buttons anywhere they'd like on the screen. It also provides the user with the abilities to undo a change, save the on screen controller layout for later retrieval, and load previously saved controller layouts
  */
-@interface LayoutOnScreenControlsViewController : UIViewController <OnScreenWidgetGuidelineUpdateDelegate>
+@interface LayoutOnScreenControlsViewController : UIViewController <OnScreenWidgetGuidelineUpdateDelegate,UITextFieldDelegate>
 - (void)profileRefresh;
 - (void)reloadOnScreenWidgetViews;
 - (void)presentProfilesTableView;
@@ -107,8 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) IBOutlet UIStackView *autoTapStack;
 @property (strong, nonatomic) IBOutlet UILabel *autoTapLabel;
-@property (strong, nonatomic) IBOutlet UISlider *autoTapSlider;
-
+// @property (strong, nonatomic) IBOutlet UISlider *autoTapSlider;
+@property (strong, nonatomic) IBOutlet UITextField *autoTapField;
 
 
 @property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;

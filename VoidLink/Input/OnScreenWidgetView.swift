@@ -2013,6 +2013,77 @@ import UIKit
         if self.buttonMode != ButtonMode.tapToToggle.rawValue {self.handleFingerUpOrSlideout()}
     }
     
+    @objc public func setAutoTapIntervalByText(str: String){
+        self.autoTapInterval = self.parseTimeToMilliseconds(str)
+    }
+    
+    private func parseTimeToMilliseconds(_ input: String) -> Int {
+        // 最大值：24小时对应的毫秒数
+        let maxMilliseconds = 24 * 60 * 60 * 1000
+        
+        // 去除前后空白
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        let pattern = #"^(\d+)(ms|s|m)?$"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: trimmed, range: NSRange(trimmed.startIndex..., in: trimmed)) else {
+            return 0
+        }
+        
+        let valueRange = Range(match.range(at: 1), in: trimmed)!
+        let valueString = String(trimmed[valueRange])
+        guard let value = Int(valueString) else { return 0 }
+        
+        var unit = "ms"
+        if let unitRange = Range(match.range(at: 2), in: trimmed) {
+            unit = String(trimmed[unitRange])
+        }
+        
+        var milliseconds: Int
+        switch unit {
+        case "ms":
+            milliseconds = value
+        case "s":
+            milliseconds = value * 1000
+        case "m":
+            milliseconds = value * 60 * 1000
+        default:
+            return 0
+        }
+        
+        // 小于 50 ms 的情况返回 0
+        if milliseconds < 50 {
+            return 0
+        }
+        
+        // 限制最大值
+        if milliseconds > maxMilliseconds {
+            milliseconds = maxMilliseconds
+        }
+        
+        return milliseconds
+    }
+
+    @objc public func getAutoTapIntervalStr() -> String {
+        // 边界限制：小于50ms的当作0，超过24小时的限制为24小时
+        let maxMilliseconds = 24 * 60 * 60 * 1000
+        if autoTapInterval < 50 {
+            return ""
+        }
+        let ms = min(autoTapInterval, maxMilliseconds)
+        
+        if ms % (60 * 1000) == 0 {
+            // 整分钟
+            return "\(ms / (60 * 1000))m"
+        } else if ms % 1000 == 0 {
+            // 整秒
+            return "\(ms / 1000)s"
+        } else {
+            // 毫秒
+            return "\(ms)ms"
+        }
+    }
+    
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         if superview == nil {
