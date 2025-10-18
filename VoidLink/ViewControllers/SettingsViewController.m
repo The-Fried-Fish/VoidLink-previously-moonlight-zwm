@@ -1830,7 +1830,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         self->oswLayoutFingers = (uint16_t)self->tempSettings.oscLayoutToolFingers.intValue; // load old setting of oscLayoutFingers
         uint8_t keyboardToggleFingers = self->tempSettings.keyboardToggleFingers.intValue;
 
-        [self.softKeyboardGestureSelector setSelectedSegmentIndex:keyboardToggleFingers>=5 ? 3 : keyboardToggleFingers-3];
+        [self.softKeyboardGestureSelector setSelectedSegmentIndex:keyboardToggleFingers>=6 ? 3 : keyboardToggleFingers-3];
 
 
 
