@@ -80,6 +80,7 @@
 @property (nonatomic) BOOL rememberFoldState;
 @property (nonatomic, retain) NSNumber * singleTapSensitivity;
 @property (nonatomic, retain) NSNumber * hapticEngine;
+@property (nonatomic, retain) NSNumber * appTheme;
 @property (nonatomic, retain) NSNumber * edgeSlidingSensitivity;
 @property (nonatomic, retain) NSNumber * framePacingMode;
 

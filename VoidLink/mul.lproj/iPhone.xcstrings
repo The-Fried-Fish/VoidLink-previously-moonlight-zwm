@@ -3235,6 +3235,96 @@
         }
       }
     },
+    "pNz-vd-Sr9.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; pNz-vd-Sr9.segmentTitles[0] = \"System\"; ObjectID = \"pNz-vd-Sr9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "System"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随系统"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟隨系統"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟隨系統"
+          }
+        }
+      }
+    },
+    "pNz-vd-Sr9.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; pNz-vd-Sr9.segmentTitles[1] = \"Light\"; ObjectID = \"pNz-vd-Sr9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Light"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浅色"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "淺色"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "淺色"
+          }
+        }
+      }
+    },
+    "pNz-vd-Sr9.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; pNz-vd-Sr9.segmentTitles[2] = \"Dark\"; ObjectID = \"pNz-vd-Sr9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Dark"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深色"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深色"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深色"
+          }
+        }
+      }
+    },
     "q6v-Jb-ysy.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[0] = \"Xbox 360\"; ObjectID = \"q6v-Jb-ysy\";",
       "extractionState" : "extracted_with_value",
@@ -4431,6 +4521,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸控移動事件間隔"
+          }
+        }
+      }
+    },
+    "yF6-p8-b2s.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Theme\"; ObjectID = \"yF6-p8-b2s\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Theme"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主题"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主題"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主題"
           }
         }
       }

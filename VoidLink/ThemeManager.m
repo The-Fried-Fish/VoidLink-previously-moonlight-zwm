@@ -15,7 +15,7 @@ NSString * const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 static UIUserInterfaceStyle _privateUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
 static UIUserInterfaceStyle _userInterfaceStyle;
 
-+ (UIColor *)getUIStyle{
++ (UIColor *)setPublicUIStyle{
     if (@available(iOS 13.0, *)) {
         UITraitCollection *traitCollection = [UIScreen mainScreen].traitCollection;
             if(_privateUserInterfaceStyle == UIUserInterfaceStyleUnspecified) {
@@ -31,7 +31,7 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 
 
 + (UIUserInterfaceStyle)userInterfaceStyle {
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
     return _userInterfaceStyle;
 }
 
@@ -40,12 +40,12 @@ static UIUserInterfaceStyle _userInterfaceStyle;
         return;
     }
     _privateUserInterfaceStyle = style;
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
     [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil];
 }
 
 + (UIColor *)appBackgroundColor {
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
     switch (self.userInterfaceStyle) {
         case UIUserInterfaceStyleLight:
             return [UIColor colorWithRed:242.0/255.0 green:242.0/255.0 blue:247.0/255.0 alpha:1.0];
@@ -59,7 +59,7 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 }
 
 + (UIColor *)widgetBackgroundColor {
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
     switch (self.userInterfaceStyle) {
         case UIUserInterfaceStyleLight:
             return [UIColor whiteColor];
@@ -72,7 +72,7 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 }
 
 + (UIColor *)separatorColor {
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
         switch (self.userInterfaceStyle) {
             case UIUserInterfaceStyleLight:
                 return [UIColor colorWithWhite:0.1 alpha:0.28];
@@ -86,7 +86,7 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 
 
 + (UIColor *)textColor {
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
         switch (self.userInterfaceStyle) {
         case UIUserInterfaceStyleLight:
             return [UIColor blackColor];
@@ -126,7 +126,7 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 }
 
 + (UIColor *)appPrimaryColorWithAlpha {
-    [ThemeManager getUIStyle];
+    [ThemeManager setPublicUIStyle];
     switch (self.userInterfaceStyle) {
         case UIUserInterfaceStyleLight:
             return [[ThemeManager appPrimaryColor] colorWithAlphaComponent:0.24]; // #0A84FF

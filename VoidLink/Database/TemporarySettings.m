@@ -136,6 +136,7 @@
     self.singleTapSensitivity = settings.singleTapSensitivity;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
     self.edgeSlidingSensitivity = settings.edgeSlidingSensitivity;
+    self.appTheme = settings.appTheme;
     self.hapticEngine = settings.hapticEngine;
 #endif
     self.uniqueId = settings.uniqueId;

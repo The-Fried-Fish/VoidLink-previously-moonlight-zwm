@@ -800,6 +800,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.statsOverlayStack ofId:@"statsOverlayStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.unlockDisplayOrientationStack ofId:@"unlockDisplayOrientationStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.backgroundSessionTimerStack ofId:@"backgroundSessionTimerStack" withInfoTag:NO withDynamicLabel:YES to:otherSection];
+    [self addSetting:self.appThemeStack ofId:@"appThemeStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
@@ -1766,7 +1767,15 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.backgroundSessionTimerSlider setValue:(uint32_t)self->tempSettings.backgroundSessionTimer.floatValue];
         [self.backgroundSessionTimerSlider addTarget:self action:@selector(backgroundSessionTimerSliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self backgroundSessionTimerSliderMoved:self.backgroundSessionTimerSlider];
-
+        
+        [self.appThemeSelector setSelectedSegmentIndex:self->tempSettings.appTheme.intValue];
+        [self.appThemeSelector addTarget:self action:@selector(appThemeChanged:) forControlEvents:UIControlEventValueChanged];
+        if (@available(iOS 13.0, *)) nil;
+        else{
+            [self.appThemeSelector setSelectedSegmentIndex:UIUserInterfaceStyleDark];
+            [self.appThemeSelector setEnabled:false];
+        }
+        
         // lift streamview setting
         [self.liftStreamViewForKeyboardSelector setSelectedSegmentIndex:self->tempSettings.liftStreamViewForKeyboard ? 1 : 0];// Load old setting
 
@@ -2211,6 +2220,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:self.backgroundSessionTimerStack].text = labelString; // Update label display
 }
 
+- (void)appThemeChanged:(UISegmentedControl* )sender{
+    [ThemeManager setUserInterfaceStyle:sender.selectedSegmentIndex];
+    Settings* currentSettings = [self->dataMan retrieveSettings];
+    currentSettings.appTheme = @(sender.selectedSegmentIndex);
+    [dataMan saveData];
+}
 
 // veloc factor upto 700%
 - (CGFloat) map_velocFactorDisplay_fromSliderValue:(CGFloat)sliderValue{
