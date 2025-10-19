@@ -74,6 +74,7 @@ import UIKit
     @objc public var borderWidth: CGFloat = 0.0
     @objc public var backgroundAlpha: CGFloat = 0.5
     @objc public var labelAlpha: CGFloat = 0.82
+    @objc public var borderAlpha: CGFloat = 0.82 * 1.01
     @objc public var vibrationStyle: Int = 6
     @objc public var latestTouchLocation: CGPoint
     @objc public var selfViewOnTheRight: Bool = false
@@ -407,15 +408,9 @@ import UIKit
         layoutChanges.removeLast()
     }
     
-    @objc public func adjustTransparency(alpha: CGFloat){
-        if alpha != 0 {
-            self.backgroundAlpha = alpha
-        }
-        else{
-            // self.backgroundAlpha = 0.5
-            self.backgroundAlpha = alpha
-        }
-        self.tweakAlpha()
+    @objc public func adjustTransparency(alpha: CGFloat, tweakBorderAlpha:Bool){
+        self.backgroundAlpha = alpha
+        self.tweakAlpha(tweakBorderAlpha: tweakBorderAlpha)
     }
     
     @objc public func adjustBorder(width: CGFloat){
@@ -461,17 +456,18 @@ import UIKit
         label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
     }
     
-    private func tweakAlpha(){
+    @objc public func tweakBorderAlpha(alpha:CGFloat){
+        borderAlpha = alpha
+        defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
+        self.layer.borderColor = defaultBorderColor
+    }
+    
+    private func tweakAlpha(tweakBorderAlpha:Bool){
         // setup default border from self.backgroundAlpha
         let realBackgroundAlpha = self.backgroundAlpha - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
         self.backgroundColor = UIColor(white: 0.2, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
-        var borderAlpha = realBackgroundAlpha * 1.01
-        if widgetType == WidgetTypeEnum.touchPad {
-            minimumBorderAlpha = 0.0
-        }
-        if borderAlpha < minimumBorderAlpha {
-            borderAlpha = minimumBorderAlpha
-        }
+        
+        borderAlpha = tweakBorderAlpha ? realBackgroundAlpha * 1.01 : borderAlpha
         defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
         self.layer.borderColor = defaultBorderColor
         
@@ -580,7 +576,7 @@ import UIKit
         self.setSquareWidgetCornerRadius()
         self.layer.borderWidth = self.borderWidth
         
-        self.tweakAlpha()
+        self.tweakAlpha(tweakBorderAlpha: false)
         
         if self.shape == "default" || self.shape.isEmpty {
             if CommandManager.oscButtonMappings.keys.contains(self.buttonString) && !CommandManager.oscRectangleButtonCmds.contains(self.buttonString){ //make oscButtons round

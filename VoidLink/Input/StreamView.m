@@ -575,9 +575,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 // widgetView.sizeReference = buttonState.sizeReference;
                 //portrait markmarkmark
                 [widgetView resizeWidgetView]; // resize must be called after relocation
-                [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
+                [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha tweakBorderAlpha:NO];
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];
                 [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
+                [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
                 [widgetView setupAutoTapTimer];
             }
         }
