@@ -28,8 +28,6 @@ static UIUserInterfaceStyle _userInterfaceStyle;
     }
 }
 
-
-
 + (UIUserInterfaceStyle)userInterfaceStyle {
     [ThemeManager setPublicUIStyle];
     return _userInterfaceStyle;

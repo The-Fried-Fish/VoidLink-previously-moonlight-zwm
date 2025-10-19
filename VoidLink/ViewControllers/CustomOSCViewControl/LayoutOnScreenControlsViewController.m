@@ -21,6 +21,13 @@
 
 @interface LayoutOnScreenControlsViewController ()
 
+typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
+    widgetAlpha,
+    labelAlpha,
+    borderAlpha,
+    AlphaSliderModeCount
+};
+
 @end
 
 
@@ -28,7 +35,7 @@
     BOOL isToolbarHidden;
     OSCProfilesManager* profilesManager;
     OnScreenWidgetView* selectedWidgetView;
-    bool labelAlphaLoaded;
+    AlphaSliderMode alphaSliderMode;
     CALayer* selectedControllerLayer;
     CGRect controllerLoadedBounds;
     bool widgetViewSelected;
@@ -152,8 +159,9 @@
             [widgetView setLocationWithPosition:buttonState.position];
             widgetView.sizeReference = [self getCurrentWidgetSizeReference];
             [widgetView resizeWidgetView]; // resize must be called after relocation
-            [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha];
+            [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha tweakBorderAlpha:NO];
             [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
+            [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
             [widgetView adjustBorderWithWidth:buttonState.borderWidth];
             [self.onScreenWidgetViews addObject:widgetView];
         }
@@ -339,10 +347,30 @@
 
 - (void)switchAlphaSlider:(UISwipeGestureRecognizer *)sender {
     if(!widgetViewSelected) return;
-    labelAlphaLoaded = !labelAlphaLoaded;
-    if(labelAlphaLoaded) [self.widgetAlphaSlider setValue: self->selectedWidgetView.labelAlpha];
-    else [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
-    [self widgetAlphaSliderMoved:self.widgetAlphaSlider];
+    alphaSliderMode = (alphaSliderMode + 1) % AlphaSliderModeCount;
+    [self loadWidgetAlphas];
+}
+
+- (void)loadWidgetAlphas{
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        switch(alphaSliderMode){
+            case widgetAlpha:
+                [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
+                [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", _widgetAlphaSlider.value]];
+                break;
+            case labelAlpha:
+                [self.widgetAlphaSlider setValue: self->selectedWidgetView.labelAlpha];
+                [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Label alpha: %.2f", _widgetAlphaSlider.value]];
+                break;
+            case borderAlpha:
+                [self.widgetAlphaSlider setValue: self->selectedWidgetView.borderAlpha];
+                [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Border alpha: %.2f", _widgetAlphaSlider.value]];
+                break;
+            case AlphaSliderModeCount:
+            default:
+                break;
+        }
+    }
 }
 
 /* animates the toolbar up and off the screen or back down onto the screen */
@@ -672,8 +700,9 @@
     else [newWidget setLocationWithPosition:widget.center];
     newWidget.sizeReference = widget.sizeReference;
     [newWidget resizeWidgetView]; // resize must be called after relocation
-    [newWidget adjustTransparencyWithAlpha:widget.backgroundAlpha];
+    [newWidget adjustTransparencyWithAlpha:widget.backgroundAlpha tweakBorderAlpha:NO];
     [newWidget tweakLabelAlphaWithAlpha:widget.labelAlpha];
+    [newWidget tweakBorderAlphaWithAlpha:widget.borderAlpha];
     [newWidget adjustBorderWithWidth:widget.borderWidth];
     [self.onScreenWidgetViews addObject:newWidget];
     self->selectedWidgetView = newWidget;
@@ -763,8 +792,6 @@
  */
 
 - (void)widgetViewTapped: (NSNotification *)notification{
-    //self.undoButton.alpha = selectedWidgetView.layoutChanges.count>1 && !CGPointEqualToPoint(selectedWidgetView.layoutChanges.lastObject.CGPointValue, selectedWidgetView.initialCenter)? 1.0 : 0.3;
-    // labelAlphaLoaded = false;
     
     [self hideStickIndicators];
     
@@ -851,10 +878,9 @@
     [self autoFitLabel:self.widgetHeightLabel];
     [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
     
-    if(labelAlphaLoaded) [self.widgetAlphaSlider setValue: self->selectedWidgetView.labelAlpha];
-    else [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
+    
+    [self loadWidgetAlphas];
     [self autoFitLabel:self.widgetAlphaLabel];
-    [self widgetAlphaSliderMoved:self.widgetAlphaSlider];
     
     [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
     [self autoFitLabel:self.widgetBorderWidthLabel];
@@ -871,7 +897,6 @@
                     NSForegroundColorAttributeName:[[UIColor whiteColor] colorWithAlphaComponent:0.77]
                                         }];
     [self autoFitLabel:self.autoTapLabel];
-    // [self autoTapSliderMoved:self.autoTapSlider];
 
     self.decelerationRateStack.hidden = !selectedWidgetView.hasTrackBall;
     [self.decelerationRateSlider setValue:selectedWidgetView.trackballDecelerationRate];
@@ -967,20 +992,28 @@
 }
 
 - (void)widgetAlphaSliderMoved:(UISlider* )sender{
-    if(labelAlphaLoaded){
-        [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Label alpha: %.2f", sender.value]];
-        [selectedWidgetView tweakLabelAlphaWithAlpha:sender.value];
-    }
-    else{
-        [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", sender.value]];
-        if(self->selectedWidgetView != nil && self->widgetViewSelected){
-            [self->selectedWidgetView adjustTransparencyWithAlpha:sender.value];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        switch(alphaSliderMode){
+            case widgetAlpha:
+                [self->selectedWidgetView adjustTransparencyWithAlpha:sender.value tweakBorderAlpha:YES];
+                break;
+            case labelAlpha:
+                [selectedWidgetView tweakLabelAlphaWithAlpha:sender.value];
+                break;
+            case borderAlpha:
+                [self->selectedWidgetView tweakBorderAlphaWithAlpha:sender.value];
+                break;
+            case AlphaSliderModeCount:
+            default:
+                break;
         }
-        
-        if(self->selectedControllerLayer != nil && self->controllerLayerSelected){
-            [self.layoutOSC adjustControllerLayerOpacityWith:self->selectedControllerLayer and:sender.value];
-        }
+        [self loadWidgetAlphas];
     }
+
+    if(self->selectedControllerLayer != nil && self->controllerLayerSelected){
+        [self.layoutOSC adjustControllerLayerOpacityWith:self->selectedControllerLayer and:sender.value];
+    }
+    
     return;
 }
 
