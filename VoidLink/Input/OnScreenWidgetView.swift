@@ -74,7 +74,7 @@ import UIKit
     @objc public var borderWidth: CGFloat = 0.0
     @objc public var backgroundAlpha: CGFloat = 0.5
     @objc public var labelAlpha: CGFloat = 0.82
-    @objc public var borderAlpha: CGFloat = 0.82 * 1.01
+    @objc public var borderAlpha: CGFloat = 0.19
     @objc public var vibrationStyle: Int = 6
     @objc public var latestTouchLocation: CGPoint
     @objc public var selfViewOnTheRight: Bool = false
@@ -491,13 +491,14 @@ import UIKit
         let realBackgroundAlpha = self.backgroundAlpha - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
         self.backgroundColor = UIColor(white: 0.2, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
         
-        borderAlpha = tweakBorderAlpha ? realBackgroundAlpha * 1.01 : borderAlpha
-        defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
-        self.layer.borderColor = defaultBorderColor
+        if tweakBorderAlpha {
+            borderAlpha = realBackgroundAlpha * 1.01
+            defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
+            self.layer.borderColor = defaultBorderColor
+        }
         
         if widgetType == WidgetTypeEnum.touchPad {
             self.backgroundColor = UIColor.clear // make touchPad transparent
-            self.layer.borderColor = UIColor(white: 0.2, alpha: borderAlpha - 0.15).cgColor // reduced border alpha for touchPad
         }
     }
     
