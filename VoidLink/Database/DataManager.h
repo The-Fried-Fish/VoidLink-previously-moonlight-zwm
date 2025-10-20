@@ -16,12 +16,6 @@
 
 @interface DataManager : NSObject
 
-typedef NS_ENUM(NSUInteger, AppTheme) {
-    SystemTheme,
-    LightTheme,
-    DarkTheme
-};
-
 typedef NS_ENUM(NSUInteger, UINavigationBarHeight) {
     UINavigationBarHeightIPad = 50,
     UINavigationBarHeightIPhone = 44
