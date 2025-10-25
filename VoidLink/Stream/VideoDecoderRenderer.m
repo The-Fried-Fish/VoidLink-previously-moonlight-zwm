@@ -114,7 +114,9 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 {
     NSLog(@"initializing video decoder %f", CACurrentMediaTime());
     self = [super init];
-
+    
+    _appDidEnterBackgroundWithoutPiP = false;
+    
     _sq = dispatch_queue_create("com.moonlight.VideoDecoderRenderer",
                                 dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0));
 
@@ -263,6 +265,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 // DisplayLink calls us every vsync we we try to present the most recent frame. We try to maintain a user-configurable buffer
 // of 1-5 frames. If the buffer is full, every other frame is dropped which just appears to the user as a lower framerate stream.
 - (void)renderModeAVSB:(CADisplayLink *)link {
+    
     CFTimeInterval start = link.timestamp;
     CFTimeInterval deadline = link.targetTimestamp;
     static CFTimeInterval lastTargetLocal = 0.0f;
@@ -326,6 +329,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 // Legacy frame pacing callback - matches upstream/Integration behavior exactly
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
+    if(_appDidEnterBackgroundWithoutPiP) return;
+    
     VIDEO_FRAME_HANDLE handle;
     PDECODE_UNIT du;
     
@@ -374,7 +379,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         Log(LOG_I, @"Setting timebase for stream to %d / %d", pts.value, pts.timescale);
     }
 
-    [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
+    if(!_appDidEnterBackgroundWithoutPiP) [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
 
 #ifdef DISPLAYLINK_VERBOSE
     // Some OS-level metrics I'm not sure what to do with

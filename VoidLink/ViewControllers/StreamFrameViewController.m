@@ -1031,6 +1031,8 @@
 - (void)applicationWillResignActive:(NSNotification *)notification {
     //[self.pipController startPictureInPicture];
     //sleep(1);
+    _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = true;
+
     [_streamView saveRelocatedWidgetViews];
 
 #if !TARGET_OS_TV
@@ -1046,6 +1048,7 @@
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
+    _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = false;
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
@@ -1075,11 +1078,13 @@
 
 // This fires when the home button is pressed
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-
     NSLog(@"did enter background, %d, %@, %d", _settings.enablePIP, self.pipController, self.pipController.isPictureInPictureActive);
     if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
         //Log(LOG_I, @"PIP is active, not terminating stream");
+        _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = false;
     } else {
+        _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = true;
+
         if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
             Log(LOG_I, @"Pausing Metal renderer on background");
             [self.metalViewController pauseRendering];
