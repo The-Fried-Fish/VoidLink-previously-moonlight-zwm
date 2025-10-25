@@ -28,6 +28,8 @@
 如果你在用Bilibili， 请关注`True砖家`，了解该fork的最新消息。 <br>
 If you are on Bilibili, subscribe `True砖家` to get the latest news of this fork: <br>
 https://b23.tv/A0F9v7n
+## 中文用户捐赠渠道
+<img width="198" height="244" alt="截屏2025-10-25 20 53 06" src="https://github.com/user-attachments/assets/27153225-5651-4d7e-8976-0961739b9639" />
 
 <br>
 
@@ -42,6 +44,7 @@ https://b23.tv/A0F9v7n
 [@xzzpig](https://github.com/xzzpig) <br>
 [@qiin2333](https://github.com/qiin2333) <br>
 [@King0fSpace](https://github.com/King0fSpace) <br>
+
 
 # 应用截图 ScreenShots
 ## Host view
