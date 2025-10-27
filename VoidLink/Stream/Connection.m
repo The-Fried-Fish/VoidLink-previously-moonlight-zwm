@@ -5,6 +5,9 @@
 //  Created by Diego Waxemberg on 1/19/14.
 //  Copyright (c) 2015 Moonlight Stream. All rights reserved.
 //
+//  Modified by True砖家 since 2025.9
+//  Copyright © 2025 True砖家 on Bilibili. All rights reserved.
+//
 
 #import "Connection.h"
 #import "Plot.h"
@@ -46,6 +49,12 @@ static OPUS_MULTISTREAM_CONFIGURATION audioConfig;
 static void* audioBuffer;
 static float volume = 1.0;
 static int audioFrameSize;
+
+static bool useSystemAudioEngine;
+static AVAudioEngine *audioEngine;
+static AVAudioPlayerNode *audioPlayerNode;
+static AVAudioPCMBuffer *pcmBuffer;
+static AVAudioFormat *audioFormat;
 
 static VideoDecoderRenderer* renderer;
 
@@ -276,10 +285,20 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
     SDL_PauseAudioDevice(audioDevice, 0);
     
     // Disable lowering volume of other audio streams (SDL sets AVAudioSessionCategoryOptionDuckOthers by default)
-
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:nil];
- 
+    // AVAudioSessionCategoryOptionAllowBluetoothA2DP
+    // AVAudioSessionCategoryOptionAllowBluetooth
+    DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* tempSettings = [dataMan getSettings];
+    bool useBluetoothD2P = tempSettings.useBuiltinMic || !tempSettings.redirectMic;
+    AVAudioSessionCategoryOptions bluetoothAudioOption = useBluetoothD2P ? AVAudioSessionCategoryOptionAllowBluetoothA2DP : AVAudioSessionCategoryOptionAllowBluetooth;
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord
+             withOptions:AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker|bluetoothAudioOption
+                   error:nil];
+    [session setActive:YES error:nil];
     
+    AudioEngineInit(audioConfig.sampleRate, audioConfig.channelCount);
+
     return 0;
 }
 
@@ -310,6 +329,30 @@ void ArCleanup(void)
     volume = powf(linearVolume, exponent);
 }
 
++ (void)setUseSystemAudioEngine:(bool)useSysAudioEngine{
+    useSystemAudioEngine = useSysAudioEngine;
+}
+
+void AudioEngineInit(int sampleRate, int channelCount) {
+    audioEngine = [[AVAudioEngine alloc] init];
+    audioPlayerNode = [[AVAudioPlayerNode alloc] init];
+    
+    [audioEngine attachNode:audioPlayerNode];
+    
+    audioFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32
+                                                   sampleRate:sampleRate
+                                                     channels:channelCount
+                                                  interleaved:NO];
+    
+    [audioEngine connect:audioPlayerNode to:audioEngine.mainMixerNode format:audioFormat];
+
+    NSError *err = nil;
+    if (![audioEngine startAndReturnError:&err]) {
+        NSLog(@"AudioEngine start error: %@", err);
+    }
+    [audioPlayerNode play];
+}
+
 void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
 {
     int decodeLen;
@@ -333,21 +376,41 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
         
         float* fbuf = (float*)audioBuffer;
         
-        if(volume != 1.0){
-            int totalSamples = decodeLen * audioConfig.channelCount;
-            for (int i = 0; i < totalSamples; i++) {
-                fbuf[i] *= volume;
+        // if(useSystemAudioEngine && false) {
+        if(true){
+            // 创建 AVAudioPCMBuffer
+            AVAudioFrameCount frameCount = decodeLen;
+            AVAudioPCMBuffer *buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFormat frameCapacity:frameCount];
+            buffer.frameLength = frameCount;
+            
+            // 拷贝数据到 buffer
+            for (int ch = 0; ch < audioConfig.channelCount; ch++) {
+                float *dst = buffer.floatChannelData[ch];
+                for (int i = 0; i < decodeLen; i++) {
+                    dst[i] = fbuf[i * audioConfig.channelCount + ch] * volume; // 非交错数据
+                }
             }
+            // 播放
+            [audioPlayerNode scheduleBuffer:buffer completionHandler:nil];
         }
         
-        while (SDL_GetQueuedAudioSize(audioDevice) / audioFrameSize > 10) {
-            [NSThread sleepForTimeInterval:0.001f];
-        }
-        
-        if (SDL_QueueAudio(audioDevice,
-                           audioBuffer,
-                           sizeof(float) * decodeLen * audioConfig.channelCount) < 0) {
-            Log(LOG_E, @"Failed to queue audio sample: %s\n", SDL_GetError());
+        else{
+            if(volume != 1.0){
+                int totalSamples = decodeLen * audioConfig.channelCount;
+                for (int i = 0; i < totalSamples; i++) {
+                    fbuf[i] *= volume;
+                }
+            }
+            
+            while (SDL_GetQueuedAudioSize(audioDevice) / audioFrameSize > 10) {
+                [NSThread sleepForTimeInterval:0.001f];
+            }
+            
+            if (SDL_QueueAudio(audioDevice,
+                               audioBuffer,
+                               sizeof(float) * decodeLen * audioConfig.channelCount) < 0) {
+                Log(LOG_E, @"Failed to queue audio sample: %s\n", SDL_GetError());
+            }
         }
     }
 }
@@ -423,7 +486,9 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     // won't be able to acquire it if LiStartConnection is in
     // progress.
     LiInterruptConnection();
-    
+    [audioPlayerNode stop];
+    [audioEngine stop];
+
     // We dispatch this async to get out because this can be invoked
     // on a thread inside common and we don't want to deadlock. It also avoids
     // blocking on the caller's thread waiting to acquire initLock.
