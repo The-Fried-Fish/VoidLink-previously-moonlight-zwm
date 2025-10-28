@@ -1057,7 +1057,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
         vibrationGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:sender.selectedSegmentIndex];
         [vibrationGenerator prepare];
         [vibrationGenerator impactOccurred];
-        NSLog(@"vibration instance: %@", vibrationGenerator);
+        // NSLog(@"vibration instance: %@", vibrationGenerator);
     }
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         [self->selectedWidgetView setVibrationWithStyle:sender.selectedSegmentIndex];
