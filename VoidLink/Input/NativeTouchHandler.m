@@ -213,6 +213,7 @@
     if (asyncNativeTouch) dispatch_async(dispatch_get_global_queue(touchDownQos, 0), ^{
         for (UITouch* touch in touches){
             // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
+            if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
             [self handleTouchDown:touch]; //generate & populate pointerId
             if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
@@ -221,6 +222,7 @@
     else{
         for (UITouch* touch in touches){
             // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
+            if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
             [self handleTouchDown:touch]; //generate & populate pointerId
             if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
@@ -242,7 +244,11 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_main_queue(), ^{
         for (UITouch* touch in touches){
-            if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
+            NSNumber* touchAddrObj = @((uintptr_t)touch);
+            if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:touchAddrObj]){
+                [OnScreenControls.touchAddrsCapturedByOnScreenControls removeObject:touchAddrObj];
+                continue;
+            }
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
