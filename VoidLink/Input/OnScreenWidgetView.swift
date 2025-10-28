@@ -54,7 +54,7 @@ import UIKit
     private var buttonString: String = ""
     private var functionalButtonString: String = ""
     public var motionControlButtonString: String = ""
-    private var touchPadString: String = ""
+    @objc public var touchPadString: String = ""
     // super combo key string set
     @objc public var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
@@ -119,6 +119,8 @@ import UIKit
     @objc public var hasTrackBall: Bool = false
     @objc public var isFuncationalButton: Bool = false
     @objc public var hasHapticFeedback: Bool = false
+    @objc public var isDirectionPad: Bool = false
+    @objc public var hasL3R3Indicator: Bool = false
 
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
@@ -135,10 +137,9 @@ import UIKit
     private let crossMarkColor: CGColor = UIColor(white: 1, alpha: 0.70).cgColor
     private let stickBallColor: CGColor = UIColor(white: 1, alpha: 0.75).cgColor
     private var stickInputScale: CGFloat = 35
-    private var l3r3Indicator = CAShapeLayer()
+    @objc public var l3r3Indicator = CAShapeLayer()
     private let stickBallMaxOffset = 18.0
     @objc public var crossMarkLayer = CAShapeLayer()
-    @objc public var stickBallLayer = CAShapeLayer()
     
     // this is for all stick pads and mouse Pad
     @objc public var sensitivityFactorX: CGFloat = 1.0
@@ -156,13 +157,13 @@ import UIKit
     @objc public var stickIndicatorOffset: CGFloat = 120
     
     // for all LRUD pads
-    private var upIndicator = CAShapeLayer()
-    private var downIndicator = CAShapeLayer()
-    private var leftIndicator = CAShapeLayer()
-    private var rightIndicator = CAShapeLayer()
+    @objc public var upIndicator = CAShapeLayer()
+    @objc public var downIndicator = CAShapeLayer()
+    @objc public var leftIndicator = CAShapeLayer()
+    @objc public var rightIndicator = CAShapeLayer()
     
     // for DPAD LRUD pad
-    private var lrudIndicatorBall = CAShapeLayer()
+    @objc public var lrudIndicatorBall = CAShapeLayer()
     private let triggeringAngle = 67.5
     private enum Direction: Int {
         case right = 1
@@ -215,8 +216,10 @@ import UIKit
     
     // whole button press down visual effect
     @objc public let buttonDownVisualEffectLayer = CAShapeLayer()
-    private var buttonDownVisualEffectWidth: CGFloat
-    
+    @objc public var buttonDownVisualEffectStandardWidth: CGFloat
+    @objc public var highlightSizeFactor: CGFloat = 1.0
+    @objc static public var isTweakingHighlightSize: Bool = false
+
     
     @objc init(cmdString: String, buttonLabel: String, shape:String) {
 
@@ -291,7 +294,7 @@ import UIKit
         self.quickDoubleTapDetected = false
         self.touchTapTimeInterval = 100
         self.touchTapTimeStamp = 100
-        self.buttonDownVisualEffectWidth = 0
+        self.buttonDownVisualEffectStandardWidth = 0
         self.mousePointerMoved = false
         self.touchLockedForMoveEvent = UITouch()
         self.twoTouchesDetected = false
@@ -374,7 +377,9 @@ import UIKit
         self.isMousePad = self.touchPadString == "MOUSEPAD" && widgetType == WidgetTypeEnum.touchPad
         self.hasTrackBall = self.touchPadString == "TRACKBALL"
         self.isFuncationalButton = self.functionalButtonString != ""
-        self.hasHapticFeedback = !self.comboButtonStrings.isEmpty
+        self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
+        self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
+        self.hasL3R3Indicator = !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
     }
     
     // ======================================================================================================
@@ -650,39 +655,46 @@ import UIKit
         
         center = storedCenter //anchor the center while resizing self
         
-        setupButtonDownVisualEffectLayer();
+        hideAllHighlightLayersOfAllWidgets(selfIncluded: false)
+        if widgetType == WidgetTypeEnum.button {setupButtonDownVisualEffectLayer()}
         if CommandManager.directionPads.contains(touchPadString) {setupLrudDirectionIndicatorlayers()}
-        if CommandManager.stickTouchPads.contains(touchPadString) {self.l3r3Indicator = createl3r3Indicator()}
-        if CommandManager.verticalTouchPads.contains(touchPadString) {self.l3r3Indicator = createl3r3Indicator()}
-        if self.touchPadString == "MOUSEPAD" {self.l3r3Indicator = createl3r3Indicator()}
+        if CommandManager.stickTouchPads.contains(touchPadString) {setupL3R3Indicator()}
+        if CommandManager.verticalTouchPads.contains(touchPadString) {setupL3R3Indicator()}
+        if self.touchPadString == "MOUSEPAD" {setupL3R3Indicator()}
         if self.hasStickIndicator {
             if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
-            if self.stickBallLayer.superlayer == nil {self.stickBallLayer = createStickBall()}
+            if self.lrudIndicatorBall.superlayer == nil {self.lrudIndicatorBall = createStickBall()}
         }
     }
     
-    private func createl3r3Indicator() -> CAShapeLayer{
+    @objc public func setupL3R3Indicator() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
         let indicatorFrame = CAShapeLayer();
-        let indicatorBorder = CAShapeLayer();
+        // l3r3Indicator = CAShapeLayer();
         
-        indicatorFrame.frame = CGRectMake(0, 0, 75, 75)
-        indicatorFrame.cornerRadius = 9
-        indicatorBorder.borderWidth = 7
-        indicatorBorder.frame = indicatorFrame.bounds.insetBy(dx: -indicatorBorder.borderWidth, dy: -indicatorBorder.borderWidth) // Adjust the inset as needed
-        indicatorBorder.borderColor = UIColor.clear.cgColor
+        indicatorFrame.frame = CGRectMake(0, 0, 75*highlightSizeFactor, 75*highlightSizeFactor)
+        indicatorFrame.cornerRadius = 9 * highlightSizeFactor
+        l3r3Indicator.borderWidth = 7 * min(highlightSizeFactor,1.0)
+        l3r3Indicator.frame = indicatorFrame.bounds.insetBy(dx: -l3r3Indicator.borderWidth, dy: -l3r3Indicator.borderWidth) // Adjust the inset as needed
+        l3r3Indicator.borderColor = UIColor.clear.cgColor
         
-        indicatorBorder.cornerRadius = indicatorFrame.cornerRadius + indicatorBorder.borderWidth
-        indicatorBorder.backgroundColor = UIColor.clear.cgColor
-        indicatorBorder.fillColor = UIColor.clear.cgColor
-        let path = UIBezierPath(roundedRect: indicatorBorder.bounds, cornerRadius: indicatorBorder.cornerRadius)
+        l3r3Indicator.cornerRadius = indicatorFrame.cornerRadius + l3r3Indicator.borderWidth
+        l3r3Indicator.backgroundColor = UIColor.clear.cgColor
+        l3r3Indicator.fillColor = UIColor.clear.cgColor
+        let path = UIBezierPath(roundedRect: l3r3Indicator.bounds, cornerRadius: l3r3Indicator.cornerRadius)
         
-        indicatorBorder.path = path.cgPath
-        indicatorBorder.borderColor = voidlinkPurple
-        indicatorBorder.isHidden = true
+        l3r3Indicator.path = path.cgPath
+        l3r3Indicator.borderColor = voidlinkPurple
+        self.l3r3Indicator.position = CGPointMake(self.bounds.width/2, self.bounds.height/2)
+        if !OnScreenWidgetView.isTweakingHighlightSize {l3r3Indicator.isHidden = true}
         
-        self.layer.addSublayer(indicatorBorder)
+        if l3r3Indicator.superlayer == nil {
+            self.layer.addSublayer(l3r3Indicator)
+        }
         
-        return indicatorBorder
+        CATransaction.commit()
     }
     
     private func showl3r3Indicator(){
@@ -709,18 +721,18 @@ import UIKit
     private func handleStickBallReachingBorder(){
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        stickBallLayer.lineWidth = 0.6
+        lrudIndicatorBall.lineWidth = 0.6
         // stickBallLayer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        stickBallLayer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lrudIndicatorBall.shadowOffset = CGSize(width: 0.0, height: 0.0)
         // stickBallLayer.shadowColor = stickBallLayer.strokeColor
         CATransaction.commit()
     }
     
     private func handleStickBallLeavingBorder(){
-        stickBallLayer.lineWidth = 0
-        stickBallLayer.shadowOffset = CGSize(width: 0.5, height: 0.5)
-        stickBallLayer.shadowOpacity = 0.8
-        stickBallLayer.shadowColor = UIColor.black.cgColor
+        lrudIndicatorBall.lineWidth = 0
+        lrudIndicatorBall.shadowOffset = CGSize(width: 0.5, height: 0.5)
+        lrudIndicatorBall.shadowOpacity = 0.8
+        lrudIndicatorBall.shadowColor = UIColor.black.cgColor
     }
     
     // create stick indicator: the crossMark & stickBall:
@@ -815,8 +827,8 @@ import UIKit
         // Create a CAShapeLayer
         // self.stickBallLayer.path = path.cgPath  // Assign the circular path to the shape layer
         // self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
-        self.stickBallLayer.position = point
-        self.stickBallLayer.isHidden = false
+        self.lrudIndicatorBall.position = point
+        self.lrudIndicatorBall.isHidden = false
         
         CATransaction.commit()
     }
@@ -825,17 +837,17 @@ import UIKit
     @objc public func updateStickIndicator(){
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        self.stickBallLayer.removeAllAnimations()
+        self.lrudIndicatorBall.removeAllAnimations()
         if !OnScreenWidgetView.editMode {
             let realOffsetX = touchInputToStickBallCoord(input: offSetX*sensitivityFactorX)
             let realOffsetY = touchInputToStickBallCoord(input: offSetY*sensitivityFactorY)
-            self.stickBallLayer.position = CGPointMake(touchBeganLocation.x + realOffsetX, touchBeganLocation.y + realOffsetY - self.stickIndicatorOffset)
+            self.lrudIndicatorBall.position = CGPointMake(touchBeganLocation.x + realOffsetX, touchBeganLocation.y + realOffsetY - self.stickIndicatorOffset)
             /*
             if fabs(realOffsetX) == stickBallMaxOffset || fabs(realOffsetY) == stickBallMaxOffset {handleStickBallReachingBorder()}
             else{handleStickBallLeavingBorder()}*/
         }
         else{
-            self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame)-stickIndicatorOffset)
+            self.lrudIndicatorBall.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame)-stickIndicatorOffset)
         }
         CATransaction.commit()
     }
@@ -849,7 +861,7 @@ import UIKit
         
         CATransaction.begin()
         CATransaction.setAnimationDuration(0.15)
-        self.stickBallLayer.position = CGPointMake(touchBeganLocation.x, touchBeganLocation.y - self.stickIndicatorOffset)
+        self.lrudIndicatorBall.position = CGPointMake(touchBeganLocation.x, touchBeganLocation.y - self.stickIndicatorOffset)
         CATransaction.setCompletionBlock {
             // 动画结束后执行的代码
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -857,7 +869,7 @@ import UIKit
                     CATransaction.begin()
                     CATransaction.setDisableActions(true)
                     self.crossMarkLayer.isHidden = true
-                    self.stickBallLayer.isHidden = true
+                    self.lrudIndicatorBall.isHidden = true
                     CATransaction.commit()
                 }
             }
@@ -882,45 +894,47 @@ import UIKit
         CATransaction.commit()
     }
     
-    private func createLrudBall() -> CAShapeLayer {
+    private func setupLrudBall() {
         // Create a circular path using UIBezierPath
-        let path = UIBezierPath(arcCenter: CGPoint.zero, radius: 10, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
+        let path = UIBezierPath(arcCenter: CGPoint.zero, radius: 10*min(highlightSizeFactor,1.0), startAngle: 0, endAngle: 2 * .pi, clockwise: true)
         
         // Create a CAShapeLayer
-        let ballLayer = CAShapeLayer()
-        ballLayer.path = path.cgPath  // Assign the circular path to the shape layer
-        self.layer.addSublayer(ballLayer)
+        lrudIndicatorBall.path = path.cgPath  // Assign the circular path to the shape layer
+        if lrudIndicatorBall.superlayer == nil {
+            self.layer.addSublayer(lrudIndicatorBall)
+        }
+        
+        lrudIndicatorBall.position = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2,)
 
         // Set the stroke color and width (border of the circle)
-        ballLayer.strokeColor = stickBallColor
-        ballLayer.lineWidth = 0
-        ballLayer.shadowOffset = CGSize(width: 0.5, height: 0.5)
-        ballLayer.shadowRadius = 0;
-        ballLayer.shadowOpacity = 0.8
-        ballLayer.name = "lrudBall"
-        ballLayer.isHidden = true
+        lrudIndicatorBall.strokeColor = stickBallColor
+        lrudIndicatorBall.lineWidth = 0
+        lrudIndicatorBall.shadowOffset = CGSize(width: 0.5, height: 0.5)
+        lrudIndicatorBall.shadowRadius = 0;
+        lrudIndicatorBall.shadowOpacity = 0.8
+        lrudIndicatorBall.name = "lrudBall"
+        if !OnScreenWidgetView.isTweakingHighlightSize {lrudIndicatorBall.isHidden = true}
         
         // Set the fill color (inside of the circle)
-        ballLayer.fillColor = stickBallColor  // Light fill with some transparency
-        return ballLayer
+        lrudIndicatorBall.fillColor = stickBallColor  // Light fill with some transparency
     }
     
-    private func createLrudDirectionLayer() -> CAShapeLayer {
+    private func setupLrudDirectionLayer(directionLayer:CAShapeLayer) {
         let indicatorFrame = CAShapeLayer();
-        let indicatorBorder = CAShapeLayer();
-        
-        indicatorFrame.frame = CGRectMake(0, 0, 75, 75)
-        indicatorFrame.cornerRadius = 9
-        indicatorBorder.borderWidth = 6
-        indicatorBorder.frame = indicatorFrame.bounds.insetBy(dx: -indicatorBorder.borderWidth, dy: -indicatorBorder.borderWidth) // Adjust the inset as needed
-        indicatorBorder.cornerRadius = indicatorFrame.cornerRadius + indicatorBorder.borderWidth
-        indicatorBorder.backgroundColor = UIColor.clear.cgColor
-        indicatorBorder.fillColor = UIColor.clear.cgColor
-        let path = UIBezierPath(roundedRect: indicatorBorder.bounds, cornerRadius: indicatorBorder.cornerRadius)
-        indicatorBorder.path = path.cgPath
-        indicatorBorder.borderColor = voidlinkPurple
-        
-        return indicatorBorder
+        indicatorFrame.frame = CGRectMake(0, 0, 75*highlightSizeFactor, 75*highlightSizeFactor)
+        indicatorFrame.cornerRadius = 9 * highlightSizeFactor
+        directionLayer.borderWidth = 6 * min(1.0, highlightSizeFactor)
+        directionLayer.frame = indicatorFrame.bounds.insetBy(dx: -directionLayer.borderWidth, dy: -directionLayer.borderWidth) // Adjust the inset as needed
+        directionLayer.cornerRadius = indicatorFrame.cornerRadius + directionLayer.borderWidth
+        directionLayer.backgroundColor = UIColor.clear.cgColor
+        directionLayer.fillColor = UIColor.clear.cgColor
+        let path = UIBezierPath(roundedRect: directionLayer.bounds, cornerRadius: directionLayer.cornerRadius)
+        directionLayer.path = path.cgPath
+        directionLayer.borderColor = voidlinkPurple
+        directionLayer.position = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2)
+        if directionLayer.superlayer == nil {
+            self.layer.insertSublayer(directionLayer, below: lrudIndicatorBall)
+        }
     }
     
     private func showLrudDirectionIndicator(with indicatorLayer:CAShapeLayer){
@@ -1155,7 +1169,7 @@ import UIKit
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            buttonDownVisualEffectLayer.isHidden = false
+            if widgetType == WidgetTypeEnum.button {buttonDownVisualEffectLayer.isHidden = false}
             CATransaction.commit()
         }
     }
@@ -1165,7 +1179,7 @@ import UIKit
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            buttonDownVisualEffectLayer.isHidden = true
+            if !OnScreenWidgetView.isTweakingHighlightSize {buttonDownVisualEffectLayer.isHidden = true}
             CATransaction.commit()
         }
     }
@@ -1184,45 +1198,60 @@ import UIKit
         }
     }
     
-    private func setupLrudDirectionIndicatorlayers() {
-        upIndicator = createLrudDirectionLayer()
+    @objc public func setupLrudDirectionIndicatorlayers() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        self.setupLrudBall()
+        
+        setupLrudDirectionLayer(directionLayer: upIndicator)
         upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1)
-        downIndicator = createLrudDirectionLayer()
+        setupLrudDirectionLayer(directionLayer: downIndicator)
         downIndicator.anchorPoint = CGPoint(x: 0.5, y: 0)
-        leftIndicator = createLrudDirectionLayer()
+        setupLrudDirectionLayer(directionLayer: leftIndicator)
         leftIndicator.anchorPoint = CGPoint(x: 1, y: 0.5)
-        rightIndicator = createLrudDirectionLayer()
+        setupLrudDirectionLayer(directionLayer: rightIndicator)
         rightIndicator.anchorPoint = CGPoint(x: 0, y: 0.5)
-        self.layer.insertSublayer(leftIndicator, below: self.layer);
-        self.layer.insertSublayer(rightIndicator, below: self.layer);
-        self.layer.insertSublayer(upIndicator, below: self.layer);
-        self.layer.insertSublayer(downIndicator, below: self.layer);
-        leftIndicator.isHidden = true
-        rightIndicator.isHidden = true
-        upIndicator.isHidden = true
-        downIndicator.isHidden = true
-        /*
-        leftIndicator.borderColor = UIColor.clear.cgColor
-        rightIndicator.borderColor = UIColor.clear.cgColor
-        upIndicator.borderColor = UIColor.clear.cgColor
-        downIndicator.borderColor = UIColor.clear.cgColor */
-        self.lrudIndicatorBall = self.createLrudBall()
-    }
-    
-    private func setupButtonDownVisualEffectLayer() {
-        self.buttonDownVisualEffectWidth = 8
-        if self.shape == "round" {
-            if deNormalizedWidthFactor < 1.3 {self.buttonDownVisualEffectWidth = 15.3} // wider visual effect for osc buttons
-            else {self.buttonDownVisualEffectWidth = 9}
+                
+        if !OnScreenWidgetView.isTweakingHighlightSize {
+            leftIndicator.isHidden = true
+            rightIndicator.isHidden = true
+            upIndicator.isHidden = true
+            downIndicator.isHidden = true
         }
         
-        if self.motionControlButtonString != "" {self.buttonDownVisualEffectWidth = 3}
+        CATransaction.commit()
+    }
+    
+    @objc public func hideAllHighlightLayersOfAllWidgets(selfIncluded:Bool) {
+        self.forEachWidget(){ widget in
+            if !selfIncluded && widget == self {return}
+            widget.buttonDownVisualEffectLayer.isHidden = true;
+            widget.l3r3Indicator.isHidden = true
+            widget.lrudIndicatorBall.isHidden = true
+            widget.upIndicator.isHidden = true
+            widget.downIndicator.isHidden = true
+            widget.leftIndicator.isHidden = true
+            widget.rightIndicator.isHidden = true
+        }
+    }
+    
+    @objc public func setupButtonDownVisualEffectLayer() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        self.buttonDownVisualEffectStandardWidth = 8
+        if self.shape == "round" {
+            if deNormalizedWidthFactor < 1.3 {self.buttonDownVisualEffectStandardWidth = 15.3} // wider visual effect for osc buttons
+            else {self.buttonDownVisualEffectStandardWidth = 9}
+        }
+        
+        if self.motionControlButtonString != "" {self.buttonDownVisualEffectStandardWidth = 3}
         
         // Set the frame to be larger than the view to expand outward
-        buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectWidth // set this 0 to hide the visual effect first
+        buttonDownVisualEffectLayer.borderWidth = self.buttonDownVisualEffectStandardWidth * self.highlightSizeFactor // set this 0 to hide the visual effect first
         buttonDownVisualEffectLayer.borderColor = voidlinkPurple
-        buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -self.buttonDownVisualEffectWidth, dy: -self.buttonDownVisualEffectWidth) // Adjust the inset as needed
-        buttonDownVisualEffectLayer.cornerRadius = self.layer.cornerRadius + self.buttonDownVisualEffectWidth
+        buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -buttonDownVisualEffectLayer.borderWidth, dy: -buttonDownVisualEffectLayer.borderWidth) // Adjust the inset as needed
+        buttonDownVisualEffectLayer.cornerRadius = self.layer.cornerRadius + buttonDownVisualEffectLayer.borderWidth
         buttonDownVisualEffectLayer.backgroundColor = UIColor.clear.cgColor;
         buttonDownVisualEffectLayer.fillColor = UIColor.clear.cgColor;
         
@@ -1230,10 +1259,14 @@ import UIKit
         let path = UIBezierPath( roundedRect: buttonDownVisualEffectLayer.bounds, cornerRadius: buttonDownVisualEffectLayer.cornerRadius)
         buttonDownVisualEffectLayer.path = path.cgPath
         
-        self.layer.insertSublayer(buttonDownVisualEffectLayer, below: self.layer)
+        if buttonDownVisualEffectLayer.superlayer == nil {
+            self.layer.insertSublayer(buttonDownVisualEffectLayer, below: self.layer)
+        }
 
         buttonDownVisualEffectLayer.position = CGPointMake(self.bounds.midX, self.bounds.midY)
-        buttonDownVisualEffectLayer.isHidden = true
+        if !OnScreenWidgetView.isTweakingHighlightSize {buttonDownVisualEffectLayer.isHidden = true}
+        
+        CATransaction.commit()
     }
     //==========================================================================================================
     
@@ -1653,7 +1686,7 @@ import UIKit
             if let touch = touches.first {
                 self.moveByTouch(touch: touch)
                 }
-            self.stickBallLayer.removeFromSuperlayer()
+            self.lrudIndicatorBall.removeFromSuperlayer()
             self.crossMarkLayer.removeFromSuperlayer()
         }
     }
@@ -1940,24 +1973,26 @@ import UIKit
             }
         }
         
-        if CommandManager.stickTouchPads.contains(touchPadString){
-            self.l3r3Indicator.isHidden = true
-        }
-        
-        if CommandManager.directionPads.contains(touchPadString){
-            self.upIndicator.isHidden = true
-            self.downIndicator.isHidden = true
-            self.leftIndicator.isHidden = true
-            self.rightIndicator.isHidden = true
-            self.lrudIndicatorBall.isHidden = true
-        }
-        
-        if CommandManager.verticalTouchPads.contains(touchPadString){
-            self.l3r3Indicator.isHidden = true
-        }
-        
-        if self.touchPadString == "MOUSEPAD" && self.mouseButtonAction == .noClick {
-            self.l3r3Indicator.isHidden = true
+        if !OnScreenWidgetView.isTweakingHighlightSize {
+            if CommandManager.stickTouchPads.contains(touchPadString){
+                self.l3r3Indicator.isHidden = true
+            }
+            
+            if CommandManager.directionPads.contains(touchPadString){
+                self.upIndicator.isHidden = true
+                self.downIndicator.isHidden = true
+                self.leftIndicator.isHidden = true
+                self.rightIndicator.isHidden = true
+                self.lrudIndicatorBall.isHidden = true
+            }
+            
+            if CommandManager.verticalTouchPads.contains(touchPadString){
+                self.l3r3Indicator.isHidden = true
+            }
+            
+            if self.touchPadString == "MOUSEPAD" && self.mouseButtonAction == .noClick {
+                self.l3r3Indicator.isHidden = true
+            }
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
@@ -2092,7 +2127,7 @@ import UIKit
             if self.motionControlButtonString == "MOTION" {}
             buttonDownVisualEffectLayer.removeFromSuperlayer()
             crossMarkLayer.removeFromSuperlayer()
-            stickBallLayer.removeFromSuperlayer()
+            lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()
             upIndicator.removeFromSuperlayer()
             downIndicator.removeFromSuperlayer()

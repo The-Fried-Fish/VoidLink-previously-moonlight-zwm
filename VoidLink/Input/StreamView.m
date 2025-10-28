@@ -429,12 +429,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
 - (bool) isOscEnabled{
-    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch) && settings.onscreenControls.intValue != OnScreenControlsLevelOff;
+    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch || settings.touchMode.intValue == TouchDisabled) && settings.onscreenControls.intValue != OnScreenControlsLevelOff;
 }
 
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
 - (bool) isOnScreenWidgetEnabled{
-    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch || settings.touchMode.intValue == TouchDisabled) && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+    return [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void) reloadOnScreenControlsRealtimeWith:(ControllerSupport*)controllerSupport
@@ -462,6 +462,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 
 - (void) clearOnScreenWidgets{
+    OnScreenWidgetView.isTweakingHighlightSize = false;
     for (UIView *subview in self->streamFrameTopLayerView.subviews) {
         // 检查子视图是否是特定类型的实例
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -556,6 +557,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.widthFactor = buttonState.widthFactor;
                 widgetView.heightFactor = buttonState.heightFactor;
                 widgetView.borderWidth = buttonState.borderWidth;
+                widgetView.highlightSizeFactor = buttonState.highlightSizeFactor;
                 widgetView.autoTapInterval = buttonState.autoTapInterval;
                 [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
                 widgetView.mouseButtonAction = buttonState.mouseButtonAction;

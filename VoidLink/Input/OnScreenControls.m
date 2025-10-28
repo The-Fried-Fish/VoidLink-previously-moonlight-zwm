@@ -1208,6 +1208,11 @@ static float L3_Y;
 }
 
 - (void)oscButtonHapticFeedback:(CALayer* )button{
+    if([button.name isEqualToString:@"upButton"]
+       || [button.name isEqualToString:@"downButton"]
+       || [button.name isEqualToString:@"leftButton"]
+       || [button.name isEqualToString:@"rightButton"]) return;
+    
     NSNumber *style = [OnScreenControls.layerVibrationStyleDic objectForKey:button.name];
     uint8_t vibrationStyle = [style unsignedCharValue];
     
@@ -1223,7 +1228,7 @@ static float L3_Y;
         vibrationGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:vibrationStyle];
         [vibrationGenerator prepare];
         [vibrationGenerator impactOccurred];
-        NSLog(@"vibration instance: %@",vibrationGenerator);
+        // NSLog(@"vibration instance: %@",vibrationGenerator);
     }
 }
 
@@ -1437,7 +1442,7 @@ static float L3_Y;
     for (UITouch* touch in touches) {
         
         // remove the touch obj from touchesCapturedByOnScreenButtons
-        if([touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) [touchAddrsCapturedByOnScreenControls removeObject:@((uintptr_t)touch)];
+        // if([touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) [touchAddrsCapturedByOnScreenControls removeObject:@((uintptr_t)touch)];
         
         if (touch == _aTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:A_FLAG];
