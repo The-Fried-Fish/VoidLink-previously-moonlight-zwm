@@ -914,19 +914,18 @@ import UIKit
     }
     
     private func showLrudDirectionIndicator(with indicatorLayer:CAShapeLayer){
-        // Add the border layer below the super layer
-        indicatorLayer.isHidden = false
-        
         // show the indicator based on the touchBeganLocation
-        // indicatorLayer.position = CGPointMake(CGRectGetMinX(self.frame)+touchBeganLocation.x, CGRectGetMinY(self.frame)+touchBeganLocation.y)
         indicatorLayer.position = touchBeganLocation
 
-        if vibrationOn {
-            vibrationGenerator.prepare()
-            vibrationGenerator.impactOccurred()
+        if indicatorLayer.isHidden {
+            indicatorLayer.isHidden = false
+            if vibrationOn {
+                vibrationGenerator.prepare()
+                vibrationGenerator.impactOccurred()
+            }
         }
     }
-    
+
     private func handleLrudTouchMove(){
         CATransaction.begin()
         CATransaction.setDisableActions(true)
