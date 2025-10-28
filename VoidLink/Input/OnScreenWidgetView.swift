@@ -350,7 +350,7 @@ import UIKit
         self.isMousePad = self.touchPadString == "MOUSEPAD" && widgetType == WidgetTypeEnum.touchPad
         self.hasTrackBall = self.touchPadString == "TRACKBALL"
         self.isFuncationalButton = self.functionalButtonString != ""
-        self.hasHapticFeedback = !self.comboButtonStrings.isEmpty
+        self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
     }
     
     // ======================================================================================================
