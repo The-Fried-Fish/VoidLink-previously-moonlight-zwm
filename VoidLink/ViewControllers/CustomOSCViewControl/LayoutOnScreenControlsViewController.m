@@ -28,6 +28,12 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     AlphaSliderModeCount
 };
 
+typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
+    widgetBorderWidth,
+    hightlightSize,
+    BorderWidthSliderModeCount
+};
+
 @end
 
 
@@ -36,6 +42,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     OSCProfilesManager* profilesManager;
     OnScreenWidgetView* selectedWidgetView;
     AlphaSliderMode alphaSliderMode;
+    BorderWidthSliderMode borderWidthSliderMode;
     CALayer* selectedControllerLayer;
     CGRect controllerLoadedBounds;
     bool widgetViewSelected;
@@ -73,10 +80,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
 
 - (void) viewWillDisappear:(BOOL)animated{
     OnScreenWidgetView.editMode = false;
-    for (OnScreenWidgetView* widgetView in self.onScreenWidgetViews){
-        [widgetView.stickBallLayer removeFromSuperlayer];
-        [widgetView.crossMarkLayer removeFromSuperlayer];
-    }
+    OnScreenWidgetView.isTweakingHighlightSize = false;
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"OscLayoutCloseNotification" object:self];
 }
@@ -114,6 +118,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
 
 - (void)reloadOnScreenWidgetViews{
     NSLog(@"reloadOnScreenWidgets %f", CACurrentMediaTime());
+    OnScreenWidgetView.isTweakingHighlightSize = false;
     OnScreenWidgetView.editMode = true;
     [self hideStickIndicators];
 
@@ -142,6 +147,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
             widgetView.widthFactor = buttonState.widthFactor;
             widgetView.heightFactor = buttonState.heightFactor;
             widgetView.borderWidth = buttonState.borderWidth;
+            widgetView.highlightSizeFactor = buttonState.highlightSizeFactor;
             widgetView.autoTapInterval = buttonState.autoTapInterval;
             [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
             widgetView.mouseButtonAction = buttonState.mouseButtonAction;
@@ -367,6 +373,57 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
                 [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Border alpha: %.2f", _widgetAlphaSlider.value]];
                 break;
             case AlphaSliderModeCount:
+            default:
+                break;
+        }
+    }
+}
+
+- (void)switchBorderWidthSlider:(UISwipeGestureRecognizer *)sender {
+    if(!widgetViewSelected) return;
+    borderWidthSliderMode = (borderWidthSliderMode + 1) % BorderWidthSliderModeCount;
+    OnScreenWidgetView.isTweakingHighlightSize = borderWidthSliderMode == hightlightSize;
+    [self loadWidgetWidths];
+}
+
+- (void)loadWidgetWidths{
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        switch(borderWidthSliderMode){
+            case widgetBorderWidth:
+                [self.widgetBorderWidthSlider setMinimumValue:0];
+                [self.widgetBorderWidthSlider setMaximumValue:8];
+                [self.widgetBorderWidthSlider setValue:selectedWidgetView.borderWidth animated:NO];
+                
+                selectedWidgetView.buttonDownVisualEffectLayer.hidden = true;
+                selectedWidgetView.l3r3Indicator.hidden = true;
+                
+                (selectedWidgetView.lrudIndicatorBall.hidden
+                 = selectedWidgetView.upIndicator.hidden
+                 = selectedWidgetView.downIndicator.hidden
+                 = selectedWidgetView.leftIndicator.hidden
+                 = selectedWidgetView.rightIndicator.hidden
+                 = true);
+                
+                [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Border width: %.2f", _widgetBorderWidthSlider.value]];
+                break;
+                
+            case hightlightSize:
+                [self.widgetBorderWidthSlider setMinimumValue:0];
+                [self.widgetBorderWidthSlider setMaximumValue:2];
+                [self.widgetBorderWidthSlider setValue:selectedWidgetView.highlightSizeFactor animated:NO];
+                selectedWidgetView.buttonDownVisualEffectLayer.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
+                selectedWidgetView.l3r3Indicator.hidden = !selectedWidgetView.hasL3R3Indicator;
+                
+                (selectedWidgetView.lrudIndicatorBall.hidden
+                 = selectedWidgetView.upIndicator.hidden
+                 = selectedWidgetView.downIndicator.hidden
+                 = selectedWidgetView.leftIndicator.hidden
+                 = selectedWidgetView.rightIndicator.hidden
+                 = !selectedWidgetView.isDirectionPad);
+
+                [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Highlight size: %.2f", _widgetBorderWidthSlider.value]];
+                break;
+                
             default:
                 break;
         }
@@ -683,6 +740,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     newWidget.widthFactor = widget.widthFactor;
     newWidget.heightFactor = widget.heightFactor;
     newWidget.borderWidth = widget.borderWidth;
+    newWidget.highlightSizeFactor = widget.highlightSizeFactor;
     newWidget.autoTapInterval = widget.autoTapInterval;
     newWidget.sensitivityFactorX = widget.sensitivityFactorX;
     newWidget.sensitivityFactorY = widget.sensitivityFactorY;
@@ -695,6 +753,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     newWidget.mouseButtonAction = widget.mouseButtonAction;
     newWidget.buttonMode = widget.buttonMode;
     [self.view insertSubview:newWidget belowSubview:self.widgetPanelStack];
+    [newWidget accessWidgetAttributes];
 
     if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
     else [newWidget setLocationWithPosition:widget.center];
@@ -779,7 +838,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
         if([view isKindOfClass:[OnScreenWidgetView class]]){
             OnScreenWidgetView* widget = (OnScreenWidgetView* )view;
             [widget.crossMarkLayer setHidden:true];
-            [widget.stickBallLayer setHidden:true];
+            [widget.lrudIndicatorBall setHidden:true];
         }
     }
 }
@@ -802,10 +861,14 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     self->widgetViewSelected = true;
     self->controllerLayerSelected = false;
     
-    if(widgetView != selectedWidgetView) [selectedWidgetView setAutoTapIntervalByTextWithStr:_autoTapField.text];
+    if(widgetView != selectedWidgetView){
+        [selectedWidgetView setAutoTapIntervalByTextWithStr:_autoTapField.text];
+    }
     
     self->selectedWidgetView = widgetView;
-        
+    
+    [selectedWidgetView hideAllHighlightLayersOfAllWidgetsWithSelfIncluded:YES];
+    
     [self autoFitLabel:self.currentProfileLabel];
     self.currentProfileLabel.textAlignment = NSTextAlignmentLeft;
     [self.currentProfileLabel setText:
@@ -878,13 +941,13 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     [self autoFitLabel:self.widgetHeightLabel];
     [self.widgetHeightLabel setText:[LocalizationHelper localizedStringForKey:@"Height: %.2f", self->selectedWidgetView.deNormalizedHeightFactor]];
     
-    
     [self loadWidgetAlphas];
     [self autoFitLabel:self.widgetAlphaLabel];
     
-    [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
+    // [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
+    [self loadWidgetWidths];
     [self autoFitLabel:self.widgetBorderWidthLabel];
-    [self widgetBorderWidthSliderMoved:self.widgetBorderWidthSlider];
+    // [self widgetBorderWidthSliderMoved:self.widgetBorderWidthSlider];
     
     self.autoTapStack.hidden = !selectedWidgetView.hasAutoTap;
     // [self.autoTapSlider setValue:self->selectedWidgetView.autoTapInterval];
@@ -1013,16 +1076,25 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     if(self->selectedControllerLayer != nil && self->controllerLayerSelected){
         [self.layoutOSC adjustControllerLayerOpacityWith:self->selectedControllerLayer and:sender.value];
     }
-    
-    return;
 }
 
 - (void)widgetBorderWidthSliderMoved:(UISlider* )sender{
-    [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Border width: %.2f", sender.value]];
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        [self->selectedWidgetView adjustBorderWithWidth:sender.value];
+        switch(borderWidthSliderMode){
+            case widgetBorderWidth:
+                [self->selectedWidgetView adjustBorderWithWidth:sender.value];
+                break;
+            case hightlightSize:
+                self->selectedWidgetView.highlightSizeFactor = sender.value;
+                if(selectedWidgetView.widgetType == WidgetTypeEnumButton) [selectedWidgetView setupButtonDownVisualEffectLayer];
+                if(selectedWidgetView.hasL3R3Indicator) [selectedWidgetView setupL3R3Indicator];
+                if(selectedWidgetView.isDirectionPad) [selectedWidgetView setupLrudDirectionIndicatorlayers];
+                break;
+            default:
+                break;
+        }
     }
-    return;
+    [self loadWidgetWidths];
 }
 
 /*
@@ -1040,7 +1112,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     }
 }
 
-- (void)slideModeChanged:(UISegmentedControl* )sender{
+- (void)buttonModeChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         selectedWidgetView.buttonMode = _buttonModeSelector.selectedSegmentIndex;
     }
@@ -1201,6 +1273,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     self.widgetHeightLabel.text = [LocalizationHelper localizedStringForKey:@"Height"];
     self.widgetHeightStack.hidden = YES;
 
+    alphaSliderMode = widgetAlpha;
     [self.widgetAlphaSlider addTarget:self action:@selector(widgetAlphaSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.widgetAlphaLabel.text = [LocalizationHelper localizedStringForKey:@"Alpha"];
     self.widgetAlphaLabel.userInteractionEnabled = true;
@@ -1209,10 +1282,17 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
                                             action:@selector(switchAlphaSlider:)];
     [self.widgetAlphaLabel addGestureRecognizer:alphaSwitchTapGesture];
 
-   
+    borderWidthSliderMode = widgetBorderWidth;
     [self.widgetBorderWidthSlider addTarget:self action:@selector(widgetBorderWidthSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.widgetBorderWidthLabel.text = [LocalizationHelper localizedStringForKey:@"Border width"];
+    self.widgetBorderWidthLabel.userInteractionEnabled = true;
+    UITapGestureRecognizer *borderWidthSwitchTapGesture =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(switchBorderWidthSlider:)];
+    [self.widgetBorderWidthLabel addGestureRecognizer:borderWidthSwitchTapGesture];
+    
     self.borderWidthAlphaStack.hidden = YES;
+
     
     // [self.autoTapSlider addTarget:self action:@selector(autoTapSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.autoTapLabel.text = [LocalizationHelper localizedStringForKey:@"Autotap timer   "];
@@ -1254,7 +1334,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     [self.mouseButtonDownSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.mouseDownButtonStack.hidden = YES;
 
-    [self.buttonModeSelector addTarget:self action:@selector(slideModeChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.buttonModeSelector addTarget:self action:@selector(buttonModeChanged:) forControlEvents:(UIControlEventValueChanged)];
     [self.buttonModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.buttonModeStack.hidden = YES;
 
@@ -1524,7 +1604,6 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
         [self->selectedWidgetView removeFromSuperview];
         [self.onScreenWidgetViews removeObject:self->selectedWidgetView];
-        [selectedWidgetView.buttonDownVisualEffectLayer removeFromSuperlayer];
     }
     
     

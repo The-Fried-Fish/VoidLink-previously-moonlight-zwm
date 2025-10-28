@@ -2563,6 +2563,29 @@
         }
       }
     },
+    "Highlight size: %.2f" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮尺寸: %.2f"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮尺寸: %.2f"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮尺寸: %.2f"
+          }
+        }
+      }
+    },
     "Host information updated" : {
       "extractionState" : "manual",
       "localizations" : {

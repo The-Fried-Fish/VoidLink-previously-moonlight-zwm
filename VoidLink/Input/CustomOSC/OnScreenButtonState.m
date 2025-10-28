@@ -55,6 +55,7 @@
     [encoder encodeFloat:self.labelAlpha forKey:@"labelAlpha"];
     [encoder encodeFloat:self.borderAlpha forKey:@"borderAlpha"];
     [encoder encodeFloat:self.borderWidth forKey:@"borderWidth"];
+    [encoder encodeFloat:self.highlightSizeFactor forKey:@"highlightSizeFactor"];
     [encoder encodeObject:self.widgetShape forKey:@"widgetShape"];
     [encoder encodeFloat:self.minStickOffset forKey:@"minStickOffset"];
 }
@@ -85,6 +86,7 @@
         self.labelAlpha = [decoder containsValueForKey:@"labelAlpha"] ? [decoder decodeFloatForKey:@"labelAlpha"] : 0.82;
         self.borderAlpha = [decoder containsValueForKey:@"borderAlpha"] ? [decoder decodeFloatForKey:@"borderAlpha"] : 0.19;
         self.borderWidth = [decoder decodeFloatForKey:@"borderWidth"];
+        self.highlightSizeFactor = [decoder containsValueForKey:@"highlightSizeFactor"] ? [decoder decodeFloatForKey:@"highlightSizeFactor"] : 1.0;
         self.widgetShape = [decoder decodeObjectForKey:@"widgetShape"];
         self.minStickOffset = [decoder decodeFloatForKey:@"minStickOffset"];
     }
