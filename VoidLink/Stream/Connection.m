@@ -334,15 +334,41 @@ void ArCleanup(void)
 }
 
 void AudioEngineInit(int sampleRate, int channelCount) {
+    
     audioEngine = [[AVAudioEngine alloc] init];
     audioPlayerNode = [[AVAudioPlayerNode alloc] init];
     
     [audioEngine attachNode:audioPlayerNode];
+        
+    AVAudioChannelLayout *layout;
     
-    audioFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32
-                                                   sampleRate:sampleRate
-                                                     channels:channelCount
-                                                  interleaved:NO];
+    switch (channelCount) {
+        case 2:
+        default:
+            audioFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32
+                                                           sampleRate:sampleRate
+                                                             channels:channelCount
+                                                          interleaved:NO];
+            break;
+        case 6:
+            layout =
+                [[AVAudioChannelLayout alloc] initWithLayoutTag:kAudioChannelLayoutTag_MPEG_5_1_A];
+            audioFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32
+                                                           sampleRate:sampleRate
+                                                          interleaved:NO
+                                                        channelLayout:layout];
+            break;
+        case 8:
+            layout =
+                [[AVAudioChannelLayout alloc] initWithLayoutTag:kAudioChannelLayoutTag_MPEG_7_1_A];
+            audioFormat = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32
+                                                           sampleRate:sampleRate
+                                                          interleaved:NO
+                                                        channelLayout:layout];
+            break;
+    }
+    
+    if(!audioFormat) return;
     
     [audioEngine connect:audioPlayerNode to:audioEngine.mainMixerNode format:audioFormat];
 
@@ -350,6 +376,7 @@ void AudioEngineInit(int sampleRate, int channelCount) {
     if (![audioEngine startAndReturnError:&err]) {
         NSLog(@"AudioEngine start error: %@", err);
     }
+    
     [audioPlayerNode play];
 }
 
