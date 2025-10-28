@@ -138,8 +138,9 @@
     self.edgeSlidingSensitivity = settings.edgeSlidingSensitivity;
     self.appTheme = settings.appTheme;
     self.hapticEngine = settings.hapticEngine;
-#endif
     self.uniqueId = settings.uniqueId;
+    self.audioEngine = settings.audioEngine;
+#endif
     
     return self;
 }

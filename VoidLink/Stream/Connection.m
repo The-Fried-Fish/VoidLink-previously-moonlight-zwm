@@ -403,8 +403,7 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
         
         float* fbuf = (float*)audioBuffer;
         
-        // if(useSystemAudioEngine && false) {
-        if(true){
+        if(useSystemAudioEngine) {
             // 创建 AVAudioPCMBuffer
             AVAudioFrameCount frameCount = decodeLen;
             AVAudioPCMBuffer *buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFormat frameCapacity:frameCount];
@@ -581,9 +580,7 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _streamConfig.supportedVideoFormats = config.supportedVideoFormats;
     _streamConfig.audioConfiguration = config.audioConfiguration;
     _streamConfig.redirectMic = config.redirectMic && [MicHandler permissionGranted];
-    NSLog(@"config.localVolume %f", config.localVolume);
     [Connection setVolume:config.localVolume];
-
     // Since we require iOS 12 or above, we're guaranteed to be running
     // on a 64-bit device with ARMv8 crypto instructions, so we don't
     // need to check for that here.

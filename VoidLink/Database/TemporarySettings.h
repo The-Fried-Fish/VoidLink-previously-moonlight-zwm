@@ -82,6 +82,7 @@
 @property (nonatomic, retain) NSNumber * hapticEngine;
 @property (nonatomic, retain) NSNumber * appTheme;
 @property (nonatomic, retain) NSNumber * edgeSlidingSensitivity;
+@property (nonatomic, retain) NSNumber * audioEngine;
 @property (nonatomic, retain) NSNumber * framePacingMode;
 
 - (id) initFromSettings:(Settings*)settings;
