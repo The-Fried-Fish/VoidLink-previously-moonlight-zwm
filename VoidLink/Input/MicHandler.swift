@@ -186,7 +186,7 @@ public class MicHandler: NSObject {
     private func configureSession() throws {
         let session = AVAudioSession.sharedInstance()
         let bluetoothAudioOption = self.useBuiltinMic ? AVAudioSession.CategoryOptions.allowBluetoothA2DP : AVAudioSession.CategoryOptions.allowBluetooth
-        try session.setCategory(.playAndRecord, mode: .videoRecording, options: [.mixWithOthers, .defaultToSpeaker, bluetoothAudioOption])
+        try session.setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers, .defaultToSpeaker, bluetoothAudioOption])
         if #available(iOS 13.0, *) {
             try session.setAllowHapticsAndSystemSoundsDuringRecording(true)
         }
