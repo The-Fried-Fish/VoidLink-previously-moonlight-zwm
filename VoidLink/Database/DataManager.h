@@ -21,6 +21,11 @@ typedef NS_ENUM(NSUInteger, UINavigationBarHeight) {
     UINavigationBarHeightIPhone = 44
 };
 
+typedef NS_ENUM(NSInteger, AudioEngine) {
+    SystemAudioEngine,
+    SDLAudioEngine
+};
+
 typedef NS_ENUM(NSInteger, TouchMode) {
     RelativeTouch,
     NativeTouch,
@@ -120,6 +125,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
               singleTapSensitivy:(CGFloat)singleTapSensitivy
                     hapticEngine:(NSInteger)hapticEngine
           edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
+                     audioEngine:(NSInteger)audioEngine
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

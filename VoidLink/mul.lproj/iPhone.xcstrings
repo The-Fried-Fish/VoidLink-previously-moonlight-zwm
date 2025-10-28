@@ -1657,6 +1657,36 @@
         }
       }
     },
+    "dO2-cf-Ovg.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Audio Engine\"; ObjectID = \"dO2-cf-Ovg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Audio Engine"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音频引擎"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音訊引擎"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音訊引擎"
+          }
+        }
+      }
+    },
     "dUM-r9-0Bo.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Emulated Controller Type\"; ObjectID = \"dUM-r9-0Bo\";",
       "extractionState" : "extracted_with_value",
@@ -3321,6 +3351,48 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "深色"
+          }
+        }
+      }
+    },
+    "pVq-EW-Dta.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; pVq-EW-Dta.segmentTitles[0] = \"System\"; ObjectID = \"pVq-EW-Dta\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "System"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系统"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統"
+          }
+        }
+      }
+    },
+    "pVq-EW-Dta.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; pVq-EW-Dta.segmentTitles[1] = \"SDL\"; ObjectID = \"pVq-EW-Dta\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "SDL"
           }
         }
       }

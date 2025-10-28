@@ -5,6 +5,10 @@
 //  Created by Diego Waxemberg on 1/19/14.
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
+//  Modified by True砖家 since 2025.9
+//  Copyright © 2025 True砖家 on Bilibili. All rights reserved.
+//
+
 
 #import "ConnectionCallbacks.h"
 #import "VideoDecoderRenderer.h"
@@ -23,5 +27,6 @@
 -(BOOL) getVideoStats:(video_stats_t*)stats;
 -(NSString*) getActiveCodecName;
 + (void)setVolume:(float)newVolume;
++ (void)setUseSystemAudioEngine:(bool)useSysAudioEngine;
 
 @end
