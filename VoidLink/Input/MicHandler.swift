@@ -185,11 +185,14 @@ public class MicHandler: NSObject {
 
     private func configureSession() throws {
         let session = AVAudioSession.sharedInstance()
+        /*
         let bluetoothAudioOption = self.useBuiltinMic ? AVAudioSession.CategoryOptions.allowBluetoothA2DP : AVAudioSession.CategoryOptions.allowBluetooth
         try session.setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers, .defaultToSpeaker, bluetoothAudioOption])
+        
         if #available(iOS 13.0, *) {
             try session.setAllowHapticsAndSystemSoundsDuringRecording(true)
-        }
+        } */
+        // AVAudioSession Initiailized in Connection.m -> ArInit
         
         // 列出所有可用输入
         if self.useBuiltinMic, let inputs = session.availableInputs {
@@ -201,7 +204,7 @@ public class MicHandler: NSObject {
                 }
             }
         }
-        try session.setActive(true)
+        // try session.setActive(true)
     }
     
     private func sendOpusFrameFromDequeBuffer() {
