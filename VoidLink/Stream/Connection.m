@@ -371,8 +371,14 @@ void AudioEngineInit(int sampleRate, int channelCount) {
     
     if(!audioFormat) return;
     
+    AVAudioFormat *mixerFormat = [audioEngine.mainMixerNode outputFormatForBus:0];
+    AVAudioFormat *outputFormat = [audioEngine.outputNode inputFormatForBus:0];
+    NSLog(@"Mixer: %dch, Output: %dch",
+          (int)mixerFormat.channelCount,
+          (int)outputFormat.channelCount);
+    
     [audioEngine connect:audioPlayerNode to:audioEngine.mainMixerNode format:audioFormat];
-
+    
     NSError *err = nil;
     if (![audioEngine startAndReturnError:&err]) {
         NSLog(@"AudioEngine start error: %@", err);
@@ -404,7 +410,7 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
         
         float* fbuf = (float*)audioBuffer;
         
-        if(useSystemAudioEngine) {
+        if(audioConfig.channelCount <= 2) {
             // 创建 AVAudioPCMBuffer
             AVAudioFrameCount frameCount = decodeLen;
             AVAudioPCMBuffer *buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFormat frameCapacity:frameCount];
