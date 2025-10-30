@@ -290,10 +290,11 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
     TemporarySettings* tempSettings = [dataMan getSettings];
     bool useBluetoothD2P = tempSettings.useBuiltinMic || !tempSettings.redirectMic;
     AVAudioSessionCategoryOptions bluetoothAudioOption = useBluetoothD2P ? AVAudioSessionCategoryOptionAllowBluetoothA2DP : AVAudioSessionCategoryOptionAllowBluetooth;
+    AVAudioSessionCategoryOptions audioMixOption = opusConfig->channelCount > 2 ? 0 : AVAudioSessionCategoryOptionMixWithOthers;
     AVAudioSession *session = [AVAudioSession sharedInstance];
     [session setCategory:tempSettings.redirectMic ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryPlayback
                     mode:AVAudioSessionModeDefault
-                 options:AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker|bluetoothAudioOption
+                 options:audioMixOption|AVAudioSessionCategoryOptionDefaultToSpeaker|bluetoothAudioOption
                    error:nil];
     if(tempSettings.redirectMic) if(@available(iOS 13.0, *)) [session setAllowHapticsAndSystemSoundsDuringRecording:YES error:nil];
     [session setActive:YES error:nil];
@@ -371,8 +372,14 @@ void AudioEngineInit(int sampleRate, int channelCount) {
     
     if(!audioFormat) return;
     
+    AVAudioFormat *mixerFormat = [audioEngine.mainMixerNode outputFormatForBus:0];
+    AVAudioFormat *outputFormat = [audioEngine.outputNode inputFormatForBus:0];
+    NSLog(@"Mixer: %dch, Output: %dch",
+          (int)mixerFormat.channelCount,
+          (int)outputFormat.channelCount);
+    
     [audioEngine connect:audioPlayerNode to:audioEngine.mainMixerNode format:audioFormat];
-
+    
     NSError *err = nil;
     if (![audioEngine startAndReturnError:&err]) {
         NSLog(@"AudioEngine start error: %@", err);
