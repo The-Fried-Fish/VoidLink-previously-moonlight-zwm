@@ -290,11 +290,10 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
     TemporarySettings* tempSettings = [dataMan getSettings];
     bool useBluetoothD2P = tempSettings.useBuiltinMic || !tempSettings.redirectMic;
     AVAudioSessionCategoryOptions bluetoothAudioOption = useBluetoothD2P ? AVAudioSessionCategoryOptionAllowBluetoothA2DP : AVAudioSessionCategoryOptionAllowBluetooth;
-    AVAudioSessionCategoryOptions audioMixOption = opusConfig->channelCount > 2 ? 0 : AVAudioSessionCategoryOptionMixWithOthers;
     AVAudioSession *session = [AVAudioSession sharedInstance];
     [session setCategory:tempSettings.redirectMic ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryPlayback
                     mode:AVAudioSessionModeDefault
-                 options:audioMixOption|AVAudioSessionCategoryOptionDefaultToSpeaker|bluetoothAudioOption
+                 options:AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker|bluetoothAudioOption
                    error:nil];
     if(tempSettings.redirectMic) if(@available(iOS 13.0, *)) [session setAllowHapticsAndSystemSoundsDuringRecording:YES error:nil];
     [session setActive:YES error:nil];
@@ -411,7 +410,7 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
         
         float* fbuf = (float*)audioBuffer;
         
-        if(useSystemAudioEngine) {
+        if(audioConfig.channelCount <= 2) {
             // 创建 AVAudioPCMBuffer
             AVAudioFrameCount frameCount = decodeLen;
             AVAudioPCMBuffer *buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFormat frameCapacity:frameCount];
