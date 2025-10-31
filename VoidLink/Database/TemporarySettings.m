@@ -140,6 +140,7 @@
     self.hapticEngine = settings.hapticEngine;
     self.uniqueId = settings.uniqueId;
     self.audioEngine = settings.audioEngine;
+    self.appendLeftClick = settings.appendLeftClick;
 #endif
     
     return self;

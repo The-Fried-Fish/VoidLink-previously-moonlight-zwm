@@ -109,6 +109,7 @@
                     hapticEngine:(NSInteger)hapticEngine
           edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
                      audioEngine:(NSInteger)audioEngine
+                 appendLeftClick:(BOOL)appendLeftClick
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -168,6 +169,7 @@
         settingsToSave.hapticEngine = [NSNumber numberWithInteger:hapticEngine];
         settingsToSave.edgeSlidingSensitivity = [NSNumber numberWithFloat:edgeSlidingSensitivity];
         settingsToSave.audioEngine = [NSNumber numberWithInteger:audioEngine];
+        settingsToSave.appendLeftClick = appendLeftClick;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

@@ -17,7 +17,6 @@
 @implementation NativeTouchHandler {
     StreamView* streamView;
     TemporarySettings* currentSettings;
-    bool activateCoordSelector;
     CGFloat pointerVelocityDividerLocationByPoints;
     
     bool asyncNativeTouch;
@@ -43,13 +42,14 @@
     CGRect streamViewBounds;
     
     int64_t moveEventIntervalNSec;
+    
+    bool _appendMouseLeftClick;
 }
 
 - (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings{
     self = [super init];
     self->streamView = view;
     self->currentSettings = settings;
-    self->activateCoordSelector = currentSettings.pointerVelocityModeDivider.floatValue != 1.0;
     self->moveEventIntervalNSec =  (int64_t)(currentSettings.touchMoveEventInterval.intValue * 1000);;
     self->streamViewBounds = view.bounds;
     
@@ -60,7 +60,9 @@
     }
     self->activePointerIds = [NSMutableSet set];
     self->blacklistedTouches = [NSMutableSet set];
-        
+
+    _appendMouseLeftClick = settings.appendLeftClick;
+    
     self->asyncNativeTouch = settings.asyncNativeTouchPriority.intValue != AsyncNativeTouchOff;
     
     switch(settings.asyncNativeTouchPriority.intValue){
@@ -195,7 +197,7 @@
     //NSLog(@"selecting coords: %d", touch.phase == UITouchPhaseMoved);
     // NSLog(@"excluded count: %d", (uint32_t)[excludedPointerIds count]);
     
-    targetCoords = activateCoordSelector ? [self selectCoordsFor:touch] : [touch locationInView:streamView];
+    targetCoords = [self selectCoordsFor:touch];
 
     CGPoint location = [self adjustCoordinatesForVideoArea:targetCoords];
     CGSize videoSize = [self getVideoAreaSize];
@@ -215,7 +217,7 @@
             // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
             if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
             [self handleTouchDown:touch]; //generate & populate pointerId
-            if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
+            [self populatePointerObjIntoDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
         }
     });
@@ -224,7 +226,7 @@
             // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
             if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
             [self handleTouchDown:touch]; //generate & populate pointerId
-            if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
+            [self populatePointerObjIntoDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
         }
     }
@@ -234,7 +236,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_main_queue(), ^{
         for (UITouch* touch in touches){
             if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) continue;
-            if(self->activateCoordSelector) [self updatePointerObjInDict:touch];
+            [self updatePointerObjInDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE];
             [[self getPointerObjFromDict:touch] doesNeedResetCoords];
         }
@@ -251,8 +253,11 @@
             }
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
             [self removePointerId:touch]; //then remove pointerId
-            if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
-            [self->blacklistedTouches removeObject:@((uintptr_t)touch)];
+
+            if(self->_appendMouseLeftClick && [self touchDidntMoveOnScreen:touch]) [self sendShortMouseLeftButtonClickEvent];
+            [self removePointerObjFromDict:touch];
+
+            [self->blacklistedTouches removeObject:touchAddrObj];
         }
     });
 }
@@ -260,7 +265,6 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     [self touchesEnded:touches withEvent:event];
 }
-
 
 - (void)populatePointerObjIntoDict:(UITouch*)touch{
     NativeTouchPointer* pointer = [[NativeTouchPointer alloc] initWithTouch:touch];
@@ -288,6 +292,27 @@
     NativeTouchPointer *pointer = [pointerObjDict objectForKey:@((uintptr_t)touch)];
     if(pointer == nil) return CGPointMake(0, 0);
     return pointer.useRelativeCoords ? pointer.latestRelativePoint : pointer.latestPoint;
+}
+
+- (void)sendShortMouseLeftButtonClickEvent{
+    dispatch_time_t delayShort = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC));
+    dispatch_time_t delayLong = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.03 * NSEC_PER_SEC));
+    dispatch_after(delayShort, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);
+        dispatch_after(delayLong, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+        });
+    });
+}
+
+- (bool)touchDidntMoveOnScreen:(UITouch* )touch{
+    NativeTouchPointer *pointer = [pointerObjDict objectForKey:@((uintptr_t)touch)];
+    return [self isAdjacentPoints:[touch locationInView:streamView] from:pointer.initialPoint tolerance:3];
+}
+
+- (BOOL)isAdjacentPoints:(CGPoint)currentPoint from:(CGPoint)originalPoint tolerance:(CGFloat)tolerance {
+    bool isAdjacent = hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= hypot(tolerance, tolerance);
+    return isAdjacent;
 }
 
 @end

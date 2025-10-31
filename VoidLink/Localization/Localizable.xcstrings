@@ -766,6 +766,35 @@
         }
       }
     },
+    "appendLeftClickStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This works for games like “Old School RuneScape” that requires double tap on touch screen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "对需要在触摸屏上双击的游戏, 如 OSRS (Old School RuneScape) 有效"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "對需要在觸控螢幕上雙擊的遊戲, 如 OSRS（Old School RuneScape）有效"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "對需要在觸控螢幕上雙擊的遊戲, 如 OSRS（Old School RuneScape）有效"
+          }
+        }
+      }
+    },
     "Applications" : {
       "extractionState" : "manual",
       "localizations" : {
