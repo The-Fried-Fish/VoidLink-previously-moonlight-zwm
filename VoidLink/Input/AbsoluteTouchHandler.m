@@ -39,11 +39,15 @@
     CGFloat slideGestureVerticalThreshold;
     CGFloat screenWidthWithThreshold;
     CGFloat _edgeTolerance;
+    
+    bool _appendMouseLeftClick;
 }
 
 - (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings {
     self = [self init];
     self->streamView = view;
+    
+    _appendMouseLeftClick = settings.appendLeftClick;
     
     // upper screen check
     _edgeTolerance = settings.edgeSlidingSensitivity.floatValue;
@@ -140,6 +144,8 @@
         // Remember this last touch for touch-down deadzoning
         lastTouchUp = [touches anyObject];
         lastTouchUpLocation = [lastTouchUp locationInView:streamView];
+        
+        if(_appendMouseLeftClick && [self touchDidntMoveOnScreen:lastTouchUp]) [self sendShortMouseLeftButtonClickEvent];
     }
 }
 
@@ -147,5 +153,26 @@
     // Treat this as a normal touchesEnded event
     [self touchesEnded:touches withEvent:event];
 }
+
+- (void)sendShortMouseLeftButtonClickEvent{
+    dispatch_time_t delayShort = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC));
+    dispatch_time_t delayLong = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.03 * NSEC_PER_SEC));
+    dispatch_after(delayShort, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);
+        dispatch_after(delayLong, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+        });
+    });
+}
+
+- (bool)touchDidntMoveOnScreen:(UITouch* )touch{
+    return [self isAdjacentPoints:[touch locationInView:streamView] from:lastTouchDownLocation tolerance:3];
+}
+
+- (BOOL)isAdjacentPoints:(CGPoint)currentPoint from:(CGPoint)originalPoint tolerance:(CGFloat)tolerance {
+    bool isAdjacent = hypotf(originalPoint.x - currentPoint.x, originalPoint.y - currentPoint.y) <= hypot(tolerance, tolerance);
+    return isAdjacent;
+}
+
 
 @end
