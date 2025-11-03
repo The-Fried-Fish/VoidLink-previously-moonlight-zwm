@@ -374,7 +374,8 @@
     }
     else [micHandler stopTappingWithStopEngine:false];
     
-    [Connection setUseSystemAudioEngine:_settings.audioEngine.intValue == SystemAudioEngine];
+    Connection.useSystemAudioEngine = _settings.audioEngine.intValue == SystemAudioEngine;
+    Connection.muteInBackground = _settings.muteInBackground;
     
     if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
     // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
@@ -1033,7 +1034,7 @@
 - (void)applicationWillResignActive:(NSNotification *)notification {
     //[self.pipController startPictureInPicture];
     //sleep(1);
-    _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = true;
+    appDidEnterBackgroundWithoutPip = true;
 
     [_streamView saveRelocatedWidgetViews];
 
@@ -1050,7 +1051,7 @@
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = false;
+    appDidEnterBackgroundWithoutPip = false;
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
@@ -1083,9 +1084,9 @@
     NSLog(@"did enter background, %d, %@, %d", _settings.enablePIP, self.pipController, self.pipController.isPictureInPictureActive);
     if (_settings.enablePIP && self.pipController && self.pipController.isPictureInPictureActive) {
         //Log(LOG_I, @"PIP is active, not terminating stream");
-        _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = false;
+        appDidEnterBackgroundWithoutPip = false;
     } else {
-        _streamMan.videoRenderer.appDidEnterBackgroundWithoutPiP = true;
+        appDidEnterBackgroundWithoutPip = true;
 
         if ([_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
             Log(LOG_I, @"Pausing Metal renderer on background");

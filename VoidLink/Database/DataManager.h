@@ -128,6 +128,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                      audioEngine:(NSInteger)audioEngine
                  appendLeftClick:(BOOL)appendLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
+                muteInBackground:(BOOL)muteInBackground
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

@@ -115,7 +115,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     NSLog(@"initializing video decoder %f", CACurrentMediaTime());
     self = [super init];
     
-    _appDidEnterBackgroundWithoutPiP = false;
+    appDidEnterBackgroundWithoutPip = false;
     
     _sq = dispatch_queue_create("com.moonlight.VideoDecoderRenderer",
                                 dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0));
@@ -329,7 +329,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 // Legacy frame pacing callback - matches upstream/Integration behavior exactly
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
-    if(_appDidEnterBackgroundWithoutPiP) return;
+    if(appDidEnterBackgroundWithoutPip) return;
     
     VIDEO_FRAME_HANDLE handle;
     PDECODE_UNIT du;
@@ -379,7 +379,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         Log(LOG_I, @"Setting timebase for stream to %d / %d", pts.value, pts.timescale);
     }
 
-    if(!_appDidEnterBackgroundWithoutPiP) [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
+    if(!appDidEnterBackgroundWithoutPip) [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
 
 #ifdef DISPLAYLINK_VERBOSE
     // Some OS-level metrics I'm not sure what to do with

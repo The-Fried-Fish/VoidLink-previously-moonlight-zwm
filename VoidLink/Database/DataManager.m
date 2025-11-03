@@ -111,6 +111,7 @@
                      audioEngine:(NSInteger)audioEngine
                  appendLeftClick:(BOOL)appendLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
+                muteInBackground:(BOOL)muteInBackground
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -172,6 +173,7 @@
         settingsToSave.audioEngine = [NSNumber numberWithInteger:audioEngine];
         settingsToSave.appendLeftClick = appendLeftClick;
         settingsToSave.duckOtherApps = duckOtherApps;
+        settingsToSave.muteInBackground = muteInBackground;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

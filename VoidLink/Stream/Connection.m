@@ -56,6 +56,8 @@ static AVAudioPlayerNode *audioPlayerNode;
 static AVAudioPCMBuffer *pcmBuffer;
 static AVAudioFormat *audioFormat;
 
+static bool muteInBackground;
+
 static VideoDecoderRenderer* renderer;
 
 static BandwidthTracker *bwTracker;
@@ -334,6 +336,10 @@ void ArCleanup(void)
     volume = powf(linearVolume, exponent);
 }
 
++ (void)setMuteInBackground:(bool)mute {
+    muteInBackground = mute;
+}
+
 + (void)setUseSystemAudioEngine:(bool)useSysAudioEngine{
     useSystemAudioEngine = useSysAudioEngine;
 }
@@ -393,6 +399,8 @@ void AudioEngineInit(int sampleRate, int channelCount) {
 
 void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
 {
+    if(appDidEnterBackgroundWithoutPip && muteInBackground) return;
+    
     int decodeLen;
     
     // Don't queue if there's already more than 30 ms of audio data waiting

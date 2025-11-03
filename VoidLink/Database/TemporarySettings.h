@@ -85,6 +85,7 @@
 @property (nonatomic, retain) NSNumber * audioEngine;
 @property (nonatomic) BOOL appendLeftClick;
 @property (nonatomic) BOOL duckOtherApps;
+@property (nonatomic) BOOL muteInBackground;
 @property (nonatomic, retain) NSNumber * framePacingMode;
 
 - (id) initFromSettings:(Settings*)settings;
