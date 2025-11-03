@@ -18,7 +18,6 @@
 
 @property (atomic, readonly) PlotMetrics decodeMetrics;
 @property (atomic, readonly) PlotMetrics frameQueueMetrics;
-@property (atomic, assign) bool appDidEnterBackgroundWithoutPiP;
 
 @property (nonatomic, strong, readonly) AVSampleBufferDisplayLayer *displayLayer;
 

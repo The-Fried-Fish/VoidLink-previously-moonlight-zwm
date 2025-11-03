@@ -1192,6 +1192,7 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.externalDisplayModeStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioConfigStack];
+    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.duckOtherAppStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.pipStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.appThemeStack];
     [settingsViewController.renderingBackendSelector setEnabled:!_settingsExpandedInStreamView];

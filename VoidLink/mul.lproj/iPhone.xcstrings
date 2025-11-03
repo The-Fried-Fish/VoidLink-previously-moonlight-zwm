@@ -1447,6 +1447,36 @@
         }
       }
     },
+    "CEd-Wx-Gml.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Duck Other Apps\"; ObjectID = \"CEd-Wx-Gml\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Duck Other Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "降低其他App音量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "降低其他App音量"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "降低其他App音量"
+          }
+        }
+      }
+    },
     "ci6-ak-aCa.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Custom Resolution\"; ObjectID = \"ci6-ak-aCa\";",
       "extractionState" : "extracted_with_value",
@@ -3081,6 +3111,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "滑鼠按下"
+          }
+        }
+      }
+    },
+    "PaG-9w-YxB.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Mute in Background\"; ObjectID = \"PaG-9w-YxB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mute in Background"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台静音"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行静音"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景執行静音"
           }
         }
       }

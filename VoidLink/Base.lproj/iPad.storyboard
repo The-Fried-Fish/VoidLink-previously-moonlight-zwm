@@ -1186,6 +1186,26 @@
                                     <constraint firstAttribute="height" constant="31" id="GWg-Dx-N44"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="gBG-8F-6F8">
+                                <rect key="frame" x="432" y="2349" width="281" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Duck Other Apps" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YPA-7E-Cdl" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="131" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YEv-1B-97I">
+                                        <rect key="frame" x="151" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="LXO-Pc-PnJ"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="6TQ-fK-dDd"/>
+                                </constraints>
+                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="xbj-CP-fhP" userLabel="micVolumeStack">
                                 <rect key="frame" x="440" y="2584" width="380" height="55.5"/>
                                 <subviews>
@@ -1360,16 +1380,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Oyk-L5-WTt" userLabel="singleTapSensitivityStack">
-                                <rect key="frame" x="440" y="307" width="668" height="55.5"/>
+                                <rect key="frame" x="440" y="307" width="700" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single Tap Sensitivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SuN-S2-8hj">
-                                        <rect key="frame" x="0.0" y="0.0" width="668" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="700" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="5" minimumValueImage="0.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="j4n-De-TRX" userLabel="Single Tap Sensitivity Slider">
-                                        <rect key="frame" x="-2" y="25.5" width="672" height="31"/>
+                                        <rect key="frame" x="-2" y="25.5" width="704" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="qOF-42-hPO"/>
                                         </constraints>
@@ -1494,6 +1514,26 @@
                                     <constraint firstAttribute="height" constant="31" id="m8h-w7-JRF"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="tNi-0x-k5z">
+                                <rect key="frame" x="440" y="2670" width="302.5" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mute in Background" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hPX-cJ-dgH" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="152.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WT0-Xz-Ldt">
+                                        <rect key="frame" x="172.5" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="XPN-Mt-wLR"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="tTa-Lf-P8K"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1521,6 +1561,8 @@
                         <outlet property="codecSelector" destination="aFy-0w-YPe" id="DlU-0l-gwz"/>
                         <outlet property="codecStack" destination="gWg-BF-yDI" id="GGc-JQ-N8y"/>
                         <outlet property="customResolutionSwitch" destination="E5w-kK-dOo" id="hrt-v2-8dY"/>
+                        <outlet property="duckOtherAppStack" destination="gBG-8F-6F8" id="T9P-ys-pHB"/>
+                        <outlet property="duckOtherAppSwitch" destination="YEv-1B-97I" id="o3Q-yt-74a"/>
                         <outlet property="edgeSlidingSensitivitySlider" destination="41s-BD-8rZ" id="ytk-Y5-Alq"/>
                         <outlet property="edgeSlidingSensitivityStack" destination="CVS-fB-e0q" id="tGR-K2-Jwq"/>
                         <outlet property="emulatedControllerTypeSelector" destination="JaY-XA-1V6" id="aU2-ps-esq"/>
@@ -1564,6 +1606,8 @@
                         <outlet property="mousePointerVelocityStack" destination="aQ8-4e-CQB" id="CW3-el-Yc3"/>
                         <outlet property="multiControllerStack" destination="RrU-mx-9jP" id="Axn-vT-LIf"/>
                         <outlet property="multiControllerSwitch" destination="8fR-vS-q3F" id="Sli-WG-kkI"/>
+                        <outlet property="muteInBackgroundStack" destination="tNi-0x-k5z" id="tHI-f3-EXN"/>
+                        <outlet property="muteInBackgroundSwitch" destination="WT0-Xz-Ldt" id="f1S-84-GB2"/>
                         <outlet property="navigationBar" destination="3qa-QW-sSl" id="CK1-rt-Reg"/>
                         <outlet property="onScreenWidgetSelector" destination="qSU-wh-tqA" id="j8d-fB-Z2c"/>
                         <outlet property="onScreenWidgetStack" destination="ziJ-RC-xkP" id="4Me-0o-H65"/>

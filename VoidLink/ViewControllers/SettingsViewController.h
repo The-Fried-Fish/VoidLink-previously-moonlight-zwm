@@ -184,6 +184,12 @@
 @property (strong, nonatomic) IBOutlet UIStackView *appendLeftClickStack;
 @property (strong, nonatomic) IBOutlet UISwitch *appendLeftClickSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *duckOtherAppStack;
+@property (strong, nonatomic) IBOutlet UISwitch *duckOtherAppSwitch;
+
+@property (strong, nonatomic) IBOutlet UIStackView *muteInBackgroundStack;
+@property (strong, nonatomic) IBOutlet UISwitch *muteInBackgroundSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

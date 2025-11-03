@@ -19,6 +19,8 @@
 #define CONN_TEST_SERVER "www.baidu.com"
 
 @interface Connection : NSOperation <NSStreamDelegate>
+@property (class, nonatomic, assign) bool muteInBackground;
+@property (class, nonatomic, assign) bool useSystemAudioEngine;
 
 -(id) initWithConfig:(StreamConfiguration*)config renderer:(VideoDecoderRenderer*)myRenderer connectionCallbacks:(id<ConnectionCallbacks>)callbacks;
 -(void) terminate;
@@ -26,7 +28,7 @@
 -(BandwidthTracker *) getBwTracker;
 -(BOOL) getVideoStats:(video_stats_t*)stats;
 -(NSString*) getActiveCodecName;
+
 + (void)setVolume:(float)newVolume;
-+ (void)setUseSystemAudioEngine:(bool)useSysAudioEngine;
 
 @end
