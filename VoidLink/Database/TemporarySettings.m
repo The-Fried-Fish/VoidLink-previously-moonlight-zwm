@@ -140,7 +140,7 @@
     self.hapticEngine = settings.hapticEngine;
     self.uniqueId = settings.uniqueId;
     self.audioEngine = settings.audioEngine;
-    self.appendLeftClick = settings.appendLeftClick;
+    self.delayLeftClick = settings.delayLeftClick;
     self.duckOtherApps = settings.duckOtherApps;
     self.muteInBackground = settings.muteInBackground;
 #endif

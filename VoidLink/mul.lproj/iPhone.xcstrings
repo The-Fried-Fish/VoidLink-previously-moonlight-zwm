@@ -3542,31 +3542,31 @@
       }
     },
     "qOa-te-sPj.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Additional Left Click\"; ObjectID = \"qOa-te-sPj\";",
+      "comment" : "Class = \"UILabel\"; text = \"Delay Left Click\"; ObjectID = \"qOa-te-sPj\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Additional Left Click"
+            "value" : "Delay Left Click"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "追加鼠标左单击"
+            "value" : "延迟鼠标左单击"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "追加滑鼠左單擊"
+            "value" : "延遲滑鼠左單擊"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "追加滑鼠左單擊"
+            "value" : "延遲滑鼠左單擊"
           }
         }
       }

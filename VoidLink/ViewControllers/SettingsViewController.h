@@ -181,8 +181,8 @@
 @property (strong, nonatomic) IBOutlet UIStackView *audioEngineStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioEngineSelector;
 
-@property (strong, nonatomic) IBOutlet UIStackView *appendLeftClickStack;
-@property (strong, nonatomic) IBOutlet UISwitch *appendLeftClickSwitch;
+@property (strong, nonatomic) IBOutlet UIStackView *delayLeftClickStack;
+@property (strong, nonatomic) IBOutlet UISwitch *delayLeftClickSwitch;
 
 @property (strong, nonatomic) IBOutlet UIStackView *duckOtherAppStack;
 @property (strong, nonatomic) IBOutlet UISwitch *duckOtherAppSwitch;
