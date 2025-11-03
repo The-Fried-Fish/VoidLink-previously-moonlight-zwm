@@ -110,6 +110,7 @@
           edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
                      audioEngine:(NSInteger)audioEngine
                  appendLeftClick:(BOOL)appendLeftClick
+                   duckOtherApps:(BOOL)duckOtherApps
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -170,6 +171,7 @@
         settingsToSave.edgeSlidingSensitivity = [NSNumber numberWithFloat:edgeSlidingSensitivity];
         settingsToSave.audioEngine = [NSNumber numberWithInteger:audioEngine];
         settingsToSave.appendLeftClick = appendLeftClick;
+        settingsToSave.duckOtherApps = duckOtherApps;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

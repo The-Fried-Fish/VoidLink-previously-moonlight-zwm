@@ -141,6 +141,7 @@
     self.uniqueId = settings.uniqueId;
     self.audioEngine = settings.audioEngine;
     self.appendLeftClick = settings.appendLeftClick;
+    self.duckOtherApps = settings.duckOtherApps;
 #endif
     
     return self;

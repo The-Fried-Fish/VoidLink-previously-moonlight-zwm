@@ -791,6 +791,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.useBuiltinMicStack ofId:@"useBuiltinMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [self addSetting:self.micVolumeStack ofId:@"micVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
+    [self addSetting:self.duckOtherAppStack ofId:@"duckOtherAppStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     // [self addSetting:self.audioEngineStack ofId:@"audioEngineStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     // cancel audio engine selector due to system engine is unable to playback multi-channel audio
     [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
@@ -1714,6 +1715,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.localVolumeSlider setValue:self->tempSettings.localVolume.floatValue*100];
         [self.localVolumeSlider addTarget:self action:@selector(localVolumeSliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self localVolumeSliderMoved:self.localVolumeSlider];
+        
+        [self.duckOtherAppSwitch setOn:self->tempSettings.duckOtherApps];
         
         [self.micVolumeSlider setValue:self->tempSettings.micVolume.floatValue*100];
         [self.micVolumeSlider addTarget:self action:@selector(micVolumeSliderMoved:) forControlEvents:UIControlEventValueChanged];
@@ -2871,6 +2874,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat edgeSlidingSensitivity = self.edgeSlidingSensitivitySlider.value;
     NSInteger audioEngine = self.audioEngineSelector.selectedSegmentIndex;
     BOOL appendLeftClick = self.appendLeftClickSwitch.isOn;
+    BOOL duckOtherApps = self.duckOtherAppSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2927,6 +2931,7 @@ BOOL isCustomResolution(int resolutionSelected) {
               edgeSlidingSensitivity:edgeSlidingSensitivity
                          audioEngine:audioEngine
                      appendLeftClick:appendLeftClick
+                       duckOtherApps:duckOtherApps
               backgroundSessionTimer:backgroundSessionTimer];
 }
 
