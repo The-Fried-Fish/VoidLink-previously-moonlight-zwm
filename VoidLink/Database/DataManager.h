@@ -126,7 +126,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                     hapticEngine:(NSInteger)hapticEngine
           edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
                      audioEngine:(NSInteger)audioEngine
-                 appendLeftClick:(BOOL)appendLeftClick
+                 delayLeftClick:(BOOL)delayLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
                 muteInBackground:(BOOL)muteInBackground
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;

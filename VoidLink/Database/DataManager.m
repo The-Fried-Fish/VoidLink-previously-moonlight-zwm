@@ -109,7 +109,7 @@
                     hapticEngine:(NSInteger)hapticEngine
           edgeSlidingSensitivity:(CGFloat)edgeSlidingSensitivity
                      audioEngine:(NSInteger)audioEngine
-                 appendLeftClick:(BOOL)appendLeftClick
+                 delayLeftClick:(BOOL)delayLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
                 muteInBackground:(BOOL)muteInBackground
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
@@ -171,7 +171,7 @@
         settingsToSave.hapticEngine = [NSNumber numberWithInteger:hapticEngine];
         settingsToSave.edgeSlidingSensitivity = [NSNumber numberWithFloat:edgeSlidingSensitivity];
         settingsToSave.audioEngine = [NSNumber numberWithInteger:audioEngine];
-        settingsToSave.appendLeftClick = appendLeftClick;
+        settingsToSave.delayLeftClick = delayLeftClick;
         settingsToSave.duckOtherApps = duckOtherApps;
         settingsToSave.muteInBackground = muteInBackground;
         settingsToSave.rememberFoldState = rememberFoldState;

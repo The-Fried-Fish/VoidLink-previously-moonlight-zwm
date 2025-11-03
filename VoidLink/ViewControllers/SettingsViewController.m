@@ -716,9 +716,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
+    [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.appendLeftClickStack ofId:@"appendLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
@@ -1284,8 +1284,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"useBuiltinMicStackTip"];
         showOnlineDocAction = false;
     }
-    if([sender.superview.accessibilityIdentifier isEqualToString: @"appendLeftClickStack"]){
-        tipText = [LocalizationHelper localizedStringForKey:@"appendLeftClickStackTip"];
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"delayLeftClickStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"delayLeftClickStackTip"];
         showOnlineDocAction = false;
     }
 
@@ -1680,7 +1680,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.multiControllerSwitch setOn:self->tempSettings.multiController];
         [self.swapAbxySwitch setOn:self->tempSettings.swapABXYButtons];
         [self.buttonVisualFeedbackSwitch setOn:self->tempSettings.buttonVisualFeedback];
-        [self.appendLeftClickSwitch setOn:self->tempSettings.appendLeftClick];
+        [self.delayLeftClickSwitch setOn:self->tempSettings.delayLeftClick];
 
         [self.hapticEngineSelector setSelectedSegmentIndex:self->tempSettings.hapticEngine.intValue];
         bool hideHapticEngineStack = false;
@@ -2333,12 +2333,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityDividerStack];
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityFactorStack];
 
-    [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.mousePointerVelocityStack];
-    [self setHidden:!(sender.selectedSegmentIndex == RelativeTouch) forStack:self.singleTapSensitivityStack];
+    [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.mousePointerVelocityStack];
+    [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.singleTapSensitivityStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
-    [self setHidden:!(([self isNotNativeTouchOnly] && sender.selectedSegmentIndex == NativeTouch)
-                      || sender.selectedSegmentIndex == AbsoluteTouch) forStack:self.appendLeftClickStack];
+    [self setHidden:sender.selectedSegmentIndex!=AbsoluteTouch forStack:self.delayLeftClickStack];
     [self handleOswGestureChange];
 }
 
@@ -2411,7 +2410,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)enableOswForNativeTouchSwitchFlipped:(UISwitch *)sender{
     [self setHidden:!sender.isOn forStack:self.onScreenWidgetStack];
     [self setHidden:!sender.isOn forStack:self.buttonVisualFeedbackStack];
-    [self setHidden:!sender.isOn forStack:self.appendLeftClickStack];
     [self handleOswGestureChange];
 }
 
@@ -2881,7 +2879,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger hapticEngine = self.hapticEngineSelector.selectedSegmentIndex;
     CGFloat edgeSlidingSensitivity = self.edgeSlidingSensitivitySlider.value;
     NSInteger audioEngine = self.audioEngineSelector.selectedSegmentIndex;
-    BOOL appendLeftClick = self.appendLeftClickSwitch.isOn;
+    BOOL delayLeftClick = self.delayLeftClickSwitch.isOn;
     BOOL duckOtherApps = self.duckOtherAppSwitch.isOn;
     BOOL muteInBackground = self.muteInBackgroundSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
@@ -2939,7 +2937,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                         hapticEngine:hapticEngine
               edgeSlidingSensitivity:edgeSlidingSensitivity
                          audioEngine:audioEngine
-                     appendLeftClick:appendLeftClick
+                     delayLeftClick:delayLeftClick
                        duckOtherApps:duckOtherApps
                     muteInBackground:muteInBackground
               backgroundSessionTimer:backgroundSessionTimer];

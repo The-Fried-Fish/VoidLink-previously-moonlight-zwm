@@ -83,7 +83,7 @@
 @property (nonatomic, retain) NSNumber * appTheme;
 @property (nonatomic, retain) NSNumber * edgeSlidingSensitivity;
 @property (nonatomic, retain) NSNumber * audioEngine;
-@property (nonatomic) BOOL appendLeftClick;
+@property (nonatomic) BOOL delayLeftClick;
 @property (nonatomic) BOOL duckOtherApps;
 @property (nonatomic) BOOL muteInBackground;
 @property (nonatomic, retain) NSNumber * framePacingMode;
