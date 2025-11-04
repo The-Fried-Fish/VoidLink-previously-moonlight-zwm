@@ -205,7 +205,7 @@ import UIKit
     private var capturedTouches: NSMutableSet
     private let noTouch: UITouch = UITouch()
     let setLock = NSLock()
-    
+     
     //controller touch pad
     private var pointerIdPool: Set<UInt32>
     private var pointerIdDict: Dictionary<ObjectIdentifier, UInt32>
@@ -216,6 +216,10 @@ import UIKit
     @objc public var buttonDownVisualEffectStandardWidth: CGFloat
     @objc public var highlightSizeFactor: CGFloat = 1.0
     @objc static public var isTweakingHighlightSize: Bool = false
+    
+    // discreteWheels
+    private var tickCycle: UInt8 = UIScreen.main.maximumFramesPerSecond > 110 ? 20 : 10
+    private var tickFlag: UInt8 = 0
 
     
     @objc init(cmdString: String, buttonLabel: String, shape:String) {
@@ -1377,6 +1381,7 @@ import UIKit
         self.touchBegan = true
         self.directionPadTouchBegan = true
         self.firstTouchMoved = false
+        self.tickFlag = 0
         super.touchesBegan(touches, with: event)
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button || self.touchPadString == "MOUSEPAD";
 
@@ -1429,7 +1434,7 @@ import UIKit
                             self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
                         }
                     }
-                case "LTPAD", "RTPAD","MOUSEWHEEL", "WHEEL":
+                case "LTPAD", "RTPAD","MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL":
                     if quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
@@ -1739,6 +1744,14 @@ import UIKit
             case "MOUSEWHEEL","WHEEL":
                 self.updateTouchLocation(touch: touches.first!)
                 if firstTouchMoved {LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))}
+            case "DISCRETEWHEEL", "DSWHEEL":
+                self.updateTouchLocation(touch: touches.first!)
+                tickFlag = (tickFlag+1)%UInt8(CGFloat(tickCycle)/abs(sensitivityFactorY))
+                var delta = 0.0
+                if self.deltaY==0 {delta=self.latestTouchLocation.y-self.touchBeganLocation.y}
+                else {delta = self.deltaY}
+                delta = delta * CGFloat(copysign(1.0, sensitivityFactorY))
+                if(tickFlag == 1) {LiSendScrollEvent(delta > 0 ? -3 : 3)}
             default:
                 break
             }
