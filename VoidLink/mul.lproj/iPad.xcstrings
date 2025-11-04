@@ -4573,6 +4573,18 @@
         }
       }
     },
+    "x9i-JN-FSn.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Roll factor\"; ObjectID = \"x9i-JN-FSn\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Roll factor"
+          }
+        }
+      }
+    },
     "xfv-K0-1CO.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Tap any widget to load configuration (per widget)\\n\"; ObjectID = \"xfv-K0-1CO\";",
       "extractionState" : "extracted_with_value",

@@ -565,6 +565,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
                 widgetView.yawFactor = buttonState.yawFactor;
                 widgetView.pitchFactor = buttonState.pitchFactor;
+                widgetView.rollFactor = buttonState.rollFactor;
                 widgetView.trackballDecelerationRate = buttonState.decelerationRate;
                 widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
                 widgetView.minStickOffset = buttonState.minStickOffset;
