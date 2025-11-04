@@ -84,6 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UILabel *pitchFactorLabel;
 @property (strong, nonatomic) IBOutlet UISlider *pitchFactorSlider;
 @property (strong, nonatomic) IBOutlet UIStackView *pitchFactorStack;
+@property (strong, nonatomic) IBOutlet UILabel *rollFactorLabel;
+@property (strong, nonatomic) IBOutlet UISlider *rollFactorSlider;
+@property (strong, nonatomic) IBOutlet UIStackView *rollFactorStack;
 
 
 @property (strong, nonatomic) IBOutlet UIStackView *decelerationRateStack;

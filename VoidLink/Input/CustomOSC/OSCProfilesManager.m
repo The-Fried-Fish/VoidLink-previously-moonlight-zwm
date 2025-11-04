@@ -404,6 +404,7 @@ static CGRect layoutViewBounds;
         buttonState.sensitivityFactorY = widgetView.sensitivityFactorY;
         buttonState.yawFactor = widgetView.yawFactor;
         buttonState.pitchFactor = widgetView.pitchFactor;
+        buttonState.rollFactor = widgetView.rollFactor;
         buttonState.decelerationRate = widgetView.trackballDecelerationRate;
         buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
         buttonState.widgetShape = widgetView.shape;

@@ -1297,6 +1297,18 @@
         }
       }
     },
+    "BNN-vq-Pve.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Roll factor\"; ObjectID = \"BNN-vq-Pve\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Roll factor"
+          }
+        }
+      }
+    },
     "bue-hp-CWD.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Duplicate\"; ObjectID = \"bue-hp-CWD\";",
       "extractionState" : "extracted_with_value",

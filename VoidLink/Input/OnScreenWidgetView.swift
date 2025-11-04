@@ -110,6 +110,9 @@ import UIKit
     @objc public var hasPitchFactor: Bool = false
     @objc public var pitchFactorMin: CGFloat = 0
     @objc public var pitchFactorMax: CGFloat = 1
+    @objc public var hasRollFactor: Bool = false
+    @objc public var rollFactorMin: CGFloat = 0
+    @objc public var rollFactorMax: CGFloat = 1
 
     @objc public var hasAutoTap: Bool = false
     @objc public var isMousePad: Bool = false
@@ -354,6 +357,8 @@ import UIKit
         self.yawFactorMax = 1.0
         self.pitchFactorMin = 0
         self.pitchFactorMax = 1.0
+        
+        self.hasRollFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick && oscProfile.rollToLeftStick)
         
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePad = self.touchPadString == "MOUSEPAD" && widgetType == WidgetTypeEnum.touchPad
@@ -1790,7 +1795,7 @@ import UIKit
                         widget.tapToToggleFlag = !widget.tapToToggleFlag
                     }
                 }
-                self.motionHandler.stopGyroUpdate(interruptTouchInput: false)
+                self.motionHandler.stopGyroUpdate(interruptTouchInput: false, resetLeftStick: true)
                 self.motionHandler.gyroStarter = nil
             }
             else {

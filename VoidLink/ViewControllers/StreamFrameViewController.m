@@ -1572,7 +1572,7 @@
 }
 
 - (void)stopGyroUpdateWithInterruptTouchInput:(BOOL)interruption{
-    [_motionHandler stopGyroUpdateWithInterruptTouchInput:interruption];
+    [_motionHandler stopGyroUpdateWithInterruptTouchInput:interruption resetLeftStick:false];
 }
 
 - (void)stopAccelUpdate{

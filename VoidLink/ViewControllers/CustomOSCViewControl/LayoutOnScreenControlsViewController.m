@@ -155,6 +155,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
             widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
             widgetView.yawFactor = buttonState.yawFactor;
             widgetView.pitchFactor = buttonState.pitchFactor;
+            widgetView.rollFactor = buttonState.rollFactor;
             widgetView.trackballDecelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
@@ -746,6 +747,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     newWidget.sensitivityFactorY = widget.sensitivityFactorY;
     newWidget.yawFactor = widget.yawFactor;
     newWidget.pitchFactor = widget.pitchFactor;
+    newWidget.rollFactor = widget.rollFactor;
     newWidget.trackballDecelerationRate = widget.trackballDecelerationRate;
     newWidget.stickIndicatorOffset = widget.stickIndicatorOffset;
     newWidget.minStickOffset = [widgetInitParams[@"minStickOffsetString"] floatValue];
@@ -917,6 +919,15 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
         [self.pitchFactorSlider setValue:self->selectedWidgetView.pitchFactor];
         [self.pitchFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Pitch factor: %.2f", self->selectedWidgetView.pitchFactor]];
         [self autoFitLabel:self.pitchFactorLabel];
+    }
+    
+    self.rollFactorStack.hidden = !selectedWidgetView.hasRollFactor;
+    if(selectedWidgetView.hasRollFactor){
+        [self.rollFactorSlider setMinimumValue:selectedWidgetView.rollFactorMin];
+        [self.rollFactorSlider setMaximumValue:selectedWidgetView.rollFactorMax];
+        [self.rollFactorSlider setValue:self->selectedWidgetView.rollFactor];
+        [self.rollFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Roll factor: %.2f", self->selectedWidgetView.rollFactor]];
+        [self autoFitLabel:self.rollFactorLabel];
     }
 
     
@@ -1174,6 +1185,12 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     return;
 }
 
+- (void)rollFactorSliderMoved:(UISlider* )sender{
+    [self.rollFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Roll factor: %.2f", sender.value]];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.rollFactor = sender.value;
+    return;
+}
+
 - (void)decelerationRateSliderMoved:(UISlider* )sender{
     [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", sender.value]];
     if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.trackballDecelerationRate = sender.value;
@@ -1308,13 +1325,17 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     self.sensitivityYStack.hidden = YES;
     
     [self.yawFactorSlider addTarget:self action:@selector(yawFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
-    self.yawFactorLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityYaw"];
+    self.yawFactorLabel.text = [LocalizationHelper localizedStringForKey:@"Yaw Factor"];
     self.yawFactorStack.hidden = YES;
     
     [self.pitchFactorSlider addTarget:self action:@selector(pitchFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
-    self.pitchFactorLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityPitch"];
+    self.pitchFactorLabel.text = [LocalizationHelper localizedStringForKey:@"Pitch Factor"];
     self.pitchFactorStack.hidden = YES;
     
+    [self.rollFactorSlider addTarget:self action:@selector(rollFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+    self.rollFactorLabel.text = [LocalizationHelper localizedStringForKey:@"Roll Factor"];
+    self.rollFactorStack.hidden = YES;
+
     [self.decelerationRateSlider addTarget:self action:@selector(decelerationRateSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.decelerationRateLabel.text = [LocalizationHelper localizedStringForKey:@"Deceleration Rate"];
     self.decelerationRateStack.hidden = YES;
