@@ -327,6 +327,8 @@ import UIKit
                 self.buttonMode = ButtonMode.movable.rawValue
             }
         }
+        
+        self.tweakBorderAlpha(alpha: 0.19) // fix default borderAlpha offset
 
         setupView()
         
