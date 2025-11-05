@@ -19,7 +19,6 @@
 #import "DataManager.h"
 #import "PaddedLabel.h"
 #import "ImGuiRenderer.h"
-#import "RelativeTouchHandler.h"
 #import "MetalVideoRenderer.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "CustomTapGestureRecognizer.h"
@@ -310,6 +309,11 @@
     
 }
 
+- (void)handleAbsTouchPanGesture:(UIPanGestureRecognizer* )gesture{
+    NSLog(@"handleAbsTouchPanGesture %f", CACurrentMediaTime());
+    LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+}
+
 - (void)configZoomGestureAndAddStreamView{
     if (_settings.touchMode.intValue == AbsoluteTouch) {
         if(!_scrollView) _scrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
@@ -317,6 +321,7 @@
         [_scrollView.panGestureRecognizer setMinimumNumberOfTouches:2];
         [_scrollView.panGestureRecognizer setMaximumNumberOfTouches:2]; // reduce competing with keyboardToggleRecognizer in StreamView.
 #endif
+        [_scrollView.panGestureRecognizer addTarget:self action:@selector(handleAbsTouchPanGesture:)];
         [_scrollView setShowsHorizontalScrollIndicator:NO];
         [_scrollView setShowsVerticalScrollIndicator:NO];
         [_scrollView setDelegate:self];
@@ -773,6 +778,10 @@
 
 - (void)enterPip{
     [self.pipController startPictureInPicture];
+}
+
+- (void)alterAbsTouchDragWithMouseButton:(int32_t)mouseButton{
+    [_streamView alterAbsTouchDragWith:mouseButton];
 }
 
 - (void)oscLayoutClosed{

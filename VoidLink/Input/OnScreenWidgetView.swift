@@ -33,6 +33,7 @@ import UIKit
         func openWidgetLayoutTool()
         func switchWidgetProfile()
         func bringUpSoftKeyboard()
+        func alterAbsTouchDragWith(mouseButton:Int32)
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -1142,6 +1143,9 @@ import UIKit
     }
     
     private func handleButtonDown() {
+        
+        if !OnScreenWidgetView.editMode, !self.functionalButtonString.isEmpty {self.handleFunctionalButtonDown()}
+                        
         if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
         
         if !OnScreenWidgetView.editMode, !self.motionControlButtonString.isEmpty {self.handleMotionControlButtonDown()}
@@ -1351,7 +1355,7 @@ import UIKit
                 if CommandManager.keyboardButtonMappings.keys.contains(comboString) {
                     LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[comboString]!,Int8(KEY_ACTION_DOWN), 0)
                 }
-                if CommandManager.mouseButtonMappings.keys.contains(comboString) {
+                if CommandManager.mouseButtonMappings.keys.contains(comboString), self.functionalButtonString != "ABSTCHDRAG" {
                     LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), Int32(CommandManager.mouseButtonMappings[comboString]!))
                 }
                 if comboString != comboStrings.last {
@@ -1865,6 +1869,17 @@ import UIKit
         }
     }
     
+    private func handleFunctionalButtonDown(){
+        switch self.functionalButtonString {
+        case "ABSTCHDRAG":
+            let mouseButton = CommandManager.mouseButtonMappings[Set(self.comboButtonStrings).intersection(CommandManager.mouseButtonMappings.keys).first ?? "MLEFT"] ?? BUTTON_LEFT
+            print("mouseButton \(mouseButton)");
+            self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:mouseButton)
+        default:
+            break
+        }
+    }
+    
     private func handleFunctionalButtonUp(){
         let longPressed = CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
         if longPressed, buttonMode == ButtonMode.movable.rawValue {return}
@@ -1879,6 +1894,9 @@ import UIKit
             self.functionalButtonDelegate?.switchWidgetProfile()
         case "SOFTKEYBOARD":
             self.functionalButtonDelegate?.bringUpSoftKeyboard()
+        case "ABSTCHDRAG":
+            // self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:CommandManager.mouseButtonMappings[self.comboButtonStrings.first ?? "MLEFT"] ?? BUTTON_LEFT)
+            self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
         default:
             break
         }
