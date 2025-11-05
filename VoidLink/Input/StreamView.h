@@ -44,6 +44,7 @@
                   config:(StreamConfiguration*)streamConfig
  streamFrameTopLayerView:(UIView* )topLayerView
 ;
+
 - (void) showOnScreenControls;
 - (void) setOnScreenControls;
 - (void) disableOnScreenControls;
@@ -61,10 +62,12 @@
 
 - (OnScreenControlsLevel) getCurrentOscState;
 
--(void)readyToBringUpSoftKeyboardByToolbox;
+- (void)readyToBringUpSoftKeyboardByToolbox;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
 - (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight;
+
+- (void)alterAbsTouchDragWith:(int32_t)mouseButton;
 
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse;

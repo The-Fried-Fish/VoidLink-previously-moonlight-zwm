@@ -115,13 +115,14 @@ import UIKit
         "OSCBACK"
     ]
     
-    @objc public static let touchPadCmds: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD","LTPAD", "RTPAD", "DS4TOUCH", "MOUSEPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL", "DPAD", "TRACKBALL", "WASDPAD", "ARROWPAD"]
+    @objc public static let touchPadCmds: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD","LTPAD", "RTPAD", "DS4TOUCH", "MOUSEPAD", "ABSMOUSE", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL", "DPAD", "TRACKBALL", "WASDPAD", "ARROWPAD"]
+    @objc public static let mousePads: [String] = ["MOUSEPAD", "ABSMOUSE"]
     @objc public static let directionPads: [String] = ["DPAD", "WASDPAD", "ARROWPAD"]
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]
     @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let bidirectionalVerticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
-    @objc public static let functionalButtonCmds: [String] = ["SETTINGS", "TOOLBOX", "WIDGETTOOL", "WIDGETPROFILES", "PROFILES", "SOFTKEYBOARD"]
+    @objc public static let functionalButtonCmds: [String] = ["SETTINGS", "TOOLBOX", "WIDGETTOOL", "WIDGETPROFILES", "PROFILES", "SOFTKEYBOARD", "ABSTCHDRAG"]
     @objc public static let motionControlButtonCmds: [String] = ["GYRO","GYROPAUSE","ACCEL","MOTION"]
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]

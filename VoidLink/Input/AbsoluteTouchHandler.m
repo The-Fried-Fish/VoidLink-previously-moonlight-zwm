@@ -34,6 +34,8 @@
     UITouch* lastTouchUp;
     CGPoint lastTouchUpLocation;
     
+    UITouch* capturedTouch;
+    
     CGPoint touchBeganLocation;
     CGPoint movingTouchLocation;
 
@@ -47,6 +49,7 @@
     CGFloat _edgeTolerance;
     
     bool _delayMouseLeftClick;
+    bool dragButtonDown;
     
     bool rightButtonClicked;
 }
@@ -55,8 +58,10 @@
     self = [self init];
     self->streamView = view;
     
-    _delayMouseLeftClick = settings.delayLeftClick;
-    
+    // _delayMouseLeftClick = settings.delayLeftClick;
+    _delayMouseLeftClick = true; // deprecate legacy absolute touch
+    dragButtonDown = false;
+
     leftClickTimeThreshold = 0.15;
     
     // upper screen check
@@ -65,13 +70,18 @@
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
     self->touchPointSpawnedAtUpperScreenEdge = false;
     
+    _mouseButtonForCursorMove = BUTTON_LEFT;
+    
     return self;
 }
 
 - (void)onLongPressStart:(NSTimer*)timer {
     // Raise the left click and start a right click
     if([self touchDidntMoveOnScreen:movingTouchLocation]){
-        if(_delayMouseLeftClick) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+        if(_delayMouseLeftClick){
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+            if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
+        }
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_RIGHT);
         dispatch_time_t delayShort = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC));
         dispatch_after(delayShort, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -93,24 +103,28 @@
     touchPointSpawnedAtUpperScreenEdge = false; // reset this flag immediately if we get a touch event passing the check above, this fixes irresponsive touch after closing the command tool menu.
 
     // Ignore touch down events with more than one finger
+    /*
     if ([[event allTouches] count] > 1) {
         return;
-    }
+    }*/
     
-    UITouch* touch = [touches anyObject];
-    CGPoint touchLocation = [touch locationInView:streamView];
+    capturedTouch = [touches anyObject];
+    CGPoint touchLocation = [capturedTouch locationInView:streamView];
     
-    touchBeganTimeStamp = touch.timestamp;
+    touchBeganTimeStamp = capturedTouch.timestamp;
     
     // Don't reposition for finger down events within the deadzone. This makes double-clicking easier.
-    if (touch.timestamp - lastTouchUp.timestamp > DOUBLE_TAP_DEAD_ZONE_DELAY ||
+    if (capturedTouch.timestamp - lastTouchUp.timestamp > DOUBLE_TAP_DEAD_ZONE_DELAY ||
         sqrt(pow((touchLocation.x / streamView.bounds.size.width) - (lastTouchUpLocation.x / streamView.bounds.size.width), 2) +
              pow((touchLocation.y / streamView.bounds.size.height) - (lastTouchUpLocation.y / streamView.bounds.size.height), 2)) > DOUBLE_TAP_DEAD_ZONE_DELTA) {
         [streamView updateCursorLocation:touchLocation isMouse:NO];
     }
     
     // Press the left button down
-    if(!_delayMouseLeftClick) LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);
+    if(!_delayMouseLeftClick){
+        // _delayMouseLeftClick will always be true.
+        LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT); //deprecated
+    }
     
     // Start the long press timer
     longPressTimer = [NSTimer scheduledTimerWithTimeInterval:LONG_PRESS_ACTIVATION_DELAY
@@ -119,10 +133,20 @@
                                                     userInfo:nil
                                                      repeats:NO];
     
-    lastTouchDown = touch;
+    lastTouchDown = capturedTouch;
     lastTouchDownLocation = touchLocation;
     movingTouchLocation = touchLocation;
     touchBeganLocation = touchLocation;
+}
+
+- (void)pauseLeftButtonDrag{
+    if(dragButtonDown){
+        LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
+        dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, self->_mouseButtonForCursorMove);
+        });
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -130,12 +154,14 @@
     if(touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
     
     // Ignore touch move events with more than one finger
+    /*
     if ([[event allTouches] count] > 1) {
         return;
-    }
+    }*/
     
-    UITouch* touch = [touches anyObject];
-    movingTouchLocation = [touch locationInView:streamView];
+    if(![touches containsObject:capturedTouch]) return;
+    
+    movingTouchLocation = [capturedTouch locationInView:streamView];
     
     if (sqrt(pow((movingTouchLocation.x / streamView.bounds.size.width) - (lastTouchDownLocation.x / streamView.bounds.size.width), 2) +
              pow((movingTouchLocation.y / streamView.bounds.size.height) - (lastTouchDownLocation.y / streamView.bounds.size.height), 2)) > LONG_PRESS_ACTIVATION_DELTA) {
@@ -143,11 +169,13 @@
         [longPressTimer invalidate];
         longPressTimer = nil;
         
-        if(_delayMouseLeftClick && (CACurrentMediaTime()-touchBeganTimeStamp>leftClickTimeThreshold)) LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);
-        
+        if(_delayMouseLeftClick && (CACurrentMediaTime()-touchBeganTimeStamp>leftClickTimeThreshold) && !dragButtonDown){
+            LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, _mouseButtonForCursorMove);
+            dragButtonDown = true;
+        }
     }
     
-   if(!rightButtonClicked) [streamView updateCursorLocation:[[touches anyObject] locationInView:streamView] isMouse:NO];
+   if(!rightButtonClicked) [streamView updateCursorLocation:movingTouchLocation isMouse:NO];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -155,36 +183,39 @@
     if(touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
 
     // Only fire this logic if all touches have ended
-    if ([[event allTouches] count] == [touches count]) {
+    if ([touches containsObject:capturedTouch]) {
         // Cancel the long press timer
         [longPressTimer invalidate];
         longPressTimer = nil;
         
         // Remember this last touch for touch-down deadzoning
-        UITouch* touch = [touches anyObject];
-        CGPoint touchLocation = [touch locationInView:streamView];
+        CGPoint touchEndLocation = [capturedTouch locationInView:streamView];
         
         if(_delayMouseLeftClick){
             if(CACurrentMediaTime()-touchBeganTimeStamp<leftClickTimeThreshold) {
                 if(CACurrentMediaTime()-lastTouchUp.timestamp<0.15
-                   && ![self isAdjacentPoints:touchLocation from:lastTouchUpLocation tolerance:30]) [streamView updateCursorLocation:touchLocation isMouse:NO];
-                if([self touchDidntMoveOnScreen:touchLocation] && !rightButtonClicked) [self sendShortMouseLeftButtonClickEvent];
+                   && ![self isAdjacentPoints:touchEndLocation from:lastTouchUpLocation tolerance:30]) [streamView updateCursorLocation:touchEndLocation isMouse:NO];
+                if([self touchDidntMoveOnScreen:touchEndLocation] && !rightButtonClicked) [self sendShortMouseLeftButtonClickEvent];
             }
             else if(!rightButtonClicked){
                     LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+                    if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
                     LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
             }
         }
-        else{
+        else{ // deprecated
+            /*
             // Left button up on finger up
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
 
             // Raise right button too in case we triggered a long press gesture
-            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT); */
         }
         
         lastTouchUp = [touches anyObject];
         lastTouchUpLocation = [lastTouchUp locationInView:streamView];
+        
+        dragButtonDown = false;
     }
 }
 
