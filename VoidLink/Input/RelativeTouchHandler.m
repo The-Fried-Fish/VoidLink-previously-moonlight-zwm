@@ -31,7 +31,8 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     CGFloat _edgeTolerance;
 
     UITouch* touchLockedForMouseMove;
-    
+    UITouch* quickTapTouch;
+
     CADisplayLink *displayLink;
     
 #if TARGET_OS_TV
@@ -142,12 +143,15 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
     // quick double tap detection for dragging. simulates a real notebook computer touchpad
     CGPoint currentTouchLocation = [candidateTouch locationInView:streamView];
-    NSTimeInterval tapInterval = CACurrentMediaTime() - mousePointerTimestamp;
-    if(tapInterval < QUICK_TAP_TIME_INTERVAL && [self isAdjacentTouches:currentTouchLocation from:initialMousePointerLocation] ) {
-        // NSLog(@"quick click detected");
-        quickTapDetected = true;
-        NSLog(@"quick Tap Detected");
-        // LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT); // do not press down mouse button here, or it wiil easily turn to double click on remote PC
+    
+    if([UITouchUtil touchesIn:streamView from:event].count == 1){
+        NSTimeInterval tapInterval = CACurrentMediaTime() - mousePointerTimestamp;
+        if(tapInterval < QUICK_TAP_TIME_INTERVAL
+           && [self isAdjacentTouches:currentTouchLocation from:initialMousePointerLocation]) {
+            quickTapDetected = true;
+            NSLog(@"quick Tap Detected");
+        }
+        quickTapTouch = touches.anyObject;
     }
 
     // use [event allTouches] to check if touchLockedForMouseMove is captured, if already captured, don't update touchLockedForMouseMove
@@ -160,24 +164,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    
-    //NSLog(@"%f, touchesMoved callback, is scrolling: %d, touches count: %d", CACurrentMediaTime(), isInMouseWheelScrollingMode, (uint32_t)[touches count]);
-    /*
-    if(isInMouseWheelScrollingMode && [[event allTouches] count] == 2 && ![self isOnScreenWidgetViewBeingPressed] && ![self isOnScreenControllerBeingPressed:touches]){
-        NSSet* twoTouches = [event allTouches];
-        CGPoint firstLocation = [[[twoTouches allObjects] objectAtIndex:0] locationInView:streamView];
-        CGPoint secondLocation = [[[twoTouches allObjects] objectAtIndex:1] locationInView:streamView];
         
-        CGPoint avgLocation = CGPointMake((firstLocation.x + secondLocation.x) / 2, (firstLocation.y + secondLocation.y) / 2);
-        if ((CACurrentMediaTime() - _mouseRightClickTapRecognizer.gestureCapturedTime > RIGHTCLICK_TAP_DOWN_TIME_THRESHOLD_S) && twoFingerTouchLocation.y != avgLocation.y) { //prevent sending scrollevent while right click gesture is being recognized. The time threshold is only 150ms, resulting in a barely noticeable delay before the scroll event is activated.
-            // and we must exclude onscreen button taps & on-screen controller taps
-            LiSendHighResScrollEvent((avgLocation.y - twoFingerTouchLocation.y) * 10);
-        }
-        twoFingerTouchLocation = avgLocation;
-        return;
-    }
-     */
-    
     NSSet* currentTouches = [UITouchUtil touchesIn:streamView from:event];
     uint8_t currentTouchesCount = currentTouches.count;
         
