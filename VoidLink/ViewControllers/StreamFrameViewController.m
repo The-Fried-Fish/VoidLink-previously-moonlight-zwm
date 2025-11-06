@@ -304,7 +304,8 @@
         _oscLayoutTapRecoginizer.delaysTouchesBegan = NO;
         _oscLayoutTapRecoginizer.delaysTouchesEnded = NO;
         if(_settings.touchMode.intValue == AbsoluteTouch) _oscLayoutTapRecoginizer.immediateTriggering = true; // make immediate triggering on for absolute touch mode
-        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer]; //
+        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer];
+        _oscLayoutTapRecoginizer.touchCapturingView = _streamView;
     }
     
 }
@@ -325,7 +326,7 @@
         [_scrollView setShowsHorizontalScrollIndicator:NO];
         [_scrollView setShowsVerticalScrollIndicator:NO];
         [_scrollView setDelegate:self];
-        [_scrollView setMaximumZoomScale:10.0f];
+        [_scrollView setMaximumZoomScale:1.0f];
         if(!_mainFrameViewcontroller.settingsExpandedInStreamView){
             // Add StreamView inside a UIScrollView for absolute mode
             [_scrollView addSubview:_streamView];

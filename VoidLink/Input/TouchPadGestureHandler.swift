@@ -1,0 +1,42 @@
+//
+//  TouchPadGestureHandler.swift
+//  VoidLink
+//
+//  Created by True砖家 on 2025/11/5.
+//  Copyright © 2025 True砖家 on Bilibili. All rights reserved.
+//
+
+import UIKit
+
+@objc class TouchPadGestureHandler: NSObject {
+    
+    @objc public static var ctrlDown:Bool = false
+    @objc public static func handleGesture(in view: UIView, with event: UIEvent) {
+        let currentTouches = UITouchUtil.touches(in: view, from: event)
+        guard currentTouches.count == 2 else { return }
+        
+        LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+        LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_RIGHT)
+        
+        guard let touch1 = currentTouches.first else { return }
+        var mutable = Array(currentTouches)
+        mutable.removeAll { $0 == touch1 }
+        guard let touch2 = mutable.first else { return }
+        
+        let currentDistance = UITouchUtil.distance(between: touch1, and: touch2, in: view)
+        let previousDistance = UITouchUtil.previousDistance(between: touch1, and: touch2, in: view)
+        let midPointDeltaY = UITouchUtil.midPointDeltaY(between: touch1, and: touch2, in: view)
+        let midPointDeltaX = UITouchUtil.midPointDeltaX(between: touch1, and: touch2, in: view)
+        
+        LiSendHighResScrollEvent(Int16((currentDistance - previousDistance) * 5 + midPointDeltaY * 5))
+        LiSendHighResHScrollEvent(Int16(-midPointDeltaX) * 5)
+        
+        if abs(currentDistance - previousDistance) > abs(midPointDeltaY) {
+            LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_DOWN), 0)
+            ctrlDown = true
+        } else {
+            LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_UP), 0)
+            ctrlDown = false
+        }
+    }
+}

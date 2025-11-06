@@ -23,7 +23,7 @@
 #define UPDATE_BUTTON(x, y) (buttonFlags = \
 (y) ? (buttonFlags | (x)) : (buttonFlags & ~(x)))
 
-static NSMutableSet* touchAddrsCapturedByOnScreenControls;
+static NSMutableSet* touchesCapturedByOnScreenControls;
 static CGRect standardRoundButtonBounds;
 static CGRect standardRectangleButtonBounds;
 static CGRect standardStickBounds;
@@ -147,8 +147,8 @@ static float L2_Y;
 static float L3_X;
 static float L3_Y;
 
-+ (NSMutableSet* )touchAddrsCapturedByOnScreenControls{
-    return touchAddrsCapturedByOnScreenControls;
++ (NSMutableSet* )touchesCapturedByOnScreenControls{
+    return touchesCapturedByOnScreenControls;
 }
 
 - (void) sendRightStickTouchPadEvent:(CGFloat) stickX : (CGFloat) stickY{
@@ -316,7 +316,7 @@ static float L3_Y;
     _standardLeftRightButtonBounds = standardLeftRightButtonBounds = CGRectMake(0, 0, [UIImage imageNamed:@"LeftButton"].size.width, [UIImage imageNamed:@"LeftButton"].size.height);
 
     _activeCustomOscButtonPositionDict = [[NSMutableDictionary alloc] init];
-    touchAddrsCapturedByOnScreenControls = [[NSMutableSet alloc] init];
+    touchesCapturedByOnScreenControls = [[NSMutableSet alloc] init];
     
     return self;
 }
@@ -1413,12 +1413,12 @@ static float L3_Y;
             touchEventCapturedByOsc = true;
         }
         // additionally, populate the touchesCapturedByOSButton set, for native/relative touch handler to deal with.
-        if(touchEventCapturedByOsc) [touchAddrsCapturedByOnScreenControls addObject:@((uintptr_t)touch)];
+        if(touchEventCapturedByOsc) [touchesCapturedByOnScreenControls addObject:touch];
     }
     if (updated) {
         [_controllerSupport updateFinished:_controller];
     }
-    // NSLog(@"captured by OSB touches, OSC Class: %d", (uint32_t)[touchAddrsCapturedByOnScreenControls count]);
+    // NSLog(@"captured by OSB touches, OSC Class: %d", (uint32_t)[touchesCapturedByOnScreenControls count]);
 
     
     bool oscTouched = updated || stickTouch;
@@ -1442,7 +1442,7 @@ static float L3_Y;
     for (UITouch* touch in touches) {
         
         // remove the touch obj from touchesCapturedByOnScreenButtons
-        // if([touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) [touchAddrsCapturedByOnScreenControls removeObject:@((uintptr_t)touch)];
+        // if([touchesCapturedByOnScreenControls containsObject:touch]) [touchesCapturedByOnScreenControls removeObject:touch)];
         
         if (touch == _aTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:A_FLAG];

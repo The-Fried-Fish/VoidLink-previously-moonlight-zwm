@@ -10,6 +10,7 @@
 //
 
 #import "AbsoluteTouchHandler.h"
+#import "VoidLink-Swift.h"
 
 #include <Limelight.h>
 
@@ -50,6 +51,7 @@
     
     bool _delayMouseLeftClick;
     bool dragButtonDown;
+    UInt8 currentTouchesCount;
     
     bool rightButtonClicked;
 }
@@ -62,7 +64,7 @@
     _delayMouseLeftClick = true; // deprecate legacy absolute touch
     dragButtonDown = false;
 
-    leftClickTimeThreshold = 0.15;
+    leftClickTimeThreshold = 0.1;
     
     // upper screen check
     _edgeTolerance = settings.edgeSlidingSensitivity.floatValue;
@@ -77,6 +79,8 @@
 
 - (void)onLongPressStart:(NSTimer*)timer {
     // Raise the left click and start a right click
+    if(currentTouchesCount>=2) return;
+
     if([self touchDidntMoveOnScreen:movingTouchLocation]){
         if(_delayMouseLeftClick){
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
@@ -137,6 +141,7 @@
     lastTouchDownLocation = touchLocation;
     movingTouchLocation = touchLocation;
     touchBeganLocation = touchLocation;
+    currentTouchesCount = [UITouchUtil touchesIn:streamView from:event].count;
 }
 
 - (void)pauseLeftButtonDrag{
@@ -159,7 +164,17 @@
         return;
     }*/
     
-    if(![touches containsObject:capturedTouch]) return;
+    NSSet* currentTouches = [UITouchUtil touchesIn:streamView from:event];
+    currentTouchesCount = currentTouches.count;
+    
+    if(currentTouchesCount == 2){
+        if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
+        [TouchPadGestureHandler handleGestureIn:streamView with:event];
+    }
+     
+    if(currentTouchesCount>=2) return;
+    
+    if(![currentTouches containsObject:capturedTouch]) return;
     
     movingTouchLocation = [capturedTouch locationInView:streamView];
     
@@ -169,7 +184,9 @@
         [longPressTimer invalidate];
         longPressTimer = nil;
         
-        if(_delayMouseLeftClick && (CACurrentMediaTime()-touchBeganTimeStamp>leftClickTimeThreshold) && !dragButtonDown){
+        NSTimeInterval dragDelay = _mouseButtonForCursorMove == BUTTON_LEFT ? leftClickTimeThreshold : 0;
+        
+        if(_delayMouseLeftClick && (CACurrentMediaTime()-touchBeganTimeStamp>dragDelay) && !dragButtonDown){
             LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, _mouseButtonForCursorMove);
             dragButtonDown = true;
         }
@@ -211,6 +228,8 @@
             // Raise right button too in case we triggered a long press gesture
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT); */
         }
+        
+        if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
         
         lastTouchUp = [touches anyObject];
         lastTouchUpLocation = [lastTouchUp locationInView:streamView];

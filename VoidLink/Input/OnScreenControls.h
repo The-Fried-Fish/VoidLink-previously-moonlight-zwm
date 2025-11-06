@@ -110,7 +110,7 @@ typedef NS_ENUM(NSInteger, OnScreenControlsLevel) {
 
 
 
-+ (NSMutableSet* )touchAddrsCapturedByOnScreenControls;
++ (NSMutableSet* )touchesCapturedByOnScreenControls;
 - (void) sendRightStickTouchPadEvent:(CGFloat) stickX : (CGFloat) stickY;
 - (void) clearRightStickTouchPadFlag;
 - (void) sendLeftStickTouchPadEvent:(CGFloat) stickX : (CGFloat) stickY;

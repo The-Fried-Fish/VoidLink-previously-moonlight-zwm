@@ -170,7 +170,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [_onScreenControls setLevel:OnScreenControlsLevelOff];
         
         //pass touchesCaptureByOnScreenButtons Set to the native touchhandler, this NSSet is init witihin onscreencontrols class, don't do it again in native touch handler class
-        [OnScreenControls.touchAddrsCapturedByOnScreenControls removeAllObjects]; // reset the attribute to nil
+        [OnScreenControls.touchesCapturedByOnScreenControls removeAllObjects]; // reset the attribute to nil
         
         /*
         if(settings.touchMode.intValue == NativeTouch){
@@ -237,6 +237,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleRecognizer.delaysTouchesBegan = NO;
     keyboardToggleRecognizer.delaysTouchesEnded = NO;
     [self->_streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer];
+    keyboardToggleRecognizer.touchCapturingView = self;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{

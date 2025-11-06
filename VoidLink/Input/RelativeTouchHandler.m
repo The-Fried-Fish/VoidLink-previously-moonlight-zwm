@@ -23,7 +23,6 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     BOOL firstTouchMoved;
     BOOL mousePointerMoved;
     BOOL quickTapDetected;
-    BOOL isInMouseWheelScrollingMode;
     
     // upper screen edge check
     bool touchPointSpawnedAtUpperScreenEdge;
@@ -55,8 +54,8 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     _mouseRightClickTapRecognizer.delaysTouchesBegan = NO;
     _mouseRightClickTapRecognizer.delaysTouchesEnded = NO;
     [self->streamView.streamFrameTopLayerView addGestureRecognizer:_mouseRightClickTapRecognizer]; // add all additional gestures to the streamFrameTopLayerView instead of the streamview.
+    _mouseRightClickTapRecognizer.touchCapturingView = streamView;
     
-    isInMouseWheelScrollingMode = false;
     firstTouchMoved = false;
     mousePointerMoved = false;
     mousePointerTimestamp = 0;
@@ -86,34 +85,10 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
 - (bool)isOnScreenControllerBeingPressed:(NSSet* )touches{
     for(UITouch* touch in touches){
-        if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]) return true;
+        if([OnScreenControls.touchesCapturedByOnScreenControls containsObject:touch]) return true;
     }
     return false;
 }
-
-
-- (bool)isOnScreenWidgetViewBeingPressed {
-    bool gotOneButtonPressed = false;
-    for(UIView* view in self->streamView.superview.subviews){  // iterates all on-screen widget views in StreamFrameView
-        if ([view isKindOfClass:[OnScreenWidgetView class]]) {
-            OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
-            if(widgetView.pressedFlagForTapGesture){
-                gotOneButtonPressed = true; //got one button pressed
-            }
-        }
-    }
-    return gotOneButtonPressed;
-}
-
-- (void)resetAllPressedFlagsForOnScreenWidgetViews {
-    for(UIView* view in self->streamView.superview.subviews){  // iterates all on-screen widget views in StreamFrameView
-        if ([view isKindOfClass:[OnScreenWidgetView class]]) {
-            OnScreenWidgetView* widgetView = (OnScreenWidgetView*) view;
-            widgetView.pressedFlagForTapGesture = false;
-        }
-    }
-}
-
 
 - (void)mouseRightClick {
     dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
@@ -153,23 +128,13 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     }
     
     touchPointSpawnedAtUpperScreenEdge = false; // reset this flag immediately if we get a touch event passing the check above, this fixes irresponsive touch after closing the command tool menu.
-    
-    if([[event allTouches] count] == 2 && ![self isOnScreenWidgetViewBeingPressed] && ![self isOnScreenControllerBeingPressed:[event allTouches]]){
-        NSLog(@"get in scrolling mode");
-        isInMouseWheelScrollingMode = true;
-        return; // if we got 2 touches on the blank area, it's gonna be a mouse scroll touch, and must prevent UITtouch object for mouse pointer being captured & locked
-    }
-    
-    // NSLog(@"touches count in began stage: %llu", (uint64_t)[touches count]);
-    
+        
     UITouch* candidateTouch = nil;
     
     // the onscreen controllers are implmented by CALayer, which can not intercept UITouch event, touch will penetrate to the streamView level and captured in the touches callback of this touchHandler class.
     // the onscreen button are UIViews, they intercept UITouch events, so we don't need to worry about them.
     for(UITouch* touch in touches){
-        // NSLog(@"candidate touch test: %llu", (uint64_t)touch);
-        if([OnScreenControls.touchAddrsCapturedByOnScreenControls containsObject:@((uintptr_t)touch)]){
-            // NSLog(@"%f controller tap detected", CACurrentMediaTime());
+        if([OnScreenControls.touchesCapturedByOnScreenControls containsObject:touch]){
             continue;
         }
         else candidateTouch = touch;
@@ -185,7 +150,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         // LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT); // do not press down mouse button here, or it wiil easily turn to double click on remote PC
     }
 
-    // we must use [event allTouches] to check if touchLockedForMouseMove is captured, because the UITouch object could be captured by upper layer of UIView(in cases like tap gestures), not passed to the touches callbacks in this class, but still available in [event allTouches]
+    // use [event allTouches] to check if touchLockedForMouseMove is captured, if already captured, don't update touchLockedForMouseMove
     if(candidateTouch != nil && ![[event allTouches] containsObject:touchLockedForMouseMove]){
         touchLockedForMouseMove = candidateTouch;
         // NSLog(@"Candidate touch for mouse movement locked");
@@ -197,7 +162,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     
     //NSLog(@"%f, touchesMoved callback, is scrolling: %d, touches count: %d", CACurrentMediaTime(), isInMouseWheelScrollingMode, (uint32_t)[touches count]);
-    
+    /*
     if(isInMouseWheelScrollingMode && [[event allTouches] count] == 2 && ![self isOnScreenWidgetViewBeingPressed] && ![self isOnScreenControllerBeingPressed:touches]){
         NSSet* twoTouches = [event allTouches];
         CGPoint firstLocation = [[[twoTouches allObjects] objectAtIndex:0] locationInView:streamView];
@@ -211,8 +176,14 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         twoFingerTouchLocation = avgLocation;
         return;
     }
-
-    // NSLog(@"%f touchesMoved callback, locked touch: %llu", CACurrentMediaTime(), (uintptr_t)touchLockedForMouseMove);
+     */
+    
+    NSSet* currentTouches = [UITouchUtil touchesIn:streamView from:event];
+    uint8_t currentTouchesCount = currentTouches.count;
+        
+    if(![self isOnScreenControllerBeingPressed:currentTouches]) [TouchPadGestureHandler handleGestureIn:streamView with:event];
+     
+    if(currentTouchesCount>=2) return;
     
     if([touches containsObject:touchLockedForMouseMove]){
         CGPoint currentLocation = [touchLockedForMouseMove locationInView:streamView];
@@ -225,10 +196,6 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    if(isInMouseWheelScrollingMode){
-        isInMouseWheelScrollingMode = false;
-        return;
-    }
     
     if([touches containsObject:touchLockedForMouseMove]){
         // dealing with a single first tap, whether the button will be released, is going to be decided in sendLongMouseLeftButtonClickEvent
@@ -245,47 +212,33 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         mousePointerMoved = false;
     }
     
-    if([[event allTouches] count] == [touches count]){
-        isInMouseWheelScrollingMode = false;
+    for(UITouch* touch in touches){
+        [OnScreenControls.touchesCapturedByOnScreenControls removeObject:touch];
+    }
+    
+    if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
+    
+    if([UITouchUtil touchesIn:streamView from:event].count == [touches count]){
         touchLockedForMouseMove = nil;
         mousePointerMoved = false; // need to reset this anyway
-        [self resetAllPressedFlagsForOnScreenWidgetViews]; // reset all pressed flag for on-screen widget views after all fingers lifted from screen.
     }
     
     touchPointSpawnedAtUpperScreenEdge = false;
 }
 
-- (void)displayLinkCallback:(CADisplayLink *)link {
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        if(self->touchLockedForMouseMove && !self->mousePointerMoved){
-            CGPoint testpoint = [self->touchLockedForMouseMove locationInView:self->streamView];
-                NSLog(@"displayLinkCallback %f: %f, %f", CACurrentMediaTime(), testpoint.x, testpoint.y);
-                //[self sendMouseMoveEvent:touchLockedForMouseMove];
-            }
-    });
-}
-
 - (void)sendMouseMoveEvent:(CGPoint)currentLocation{
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+        int deltaX = ([UITouchUtil getDeltaXFrom:self->touchLockedForMouseMove in:self->streamView]) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
+        int deltaY = ([UITouchUtil getDeltaYFrom:self->touchLockedForMouseMove in:self->streamView]) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
         
-        bool isAdjacentPoints = [self isAdjacentPoints:self->initialMousePointerLocation from:currentLocation tolerance:0.5];
+        if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
+        if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);
+        
+        bool isAdjacentPoints = [self isAdjacentPoints:self->initialMousePointerLocation from:currentLocation tolerance:5];
     
         if (!self->firstTouchMoved && !isAdjacentPoints) {
             self->latestMousePointerLocation = currentLocation;
             self->firstTouchMoved = true;
-        }
-        
-        if (self->latestMousePointerLocation.x != currentLocation.x ||
-            self->latestMousePointerLocation.y != currentLocation.y)
-        {
-            int deltaX = (currentLocation.x - self->latestMousePointerLocation.x) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
-            int deltaY = (currentLocation.y - self->latestMousePointerLocation.y) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
-            
-            if (deltaX != 0 || deltaY != 0) {
-                self->latestMousePointerLocation = currentLocation;
-                if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
-                if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);
-            }
         }
     });
 }

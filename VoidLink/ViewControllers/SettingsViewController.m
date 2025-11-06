@@ -716,7 +716,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
+    // [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
@@ -2879,7 +2879,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger hapticEngine = self.hapticEngineSelector.selectedSegmentIndex;
     CGFloat edgeSlidingSensitivity = self.edgeSlidingSensitivitySlider.value;
     NSInteger audioEngine = self.audioEngineSelector.selectedSegmentIndex;
-    BOOL delayLeftClick = self.delayLeftClickSwitch.isOn;
+    // BOOL delayLeftClick = self.delayLeftClickSwitch.isOn;
+    BOOL delayLeftClick = true;
     BOOL duckOtherApps = self.duckOtherAppSwitch.isOn;
     BOOL muteInBackground = self.muteInBackgroundSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
