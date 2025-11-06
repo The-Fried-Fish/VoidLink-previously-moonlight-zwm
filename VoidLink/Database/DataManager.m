@@ -113,6 +113,9 @@
                    duckOtherApps:(BOOL)duckOtherApps
                 muteInBackground:(BOOL)muteInBackground
      relativeTouchSlideThreshold:(CGFloat)relativeTouchSlideThreshold
+                     enablePinch:(BOOL)enablePinch
+               scrollSensitivity:(CGFloat)scrollSensitivity
+                pinchSensitivity:(CGFloat)pinchSensitivity
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -175,7 +178,10 @@
         settingsToSave.delayLeftClick = delayLeftClick;
         settingsToSave.duckOtherApps = duckOtherApps;
         settingsToSave.muteInBackground = muteInBackground;
-        settingsToSave.relativeTouchSlideThreshold = [NSNumber numberWithFloat:relativeTouchSlideThreshold];;
+        settingsToSave.relativeTouchSlideThreshold = [NSNumber numberWithFloat:relativeTouchSlideThreshold];
+        settingsToSave.enablePinch = enablePinch;
+        settingsToSave.scrollSensitivity = [NSNumber numberWithFloat:scrollSensitivity];
+        settingsToSave.pinchSensitivity = [NSNumber numberWithFloat:pinchSensitivity];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

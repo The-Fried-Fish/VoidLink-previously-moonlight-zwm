@@ -144,6 +144,9 @@
     self.duckOtherApps = settings.duckOtherApps;
     self.muteInBackground = settings.muteInBackground;
     self.relativeTouchSlideThreshold = settings.relativeTouchSlideThreshold;
+    self.enablePinch = settings.enablePinch;
+    self.scrollSensitivity = settings.scrollSensitivity;
+    self.pinchSensitivity = settings.pinchSensitivity;
 #endif
     
     return self;

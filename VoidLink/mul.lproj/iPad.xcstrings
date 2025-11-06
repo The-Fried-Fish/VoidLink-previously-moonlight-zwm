@@ -1969,6 +1969,36 @@
         }
       }
     },
+    "Evh-LH-rdh.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pinch Gesture\"; ObjectID = \"Evh-LH-rdh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pinch Gesture"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缩放手势"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縮放手勢"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縮放手勢"
+          }
+        }
+      }
+    },
     "FJv-HJ-UYJ.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Touch Move Event Interval\"; ObjectID = \"FJv-HJ-UYJ\";",
       "extractionState" : "extracted_with_value",
@@ -2415,6 +2445,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "90°旋轉"
+          }
+        }
+      }
+    },
+    "hDf-9O-NGp.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Scroll Sensitivity\"; ObjectID = \"hDf-9O-NGp\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Scroll Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滚动灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滾動靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滾動靈敏度"
           }
         }
       }
@@ -4863,6 +4923,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "串流中開啟工具箱"
+          }
+        }
+      }
+    },
+    "Zsj-Fa-IgS.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pinch Sensitivity\"; ObjectID = \"Zsj-Fa-IgS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pinch Sensitivity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缩放灵敏度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縮放靈敏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縮放靈敏度"
           }
         }
       }

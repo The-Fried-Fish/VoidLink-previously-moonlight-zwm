@@ -11,6 +11,10 @@ import UIKit
 @objc class TouchPadGestureHandler: NSObject {
     
     @objc public static var ctrlDown:Bool = false
+    @objc public static var enablePinch:Bool = true
+    @objc public static var enableHorizontalScroll:Bool = true
+    @objc public static var scrollSensitivity:CGFloat = 1.0
+    @objc public static var pinchSensitivity:CGFloat = 1.0
     @objc public static func handleGesture(in view: UIView, with event: UIEvent) {
         let currentTouches = UITouchUtil.touches(in: view, from: event)
         guard currentTouches.count == 2 else { return }
@@ -28,9 +32,11 @@ import UIKit
         let midPointDeltaY = UITouchUtil.midPointDeltaY(between: touch1, and: touch2, in: view)
         let midPointDeltaX = UITouchUtil.midPointDeltaX(between: touch1, and: touch2, in: view)
         
-        LiSendHighResScrollEvent(Int16((currentDistance - previousDistance) * 5 + midPointDeltaY * 5))
-        LiSendHighResHScrollEvent(Int16(-midPointDeltaX) * 5)
+        let pinchDelta = enablePinch ? (currentDistance-previousDistance)*5*pinchSensitivity : 0;
+        LiSendHighResScrollEvent(Int16(pinchDelta + midPointDeltaY*5*scrollSensitivity))
+        if enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*5*scrollSensitivity))}
         
+        if !enablePinch {return};
         if abs(currentDistance - previousDistance) > abs(midPointDeltaY) {
             LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_DOWN), 0)
             ctrlDown = true

@@ -452,6 +452,10 @@
     _streamView.onScreenControls.instanceReceiverDelegate = _motionHandler;
     [_streamView.onScreenControls sendInstance];
     
+    TouchPadGestureHandler.enablePinch = _settings.enablePinch;
+    TouchPadGestureHandler.scrollSensitivity = _settings.scrollSensitivity.floatValue;
+    TouchPadGestureHandler.pinchSensitivity = _settings.pinchSensitivity.floatValue;
+
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }

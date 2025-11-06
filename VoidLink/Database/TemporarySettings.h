@@ -86,7 +86,10 @@
 @property (nonatomic) BOOL delayLeftClick;
 @property (nonatomic) BOOL duckOtherApps;
 @property (nonatomic) BOOL muteInBackground;
+@property (nonatomic) BOOL enablePinch;
 @property (nonatomic, retain) NSNumber * framePacingMode;
+@property (nonatomic, retain) NSNumber * scrollSensitivity;
+@property (nonatomic, retain) NSNumber * pinchSensitivity;
 @property (nonatomic, retain) NSNumber * relativeTouchSlideThreshold;
 
 - (id) initFromSettings:(Settings*)settings;

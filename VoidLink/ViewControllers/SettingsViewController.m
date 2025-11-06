@@ -714,6 +714,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
+    [self addSetting:self.pinchGestureStack ofId:@"pinchGestureStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
+    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
+    [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
+    [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     // [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
@@ -1850,6 +1854,17 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.mousePointerVelocityFactorSlider addTarget:self action:@selector(mousePointerVelocityFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self mousePointerVelocityFactorSliderMoved:self.mousePointerVelocityFactorSlider];
         
+        [self.pinchGestureSwitch setOn:self->tempSettings.enablePinch];
+        [self.pinchGestureSwitch addTarget:self action:@selector(pinchGestureSwitchFlipped:) forControlEvents:(UIControlEventValueChanged)];
+        
+        [self.scrollSensitivitySlider setValue:self->tempSettings.scrollSensitivity.floatValue animated:NO];
+        [self.scrollSensitivitySlider addTarget:self action:@selector(scrollSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+        [self scrollSensitivitySliderMoved:self.scrollSensitivitySlider];
+        
+        [self.pinchSensitivitySlider setValue:self->tempSettings.pinchSensitivity.floatValue animated:NO];
+        [self.pinchSensitivitySlider addTarget:self action:@selector(pinchSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+        [self pinchSensitivitySliderMoved:self.pinchSensitivitySlider];
+
         [self.singleTapSensitivitySlider setValue:self->tempSettings.singleTapSensitivity.doubleValue animated:NO];
         [self.singleTapSensitivitySlider addTarget:self action:@selector(singleTapSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)];
         [self singleTapSensitivitySliderMoved:self.singleTapSensitivitySlider];
@@ -2284,6 +2299,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_singleTapSensitivityStack].text = [NSString stringWithFormat:@"  %.1f  ",sender.value];
 }
 
+- (void) scrollSensitivitySliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:_scrollSensitivityStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)(sender.value*100)];
+}
+
+- (void) pinchSensitivitySliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:_pinchSensitivityStack].text = [NSString stringWithFormat:@"  %d%%  ", (uint16_t)(sender.value*100)];
+}
+
 - (void) relativeTouchSlideThresholdSliderMoved:(UISlider* )sender {
     [self findDynamicLabelFromStack:_relativeTouchSlideThresholdStack].text = [NSString stringWithFormat:@" %.1f ",sender.value];
 }
@@ -2347,6 +2370,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityFactorStack];
     [self setHidden:!isNativeTouch forStack:self.touchMoveEventIntervalStack];
 
+    [self setHidden:(sender.selectedSegmentIndex!=RelativeTouch
+                     && sender.selectedSegmentIndex!=AbsoluteTouch) forStack:self.pinchGestureStack];
+    [self setHidden:(sender.selectedSegmentIndex!=RelativeTouch
+                     && sender.selectedSegmentIndex!=AbsoluteTouch) forStack:self.scrollSensitivityStack];
+    [self setHidden:((sender.selectedSegmentIndex!=RelativeTouch
+                     && sender.selectedSegmentIndex!=AbsoluteTouch)
+                     || !_pinchGestureSwitch.isOn) forStack:self.pinchSensitivityStack];
+    
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.mousePointerVelocityStack];
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.singleTapSensitivityStack];
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.relativeTouchSlideThresholdStack];
@@ -2395,6 +2426,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         }
         [hiddenStacks removeObject:stack];
     }
+}
+
+- (void)pinchGestureSwitchFlipped:(UISwitch* )sender{
+    [self setHidden:!sender.isOn forStack:_pinchSensitivityStack];
 }
 
 - (void)highlightEmergingStack:(UIStackView* )stack{
@@ -2899,6 +2934,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL duckOtherApps = self.duckOtherAppSwitch.isOn;
     BOOL muteInBackground = self.muteInBackgroundSwitch.isOn;
     CGFloat relativeTouchSlideThreshold = self.relativeTouchSlideThresholdSlider.value;
+    BOOL enablePinch = self.pinchGestureSwitch.isOn;
+    CGFloat scrollSensitivity = self.scrollSensitivitySlider.value;
+    CGFloat pinchSensitivity = self.pinchSensitivitySlider.value;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2958,6 +2996,9 @@ BOOL isCustomResolution(int resolutionSelected) {
                        duckOtherApps:duckOtherApps
                     muteInBackground:muteInBackground
          relativeTouchSlideThreshold:relativeTouchSlideThreshold
+                         enablePinch:enablePinch
+                   scrollSensitivity:scrollSensitivity
+                    pinchSensitivity:pinchSensitivity
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

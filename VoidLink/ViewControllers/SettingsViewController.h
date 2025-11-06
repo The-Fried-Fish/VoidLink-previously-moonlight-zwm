@@ -193,6 +193,15 @@
 @property (strong, nonatomic) IBOutlet UIStackView *relativeTouchSlideThresholdStack;
 @property (strong, nonatomic) IBOutlet UISlider *relativeTouchSlideThresholdSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *pinchGestureStack;
+@property (strong, nonatomic) IBOutlet UISwitch *pinchGestureSwitch;
+
+@property (strong, nonatomic) IBOutlet UIStackView *scrollSensitivityStack;
+@property (strong, nonatomic) IBOutlet UISlider *scrollSensitivitySlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *pinchSensitivityStack;
+@property (strong, nonatomic) IBOutlet UISlider *pinchSensitivitySlider;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;
