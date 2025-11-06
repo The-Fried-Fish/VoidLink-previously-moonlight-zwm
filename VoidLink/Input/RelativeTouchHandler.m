@@ -234,7 +234,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
         if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);
         
-        bool isAdjacentPoints = [self isAdjacentPoints:self->initialMousePointerLocation from:currentLocation tolerance:5];
+        bool isAdjacentPoints = [self isAdjacentPoints:self->initialMousePointerLocation from:currentLocation tolerance:self->currentSettings.relativeTouchSlideThreshold.floatValue];
     
         if (!self->firstTouchMoved && !isAdjacentPoints) {
             self->latestMousePointerLocation = currentLocation;

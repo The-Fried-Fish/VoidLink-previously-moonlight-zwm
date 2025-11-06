@@ -153,6 +153,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
             widgetView.mouseButtonAction = buttonState.mouseButtonAction;
             widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
             widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
+            widgetView.slideThreshold = buttonState.slideThreshold;
             widgetView.yawFactor = buttonState.yawFactor;
             widgetView.pitchFactor = buttonState.pitchFactor;
             widgetView.rollFactor = buttonState.rollFactor;
@@ -745,6 +746,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     newWidget.autoTapInterval = widget.autoTapInterval;
     newWidget.sensitivityFactorX = widget.sensitivityFactorX;
     newWidget.sensitivityFactorY = widget.sensitivityFactorY;
+    newWidget.slideThreshold = widget.slideThreshold;
     newWidget.yawFactor = widget.yawFactor;
     newWidget.pitchFactor = widget.pitchFactor;
     newWidget.rollFactor = widget.rollFactor;
@@ -902,6 +904,16 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
         [self.sensitivityYLabel setText:[LocalizationHelper localizedStringForKey:@"SensitivityY: %.2f", self->selectedWidgetView.sensitivityFactorY]];
         [self autoFitLabel:self.sensitivityYLabel];
     }
+    
+    self.slideThresholdStack.hidden = !selectedWidgetView.hasSlideThreshold;
+    if(selectedWidgetView.hasSlideThreshold){
+        [self.slideThresholdSlider setMinimumValue:selectedWidgetView.slideThresholdMin];
+        [self.slideThresholdSlider setMaximumValue:selectedWidgetView.slideThresholdMax];
+        [self.slideThresholdSlider setValue:self->selectedWidgetView.slideThreshold];
+        [self.slideThresholdLabel setText:[LocalizationHelper localizedStringForKey:@"Slide threshold: %.1f", self->selectedWidgetView.slideThreshold]];
+        [self autoFitLabel:self.slideThresholdLabel];
+    }
+
     
     self.yawFactorStack.hidden = !selectedWidgetView.hasYawFactor;
     if(selectedWidgetView.hasYawFactor){
@@ -1167,6 +1179,12 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     return;
 }
 
+- (void)slideThresholdSliderMoved:(UISlider* )sender{
+    [self.slideThresholdLabel setText:[LocalizationHelper localizedStringForKey:@"Slide threshold: %.1f", sender.value]];
+    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.slideThreshold = sender.value;
+    return;
+}
+
 - (void)yawFactorSliderMoved:(UISlider* )sender{;
     [self.yawFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Yaw factor: %.2f", sender.value]];
     [self.pitchFactorLabel setText:[LocalizationHelper localizedStringForKey:@"Pitch factor: %.2f", sender.value]];
@@ -1323,6 +1341,10 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     [self.sensitivityYSlider addTarget:self action:@selector(sensitivityYSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.sensitivityYLabel.text = [LocalizationHelper localizedStringForKey:@"SensitivityY"];
     self.sensitivityYStack.hidden = YES;
+    
+    [self.slideThresholdSlider addTarget:self action:@selector(slideThresholdSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+    self.slideThresholdLabel.text = [LocalizationHelper localizedStringForKey:@"Slide threshold"];
+    self.slideThresholdStack.hidden = YES;
     
     [self.yawFactorSlider addTarget:self action:@selector(yawFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.yawFactorLabel.text = [LocalizationHelper localizedStringForKey:@"Yaw Factor"];

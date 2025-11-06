@@ -1537,19 +1537,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑出时松开"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑出時鬆開"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑出時鬆開"
           }
         }
@@ -1567,19 +1567,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑动时按下"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑動時按下"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑動時按下"
           }
         }
@@ -2811,6 +2811,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手把映射類型"
+          }
+        }
+      }
+    },
+    "jYn-fE-27r.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide Distance Threshold\"; ObjectID = \"jYn-fE-27r\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide Distance Threshold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动距离阈值"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動距離閾值"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動距離閾值"
           }
         }
       }
@@ -4089,6 +4119,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自訂"
+          }
+        }
+      }
+    },
+    "qx4-KQ-j2T.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide threshold\"; ObjectID = \"qx4-KQ-j2T\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide threshold"
           }
         }
       }

@@ -113,6 +113,10 @@ NS_ASSUME_NONNULL_BEGIN
 // @property (strong, nonatomic) IBOutlet UISlider *autoTapSlider;
 @property (strong, nonatomic) IBOutlet UITextField *autoTapField;
 
+@property (strong, nonatomic) IBOutlet UIStackView *slideThresholdStack;
+@property (strong, nonatomic) IBOutlet UILabel *slideThresholdLabel;
+@property (strong, nonatomic) IBOutlet UISlider *slideThresholdSlider;
+
 
 @property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;
 

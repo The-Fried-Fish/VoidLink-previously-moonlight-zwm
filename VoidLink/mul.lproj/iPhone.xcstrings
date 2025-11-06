@@ -577,6 +577,18 @@
         }
       }
     },
+    "6mJ-6V-XcK.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide threshold\"; ObjectID = \"6mJ-6V-XcK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide threshold"
+          }
+        }
+      }
+    },
     "6PG-vr-boy.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Edge Trigger Sensitivity\"; ObjectID = \"6PG-vr-boy\";",
       "extractionState" : "extracted_with_value",
@@ -1305,6 +1317,36 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Roll factor"
+          }
+        }
+      }
+    },
+    "bsU-vw-dTl.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide Distance Threshold\"; ObjectID = \"bsU-vw-dTl\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide Distance Threshold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动距离阈值"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動距離閾值"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動距離閾值"
           }
         }
       }

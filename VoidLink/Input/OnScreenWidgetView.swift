@@ -104,6 +104,9 @@ import UIKit
     @objc public var hasSensitivityY: Bool = false
     @objc public var sensitivityYMin: CGFloat = 0
     @objc public var sensitivityYMax: CGFloat = 8
+    @objc public var hasSlideThreshold: Bool = false
+    @objc public var slideThresholdMin: CGFloat = 0
+    @objc public var slideThresholdMax: CGFloat = 20
     @objc public var hasYawFactor: Bool = false
     @objc public var yawFactorMin: CGFloat = 0
     @objc public var yawFactorMax: CGFloat = 1
@@ -202,6 +205,7 @@ import UIKit
     @objc public var trackballDecelerationRate: CGFloat = 0.93
     private let trackballVelocityThreshold: CGFloat = 0.1
     
+    @objc public var slideThreshold: CGFloat = 6.0
     
     // border & visual effect
     private var minimumBorderAlpha: CGFloat = 0.19
@@ -348,6 +352,7 @@ import UIKit
         self.hasStickIndicator = CommandManager.nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString)
+        self.hasSlideThreshold = CommandManager.vectorTouchPads.contains(self.touchPadString)
         
         if CommandManager.bidirectionalVerticalTouchPads.contains(self.touchPadString){
             self.sensitivityYMin = -4.0
@@ -1687,7 +1692,7 @@ import UIKit
     private func updateTouchLocation(_ touches: Set<UITouch>){
         let currentTouchLocation = touches.first!.location(in: self)
         //if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: touchBeganLocation, tolerance: 0.5) {
-        if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: touchBeganLocation, tolerance: 5) {
+        if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: touchBeganLocation, tolerance: slideThreshold) {
             // First move event
             self.latestTouchLocation = currentTouchLocation
             self.firstTouchMoved = true

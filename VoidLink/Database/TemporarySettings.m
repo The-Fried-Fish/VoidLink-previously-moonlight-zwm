@@ -143,6 +143,7 @@
     self.delayLeftClick = settings.delayLeftClick;
     self.duckOtherApps = settings.duckOtherApps;
     self.muteInBackground = settings.muteInBackground;
+    self.relativeTouchSlideThreshold = settings.relativeTouchSlideThreshold;
 #endif
     
     return self;

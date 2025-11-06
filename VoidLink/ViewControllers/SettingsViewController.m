@@ -715,7 +715,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     // [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
@@ -827,8 +826,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] andSize:20];
     }
+    // [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
     [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
-    
+    [self addSetting:self.relativeTouchSlideThresholdStack ofId:@"relativeTouchSlideThresholdStack" withInfoTag:YES withDynamicLabel:YES to:experimentalSection];
+    [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
@@ -1194,7 +1195,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     if([sender.superview.accessibilityIdentifier isEqualToString: @"yuv444Stack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"yuv444StackTip"];
         showOnlineDocAction = true;
-        onlineDocLink = @"https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/koeimmrvt4o17auc?singleDoc#";
+        onlineDocLink = @"https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/koeimmrvt4o17auc";
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"touchModeStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"touchModeStackTip"];
@@ -1287,6 +1288,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     if([sender.superview.accessibilityIdentifier isEqualToString: @"delayLeftClickStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"delayLeftClickStackTip"];
         showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"relativeTouchSlideThresholdStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"relativeTouchSlideThresholdStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"relativeTouchSlideThresholdStackLink"];
     }
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
@@ -1847,6 +1853,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.singleTapSensitivitySlider setValue:self->tempSettings.singleTapSensitivity.doubleValue animated:NO];
         [self.singleTapSensitivitySlider addTarget:self action:@selector(singleTapSensitivitySliderMoved:) forControlEvents:(UIControlEventValueChanged)];
         [self singleTapSensitivitySliderMoved:self.singleTapSensitivitySlider];
+        
+        [self.relativeTouchSlideThresholdSlider setValue:self->tempSettings.relativeTouchSlideThreshold.floatValue animated:NO];
+        [self.relativeTouchSlideThresholdSlider addTarget:self action:@selector(relativeTouchSlideThresholdSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
+        [self relativeTouchSlideThresholdSliderMoved:self.relativeTouchSlideThresholdSlider];
 
         // these settings will be affected by onscreenControl & touchMode, must be loaded before them.
         // NSLog(@"osc tool fingers setting test: %d", currentSettings.oscLayoutToolFingers.intValue);
@@ -2274,6 +2284,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_singleTapSensitivityStack].text = [NSString stringWithFormat:@"  %.1f  ",sender.value];
 }
 
+- (void) relativeTouchSlideThresholdSliderMoved:(UISlider* )sender {
+    [self findDynamicLabelFromStack:_relativeTouchSlideThresholdStack].text = [NSString stringWithFormat:@" %.1f ",sender.value];
+}
 
 - (uint32_t) getScreenEdgeFromSelector {
     switch (self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex) {
@@ -2332,9 +2345,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityDividerStack];
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityFactorStack];
+    [self setHidden:!isNativeTouch forStack:self.touchMoveEventIntervalStack];
 
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.mousePointerVelocityStack];
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.singleTapSensitivityStack];
+    [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.relativeTouchSlideThresholdStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
     [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
     [self setHidden:sender.selectedSegmentIndex!=AbsoluteTouch forStack:self.delayLeftClickStack];
@@ -2883,6 +2898,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL delayLeftClick = true;
     BOOL duckOtherApps = self.duckOtherAppSwitch.isOn;
     BOOL muteInBackground = self.muteInBackgroundSwitch.isOn;
+    CGFloat relativeTouchSlideThreshold = self.relativeTouchSlideThresholdSlider.value;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -2941,6 +2957,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                      delayLeftClick:delayLeftClick
                        duckOtherApps:duckOtherApps
                     muteInBackground:muteInBackground
+         relativeTouchSlideThreshold:relativeTouchSlideThreshold
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

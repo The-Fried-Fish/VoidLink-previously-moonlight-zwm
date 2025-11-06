@@ -87,6 +87,7 @@
 @property (nonatomic) BOOL duckOtherApps;
 @property (nonatomic) BOOL muteInBackground;
 @property (nonatomic, retain) NSNumber * framePacingMode;
+@property (nonatomic, retain) NSNumber * relativeTouchSlideThreshold;
 
 - (id) initFromSettings:(Settings*)settings;
 

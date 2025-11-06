@@ -190,6 +190,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *muteInBackgroundStack;
 @property (strong, nonatomic) IBOutlet UISwitch *muteInBackgroundSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *relativeTouchSlideThresholdStack;
+@property (strong, nonatomic) IBOutlet UISlider *relativeTouchSlideThresholdSlider;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

@@ -112,6 +112,7 @@
                  delayLeftClick:(BOOL)delayLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
                 muteInBackground:(BOOL)muteInBackground
+     relativeTouchSlideThreshold:(CGFloat)relativeTouchSlideThreshold
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -174,6 +175,7 @@
         settingsToSave.delayLeftClick = delayLeftClick;
         settingsToSave.duckOtherApps = duckOtherApps;
         settingsToSave.muteInBackground = muteInBackground;
+        settingsToSave.relativeTouchSlideThreshold = [NSNumber numberWithFloat:relativeTouchSlideThreshold];;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat highlightSizeFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat sensitivityFactorX; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat sensitivityFactorY; // for OnScreenWidgetView
+@property (nonatomic, assign) CGFloat slideThreshold; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat yawFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat pitchFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat rollFactor; // for OnScreenWidgetView

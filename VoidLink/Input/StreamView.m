@@ -564,6 +564,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.mouseButtonAction = buttonState.mouseButtonAction;
                 widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
                 widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
+                widgetView.slideThreshold = buttonState.slideThreshold;
                 widgetView.yawFactor = buttonState.yawFactor;
                 widgetView.pitchFactor = buttonState.pitchFactor;
                 widgetView.rollFactor = buttonState.rollFactor;
