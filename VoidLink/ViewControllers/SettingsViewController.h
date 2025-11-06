@@ -202,6 +202,10 @@
 @property (strong, nonatomic) IBOutlet UIStackView *pinchSensitivityStack;
 @property (strong, nonatomic) IBOutlet UISlider *pinchSensitivitySlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *touchModeStack2;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *touchModeSelector2;
+
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

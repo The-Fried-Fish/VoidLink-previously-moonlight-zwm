@@ -260,6 +260,29 @@
                                     <constraint firstAttribute="width" constant="380" id="Yf1-gv-h0d"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="MFl-tk-Uji" userLabel="touchModeStack2">
+                                <rect key="frame" x="892" y="2453" width="380" height="31"/>
+                                <subviews>
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="Bkf-0d-XuA" userLabel="Touch Mode Selector">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="31" id="eWH-O2-p59"/>
+                                        </constraints>
+                                        <segments>
+                                            <segment title="Touchpad"/>
+                                            <segment title="Native Touch"/>
+                                            <segment title="Single Point"/>
+                                            <segment title="Disabled"/>
+                                        </segments>
+                                        <color key="tintColor" systemColor="systemBrownColor"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="7Uw-kJ-bBA"/>
+                                    <constraint firstAttribute="height" constant="31" id="syI-vD-Jbk"/>
+                                </constraints>
+                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="YBu-VX-wpN" userLabel="externalDisplayMode Stack">
                                 <rect key="frame" x="20" y="2497" width="380" height="56.5"/>
                                 <subviews>
@@ -1380,16 +1403,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Oyk-L5-WTt" userLabel="singleTapSensitivityStack">
-                                <rect key="frame" x="440" y="307" width="792" height="55.5"/>
+                                <rect key="frame" x="440" y="307" width="824" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single Tap Sensitivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SuN-S2-8hj">
-                                        <rect key="frame" x="0.0" y="0.0" width="792" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="824" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="5" minimumValueImage="0.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="j4n-De-TRX" userLabel="Single Tap Sensitivity Slider">
-                                        <rect key="frame" x="-2" y="25.5" width="796" height="31"/>
+                                        <rect key="frame" x="-2" y="25.5" width="828" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="qOF-42-hPO"/>
                                         </constraints>
@@ -1747,7 +1770,9 @@
                         <outlet property="testStack" destination="aP7-M9-psT" id="xAv-s6-rea"/>
                         <outlet property="touchModeLabel" destination="MUY-2Y-bHi" id="6jD-aq-rmE"/>
                         <outlet property="touchModeSelector" destination="bhC-da-VGd" id="hna-Cr-kyd"/>
+                        <outlet property="touchModeSelector2" destination="Bkf-0d-XuA" id="iY6-nI-QrW"/>
                         <outlet property="touchModeStack" destination="M78-Pw-jWx" id="mdl-y3-54B"/>
+                        <outlet property="touchModeStack2" destination="MFl-tk-Uji" id="3ev-wc-kGK"/>
                         <outlet property="touchMoveEventIntervalLabel" destination="FJv-HJ-UYJ" id="evb-ZA-S53"/>
                         <outlet property="touchMoveEventIntervalSlider" destination="4gD-tc-95I" id="h7Y-LN-LPg"/>
                         <outlet property="touchMoveEventIntervalStack" destination="iYl-5Z-ujb" id="aWe-Fq-7ei"/>

@@ -830,7 +830,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] andSize:20];
     }
-    // [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
+    
+    [self addSetting:self.touchModeStack2 ofId:@"touchModeStack2" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
+    [self.touchModeSelector2 setEnabled:false];
     [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.relativeTouchSlideThresholdStack ofId:@"relativeTouchSlideThresholdStack" withInfoTag:YES withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
@@ -2358,6 +2360,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)touchModeChanged:(UISegmentedControl* )sender {
     // Disable On-Screen Controls & Widgets in non-relative touch mode
     // bool customOscEnabled = [self isOswEnabled] && [self.onScreenWidgetSelector selectedSegmentIndex] == OnScreenControlsLevelCustom;
+    self.touchModeSelector2.selectedSegmentIndex = sender.selectedSegmentIndex;
     bool isNativeTouch = sender.selectedSegmentIndex == NativeTouch;
     //bool asyncNativeTouchEnabled = [self.asyncNativeTouchPrioritySelector selectedSegmentIndex] != AsyncNativeTouchOff;
     if(self.enableOswSwitchStack.hidden != !isNativeTouch && isNativeTouch) [self highlightEmergingStack:self.enableOswSwitchStack];

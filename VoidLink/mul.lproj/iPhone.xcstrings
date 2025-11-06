@@ -2779,6 +2779,126 @@
         }
       }
     },
+    "n8C-pt-nPE.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; n8C-pt-nPE.segmentTitles[0] = \"Touchpad\"; ObjectID = \"n8C-pt-nPE\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Touchpad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触控板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控板"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控板"
+          }
+        }
+      }
+    },
+    "n8C-pt-nPE.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; n8C-pt-nPE.segmentTitles[1] = \"Native Touch\"; ObjectID = \"n8C-pt-nPE\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Native Touch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多点触控"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多點觸控"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多點觸控"
+          }
+        }
+      }
+    },
+    "n8C-pt-nPE.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; n8C-pt-nPE.segmentTitles[2] = \"Single Point\"; ObjectID = \"n8C-pt-nPE\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Single Point"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单点鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單點滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單點滑鼠"
+          }
+        }
+      }
+    },
+    "n8C-pt-nPE.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; n8C-pt-nPE.segmentTitles[3] = \"Disabled\"; ObjectID = \"n8C-pt-nPE\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
     "nj6-9l-1j7.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; nj6-9l-1j7.segmentTitles[0] = \"Auto\"; ObjectID = \"nj6-9l-1j7\";",
       "extractionState" : "extracted_with_value",

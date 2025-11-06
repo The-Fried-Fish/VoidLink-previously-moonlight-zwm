@@ -1327,6 +1327,126 @@
         }
       }
     },
+    "Bkf-0d-XuA.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; Bkf-0d-XuA.segmentTitles[0] = \"Touchpad\"; ObjectID = \"Bkf-0d-XuA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Touchpad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触控板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控板"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控板"
+          }
+        }
+      }
+    },
+    "Bkf-0d-XuA.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; Bkf-0d-XuA.segmentTitles[1] = \"Native Touch\"; ObjectID = \"Bkf-0d-XuA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Native Touch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多点触控"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多點觸控"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多點觸控"
+          }
+        }
+      }
+    },
+    "Bkf-0d-XuA.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; Bkf-0d-XuA.segmentTitles[2] = \"Single Point\"; ObjectID = \"Bkf-0d-XuA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Single Point"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单点鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單點滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單點滑鼠"
+          }
+        }
+      }
+    },
+    "Bkf-0d-XuA.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; Bkf-0d-XuA.segmentTitles[3] = \"Disabled\"; ObjectID = \"Bkf-0d-XuA\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
     "c1r-Hf-b7t.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Down button\"; ObjectID = \"c1r-Hf-b7t\";",
       "extractionState" : "extracted_with_value",
