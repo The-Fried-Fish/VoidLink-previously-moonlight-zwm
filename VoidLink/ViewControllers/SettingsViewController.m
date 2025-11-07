@@ -31,7 +31,8 @@
     
     NSLayoutConstraint *parentStackLeadingConstraint;
     NSLayoutConstraint *parentStackWidthConstraint;
-    
+    NSLayoutConstraint *parentStackCenterXConstraint;
+
     NSInteger _bitrate;
     NSInteger _lastSelectedResolutionIndex;
     bool settingsViewJustLoaded;
@@ -503,28 +504,19 @@ BOOL isCustomResolution(int resolutionSelected) {
     self.scrollView.alwaysBounceVertical = YES;
     self.scrollView.showsVerticalScrollIndicator = NO;
 
-    /*
-    self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-        // [self.scrollView.topAnchor constraintEqualToAnchor:],
-        [self.scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-        [self.scrollView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-        [self.scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-        [self.scrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-    ]];
-     */
-
     _parentStack = [[UIStackView alloc] init];
     _parentStack.axis = UILayoutConstraintAxisVertical;
     _parentStack.spacing = 0;
     _parentStack.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.scrollView addSubview:_parentStack];
     
-    [NSLayoutConstraint activateConstraints:@[
-        [_parentStack.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: currentSettingsMenuMode == AllSettings ? [self getStandardNavBarHeight] : [self getStandardNavBarHeight]+10],
-        [_parentStack.bottomAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.bottomAnchor constant:-20],
-    ]];
-
+    if(!_parentStack.superview){
+        [self.scrollView addSubview:_parentStack];
+        [NSLayoutConstraint activateConstraints:@[
+            [_parentStack.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: currentSettingsMenuMode == AllSettings ? [self getStandardNavBarHeight] : [self getStandardNavBarHeight]+10],
+            [_parentStack.bottomAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.bottomAnchor constant:-20],
+        ]];
+    }
+    
     [self updateParentStackHorizontalConstraints];
 }
 
@@ -534,10 +526,10 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)updateParentStackHorizontalConstraints{
     if(![self isIPhone]){
-        [NSLayoutConstraint activateConstraints:@[
-            [_parentStack.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor constant: 0], //mark: settingMenuLayout
-            [_parentStack.widthAnchor constraintEqualToAnchor:self.view.widthAnchor constant:-20] // section width adjusted here
-        ]];
+        if(parentStackCenterXConstraint && parentStackWidthConstraint) [NSLayoutConstraint deactivateConstraints:@[parentStackCenterXConstraint, parentStackWidthConstraint]];
+        parentStackCenterXConstraint = [_parentStack.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor constant: 0]; //mark: settingMenuLayout
+        parentStackWidthConstraint = [_parentStack.widthAnchor constraintEqualToAnchor:self.view.widthAnchor constant:-20]; // section width adjusted here
+        [NSLayoutConstraint activateConstraints:@[parentStackCenterXConstraint, parentStackWidthConstraint]];
         return;
     }
     
@@ -552,7 +544,8 @@ BOOL isCustomResolution(int resolutionSelected) {
             currentOrientation = activeScene.interfaceOrientation;
         }
         else currentOrientation = keyWindow.windowScene.interfaceOrientation;
-
+        
+        if(parentStackLeadingConstraint && parentStackWidthConstraint) [NSLayoutConstraint deactivateConstraints:@[parentStackLeadingConstraint, parentStackWidthConstraint]];
         switch (currentOrientation) {
             case UIInterfaceOrientationLandscapeRight:
                 parentStackLeadingConstraint = [_parentStack.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:0];
@@ -567,8 +560,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     } else {
         // Fallback on earlier versions
     }
-    
-    
+        
     double delayInSeconds = 0.05;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^{
@@ -677,10 +669,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
-- (void)addSetting:(UIStackView *)stack ofId:(NSString* )identifier withInfoTag:(BOOL)attched withDynamicLabel:(BOOL)added to:(MenuSectionView* )menuSection{
+- (void)addSetting:(UIStackView *)stack ofId:(NSString* )identifier withInfoTag:(BOOL)attached withDynamicLabel:(BOOL)added to:(MenuSectionView* )menuSection{
     stack.accessibilityIdentifier = identifier;
     [_settingStackDict setObject:stack forKey:identifier];
-    if(attched) [self attachInfoTagForStack:stack];
+    if(attached) [self attachInfoTagForStack:stack];
     if(added) [self addDynamicLabelForStack:stack];
     [menuSection addSubStackView:stack];
 }

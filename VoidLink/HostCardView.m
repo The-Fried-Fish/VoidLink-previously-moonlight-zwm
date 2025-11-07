@@ -425,7 +425,6 @@ static const float REFRESH_CYCLE = 2.0f;
         [self.transparentButton.bottomAnchor constraintEqualToAnchor:self.separatorLine.topAnchor],
     ]];
     
-    
     _widthConstraint.constant = _cardContentpadding*2 + appButtonWidth + 15*_sizeFactor + launchButtonWidth;
     _heightConstraint.constant = _cardContentpadding*2 + _iconBackgroundView.frame.size.height + iconAndButtonSpacing + buttonHeight + 1;
     

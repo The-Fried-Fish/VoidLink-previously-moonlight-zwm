@@ -1134,20 +1134,6 @@ static NSMutableSet* hostList;
     }
 }
 
-
-- (void)handleOrientationChange {
-    // UIDeviceOrientation targetOrientation = [[UIDevice currentDevice] orientation];
-    // if([self isIPhone] && UIDeviceOrientationIsPortrait(targetOrientation)) [self simulateSettingsButtonPressClose]; // on iphone, force close settings views if target orietation is portrait.
-    double delayInSeconds = 0.7;
-    // Convert the delay into a dispatch_time_t value
-    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    // Perform some task after the delay
-    dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
-        // [self updateResolutionAccordingly];
-        // [self.settingsButton setEnabled:![self isIPhonePortrait]]; //make sure settings button is disabled in iphone portrait mode.
-    });
-}
-
 // currently obselete:
 - (void) setNeedsUpdateAllowedOrientation{
     if (@available(iOS 16.0, *)) {
@@ -1283,7 +1269,7 @@ static NSMutableSet* hostList;
     // Create and configure the label
     if (@available(iOS 13.0, *)) return;
     else {
-        [self->waterMark removeFromSuperview];
+        [self->waterMark removeFromSuperview]; // removed before activate contraint
         self->waterMark = [[UILabel alloc] init];
         self->waterMark.translatesAutoresizingMaskIntoConstraints = NO;
         self->waterMark.numberOfLines = 1;
@@ -1426,31 +1412,6 @@ static NSMutableSet* hostList;
     return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
 }
 
-- (void)setupHostViewTitle{
-    self->hostViewTitleLabel = [[UILabel alloc] init];
-
-    hostViewTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    hostViewTitleLabel.numberOfLines = 1;
-    hostViewTitleLabel.font = [UIFont systemFontOfSize:30 weight:UIFontWeightSemibold];
-    hostViewTitleLabel.text = [LocalizationHelper localizedStringForKey:@"Hosts"];
-    // CGFloat labelHeight = 60;
-
-
-    hostViewTitleLabel.textColor = [ThemeManager textColor];
-    hostViewTitleLabel.textAlignment = NSTextAlignmentCenter;
-    // hostViewTitleLabel.backgroundColor = [UIColor clearColor];
-    hostViewTitleLabel.userInteractionEnabled = NO; // Enable user interaction for tap gesture
-    // Add tap gesture recognizer to handle hyperlink action
-    [self.view addSubview:hostViewTitleLabel];
-    // Set up constraints
-    [NSLayoutConstraint activateConstraints:@[
-        [hostViewTitleLabel.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:0], // Aligns the horizontal center of label to the horizontal center of view
-        [hostViewTitleLabel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:25],
-        [hostViewTitleLabel.heightAnchor constraintEqualToConstant:30],
-        [hostViewTitleLabel.widthAnchor constraintEqualToConstant:100],
-    ]];
-}
-
 - (void)applyNavBarAppearance{
     if (@available(iOS 13.0, *)) {
         self.navigationController.navigationBar.standardAppearance.backgroundColor = [UIColor clearColor]; // old ios depend on this, do not remove
@@ -1572,11 +1533,6 @@ static NSMutableSet* hostList;
     TemporarySettings* tempSettings = [dataMan getSettings];
     [ThemeManager setUserInterfaceStyle:tempSettings.appTheme.intValue];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceOrientationDidChange) // handle orientation change since i made portrait mode available
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
-
 #if !TARGET_OS_TV
     self.settingsExpandedInStreamView = false; // init this flag
     self.revealViewController.isStreaming = false; //init this flag for rvlVC
@@ -1847,10 +1803,6 @@ static NSMutableSet* hostList;
     [self attachWaterMark];
     
 #if !TARGET_OS_TV
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleOrientationChange) // //force expand settings view to update resolution table, and all setting includes current fullscreen resolution will be updated.
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
     
     [[self revealViewController] setPrimaryViewController:self];
     self.revealViewController.isStreaming = false; // tell the revealViewController streaming is finished
@@ -2035,20 +1987,6 @@ static NSMutableSet* hostList;
     // Reset state first so we can rediscover hosts that were deleted before
     [_discMan resetDiscoveryState];
 }
-
-// This function forces immediate decoding of the UIImage, rather
-// than the default lazy decoding that results in janky scrolling.
--(void)deviceOrientationDidChange{
-    if(self.revealViewController.isStreaming || self.collectionView.superview == nil) return;
-    [NSLayoutConstraint activateConstraints:@[
-        [self.collectionView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
-        [self.collectionView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
-        [self.collectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-        [self.collectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-        //[self.collectionView.heightAnchor constraintEqualToConstant:_headerViewHeight]
-    ]];
-}
-
 
 + (UIImage*) loadBoxArtForCaching:(TemporaryApp*)app {
     UIImage* boxArt;
@@ -2339,19 +2277,18 @@ static NSMutableSet* hostList;
     self.hostCollectionVC.minimumLineSpacing = 25;
     // 添加为子控制器
     [self addChildViewController:self.hostCollectionVC];
-    [self.view addSubview:self.hostCollectionVC.view];
-
-    // 设置其布局（Auto Layout 示例）
-    // CGFloat hostCollectionViewPadding = 75;
-    CGFloat leftPadding = [self isIPhone] ? 30 : 0;
-    self.hostCollectionVC.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-        [self.hostCollectionVC.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:0],
-        [self.hostCollectionVC.view.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:leftPadding],
-        [self.hostCollectionVC.view.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor constant:0],
-        // [self.hostCollectionVC.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor constant:0] //?
-    ]];
-
+    
+    if(self.hostCollectionVC.view.superview == nil){
+        [self.view addSubview:self.hostCollectionVC.view];
+        CGFloat leftPadding = [self isIPhone] ? 30 : 0;
+        self.hostCollectionVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+        [NSLayoutConstraint activateConstraints:@[
+            [self.hostCollectionVC.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:0],
+            [self.hostCollectionVC.view.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:leftPadding],
+            [self.hostCollectionVC.view.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor constant:0],
+        ]];
+    }
+    
     // 通知子控制器已添加完成
     [self.hostCollectionVC didMoveToParentViewController:self];
 
