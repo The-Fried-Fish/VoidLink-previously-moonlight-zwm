@@ -1422,6 +1422,35 @@
         }
       }
     },
+    "ctrlDownForPinchStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When disabled, pinch gesture equals vertical scrolling. Works for some games that use vertical scrolling for zooming."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭此选项时, 捏合缩手势相当于垂直滚动. 对一些使用垂直滚动缩放画面的游戏有效."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉此選項時, 捏合縮手勢相當於垂直滾動. 對一些使用垂直滾動縮放畫面的遊戲有效."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉此選項時, 捏合縮手勢相當於垂直滾動. 對一些使用垂直滾動縮放畫面的遊戲有效."
+          }
+        }
+      }
+    },
     "Current profile updated successfully" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4638,6 +4667,64 @@
         }
       }
     },
+    "relativeTouchSlideThresholdStackLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/egk4t4550owmomda"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fqd6l1kgt482on8a"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fqd6l1kgt482on8a"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fqd6l1kgt482on8a"
+          }
+        }
+      }
+    },
+    "relativeTouchSlideThresholdStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixes mouse cursor jump on initial move of touchPad mode."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于修复触控板模式下鼠标指针刚开始移动时会突然跳一下的问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於修復觸控板模式下滑鼠指標剛開始移動時會突然跳一下的問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於修復觸控板模式下滑鼠指標剛開始移動時會突然跳一下的問題。"
+          }
+        }
+      }
+    },
     "Remove" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5308,6 +5395,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "串流中選單的滑動距離：%.2f * 螢幕寬度"
+          }
+        }
+      }
+    },
+    "Slide threshold: %.1f" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑动阈值: %.2f"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動閾值: %.2f"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動閾值: %.2f"
           }
         }
       }

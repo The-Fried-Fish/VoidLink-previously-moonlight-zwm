@@ -56,11 +56,13 @@ static const CGFloat cellOffsetY = 20;
     if (!self.cardView) {
         self.cardView = [[HostCardView alloc] initWithHost:host andSizeFactor:[self getHostCardSizeFactor]];
         [self assignDelegateForHostCard];
-        [self.contentView addSubview:self.cardView];
-        [NSLayoutConstraint activateConstraints:@[
-            [self.cardView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor],
-            [self.cardView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:0],
-        ]];
+        if(!self.cardView.superview){
+            [self.contentView addSubview:self.cardView];
+            [NSLayoutConstraint activateConstraints:@[
+                [self.cardView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor],
+                [self.cardView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:0],
+            ]];
+        }
     }
 }
 
@@ -69,6 +71,7 @@ static const CGFloat cellOffsetY = 20;
 @interface HostCollectionViewController () <UICollectionViewDelegateFlowLayout>
 @property (nonatomic, strong, readwrite) NSMutableArray<TemporaryHost *> *items;
 @property (nonatomic, strong) NSLayoutConstraint *collectionViewHeightConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *superViewBottomConstraint;
 @end
 
 @implementation HostCollectionViewController{
@@ -130,6 +133,8 @@ static const CGFloat cellOffsetY = 20;
 - (void)addHost:(TemporaryHost *)host {
     if(![self.items containsObject:host]){
         [self.items addObject:host];
+        [self.items addObject:host];
+        [self.items addObject:host];
         [self.collectionView reloadData];
     }
 }
@@ -173,9 +178,10 @@ static const CGFloat cellOffsetY = 20;
     CGFloat contentHeight = self.collectionView.collectionViewLayout.collectionViewContentSize.height;
     bool contentExceedsView = contentHeight > self.view.superview.bounds.size.height - self.view.frame.origin.y;
     if(contentExceedsView){
-        [NSLayoutConstraint activateConstraints:@[
-            [self.view.bottomAnchor constraintEqualToAnchor:self.view.superview.safeAreaLayoutGuide.bottomAnchor constant:0]
-        ]];
+        if(!_superViewBottomConstraint){
+            _superViewBottomConstraint = [self.view.bottomAnchor constraintEqualToAnchor:self.view.superview.safeAreaLayoutGuide.bottomAnchor constant:0];
+            _superViewBottomConstraint.active = YES;
+        }
     }
     else{
         _collectionViewHeightConstraint.constant = contentHeight;

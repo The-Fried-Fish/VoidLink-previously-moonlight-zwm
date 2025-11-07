@@ -112,6 +112,14 @@
                  delayLeftClick:(BOOL)delayLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
                 muteInBackground:(BOOL)muteInBackground
+     relativeTouchSlideThreshold:(CGFloat)relativeTouchSlideThreshold
+                     enablePinch:(BOOL)enablePinch
+               scrollSensitivity:(CGFloat)scrollSensitivity
+                pinchSensitivity:(CGFloat)pinchSensitivity
+                ctrlDownForPinch:(BOOL)ctrlDownForPinch
+                leftClickDelayMs:(CGFloat)leftClickDelayMs
+              settingsMenuOffset:(CGFloat)settingsMenuOffset
+             passthroughGestures:(BOOL)passthroughGestures
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -174,6 +182,14 @@
         settingsToSave.delayLeftClick = delayLeftClick;
         settingsToSave.duckOtherApps = duckOtherApps;
         settingsToSave.muteInBackground = muteInBackground;
+        settingsToSave.relativeTouchSlideThreshold = [NSNumber numberWithFloat:relativeTouchSlideThreshold];
+        settingsToSave.enablePinch = enablePinch;
+        settingsToSave.scrollSensitivity = [NSNumber numberWithFloat:scrollSensitivity];
+        settingsToSave.pinchSensitivity = [NSNumber numberWithFloat:pinchSensitivity];
+        settingsToSave.ctrlDownForPinch = ctrlDownForPinch;
+        settingsToSave.leftClickDelayMs = [NSNumber numberWithFloat:leftClickDelayMs];
+        settingsToSave.settingsMenuOffset = [NSNumber numberWithFloat:settingsMenuOffset];
+        settingsToSave.passthroughGestures = passthroughGestures;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

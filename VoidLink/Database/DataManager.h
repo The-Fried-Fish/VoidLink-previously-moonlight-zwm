@@ -129,6 +129,14 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                  delayLeftClick:(BOOL)delayLeftClick
                    duckOtherApps:(BOOL)duckOtherApps
                 muteInBackground:(BOOL)muteInBackground
+     relativeTouchSlideThreshold:(CGFloat)relativeTouchSlideThreshold
+                     enablePinch:(BOOL)enablePinch
+               scrollSensitivity:(CGFloat)scrollSensitivity
+                pinchSensitivity:(CGFloat)pinchSensitivity
+                ctrlDownForPinch:(BOOL)ctrlDownForPinch
+                leftClickDelayMs:(CGFloat)leftClickDelayMs
+              settingsMenuOffset:(CGFloat)settingsMenuOffset
+             passthroughGestures:(BOOL)passthroughGestures
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

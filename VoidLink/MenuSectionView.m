@@ -58,7 +58,7 @@ static BOOL overridePersistedFoldState = YES;
     _isExpanded = YES;
     _expandable = true;
     _backgroundColor = [UIColor clearColor];
-    _rootStackViewSpacing = [self isIPhone] ? 10 : 13.8;
+    _rootStackViewSpacing = [self isIPhone] ? 10 : 12;
     _subStackViews = [NSMutableArray array];
     _headerViewHeight = 37;
     _headerViewVerticalSpacing = 25;
@@ -342,7 +342,9 @@ static BOOL overridePersistedFoldState = YES;
 
 
 - (void)updateViewForFoldState {
-    [self setupConstraints];
+    // [self setupConstraints];
+    // don't run this repeatedly
+    
     NSInteger visibleCount = 0;
     for (UIView *subview in _rootStackView.arrangedSubviews) {
         if (!subview.isHidden) {

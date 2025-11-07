@@ -61,7 +61,9 @@ import UIKit
         "M_X1" : BUTTON_X1,
         "MX1" : BUTTON_X1,
         "M_X2" : BUTTON_X2,
-        "MX2" : BUTTON_X2
+        "MX2" : BUTTON_X2,
+        "WHEELUP" : 0xFF,
+        "WHEELDOWN" : -0xFF,
     ]
     
     
@@ -120,6 +122,7 @@ import UIKit
     @objc public static let directionPads: [String] = ["DPAD", "WASDPAD", "ARROWPAD"]
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]
+    @objc public static let vectorTouchPads: [String] = ["LSVPAD", "RSVPAD", "MOUSEPAD", "TRACKBALL"]
     @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let bidirectionalVerticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let functionalButtonCmds: [String] = ["SETTINGS", "TOOLBOX", "WIDGETTOOL", "WIDGETPROFILES", "PROFILES", "SOFTKEYBOARD", "ABSTCHDRAG"]
@@ -127,7 +130,7 @@ import UIKit
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]
     
-    static let keyboardButtonMappings: [String: Int16] = [
+    @objc public static let keyboardButtonMappings: [String: Int16] = [
         // Windows Key Codes
         "NULL": 0xFF,
         "CTRL": 0x11,        // VK_CONTROL

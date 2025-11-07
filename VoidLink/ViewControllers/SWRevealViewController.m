@@ -157,6 +157,13 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     
     [self insertSubview:_rearNavView belowSubview:_frontView];
     [self insertSubview:_safeAreaPadding belowSubview:_frontView];
+    [NSLayoutConstraint activateConstraints:@[
+        [_safeAreaPadding.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor constant:0],
+        [_safeAreaPadding.topAnchor constraintEqualToAnchor:self.topAnchor],
+        [_safeAreaPadding.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+        [_safeAreaPadding.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+        // reserve height for navigation bar
+    ]];
 
     CGFloat navBarHeight = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
     
@@ -263,14 +270,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     _frontView.layer.shadowPath = shadowPath.CGPath;
     
     _safeAreaPadding.hidden = self.safeAreaLayoutGuide.topAnchor == 0;
-    [NSLayoutConstraint activateConstraints:@[
-        [_safeAreaPadding.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor constant:0],
-        [_safeAreaPadding.topAnchor constraintEqualToAnchor:self.topAnchor],
-        [_safeAreaPadding.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-        [_safeAreaPadding.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-        // reserve height for navigation bar
-    ]];
-    
+
     //NSLog(@"width %f", self.bounds.size.width
 }
 
@@ -984,7 +984,7 @@ const int FrontViewPositionNone = 0xff;
     [_dockedNavBar setItems:@[_navItem]];
     _dockedNavBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor whiteColor]};
     
-    [_dockedNavBar removeFromSuperview];
+    [_dockedNavBar removeFromSuperview]; // removed before activate contraints
     [_contentView.rearNavView addSubview:_dockedNavBar];
 
     // 设置导航栏约束
@@ -995,7 +995,7 @@ const int FrontViewPositionNone = 0xff;
         [_dockedNavBar.widthAnchor constraintEqualToConstant:_rearViewRevealWidth],
     ]];
     [self layoutSettingsView];
-    
+    // NSLog(@"leak test %f %lu", CACurrentMediaTime(), _contentView.rearNavView.constraints.count);
 }
 
 

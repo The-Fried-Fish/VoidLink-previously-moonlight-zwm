@@ -15,12 +15,14 @@
 		182760FD2E83E68B00EC1C5C /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 182760FC2E83E68B00EC1C5C /* Collections */; };
 		1829CE3F2E2154DF0074A99A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1829CE3E2E2154DF0074A99A /* SceneDelegate.m */; };
 		18341A042DEB662C0094E5F2 /* FixedTintImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18341A032DEB662C0094E5F2 /* FixedTintImageView.m */; };
+		18416EA42EBB3DCE00AE0124 /* UITouchUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18416EA32EBB3DCE00AE0124 /* UITouchUtil.swift */; };
 		1850C82A2E667E4000845308 /* MicHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1850C8292E667E4000845308 /* MicHandler.swift */; };
 		18729EDE2E8BD68800101194 /* UUIDHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18729EDD2E8BD68800101194 /* UUIDHelper.swift */; };
 		187F4B282E04658A00EECC59 /* WidgetPanelStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */; };
 		1888C1922E24C33100108730 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1912E24C33100108730 /* AboutViewController.swift */; };
 		1888C1932E24C41000108730 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1902E24C2C800108730 /* AboutView.swift */; };
 		188973D32E386A670025E48C /* widgetTemplatesIPhone.bin in Resources */ = {isa = PBXBuildFile; fileRef = 188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */; };
+		18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */; };
 		189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 189AD2992DE7446000E24B88 /* HostCollectionViewController.m */; };
 		18E4BCEA2E891895000A8657 /* MotionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E4BCE92E891895000A8657 /* MotionHandler.swift */; };
 		840751B32BF49C050096B657 /* CustomTapGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 840751B22BF49C050096B657 /* CustomTapGestureRecognizer.m */; };
@@ -167,6 +169,7 @@
 		1829CE3E2E2154DF0074A99A /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		18341A022DEB65AB0094E5F2 /* FixedTintImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FixedTintImageView.h; sourceTree = "<group>"; };
 		18341A032DEB662C0094E5F2 /* FixedTintImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FixedTintImageView.m; sourceTree = "<group>"; };
+		18416EA32EBB3DCE00AE0124 /* UITouchUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITouchUtil.swift; sourceTree = "<group>"; };
 		1850C8292E667E4000845308 /* MicHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicHandler.swift; sourceTree = "<group>"; };
 		18729EDD2E8BD68800101194 /* UUIDHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDHelper.swift; sourceTree = "<group>"; };
 		187F4B232E04633100EECC59 /* WidgetPanelStackView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WidgetPanelStackView.h; sourceTree = "<group>"; };
@@ -174,6 +177,7 @@
 		1888C1902E24C2C800108730 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		1888C1912E24C33100108730 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = widgetTemplatesIPhone.bin; path = PresetConfigs/widgetTemplatesIPhone.bin; sourceTree = "<group>"; };
+		18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadGestureHandler.swift; sourceTree = "<group>"; };
 		189AD2962DE743B700E24B88 /* HostCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HostCollectionViewController.h; sourceTree = "<group>"; };
 		189AD2992DE7446000E24B88 /* HostCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HostCollectionViewController.m; sourceTree = "<group>"; };
 		18BF141D2E0D7A00009DEE4F /* VoidLink v1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VoidLink v1.0.xcdatamodel"; sourceTree = "<group>"; };
@@ -707,6 +711,8 @@
 				9819CC21254F180F008A7C8E /* AbsoluteTouchHandler.m */,
 				988FCD3F293B091B003050E2 /* KeyboardInputField.h */,
 				988FCD40293B091B003050E2 /* KeyboardInputField.m */,
+				18416EA32EBB3DCE00AE0124 /* UITouchUtil.swift */,
+				18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */,
 				1850C8292E667E4000845308 /* MicHandler.swift */,
 				18E4BCE92E891895000A8657 /* MotionHandler.swift */,
 				84E1CDEB2C4F67D300547904 /* CommandManager.swift */,
@@ -1011,6 +1017,7 @@
 				FB1A674D2131E65900507771 /* KeyboardSupport.m in Sources */,
 				97E20DDF2E2164A9000D5DCA /* Frame.m in Sources */,
 				97E20DE02E2164A9000D5DCA /* FrameQueue.m in Sources */,
+				18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */,
 				97E20DE12E2164A9000D5DCA /* FloatBuffer.m in Sources */,
 				97E20DE22E2164A9000D5DCA /* PaddedLabel.m in Sources */,
 				97E20DE32E2164A9000D5DCA /* BandwidthTracker.m in Sources */,
@@ -1100,6 +1107,7 @@
 				84351B2B2C29AD6100A77989 /* LayoutOnScreenControlsViewController.m in Sources */,
 				84351B5C2C29ADBE00A77989 /* ProfileTableViewCell.m in Sources */,
 				18341A042DEB662C0094E5F2 /* FixedTintImageView.m in Sources */,
+				18416EA42EBB3DCE00AE0124 /* UITouchUtil.swift in Sources */,
 				FB89463119F646E200339C8A /* StreamManager.m in Sources */,
 				84351B2D2C29AD6100A77989 /* ToolBarContainerView.m in Sources */,
 				18E4BCEA2E891895000A8657 /* MotionHandler.swift in Sources */,

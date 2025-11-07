@@ -304,14 +304,10 @@
         _oscLayoutTapRecoginizer.delaysTouchesBegan = NO;
         _oscLayoutTapRecoginizer.delaysTouchesEnded = NO;
         if(_settings.touchMode.intValue == AbsoluteTouch) _oscLayoutTapRecoginizer.immediateTriggering = true; // make immediate triggering on for absolute touch mode
-        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer]; //
+        [self.view addGestureRecognizer:_oscLayoutTapRecoginizer];
+        _oscLayoutTapRecoginizer.touchCapturingView = _streamView;
     }
     
-}
-
-- (void)handleAbsTouchPanGesture:(UIPanGestureRecognizer* )gesture{
-    NSLog(@"handleAbsTouchPanGesture %f", CACurrentMediaTime());
-    LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
 }
 
 - (void)configZoomGestureAndAddStreamView{
@@ -321,17 +317,17 @@
         [_scrollView.panGestureRecognizer setMinimumNumberOfTouches:2];
         [_scrollView.panGestureRecognizer setMaximumNumberOfTouches:2]; // reduce competing with keyboardToggleRecognizer in StreamView.
 #endif
-        [_scrollView.panGestureRecognizer addTarget:self action:@selector(handleAbsTouchPanGesture:)];
         [_scrollView setShowsHorizontalScrollIndicator:NO];
         [_scrollView setShowsVerticalScrollIndicator:NO];
         [_scrollView setDelegate:self];
-        [_scrollView setMaximumZoomScale:10.0f];
+        [_scrollView setMaximumZoomScale:_settings.passthroughGestures ? 1.0 : 10.0f];
         if(!_mainFrameViewcontroller.settingsExpandedInStreamView){
             // Add StreamView inside a UIScrollView for absolute mode
             [_scrollView addSubview:_streamView];
             // Insert at index 0 to ensure it doesn't cover OSC controls (CALayers)
             [self.view insertSubview:_scrollView atIndex:0];
         }
+        _scrollView.panGestureRecognizer.enabled = !_settings.passthroughGestures;
     }
     else{
         // Add streamView directly to self.view in other touch modes
@@ -451,6 +447,11 @@
     _streamView.onScreenControls.instanceReceiverDelegate = _motionHandler;
     [_streamView.onScreenControls sendInstance];
     
+    TouchPadGestureHandler.enablePinch = _settings.enablePinch;
+    TouchPadGestureHandler.ctrlDownForPinch = _settings.ctrlDownForPinch;
+    TouchPadGestureHandler.scrollSensitivity = _settings.scrollSensitivity.floatValue;
+    TouchPadGestureHandler.pinchSensitivity = _settings.pinchSensitivity.floatValue;
+
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
 }

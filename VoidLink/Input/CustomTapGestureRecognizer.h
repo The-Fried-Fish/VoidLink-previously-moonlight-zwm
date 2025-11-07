@@ -14,7 +14,7 @@
     CGFloat lowestTouchPointYCoord;
 }
 
-
+@property (nonatomic, weak) UIView* touchCapturingView;
 @property (nonatomic, assign) uint8_t numberOfTouchesRequired;
 @property (nonatomic, assign) bool immediateTriggering; // if enabled,  trigger the signal on touchesBegan stage.
 @property (nonatomic, assign) double tapDownTimeThreshold; // tap down threshold in seconds.
