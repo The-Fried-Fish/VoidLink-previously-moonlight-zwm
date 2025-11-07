@@ -974,7 +974,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         view.clipsToBounds = YES;
         view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
     } completion:^(BOOL finished){
-        completion();
+        if(completion) completion();
     }];
 }
 
