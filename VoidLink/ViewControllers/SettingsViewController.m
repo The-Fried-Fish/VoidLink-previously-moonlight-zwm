@@ -446,6 +446,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(![self manuallyChangedFPS]) [self framerateChanged];
     
     [self reloadMotionControlConfigs];
+    
+    self->tempSettings = [self->dataMan getSettings];
  }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -454,17 +456,16 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self updateParentStackHorizontalConstraints];
     
     [self updateResolutionTable];
-    [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
     
-    self->tempSettings = [self->dataMan getSettings];
+    _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
+    
+    [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
     
     //CGSize currentResolution = CGSizeMake(currentSettings.width.intValue, currentSettings.height.intValue);
     [self.customResolutionSwitch setOn: isCustomResolution(self->tempSettings.resolutionSelected.intValue)];
     [self.resolutionSelector setEnabled:!self.customResolutionSwitch.isOn];
     [self touchModeChanged:self.touchModeSelector1]; // a special fix for iOS 14 to set hidden for the "enableOswStack"
-    
-    _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
-    
+        
     settingsViewJustExpanded = false;
 }
 

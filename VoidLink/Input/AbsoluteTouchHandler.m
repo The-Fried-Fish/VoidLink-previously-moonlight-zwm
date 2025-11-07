@@ -135,7 +135,7 @@
     if (capturedTouch.timestamp - lastTouchUp.timestamp > DOUBLE_TAP_DEAD_ZONE_DELAY ||
         sqrt(pow((touchLocation.x / streamView.bounds.size.width) - (lastTouchUpLocation.x / streamView.bounds.size.width), 2) +
              pow((touchLocation.y / streamView.bounds.size.height) - (lastTouchUpLocation.y / streamView.bounds.size.height), 2)) > DOUBLE_TAP_DEAD_ZONE_DELTA) {
-        [streamView updateCursorLocation:touchLocation isMouse:NO];
+       if(!multiTouchesDetected) [streamView updateCursorLocation:touchLocation isMouse:NO];
     }
     
     // Press the left button down
