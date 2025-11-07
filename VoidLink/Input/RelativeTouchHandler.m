@@ -94,6 +94,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 }
 
 - (void)mouseRightClick {
+    multiTouchesDetected = false;
     dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_RIGHT);
@@ -160,7 +161,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
         }
         quickTapTouch = touches.anyObject;
     }
-
+        
     // use [event allTouches] to check if touchLockedForMouseMove is captured, if already captured, don't update touchLockedForMouseMove
     if(candidateTouch != nil && ![[event allTouches] containsObject:touchLockedForMouseMove]){
         touchLockedForMouseMove = candidateTouch;
@@ -175,7 +176,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     NSSet* currentTouches = [UITouchUtil touchesIn:streamView from:event];
         
     if(![self isOnScreenControllerBeingPressed:currentTouches]) [TouchPadGestureHandler handleGestureIn:streamView with:event];
-     
+         
     if(multiTouchesDetected) return;
     
     if([touches containsObject:touchLockedForMouseMove]){
@@ -192,13 +193,18 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     
     if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
     
+    NSLog(@"testtttttt %lu, %lu, %f",[UITouchUtil touchesIn:streamView from:event].count, touches.count, CACurrentMediaTime());
+    NSLog(@"testtttttt666 %lu, %lu, %f",[event allTouches].count, touches.count, CACurrentMediaTime());
+
+    
     if(multiTouchesDetected){
-        if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
+        if([UITouchUtil touchesIn:streamView from:event].count == touches.count){
+            
+            multiTouchesDetected = false;}
         return;
     }
-    
     if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
-    
+
     if([touches containsObject:touchLockedForMouseMove]){
         // dealing with a single first tap, whether the button will be released, is going to be decided in sendLongMouseLeftButtonClickEvent
         if(!mousePointerMoved && !self->quickTapDetected) [self sendLongMouseLeftButtonClickEvent];

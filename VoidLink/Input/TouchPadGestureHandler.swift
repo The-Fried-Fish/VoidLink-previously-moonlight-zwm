@@ -33,13 +33,14 @@ import UIKit
         let midPointDeltaY = UITouchUtil.midPointDeltaY(between: touch1, and: touch2, in: view)
         let midPointDeltaX = UITouchUtil.midPointDeltaX(between: touch1, and: touch2, in: view)
         
-        let pinchDelta = enablePinch ? (currentDistance-previousDistance)*5*pinchSensitivity : 0;
-        LiSendHighResScrollEvent(Int16(pinchDelta + midPointDeltaY*5*scrollSensitivity))
-        if enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*5*scrollSensitivity))}
+        let originalPinchDelta = currentDistance-previousDistance;
+        let pinchDelta = enablePinch ? originalPinchDelta*7*pinchSensitivity : 0;
+        LiSendHighResScrollEvent(Int16(pinchDelta + midPointDeltaY*7*scrollSensitivity))
+        if enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*7*scrollSensitivity))}
         
         if !enablePinch || !ctrlDownForPinch {return};
         
-        if abs(currentDistance - previousDistance) > abs(midPointDeltaY) {
+        if abs(originalPinchDelta) > abs(midPointDeltaY)*1.3, abs(originalPinchDelta) > abs(midPointDeltaX)*1.3 {
             LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_DOWN), 0)
             ctrlDown = true
         } else {
