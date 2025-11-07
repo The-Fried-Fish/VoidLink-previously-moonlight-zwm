@@ -12,6 +12,7 @@ import UIKit
     
     @objc public static var ctrlDown:Bool = false
     @objc public static var enablePinch:Bool = true
+    @objc public static var ctrlDownForPinch:Bool = true
     @objc public static var enableHorizontalScroll:Bool = true
     @objc public static var scrollSensitivity:CGFloat = 1.0
     @objc public static var pinchSensitivity:CGFloat = 1.0
@@ -36,7 +37,8 @@ import UIKit
         LiSendHighResScrollEvent(Int16(pinchDelta + midPointDeltaY*5*scrollSensitivity))
         if enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*5*scrollSensitivity))}
         
-        if !enablePinch {return};
+        if !enablePinch || !ctrlDownForPinch {return};
+        
         if abs(currentDistance - previousDistance) > abs(midPointDeltaY) {
             LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_DOWN), 0)
             ctrlDown = true

@@ -29,6 +29,9 @@
 @implementation AbsoluteTouchHandler {
     StreamView* streamView;
     
+    bool multiTouchesDetected;
+    bool passthroughGestures;
+    
     NSTimer* longPressTimer;
     UITouch* lastTouchDown;
     CGPoint lastTouchDownLocation;
@@ -50,6 +53,8 @@
     CGFloat _edgeTolerance;
     
     bool _delayMouseLeftClick;
+    NSTimeInterval leftClickDelay;
+    
     bool dragButtonDown;
     UInt8 currentTouchesCount;
     
@@ -60,10 +65,13 @@
     self = [self init];
     self->streamView = view;
     
-    // _delayMouseLeftClick = settings.delayLeftClick;
-    _delayMouseLeftClick = true; // deprecate legacy absolute touch
+    multiTouchesDetected = false;
+    passthroughGestures = settings.passthroughGestures;
+    
+    _delayMouseLeftClick = settings.delayLeftClick;
+    // _delayMouseLeftClick = true;
     dragButtonDown = false;
-
+    
     leftClickTimeThreshold = 0.1;
     
     // upper screen check
@@ -73,6 +81,8 @@
     self->touchPointSpawnedAtUpperScreenEdge = false;
     
     _mouseButtonForCursorMove = BUTTON_LEFT;
+    
+    leftClickDelay = ((CGFloat)settings.leftClickDelayMs.intValue)/1000;
     
     return self;
 }
@@ -97,6 +107,10 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     rightButtonClicked = false;
+
+    
+    if([UITouchUtil touchesIn:streamView from:event].count>=2) multiTouchesDetected = true;
+
     
     CGPoint initialPoint = [[touches anyObject] locationInView:streamView];
     if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < _edgeTolerance || initialPoint.x > screenWidthWithThreshold)) {
@@ -126,7 +140,6 @@
     
     // Press the left button down
     if(!_delayMouseLeftClick){
-        // _delayMouseLeftClick will always be true.
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT); //deprecated
     }
     
@@ -169,10 +182,10 @@
     
     if(currentTouchesCount == 2){
         if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
-        [TouchPadGestureHandler handleGestureIn:streamView with:event];
+        if(passthroughGestures) [TouchPadGestureHandler handleGestureIn:streamView with:event];
     }
      
-    if(currentTouchesCount>=2) return;
+    if(multiTouchesDetected) return;
     
     if(![currentTouches containsObject:capturedTouch]) return;
     
@@ -197,8 +210,17 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     
+    if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
+    
     if(touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
 
+    if(multiTouchesDetected) {
+        if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
+        return;
+    };
+    
+    if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
+    
     // Only fire this logic if all touches have ended
     if ([touches containsObject:capturedTouch]) {
         // Cancel the long press timer
@@ -220,17 +242,14 @@
                     LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
             }
         }
-        else{ // deprecated
-            /*
+        else{
             // Left button up on finger up
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
 
             // Raise right button too in case we triggered a long press gesture
-            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT); */
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
         }
-        
-        if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
-        
+                
         lastTouchUp = [touches anyObject];
         lastTouchUpLocation = [lastTouchUp locationInView:streamView];
         
@@ -244,7 +263,7 @@
 }
 
 - (void)sendShortMouseLeftButtonClickEvent{
-    dispatch_time_t delayShort = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC));
+    dispatch_time_t delayShort = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(leftClickDelay * NSEC_PER_SEC));
     dispatch_time_t delayLong = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.03 * NSEC_PER_SEC));
     dispatch_after(delayShort, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_LEFT);

@@ -147,6 +147,10 @@
     self.enablePinch = settings.enablePinch;
     self.scrollSensitivity = settings.scrollSensitivity;
     self.pinchSensitivity = settings.pinchSensitivity;
+    self.leftClickDelayMs = settings.leftClickDelayMs;
+    self.ctrlDownForPinch = settings.ctrlDownForPinch;
+    self.settingsMenuOffset = settings.settingsMenuOffset;
+    self.passthroughGestures = settings.passthroughGestures;
 #endif
     
     return self;

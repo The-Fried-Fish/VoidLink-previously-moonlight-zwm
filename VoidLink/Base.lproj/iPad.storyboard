@@ -1403,16 +1403,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Oyk-L5-WTt" userLabel="singleTapSensitivityStack">
-                                <rect key="frame" x="440" y="307" width="824" height="55.5"/>
+                                <rect key="frame" x="440" y="307" width="428" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single Tap Sensitivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SuN-S2-8hj">
-                                        <rect key="frame" x="0.0" y="0.0" width="824" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="428" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="5" minimumValueImage="0.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="j4n-De-TRX" userLabel="Single Tap Sensitivity Slider">
-                                        <rect key="frame" x="-2" y="25.5" width="828" height="31"/>
+                                        <rect key="frame" x="-2" y="25.5" width="432" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="qOF-42-hPO"/>
                                         </constraints>
@@ -1578,7 +1578,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="uEq-Pc-Fum">
-                                <rect key="frame" x="463" y="544" width="257" height="31"/>
+                                <rect key="frame" x="440" y="621" width="257" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pinch Gesture" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Evh-LH-rdh" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="107" height="31"/>
@@ -1597,8 +1597,28 @@
                                     <constraint firstAttribute="height" constant="31" id="3jV-tZ-Mi1"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="4Jb-ey-ca7">
+                                <rect key="frame" x="440" y="573" width="297.5" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ctrl Down for Pinch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BsJ-eo-2Ac" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="147.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfr-Wn-dB4">
+                                        <rect key="frame" x="167.5" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="P1q-30-0uK"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="yy0-9H-bjl"/>
+                                </constraints>
+                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="aEs-8U-RwE">
-                                <rect key="frame" x="440" y="606" width="380" height="55.5"/>
+                                <rect key="frame" x="440" y="676" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scroll Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDf-9O-NGp" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1618,7 +1638,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="t6B-h4-iY7">
-                                <rect key="frame" x="440" y="686" width="380" height="55.5"/>
+                                <rect key="frame" x="440" y="756" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pinch Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zsj-Fa-IgS" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1635,6 +1655,46 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55.5" id="Oxd-pJ-8oy"/>
                                     <constraint firstAttribute="width" constant="380" id="c4j-rz-SyJ"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="q0S-CP-V6v">
+                                <rect key="frame" x="440" y="451" width="380" height="55.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Left Click Delay" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aDg-5A-6M9" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="Mh4-1P-bSv">
+                                        <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="55.5" id="aRb-oZ-ZQp"/>
+                                    <constraint firstAttribute="width" constant="380" id="oo6-nE-eT1"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="wUP-2q-5vh">
+                                <rect key="frame" x="668" y="621" width="318.5" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Passthrough Gestures" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dfj-BB-Vby" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="168.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eO1-kV-e9j">
+                                        <rect key="frame" x="188.5" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="qZg-EX-I27"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="bkz-ks-hpu"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -1661,6 +1721,8 @@
                         <outlet property="citrixX1MouseSwitch" destination="GQM-NR-WIO" id="RNm-18-mrK"/>
                         <outlet property="codecSelector" destination="aFy-0w-YPe" id="DlU-0l-gwz"/>
                         <outlet property="codecStack" destination="gWg-BF-yDI" id="GGc-JQ-N8y"/>
+                        <outlet property="ctrlDownForPinchStack" destination="4Jb-ey-ca7" id="Ou2-Qz-VO6"/>
+                        <outlet property="ctrlDownForPinchSwitch" destination="zfr-Wn-dB4" id="GXR-zn-daI"/>
                         <outlet property="customResolutionSwitch" destination="E5w-kK-dOo" id="hrt-v2-8dY"/>
                         <outlet property="delayLeftClickStack" destination="Xp7-7O-Ndt" id="CwB-Wy-beh"/>
                         <outlet property="delayLeftClickSwitch" destination="Haf-rg-zLB" id="FaA-3p-JDw"/>
@@ -1694,6 +1756,8 @@
                         <outlet property="hapticEngineStack" destination="MUp-Hc-VgH" id="XuW-ww-cmv"/>
                         <outlet property="hdrStack" destination="dH7-Sy-EdJ" id="cJm-bj-Aqo"/>
                         <outlet property="hdrSwitch" destination="wIq-fF-X8l" id="Ozz-h0-nJL"/>
+                        <outlet property="leftClickDelaySlider" destination="Mh4-1P-bSv" id="Tbj-Y0-t1x"/>
+                        <outlet property="leftClickDelayStack" destination="q0S-CP-V6v" id="0lz-MN-OEb"/>
                         <outlet property="liftStreamViewForKeyboardSelector" destination="MM5-O0-vK3" id="tSC-Rp-Qfg"/>
                         <outlet property="liftStreamViewForKeyboardStack" destination="mes-so-dfK" id="nXR-Ot-Ydf"/>
                         <outlet property="localMousePointerModeSelector" destination="4FU-iP-c6T" id="4Gz-ao-xH2"/>
@@ -1717,6 +1781,8 @@
                         <outlet property="onscreenControllerLabel" destination="LGV-5y-piG" id="GsV-fS-lX9"/>
                         <outlet property="optimizeGamesStack" destination="TvS-69-vcF" id="pm1-0c-dCR"/>
                         <outlet property="optimizeGamesSwitch" destination="Sui-Ig-YxN" id="Lxu-si-ugy"/>
+                        <outlet property="passthroughGesturesStack" destination="wUP-2q-5vh" id="a4w-16-lLs"/>
+                        <outlet property="passthroughGesturesSwitch" destination="eO1-kV-e9j" id="5r8-o4-t9J"/>
                         <outlet property="performanceGraphStack" destination="H8p-G9-pnl" id="9RJ-uO-IpF"/>
                         <outlet property="pinchGestureStack" destination="uEq-Pc-Fum" id="68g-K6-P87"/>
                         <outlet property="pinchGestureSwitch" destination="TJy-Zp-DKM" id="Haj-ha-vNy"/>
@@ -1769,7 +1835,7 @@
                         <outlet property="swapAbxySwitch" destination="hv7-6b-rez" id="iKX-qk-Dep"/>
                         <outlet property="testStack" destination="aP7-M9-psT" id="xAv-s6-rea"/>
                         <outlet property="touchModeLabel" destination="MUY-2Y-bHi" id="6jD-aq-rmE"/>
-                        <outlet property="touchModeSelector" destination="bhC-da-VGd" id="hna-Cr-kyd"/>
+                        <outlet property="touchModeSelector1" destination="bhC-da-VGd" id="hna-Cr-kyd"/>
                         <outlet property="touchModeSelector2" destination="Bkf-0d-XuA" id="iY6-nI-QrW"/>
                         <outlet property="touchModeStack" destination="M78-Pw-jWx" id="mdl-y3-54B"/>
                         <outlet property="touchModeStack2" destination="MFl-tk-Uji" id="3ev-wc-kGK"/>
@@ -1803,7 +1869,7 @@
                     </items>
                 </navigationBar>
             </objects>
-            <point key="canvasLocation" x="-503.59712230215831" y="1977.520661157025"/>
+            <point key="canvasLocation" x="-503.95683453237416" y="1977.520661157025"/>
         </scene>
         <!--Reveal View Controller-->
         <scene sceneID="rR7-ZT-bc7">

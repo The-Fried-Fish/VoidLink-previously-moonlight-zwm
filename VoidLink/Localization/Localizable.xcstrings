@@ -1422,6 +1422,35 @@
         }
       }
     },
+    "ctrlDownForPinchStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When disabled, pinch gesture equals vertical scrolling. Works for some games that use vertical scrolling for zooming."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭此选项时, 捏合缩手势相当于垂直滚动. 对一些使用垂直滚动缩放画面的游戏有效."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉此選項時, 捏合縮手勢相當於垂直滾動. 對一些使用垂直滾動縮放畫面的遊戲有效."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉此選項時, 捏合縮手勢相當於垂直滾動. 對一些使用垂直滾動縮放畫面的遊戲有效."
+          }
+        }
+      }
+    },
     "Current profile updated successfully" : {
       "extractionState" : "manual",
       "localizations" : {

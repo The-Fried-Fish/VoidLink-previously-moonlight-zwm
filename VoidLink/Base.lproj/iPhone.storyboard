@@ -2284,16 +2284,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="N0i-z6-WgC" userLabel="singleTapSensitivityStack">
-                                <rect key="frame" x="437" y="2383" width="540" height="55.5"/>
+                                <rect key="frame" x="437" y="2383" width="580" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single Tap Sensitivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WzD-wo-Wum">
-                                        <rect key="frame" x="0.0" y="0.0" width="540" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="580" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="5" minimumValueImage="0.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="uCa-Oa-7mv" userLabel="Single Tap Sensitivity Slider">
-                                        <rect key="frame" x="-2" y="25.5" width="544" height="31"/>
+                                        <rect key="frame" x="-2" y="25.5" width="584" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="XXP-GP-uhn"/>
                                         </constraints>
@@ -2470,6 +2470,66 @@
                                     <constraint firstAttribute="height" constant="31" id="T1t-8e-I8X"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="eYW-eD-LTg">
+                                <rect key="frame" x="437" y="289" width="297.5" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ctrl Down for Pinch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ICY-9b-uFD" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="147.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q46-JG-pX4">
+                                        <rect key="frame" x="167.5" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="ee9-Uw-3XB"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="bcL-21-TrI"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="muF-2y-dHu">
+                                <rect key="frame" x="676" y="328" width="380" height="55.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Left Click Delay" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5S1-w1-Wnq" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="HNu-vj-Q0t">
+                                        <rect key="frame" x="-2" y="25.5" width="384" height="31"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="6bB-ha-UGL"/>
+                                    <constraint firstAttribute="height" constant="55.5" id="SUg-XN-Moi"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="F8I-3L-7uS">
+                                <rect key="frame" x="437" y="232" width="318.5" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Passthrough Gestures" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A5m-3n-5qc" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="168.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XrB-Rl-noQ">
+                                        <rect key="frame" x="188.5" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="3YP-WA-0B5"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="qut-MF-kwq"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -2494,6 +2554,8 @@
                         <outlet property="citrixX1MouseSwitch" destination="zw9-ok-nQC" id="5w4-2h-gCP"/>
                         <outlet property="codecSelector" destination="5Y7-To-ca2" id="Kmt-sp-eXj"/>
                         <outlet property="codecStack" destination="cVe-Uk-gXv" id="826-Tv-rMl"/>
+                        <outlet property="ctrlDownForPinchStack" destination="eYW-eD-LTg" id="eQS-WT-74l"/>
+                        <outlet property="ctrlDownForPinchSwitch" destination="q46-JG-pX4" id="jjp-BU-9RP"/>
                         <outlet property="customResolutionSwitch" destination="kRO-HO-zKO" id="ZUP-Yd-QDY"/>
                         <outlet property="delayLeftClickStack" destination="fjb-oT-r1E" id="0Tb-f9-Pym"/>
                         <outlet property="delayLeftClickSwitch" destination="YB5-xe-Zdx" id="FEK-Lb-f0r"/>
@@ -2528,6 +2590,8 @@
                         <outlet property="hapticEngineStack" destination="kiR-q0-FQX" id="zj5-eD-N5a"/>
                         <outlet property="hdrStack" destination="kFw-d7-BTn" id="3aT-Gh-bDO"/>
                         <outlet property="hdrSwitch" destination="Kgb-YU-AFW" id="ksG-A4-HhS"/>
+                        <outlet property="leftClickDelaySlider" destination="HNu-vj-Q0t" id="X9f-ya-wVv"/>
+                        <outlet property="leftClickDelayStack" destination="muF-2y-dHu" id="rmd-Pm-nfV"/>
                         <outlet property="liftStreamViewForKeyboardSelector" destination="TJx-6E-kgr" id="KnL-15-Q6G"/>
                         <outlet property="liftStreamViewForKeyboardStack" destination="mgf-RQ-AVP" id="xH0-F0-dth"/>
                         <outlet property="localMousePointerModeSelector" destination="zLl-8w-K8J" id="jsc-Tp-zwe"/>
@@ -2550,6 +2614,8 @@
                         <outlet property="onscreenControllerLabel" destination="5uF-E5-hpX" id="Ntz-sT-O6S"/>
                         <outlet property="optimizeGamesStack" destination="Col-Dm-lwT" id="ng3-CV-HLd"/>
                         <outlet property="optimizeGamesSwitch" destination="zGD-yR-gUS" id="Gji-vK-txl"/>
+                        <outlet property="passthroughGesturesStack" destination="F8I-3L-7uS" id="M6R-70-8nf"/>
+                        <outlet property="passthroughGesturesSwitch" destination="XrB-Rl-noQ" id="UXc-O3-nWr"/>
                         <outlet property="performanceGraphStack" destination="9r0-OX-NYn" id="wQE-tW-wtN"/>
                         <outlet property="pinchGestureStack" destination="HWI-UV-lqB" id="d01-s2-BYB"/>
                         <outlet property="pinchGestureSwitch" destination="VHo-r1-Z1H" id="lvd-eF-did"/>
@@ -2601,7 +2667,7 @@
                         <outlet property="swapAbxyStack" destination="reE-vr-Mdk" id="y3v-ac-LHy"/>
                         <outlet property="swapAbxySwitch" destination="T5q-1k-zB3" id="153-6O-0Pv"/>
                         <outlet property="touchModeLabel" destination="v5B-5J-veL" id="ewI-fd-FnI"/>
-                        <outlet property="touchModeSelector" destination="A9r-dE-rT4" id="DBR-8D-QTL"/>
+                        <outlet property="touchModeSelector1" destination="A9r-dE-rT4" id="DBR-8D-QTL"/>
                         <outlet property="touchModeSelector2" destination="n8C-pt-nPE" id="N2Y-O4-zK6"/>
                         <outlet property="touchModeStack" destination="2bi-tR-7sa" id="Fh0-Q4-fiq"/>
                         <outlet property="touchModeStack2" destination="cNd-hI-JAS" id="tOg-4I-grM"/>
@@ -2640,19 +2706,19 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411764705879" green="0.51764705882352946" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

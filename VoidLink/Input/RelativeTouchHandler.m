@@ -1,6 +1,6 @@
 //
 //  RelativeTouchHandler.m
-//  Moonlight
+//  VoidLink
 //
 //  Completely refactored by True砖家 on 2024.9.13
 //  Copyright © 2024 True砖家 on Bilibili. All rights reserved.
@@ -33,6 +33,8 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     UITouch* touchLockedForMouseMove;
     UITouch* quickTapTouch;
 
+    bool multiTouchesDetected;
+    
     CADisplayLink *displayLink;
     
 #if TARGET_OS_TV
@@ -129,7 +131,12 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     }
     
     touchPointSpawnedAtUpperScreenEdge = false; // reset this flag immediately if we get a touch event passing the check above, this fixes irresponsive touch after closing the command tool menu.
-        
+     
+    if([UITouchUtil touchesIn:streamView from:event].count>=2){
+        multiTouchesDetected = true;
+        return;
+    }
+    
     UITouch* candidateTouch = nil;
     
     // the onscreen controllers are implmented by CALayer, which can not intercept UITouch event, touch will penetrate to the streamView level and captured in the touches callback of this touchHandler class.
@@ -166,11 +173,10 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
         
     NSSet* currentTouches = [UITouchUtil touchesIn:streamView from:event];
-    uint8_t currentTouchesCount = currentTouches.count;
         
     if(![self isOnScreenControllerBeingPressed:currentTouches]) [TouchPadGestureHandler handleGestureIn:streamView with:event];
      
-    if(currentTouchesCount>=2) return;
+    if(multiTouchesDetected) return;
     
     if([touches containsObject:touchLockedForMouseMove]){
         CGPoint currentLocation = [touchLockedForMouseMove locationInView:streamView];
@@ -183,6 +189,15 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
+    
+    if(multiTouchesDetected){
+        if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
+        return;
+    }
+    
+    if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
     
     if([touches containsObject:touchLockedForMouseMove]){
         // dealing with a single first tap, whether the button will be released, is going to be decided in sendLongMouseLeftButtonClickEvent
@@ -202,14 +217,12 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     for(UITouch* touch in touches){
         [OnScreenControls.touchesCapturedByOnScreenControls removeObject:touch];
     }
-    
-    if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
-    
+        
     if([UITouchUtil touchesIn:streamView from:event].count == [touches count]){
         touchLockedForMouseMove = nil;
         mousePointerMoved = false; // need to reset this anyway
     }
-    
+        
     touchPointSpawnedAtUpperScreenEdge = false;
 }
 

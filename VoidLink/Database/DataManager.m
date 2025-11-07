@@ -116,6 +116,10 @@
                      enablePinch:(BOOL)enablePinch
                scrollSensitivity:(CGFloat)scrollSensitivity
                 pinchSensitivity:(CGFloat)pinchSensitivity
+                ctrlDownForPinch:(BOOL)ctrlDownForPinch
+                leftClickDelayMs:(CGFloat)leftClickDelayMs
+              settingsMenuOffset:(CGFloat)settingsMenuOffset
+             passthroughGestures:(BOOL)passthroughGestures
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -182,6 +186,10 @@
         settingsToSave.enablePinch = enablePinch;
         settingsToSave.scrollSensitivity = [NSNumber numberWithFloat:scrollSensitivity];
         settingsToSave.pinchSensitivity = [NSNumber numberWithFloat:pinchSensitivity];
+        settingsToSave.ctrlDownForPinch = ctrlDownForPinch;
+        settingsToSave.leftClickDelayMs = [NSNumber numberWithFloat:leftClickDelayMs];
+        settingsToSave.settingsMenuOffset = [NSNumber numberWithFloat:settingsMenuOffset];
+        settingsToSave.passthroughGestures = passthroughGestures;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

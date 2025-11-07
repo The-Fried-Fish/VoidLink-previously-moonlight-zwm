@@ -68,7 +68,7 @@
 @property (strong, nonatomic) IBOutlet UISegmentedControl *resolutionSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *customResolutionSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *touchModeLabel;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *touchModeSelector;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *touchModeSelector1;
 @property (strong, nonatomic) IBOutlet UISwitch *enableOswForNativeTouchSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *onscreenControllerLabel;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *onScreenWidgetSelector;
@@ -205,6 +205,14 @@
 @property (strong, nonatomic) IBOutlet UIStackView *touchModeStack2;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *touchModeSelector2;
 
+@property (strong, nonatomic) IBOutlet UIStackView *ctrlDownForPinchStack;
+@property (strong, nonatomic) IBOutlet UISwitch *ctrlDownForPinchSwitch;
+
+@property (strong, nonatomic) IBOutlet UIStackView *leftClickDelayStack;
+@property (strong, nonatomic) IBOutlet UISlider *leftClickDelaySlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *passthroughGesturesStack;
+@property (strong, nonatomic) IBOutlet UISwitch *passthroughGesturesSwitch;
 
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 

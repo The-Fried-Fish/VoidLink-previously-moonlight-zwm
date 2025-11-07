@@ -1183,7 +1183,7 @@ static NSMutableSet* hostList;
     // [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.optimizeGamesStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
-    [settingsViewController.touchModeSelector setEnabled:!_settingsExpandedInStreamView || !_sessionLaunchedWithAbsoluteTouch];
+    [settingsViewController.touchModeSelector1 setEnabled:!_settingsExpandedInStreamView || !_sessionLaunchedWithAbsoluteTouch];
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView && [settingsViewController hdrSupported]];

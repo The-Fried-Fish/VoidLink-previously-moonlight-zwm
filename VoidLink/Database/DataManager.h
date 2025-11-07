@@ -133,6 +133,10 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                      enablePinch:(BOOL)enablePinch
                scrollSensitivity:(CGFloat)scrollSensitivity
                 pinchSensitivity:(CGFloat)pinchSensitivity
+                ctrlDownForPinch:(BOOL)ctrlDownForPinch
+                leftClickDelayMs:(CGFloat)leftClickDelayMs
+              settingsMenuOffset:(CGFloat)settingsMenuOffset
+             passthroughGestures:(BOOL)passthroughGestures
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

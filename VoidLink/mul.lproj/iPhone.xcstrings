@@ -373,6 +373,36 @@
         }
       }
     },
+    "5S1-w1-Wnq.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Left Click Delay\"; ObjectID = \"5S1-w1-Wnq\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Left Click Delay"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左单击延迟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左單擊延遲"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左單擊延遲"
+          }
+        }
+      }
+    },
     "5uF-E5-hpX.text" : {
       "comment" : "Class = \"UILabel\"; text = \"On-Screen Widgets   \"; ObjectID = \"5uF-E5-hpX\";",
       "extractionState" : "extracted_with_value",
@@ -1005,6 +1035,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "效能"
+          }
+        }
+      }
+    },
+    "A5m-3n-5qc.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Passthrough Gestures\"; ObjectID = \"A5m-3n-5qc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Passthrough Gestures"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透传手势"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透傳手勢"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透傳手勢"
           }
         }
       }
@@ -2373,6 +2433,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "靈敏度分割位置"
+          }
+        }
+      }
+    },
+    "ICY-9b-uFD.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Ctrl Down for Pinch\"; ObjectID = \"ICY-9b-uFD\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ctrl Down for Pinch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏合时按下Ctrl"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏合時按下Ctrl"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏合時按下Ctrl"
           }
         }
       }
@@ -3787,13 +3877,13 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "延迟鼠标左单击"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "延遲滑鼠左單擊"
           }
         },

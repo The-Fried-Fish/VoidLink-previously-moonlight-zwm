@@ -583,7 +583,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "延遲滑鼠左單擊"
           }
         }
@@ -807,6 +807,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手把"
+          }
+        }
+      }
+    },
+    "aDg-5A-6M9.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Left Click Delay\"; ObjectID = \"aDg-5A-6M9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Left Click Delay"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左单击延迟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左單擊延遲"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左單擊延遲"
           }
         }
       }
@@ -1447,6 +1477,36 @@
         }
       }
     },
+    "BsJ-eo-2Ac.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Ctrl Down for Pinch\"; ObjectID = \"BsJ-eo-2Ac\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ctrl Down for Pinch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏合时按下Ctrl"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏合時按下Ctrl"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏合時按下Ctrl"
+          }
+        }
+      }
+    },
     "c1r-Hf-b7t.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Down button\"; ObjectID = \"c1r-Hf-b7t\";",
       "extractionState" : "extracted_with_value",
@@ -1881,6 +1941,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最佳化遊戲設定"
+          }
+        }
+      }
+    },
+    "dfj-BB-Vby.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Passthrough Gestures\"; ObjectID = \"dfj-BB-Vby\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Passthrough Gestures"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透传手势"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透傳手勢"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透傳手勢"
           }
         }
       }
