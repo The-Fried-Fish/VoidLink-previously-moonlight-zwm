@@ -133,8 +133,6 @@ static const CGFloat cellOffsetY = 20;
 - (void)addHost:(TemporaryHost *)host {
     if(![self.items containsObject:host]){
         [self.items addObject:host];
-        [self.items addObject:host];
-        [self.items addObject:host];
         [self.collectionView reloadData];
     }
 }
@@ -145,7 +143,6 @@ static const CGFloat cellOffsetY = 20;
         [self.collectionView reloadData];
     }
 }
-
 
 - (void)removeLastItem {
     if (self.items.count > 0) {
