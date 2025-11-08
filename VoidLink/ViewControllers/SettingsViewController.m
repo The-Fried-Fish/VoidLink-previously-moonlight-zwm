@@ -1397,7 +1397,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     currentSettings.settingsMenuMode = [NSNumber numberWithInteger:currentSettingsMenuMode];
     [dataMan saveData];
     
-    _parentStack.spacing = [self isIPhone] ? 10 : 15;
+    _parentStack.spacing = [self isIPhone] ? 10 : 12;
     
     [self loadFavoriteSettingStackIdentifiers];
     for(NSString* settingIdentifier in _favoriteSettingStackIdentifiers){
