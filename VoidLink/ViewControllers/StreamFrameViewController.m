@@ -311,7 +311,7 @@
 }
 
 - (void)configZoomGestureAndAddStreamView{
-    if (_settings.touchMode.intValue == AbsoluteTouch) {
+    if (_settings.touchMode.intValue == AbsoluteTouch && !_settings.passthroughGestures) {
         if(!_scrollView) _scrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
 #if !TARGET_OS_TV
         [_scrollView.panGestureRecognizer setMinimumNumberOfTouches:2];

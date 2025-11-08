@@ -89,8 +89,8 @@
 
 - (void)onLongPressStart:(NSTimer*)timer {
     // Raise the left click and start a right click
-    if(currentTouchesCount>=2) return;
-
+    if(multiTouchesDetected) return;
+    
     if([self touchDidntMoveOnScreen:movingTouchLocation]){
         if(_delayMouseLeftClick){
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
@@ -109,8 +109,11 @@
     rightButtonClicked = false;
 
     
-    if([UITouchUtil touchesIn:streamView from:event].count>=2) multiTouchesDetected = true;
-
+    if([UITouchUtil touchesIn:streamView from:event].count>=2){
+        multiTouchesDetected = true;
+        [longPressTimer invalidate];
+        longPressTimer = nil;
+    }
     
     CGPoint initialPoint = [[touches anyObject] locationInView:streamView];
     if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < _edgeTolerance || initialPoint.x > screenWidthWithThreshold)) {
@@ -209,11 +212,13 @@
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    [longPressTimer invalidate];
+    longPressTimer = nil;
     
     if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
     
     if(touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
-
+    
     if(multiTouchesDetected) {
         if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;
         return;

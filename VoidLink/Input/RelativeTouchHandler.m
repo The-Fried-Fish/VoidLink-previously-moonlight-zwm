@@ -193,10 +193,6 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     
     if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
     
-    NSLog(@"testtttttt %lu, %lu, %f",[UITouchUtil touchesIn:streamView from:event].count, touches.count, CACurrentMediaTime());
-    NSLog(@"testtttttt666 %lu, %lu, %f",[event allTouches].count, touches.count, CACurrentMediaTime());
-
-    
     if(multiTouchesDetected){
         if([UITouchUtil touchesIn:streamView from:event].count == touches.count){
             
