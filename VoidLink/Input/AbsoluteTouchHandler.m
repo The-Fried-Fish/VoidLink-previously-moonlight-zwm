@@ -113,6 +113,7 @@
         multiTouchesDetected = true;
         [longPressTimer invalidate];
         longPressTimer = nil;
+        return;
     }
     
     CGPoint initialPoint = [[touches anyObject] locationInView:streamView];
@@ -188,7 +189,7 @@
         if(passthroughGestures) [TouchPadGestureHandler handleGestureIn:streamView with:event];
     }
      
-    if(multiTouchesDetected) return;
+    if(currentTouchesCount > 1) return;
     
     if(![currentTouches containsObject:capturedTouch]) return;
     
@@ -290,3 +291,4 @@
 
 
 @end
+
