@@ -446,6 +446,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(![self manuallyChangedFPS]) [self framerateChanged];
     
     [self reloadMotionControlConfigs];
+    
+    self->tempSettings = [self->dataMan getSettings];
  }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -454,17 +456,16 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self updateParentStackHorizontalConstraints];
     
     [self updateResolutionTable];
+    
+    // _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
+    /// cancel restoring contentOffset
+    
     [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
-    
-    self->tempSettings = [self->dataMan getSettings];
-    
-    //CGSize currentResolution = CGSizeMake(currentSettings.width.intValue, currentSettings.height.intValue);
     [self.customResolutionSwitch setOn: isCustomResolution(self->tempSettings.resolutionSelected.intValue)];
     [self.resolutionSelector setEnabled:!self.customResolutionSwitch.isOn];
+    
     [self touchModeChanged:self.touchModeSelector1]; // a special fix for iOS 14 to set hidden for the "enableOswStack"
-    
-    _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
-    
+
     settingsViewJustExpanded = false;
 }
 
@@ -974,7 +975,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         view.clipsToBounds = YES;
         view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
     } completion:^(BOOL finished){
-        completion();
+        if(completion) completion();
     }];
 }
 
@@ -1396,7 +1397,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     currentSettings.settingsMenuMode = [NSNumber numberWithInteger:currentSettingsMenuMode];
     [dataMan saveData];
     
-    _parentStack.spacing = [self isIPhone] ? 10 : 15;
+    _parentStack.spacing = [self isIPhone] ? 10 : 12;
     
     [self loadFavoriteSettingStackIdentifiers];
     for(NSString* settingIdentifier in _favoriteSettingStackIdentifiers){
@@ -1916,7 +1917,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self touchModeChanged:self.touchModeSelector1];
         
         [self.touchModeSelector2 addTarget:self action:@selector(touchMode2Changed:) forControlEvents:UIControlEventValueChanged];
-
+        self.touchModeSelector2.selectedSegmentIndex = self.touchModeSelector1.selectedSegmentIndex;
 
         // self.enableOswSwitchStack.hidden = !(self->tempSettings.touchMode.intValue == NativeTouch || self->tempSettings.touchMode.intValue == NativeTouchOnly); // do not use setHidden to stack wrapped by a settingStack
         
