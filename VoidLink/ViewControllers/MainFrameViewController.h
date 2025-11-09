@@ -36,6 +36,9 @@
 - (bool)isIPhonePortrait;
 - (void)quitRunningApp;
 - (NSInteger)requestForBitrate:(NSInteger)bitrateKbps;
+// Resume the currently running app (if any) immediately, using
+// updated resolution derived from current window metrics.
+- (void)resumeRunningAppAfterResize;
 #endif
 - (void)fillResolutionTable:(CGSize*)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
 - (bool)isIPhone;

@@ -25,6 +25,7 @@
 #include <libavformat/avio.h>
 #include <libavutil/mem.h>
 #include <mach/mach_time.h>
+#include <math.h>
 
 // Define for extra logging related to frame pacing
 //#define DISPLAYLINK_VERBOSE
@@ -72,12 +73,25 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     // respects the PAR encoded in the SPS which causes our computed video-relative
     // touch location to be wrong in StreamView if the aspect ratio of the host
     // desktop doesn't match the aspect ratio of the stream.
-    CGSize videoSize;
-    if (_view.bounds.size.width > _view.bounds.size.height * _streamAspectRatio) {
-        videoSize = CGSizeMake(_view.bounds.size.height * _streamAspectRatio, _view.bounds.size.height);
-    } else {
-        videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / _streamAspectRatio);
+    // Compute a safe aspect ratio and video size to avoid NaN/Inf bounds
+    CGFloat viewW = _view.bounds.size.width;
+    CGFloat viewH = _view.bounds.size.height;
+    float ar = _streamAspectRatio;
+    if (!isfinite(ar) || ar <= 0.0f) {
+        if (viewH > 0.0) ar = (float)(viewW / viewH);
+        if (!isfinite(ar) || ar <= 0.0f) ar = 16.0f/9.0f;
     }
+    if (!(viewW > 0.0)) viewW = 1.0;
+    if (!(viewH > 0.0)) viewH = 1.0;
+
+    CGSize videoSize;
+    if (viewW > viewH * ar) {
+        videoSize = CGSizeMake(viewH * ar, viewH);
+    } else {
+        videoSize = CGSizeMake(viewW, viewW / ar);
+    }
+    if (!isfinite(videoSize.width) || videoSize.width <= 0.0) videoSize.width = MAX(viewW, 1.0);
+    if (!isfinite(videoSize.height) || videoSize.height <= 0.0) videoSize.height = MAX(viewH, 1.0);
 
     [CATransaction begin];
     [CATransaction setDisableActions:YES];

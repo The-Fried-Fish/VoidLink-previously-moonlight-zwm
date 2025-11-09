@@ -62,6 +62,10 @@
 @property (strong, nonatomic) IBOutlet UIStackView *frameQueueSizeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *performanceGraphStack;
 
+// Programmatic: Real-time window adaptation toggle (under Video section, below PiP)
+@property (strong, nonatomic) UIStackView *realtimeAdaptationStack;
+@property (strong, nonatomic) UISwitch *realtimeAdaptationSwitch;
+
 @property (strong, nonatomic) IBOutlet UILabel *bitrateLabel;
 @property (strong, nonatomic) IBOutlet UISlider *bitrateSlider;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *framerateSelector;

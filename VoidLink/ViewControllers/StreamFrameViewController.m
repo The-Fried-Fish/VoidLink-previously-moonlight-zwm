@@ -81,6 +81,11 @@
     BOOL _isRestoringFromPiP;
     CADisplayLink *_displayLink;
 
+    // Real-time window adaptation state
+    dispatch_block_t _autoAdaptQuitResumeBlock;
+    BOOL _autoAdaptQuitResumeInProgress;
+    
+
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
     CustomEdgeSlideGestureRecognizer *_slideToToolboxRecognizer;
@@ -693,6 +698,16 @@
                                                  name:@"OscLayoutCloseNotification"
                                                object:nil];
 
+    // Observe Menu Bar (iOS 18+) button actions via notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(expandSettingsView)
+                                                 name:@"VLMenuBarOpenSettings"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bringUpToolboxMenu)
+                                                 name:@"VLMenuBarOpenToolbox"
+                                               object:nil];
+
 #if 0
     // FIXME: This doesn't work reliably on iPad for some reason. Showing and hiding the keyboard
     // several times in a row will not correctly restore the state of the UIScrollView.
@@ -1161,6 +1176,8 @@
 - (void) connectionStarted {
     Log(LOG_I, @"Connection started");
     dispatch_async(dispatch_get_main_queue(), ^{
+        //
+
         // Leave the spinner spinning until it's obscured by
         // the first frame of video.
         self->_stageLabel.hidden = YES;
@@ -1192,6 +1209,8 @@
 
 - (void)connectionTerminated:(int)errorCode {
     Log(LOG_I, @"Connection terminated: %d", errorCode);
+
+    // orderly-termination branch removed
     
     unsigned int portFlags = LiGetPortFlagsFromTerminationErrorCode(errorCode);
     unsigned int portTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
@@ -1631,7 +1650,7 @@
         return;
     }
 
-    Log(LOG_I, @"View size changed, terminating stream");
+    Log(LOG_I, @"View size changed, reconfiguring");
     
     double delayInSeconds = 0.2;
     if (_delayedRemoveExtScreen) {
@@ -1639,15 +1658,26 @@
     }
     dispatch_block_t block = dispatch_block_create(0, ^{
         [self handleViewResize];
-        [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+        // Avoid heavy reconfiguration when real-time adaptation is enabled;
+        // the stream will be restarted shortly with the new resolution.
+        if (![self isRealtimeAdaptationEnabled]) {
+            [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+        }
     });
     _delayedRemoveExtScreen = block;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), block);
+
+    // Real-time adaptation: simple return-and-resume after stabilization
+    if ([self isRealtimeAdaptationEnabled] && !_autoAdaptQuitResumeInProgress) {
+        [self scheduleAutoAdaptQuitAndResumeWithDelay:0];
+    }
 }
 
 - (void)dealloc {
     [self stopDisplayLink];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLMenuBarOpenSettings" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLMenuBarOpenToolbox" object:nil];
 }
 
 - (void)setupDisplayLink {
@@ -1670,6 +1700,88 @@
         LiSendKeyboardEvent(0xFF, KEY_ACTION_UP, 0);
     });
 }
+
+
+#pragma mark - Real-time Window Adaptation
+
+- (BOOL)isRealtimeAdaptationEnabled {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"VLRealtimeWindowAdaptationEnabled"];
+}
+
+- (void)setRealtimeAdaptationEnabled:(BOOL)enabled {
+    [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:@"VLRealtimeWindowAdaptationEnabled"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)toggleRealtimeAdaptation {
+    BOOL enabled = ![self isRealtimeAdaptationEnabled];
+    [self setRealtimeAdaptationEnabled:enabled];
+    Log(LOG_I, @"Real-time window adaptation: %s", enabled ? "ON" : "OFF");
+    NSString *msg = enabled ? @"Real-time window adaptation: ON" : @"Real-time window adaptation: OFF";
+    [self updateOverlayText:msg];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self updateOverlayText:nil];
+    });
+}
+
+- (void)scheduleAutoAdaptQuitAndResumeWithDelay:(NSTimeInterval)delaySeconds {
+    if (_autoAdaptQuitResumeInProgress) {
+        return;
+    }
+    if (_autoAdaptQuitResumeBlock) {
+        dispatch_block_cancel(_autoAdaptQuitResumeBlock);
+        _autoAdaptQuitResumeBlock = nil;
+    }
+    __weak typeof(self) weakSelf = self;
+    dispatch_block_t block = dispatch_block_create(0, ^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf performAutoAdaptQuitAndResume];
+    });
+    _autoAdaptQuitResumeBlock = block;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delaySeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
+}
+
+- (void)performAutoAdaptQuitAndResume {
+    if (_autoAdaptQuitResumeInProgress) return;
+    _autoAdaptQuitResumeInProgress = YES;
+
+    // Return to main frame, then instruct it to resume the running app.
+    // We dispatch the resume after a slight delay to ensure navigation popped.
+    [self returnToMainFrame];
+    // Defer resume to MainFrameViewController via notification to avoid timing/ownership issues
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        Log(LOG_I, @"[Auto-Adapt] Posting resume request notification");
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"VLRealtimeAdaptationResumeRequest" object:nil];
+        // Also directly invoke on MainFrame to be robust against notification timing
+        if (self.mainFrameViewcontroller && [self.mainFrameViewcontroller respondsToSelector:@selector(resumeRunningAppAfterResize)]) {
+            Log(LOG_I, @"[Auto-Adapt] Direct resume invoke on MainFrameViewController");
+            [self.mainFrameViewcontroller resumeRunningAppAfterResize];
+        }
+        self->_autoAdaptQuitResumeInProgress = NO;
+    });
+}
+
+- (CGSize)currentWindowPixelSize {
+    UIWindow *window = _deviceWindow ? _deviceWindow : self.view.window;
+    if (!window) {
+        UIScreen *screen = [UIScreen mainScreen];
+        return CGSizeMake(self.view.bounds.size.width * screen.scale,
+                          self.view.bounds.size.height * screen.scale);
+    }
+    CGFloat scale = window.screen.scale;
+    CGFloat w = window.frame.size.width * scale;
+    CGFloat h = window.frame.size.height * scale;
+    if (UIScreen.screens.count > 1 && [self isAirPlayEnabled]) {
+        CGRect bounds = [UIScreen.screens.lastObject bounds];
+        scale = [UIScreen.screens.lastObject scale];
+        w = bounds.size.width * scale;
+        h = bounds.size.height * scale;
+    }
+    return CGSizeMake(w, h);
+}
+
+// removed old in-place restart path (scheduleAutoAdaptRestartWithDelay / performAutoAdaptRestart)
 
 
 @end
