@@ -445,6 +445,31 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     if(![self manuallyChangedFPS]) [self framerateChanged];
     
+    self->motionControlSection.expandable = [self isCustomOswEnabled];
+    [self->motionControlSection setExpanded:self->motionControlSection.expandable];
+    __weak typeof(self) weakSelf = self;
+    self->motionControlSection.lockedSectionHandler = ^{
+        [CountdownAlertController showAlertIn:weakSelf
+                                        title:[LocalizationHelper localizedStringForKey:@"Tips"]
+                                      message:[LocalizationHelper localizedStringForKey:@"Tap 'OK' to set on-screen widget to 'Custom' and enable motion control."]
+                                   withCancel:YES
+                                  buttonTitle:[LocalizationHelper localizedStringForKey:@"OK"]
+                                    countdown:0
+                                   completion:^{
+            if(!CountdownAlertController.actionCancelled){
+                [weakSelf.onScreenWidgetSelector setSelectedSegmentIndex:OnScreenControlsLevelCustom];
+                if(weakSelf.touchModeSelector1.selectedSegmentIndex == NativeTouch){
+                    [weakSelf.enableOswForNativeTouchSwitch setOn:true];
+                    [weakSelf enableOswForNativeTouchSwitchFlipped:weakSelf.enableOswForNativeTouchSwitch];
+                }
+                __strong typeof(weakSelf) strongSelf = weakSelf;
+                if (!strongSelf) return;
+                strongSelf->motionControlSection.expandable = true;
+                [strongSelf->motionControlSection setExpanded:YES];
+            }
+        }];
+    };
+    
     [self reloadMotionControlConfigs];
     
     self->tempSettings = [self->dataMan getSettings];
@@ -1930,31 +1955,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         [self.sendDummyEventSwitch setOn:self->tempSettings.sendDummyEvent];// Load old setting
         
-        
-        self->motionControlSection.expandable = [self isCustomOswEnabled];
-        // [self->motionControlSection setExpanded:[self isCustomOswEnabled]];
-        __weak typeof(self) weakSelf = self;
-        self->motionControlSection.lockedSectionHandler = ^{
-            [CountdownAlertController showAlertIn:weakSelf
-                                            title:[LocalizationHelper localizedStringForKey:@"Tips"]
-                                          message:[LocalizationHelper localizedStringForKey:@"Tap 'OK' to set on-screen widget to 'Custom' and enable motion control."]
-                                       withCancel:YES
-                                      buttonTitle:[LocalizationHelper localizedStringForKey:@"OK"]
-                                        countdown:0
-                                       completion:^{
-                if(!CountdownAlertController.actionCancelled){
-                    [weakSelf.onScreenWidgetSelector setSelectedSegmentIndex:OnScreenControlsLevelCustom];
-                    if(weakSelf.touchModeSelector1.selectedSegmentIndex == NativeTouch){
-                        [weakSelf.enableOswForNativeTouchSwitch setOn:true];
-                        [weakSelf enableOswForNativeTouchSwitchFlipped:weakSelf.enableOswForNativeTouchSwitch];
-                    }
-                    __strong typeof(weakSelf) strongSelf = weakSelf;
-                    if (!strongSelf) return;
-                    strongSelf->motionControlSection.expandable = true;
-                    [strongSelf->motionControlSection setExpanded:YES];
-                }
-            }];
-        };
         [self.mapGyroToSelector addTarget:self action:@selector(mapGyroToChanged:) forControlEvents:UIControlEventValueChanged];
         [self.yawPitchToRightStickSwitch addTarget:self action:@selector(yawPitchToRightStickSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.rollToLeftStickSwitch addTarget:self action:@selector(rollToLeftStickSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
