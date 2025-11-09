@@ -365,6 +365,16 @@
     if(viewIsBeingResized) viewIsBeingResized = false;
     else [self configOscLayoutTool];
     [self updateToolboxSpecialEntries];
+    // Listen for main menu system notifications (iOS 26.0+)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleShowToolboxRequest:) name:@"VLShowToolboxRequested" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showToolboxFromMainMenu:) name:@"VLShowToolboxFromMainMenu" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsFromMainMenu:) name:@"VLShowSettingsFromMainMenu" object:nil];
+
+    // Notify about streaming state changes for UIMainMenuSystem
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"VLIsCurrentlyStreaming"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"VLStreamingStateChanged" object:self];
+
     [self configGestures];
     [self configZoomGestureAndAddStreamView];
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
@@ -938,14 +948,19 @@
 
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
-    
+
     [self.navigationController popToRootViewControllerAnimated:NO];
-    
+
     _extWindow = nil;
-    
+
     if(_streamConfig.redirectMic) [micHandler stopTappingWithStopEngine:true];
 
     self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
+
+    // Reset streaming state for UIMainMenuSystem
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"VLIsCurrentlyStreaming"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"VLStreamingStateChanged" object:self];
 }
 
 // External Screen connected
@@ -1648,6 +1663,16 @@
 
 - (void)dealloc {
     [self stopDisplayLink];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLMenuBarOpenSettings" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLMenuBarOpenToolbox" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLShowToolboxRequested" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLShowToolboxFromMainMenu" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLShowSettingsFromMainMenu" object:nil];
+
+    // Notify about streaming state changes for UIMainMenuSystem
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"VLIsCurrentlyStreaming"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"VLStreamingStateChanged" object:self];
 }
 
 - (void)setupDisplayLink {
@@ -1672,4 +1697,23 @@
 }
 
 
+
+#pragma mark - Main Menu System Notification Handlers
+
+- (void)handleShowToolboxRequest:(NSNotification *)notification {
+    // Handle toolbox request from MainFrameViewController
+    [self bringUpToolboxMenu];
+}
+
+- (void)showToolboxFromMainMenu:(NSNotification *)notification {
+    // Handle toolbox menu request from UIMainMenuSystem (iOS 26.0+)
+    [self bringUpToolboxMenu];
+}
+
+- (void)showSettingsFromMainMenu:(NSNotification *)notification {
+    // Handle settings menu request from UIMainMenuSystem (iOS 26.0+)
+    [self expandSettingsView];
+}
+
+// removed old in-place restart path (scheduleAutoAdaptRestartWithDelay / performAutoAdaptRestart)
 @end
