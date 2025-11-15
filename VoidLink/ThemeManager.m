@@ -34,10 +34,10 @@ static UIUserInterfaceStyle _userInterfaceStyle;
 }
 
 + (void)setUserInterfaceStyle:(UIUserInterfaceStyle)style {
+    _privateUserInterfaceStyle = style;
     if (_userInterfaceStyle == style) {
         return;
     }
-    _privateUserInterfaceStyle = style;
     [ThemeManager setPublicUIStyle];
     [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil];
 }

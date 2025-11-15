@@ -505,7 +505,7 @@ static const float REFRESH_CYCLE = 2.0f;
 }
 
 - (bool)isDarkTheme{
-    return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    return ThemeManager.userInterfaceStyle == UIUserInterfaceStyleDark;
 }
 
 - (void) updateLoop {
