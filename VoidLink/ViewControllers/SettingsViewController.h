@@ -83,6 +83,9 @@
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *liftStreamViewForKeyboardSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *slideToSettingsScreenEdgeSelector;
+@property (strong, nonatomic) UIStackView *applePencilStack;
+@property (strong, nonatomic) UIButton *pencilDoubleTapButton;
+@property (strong, nonatomic) UIButton *pencilSqueezeButton;
 
 @property (strong, nonatomic) IBOutlet UILabel *touchMoveEventIntervalLabel;
 @property (strong, nonatomic) IBOutlet UISlider *touchMoveEventIntervalSlider;

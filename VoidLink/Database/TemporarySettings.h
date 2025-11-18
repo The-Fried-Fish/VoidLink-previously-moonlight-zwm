@@ -95,6 +95,8 @@
 @property (nonatomic, retain) NSNumber * relativeTouchSlideThreshold;
 @property (nonatomic, retain) NSNumber * leftClickDelayMs;
 @property (nonatomic, retain) NSNumber * settingsMenuOffset;
+@property (nonatomic, retain) NSString * pencilDoubleTapAction;
+@property (nonatomic, retain) NSString * pencilSqueezeAction;
 
 - (id) initFromSettings:(Settings*)settings;
 

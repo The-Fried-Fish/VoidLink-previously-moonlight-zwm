@@ -26,6 +26,7 @@
 #import "KeyboardInputField.h"
 #import "CustomTapGestureRecognizer.h"
 #import "LocalizationHelper.h"
+#import <UIKit/UIPencilInteraction.h>
 
 
 static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
@@ -70,6 +71,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #if defined(__IPHONE_16_1) || defined(__TVOS_16_1)
     UIHoverGestureRecognizer *stylusHoverRecognizer;
 #endif
+    UIPencilInteraction *pencilInteraction;
     CGFloat HeightViewLiftedTo;
     UILabel* keyboardToggleTip;
     
@@ -77,6 +79,43 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     WidgetSizeTransition _widgetSizeTransition;
     OSCProfilesManager* oscProfileMan;
+}
+
+- (void)configurePencilInteraction {
+#if !TARGET_OS_TV
+    if (@available(iOS 12.1, *)) {
+        pencilInteraction = [[UIPencilInteraction alloc] init];
+        pencilInteraction.delegate = self;
+        [self addInteraction:pencilInteraction];
+    }
+#endif
+}
+
+- (void)handlePencilMappedAction:(NSString *)mapping {
+    if (mapping.length == 0) {
+        return;
+    }
+
+    NSNumber *mouseButton = CommandManager.mouseButtonMappings[mapping];
+    if (mouseButton != nil) {
+        LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, mouseButton.intValue);
+        LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, mouseButton.intValue);
+        return;
+    }
+
+    NSNumber *keyCode = CommandManager.keyboardButtonMappings[mapping];
+    if (keyCode != nil) {
+        LiSendKeyboardEvent(keyCode.shortValue, KEY_ACTION_DOWN, 0);
+        LiSendKeyboardEvent(keyCode.shortValue, KEY_ACTION_UP, 0);
+    }
+}
+
+- (void)pencilInteractionDidTap:(UIPencilInteraction *)interaction API_AVAILABLE(ios(12.1)) {
+    [self handlePencilMappedAction:settings.pencilDoubleTapAction];
+}
+
+- (void)pencilInteractionDidSqueeze:(UIPencilInteraction *)interaction API_AVAILABLE(ios(17.5)) {
+    [self handlePencilMappedAction:settings.pencilSqueezeAction];
 }
 
 - (void) setupStreamView:(ControllerSupport*)controllerSupport
@@ -91,9 +130,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     self->streamAspectRatio = (float)streamConfig.width / (float)streamConfig.height;
     self.streamAspectRatio = self->streamAspectRatio;
     _widgetSizeTransition = keepWidgetSize;
-    
+
     settings = [[[DataManager alloc] init] getSettings];
-    
+    [self configurePencilInteraction];
+
     localMousePointerMode = streamConfig.localMousePointerMode;
     
     keysDown = [[NSMutableSet alloc] init];
