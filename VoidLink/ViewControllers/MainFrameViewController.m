@@ -85,6 +85,11 @@
 }
 static NSMutableSet* hostList;
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLShowSettingsFromMainMenu" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLShowToolboxFromMainMenu" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLShowToolboxRequested" object:nil];
+}
 - (void)startPairing:(NSString *)PIN {
     // Needs to be synchronous to ensure the alert is shown before any potential
     // failure callback could be invoked.
@@ -1400,6 +1405,7 @@ static NSMutableSet* hostList;
     return barItem;
 }
 
+
 - (void)helpButtonTapped{
     if (@available(iOS 13.0, *)) {
         AboutViewController *aboutVC = [[AboutViewController alloc] init];
@@ -1409,6 +1415,7 @@ static NSMutableSet* hostList;
         // Fallback on earlier versions
     }
 }
+
 
 - (CGFloat)getStandardNavBarHeight{
     return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
@@ -1534,7 +1541,11 @@ static NSMutableSet* hostList;
     DataManager* dataMan = [[DataManager alloc] init];
     TemporarySettings* tempSettings = [dataMan getSettings];
     [ThemeManager setUserInterfaceStyle:tempSettings.appTheme.intValue];
-    
+
+    // Listen for main menu system notifications (iOS 26.0+)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsFromMainMenu:) name:@"VLShowSettingsFromMainMenu" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showToolboxFromMainMenu:) name:@"VLShowToolboxFromMainMenu" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleShowToolboxRequest:) name:@"VLShowToolboxRequested" object:nil];
 #if !TARGET_OS_TV
     self.settingsExpandedInStreamView = false; // init this flag
     self.revealViewController.isStreaming = false; //init this flag for rvlVC
@@ -2294,6 +2305,35 @@ static NSMutableSet* hostList;
     // 通知子控制器已添加完成
     [self.hostCollectionVC didMoveToParentViewController:self];
 
+}
+
+#pragma mark - Main Menu System Notification Handlers
+
+- (void)showSettingsFromMainMenu:(NSNotification *)notification {
+    // Handle settings menu request from UIMainMenuSystem (iOS 26.0+)
+    // Only open settings if it's not already open
+    if (currentPosition != FrontViewPositionLeft) {
+        [[self revealViewController] revealToggleAnimated:YES];
+    }
+}
+
+- (void)showToolboxFromMainMenu:(NSNotification *)notification {
+    // Handle toolbox menu request from UIMainMenuSystem (iOS 26.0+)
+    [self handleShowToolboxRequest:notification];
+}
+
+- (void)handleShowToolboxRequest:(NSNotification *)notification {
+    // Handle toolbox request from other parts of the app
+    // Find and notify current StreamFrameViewController to show toolbox
+    if ([self.revealViewController.frontViewController isKindOfClass:[StreamFrameViewController class]]) {
+        StreamFrameViewController *streamVC = (StreamFrameViewController *)self.revealViewController.frontViewController;
+        [streamVC bringUpToolboxMenu];
+    } else {
+        // Otherwise, post notification for StreamFrameViewController to handle
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"VLShowToolboxRequested"
+                                                            object:self
+                                                          userInfo:nil];
+    }
 }
 
 @end

@@ -60,7 +60,15 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for command tool customization after application launch (works only when user default is nil)
     [CommandManager presetDefaultCommands];
-    
+
+    // Configure UIMainMenuSystem for iOS 26.0+
+    if (@available(iOS 26.0, *)) {
+        // Reset streaming state on app launch
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"VLIsCurrentlyStreaming"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [self setupMainMenuSystem];
+    }
+
     // For iOS 12 and below, we need to manually create the window
     if (@available(iOS 13.0, *)) {
         // Scene delegate will handle window creation
@@ -262,5 +270,110 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     return [[self applicationDocumentsDirectory] URLByAppendingPathComponent:DB_NAME];
 #endif
 }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
+- (void)setupMainMenuSystem API_AVAILABLE(ios(26.0)) {
+    // Only setup main menu system on iPad where it makes sense
+    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPad) {
+        return;
+    }
+
+    UIMainMenuSystem *mainMenu = [UIMainMenuSystem sharedSystem];
+
+    // Create configuration with default settings
+    UIMainMenuSystemConfiguration *config = [[UIMainMenuSystemConfiguration alloc] init];
+
+    // Set preferences for menu elements
+    config.newScenePreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.documentPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.printingPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.findingPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.toolbarPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.sidebarPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.inspectorPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+    config.textFormattingPreference = UIMenuSystemElementGroupPreferenceAutomatic;
+
+    // Save the build handler for later use with setNeedsRebuild
+    __weak typeof(self) weakSelf = self;
+    self.mainMenuBuildHandler = ^(id<UIMenuBuilder> builder) {
+        [weakSelf buildMainMenuWithBuilder:builder];
+    };
+
+    [mainMenu setBuildConfiguration:config buildHandler:self.mainMenuBuildHandler];
+
+    // Listen for streaming state changes to rebuild menu dynamically
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(streamingStateChanged:)
+                                                 name:@"VLStreamingStateChanged"
+                                               object:nil];
+}
+
+- (void)buildMainMenuWithBuilder:(id<UIMenuBuilder>)builder API_AVAILABLE(ios(26.0)) {
+    // Create Settings menu action
+    UIAction *settingsAction = [UIAction actionWithTitle:@"Settings"
+                                                    image:[UIImage systemImageNamed:@"sidebar.left"]
+                                               identifier:nil
+                                                  handler:^(__kindof UIAction * _Nonnull action) {
+            [self showSettingsFromMainMenu:action];
+        }];
+
+    // Create Settings menu
+    UIMenu *settingsMenu = [UIMenu menuWithTitle:@"Settings"
+                                            image:[UIImage systemImageNamed:@"sidebar.left"]
+                                       identifier:@"com.voidlink.settings"
+                                          options:UIMenuOptionsDisplayInline
+                                         children:@[settingsAction]];
+
+    // Create Toolbox menu action
+    UIAction *toolboxAction = [UIAction actionWithTitle:@"Toolbox"
+                                                   image:[UIImage systemImageNamed:@"wrench.and.screwdriver"]
+                                              identifier:@"com.voidlink.toolbox.action"
+                                                 handler:^(__kindof UIAction * _Nonnull action) {
+            [self showToolboxFromMainMenu:action];
+        }];
+
+    // Hide toolbox menu when not streaming
+    if (![self isCurrentlyStreaming]) {
+        toolboxAction.attributes = UIMenuElementAttributesHidden;
+    }
+
+    // Create Toolbox menu
+    UIMenu *toolboxMenu = [UIMenu menuWithTitle:@"Toolbox"
+                                           image:[UIImage systemImageNamed:@"wrench.and.screwdriver"]
+                                      identifier:@"com.voidlink.toolbox"
+                                         options:UIMenuOptionsDisplayInline
+                                        children:@[toolboxAction]];
+
+    // Insert menus after the View menu
+    [builder insertSiblingMenu:settingsMenu afterMenuForIdentifier:UIMenuView];
+    [builder insertSiblingMenu:toolboxMenu afterMenuForIdentifier:settingsMenu.identifier];
+}
+
+- (BOOL)isCurrentlyStreaming API_AVAILABLE(ios(26.0)) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"VLIsCurrentlyStreaming"];
+}
+
+
+- (void)showSettingsFromMainMenu:(UIAction *)sender API_AVAILABLE(ios(26.0)) {
+    // Post notification to show settings
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"VLShowSettingsFromMainMenu"
+                                                        object:self
+                                                      userInfo:nil];
+}
+
+- (void)showToolboxFromMainMenu:(UIAction *)sender API_AVAILABLE(ios(26.0)) {
+    // Check if we're in stream state before showing toolbox
+    if ([self isCurrentlyStreaming]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"VLShowToolboxFromMainMenu"
+                                                            object:self
+                                                          userInfo:nil];
+    }
+}
+
+- (void)streamingStateChanged:(NSNotification *)notification API_AVAILABLE(ios(26.0)) {
+    // Trigger menu rebuild when streaming state changes
+    [[UIMainMenuSystem sharedSystem] setNeedsRebuild];
+}
+#endif
 
 @end
