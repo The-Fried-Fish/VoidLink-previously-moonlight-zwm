@@ -54,6 +54,7 @@
     MenuSectionView *otherSection;
     MenuSectionView *experimentalSection;
     NSMutableSet* hiddenStacks;
+    NSArray<NSDictionary<NSString *, NSString *> *> *pencilActionOptions;
 }
 
 @dynamic overrideUserInterfaceStyle;
@@ -702,6 +703,99 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(added) [self addDynamicLabelForStack:stack];
     [menuSection addSubStackView:stack];
 }
+
+- (void)configurePencilActionOptions {
+    pencilActionOptions = @[
+        @{@"title": [LocalizationHelper localizedStringForKey:@"None"], @"value": @""},
+        @{@"title": [LocalizationHelper localizedStringForKey:@"Left Click"], @"value": @"MLEFT"},
+        @{@"title": [LocalizationHelper localizedStringForKey:@"Right Click"], @"value": @"MRIGHT"},
+        @{@"title": [LocalizationHelper localizedStringForKey:@"Middle Click"], @"value": @"MMIDDLE"},
+        @{@"title": [LocalizationHelper localizedStringForKey:@"Space"], @"value": @"SPACE"},
+        @{@"title": [LocalizationHelper localizedStringForKey:@"Esc"], @"value": @"ESC"}
+    ];
+}
+
+- (NSString *)displayNameForPencilMapping:(NSString *)mapping {
+    for (NSDictionary<NSString *, NSString *> *option in pencilActionOptions) {
+        if ([option[@"value"] isEqualToString:mapping ?: @""]) {
+            return option[@"title"];
+        }
+    }
+    if (mapping.length == 0) {
+        return [LocalizationHelper localizedStringForKey:@"None"];
+    }
+    return mapping;
+}
+
+- (UIButton *)createPencilButtonWithSelector:(SEL)selector tag:(NSInteger)tag {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.tag = tag;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+    button.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
+    return button;
+}
+
+- (UIStackView *)createPencilRowWithTitle:(NSString *)title button:(UIButton *)button {
+    UILabel *label = [[UILabel alloc] init];
+    label.text = title;
+    label.font = [UIFont systemFontOfSize:12];
+    label.textColor = [UIColor labelColor];
+    [label.widthAnchor constraintEqualToConstant:160].active = YES;
+
+    UIStackView *row = [[UIStackView alloc] initWithArrangedSubviews:@[label, button]];
+    row.axis = UILayoutConstraintAxisHorizontal;
+    row.spacing = 10;
+    return row;
+}
+
+- (UIStackView *)buildApplePencilSettingsStack {
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.text = [LocalizationHelper localizedStringForKey:@"Apple Pencil Pro"];
+    titleLabel.font = [UIFont systemFontOfSize:17];
+    titleLabel.textColor = [UIColor whiteColor];
+
+    self.pencilDoubleTapButton = [self createPencilButtonWithSelector:@selector(pencilActionButtonTapped:) tag:1];
+    self.pencilSqueezeButton = [self createPencilButtonWithSelector:@selector(pencilActionButtonTapped:) tag:2];
+
+    UIStackView *doubleTapRow = [self createPencilRowWithTitle:[LocalizationHelper localizedStringForKey:@"Double Tap"] button:self.pencilDoubleTapButton];
+    UIStackView *squeezeRow = [self createPencilRowWithTitle:[LocalizationHelper localizedStringForKey:@"Squeeze"] button:self.pencilSqueezeButton];
+
+    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[titleLabel, doubleTapRow, squeezeRow]];
+    stack.axis = UILayoutConstraintAxisVertical;
+    stack.spacing = 5;
+    return stack;
+}
+
+- (void)updatePencilButtons {
+    [self.pencilDoubleTapButton setTitle:[self displayNameForPencilMapping:self->tempSettings.pencilDoubleTapAction] forState:UIControlStateNormal];
+    [self.pencilSqueezeButton setTitle:[self displayNameForPencilMapping:self->tempSettings.pencilSqueezeAction] forState:UIControlStateNormal];
+}
+
+- (void)presentPencilActionPickerForTag:(NSInteger)tag {
+    NSString *title = tag == 1 ? [LocalizationHelper localizedStringForKey:@"Double Tap Action"] : [LocalizationHelper localizedStringForKey:@"Squeeze Action"];
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    for (NSDictionary<NSString *, NSString *> *option in pencilActionOptions) {
+        UIAlertAction *action = [UIAlertAction actionWithTitle:option[@"title"] style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction * _Nonnull action) {
+            if (tag == 1) {
+                self->tempSettings.pencilDoubleTapAction = option[@"value"];
+            }
+            else {
+                self->tempSettings.pencilSqueezeAction = option[@"value"];
+            }
+            [self updatePencilButtons];
+        }];
+        [controller addAction:action];
+    }
+
+    [controller addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"] style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
+- (void)pencilActionButtonTapped:(UIButton *)sender {
+    [self presentPencilActionPickerForTag:sender.tag];
+}
     
 - (void)layoutSections{
     videoSection = [[MenuSectionView alloc] init];
@@ -741,6 +835,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.ctrlDownForPinchStack ofId:@"ctrlDownForPinchStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
+    [self addSetting:self.applePencilStack ofId:@"applePencilStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
@@ -1567,14 +1662,17 @@ BOOL isCustomResolution(int resolutionSelected) {
         }
         
         [self initParentStack];
-        
+
         // load rememberFoldState before section layout
         self->dataMan = [[DataManager alloc] init];
         self->tempSettings = [self->dataMan getSettings];
+        [self configurePencilActionOptions];
+        self.applePencilStack = [self buildApplePencilSettingsStack];
+        [self updatePencilButtons];
         [self.rememberFoldStateSwitch setOn:self->tempSettings.rememberFoldState];// Load old setting
         MenuSectionView.overridePersistedFoldState = !self->tempSettings.rememberFoldState;
         [self.rememberFoldStateSwitch addTarget:self action:@selector(rememberFoldStateSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
-        
+
         [self layoutSections];
 
 
@@ -3004,6 +3102,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat leftClickDelayMs = self.leftClickDelaySlider.value;
     BOOL passthroughGestures = self.passthroughGesturesSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
+    NSString *pencilDoubleTapAction = self->tempSettings.pencilDoubleTapAction ?: @"";
+    NSString *pencilSqueezeAction = self->tempSettings.pencilSqueezeAction ?: @"";
     
     [dataMan saveSettingsWithBitrate:_bitrate
                            framerate:framerate
@@ -3069,6 +3169,8 @@ BOOL isCustomResolution(int resolutionSelected) {
                     leftClickDelayMs:leftClickDelayMs
                   settingsMenuOffset:settingsMenuOffset
                  passthroughGestures:passthroughGestures
+      pencilDoubleTapAction:pencilDoubleTapAction
+        pencilSqueezeAction:pencilSqueezeAction
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

@@ -151,6 +151,8 @@
     self.ctrlDownForPinch = settings.ctrlDownForPinch;
     self.settingsMenuOffset = settings.settingsMenuOffset;
     self.passthroughGestures = settings.passthroughGestures;
+    self.pencilDoubleTapAction = settings.pencilDoubleTapAction ?: @"";
+    self.pencilSqueezeAction = settings.pencilSqueezeAction ?: @"";
 #endif
     
     return self;

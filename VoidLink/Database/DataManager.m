@@ -120,6 +120,8 @@
                 leftClickDelayMs:(CGFloat)leftClickDelayMs
               settingsMenuOffset:(CGFloat)settingsMenuOffset
              passthroughGestures:(BOOL)passthroughGestures
+      pencilDoubleTapAction:(NSString*)pencilDoubleTapAction
+        pencilSqueezeAction:(NSString*)pencilSqueezeAction
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -190,6 +192,8 @@
         settingsToSave.leftClickDelayMs = [NSNumber numberWithFloat:leftClickDelayMs];
         settingsToSave.settingsMenuOffset = [NSNumber numberWithFloat:settingsMenuOffset];
         settingsToSave.passthroughGestures = passthroughGestures;
+        settingsToSave.pencilDoubleTapAction = pencilDoubleTapAction;
+        settingsToSave.pencilSqueezeAction = pencilSqueezeAction;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];
