@@ -48,7 +48,8 @@
     CADisplayLink *_autoScrollDisplayLink;
     CGFloat _scrollSpeed;
     CGFloat _currentRefreshRate;
-    MenuSectionView *touchAndControlSection;
+    MenuSectionView *touchControlSection;
+    MenuSectionView *controllerSection;
     MenuSectionView *motionControlSection;
     MenuSectionView *videoSection;
     MenuSectionView *otherSection;
@@ -724,33 +725,42 @@ BOOL isCustomResolution(int resolutionSelected) {
     [videoSection addToParentStack:_parentStack];
     // [videoSection setExpanded:NO];
 
-    touchAndControlSection = [[MenuSectionView alloc] init];
-    touchAndControlSection.delegate = self;
-    touchAndControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch & Controller"];
-    touchAndControlSection.identifier = @"SettingsSectionTouch&Controller";
+    touchControlSection = [[MenuSectionView alloc] init];
+    touchControlSection.delegate = self;
+    touchControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch Control"];
+    touchControlSection.identifier = @"SettingsSectionTouch&Controller";
     if (@available(iOS 13.0, *)) {
-        [touchAndControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] andSize:20.5];
+        [touchControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] andSize:20.5];
     }
-    [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.passthroughGesturesStack ofId:@"passthroughGesturesStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.pinchGestureStack ofId:@"pinchGestureStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.ctrlDownForPinchStack ofId:@"ctrlDownForPinchStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:touchAndControlSection];
-    [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:touchAndControlSection];
-    [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchAndControlSection];
-    [touchAndControlSection addToParentStack:_parentStack];
+    [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
+    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
+    [self addSetting:self.passthroughGesturesStack ofId:@"passthroughGesturesStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
+    [self addSetting:self.pinchGestureStack ofId:@"pinchGestureStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
+    [self addSetting:self.ctrlDownForPinchStack ofId:@"ctrlDownForPinchStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
+    [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
+    [touchControlSection addToParentStack:_parentStack];
     // [touchAndControlSection setExpanded:NO];
+    
+    controllerSection = [[MenuSectionView alloc] init];
+    controllerSection.delegate = self;
+    controllerSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Controller"];
+    controllerSection.identifier = @"SettingsSectionController";
+    if (@available(iOS 13.0, *)) {
+        [controllerSection setSectionWithIcon:[UIImage systemImageNamed:@"gamecontroller"] andSize:26];
+    }
+    [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
+    [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
+    [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:controllerSection];
+    [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
+    [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
+    [controllerSection addToParentStack:_parentStack];
     
     motionControlSection = [[MenuSectionView alloc] init];
     motionControlSection.delegate = self;

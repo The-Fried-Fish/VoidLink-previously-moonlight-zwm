@@ -1399,6 +1399,29 @@
         }
       }
     },
+    "Controller" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器"
+          }
+        }
+      }
+    },
     "Create New" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5889,25 +5912,25 @@
         }
       }
     },
-    "Touch & Controller" : {
+    "Touch Control" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触屏与手柄"
+            "value" : "触控"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控與控制器"
+            "value" : "触控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控與控制器"
+            "value" : "触控"
           }
         }
       }
