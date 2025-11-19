@@ -55,6 +55,11 @@ typedef NS_ENUM(NSInteger, HapticEnginePreference) {
     RumbleOff
 };
 
+typedef NS_ENUM(NSInteger, ControllerToMouseStick) {
+    LeftStickToMouse,
+    RightStickToMouse,
+};
+
 typedef NS_ENUM(NSInteger, FramePacingMode) {
     FramePacingModeOff,
     FramePacingModeLegacy,

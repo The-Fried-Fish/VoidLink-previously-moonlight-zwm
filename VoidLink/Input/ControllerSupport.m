@@ -11,7 +11,7 @@
 
 #import "ControllerSupport.h"
 #import "VoidController.h"
-
+#import "VoidLink-Swift.h"
 #import "OnScreenControls.h"
 
 #import "DataManager.h"
@@ -49,6 +49,15 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     float accumulatedDeltaY;
     float accumulatedScrollX;
     float accumulatedScrollY;
+    
+    ControllerToMouseStick controllerToMouseStick;
+    bool _stickToMouseEnabled;
+    float stickToMouseInputX;
+    float stickToMouseInputY;
+    float stickToMouseExpo;
+    float stickToMouseVelocity;
+    CADisplayLink *_displayLink;
+
     
     OnScreenControls *_osc;
     VoidController *_oscController;
@@ -930,6 +939,32 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     }
 }
 
+double rc_expo(double x, double gamma) {
+    if (x == 0.0) return 0.0;
+
+    double ax = fabs(x);
+    double y = pow(ax, gamma);
+
+    return x > 0 ? y : -y;
+}
+
+- (void)sendStickToMouseMoveEventWithStickX:(float)stickX stickY:(float)stickY expo:(float)expo {
+    CGFloat mouseDeltaX = stickToMouseVelocity*rc_expo(stickX, expo);
+    CGFloat mouseDeltaY = stickToMouseVelocity*rc_expo(stickY, expo);
+    // NSLog(@"mouseDeltaX %f, mouseDeltaY %f, %f, %ld", mouseDeltaX, mouseDeltaY, CACurrentMediaTime(), (long)_displayLink.preferredFramesPerSecond);
+    LiSendMouseMoveEvent(mouseDeltaX, -mouseDeltaY);
+}
+
+- (void)stopDisplayLink {
+    [_displayLink invalidate];
+    _displayLink = nil;
+}
+
+- (void)displayLinkCallBack {
+    if(!_stickToMouseEnabled) return;
+    [self sendStickToMouseMoveEventWithStickX:stickToMouseInputX stickY:stickToMouseInputY expo:stickToMouseExpo];
+}
+
 -(void) registerControllerCallbacks:(GCController*) controller
 {
     if (controller != NULL) {
@@ -974,12 +1009,41 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 }
             }
             
-            controller.extendedGamepad.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element) {
+            [ControllerUtil listenWithController:controller swapABXY:self->_swapABXYButtons handler:^(NSDictionary * buttonDict, GCExtendedGamepad * gamepad, GCControllerElement * element) {
                 VoidController* voidController = [self->_voidControllers objectForKey:[NSNumber numberWithInteger:gamepad.controller.playerIndex]];
                 short leftStickX, leftStickY;
                 short rightStickX, rightStickY;
                 unsigned char leftTrigger, rightTrigger;
                 
+                for(NSNumber* buttonFlagId in buttonDict){
+                    GCControllerButtonInput * button = (GCControllerButtonInput *)buttonDict[buttonFlagId];
+                    UPDATE_BUTTON_FLAG(voidController, buttonFlagId.intValue, button.pressed);
+                }
+                
+                leftStickX = self->controllerToMouseStick != LeftStickToMouse ?  gamepad.leftThumbstick.xAxis.value * 0x7FFE : 0;
+                leftStickY = self->controllerToMouseStick != LeftStickToMouse ?  gamepad.leftThumbstick.yAxis.value * 0x7FFE : 0;;
+                
+                rightStickX = self->controllerToMouseStick != RightStickToMouse ?  gamepad.rightThumbstick.xAxis.value * 0x7FFE : 0;
+                rightStickY = self->controllerToMouseStick != RightStickToMouse ?  gamepad.rightThumbstick.yAxis.value * 0x7FFE : 0;
+                
+                self->stickToMouseInputX = self->controllerToMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.xAxis.value : gamepad.rightThumbstick.xAxis.value;
+                self->stickToMouseInputY = self->controllerToMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.yAxis.value : gamepad.rightThumbstick.yAxis.value;
+                
+                leftTrigger = gamepad.leftTrigger.value * 0xFF;
+                rightTrigger = gamepad.rightTrigger.value * 0xFF;
+                
+                [self updateLeftStick:voidController x:leftStickX y:leftStickY];
+                [self updateRightStick:voidController x:rightStickX y:rightStickY];
+                [self updateTriggers:voidController left:leftTrigger right:rightTrigger];
+                [self updateFinished:voidController];
+            }];
+            
+            /*
+            controller.extendedGamepad.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element) {
+                VoidController* voidController = [self->_voidControllers objectForKey:[NSNumber numberWithInteger:gamepad.controller.playerIndex]];
+                short leftStickX, leftStickY;
+                short rightStickX, rightStickY;
+                unsigned char leftTrigger, rightTrigger;
                 if (self->_swapABXYButtons) {
                     UPDATE_BUTTON_FLAG(voidController, B_FLAG, gamepad.buttonA.pressed);
                     UPDATE_BUTTON_FLAG(voidController, A_FLAG, gamepad.buttonB.pressed);
@@ -1062,12 +1126,15 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                                                  index:1];
                     }
                 }
+                                
+                leftStickX = self->controllerToMouseStick != LeftStickToMouse ?  gamepad.leftThumbstick.xAxis.value * 0x7FFE : 0;
+                leftStickY = self->controllerToMouseStick != LeftStickToMouse ?  gamepad.leftThumbstick.yAxis.value * 0x7FFE : 0;;
                 
-                leftStickX = gamepad.leftThumbstick.xAxis.value * 0x7FFE;
-                leftStickY = gamepad.leftThumbstick.yAxis.value * 0x7FFE;
+                rightStickX = self->controllerToMouseStick != RightStickToMouse ?  gamepad.rightThumbstick.xAxis.value * 0x7FFE : 0;
+                rightStickY = self->controllerToMouseStick != RightStickToMouse ?  gamepad.rightThumbstick.yAxis.value * 0x7FFE : 0;
                 
-                rightStickX = gamepad.rightThumbstick.xAxis.value * 0x7FFE;
-                rightStickY = gamepad.rightThumbstick.yAxis.value * 0x7FFE;
+                self->stickToMouseInputX = self->controllerToMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.xAxis.value : gamepad.rightThumbstick.xAxis.value;
+                self->stickToMouseInputY = self->controllerToMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.yAxis.value : gamepad.rightThumbstick.yAxis.value;
                 
                 leftTrigger = gamepad.leftTrigger.value * 0xFF;
                 rightTrigger = gamepad.rightTrigger.value * 0xFF;
@@ -1077,6 +1144,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 [self updateTriggers:voidController left:leftTrigger right:rightTrigger];
                 [self updateFinished:voidController];
             };
+            */
         }
     } else {
         Log(LOG_W, @"Tried to register controller callbacks on NULL controller");
@@ -1416,6 +1484,18 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
     _oscEnabled = _oscEnabled || (OnScreenControlsLevel)[tempSettings.onscreenControls integerValue] != OnScreenControlsLevelOff || streamConfig.gyroMode != GyroModeOff;
     _gyroSensitivity = tempSettings.gyroSensitivity.floatValue;
+    
+    _stickToMouseEnabled = true;
+    controllerToMouseStick = LeftStickToMouse;
+    stickToMouseExpo = 1.1;
+    stickToMouseVelocity = 21*60/tempSettings.framerate.intValue;
+    stickToMouseInputX = 0;
+    stickToMouseInputY = 0;
+    [self stopDisplayLink];
+    if(_stickToMouseEnabled){
+        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallBack)];
+        [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    }
 }
 
 - (void)resetGyroInputForController:(VoidController* )voidController{
@@ -1746,6 +1826,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             [self unregisterMouseCallbacks:mouse];
         }
     }
+    
+    [self stopDisplayLink];
 }
 
 @end
