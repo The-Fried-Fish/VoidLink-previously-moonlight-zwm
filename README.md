@@ -31,6 +31,9 @@ https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/dhmg3h27ls8mwt4a
 If you are on Bilibili, subscribe `True砖家` to get the latest news of this fork: <br>
 https://b23.tv/A0F9v7n
 ## 中文用户捐赠渠道
+爱发电：<br>
+https://ifdian.net/a/zhuanjia <br>
+或：<br>
 <img width="198" height="244" alt="截屏2025-10-25 20 53 06" src="https://github.com/user-attachments/assets/27153225-5651-4d7e-8976-0961739b9639" />
 
 <br>
