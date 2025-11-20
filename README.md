@@ -2,7 +2,9 @@
 # VoidLink is available on App Store
 ### [https://apps.apple.com/app/voidlink/id6747717070](https://apps.apple.com/cn/app/voidlink/id6747717070)
 
-<br>
+# Breaking news: VoidLink-Extreme with game mode enabled is under going app review.
+This is the reason why VoidLink(Utility category) has been discontinued on App Store of most regions. Check this out for details:
+https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/dhmg3h27ls8mwt4a
 
 # 代码 Coding
 - 代码提交在`Integration`分支。
