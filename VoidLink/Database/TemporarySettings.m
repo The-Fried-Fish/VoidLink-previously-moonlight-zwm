@@ -151,6 +151,14 @@
     self.ctrlDownForPinch = settings.ctrlDownForPinch;
     self.settingsMenuOffset = settings.settingsMenuOffset;
     self.passthroughGestures = settings.passthroughGestures;
+    self.mapControllerToMouse = settings.mapControllerToMouse;
+    self.controllerMouseLeftButton = settings.controllerMouseLeftButton;
+    self.controllerMouseRightButton = settings.controllerMouseRightButton;
+    self.controllerMouseSwitch = settings.controllerMouseSwitch;
+    self.controllerMouseStick = settings.controllerMouseStick;
+    self.controllerMousePointerVelocity = settings.controllerMousePointerVelocity;
+    self.controllerMouseExpo = settings.controllerMouseExpo;
+
 #endif
     
     return self;

@@ -43,7 +43,8 @@ import GameController
     case touchpad = 0x100000
     case misc     = 0x200000
     
-    case leftTrigger, rightTrigger
+    case leftTrigger  = 0x400000
+    case rightTrigger = 0x800000
 }
 
 

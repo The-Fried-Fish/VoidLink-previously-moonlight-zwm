@@ -50,12 +50,21 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     float accumulatedScrollX;
     float accumulatedScrollY;
     
-    ControllerToMouseStick controllerToMouseStick;
-    bool _stickToMouseEnabled;
+    int _controllerMouseSwitch;
+    bool _mouseSwitchButtonPressed;
+    bool _mouseSwitchButtonBeingClicked;
+    NSTimeInterval mouseSwitchDownTimestamp;
+    int _controllerMouseLeftButton;
+    int _controllerMouseRightButton;
+    ControllerMouseStick _controllerMouseStick;
+    bool _mapControllerToMouse;
+    bool _controllerMouseEnabledFlag;
     float stickToMouseInputX;
     float stickToMouseInputY;
-    float stickToMouseExpo;
-    float stickToMouseVelocity;
+    float stickToWheelInputX;
+    float stickToWheelInputY;
+    float _stickToMouseExpo;
+    float _stickToMouseVelocity;
     CADisplayLink *_displayLink;
 
     
@@ -939,19 +948,19 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     }
 }
 
-double rc_expo(double x, double gamma) {
+double rc_expo(double x, double expo) {
     if (x == 0.0) return 0.0;
 
     double ax = fabs(x);
-    double y = pow(ax, gamma);
+    double y = pow(ax, expo);
 
     return x > 0 ? y : -y;
 }
 
 - (void)sendStickToMouseMoveEventWithStickX:(float)stickX stickY:(float)stickY expo:(float)expo {
-    CGFloat mouseDeltaX = stickToMouseVelocity*rc_expo(stickX, expo);
-    CGFloat mouseDeltaY = stickToMouseVelocity*rc_expo(stickY, expo);
-    // NSLog(@"mouseDeltaX %f, mouseDeltaY %f, %f, %ld", mouseDeltaX, mouseDeltaY, CACurrentMediaTime(), (long)_displayLink.preferredFramesPerSecond);
+    CGFloat mouseDeltaX = _stickToMouseVelocity*rc_expo(stickX, expo);
+    CGFloat mouseDeltaY = _stickToMouseVelocity*rc_expo(stickY, expo);
+    NSLog(@"mouseDeltaX %f, mouseDeltaY %f, %f, %ld", mouseDeltaX, mouseDeltaY, CACurrentMediaTime(), (long)_displayLink.preferredFramesPerSecond);
     LiSendMouseMoveEvent(mouseDeltaX, -mouseDeltaY);
 }
 
@@ -961,8 +970,26 @@ double rc_expo(double x, double gamma) {
 }
 
 - (void)displayLinkCallBack {
-    if(!_stickToMouseEnabled) return;
-    [self sendStickToMouseMoveEventWithStickX:stickToMouseInputX stickY:stickToMouseInputY expo:stickToMouseExpo];
+    if(!_controllerMouseEnabledFlag){
+        return;
+    }
+    NSTimeInterval delay = 0.5/_displayLink.preferredFramesPerSecond*NSEC_PER_SEC;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self sendStickToMouseMoveEventWithStickX:self->stickToMouseInputX stickY:self->stickToMouseInputY expo:self->_stickToMouseExpo];
+        LiSendHighResScrollEvent(15*self->stickToWheelInputY);
+        LiSendHighResHScrollEvent(15*self->stickToWheelInputX);
+    });
+}
+
+- (void)sendControllerMouseSwitchClick:(VoidController*) voidController{
+    [self setButtonFlag:voidController flags:self->_controllerMouseSwitch];
+    _mouseSwitchButtonBeingClicked = true;
+    [self updateFinished:voidController];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.03*NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self clearButtonFlag:voidController flags:self->_controllerMouseSwitch];
+        self->_mouseSwitchButtonBeingClicked = false;
+        [self updateFinished:voidController];
+    });
 }
 
 -(void) registerControllerCallbacks:(GCController*) controller
@@ -1009,6 +1036,42 @@ double rc_expo(double x, double gamma) {
                 }
             }
             
+            if(self->_swapABXYButtons){
+                switch (self->_controllerMouseLeftButton) {
+                    case ControllerButtonA:
+                        self->_controllerMouseLeftButton = ControllerButtonB;
+                        break;
+                    case ControllerButtonB:
+                        self->_controllerMouseLeftButton = ControllerButtonA;
+                        break;
+                    case ControllerButtonX:
+                        self->_controllerMouseLeftButton = ControllerButtonY;
+                        break;
+                    case ControllerButtonY:
+                        self->_controllerMouseLeftButton = ControllerButtonX;
+                        break;
+                    default:
+                        break;
+                }
+                switch (self->_controllerMouseRightButton) {
+                    case ControllerButtonA:
+                        self->_controllerMouseRightButton = ControllerButtonB;
+                        break;
+                    case ControllerButtonB:
+                        self->_controllerMouseRightButton = ControllerButtonA;
+                        break;
+                    case ControllerButtonX:
+                        self->_controllerMouseRightButton = ControllerButtonY;
+                        break;
+                    case ControllerButtonY:
+                        self->_controllerMouseRightButton = ControllerButtonX;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+                        
             [ControllerUtil listenWithController:controller swapABXY:self->_swapABXYButtons handler:^(NSDictionary * buttonDict, GCExtendedGamepad * gamepad, GCControllerElement * element) {
                 VoidController* voidController = [self->_voidControllers objectForKey:[NSNumber numberWithInteger:gamepad.controller.playerIndex]];
                 short leftStickX, leftStickY;
@@ -1017,18 +1080,75 @@ double rc_expo(double x, double gamma) {
                 
                 for(NSNumber* buttonFlagId in buttonDict){
                     GCControllerButtonInput * button = (GCControllerButtonInput *)buttonDict[buttonFlagId];
-                    UPDATE_BUTTON_FLAG(voidController, buttonFlagId.intValue, button.pressed);
+                    if(self->_mapControllerToMouse){
+                        
+                        if(button.pressed){
+                            if(buttonFlagId.intValue == self->_controllerMouseSwitch){
+                                self->_mouseSwitchButtonPressed = true;
+                                self->mouseSwitchDownTimestamp = CACurrentMediaTime();
+                            }
+                        }
+                        
+                        else{
+                            if(buttonFlagId.intValue == self->_controllerMouseSwitch && self->_mouseSwitchButtonPressed){
+                                if(CACurrentMediaTime()-self->mouseSwitchDownTimestamp>1){
+                                    self->_controllerMouseEnabledFlag = !self->_controllerMouseEnabledFlag;
+                                }
+                                else [self sendControllerMouseSwitchClick:voidController];
+                                self->_mouseSwitchButtonPressed = false;
+                                self->mouseSwitchDownTimestamp = 0;
+                            }
+                        }
+                        
+                        
+                        
+                        /* if(buttonFlagId.intValue == self->_controllerMouseSwitch){
+                            if(button.pressed){
+                                self->_mouseSwitchButtonPressed = true;
+                                self->mouseSwitchDownTimestamp = CACurrentMediaTime();
+                            }
+                            else if(self->_mouseSwitchButtonPressed){
+                               if(CACurrentMediaTime()-self->mouseSwitchDownTimestamp>1){
+                                    self->_controllerMouseEnabledFlag = !self->_controllerMouseEnabledFlag;
+                                    self->_mouseSwitchButtonPressed = false;
+                                    self->mouseSwitchDownTimestamp = 0;
+                                }
+                               else [self sendControllerMouseSwitchClick:voidController];
+                            }
+                            else self->_mouseSwitchButtonPressed = false;
+                        } */
+                    }
+                    else self->_controllerMouseEnabledFlag = false;
+                        
+                    if(self->_controllerMouseEnabledFlag){
+                        if(buttonFlagId.intValue == self->_controllerMouseLeftButton || buttonFlagId.intValue == self->_controllerMouseRightButton){
+                            if(buttonFlagId.intValue == self->_controllerMouseLeftButton) LiSendMouseButtonEvent(button.pressed ? BUTTON_ACTION_PRESS : BUTTON_ACTION_RELEASE, BUTTON_LEFT);
+                            if(buttonFlagId.intValue == self->_controllerMouseRightButton) LiSendMouseButtonEvent(button.pressed ? BUTTON_ACTION_PRESS : BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
+                            UPDATE_BUTTON_FLAG(voidController, buttonFlagId.intValue, NO);
+                        }
+                        else if(buttonFlagId.intValue!=self->_controllerMouseSwitch) UPDATE_BUTTON_FLAG(voidController, buttonFlagId.intValue, button.pressed);
+                    }
+                    else if(buttonFlagId.intValue!=self->_controllerMouseSwitch) UPDATE_BUTTON_FLAG(voidController, buttonFlagId.intValue, button.pressed);
                 }
                 
-                leftStickX = self->controllerToMouseStick != LeftStickToMouse ?  gamepad.leftThumbstick.xAxis.value * 0x7FFE : 0;
-                leftStickY = self->controllerToMouseStick != LeftStickToMouse ?  gamepad.leftThumbstick.yAxis.value * 0x7FFE : 0;;
+                leftStickX = self->_controllerMouseEnabledFlag ? 0 :gamepad.leftThumbstick.xAxis.value * 0x7FFE;
+                leftStickY = self->_controllerMouseEnabledFlag ? 0 : gamepad.leftThumbstick.yAxis.value * 0x7FFE;
                 
-                rightStickX = self->controllerToMouseStick != RightStickToMouse ?  gamepad.rightThumbstick.xAxis.value * 0x7FFE : 0;
-                rightStickY = self->controllerToMouseStick != RightStickToMouse ?  gamepad.rightThumbstick.yAxis.value * 0x7FFE : 0;
+                rightStickX = self->_controllerMouseEnabledFlag ? 0 : gamepad.rightThumbstick.xAxis.value * 0x7FFE;
+                rightStickY = self->_controllerMouseEnabledFlag ? 0 : gamepad.rightThumbstick.yAxis.value * 0x7FFE;
                 
-                self->stickToMouseInputX = self->controllerToMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.xAxis.value : gamepad.rightThumbstick.xAxis.value;
-                self->stickToMouseInputY = self->controllerToMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.yAxis.value : gamepad.rightThumbstick.yAxis.value;
-                
+                if(self->_controllerMouseEnabledFlag){
+                    self->stickToMouseInputX = self->_controllerMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.xAxis.value : gamepad.rightThumbstick.xAxis.value;
+                    self->stickToMouseInputY = self->_controllerMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.yAxis.value : gamepad.rightThumbstick.yAxis.value;
+                    
+                    self->stickToWheelInputX = self->_controllerMouseStick == LeftStickToMouse ? gamepad.rightThumbstick.xAxis.value: gamepad.leftThumbstick.xAxis.value;
+                    self->stickToWheelInputY = self->_controllerMouseStick == LeftStickToMouse ? gamepad.rightThumbstick.yAxis.value: gamepad.leftThumbstick.yAxis.value;
+                }
+                else{
+                    self->stickToMouseInputX = 0;
+                    self->stickToMouseInputY = 0;
+                }
+
                 leftTrigger = gamepad.leftTrigger.value * 0xFF;
                 rightTrigger = gamepad.rightTrigger.value * 0xFF;
                 
@@ -1036,6 +1156,19 @@ double rc_expo(double x, double gamma) {
                 [self updateRightStick:voidController x:rightStickX y:rightStickY];
                 [self updateTriggers:voidController left:leftTrigger right:rightTrigger];
                 [self updateFinished:voidController];
+                
+                if (@available(iOS 14.0, *)) {
+                    if (gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadOne]) {
+                        [self handleControllerTouchpad:voidController
+                                                 touch:gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadOne]
+                                                 index:0];
+                    }
+                    if (gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadTwo]) {
+                        [self handleControllerTouchpad:voidController
+                                                 touch:gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadTwo]
+                                                 index:1];
+                    }
+                }
             }];
             
             /*
@@ -1485,15 +1618,28 @@ double rc_expo(double x, double gamma) {
     _oscEnabled = _oscEnabled || (OnScreenControlsLevel)[tempSettings.onscreenControls integerValue] != OnScreenControlsLevelOff || streamConfig.gyroMode != GyroModeOff;
     _gyroSensitivity = tempSettings.gyroSensitivity.floatValue;
     
-    _stickToMouseEnabled = true;
-    controllerToMouseStick = LeftStickToMouse;
-    stickToMouseExpo = 1.1;
-    stickToMouseVelocity = 21*60/tempSettings.framerate.intValue;
+    _mapControllerToMouse = tempSettings.mapControllerToMouse;
+    _controllerMouseSwitch = tempSettings.controllerMouseSwitch.intValue;
+    mouseSwitchDownTimestamp = 0;
+    _mouseSwitchButtonPressed = false;
+    _mouseSwitchButtonBeingClicked = false;
+    _controllerMouseStick = tempSettings.controllerMouseStick.intValue;
+    _controllerMouseLeftButton = tempSettings.controllerMouseLeftButton.intValue;
+    _controllerMouseRightButton = tempSettings.controllerMouseRightButton.intValue;
+    _stickToMouseExpo = tempSettings.controllerMouseExpo.floatValue;
+    _stickToMouseVelocity = tempSettings.controllerMousePointerVelocity.floatValue*60/tempSettings.framerate.intValue;
     stickToMouseInputX = 0;
     stickToMouseInputY = 0;
+    stickToWheelInputY = 0;
     [self stopDisplayLink];
-    if(_stickToMouseEnabled){
+    if(_mapControllerToMouse){
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallBack)];
+        if (@available(iOS 15.0, tvOS 15.0, *)) {
+            [_displayLink setPreferredFrameRateRange:CAFrameRateRangeMake(tempSettings.framerate.intValue,tempSettings.framerate.intValue, tempSettings.framerate.intValue)];
+        }
+        else {
+            _displayLink.preferredFramesPerSecond = tempSettings.framerate.intValue;
+        }
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
 }
@@ -1688,6 +1834,7 @@ double rc_expo(double x, double gamma) {
     [self initializeControllerHaptics:_oscController];
     _gyroMode = AlwaysDevice;
 
+    _controllerMouseEnabledFlag = false;
     [self updateCommonConfig:streamConfig];
     
     for(VoidController* voidController in _voidControllers.allValues){

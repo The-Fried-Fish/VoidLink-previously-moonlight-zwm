@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24G325" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24411" systemVersion="24G325" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="App" representedClassName="App" syncable="YES" codeGenerationType="class">
         <attribute name="hdrSupported" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="hidden" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
@@ -29,6 +29,12 @@
         <attribute name="bitrate" attributeType="Integer 32" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="btMouseSupport" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="buttonVisualFeedback" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="controllerMouseExpo" optional="YES" attributeType="Float" defaultValueString="1.6" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseLeftButton" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMousePointerVelocity" optional="YES" attributeType="Float" defaultValueString="12" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseRightButton" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseStick" attributeType="Integer 16" defaultValueString="1024" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseSwitch" attributeType="Integer 32" defaultValueString="1024" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ctrlDownForPinch" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="delayLeftClick" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="deviceGyroMode" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
@@ -57,6 +63,7 @@
         <attribute name="liftStreamViewForKeyboard" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="localMousePointerMode" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="localVolume" optional="YES" attributeType="Float" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="mapControllerToMouse" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="micVolume" optional="YES" attributeType="Float" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="mousePointerVelocityFactor" optional="YES" attributeType="Float" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="multiController" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
