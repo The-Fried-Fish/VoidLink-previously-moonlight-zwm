@@ -313,6 +313,36 @@
         }
       }
     },
+    "6Cy-aH-DXp.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Curve Exponent\"; ObjectID = \"6Cy-aH-DXp\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Curve Exponent"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非线性因子"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非線性因子"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非線性因子"
+          }
+        }
+      }
+    },
     "6GU-ZN-w6X.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Theme\"; ObjectID = \"6GU-ZN-w6X\";",
       "extractionState" : "extracted_with_value",
@@ -4009,6 +4039,36 @@
         }
       }
     },
+    "P1g-rW-Mgp.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Controller → Mouse\"; ObjectID = \"P1g-rW-Mgp\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller → Mouse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射为鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射為滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射為滑鼠"
+          }
+        }
+      }
+    },
     "P34-hO-6cX.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Duplicate\"; ObjectID = \"P34-hO-6cX\";",
       "extractionState" : "extracted_with_value",
@@ -4923,6 +4983,36 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "輕按任意小工具載入設定（各小工具獨立）"
+          }
+        }
+      }
+    },
+    "Xnd-C4-8N9.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pointer Velocity\"; ObjectID = \"Xnd-C4-8N9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pointer Velocity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指针速度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指針速度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指針速度"
           }
         }
       }

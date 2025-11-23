@@ -1399,6 +1399,81 @@
         }
       }
     },
+    "Continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續"
+          }
+        }
+      }
+    },
+    "Controller" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器"
+          }
+        }
+      }
+    },
+    "controllerMouseExpoStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The larger this value is, the flatter the curve becomes near the zero point (center). When set to 1, it is completely linear."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该值越大，接近零点(中心点)的曲线越平缓。为 1 时则为完全线性。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該值越大，接近零點（中心點）的曲線越平緩。為 1 時則為完全線性。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該值越大，接近零點（中心點）的曲線越平緩。為 1 時則為完全線性。"
+          }
+        }
+      }
+    },
     "Create New" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2196,6 +2271,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "我的最愛設定"
+          }
+        }
+      }
+    },
+    "Finished" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
           }
         }
       }
@@ -3128,6 +3226,29 @@
         }
       }
     },
+    "Map controller to mouse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射为鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射為滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射為滑鼠"
+          }
+        }
+      }
+    },
     "micPermissionTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3320,6 +3441,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "滑鼠指標速度：%d%%"
+          }
+        }
+      }
+    },
+    "Move the stick you wish to use for mouse control. Another stick will be used for vertical & horizontal scroll." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移动用于控制鼠标指针的摇杆。另一侧的摇杆将用于控制垂直、水平滚动。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動用於控制滑鼠指標的搖桿。另一側的搖桿將用於控制垂直、水平滾動。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動用於控制滑鼠指標的搖桿。另一側的搖桿將用於控制垂直、水平滾動。"
           }
         }
       }
@@ -4113,19 +4257,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "- App切后台时自动开启画中画， 需要打开 iOS 设置-> 多任务与手势 -> 自动开启画中画。\n\n- 画中画可在工具箱菜单中手动开启。\n\n- 画中画时长由 “其他 -> 后台会话” 设置项控制\n\n- 仅 iOS15+ 支持画中画。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "- App 切到背景時會自動啟用子母畫面，需開啟 iOS 「設定」→「多工與手勢」→「自動啟用子母畫面」。\n\n- 子母畫面也可透過工具箱選單手動啟用。\n\n- 子母畫面顯示時長由「其他」→「背景執行」設定項目控制。\n\n- 子母畫面功能自 iOS 15 起支援。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "- App 切到背景時會自動啟用子母畫面，需開啟 iOS 「設定」→「多工與手勢」→「自動啟用子母畫面」。\n\n- 子母畫面也可透過工具箱選單手動啟用。\n\n- 子母畫面顯示時長由「其他」→「背景執行」設定項目控制。\n\n- 子母畫面功能自 iOS 15 起支援。"
           }
         }
@@ -4304,7 +4448,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "觸控靈敏度：調整螢幕右半邊觸控點的移動速度，讓您可以控制遊戲內攝影機的靈敏度（適用於《原神》和《崩壞：星穹鐵道》）。詳情請參閱線上文件。"
           }
         },
@@ -4335,6 +4479,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "與電腦的連線品質不佳"
+          }
+        }
+      }
+    },
+    "Press a button for switching to controller mouse mode (long press for 1 second during streaming)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用于切换手柄鼠标模式的按键(串流时长按1秒切换)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)"
+          }
+        }
+      }
+    },
+    "Press the button for mouse left button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用于操作鼠标左键的按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於操作滑鼠左鍵的按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於操作滑鼠左鍵的按鍵"
+          }
+        }
+      }
+    },
+    "Press the button for mouse right button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用于操作鼠标右键的按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於操作滑鼠右鍵的按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於操作滑鼠右鍵的按鍵"
           }
         }
       }
@@ -5889,25 +6102,25 @@
         }
       }
     },
-    "Touch & Controller" : {
+    "Touch Control" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触屏与手柄"
+            "value" : "触控"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控與控制器"
+            "value" : "触控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控與控制器"
+            "value" : "触控"
           }
         }
       }

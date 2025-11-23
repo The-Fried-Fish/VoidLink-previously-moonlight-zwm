@@ -55,6 +55,11 @@ typedef NS_ENUM(NSInteger, HapticEnginePreference) {
     RumbleOff
 };
 
+typedef NS_ENUM(NSInteger, ControllerMouseStick) {
+    LeftStickToMouse,
+    RightStickToMouse,
+};
+
 typedef NS_ENUM(NSInteger, FramePacingMode) {
     FramePacingModeOff,
     FramePacingModeLegacy,
@@ -137,6 +142,9 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
                 leftClickDelayMs:(CGFloat)leftClickDelayMs
               settingsMenuOffset:(CGFloat)settingsMenuOffset
              passthroughGestures:(BOOL)passthroughGestures
+            mapControllerToMouse:(BOOL)mapControllerToMouse
+  controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
+             controllerMouseExpo:(CGFloat)controllerMouseExpo
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

@@ -120,6 +120,9 @@
                 leftClickDelayMs:(CGFloat)leftClickDelayMs
               settingsMenuOffset:(CGFloat)settingsMenuOffset
              passthroughGestures:(BOOL)passthroughGestures
+            mapControllerToMouse:(BOOL)mapControllerToMouse
+  controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
+             controllerMouseExpo:(CGFloat)controllerMouseExpo
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -190,6 +193,9 @@
         settingsToSave.leftClickDelayMs = [NSNumber numberWithFloat:leftClickDelayMs];
         settingsToSave.settingsMenuOffset = [NSNumber numberWithFloat:settingsMenuOffset];
         settingsToSave.passthroughGestures = passthroughGestures;
+        settingsToSave.mapControllerToMouse = mapControllerToMouse;
+        settingsToSave.controllerMousePointerVelocity = [NSNumber numberWithFloat:controllerMousePointerVelocity];
+        settingsToSave.controllerMouseExpo = [NSNumber numberWithFloat:controllerMouseExpo];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

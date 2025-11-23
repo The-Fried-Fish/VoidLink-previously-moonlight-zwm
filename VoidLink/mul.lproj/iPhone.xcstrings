@@ -1189,6 +1189,36 @@
         }
       }
     },
+    "AEN-EU-8LZ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Curve Exponent\"; ObjectID = \"AEN-EU-8LZ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Curve Exponent"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非线性因子"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非線性因子"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非線性因子"
+          }
+        }
+      }
+    },
     "AN9-U4-nUG.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Yaw&Pitch → Right Stick\"; ObjectID = \"AN9-U4-nUG\";",
       "extractionState" : "extracted_with_value",
@@ -2053,6 +2083,36 @@
         }
       }
     },
+    "F0O-Ht-fW5.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Controller → Mouse\"; ObjectID = \"F0O-Ht-fW5\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller → Mouse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄映射为鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射為滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把映射為滑鼠"
+          }
+        }
+      }
+    },
     "f46-Pt-0Pv.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Profile:\"; ObjectID = \"f46-Pt-0Pv\";",
       "extractionState" : "extracted_with_value",
@@ -2193,6 +2253,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "陀螺儀映射為"
+          }
+        }
+      }
+    },
+    "H3s-ud-yqh.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pointer Velocity\"; ObjectID = \"H3s-ud-yqh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pointer Velocity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指针速度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指針速度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指針速度"
           }
         }
       }

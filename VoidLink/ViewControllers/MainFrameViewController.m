@@ -78,6 +78,10 @@
     TemporaryApp * launchedApp;
 
     NSTimer *_foregroundHostUpdateTimer;
+    
+    id _controllerConnectObserver;
+    id _controllerDisconnectObserver;
+
 
 #if TARGET_OS_TV
     UITapGestureRecognizer* _menuRecognizer;
@@ -1626,6 +1630,25 @@ static NSMutableSet* hostList;
     __unused UIView *view = viewController.view;
     
     snapshot = nil;
+    
+    _controllerConnectObserver = [[NSNotificationCenter defaultCenter] addObserverForName:GCControllerDidConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        Log(LOG_I, @"Controller connected!");
+        GCController* controller = note.object;
+        if(controller){
+            if (@available(iOS 14.0, tvOS 14.0, *)) {
+                for (GCControllerElement* element in controller.physicalInputProfile.allElements) {
+                    element.preferredSystemGestureState = GCSystemGestureStateDisabled;
+                }
+            }
+        }
+    }];
+    
+    _controllerDisconnectObserver = [[NSNotificationCenter defaultCenter] addObserverForName:GCControllerDidDisconnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        Log(LOG_I, @"Controller disconnected!");
+        
+        GCController* controller = note.object;
+        [self unregisterControllerCallbacks:controller];
+    }];
 }
 
 -(void)viewDidLayoutSubviews{
@@ -1837,7 +1860,6 @@ static NSMutableSet* hostList;
     if([self isFirstLaunch])[self helpButtonTapped];
 }
 
-
 - (void)viewWillDisappear:(BOOL)animated{
     NSLog(@"willDisappear");
     [super viewWillDisappear:animated];
@@ -1893,6 +1915,8 @@ static NSMutableSet* hostList;
     
     // Remove our lifetime observers to avoid triggering them
     // while streaming
+    [[NSNotificationCenter defaultCenter] removeObserver:_controllerConnectObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:_controllerDisconnectObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -2294,6 +2318,16 @@ static NSMutableSet* hostList;
     // 通知子控制器已添加完成
     [self.hostCollectionVC didMoveToParentViewController:self];
 
+}
+
+-(void) unregisterControllerCallbacks:(GCController*) controller
+{
+    if (controller != NULL) {
+        controller.controllerPausedHandler = NULL;
+        if (controller.extendedGamepad != NULL) {
+            controller.extendedGamepad.valueChangedHandler = NULL;
+        }
+    }
 }
 
 @end

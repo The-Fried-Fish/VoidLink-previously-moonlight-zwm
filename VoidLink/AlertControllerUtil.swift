@@ -1,5 +1,5 @@
 //
-//  CountdownAlertController.swift
+//  AlertControllerUtil.swift
 //  VoidLink
 //
 //  Created by Weimin on 2025/10/6.
@@ -7,7 +7,7 @@
 //
 import UIKit
 
-@objc class CountdownAlertController: NSObject {
+@objc class AlertControllerUtil: NSObject {
 
     /// 类方法，直接在任何 UIViewController 上显示倒计时弹窗
     /// - Parameters:
@@ -19,7 +19,8 @@ import UIKit
     ///   - completion: 点击确认或倒计时结束的回调
     
     @objc public static var actionCancelled:Bool = false
-    
+    @objc public static var alertController:UIAlertController = UIAlertController()
+
     @objc class func showAlert(
         in viewController: UIViewController,
         title: String?,
@@ -27,11 +28,12 @@ import UIKit
         withCancel: Bool,
         buttonTitle: String,
         countdown: Int,
+        action: (() -> Void)? = nil,
         completion: (() -> Void)? = nil
     ) {
         var remainingSeconds = countdown
 
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
         let confirmAction = UIAlertAction(title: "\(remainingSeconds)", style: .default) { _ in
             actionCancelled = false
@@ -45,15 +47,15 @@ import UIKit
         
         confirmAction.isEnabled = false
         
-        if withCancel {alert.addAction(cancelAction)}
-        alert.addAction(confirmAction)
+        if withCancel {alertController.addAction(cancelAction)}
+        if buttonTitle != "" {alertController.addAction(confirmAction)}
         
         if(countdown == 0) {
             confirmAction.setValue(buttonTitle, forKey: "title")
-            confirmAction.isEnabled = true
+            confirmAction.isEnabled = buttonTitle != ""
         }
 
-        viewController.present(alert, animated: true, completion: nil)
+        viewController.present(alertController, animated: true, completion: action)
         
         if(countdown == 0) {return}
 

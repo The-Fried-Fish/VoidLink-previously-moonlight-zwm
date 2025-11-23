@@ -214,6 +214,15 @@
 @property (strong, nonatomic) IBOutlet UIStackView *passthroughGesturesStack;
 @property (strong, nonatomic) IBOutlet UISwitch *passthroughGesturesSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *controllerToMouseStack;
+@property (strong, nonatomic) IBOutlet UISwitch *controllerToMouseSwitch;
+
+@property (strong, nonatomic) IBOutlet UIStackView *controllerMouseVelocityStack;
+@property (strong, nonatomic) IBOutlet UISlider *controllerMouseVelocitySlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *controllerMouseExpoStack;
+@property (strong, nonatomic) IBOutlet UISlider *controllerMouseExpoSlider;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

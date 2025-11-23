@@ -556,12 +556,13 @@
     // 创建弹窗
     NSString* tipText = [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist];
     
-    [CountdownAlertController showAlertIn:self
+    [AlertControllerUtil showAlertIn:self
                                     title:[LocalizationHelper localizedStringForKey:@"First Launch Tips"]
                                   message:tipText
                                withCancel:NO
                               buttonTitle:[LocalizationHelper localizedStringForKey:@"Got it!"]
                                 countdown:16
+                                   action:^{}
                                completion:^{}];
     
     return;
@@ -1652,6 +1653,13 @@
 
 - (void)setupDisplayLink {
     if (_displayLink != nil) return;
+    TemporarySettings* tempSettings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
+    if (@available(iOS 15.0, tvOS 15.0, *)) {
+        [_displayLink setPreferredFrameRateRange:CAFrameRateRangeMake(tempSettings.framerate.intValue,tempSettings.framerate.intValue, tempSettings.framerate.intValue)];
+    }
+    else {
+        _displayLink.preferredFramesPerSecond = tempSettings.framerate.intValue;
+    }
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTick:)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }

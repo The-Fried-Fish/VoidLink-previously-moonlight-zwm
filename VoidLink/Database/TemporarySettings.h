@@ -95,6 +95,13 @@
 @property (nonatomic, retain) NSNumber * relativeTouchSlideThreshold;
 @property (nonatomic, retain) NSNumber * leftClickDelayMs;
 @property (nonatomic, retain) NSNumber * settingsMenuOffset;
+@property (nonatomic, retain) NSNumber * controllerMouseLeftButton;
+@property (nonatomic, retain) NSNumber * controllerMouseRightButton;
+@property (nonatomic, retain) NSNumber * controllerMouseStick;
+@property (nonatomic, retain) NSNumber * controllerMouseSwitch;
+@property (nonatomic) BOOL mapControllerToMouse;
+@property (nonatomic, retain) NSNumber * controllerMousePointerVelocity;
+@property (nonatomic, retain) NSNumber * controllerMouseExpo;
 
 - (id) initFromSettings:(Settings*)settings;
 
