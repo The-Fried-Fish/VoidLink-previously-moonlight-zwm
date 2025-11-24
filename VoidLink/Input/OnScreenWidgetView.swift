@@ -1716,8 +1716,9 @@ import UIKit
             self.mousePointerMoved = true
         }
         
-        self.deltaX = UITouchUtil.getDeltaX(from: touch, in: self)
-        self.deltaY = UITouchUtil.getDeltaY(from: touch, in: self)
+        let vector = UITouchUtil.vector(of: touch, in: self)
+        self.deltaX = vector.dx
+        self.deltaY = vector.dy
         self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
         self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
     }

@@ -24,7 +24,7 @@ static StreamView* streamView;
 
 - (instancetype)initWithTouch:(UITouch *)touch{
     self = [super init];
-    _initialPoint = [touch locationInView:streamView];
+    _initialPoint = [touch preciseLocationInView:streamView];
     _latestPoint = _initialPoint;
     _latestRelativePoint = _initialPoint;
     return self;
@@ -43,7 +43,7 @@ static StreamView* streamView;
 
 - (void)updatePointerCoords:(UITouch *)touch{
     _previousPoint = _latestPoint;
-    _latestPoint = [touch locationInView:streamView];
+    _latestPoint = [touch preciseLocationInView:streamView];
     _previousRelativePoint = _latestRelativePoint;
     if(_needResetCoords){// boundary detection & coordinates reset to the central screen point for HK:StarTrail(needs a very high pointer velocity); // boundary detection & coordinates reset to specific point for HK:StarTrail(needs a very high pointer velocity)
         _previousRelativePoint.x = fixedResetCoordX;

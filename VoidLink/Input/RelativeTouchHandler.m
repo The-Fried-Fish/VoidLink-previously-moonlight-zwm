@@ -230,8 +230,9 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
 - (void)sendMouseMoveEvent:(CGPoint)currentLocation{
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        int deltaX = ([UITouchUtil getDeltaXFrom:self->touchLockedForMouseMove in:self->streamView]) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
-        int deltaY = ([UITouchUtil getDeltaYFrom:self->touchLockedForMouseMove in:self->streamView]) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
+        CGVector vector = [UITouchUtil vectorOf:self->touchLockedForMouseMove in:self->streamView];
+        int deltaX = vector.dx * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
+        int deltaY = vector.dy * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
         
         if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
         if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);

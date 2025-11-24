@@ -162,7 +162,7 @@
     [activePointerIds addObject:pointerIdObj];
     
     //check if touch point is spawned on the left or right upper half screen edges, event to remote PC. this is for better handling in-stream slide gesture
-    CGPoint initialPoint = [touch locationInView:self->streamView];
+    CGPoint initialPoint = [touch preciseLocationInView:self->streamView];
     if(initialPoint.y < slideGestureVerticalThreshold && (initialPoint.x < _edgeTolerance || initialPoint.x > screenWidthWithThreshold)) {
         [blacklistedTouches addObject:touchAddrObj];
     }
@@ -194,7 +194,7 @@
     //NSLog(@"selecting coords: %d", touch.phase == UITouchPhaseMoved);
     // NSLog(@"excluded count: %d", (uint32_t)[excludedPointerIds count]);
     
-    targetCoords = activateCoordSelector ? [self selectCoordsFor:touch] : [touch locationInView:streamView];
+    targetCoords = activateCoordSelector ? [self selectCoordsFor:touch] : [touch preciseLocationInView:streamView];
 
     CGPoint location = [self adjustCoordinatesForVideoArea:targetCoords];
     CGSize videoSize = [self getVideoAreaSize];
