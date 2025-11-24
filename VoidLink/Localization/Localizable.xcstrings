@@ -6514,6 +6514,29 @@
         }
       }
     },
+    "Waiting for controller..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待手柄接入……"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待控制器接入……"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待控制器接入……"
+          }
+        }
+      }
+    },
     "Wake PC" : {
       "extractionState" : "manual",
       "localizations" : {
