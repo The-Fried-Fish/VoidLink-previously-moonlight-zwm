@@ -86,10 +86,11 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     CGFloat _gyroSensitivity;
     bool _captureMouse;
     
-    bool _startGyroByController;
+    bool _controllerGyroSwitchEnabled;
     bool _gyroEnabledFlag;
     int _controllerGyroSwitchToggle;
     int _controllerGyroSwitchHold;
+    bool _reverseHoldButton;
     bool _controllerGyroSwitchTogglePressed;
     bool _controllerGyroSwitchHoldPressed;
     ControllerGyroSwitchMode _gyroSwitchMode;
@@ -1047,6 +1048,15 @@ double rc_expo(double x, double expo) {
            ||self->tempSettings.gyroMode.intValue==GyroModeOff;
 }
 
+- (void)switchGyroOnOffByControllerButton{
+    self->_gyroEnabledFlag = self->_gyroEnabledFlag && self->_controllerGyroSwitchEnabled;
+    if([self useMotionHandler]){
+        if(self->_gyroEnabledFlag) [self->motionHandler startGyroByControllerButton];
+        else [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];
+    }
+    else self->_gyroEnabledFlag = self->_gyroEnabledFlag || !self->_controllerGyroSwitchEnabled;
+}
+
 -(void) registerControllerCallbacks:(GCController*) controller
 {
     if (controller != NULL) {
@@ -1157,24 +1167,22 @@ double rc_expo(double x, double expo) {
                     }
                     else self->_controllerMouseEnabledFlag = false;
                     
-                    if(self->_startGyroByController){
+                    // controller switch buttons
+                    if(true){
                         if(button.pressed){
                             if (buttonFlagId.intValue == self->_controllerGyroSwitchToggle
                                 && !self->_controllerGyroSwitchTogglePressed) {
                                 self->_controllerGyroSwitchTogglePressed = true;
+                                
                                 self->_gyroEnabledFlag = !self->_gyroEnabledFlag;
-                                self->_gyroEnabledFlag = self->_gyroEnabledFlag && self->_gyroSwitchMode != ControllerGyroSwitchDisabled;
-                                if([self useMotionHandler]){
-                                    if(self->_gyroEnabledFlag) [self->motionHandler startGyroByControllerButton];
-                                    else [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];
-                                }
+                                [self switchGyroOnOffByControllerButton];
                             }
                             if (buttonFlagId.intValue == self->_controllerGyroSwitchHold
                                 && !self->_controllerGyroSwitchHoldPressed) {
                                 self->_controllerGyroSwitchHoldPressed = true;
-                                self->_gyroEnabledFlag = true;
-                                self->_gyroEnabledFlag = self->_gyroEnabledFlag && self->_gyroSwitchMode != ControllerGyroSwitchDisabled;
-                                if([self useMotionHandler] && self->_gyroEnabledFlag) [self->motionHandler startGyroByControllerButton];
+                                
+                                self->_gyroEnabledFlag = !self->_reverseHoldButton;
+                                [self switchGyroOnOffByControllerButton];
                             }
                         }
                         else{
@@ -1185,8 +1193,9 @@ double rc_expo(double x, double expo) {
                             if (buttonFlagId.intValue == self->_controllerGyroSwitchHold
                                 && self->_controllerGyroSwitchHoldPressed) {
                                 self->_controllerGyroSwitchHoldPressed = false;
-                                self->_gyroEnabledFlag = false;
-                                if([self useMotionHandler]) [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];
+                                
+                                self->_gyroEnabledFlag = self->_reverseHoldButton;
+                                [self switchGyroOnOffByControllerButton];
                             }
                         }
                     }
@@ -1733,13 +1742,16 @@ double rc_expo(double x, double expo) {
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
     
-    _startGyroByController = true;
-    _gyroSwitchMode = tempSettings.controllerGyroSwitchMode.intValue;
+    _controllerGyroSwitchEnabled = oscProfile.controllerGyroSwitchMode != ControllerGyroSwitchDisabled;
+    _gyroSwitchMode = oscProfile.controllerGyroSwitchMode;
     // _gyroSwitchMode = ControllerGyroSwitchHoldDownToActivate;
-    _controllerGyroSwitchToggle = tempSettings.controllerGyroSwitchToggle.intValue;
-    _controllerGyroSwitchHold = tempSettings.controllerGyroSwitchHold.intValue;
+    _controllerGyroSwitchToggle = oscProfile.controllerGyroSwitchToggle;
+    _controllerGyroSwitchHold = oscProfile.controllerGyroSwitchHold;
+    _reverseHoldButton = oscProfile.reverseGyroHoldButton;
     _controllerGyroSwitchTogglePressed = false;
     _controllerGyroSwitchHoldPressed = false;
+    
+    if(oscProfile.controllerGyroSwitchMode == ControllerGyroSwitchDisabled && ![self useMotionHandler]) _gyroEnabledFlag = true;
 
     if(![self useMotionHandler]) [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];
 }

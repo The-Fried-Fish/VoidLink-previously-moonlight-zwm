@@ -374,31 +374,31 @@
       }
     },
     "6gY-8I-NWq.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Map Gyro to\"; ObjectID = \"6gY-8I-NWq\";",
+      "comment" : "Class = \"UILabel\"; text = \"Map Built-in Gyro to\"; ObjectID = \"6gY-8I-NWq\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Map Gyro to"
+            "value" : "Map Built-in Gyro to"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "陀螺仪映射为"
+            "state" : "needs_review",
+            "value" : "内置陀螺仪映射为"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "陀螺儀映射為"
+            "state" : "needs_review",
+            "value" : "内建陀螺儀映射為"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "陀螺儀映射為"
+            "state" : "needs_review",
+            "value" : "内建陀螺儀映射為"
           }
         }
       }
@@ -1533,6 +1533,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉"
+          }
+        }
+      }
+    },
+    "BQH-nQ-IyM.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Reverse Hold Button\"; ObjectID = \"BQH-nQ-IyM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reverse Hold Button"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反转保持按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉保持按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉保持按鍵"
           }
         }
       }

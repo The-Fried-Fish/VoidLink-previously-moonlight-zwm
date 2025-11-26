@@ -10,6 +10,7 @@
 //
 
 #import "OSCProfile.h"
+#import "VoidLink-Swift.h"
 
 @implementation OSCProfile
 
@@ -43,6 +44,10 @@
     [encoder encodeFloat:self.accelSensitivityY forKey:@"accelSensitivityY"];
     [encoder encodeFloat:self.accelSensitivityZ forKey:@"accelSensitivityZ"];
     [encoder encodeDouble:self.gyroToStickMinOffset forKey:@"gyroToStickMinOffset"];
+    [encoder encodeInt:self.controllerGyroSwitchMode forKey:@"controllerGyroSwitchMode"];
+    [encoder encodeBool:self.reverseGyroHoldButton forKey:@"reverseGyroHoldButton"];
+    [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
+    [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
@@ -61,6 +66,10 @@
         self.accelSensitivityY = [decoder containsValueForKey:@"accelSensitivityY"] ? [decoder decodeFloatForKey:@"accelSensitivityY"] : 1.0;
         self.accelSensitivityZ = [decoder containsValueForKey:@"accelSensitivityZ"] ? [decoder decodeFloatForKey:@"accelSensitivityZ"] : 1.0;
         self.gyroToStickMinOffset = [decoder containsValueForKey:@"gyroToStickMinOffset"] ? [decoder decodeDoubleForKey:@"gyroToStickMinOffset"] : 0;
+        self.controllerGyroSwitchMode = [decoder containsValueForKey:@"controllerGyroSwitchMode"] ? [decoder decodeIntForKey:@"controllerGyroSwitchMode"] : ControllerGyroSwitchDisabled;
+        self.reverseGyroHoldButton = [decoder containsValueForKey:@"reverseGyroHoldButton"] ? [decoder decodeBoolForKey:@"reverseGyroHoldButton"] : false;
+        self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
+        self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
     }
     
     return self;
@@ -82,6 +91,10 @@
     copy.accelSensitivityY = self.accelSensitivityY;
     copy.accelSensitivityZ = self.accelSensitivityZ;
     copy.gyroToStickMinOffset = self.gyroToStickMinOffset;
+    copy.controllerGyroSwitchMode = self.controllerGyroSwitchMode;
+    copy.reverseGyroHoldButton = self.reverseGyroHoldButton;
+    copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
+    copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
     return copy;
 }
 

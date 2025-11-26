@@ -197,7 +197,6 @@
         settingsToSave.mapControllerToMouse = mapControllerToMouse;
         settingsToSave.controllerMousePointerVelocity = [NSNumber numberWithFloat:controllerMousePointerVelocity];
         settingsToSave.controllerMouseExpo = [NSNumber numberWithFloat:controllerMouseExpo];
-        settingsToSave.controllerGyroSwitchMode = [NSNumber numberWithInteger:controllerGyroSwitchMode];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

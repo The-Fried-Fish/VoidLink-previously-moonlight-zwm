@@ -229,6 +229,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *synthPhysicalInputStack;
 @property (strong, nonatomic) IBOutlet UISwitch *synthPhysicalInputSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *reverseHoldButtonStack;
+@property (strong, nonatomic) IBOutlet UISwitch *reverseHoldButtonSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

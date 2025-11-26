@@ -354,6 +354,16 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)reloadMotionControlConfigs{
     oscProfile = [oscProfileMan getSelectedProfile];
+
+    self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = oscProfile.controllerGyroSwitchMode;
+    if(self.controllerGyroSwitchButtonSetter.selectedSegmentIndex != ControllerGyroSwitchDisabled){
+        bool bothButtonsSet = oscProfile.controllerGyroSwitchHold != ControllerButtonNull && oscProfile.controllerGyroSwitchToggle != ControllerButtonNull;
+        [self findDynamicLabelFromStack:self.controllerGyroSwitchButtonStack].text = bothButtonsSet ? [LocalizationHelper localizedStringForKey:@" both set "] : @"";
+    }
+    [self setHidden:oscProfile.controllerGyroSwitchMode==ControllerGyroSwitchDisabled forStack:self.reverseHoldButtonStack];
+    
+    [self.reverseHoldButtonSwitch setOn:oscProfile.reverseGyroHoldButton];
+
     [self.mapGyroToSelector setSelectedSegmentIndex:oscProfile.mapGyroTo];
     [self mapGyroToChanged:self.mapGyroToSelector];
     
@@ -391,6 +401,8 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && (int16_t)(oscProfile.gyroSensitivityRoll*100) == (int16_t)rollSensitivityPercent
                              && (int16_t)(oscProfile.gyroToStickMinOffset) == (int16_t)self.gyroToStickMinOffsetSlider.value
                              && oscProfile.synthesizePhysicalStick == self.synthPhysicalInputSwitch.isOn
+                             && oscProfile.controllerGyroSwitchMode == self.controllerGyroSwitchButtonSetter.selectedSegmentIndex
+                             && oscProfile.reverseGyroHoldButton == self.reverseHoldButtonSwitch.isOn
                              );
 
     if(!configNotChanged){
@@ -402,6 +414,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.gyroSensitivityRoll = rollSensitivityPercent/100;
         oscProfile.gyroToStickMinOffset = (int16_t)self.gyroToStickMinOffsetSlider.value;
         oscProfile.synthesizePhysicalStick = self.synthPhysicalInputSwitch.isOn;
+        oscProfile.controllerGyroSwitchMode = (int)self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
+        oscProfile.reverseGyroHoldButton = self.reverseHoldButtonSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
     }
 }
@@ -453,8 +467,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     if(![self manuallyChangedFPS]) [self framerateChanged];
     
-    self->motionControlSection.expandable = [self isCustomOswEnabled];
-    [self->motionControlSection setExpanded:self->motionControlSection.expandable];
+    /*
+    // self->motionControlSection.expandable = [self isCustomOswEnabled];
+    self->motionControlSection.expandable = true;
+    // [self->motionControlSection setExpanded:self->motionControlSection.expandable];
     __weak typeof(self) weakSelf = self;
     self->motionControlSection.lockedSectionHandler = ^{
         [AlertControllerUtil showAlertIn:weakSelf
@@ -478,6 +494,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             }
         }];
     };
+    */
     
     [self reloadMotionControlConfigs];
     
@@ -761,7 +778,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     controllerSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Controller"];
     controllerSection.identifier = @"SettingsSectionController";
     if (@available(iOS 13.0, *)) {
-        [controllerSection setSectionWithIcon:[UIImage systemImageNamed:@"gamecontroller"] andSize:26];
+        [controllerSection setSectionWithIcon:[UIImage systemImageNamed:@"gamecontroller"] andSize:30];
     }
     [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
     [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
@@ -771,7 +788,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.controllerToMouseStack ofId:@"controllerToMouseStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerMouseVelocityStack ofId:@"controllerMouseVelocityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerMouseExpoStack ofId:@"controllerMouseExpoStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [controllerSection addToParentStack:_parentStack];
     
     motionControlSection = [[MenuSectionView alloc] init];
@@ -782,6 +798,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         // [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] andSize:23];
         [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] andSize:23];
     }
+    [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
+    [self addSetting:self.reverseHoldButtonStack ofId:@"reverseHoldButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
     [self addSetting:self.mapGyroToStack ofId:@"mapGyroToStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
     [self addSetting:self.gyroToStickSwitchStack ofId:@"gyroToStickStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
     [self addSetting:self.yawPitchSensitivityStack ofId:@"yawPitchSensitivityStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
@@ -1357,13 +1375,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         showOnlineDocAction = false;
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"controllerGyroSwitchButtonStack"]){
-        tempSettings = [dataMan getSettings];
-        tipText = [LocalizationHelper localizedStringForKey:@"controllerGyroSwitchButtonStackTip", [ControllerUtil stringFor:tempSettings.controllerGyroSwitchToggle.intValue], [ControllerUtil stringFor:tempSettings.controllerGyroSwitchHold.intValue]];
+        oscProfile = [oscProfileMan getSelectedProfile];
+        tipText = [LocalizationHelper localizedStringForKey:@"controllerGyroSwitchButtonStackTip", [ControllerUtil stringFor:oscProfile.controllerGyroSwitchToggle], [ControllerUtil stringFor:oscProfile.controllerGyroSwitchHold]];
         showOnlineDocAction = false;
     }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"controllerToMouseStack"]){
         tempSettings = [dataMan getSettings];
-        tipText = [LocalizationHelper localizedStringForKey:@"controllerToMouseStackTip", [ControllerUtil stringFor:tempSettings.controllerMouseSwitch.intValue],  [LocalizationHelper localizedStringForKey:tempSettings.controllerGyroSwitchHold.intValue == LeftStickToMouse ? @"Left stick" : @"Right stick"],  [ControllerUtil stringFor:tempSettings.controllerMouseLeftButton.intValue], [ControllerUtil stringFor:tempSettings.controllerMouseRightButton.intValue]];
+        tipText = [LocalizationHelper localizedStringForKey:@"controllerToMouseStackTip", [ControllerUtil stringFor:tempSettings.controllerMouseSwitch.intValue],  [LocalizationHelper localizedStringForKey:tempSettings.controllerMouseStick.intValue == LeftStickToMouse ? @"Left stick" : @"Right stick"],  [ControllerUtil stringFor:tempSettings.controllerMouseLeftButton.intValue], [ControllerUtil stringFor:tempSettings.controllerMouseRightButton.intValue]];
         showOnlineDocAction = false;
     }
     
@@ -1995,12 +2013,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.controllerToMouseSwitch addTarget:self action:@selector(controllerToMouseSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self controllerToMouseSwitchFlipped:self.controllerToMouseSwitch];
         
-        self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = self->tempSettings.controllerGyroSwitchMode.intValue;
         [self.controllerGyroSwitchButtonSetter addTarget:self action:@selector(controllerGyroSwitchModeChanged:) forControlEvents:UIControlEventValueChanged];
-        if(self.controllerGyroSwitchButtonSetter.selectedSegmentIndex != ControllerGyroSwitchDisabled){
-            bool bothButtonsSet = self->tempSettings.controllerGyroSwitchHold.intValue != ControllerButtonNull && self->tempSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull;
-            [self findDynamicLabelFromStack:self.controllerGyroSwitchButtonStack].text = bothButtonsSet ? [LocalizationHelper localizedStringForKey:@" both set "] : @"";
-        }
         
         [self.controllerMouseVelocitySlider setValue:self->tempSettings.controllerMousePointerVelocity.floatValue];
         [self.controllerMouseVelocitySlider addTarget:self action:@selector(controllerMouseVelocitySliderMoved:) forControlEvents:UIControlEventValueChanged];
@@ -2079,8 +2092,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (bool)isCustomOswEnabled{
     bool customOswEnabled = [self isOswEnabled] && self.onScreenWidgetSelector.selectedSegmentIndex == OnScreenControlsLevelCustom;
-    motionControlSection.expandable = customOswEnabled;
-    if(!(settingsViewJustExpanded || settingsViewJustLoaded)) [motionControlSection setExpanded:customOswEnabled];
+    // motionControlSection.expandable = customOswEnabled;
+    // if(!(settingsViewJustExpanded || settingsViewJustLoaded)) [motionControlSection setExpanded:customOswEnabled];
     return customOswEnabled;
 }
 
@@ -2271,13 +2284,15 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)controllerGyroSwitchModeChanged:(UISegmentedControl* )sender{
+    [self setHidden:sender.selectedSegmentIndex==ControllerGyroSwitchDisabled forStack:self.reverseHoldButtonStack];
+    
     UILabel* tipLabel = [self findDynamicLabelFromStack:self.controllerGyroSwitchButtonStack];
     if(sender.selectedSegmentIndex == ControllerGyroSwitchDisabled){
         tipLabel.text = @"";
     }
     else{
         __block bool switchButtonCaptured = false;
-        Settings* currentSettings = [dataMan retrieveSettings];
+        oscProfile = [oscProfileMan getSelectedProfile];
 
         [AlertControllerUtil showAlertIn:self
                                     title:[LocalizationHelper localizedStringForKey:@"Gyro button on controller"]
@@ -2299,14 +2314,14 @@ BOOL isCustomResolution(int resolutionSelected) {
                     for(NSNumber* buttonFlagId in buttonDict){
                         GCControllerButtonInput * button = (GCControllerButtonInput *)buttonDict[buttonFlagId];
                         if(button.isPressed){
-                            if(sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle) currentSettings.controllerGyroSwitchToggle = buttonFlagId;
-                            if(sender.selectedSegmentIndex == ControllerGyroSwitchHoldDown) currentSettings.controllerGyroSwitchHold = buttonFlagId;
+                            if(sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle) self->oscProfile.controllerGyroSwitchToggle = buttonFlagId.intValue;
+                            if(sender.selectedSegmentIndex == ControllerGyroSwitchHoldDown) self->oscProfile.controllerGyroSwitchHold = buttonFlagId.intValue;
                             
                             switchButtonCaptured = true;
                             AlertControllerUtil.alertController.message = [LocalizationHelper localizedStringForKey:@"Finished"];
                             gamepad.valueChangedHandler = nil;
                             if(confirmAction) [confirmAction setValue:[LocalizationHelper localizedStringForKey:@"OK"] forKey:@"title"];
-                            [self->dataMan saveData];
+                            [self->oscProfileMan replaceSelectedProfileWith:self->oscProfile overwriteDefault:true];
                         }
                     }
                 }];
@@ -2322,7 +2337,8 @@ BOOL isCustomResolution(int resolutionSelected) {
                                               action:^{}
                                           completion:^{
                         if(AlertControllerUtil.actionCancelled){
-                            self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = ControllerGyroSwitchDisabled;
+                            self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = self->oscProfile.controllerGyroSwitchMode;
+                            [self setHidden:self.controllerGyroSwitchButtonSetter.selectedSegmentIndex==ControllerGyroSwitchDisabled forStack:self.reverseHoldButtonStack];
                             return;
                         }
                         [AlertControllerUtil.alertController dismissViewControllerAnimated:NO completion:^{}];
@@ -2333,25 +2349,28 @@ BOOL isCustomResolution(int resolutionSelected) {
         }
                                    completion:^{
             if(!switchButtonCaptured){
-                if(sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle) currentSettings.controllerGyroSwitchToggle = @(ControllerButtonNull);
-                if(sender.selectedSegmentIndex == ControllerGyroSwitchHoldDown) currentSettings.controllerGyroSwitchHold = @(ControllerButtonNull);
+                if(sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle) self->oscProfile.controllerGyroSwitchToggle = ControllerButtonNull;
+                if(sender.selectedSegmentIndex == ControllerGyroSwitchHoldDown) self->oscProfile.controllerGyroSwitchHold = ControllerButtonNull;
+                [self->oscProfileMan replaceSelectedProfileWith:self->oscProfile overwriteDefault:true];
             }
             
-            bool noSwitchButtonSet = currentSettings.controllerGyroSwitchHold.intValue == ControllerButtonNull && currentSettings.controllerGyroSwitchToggle.intValue == ControllerButtonNull;
-            bool duplicatedButtons = currentSettings.controllerGyroSwitchHold.intValue == currentSettings.controllerGyroSwitchToggle.intValue && currentSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull;
-            bool bothButtonsSet = currentSettings.controllerGyroSwitchHold.intValue != ControllerButtonNull && currentSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull;
+            bool noSwitchButtonSet = self->oscProfile.controllerGyroSwitchHold == ControllerButtonNull && self->oscProfile.controllerGyroSwitchToggle == ControllerButtonNull;
+            bool duplicatedButtons = self->oscProfile.controllerGyroSwitchHold == self->oscProfile.controllerGyroSwitchToggle && self->oscProfile.controllerGyroSwitchToggle != ControllerButtonNull;
+            bool bothButtonsSet = self->oscProfile.controllerGyroSwitchHold != ControllerButtonNull && self->oscProfile.controllerGyroSwitchToggle != ControllerButtonNull && !duplicatedButtons;
             tipLabel.text = @"";
             if(bothButtonsSet) tipLabel.text = [LocalizationHelper localizedStringForKey:@" both set "];
             if(duplicatedButtons){
                 sender.selectedSegmentIndex = ControllerGyroSwitchDisabled;
                 tipLabel.text = [LocalizationHelper localizedStringForKey:@" duplicated ! "];
+                [self->oscProfileMan replaceSelectedProfileWith:self->oscProfile overwriteDefault:true];
             }
             if(noSwitchButtonSet) sender.selectedSegmentIndex = ControllerGyroSwitchDisabled;
-            if(!noSwitchButtonSet && !bothButtonsSet){
-                sender.selectedSegmentIndex = currentSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull ? ControllerGyroSwitchPressToToggle : ControllerGyroSwitchHoldDown;
+            if(!noSwitchButtonSet && !bothButtonsSet && !duplicatedButtons){
+                sender.selectedSegmentIndex = self->oscProfile.controllerGyroSwitchToggle != ControllerButtonNull ? ControllerGyroSwitchPressToToggle : ControllerGyroSwitchHoldDown;
             }
             
-            [self->dataMan saveData];
+            [self setHidden:sender.selectedSegmentIndex==ControllerGyroSwitchDisabled forStack:self.reverseHoldButtonStack];
+            
             if(self->capturedController && self->capturedController.extendedGamepad) self->capturedController.extendedGamepad.valueChangedHandler = nil;
         }];
     }
