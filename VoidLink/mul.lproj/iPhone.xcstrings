@@ -1513,6 +1513,36 @@
         }
       }
     },
+    "Bx3-CM-wet.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Synth Physical Stick Input\"; ObjectID = \"Bx3-CM-wet\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Synth Physical Stick Input"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合成实体摇杆输入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合成實體搖桿輸入"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合成實體搖桿輸入"
+          }
+        }
+      }
+    },
     "C9B-Rx-YCP.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Physical Mouse Wheel Scroll\"; ObjectID = \"C9B-Rx-YCP\";",
       "extractionState" : "extracted_with_value",

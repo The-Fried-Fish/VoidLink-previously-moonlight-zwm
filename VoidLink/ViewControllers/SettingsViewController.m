@@ -373,6 +373,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self rollSensitivitySliderMoved:self.rollSensitivitySlider];
     [self.gyroToStickMinOffsetSlider setValue:(uint16_t)oscProfile.gyroToStickMinOffset];
     [self gyroMinStickOffsetSliderMoved:self.gyroToStickMinOffsetSlider];
+    
+    [self.synthPhysicalInputSwitch setOn:oscProfile.synthesizePhysicalStick];
 }
 
 - (void)saveMotionControlConfigs{
@@ -387,7 +389,9 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && (int16_t)(oscProfile.gyroSensitivityYaw*100) == (int16_t)yawSensitivityPercent
                              && (int16_t)(oscProfile.gyroSensitivityPitch*100) == (int16_t)pitchSensitivityPercent
                              && (int16_t)(oscProfile.gyroSensitivityRoll*100) == (int16_t)rollSensitivityPercent
-                             && (int16_t)(oscProfile.gyroToStickMinOffset) == (int16_t)self.gyroToStickMinOffsetSlider.value);
+                             && (int16_t)(oscProfile.gyroToStickMinOffset) == (int16_t)self.gyroToStickMinOffsetSlider.value
+                             && oscProfile.synthesizePhysicalStick == self.synthPhysicalInputSwitch.isOn
+                             );
 
     if(!configNotChanged){
         oscProfile.mapGyroTo = self.mapGyroToSelector.selectedSegmentIndex;
@@ -397,6 +401,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.gyroSensitivityPitch = pitchSensitivityPercent/100;
         oscProfile.gyroSensitivityRoll = rollSensitivityPercent/100;
         oscProfile.gyroToStickMinOffset = (int16_t)self.gyroToStickMinOffsetSlider.value;
+        oscProfile.synthesizePhysicalStick = self.synthPhysicalInputSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
     }
 }
@@ -784,6 +789,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addDynamicLabelForStack:self.pitchSensitivityStack];
     [self addSetting:self.rollSensitivityStack ofId:@"rollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
     [self addSetting:self.gyroToStickMinOffsetStack ofId:@"gyroToStickMinOffsetStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
+    [self addSetting:self.synthPhysicalInputStack ofId:@"synthPhysicalInputStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
     [motionControlSection addToParentStack:_parentStack];
 
     MenuSectionView *gesturesSection = [[MenuSectionView alloc] init];
@@ -2209,15 +2215,17 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)mapGyroToChanged:(UISegmentedControl* )sender{
-    [self setHidden:sender.selectedSegmentIndex != mapGyroToControllerStick forStack:_gyroToStickSwitchStack];
+    // [self setHidden:sender.selectedSegmentIndex != mapGyroToControllerStick forStack:_gyroToStickSwitchStack];
     bool mapGyroToMouseEnabled = sender.selectedSegmentIndex == mapGyroToMouse;
     bool mapGyroToControllerStickEnabled = sender.selectedSegmentIndex == mapGyroToControllerStick;
     if(mapGyroToMouseEnabled){
         [self setHidden:false forStack:_yawPitchSensitivityStack];
         [self setHidden:true forStack:_rollSensitivityStack];
     }
-    
+    [self setHidden:!mapGyroToControllerStickEnabled forStack:_gyroToStickSwitchStack];
     [self setHidden:!mapGyroToControllerStickEnabled forStack:self.gyroToStickMinOffsetStack];
+    [self setHidden:!mapGyroToControllerStickEnabled forStack:self.synthPhysicalInputStack];
+
     if(mapGyroToControllerStickEnabled){
         [self yawPitchToRightStickSwitchFlipped:self.yawPitchToRightStickSwitch];
         [self rollToLeftStickSwitchFlipped:self.rollToLeftStickSwitch];

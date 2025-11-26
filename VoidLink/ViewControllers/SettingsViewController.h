@@ -226,6 +226,8 @@
 @property (strong, nonatomic) IBOutlet UIStackView *controllerGyroSwitchButtonStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *controllerGyroSwitchButtonSetter;
 
+@property (strong, nonatomic) IBOutlet UIStackView *synthPhysicalInputStack;
+@property (strong, nonatomic) IBOutlet UISwitch *synthPhysicalInputSwitch;
 
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 

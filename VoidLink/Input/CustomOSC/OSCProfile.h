@@ -34,6 +34,7 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property (nonatomic, assign) MapGyroTo mapGyroTo;
 @property (nonatomic, assign) bool yawPitchToRightStick;
 @property (nonatomic, assign) bool rollToLeftStick;
+@property (nonatomic, assign) bool synthesizePhysicalStick;
 @property (nonatomic, assign) CGFloat gyroSensitivityYaw;
 @property (nonatomic, assign) CGFloat gyroSensitivityPitch;
 @property (nonatomic, assign) CGFloat gyroSensitivityRoll;

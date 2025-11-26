@@ -28,14 +28,14 @@ import CoreMotion
     }
     
     @objc public func mixPhysicalRightStickAndGyroInput(x: CGFloat, y: CGFloat) {
-        rightStickPhysicalInputX = x
-        rightStickPhysicalInputY = y
+        rightStickPhysicalInputX = oscProfile.synthesizePhysicalStick ? x : 0
+        rightStickPhysicalInputY = oscProfile.synthesizePhysicalStick ? y : 0
     }
     
     @objc public func mixPhysicalLeftStickAndGyroInput(x: CGFloat, y: CGFloat) {
         // rollIntegral = 0
-        leftStickPhysicalInputX = x
-        leftStickPhysicalInputY = y
+        leftStickPhysicalInputX = oscProfile.synthesizePhysicalStick ? x : 0
+        leftStickPhysicalInputY = oscProfile.synthesizePhysicalStick ? y : 0
     }
 
     public func gyroMixInputStarted() -> Bool {

@@ -34,6 +34,7 @@
     [encoder encodeInt64:self.mapGyroTo forKey:@"mapGyroTo"];
     [encoder encodeBool:self.yawPitchToRightStick forKey:@"yawPitchToRightStick"];
     [encoder encodeBool:self.rollToLeftStick forKey:@"rollToLeftStick"];
+    [encoder encodeBool:self.synthesizePhysicalStick forKey:@"synthesizePhysicalStick"];
     [encoder encodeInt64:self.mapGyroTo forKey:@"mapGyroTo"];
     [encoder encodeFloat:self.gyroSensitivityYaw forKey:@"gyroSensitivityYaw"];
     [encoder encodeFloat:self.gyroSensitivityPitch forKey:@"gyroSensitivityPitch"];
@@ -52,6 +53,7 @@
         self.mapGyroTo = [decoder containsValueForKey:@"mapGyroTo"] ? [decoder decodeInt64ForKey:@"mapGyroTo"] : mapGyroToMouse;
         self.yawPitchToRightStick = [decoder containsValueForKey:@"yawPitchToRightStick"] ? [decoder decodeBoolForKey:@"yawPitchToRightStick"] : true;
         self.rollToLeftStick = [decoder containsValueForKey:@"rollToLeftStick"] ? [decoder decodeBoolForKey:@"rollToLeftStick"] : false;
+        self.synthesizePhysicalStick = [decoder containsValueForKey:@"synthesizePhysicalStick"] ? [decoder decodeBoolForKey:@"synthesizePhysicalStick"] : true;
         self.gyroSensitivityYaw = [decoder containsValueForKey:@"gyroSensitivityYaw"] ? [decoder decodeFloatForKey:@"gyroSensitivityYaw"] : 1.0;
         self.gyroSensitivityPitch = [decoder containsValueForKey:@"gyroSensitivityPitch"] ? [decoder decodeFloatForKey:@"gyroSensitivityPitch"] : 1.0;
         self.gyroSensitivityRoll = [decoder containsValueForKey:@"gyroSensitivityRoll"] ? [decoder decodeFloatForKey:@"gyroSensitivityRoll"] : 1.0;
@@ -72,6 +74,7 @@
     copy.mapGyroTo = self.mapGyroTo;
     copy.yawPitchToRightStick = self.yawPitchToRightStick;
     copy.rollToLeftStick = self.rollToLeftStick;
+    copy.synthesizePhysicalStick = self.synthesizePhysicalStick;
     copy.gyroSensitivityYaw = self.gyroSensitivityYaw;
     copy.gyroSensitivityPitch = self.gyroSensitivityPitch;
     copy.gyroSensitivityRoll = self.gyroSensitivityRoll;
