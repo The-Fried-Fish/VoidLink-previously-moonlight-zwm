@@ -223,6 +223,10 @@
 @property (strong, nonatomic) IBOutlet UIStackView *controllerMouseExpoStack;
 @property (strong, nonatomic) IBOutlet UISlider *controllerMouseExpoSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *controllerGyroSwitchButtonStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *controllerGyroSwitchButtonSetter;
+
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

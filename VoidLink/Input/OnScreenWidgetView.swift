@@ -1301,7 +1301,7 @@ import UIKit
             targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
             self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
         }
-        self.motionHandler.mixRightStickAndGyroInput(x: targetX, y: targetY)
+        self.motionHandler.mixOnScreenRightStickAndGyroInput(x: targetX, y: targetY)
     }
     
     private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
@@ -1315,7 +1315,7 @@ import UIKit
         if !mixLeftStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
             self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
         }
-        self.motionHandler.mixLeftStickAndGyroInput(x: targetX, y: targetY)
+        self.motionHandler.mixOnScreenLeftStickAndGyroInput(x: targetX, y: targetY)
     }
      
     private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
@@ -1846,7 +1846,7 @@ import UIKit
         case "GYRO":
             self.motionHandler.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
         case "GYROPAUSE":
-            self.motionHandler.stopGyroUpdate(interruptTouchInput:false)
+            self.motionHandler.stopGyroUpdate(interruptNoneGyroInput:false)
             break
         case "ACCEL":
             break
@@ -1868,7 +1868,7 @@ import UIKit
                         widget.tapToToggleFlag = !widget.tapToToggleFlag
                     }
                 }
-                self.motionHandler.stopGyroUpdate(interruptTouchInput: false, resetLeftStick: true)
+                self.motionHandler.stopGyroUpdate(interruptNoneGyroInput: false, resetLeftStick: true)
                 self.motionHandler.gyroStarter = nil
             }
             else {
@@ -1931,7 +1931,7 @@ import UIKit
         if !mixRightStickInputToGyro || self.motionHandler.gyroMixInputStarted() != true {
             self.onScreenControls.clearRightStickTouchPadFlag()
         }
-        self.motionHandler.mixRightStickAndGyroInput(x: 0, y: 0)
+        self.motionHandler.mixOnScreenRightStickAndGyroInput(x: 0, y: 0)
     }
     
     private func clearLeftStickTouchPadFlag(){
@@ -1940,7 +1940,7 @@ import UIKit
         if !mixLeftStickInputToGyro || self.motionHandler.gyroMixInputStarted() != true {
             self.onScreenControls.clearLeftStickTouchPadFlag()
         }
-        self.motionHandler.mixLeftStickAndGyroInput(x: 0, y: 0)
+        self.motionHandler.mixOnScreenLeftStickAndGyroInput(x: 0, y: 0)
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -2168,7 +2168,7 @@ import UIKit
         super.didMoveToSuperview()
         if superview == nil {
             if self.motionControlButtonString == "GYRO" {
-                self.motionHandler.stopGyroUpdate(interruptTouchInput: true)
+                self.motionHandler.stopGyroUpdate(interruptNoneGyroInput: true)
                 self.motionHandler.gyroStarter = nil
             }
             if self.motionControlButtonString == "ACCEL" {}

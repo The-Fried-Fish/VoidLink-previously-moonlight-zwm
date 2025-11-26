@@ -254,6 +254,52 @@
         }
       }
     },
+    " both set " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 双键开关 "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 雙鍵開關 "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 雙鍵開關 "
+          }
+        }
+      }
+    },
+    " duplicated ! " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 按键重复 ! "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 按鍵重复 ! "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 按鍵重复 !"
+          }
+        }
+      }
+    },
     "!ML_TEST_RESULT_INCONCLUSIVE" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1445,6 +1491,35 @@
         }
       }
     },
+    "controllerGyroSwitchButtonStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gyro toggle button: %@\nGyro hold-down button: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪切换按键: %@\n陀螺仪保持按键: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀切換按鍵: %@\n陀螺儀保持按鍵: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀切換按鍵: %@\n陀螺儀保持按鍵: %@"
+          }
+        }
+      }
+    },
     "controllerMouseExpoStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1470,6 +1545,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "該值越大，接近零點（中心點）的曲線越平緩。為 1 時則為完全線性。"
+          }
+        }
+      }
+    },
+    "controllerToMouseStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long press to switch to mouse mode: %@\nStick for moving mouse pointer: %@\nMouse left button: %@\nMouse right button: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长按切换鼠标模式: %@\n控制鼠标的摇杆: %@\n鼠标左键: %@\n鼠标右键: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長按切換滑鼠模式: %@\n控制滑鼠的搖桿: %@\n滑鼠左鍵: %@\n滑鼠右鍵: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長按切換滑鼠模式: %@\n控制滑鼠的搖桿: %@\n滑鼠左鍵: %@\n滑鼠右鍵: %@"
           }
         }
       }
@@ -1739,6 +1843,52 @@
         }
       }
     },
+    "Disable hold-down button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用保持键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用保持鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用保持鍵"
+          }
+        }
+      }
+    },
+    "Disable press-toggle button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用切换键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用切換鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用切換鍵"
+          }
+        }
+      }
+    },
     "Disconnect" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1781,6 +1931,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "完成"
+          }
+        }
+      }
+    },
+    "Down" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下"
           }
         }
       }
@@ -2563,6 +2736,29 @@
         }
       }
     },
+    "Gyro button on controller" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄陀螺仪按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄陀螺儀按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄陀螺儀按鍵"
+          }
+        }
+      }
+    },
     "gyroModeStackDoc" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3060,6 +3256,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左"
+          }
+        }
+      }
+    },
+    "Left" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左"
+          }
+        }
+      }
+    },
+    "Left stick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿"
           }
         }
       }
@@ -3687,6 +3929,29 @@
         }
       }
     },
+    "Null" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無"
+          }
+        }
+      }
+    },
     "NVIDIA GameStream End-of-Service" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4069,6 +4334,98 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "其他"
+          }
+        }
+      }
+    },
+    "Paddle1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背键1"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵1"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵1"
+          }
+        }
+      }
+    },
+    "Paddle2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背键2"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵2"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵2"
+          }
+        }
+      }
+    },
+    "Paddle3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背键3"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵3"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵3"
+          }
+        }
+      }
+    },
+    "Paddle4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背键4"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵4"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背鍵4"
           }
         }
       }
@@ -4479,6 +4836,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "與電腦的連線品質不佳"
+          }
+        }
+      }
+    },
+    "Press a button for keeping gyro active by holding down.\nYou can have 2 buttons for both press-toggle & hold-down switch." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下保持陀螺仪模式的手柄按键。\n你可以为陀螺仪切换和保持各设置一个按键。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下保持陀螺儀模式的手把按鍵。\n您可以為陀螺儀切換和保持各設置一個按鍵。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下保持陀螺儀模式的手把按鍵。\n您可以為陀螺儀切換和保持各設置一個按鍵。"
+          }
+        }
+      }
+    },
+    "Press a button for switching gyro on & off with a press.\nYou can have 2 buttons for both press-toggle & hold-down switch." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下切换陀螺仪模式的手柄按键。\n你可以为陀螺仪切换和保持各设置一个按键。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下切換陀螺儀模式的手把按鍵。\n您可以為陀螺儀切換和保持各設置一個按鍵。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下切換陀螺儀模式的手把按鍵。\n您可以為陀螺儀切換和保持各設置一個按鍵。"
           }
         }
       }
@@ -5170,6 +5573,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "右"
+          }
+        }
+      }
+    },
+    "Right" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右"
+          }
+        }
+      }
+    },
+    "Right stick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿"
           }
         }
       }
@@ -6292,6 +6741,29 @@
         }
       }
     },
+    "Touchpad button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触摸板按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触摸板按键"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触摸板按键"
+          }
+        }
+      }
+    },
     "Undo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6363,6 +6835,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此裝置不支援"
+          }
+        }
+      }
+    },
+    "Up" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上"
           }
         }
       }

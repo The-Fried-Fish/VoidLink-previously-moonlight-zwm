@@ -40,11 +40,13 @@ import GameController
     case paddle2  = 0x020000
     case paddle3  = 0x040000
     case paddle4  = 0x080000
-    case touchpad = 0x100000
+    case touchpadButton = 0x100000
     case misc     = 0x200000
     
     case leftTrigger  = 0x400000
     case rightTrigger = 0x800000
+    
+    case null = 0xFFFFFF
 }
 
 
@@ -139,7 +141,7 @@ import GameController
                         result[.paddle4] = paddle4
                     }
                     if let touchpadBtn = profile.buttons[GCInputDualShockTouchpadButton] {
-                        result[.touchpad] = touchpadBtn
+                        result[.touchpadButton] = touchpadBtn
                     }
                     if #available(iOS 15.0, tvOS 15.0, *) {
                         if let share = profile.buttons[GCInputButtonShare] {
@@ -149,23 +151,42 @@ import GameController
                 }
             }
         }
-        
-        /*
-        if let micro = controller.microGamepad {
-            if #available(iOS 13.0, *) {
-                result[.menu] = micro.buttonMenu
-                result[.a] = micro.buttonA
-                result[.x] = micro.buttonX
-                result[.dpadUp] = micro.dpad.up
-                result[.dpadDown] = micro.dpad.down
-                result[.dpadLeft] = micro.dpad.left
-                result[.dpadRight] = micro.dpad.right
-                result[.menu] = micro.buttonMenu
-            }
-        }*/
-        
         return result
     }
     
-    
+    @objc static func string(for button: ControllerButton) -> String {
+        switch button {
+        case .a: return "A"
+        case .b: return "B"
+        case .x: return "X"
+        case .y: return "Y"
+            
+        case .dpadUp: return SwiftLocalizationHelper.localizedString(forKey: "Up")
+        case .dpadDown: return SwiftLocalizationHelper.localizedString(forKey: "Down")
+        case .dpadLeft: return SwiftLocalizationHelper.localizedString(forKey: "Left")
+        case .dpadRight: return SwiftLocalizationHelper.localizedString(forKey: "Right")
+            
+        case .leftShoulder: return "LB"
+        case .rightShoulder: return "RB"
+            
+        case .leftStickButton: return "LS"
+        case .rightStickButton: return "RS"
+            
+        case .menu: return "Menu"
+        case .back: return "Back"
+        case .special: return "Home"
+            
+        case .paddle1: return SwiftLocalizationHelper.localizedString(forKey: "Paddle1")
+        case .paddle2: return SwiftLocalizationHelper.localizedString(forKey: "Paddle2")
+        case .paddle3: return SwiftLocalizationHelper.localizedString(forKey: "Paddle3")
+        case .paddle4: return SwiftLocalizationHelper.localizedString(forKey: "Paddle4")
+        case .touchpadButton: return SwiftLocalizationHelper.localizedString(forKey: "Touch button")
+        case .misc: return "Misc"
+            
+        case .leftTrigger: return "LT"
+        case .rightTrigger: return "RT"
+            
+        case .null: return SwiftLocalizationHelper.localizedString(forKey: "Null")
+        }
+    }
 }

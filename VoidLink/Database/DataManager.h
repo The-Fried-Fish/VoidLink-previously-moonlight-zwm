@@ -21,6 +21,12 @@ typedef NS_ENUM(NSUInteger, UINavigationBarHeight) {
     UINavigationBarHeightIPhone = 44
 };
 
+typedef NS_ENUM(NSInteger, ControllerGyroSwitchMode) {
+    ControllerGyroSwitchDisabled,
+    ControllerGyroSwitchPressToToggle,
+    ControllerGyroSwitchHoldDown
+};
+
 typedef NS_ENUM(NSInteger, AudioEngine) {
     SystemAudioEngine,
     SDLAudioEngine
@@ -145,6 +151,7 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
             mapControllerToMouse:(BOOL)mapControllerToMouse
   controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
              controllerMouseExpo:(CGFloat)controllerMouseExpo
+        controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

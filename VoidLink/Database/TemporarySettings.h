@@ -102,6 +102,9 @@
 @property (nonatomic) BOOL mapControllerToMouse;
 @property (nonatomic, retain) NSNumber * controllerMousePointerVelocity;
 @property (nonatomic, retain) NSNumber * controllerMouseExpo;
+@property (nonatomic, retain) NSNumber * controllerGyroSwitchToggle;
+@property (nonatomic, retain) NSNumber * controllerGyroSwitchHold;
+@property (nonatomic, retain) NSNumber * controllerGyroSwitchMode;
 
 - (id) initFromSettings:(Settings*)settings;
 

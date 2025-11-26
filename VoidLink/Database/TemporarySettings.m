@@ -158,6 +158,9 @@
     self.controllerMouseStick = settings.controllerMouseStick;
     self.controllerMousePointerVelocity = settings.controllerMousePointerVelocity;
     self.controllerMouseExpo = settings.controllerMouseExpo;
+    self.controllerGyroSwitchToggle = settings.controllerGyroSwitchToggle;
+    self.controllerGyroSwitchHold = settings.controllerGyroSwitchHold;
+    self.controllerGyroSwitchMode = settings.controllerGyroSwitchMode;
 
 #endif
     

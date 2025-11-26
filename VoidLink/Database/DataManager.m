@@ -123,6 +123,7 @@
             mapControllerToMouse:(BOOL)mapControllerToMouse
   controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
              controllerMouseExpo:(CGFloat)controllerMouseExpo
+        controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
 
     [_managedObjectContext performBlockAndWait:^{
@@ -196,6 +197,7 @@
         settingsToSave.mapControllerToMouse = mapControllerToMouse;
         settingsToSave.controllerMousePointerVelocity = [NSNumber numberWithFloat:controllerMousePointerVelocity];
         settingsToSave.controllerMouseExpo = [NSNumber numberWithFloat:controllerMouseExpo];
+        settingsToSave.controllerGyroSwitchMode = [NSNumber numberWithInteger:controllerGyroSwitchMode];
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

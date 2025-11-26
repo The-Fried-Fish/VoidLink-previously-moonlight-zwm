@@ -763,9 +763,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:controllerSection];
     [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.controllerToMouseStack ofId:@"controllerToMouseStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
+    [self addSetting:self.controllerToMouseStack ofId:@"controllerToMouseStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerMouseVelocityStack ofId:@"controllerMouseVelocityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerMouseExpoStack ofId:@"controllerMouseExpoStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
+    [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [controllerSection addToParentStack:_parentStack];
     
     motionControlSection = [[MenuSectionView alloc] init];
@@ -1349,7 +1350,17 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"controllerMouseExpoStackTip"];
         showOnlineDocAction = false;
     }
-
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"controllerGyroSwitchButtonStack"]){
+        tempSettings = [dataMan getSettings];
+        tipText = [LocalizationHelper localizedStringForKey:@"controllerGyroSwitchButtonStackTip", [ControllerUtil stringFor:tempSettings.controllerGyroSwitchToggle.intValue], [ControllerUtil stringFor:tempSettings.controllerGyroSwitchHold.intValue]];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"controllerToMouseStack"]){
+        tempSettings = [dataMan getSettings];
+        tipText = [LocalizationHelper localizedStringForKey:@"controllerToMouseStackTip", [ControllerUtil stringFor:tempSettings.controllerMouseSwitch.intValue],  [LocalizationHelper localizedStringForKey:tempSettings.controllerGyroSwitchHold.intValue == LeftStickToMouse ? @"Left stick" : @"Right stick"],  [ControllerUtil stringFor:tempSettings.controllerMouseLeftButton.intValue], [ControllerUtil stringFor:tempSettings.controllerMouseRightButton.intValue]];
+        showOnlineDocAction = false;
+    }
+    
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
     
@@ -1978,6 +1989,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.controllerToMouseSwitch addTarget:self action:@selector(controllerToMouseSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self controllerToMouseSwitchFlipped:self.controllerToMouseSwitch];
         
+        self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = self->tempSettings.controllerGyroSwitchMode.intValue;
+        [self.controllerGyroSwitchButtonSetter addTarget:self action:@selector(controllerGyroSwitchModeChanged:) forControlEvents:UIControlEventValueChanged];
+        if(self.controllerGyroSwitchButtonSetter.selectedSegmentIndex != ControllerGyroSwitchDisabled){
+            bool bothButtonsSet = self->tempSettings.controllerGyroSwitchHold.intValue != ControllerButtonNull && self->tempSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull;
+            [self findDynamicLabelFromStack:self.controllerGyroSwitchButtonStack].text = bothButtonsSet ? [LocalizationHelper localizedStringForKey:@" both set "] : @"";
+        }
+        
         [self.controllerMouseVelocitySlider setValue:self->tempSettings.controllerMousePointerVelocity.floatValue];
         [self.controllerMouseVelocitySlider addTarget:self action:@selector(controllerMouseVelocitySliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self controllerMouseVelocitySliderMoved:self.controllerMouseVelocitySlider];
@@ -2244,6 +2262,93 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
+- (void)controllerGyroSwitchModeChanged:(UISegmentedControl* )sender{
+    UILabel* tipLabel = [self findDynamicLabelFromStack:self.controllerGyroSwitchButtonStack];
+    if(sender.selectedSegmentIndex == ControllerGyroSwitchDisabled){
+        tipLabel.text = @"";
+    }
+    else{
+        __block bool switchButtonCaptured = false;
+        Settings* currentSettings = [dataMan retrieveSettings];
+
+        [AlertControllerUtil showAlertIn:self
+                                    title:[LocalizationHelper localizedStringForKey:@"Gyro button on controller"]
+                                 message:sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle ? [LocalizationHelper localizedStringForKey:@"Press a button for switching gyro on & off with a press.\nYou can have 2 buttons for both press-toggle & hold-down switch."] : [LocalizationHelper localizedStringForKey:@"Press a button for keeping gyro active by holding down.\nYou can have 2 buttons for both press-toggle & hold-down switch."]
+                              withCancel:NO
+                             buttonTitle:sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle ? [LocalizationHelper localizedStringForKey:@"Disable press-toggle button"] : [LocalizationHelper localizedStringForKey:@"Disable hold-down button"]
+                                countdown:0
+                                   action:^{
+            
+            UIAlertAction* confirmAction = AlertControllerUtil.alertController.actions.firstObject;
+
+            self->capturedController = [GCController controllers].firstObject;
+            if(self->capturedController){
+                __weak typeof(self) weakSelf = self;
+                                
+                [ControllerUtil listenWithController:self->capturedController swapABXY:false handler:^(NSDictionary * buttonDict, GCExtendedGamepad * gamepad, GCControllerElement * element) {
+                    __strong typeof(weakSelf) self = weakSelf;
+                    if (!self) return;
+                    for(NSNumber* buttonFlagId in buttonDict){
+                        GCControllerButtonInput * button = (GCControllerButtonInput *)buttonDict[buttonFlagId];
+                        if(button.isPressed){
+                            if(sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle) currentSettings.controllerGyroSwitchToggle = buttonFlagId;
+                            if(sender.selectedSegmentIndex == ControllerGyroSwitchHoldDown) currentSettings.controllerGyroSwitchHold = buttonFlagId;
+                            
+                            switchButtonCaptured = true;
+                            AlertControllerUtil.alertController.message = [LocalizationHelper localizedStringForKey:@"Finished"];
+                            gamepad.valueChangedHandler = nil;
+                            if(confirmAction) [confirmAction setValue:[LocalizationHelper localizedStringForKey:@"OK"] forKey:@"title"];
+                            [self->dataMan saveData];
+                        }
+                    }
+                }];
+            }
+            else{
+                [AlertControllerUtil.alertController dismissViewControllerAnimated:NO completion:^{
+                    [AlertControllerUtil showAlertIn:self
+                                                title:[LocalizationHelper localizedStringForKey:@""]
+                                              message:[LocalizationHelper localizedStringForKey:@"Waiting for controller..."]
+                                           withCancel:YES
+                                          buttonTitle:[LocalizationHelper localizedStringForKey:@"Continue"]
+                                            countdown:3
+                                              action:^{}
+                                          completion:^{
+                        if(AlertControllerUtil.actionCancelled){
+                            self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = ControllerGyroSwitchDisabled;
+                            return;
+                        }
+                        [AlertControllerUtil.alertController dismissViewControllerAnimated:NO completion:^{}];
+                        [self controllerGyroSwitchModeChanged:sender];
+                    }];
+                }];
+            }
+        }
+                                   completion:^{
+            if(!switchButtonCaptured){
+                if(sender.selectedSegmentIndex == ControllerGyroSwitchPressToToggle) currentSettings.controllerGyroSwitchToggle = @(ControllerButtonNull);
+                if(sender.selectedSegmentIndex == ControllerGyroSwitchHoldDown) currentSettings.controllerGyroSwitchHold = @(ControllerButtonNull);
+            }
+            
+            bool noSwitchButtonSet = currentSettings.controllerGyroSwitchHold.intValue == ControllerButtonNull && currentSettings.controllerGyroSwitchToggle.intValue == ControllerButtonNull;
+            bool duplicatedButtons = currentSettings.controllerGyroSwitchHold.intValue == currentSettings.controllerGyroSwitchToggle.intValue && currentSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull;
+            bool bothButtonsSet = currentSettings.controllerGyroSwitchHold.intValue != ControllerButtonNull && currentSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull;
+            tipLabel.text = @"";
+            if(bothButtonsSet) tipLabel.text = [LocalizationHelper localizedStringForKey:@" both set "];
+            if(duplicatedButtons){
+                sender.selectedSegmentIndex = ControllerGyroSwitchDisabled;
+                tipLabel.text = [LocalizationHelper localizedStringForKey:@" duplicated ! "];
+            }
+            if(noSwitchButtonSet) sender.selectedSegmentIndex = ControllerGyroSwitchDisabled;
+            if(!noSwitchButtonSet && !bothButtonsSet){
+                sender.selectedSegmentIndex = currentSettings.controllerGyroSwitchToggle.intValue != ControllerButtonNull ? ControllerGyroSwitchPressToToggle : ControllerGyroSwitchHoldDown;
+            }
+            
+            [self->dataMan saveData];
+            if(self->capturedController && self->capturedController.extendedGamepad) self->capturedController.extendedGamepad.valueChangedHandler = nil;
+        }];
+    }
+}
+
 - (void)controllerToMouseSwitchFlipped:(UISwitch* )sender{
     [self setHidden:!sender.isOn forStack:_controllerMouseVelocityStack];
     [self setHidden:!sender.isOn forStack:_controllerMouseExpoStack];
@@ -2334,7 +2439,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                           message:[LocalizationHelper localizedStringForKey:@"Waiting for controller..."]
                                        withCancel:YES
                                       buttonTitle:[LocalizationHelper localizedStringForKey:@"Continue"]
-                                        countdown:2
+                                        countdown:3
                                           action:^{}
                                       completion:^{
                     if(AlertControllerUtil.actionCancelled){
@@ -3162,6 +3267,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL mapControllerToMouse = self.controllerToMouseSwitch.isOn;
     CGFloat controllerMousePointerVelocity = self.controllerMouseVelocitySlider.value;
     CGFloat controllerMouseExpo = self.controllerMouseExpoSlider.value;
+    NSInteger controllerGyroSwitchMode = self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettingsWithBitrate:_bitrate
@@ -3231,6 +3337,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                 mapControllerToMouse:mapControllerToMouse
       controllerMousePointerVelocity:controllerMousePointerVelocity
                  controllerMouseExpo:controllerMouseExpo
+            controllerGyroSwitchMode:controllerGyroSwitchMode
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

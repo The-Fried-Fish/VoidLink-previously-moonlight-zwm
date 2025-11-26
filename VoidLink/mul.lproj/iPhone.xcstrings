@@ -1309,6 +1309,18 @@
         }
       }
     },
+    "bAZ-bm-h3I.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Switch Gyro by Controller\"; ObjectID = \"bAZ-bm-h3I\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Switch Gyro by Controller"
+          }
+        }
+      }
+    },
     "Bda-3L-Wtg.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; Bda-3L-Wtg.segmentTitles[0] = \"Off\"; ObjectID = \"Bda-3L-Wtg\";",
       "extractionState" : "extracted_with_value",
@@ -2847,6 +2859,96 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "異步多點觸控"
+          }
+        }
+      }
+    },
+    "mpa-8g-1Ug.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; mpa-8g-1Ug.segmentTitles[0] = \"Disabled\"; ObjectID = \"mpa-8g-1Ug\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "mpa-8g-1Ug.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; mpa-8g-1Ug.segmentTitles[1] = \"Press-toggle\"; ObjectID = \"mpa-8g-1Ug\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Press-toggle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下切换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下切換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下切換"
+          }
+        }
+      }
+    },
+    "mpa-8g-1Ug.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; mpa-8g-1Ug.segmentTitles[2] = \"Hold down\"; ObjectID = \"mpa-8g-1Ug\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Hold down"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住保持"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住保持"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住保持"
           }
         }
       }

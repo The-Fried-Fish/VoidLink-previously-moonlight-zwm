@@ -2284,16 +2284,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="N0i-z6-WgC" userLabel="singleTapSensitivityStack">
-                                <rect key="frame" x="437" y="2383" width="596" height="55.5"/>
+                                <rect key="frame" x="437" y="2383" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Single Tap Sensitivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WzD-wo-Wum">
-                                        <rect key="frame" x="0.0" y="0.0" width="596" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="0.0" maxValue="5" minimumValueImage="0.square" catalog="system" maximumValueImage="5.square" translatesAutoresizingMaskIntoConstraints="NO" id="uCa-Oa-7mv" userLabel="Single Tap Sensitivity Slider">
-                                        <rect key="frame" x="0.0" y="25.5" width="596" height="30"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="XXP-GP-uhn"/>
                                         </constraints>
@@ -2590,6 +2590,31 @@
                                     <constraint firstAttribute="width" constant="380" id="mG1-Vg-QwM"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="5fm-3b-ixg">
+                                <rect key="frame" x="437" y="594" width="380" height="56.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Switch Gyro by Controller" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bAZ-bm-h3I">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="mpa-8g-1Ug">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Disabled"/>
+                                            <segment title="Press-toggle"/>
+                                            <segment title="Hold down"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="Ign-NM-9UD"/>
+                                    <constraint firstAttribute="height" constant="56.5" id="MNC-Cn-lnb"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -2614,6 +2639,8 @@
                         <outlet property="citrixX1MouseSwitch" destination="zw9-ok-nQC" id="5w4-2h-gCP"/>
                         <outlet property="codecSelector" destination="5Y7-To-ca2" id="Kmt-sp-eXj"/>
                         <outlet property="codecStack" destination="cVe-Uk-gXv" id="826-Tv-rMl"/>
+                        <outlet property="controllerGyroSwitchButtonSetter" destination="mpa-8g-1Ug" id="2y0-jr-5mh"/>
+                        <outlet property="controllerGyroSwitchButtonStack" destination="5fm-3b-ixg" id="Rkn-t7-opn"/>
                         <outlet property="controllerMouseExpoSlider" destination="scG-Rx-agb" id="K6s-eG-Zcu"/>
                         <outlet property="controllerMouseExpoStack" destination="QuI-NM-qCU" id="Kmp-Cc-bWI"/>
                         <outlet property="controllerMouseVelocitySlider" destination="CkB-cG-N8r" id="AMa-cl-2Wz"/>
@@ -2756,7 +2783,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iqb-Sd-6g2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3268" y="1032"/>
+            <point key="canvasLocation" x="-3268.115942028986" y="1031.9196428571429"/>
         </scene>
     </scenes>
     <resources>

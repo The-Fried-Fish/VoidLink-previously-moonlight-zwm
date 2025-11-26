@@ -1582,8 +1582,8 @@
     [_motionHandler startAccelUpdate];
 }
 
-- (void)stopGyroUpdateWithInterruptTouchInput:(BOOL)interruption{
-    [_motionHandler stopGyroUpdateWithInterruptTouchInput:interruption resetLeftStick:false];
+- (void)stopGyroUpdateWithInterruptNoneGyroInput:(BOOL)interruption{
+    [_motionHandler stopGyroUpdateWithInterruptNoneGyroInput:interruption resetLeftStick:false];
 }
 
 - (void)stopAccelUpdate{
