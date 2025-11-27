@@ -2299,6 +2299,18 @@
         }
       }
     },
+    "F1n-T2-jX6.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Minimum offset\"; ObjectID = \"F1n-T2-jX6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Minimum offset"
+          }
+        }
+      }
+    },
     "FJv-HJ-UYJ.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Touch Move Event Interval\"; ObjectID = \"FJv-HJ-UYJ\";",
       "extractionState" : "extracted_with_value",
@@ -2840,31 +2852,31 @@
       }
     },
     "HqA-an-KEe.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Minimum Stick Offset\"; ObjectID = \"HqA-an-KEe\";",
+      "comment" : "Class = \"UILabel\"; text = \"Minimum offset (Gyro→Stick)\"; ObjectID = \"HqA-an-KEe\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Minimum Stick Offset"
+            "value" : "Minimum offset (Gyro→Stick)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "摇杆输出最小偏移量"
+            "value" : "最小偏移量(陀螺仪→摇杆)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "摇杆输出最小偏移量"
+            "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "摇杆输出最小偏移量"
+            "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         }
       }

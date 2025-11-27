@@ -2004,6 +2004,35 @@
         }
       }
     },
+    "edgeSlidingSensitivityStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Higher sensitivity make it easier to trigger settings menu & tool box gestures, but will widen the untouchable screen edge area."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更高的灵敏度使设置菜单和工具箱手势更易于触发，但同时增加了屏幕边缘触控无响应区域的宽度。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更高的靈敏度使設定選單和工具箱手勢更容易觸發，但同時也會增加螢幕邊緣觸控無反應區域的寬度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更高的靈敏度使設定選單和工具箱手勢更容易觸發，但同時也會增加螢幕邊緣觸控無反應區域的寬度。"
+          }
+        }
+      }
+    },
     "Edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3539,6 +3568,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "麥克風權限"
+          }
+        }
+      }
+    },
+    "Minimum offset: %.0f" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最小偏移量: %.0f"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最小偏移量: %.0f"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最小偏移量: %.0f"
           }
         }
       }

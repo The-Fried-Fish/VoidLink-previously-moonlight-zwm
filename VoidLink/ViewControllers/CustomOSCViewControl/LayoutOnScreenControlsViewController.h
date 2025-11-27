@@ -117,6 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UILabel *slideThresholdLabel;
 @property (strong, nonatomic) IBOutlet UISlider *slideThresholdSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *minStickOffsetStack;
+@property (strong, nonatomic) IBOutlet UILabel *minStickOffsetLabel;
+@property (strong, nonatomic) IBOutlet UISlider *minStickOffsetSlider;
 
 @property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;
 

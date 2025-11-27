@@ -1374,6 +1374,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"controllerMouseExpoStackTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"edgeSlidingSensitivityStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"edgeSlidingSensitivityStackTip"];
+        showOnlineDocAction = false;
+    }
     if([sender.superview.accessibilityIdentifier isEqualToString: @"controllerGyroSwitchButtonStack"]){
         oscProfile = [oscProfileMan getSelectedProfile];
         tipText = [LocalizationHelper localizedStringForKey:@"controllerGyroSwitchButtonStackTip", [ControllerUtil stringFor:oscProfile.controllerGyroSwitchToggle], [ControllerUtil stringFor:oscProfile.controllerGyroSwitchHold]];

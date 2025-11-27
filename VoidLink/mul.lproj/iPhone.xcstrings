@@ -950,31 +950,31 @@
       }
     },
     "52u-T9-1Hv.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Minimum Stick Offset\"; ObjectID = \"52u-T9-1Hv\";",
+      "comment" : "Class = \"UILabel\"; text = \"Minimum offset (Gyro→Stick)\"; ObjectID = \"52u-T9-1Hv\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Minimum Stick Offset"
+            "value" : "Minimum offset (Gyro→Stick)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "摇杆输出最小偏移量"
+            "value" : "最小偏移量(陀螺仪→摇杆)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "摇杆输出最小偏移量"
+            "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "摇杆输出最小偏移量"
+            "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         }
       }
@@ -3105,6 +3105,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定"
+          }
+        }
+      }
+    },
+    "Mxv-HT-xeB.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Minimum offset\"; ObjectID = \"Mxv-HT-xeB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Minimum offset"
           }
         }
       }
