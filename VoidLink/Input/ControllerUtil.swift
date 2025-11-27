@@ -51,7 +51,9 @@ import GameController
 
 
 @objc class ControllerUtil: NSObject {
-        
+    
+    static private let stickMaxOffset:CGFloat = 0x7FFE
+    
     @objc static func listen(
         controller: GCController,
         swapABXY: Bool,
@@ -74,8 +76,8 @@ import GameController
             handler(buttonDict, gamepad, element)
         }
     }
-
-
+    
+    
     // MARK: - 构建按钮映射
     private static func buildMapping(for controller: GCController, swapABXY:Bool)
     -> [ControllerButton : GCControllerButtonInput]
@@ -125,7 +127,7 @@ import GameController
                 if let home = pad.buttonHome {
                     result[.special] = home
                 }
-
+                
                 if let controller = pad.controller {
                     let profile = controller.physicalInputProfile
                     if let paddle1 = profile.buttons[GCInputXboxPaddleOne] {
@@ -188,5 +190,14 @@ import GameController
             
         case .null: return SwiftLocalizationHelper.localizedString(forKey: "Null")
         }
+    }
+    
+    @objc static func compensated(offsetVector: CGVector, withMinOffset minOffset: CGFloat) -> CGVector{
+        let vectorHypot = hypot(offsetVector.dx, offsetVector.dy)
+        guard vectorHypot > 0 else {return CGVector(dx: 0, dy: 0)}
+        let targetHypot = minOffset + (stickMaxOffset-minOffset)*(vectorHypot/stickMaxOffset)
+        let compensatedX = targetHypot * (offsetVector.dx/vectorHypot)
+        let compensatedY = targetHypot * (offsetVector.dy/vectorHypot)
+        return CGVector(dx: compensatedX, dy: compensatedY)
     }
 }

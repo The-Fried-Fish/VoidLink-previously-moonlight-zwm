@@ -67,7 +67,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     float _stickToMouseVelocity;
     CADisplayLink *_displayLink;
 
-    
+    float stickMaxOffset;
+    float _leftStickMinOffset;
+    float _rightStickMinOffset;
+
     OnScreenControls *_osc;
     VoidController *_oscController;
     NSMutableSet* _activeGCControllers;
@@ -1210,13 +1213,23 @@ double rc_expo(double x, double expo) {
                     }
                     else if(buttonFlagId.intValue!=self->_controllerMouseSwitch || !self->_mapControllerToMouse) UPDATE_BUTTON_FLAG(voidController, buttonFlagId.intValue, button.pressed);
                 }
+                                
+                CGFloat leftStickXRaw = gamepad.leftThumbstick.xAxis.value * self->stickMaxOffset;
+                CGFloat leftStickYRaw = gamepad.leftThumbstick.yAxis.value * self->stickMaxOffset;
                 
-                leftStickX = self->_controllerMouseEnabledFlag ? 0 :gamepad.leftThumbstick.xAxis.value * 0x7FFE;
-                leftStickY = self->_controllerMouseEnabledFlag ? 0 : gamepad.leftThumbstick.yAxis.value * 0x7FFE;
+                CGFloat rightStickXRaw = gamepad.rightThumbstick.xAxis.value * self->stickMaxOffset;
+                CGFloat rightStickYRaw = gamepad.rightThumbstick.yAxis.value * self->stickMaxOffset;
+
                 
-                rightStickX = self->_controllerMouseEnabledFlag ? 0 : gamepad.rightThumbstick.xAxis.value * 0x7FFE;
-                rightStickY = self->_controllerMouseEnabledFlag ? 0 : gamepad.rightThumbstick.yAxis.value * 0x7FFE;
+                CGVector leftStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(leftStickXRaw, leftStickYRaw) withMinOffset:self->_leftStickMinOffset];
                 
+                CGVector rightStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(rightStickXRaw, rightStickYRaw) withMinOffset:self->_rightStickMinOffset];
+                
+                leftStickX = self->_controllerMouseEnabledFlag ? 0 : leftStickOffset.dx;
+                leftStickY = self->_controllerMouseEnabledFlag ? 0 : leftStickOffset.dy;
+                
+                rightStickX = self->_controllerMouseEnabledFlag ? 0 : rightStickOffset.dx;
+                rightStickY = self->_controllerMouseEnabledFlag ? 0 : rightStickOffset.dy;
                 
                 if(self->_controllerMouseEnabledFlag){
                     self->stickToMouseInputX = self->_controllerMouseStick == LeftStickToMouse ? gamepad.leftThumbstick.xAxis.value : gamepad.rightThumbstick.xAxis.value;
@@ -1751,6 +1764,10 @@ double rc_expo(double x, double expo) {
     _controllerGyroSwitchTogglePressed = false;
     _controllerGyroSwitchHoldPressed = false;
     
+    stickMaxOffset = 0x7FFE;
+    _leftStickMinOffset = oscProfile.physicalLeftStickMinOffset;
+    _rightStickMinOffset = oscProfile.physicalRightStickMinOffset;
+
     if(oscProfile.controllerGyroSwitchMode == ControllerGyroSwitchDisabled && ![self useMotionHandler]) _gyroEnabledFlag = true;
 
     if(![self useMotionHandler]) [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];

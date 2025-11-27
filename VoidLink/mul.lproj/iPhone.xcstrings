@@ -950,30 +950,30 @@
       }
     },
     "52u-T9-1Hv.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Minimum offset (Gyro→Stick)\"; ObjectID = \"52u-T9-1Hv\";",
+      "comment" : "Class = \"UILabel\"; text = \"Minimum Offset (Gyro→Stick)\"; ObjectID = \"52u-T9-1Hv\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Minimum offset (Gyro→Stick)"
+            "value" : "Minimum Offset (Gyro→Stick)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "最小偏移量(陀螺仪→摇杆)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         }
@@ -4063,6 +4063,36 @@
         }
       }
     },
+    "q6s-4H-y9n.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Right Stick Minimum Offset\"; ObjectID = \"q6s-4H-y9n\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Right Stick Minimum Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆最小偏移"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿最小偏移"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿最小偏移"
+          }
+        }
+      }
+    },
     "q6v-Jb-ysy.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[0] = \"Xbox 360\"; ObjectID = \"q6v-Jb-ysy\";",
       "extractionState" : "extracted_with_value",
@@ -5199,6 +5229,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "發送假事件"
+          }
+        }
+      }
+    },
+    "whI-oR-V8o.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Left Stick Minimum Offset\"; ObjectID = \"whI-oR-V8o\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Left Stick Minimum Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆最小偏移"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿最小偏移"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿最小偏移"
           }
         }
       }

@@ -352,7 +352,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSLog(@"Mic error: %@", error);
 }
 
-- (void)reloadMotionControlConfigs{
+- (void)reloadGameProfileConfigs{
     oscProfile = [oscProfileMan getSelectedProfile];
 
     self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = oscProfile.controllerGyroSwitchMode;
@@ -384,10 +384,15 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.gyroToStickMinOffsetSlider setValue:(uint16_t)oscProfile.gyroToStickMinOffset];
     [self gyroMinStickOffsetSliderMoved:self.gyroToStickMinOffsetSlider];
     
+    [self.leftStickMinOffsetSlider setValue:(uint16_t)oscProfile.physicalLeftStickMinOffset];
+    [self leftStickMinOffsetSliderMoved:self.leftStickMinOffsetSlider];
+    [self.rightStickMinOffsetSlider setValue:(uint16_t)oscProfile.physicalRightStickMinOffset];
+    [self rightStickMinOffsetSliderMoved:self.rightStickMinOffsetSlider];
+    
     [self.synthPhysicalInputSwitch setOn:oscProfile.synthesizePhysicalStick];
 }
 
-- (void)saveMotionControlConfigs{
+- (void)saveGameProfileConfigs{
     
     CGFloat yawSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.yawSensitivitySlider.value];
     CGFloat pitchSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.pitchSensitivitySlider.value];
@@ -403,6 +408,8 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.synthesizePhysicalStick == self.synthPhysicalInputSwitch.isOn
                              && oscProfile.controllerGyroSwitchMode == self.controllerGyroSwitchButtonSetter.selectedSegmentIndex
                              && oscProfile.reverseGyroHoldButton == self.reverseHoldButtonSwitch.isOn
+                             && (int16_t)(oscProfile.physicalLeftStickMinOffset) == (int16_t)self.leftStickMinOffsetSlider.value
+                             && (int16_t)(oscProfile.physicalRightStickMinOffset) == (int16_t)self.rightStickMinOffsetSlider.value
                              );
 
     if(!configNotChanged){
@@ -416,6 +423,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.synthesizePhysicalStick = self.synthPhysicalInputSwitch.isOn;
         oscProfile.controllerGyroSwitchMode = (int)self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
         oscProfile.reverseGyroHoldButton = self.reverseHoldButtonSwitch.isOn;
+        oscProfile.physicalLeftStickMinOffset = (int16_t)self.leftStickMinOffsetSlider.value;
+        oscProfile.physicalRightStickMinOffset = (int16_t)self.rightStickMinOffsetSlider.value;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
     }
 }
@@ -442,7 +451,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reloadMotionControlConfigs)
+                                             selector:@selector(reloadGameProfileConfigs)
                                                  name:@"OscLayoutCloseNotification"
                                                object:nil];
 
@@ -496,7 +505,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     };
     */
     
-    [self reloadMotionControlConfigs];
+    [self reloadGameProfileConfigs];
     
     self->tempSettings = [self->dataMan getSettings];
  }
@@ -785,6 +794,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:controllerSection];
     [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
+    [self addSetting:self.leftStickMinOffsetStack ofId:@"leftStickMinOffsetStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
+    [self addSetting:self.rightStickMinOffsetStack ofId:@"rightStickMinOffsetStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerToMouseStack ofId:@"controllerToMouseStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerMouseVelocityStack ofId:@"controllerMouseVelocityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
     [self addSetting:self.controllerMouseExpoStack ofId:@"controllerMouseExpoStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
@@ -800,7 +811,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
     [self addSetting:self.reverseHoldButtonStack ofId:@"reverseHoldButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
-    [self addSetting:self.mapGyroToStack ofId:@"mapGyroToStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
+    [self addSetting:self.mapGyroToStack ofId:@"mapGyroToStack" withInfoTag:YES withDynamicLabel:NO to:motionControlSection];
     [self addSetting:self.gyroToStickSwitchStack ofId:@"gyroToStickStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
     [self addSetting:self.yawPitchSensitivityStack ofId:@"yawPitchSensitivityStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
     [self addDynamicLabelForStack:self.yawSensitivityStack];
@@ -1328,11 +1339,19 @@ BOOL isCustomResolution(int resolutionSelected) {
         showOnlineDocAction = true;
         onlineDocLink = [LocalizationHelper localizedStringForKey:@"emulatedControllerTypeStackDoc"];
     }
+    
     if([sender.superview.accessibilityIdentifier isEqualToString: @"gyroModeStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"gyroModeStackTip"];
         showOnlineDocAction = true;
-        onlineDocLink = [LocalizationHelper localizedStringForKey:@"gyroModeStackDoc"];
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"yourMotionControlSoution"];
     }
+        if([sender.superview.accessibilityIdentifier isEqualToString: @"mapGyroToStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"mapGyroToStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"yourMotionControlSoution"];
+    }
+
+    
     if([sender.superview.accessibilityIdentifier isEqualToString: @"renderingBackendStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"renderingBackendStackTip"];
         showOnlineDocAction = false;
@@ -1388,7 +1407,19 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"controllerToMouseStackTip", [ControllerUtil stringFor:tempSettings.controllerMouseSwitch.intValue],  [LocalizationHelper localizedStringForKey:tempSettings.controllerMouseStick.intValue == LeftStickToMouse ? @"Left stick" : @"Right stick"],  [ControllerUtil stringFor:tempSettings.controllerMouseLeftButton.intValue], [ControllerUtil stringFor:tempSettings.controllerMouseRightButton.intValue]];
         showOnlineDocAction = false;
     }
-    
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"reverseHoldButtonStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"reverseHoldButtonStackTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"leftStickMinOffsetStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"physicaStickMinOffsetTip"];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"rightStickMinOffsetStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"physicaStickMinOffsetTip"];
+        showOnlineDocAction = false;
+    }
+
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
     
@@ -1810,7 +1841,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.emulatedControllerTypeSelector setSelectedSegmentIndex:[self controllerTypeToSegmentIndex:self->tempSettings.emulatedControllerType.intValue]];
         [self.emulatedControllerTypeSelector addTarget:self action:@selector(emulatedControllerTypeChanged:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self emulatedControllerTypeChanged:self.emulatedControllerTypeSelector];
-      
+        
+        [self.leftStickMinOffsetSlider addTarget:self action:@selector(leftStickMinOffsetSliderMoved:) forControlEvents:UIControlEventValueChanged];
+        [self.rightStickMinOffsetSlider addTarget:self action:@selector(rightStickMinOffsetSliderMoved:) forControlEvents:UIControlEventValueChanged];
+
         [self.audioOnPcSwitch setOn:self->tempSettings.playAudioOnPC];
         
         [self.localVolumeSlider setValue:self->tempSettings.localVolume.floatValue*100];
@@ -2521,6 +2555,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_gyroToStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
 }
 
+- (void)leftStickMinOffsetSliderMoved:(UISlider* )sender{
+    [self findDynamicLabelFromStack:_leftStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
+}
+
+- (void)rightStickMinOffsetSliderMoved:(UISlider* )sender{
+    [self findDynamicLabelFromStack:_rightStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
+}
+
 - (void)invokeOscLayout{
     // init CustomOSC stuff
     /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
@@ -3212,7 +3254,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     if(![MicHandler permissionGranted]) [self.redirectMicSwitch setOn:false];
     
-    [self saveMotionControlConfigs];
+    [self saveGameProfileConfigs];
 }
 
 - (void) saveSettings {

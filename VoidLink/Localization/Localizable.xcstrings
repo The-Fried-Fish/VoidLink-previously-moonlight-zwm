@@ -1497,25 +1497,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gyro toggle button: %@\nGyro hold-down button: %@"
+            "value" : "Gyro toggle button: %@\nGyro hold-down button: %@\n\nThese buttons are able to switch DS4 gyro mapping on & off when enabled."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺仪切换按键: %@\n陀螺仪保持按键: %@"
+            "value" : "陀螺仪切换按键: %@\n陀螺仪保持按键: %@\n\n以上按键被启用后，也可用于启动/暂停DS4陀螺仪映射"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺儀切換按鍵: %@\n陀螺儀保持按鍵: %@"
+            "value" : "陀螺儀切換按鍵: %@\n陀螺儀保持按鍵: %@\n\n以上按鍵啟用後，也可用於啟動／暫停 DS4 陀螺儀映射。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "陀螺儀切換按鍵: %@\n陀螺儀保持按鍵: %@"
+            "value" : "陀螺儀切換按鍵: %@\n陀螺儀保持按鍵: %@\n\n以上按鍵啟用後，也可用於啟動／暫停 DS4 陀螺儀映射。"
           }
         }
       }
@@ -2788,35 +2788,6 @@
         }
       }
     },
-    "gyroModeStackDoc" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/uscwmv3vz8g30rmk"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/bz6ggagp0ly4loq3"
-          }
-        }
-      }
-    },
     "gyroModeStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3516,6 +3487,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手柄映射為滑鼠"
+          }
+        }
+      }
+    },
+    "mapGyroToStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- To map gyro directly to mouse/stick, must turn off DS4 gyro mapping in “Controller” section.\n\n- All settings in “Motion Control” section are saved with on-screen widget profile, which can be selected & managed in the right edge slide toolbox menu.\n\n- Motion control can be turned on & off by controller buttons or on-screen buttons"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "- 关闭“手柄”菜单分区的DS4陀螺仪映射后， 方可将陀螺仪直接映射为手柄或鼠标。\n\n- “体感控制”菜单分区的所有设置均保存在屏显控件配置中，可在右边缘滑出的工具箱菜单中切换。\n\n- 体感控制陀螺仪可由手柄按键或屏显按键开关。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 關閉「手柄」選單分區的 DS4 陀螺儀映射後，方可將陀螺儀直接映射為手柄或滑鼠。\n\n- 「體感控制」選單分區的所有設定皆儲存在螢幕顯示小工具配置中，可在右邊緣滑出的工具箱選單中切換。\n\n- 體感控制陀螺儀可由手把按鍵或螢幕顯示按鍵開關。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "- 關閉「手柄」選單分區的 DS4 陀螺儀映射後，方可將陀螺儀直接映射為手柄或滑鼠。\n\n- 「體感控制」選單分區的所有設定皆儲存在螢幕顯示小工具配置中，可在右邊緣滑出的工具箱選單中切換。\n\n- 體感控制陀螺儀可由手把按鍵或螢幕顯示按鍵開關。"
           }
         }
       }
@@ -4655,6 +4655,35 @@
         }
       }
     },
+    "physicaStickMinOffsetTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is saved in onscreen widget profile, which can be selected & managed in toolbox menu slide from the right screen edge."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此项设置保存在屏显控件配置方案中， 可在屏幕右边缘滑出的工具箱菜单中切换。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此項設定儲存在螢幕小工具配置方案中，可在螢幕右邊緣滑出的工具箱選單中切換。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此項設定儲存在螢幕小工具配置方案中，可在螢幕右邊緣滑出的工具箱選單中切換。"
+          }
+        }
+      }
+    },
     "pipStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5602,6 +5631,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢復執行中的應用程式"
+          }
+        }
+      }
+    },
+    "reverseHoldButtonStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, the gyro-hold button becomes a gyro-pause button: holding it down pauses the gyro, and releasing it reactivates it."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用该项后，陀螺仪保持按键变为陀螺仪暂停按键。按住暂停陀螺仪，松开重新启动陀螺仪。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用此項後，陀螺儀保持按鍵將變為陀螺儀暫停按鍵。按住可暫停陀螺儀，鬆開則重新啟動陀螺儀。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用此項後，陀螺儀保持按鍵將變為陀螺儀暫停按鍵。按住可暫停陀螺儀，鬆開則重新啟動陀螺儀。"
           }
         }
       }
@@ -7178,6 +7236,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "您的網路連線效能不佳。請降低您的視訊位元率設定或嘗試更快的連線。"
+          }
+        }
+      }
+    },
+    "yourMotionControlSoution" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/watpxdpsogirwie0"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/iy4zgh86odhfgf6h"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/iy4zgh86odhfgf6h"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/iy4zgh86odhfgf6h"
           }
         }
       }

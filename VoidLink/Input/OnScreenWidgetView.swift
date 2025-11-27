@@ -1291,31 +1291,29 @@ import UIKit
     }
     
     private func sendRightStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
-        var targetX = self.touchInputToStickInput(input: inputX)
-        var targetY = -self.touchInputToStickInput(input: inputY)
-        // vertical input must be inverted
-
+        let targetX = self.touchInputToStickInput(input: inputX)
+        let targetY = -self.touchInputToStickInput(input: inputY)
         
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
         if !mixRightStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
-            targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
-            targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
-            self.onScreenControls.sendRightStickTouchPadEvent(targetX, targetY)
+            
+            let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), withMinOffset: minStickOffset)
+            self.onScreenControls.sendRightStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
         }
         self.motionHandler.mixOnScreenRightStickAndGyroInput(x: targetX, y: targetY)
     }
     
     private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
-        var targetX = self.touchInputToStickInput(input: inputX)
-        var targetY = -self.touchInputToStickInput(input: inputY)
-        targetX = (targetX >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetX/self.stickMaxOffset)
-        targetY = (targetY >= 0 ? 1.0 : -1.0) * self.minStickOffset + (self.stickMaxOffset - self.minStickOffset) * (targetY/self.stickMaxOffset)
+        let targetX = self.touchInputToStickInput(input: inputX)
+        let targetY = -self.touchInputToStickInput(input: inputY)
         
         let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
         if !mixLeftStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
-            self.onScreenControls.sendLeftStickTouchPadEvent(targetX, targetY)
+            
+            let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), withMinOffset: minStickOffset)
+            self.onScreenControls.sendLeftStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
         }
         self.motionHandler.mixOnScreenLeftStickAndGyroInput(x: targetX, y: targetY)
     }

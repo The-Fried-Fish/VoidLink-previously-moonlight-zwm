@@ -232,6 +232,12 @@
 @property (strong, nonatomic) IBOutlet UIStackView *reverseHoldButtonStack;
 @property (strong, nonatomic) IBOutlet UISwitch *reverseHoldButtonSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *leftStickMinOffsetStack;
+@property (strong, nonatomic) IBOutlet UISlider *leftStickMinOffsetSlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *rightStickMinOffsetStack;
+@property (strong, nonatomic) IBOutlet UISlider *rightStickMinOffsetSlider;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;

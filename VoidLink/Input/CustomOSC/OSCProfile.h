@@ -42,6 +42,8 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property (nonatomic, assign) CGFloat accelSensitivityY;
 @property (nonatomic, assign) CGFloat accelSensitivityZ;
 @property (nonatomic, assign) double gyroToStickMinOffset;
+@property (nonatomic, assign) double physicalLeftStickMinOffset;
+@property (nonatomic, assign) double physicalRightStickMinOffset;
 @property (nonatomic, assign) int controllerGyroSwitchMode;
 @property (nonatomic, assign) bool reverseGyroHoldButton;
 @property (nonatomic, assign) int controllerGyroSwitchHold;
