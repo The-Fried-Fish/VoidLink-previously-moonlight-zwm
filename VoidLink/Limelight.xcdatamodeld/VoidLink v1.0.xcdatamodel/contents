@@ -30,11 +30,11 @@
         <attribute name="btMouseSupport" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="buttonVisualFeedback" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="controllerMouseExpo" optional="YES" attributeType="Float" defaultValueString="1.6" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="controllerMouseLeftButton" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseLeftButton" attributeType="Integer 32" defaultValueString="16777215" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="controllerMousePointerVelocity" optional="YES" attributeType="Float" defaultValueString="12" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="controllerMouseRightButton" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="controllerMouseStick" attributeType="Integer 16" defaultValueString="1024" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="controllerMouseSwitch" attributeType="Integer 32" defaultValueString="1024" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseRightButton" attributeType="Integer 32" defaultValueString="16777215" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseStick" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerMouseSwitch" attributeType="Integer 32" defaultValueString="16777215" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ctrlDownForPinch" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="delayLeftClick" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="deviceGyroMode" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
