@@ -30,8 +30,10 @@ import UIKit
         
         let currentDistance = UITouchUtil.distance(between: touch1, and: touch2, in: view)
         let previousDistance = UITouchUtil.previousDistance(between: touch1, and: touch2, in: view)
-        let midPointDeltaY = UITouchUtil.midPointDeltaY(between: touch1, and: touch2, in: view)
-        let midPointDeltaX = UITouchUtil.midPointDeltaX(between: touch1, and: touch2, in: view)
+        
+        let midPointVector = UITouchUtil.midPointVector(between: touch1, and: touch2, in: view)
+        let midPointDeltaX = midPointVector.dx
+        let midPointDeltaY = midPointVector.dy
         
         let originalPinchDelta = currentDistance-previousDistance;
         let pinchDelta = enablePinch ? originalPinchDelta*7*pinchSensitivity : 0;

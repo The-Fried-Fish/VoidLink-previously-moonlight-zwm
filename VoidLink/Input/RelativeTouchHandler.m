@@ -230,18 +230,24 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
 - (void)sendMouseMoveEvent:(CGPoint)currentLocation{
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        CGVector vector = [UITouchUtil vectorOf:self->touchLockedForMouseMove in:self->streamView];
-        int deltaX = vector.dx * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
-        int deltaY = vector.dy * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
-        
-        if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
-        if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);
-        
         bool isAdjacentPoints = [self isAdjacentPoints:self->initialMousePointerLocation from:currentLocation tolerance:self->currentSettings.relativeTouchSlideThreshold.floatValue];
     
         if (!self->firstTouchMoved && !isAdjacentPoints) {
             self->latestMousePointerLocation = currentLocation;
             self->firstTouchMoved = true;
+        }
+        
+        if (self->latestMousePointerLocation.x != currentLocation.x ||
+            self->latestMousePointerLocation.y != currentLocation.y)
+        {
+            int deltaX = (currentLocation.x - self->latestMousePointerLocation.x) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
+            int deltaY = (currentLocation.y - self->latestMousePointerLocation.y) * 1.35 * self->currentSettings.mousePointerVelocityFactor.floatValue;
+            
+            if (deltaX != 0 || deltaY != 0) {
+                self->latestMousePointerLocation = currentLocation;
+                if(self->touchPointSpawnedAtUpperScreenEdge) return; // we're done here. this touch event will not be sent to the remote PC.
+                if(self->firstTouchMoved) LiSendMouseMoveEvent(deltaX, deltaY);
+            }
         }
     });
 }

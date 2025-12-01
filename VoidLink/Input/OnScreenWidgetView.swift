@@ -135,6 +135,9 @@ import UIKit
     @objc public var deltaX: CGFloat
     @objc public var deltaY: CGFloat
     
+    @objc private var weightedDeltaX: Int = 0
+    @objc private var weightedDeltaY: Int = 0
+
     // for LSPAD, RSPAD
     @objc public var offSetX: CGFloat
     @objc public var offSetY: CGFloat
@@ -1683,20 +1686,22 @@ import UIKit
             self.mousePointerMoved = true
         }
         
-        let vector = UITouchUtil.vector(of: touch, in: self)
-        self.deltaX = vector.dx
-        self.deltaY = vector.dy
-        self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
-        self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
-    }
-    
-    private func updateTouchLocation(_ touches: Set<UITouch>){
-        let currentTouchLocation = touches.first!.location(in: self)
-        //if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: touchBeganLocation, tolerance: 0.5) {
         if !firstTouchMoved, !self.isAdjacentPoints(currentTouchLocation, from: touchBeganLocation, tolerance: slideThreshold) {
             // First move event
             self.latestTouchLocation = currentTouchLocation
             self.firstTouchMoved = true
+        }
+        
+        self.deltaX = currentTouchLocation.x - self.latestTouchLocation.x
+        self.deltaY = currentTouchLocation.y - self.latestTouchLocation.y
+        self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
+        self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
+    }
+    
+    private func updateTouchLocation(touch: UITouch){
+        let currentTouchLocation: CGPoint = (touch.location(in: self))
+        if weightedDeltaX != 0 || weightedDeltaY != 0 {
+            self.latestTouchLocation = currentTouchLocation
         }
     }
     
@@ -1706,24 +1711,30 @@ import UIKit
             switch self.touchPadString{
             case "MOUSEPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    if self.firstTouchMoved {LiSendMouseMoveEvent(Int16(self.deltaX * 1.7 * self.sensitivityFactorX), Int16(self.deltaY * 1.7 * self.sensitivityFactorY))}
-                    self.updateTouchLocation(touches)
+                    self.weightedDeltaX = Int(self.deltaX * 1.7 * self.sensitivityFactorX)
+                    self.weightedDeltaY = Int(self.deltaY * 1.7 * self.sensitivityFactorY)
+                    if self.firstTouchMoved {LiSendMouseMoveEvent(Int16(self.weightedDeltaX), Int16(self.weightedDeltaY))}
+                    self.updateTouchLocation(touch: touches.first!)
                 }
                 break
             case "TRACKBALL":
                 DispatchQueue.global(qos: .userInteractive).async {
+                    self.weightedDeltaX = Int(self.deltaX * 1.7 * self.sensitivityFactorX)
+                    self.weightedDeltaY = Int(self.deltaY * 1.7 * self.sensitivityFactorY)
                     if self.firstTouchMoved {
-                        LiSendMouseMoveEvent(Int16(self.deltaX * 1.7 * self.sensitivityFactorX), Int16(self.deltaY * 1.7 * self.sensitivityFactorY))
-                        self.trackballVelocity = CGPoint(x: self.deltaX * 1.7 * self.sensitivityFactorX, y: self.deltaY * 1.7 * self.sensitivityFactorY)
+                        LiSendMouseMoveEvent(Int16(self.weightedDeltaX), Int16(self.weightedDeltaY))
+                        self.trackballVelocity = CGPoint(x: self.weightedDeltaX, y: self.weightedDeltaY)
                         self.stopTrackballMomentum()
                     }
-                    self.updateTouchLocation(touches)
+                    self.updateTouchLocation(touch: touches.first!)
                 }
                 break
             case "ABSMOUSE":
+                self.weightedDeltaX = Int(self.deltaX * 1.7 * self.sensitivityFactorX)
+                self.weightedDeltaY = Int(self.deltaY * 1.7 * self.sensitivityFactorY)
                 if self.firstTouchMoved {
                     if !self.absMousePaused {
-                        let reachedEdgeMask = LiSendMouseMoveAsMousePositionEvent(Int16(truncatingIfNeeded: Int(self.deltaX * 1.7 * self.sensitivityFactorX)), Int16(truncatingIfNeeded: Int(self.deltaY * 1.7 * self.sensitivityFactorY)), Int16(self.superViewWidth), Int16(self.superViewHeight))
+                        let reachedEdgeMask = LiSendMouseMoveAsMousePositionEvent(Int16(truncatingIfNeeded: self.weightedDeltaX), Int16(truncatingIfNeeded: self.weightedDeltaY), Int16(self.superViewWidth), Int16(self.superViewHeight))
                         if reachedEdgeMask>0 {
                             self.handleMousePadButtonActionUp()
                             self.absMousePaused = true
@@ -1735,59 +1746,71 @@ import UIKit
                         }
                     }
                 }
-                self.updateTouchLocation(touches)
+                self.updateTouchLocation(touch: touches.first!)
                 break
             case "LSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
+                    self.weightedDeltaX = 1
                     self.sendLeftStickTouchPadEvent(inputX: self.offSetX * self.sensitivityFactorX, inputY: self.offSetY * self.sensitivityFactorY)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
-                self.updateTouchLocation(touches)
+                self.updateTouchLocation(touch: touches.first!)
             case "RSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
+                    self.weightedDeltaX = 1
                     self.sendRightStickTouchPadEvent(inputX: self.offSetX * self.sensitivityFactorX, inputY: self.offSetY * self.sensitivityFactorY)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
-                self.updateTouchLocation(touches)
+                self.updateTouchLocation(touch: touches.first!)
             case "LSVPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
+                    self.weightedDeltaX = Int(self.deltaX*1.5167*self.sensitivityFactorX)
+                    self.weightedDeltaY = Int(self.deltaY*1.5167*self.sensitivityFactorY)
                     if self.firstTouchMoved {
-                        self.sendLeftStickTouchPadEvent(inputX: self.deltaX*1.5167*self.sensitivityFactorX, inputY: self.deltaY*1.5167*self.sensitivityFactorY)
+                        self.sendLeftStickTouchPadEvent(inputX: CGFloat(self.weightedDeltaX), inputY: CGFloat(self.weightedDeltaY))
                     }
-                    self.updateTouchLocation(touches)
+                    self.updateTouchLocation(touch: touches.first!)
                 }
             case "RSVPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
+                    self.weightedDeltaX = Int(self.deltaX*1.5167*self.sensitivityFactorX)
+                    self.weightedDeltaY = Int(self.deltaY*1.5167*self.sensitivityFactorY)
                     if self.firstTouchMoved {
-                        self.sendRightStickTouchPadEvent(inputX: self.deltaX*1.5167*self.sensitivityFactorX, inputY: self.deltaY*1.5167*self.sensitivityFactorY)
+                        self.sendRightStickTouchPadEvent(inputX: CGFloat(self.weightedDeltaX), inputY: CGFloat(self.weightedDeltaY))
                     }
-                    self.updateTouchLocation(touches)
+                    self.updateTouchLocation(touch: touches.first!)
                 }
             case "LTPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.sendLeftTriggerTouchPadEvent(inputY: (-self.offSetY*4.5*self.sensitivityFactorY))
-                    self.updateTouchLocation(touches)
+                    self.weightedDeltaY = 1
+                    self.sendLeftTriggerTouchPadEvent(inputY: -self.offSetY*4.5*self.sensitivityFactorY)
+                    self.updateTouchLocation(touch: touches.first!)
                 }
             case "RTPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.sendRightTriggerTouchPadEvent(inputY: (-self.offSetY*4.5*self.sensitivityFactorY))
-                    self.updateTouchLocation(touches)
+                    self.weightedDeltaY = 1
+                    self.sendRightTriggerTouchPadEvent(inputY: -self.offSetY*4.5*self.sensitivityFactorY)
+                    self.updateTouchLocation(touch: touches.first!)
                 }
             case "DPAD", "WASDPAD", "ARROWPAD":
+                self.weightedDeltaX = 1
                 handleLrudTouchMove()
-                self.updateTouchLocation(touches)
+                self.updateTouchLocation(touch: touches.first!)
             case "MOUSEWHEEL","WHEEL":
-                if firstTouchMoved {LiSendHighResScrollEvent(Int16(self.deltaY*7.5*self.sensitivityFactorY))}
-                self.updateTouchLocation(touches)
+                self.weightedDeltaY = Int(self.deltaY*7.5*self.sensitivityFactorY)
+                if firstTouchMoved {LiSendHighResScrollEvent(Int16(self.weightedDeltaY))}
+                self.updateTouchLocation(touch: touches.first!)
             case "DISCRETEWHEEL", "DSWHEEL":
                 let currentLocation = touches.first!.location(in: self)
                 tickFlag = (tickFlag+1)%UInt8(CGFloat(tickCycle)/abs(sensitivityFactorY))
                 var delta = self.deltaY
+                self.weightedDeltaY = 1
+                if delta==0 {self.weightedDeltaY = 0}
                 if delta==0 {delta=self.touchBeganLocation.y-currentLocation.y}
                 delta = delta * CGFloat(copysign(1.0, sensitivityFactorY))
                 if tickFlag == 1, delta != 0 {LiSendScrollEvent(delta > 0 ? -3 : 3)}
                 // self.latestTouchLocation = currentLocation
-                self.updateTouchLocation(touches)
+                self.updateTouchLocation(touch: touches.first!)
             default:
                 break
             }
