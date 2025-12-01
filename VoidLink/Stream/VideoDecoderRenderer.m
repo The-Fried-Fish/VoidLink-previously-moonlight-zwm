@@ -629,7 +629,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     }
 
     Log(LOG_I, @"AV1 video range: %@", seqHeader->color_config.color_range == 1 ? @"full" : @"limited");
-    SET_EXTENSION(kCMFormatDescriptionExtension_FullRangeVideo, @(seqHeader->color_config.color_range == 1));
+    // Force full range AV1 video for now, as sunshine incorrect reports limited range
+    SET_EXTENSION(kCMFormatDescriptionExtension_FullRangeVideo, @YES);
 
     // Progressive content
     SET_EXTENSION(kCMFormatDescriptionExtension_FieldCount, @(1));
