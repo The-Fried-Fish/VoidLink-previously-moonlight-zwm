@@ -24,6 +24,7 @@
 - (void)toggleStatsOverlay;
 - (void)toggleMouseCapture;
 - (void)toggleMouseVisible;
+- (void)disconnectAndQuitApp;
 
 @end
 
