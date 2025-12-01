@@ -1518,7 +1518,7 @@ import UIKit
             else {return}
         }
         
-        if !firstTouchMoved, !self.isAdjacentPoints(currentLocation, from: latestTouchLocation, tolerance: 0.5) {
+        if !firstTouchMoved, !self.isAdjacentPoints(currentLocation, from: latestTouchLocation, tolerance: 1) {
             // First move event
             self.latestTouchLocation = currentLocation
             self.firstTouchMoved = true
