@@ -221,10 +221,18 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     } mutableCopy];
 #else
     NSNumber *pixelFormat = nil;
-    if (self->_videoFormat & VIDEO_FORMAT_MASK_YUV444) {
+
+    // Uses limited range for AV1 as full range doesn't work well on all devices
+    if (self->_videoFormat & VIDEO_FORMAT_MASK_AV1) {
+        if (self->_videoFormat & VIDEO_FORMAT_MASK_YUV444) {
+            pixelFormat = @(kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange);
+        } else {
+            pixelFormat = @(kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange);
+        }
+        Log(LOG_I, @"Using VideoRange pixel format for AV1 (workaround for M3 decoder bug)");
+    } else if (self->_videoFormat & VIDEO_FORMAT_MASK_YUV444) {
         pixelFormat = @(kCVPixelFormatType_444YpCbCr10BiPlanarFullRange);
-    }
-    else {
+    } else {
         pixelFormat = @(kCVPixelFormatType_420YpCbCr10BiPlanarFullRange);
     }
     NSMutableDictionary *destinationPixelBufferAttributes = [@{
@@ -628,9 +636,12 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
             break;
     }
 
-    Log(LOG_I, @"AV1 video range: %@", seqHeader->color_config.color_range == 1 ? @"full" : @"limited");
-    // Force full range AV1 video for now, as sunshine incorrect reports limited range
-    SET_EXTENSION(kCMFormatDescriptionExtension_FullRangeVideo, @YES);
+    Log(LOG_I, @"AV1 video range reported by stream: %@", seqHeader->color_config.color_range == 1 ? @"full" : @"limited");
+
+    // Forces limited range for AV1 as full range doesn't work well on all devices
+    SET_EXTENSION(kCMFormatDescriptionExtension_FullRangeVideo, @NO);
+
+    Log(LOG_I, @"AV1 using limited range end-to-end");
 
     // Progressive content
     SET_EXTENSION(kCMFormatDescriptionExtension_FieldCount, @(1));
