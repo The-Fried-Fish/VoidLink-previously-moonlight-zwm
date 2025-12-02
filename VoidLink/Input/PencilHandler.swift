@@ -151,7 +151,8 @@ import UIKit
                 eventType = UInt8(LI_TOUCH_EVENT_MOVE)
             }
 
-            delay = eventType == UInt8(LI_TOUCH_EVENT_UP) ? 0.0086 : 0
+            delay = manualTick ? 0.0086 : 0.017
+            delay = eventType == UInt8(LI_TOUCH_EVENT_UP) ? delay : 0
             
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
                 LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(location.x/videoSize.width), Float(location.y/videoSize.height), Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude)), 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
