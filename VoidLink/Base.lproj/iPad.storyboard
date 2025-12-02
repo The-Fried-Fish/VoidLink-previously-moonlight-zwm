@@ -61,7 +61,7 @@
                         <viewControllerLayoutGuide type="bottom" id="XvO-F3-j4u"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="WRy-3f-gEP" customClass="UIScrollView">
-                        <rect key="frame" x="0.0" y="0.0" width="2165" height="5000"/>
+                        <rect key="frame" x="0.0" y="0.0" width="3700" height="5000"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="zpX-lo-MLA" userLabel="Resolutionstak">
@@ -1150,7 +1150,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="RGd-TV-mkU" userLabel="sendDummyEvent">
-                                <rect key="frame" x="432" y="2264" width="299.5" height="31"/>
+                                <rect key="frame" x="432" y="2264" width="589.5" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Send Dummy Event" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gus-CK-wpc" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="149.5" height="31"/>
@@ -1164,6 +1164,26 @@
                                             <constraint firstAttribute="width" constant="130" id="bOP-xq-rYt"/>
                                         </constraints>
                                     </switch>
+                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="jCF-si-KLC" userLabel="useBuiltinMicStack">
+                                        <rect key="frame" x="319.5" y="0.0" width="270" height="31"/>
+                                        <subviews>
+                                            <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Built-in Mic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bfV-QT-eKw" userLabel="uiLabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="120" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H3f-qy-ySA" userLabel="useBuiltinMicSwitch">
+                                                <rect key="frame" x="140" y="0.0" width="132" height="31"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="130" id="e7s-Xg-mNQ"/>
+                                                </constraints>
+                                            </switch>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="31" id="GWg-Dx-N44"/>
+                                        </constraints>
+                                    </stackView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="31" id="Gs7-g5-VMU"/>
@@ -1187,26 +1207,6 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="55.5" id="Kaw-h7-D2V"/>
                                     <constraint firstAttribute="width" constant="380" id="Oij-e2-w81"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="jCF-si-KLC" userLabel="useBuiltinMicStack">
-                                <rect key="frame" x="432" y="2310" width="270" height="31"/>
-                                <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Built-in Mic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bfV-QT-eKw" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="120" height="31"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H3f-qy-ySA" userLabel="useBuiltinMicSwitch">
-                                        <rect key="frame" x="140" y="0.0" width="132" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="e7s-Xg-mNQ"/>
-                                        </constraints>
-                                    </switch>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="31" id="GWg-Dx-N44"/>
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="gBG-8F-6F8">
@@ -1862,10 +1862,55 @@
                                     <constraint firstAttribute="height" constant="55.5" id="f4J-WQ-LBI"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="zuF-a5-GOI">
+                                <rect key="frame" x="3145" y="31" width="380" height="56.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pencil Tick" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qat-gL-qiL">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="bVv-CW-kN8">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Manual"/>
+                                            <segment title="Timestamp"/>
+                                            <segment title="Off"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56.5" id="DvL-nr-jOU"/>
+                                    <constraint firstAttribute="width" constant="380" id="ZCX-ga-WNg"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="O2s-9s-ABi">
+                                <rect key="frame" x="3145" y="113" width="380" height="55.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Tick Interval" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xE0-v2-n9r" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="4000" translatesAutoresizingMaskIntoConstraints="NO" id="IOG-l4-gtQ">
+                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <color key="tintColor" systemColor="linkColor"/>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="55.5" id="Jg0-mh-DYq"/>
+                                    <constraint firstAttribute="width" constant="380" id="gdZ-zL-Wl7"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
-                    <size key="freeformSize" width="2165" height="5000"/>
+                    <size key="freeformSize" width="3700" height="5000"/>
                     <connections>
                         <outlet property="appThemeSelector" destination="wi6-L4-KwS" id="mf9-YY-eyE"/>
                         <outlet property="appThemeStack" destination="Wf6-BA-Mdv" id="hlq-bB-S8N"/>
@@ -1959,6 +2004,10 @@
                         <outlet property="optimizeGamesSwitch" destination="Sui-Ig-YxN" id="Lxu-si-ugy"/>
                         <outlet property="passthroughGesturesStack" destination="wUP-2q-5vh" id="a4w-16-lLs"/>
                         <outlet property="passthroughGesturesSwitch" destination="eO1-kV-e9j" id="5r8-o4-t9J"/>
+                        <outlet property="pencilTickIntervalSlider" destination="IOG-l4-gtQ" id="3Kb-uT-ILa"/>
+                        <outlet property="pencilTickIntervalStack" destination="O2s-9s-ABi" id="0kk-q4-ppy"/>
+                        <outlet property="pencilTickSelector" destination="bVv-CW-kN8" id="Ymr-VI-Ilj"/>
+                        <outlet property="pencilTickStack" destination="zuF-a5-GOI" id="Nn7-GA-yQM"/>
                         <outlet property="performanceGraphStack" destination="H8p-G9-pnl" id="9RJ-uO-IpF"/>
                         <outlet property="pinchGestureStack" destination="uEq-Pc-Fum" id="68g-K6-P87"/>
                         <outlet property="pinchGestureSwitch" destination="TJy-Zp-DKM" id="Haj-ha-vNy"/>
@@ -2051,7 +2100,7 @@
                     </items>
                 </navigationBar>
             </objects>
-            <point key="canvasLocation" x="-503.95683453237416" y="1977.520661157025"/>
+            <point key="canvasLocation" x="-1023" y="1983"/>
         </scene>
         <!--Reveal View Controller-->
         <scene sceneID="rR7-ZT-bc7">
@@ -2870,7 +2919,7 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2879,13 +2928,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -1627,6 +1627,42 @@
         }
       }
     },
+    "bVv-CW-kN8.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[0] = \"Manual\"; ObjectID = \"bVv-CW-kN8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Manual"
+          }
+        }
+      }
+    },
+    "bVv-CW-kN8.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"Timestamp\"; ObjectID = \"bVv-CW-kN8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Timestamp"
+          }
+        }
+      }
+    },
+    "bVv-CW-kN8.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[2] = \"Off\"; ObjectID = \"bVv-CW-kN8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Off"
+          }
+        }
+      }
+    },
     "c1r-Hf-b7t.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Down button\"; ObjectID = \"c1r-Hf-b7t\";",
       "extractionState" : "extracted_with_value",
@@ -4465,6 +4501,18 @@
         }
       }
     },
+    "Qat-gL-qiL.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pencil Tick\"; ObjectID = \"Qat-gL-qiL\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pencil Tick"
+          }
+        }
+      }
+    },
     "QdG-9a-5AZ.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Soft Keyboard Toolbar\"; ObjectID = \"QdG-9a-5AZ\";",
       "extractionState" : "extracted_with_value",
@@ -5205,6 +5253,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Roll factor"
+          }
+        }
+      }
+    },
+    "xE0-v2-n9r.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Tick Interval\"; ObjectID = \"xE0-v2-n9r\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tick Interval"
           }
         }
       }

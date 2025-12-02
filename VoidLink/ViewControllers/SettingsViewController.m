@@ -555,6 +555,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone;
 }
 
+- (BOOL)isIPad {
+    return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
+}
+
 - (CGFloat)getStandardNavBarHeight{
     return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
 }
@@ -820,10 +824,25 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.gyroToStickMinOffsetStack ofId:@"gyroToStickMinOffsetStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
     [self addSetting:self.synthPhysicalInputStack ofId:@"synthPhysicalInputStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
     [motionControlSection addToParentStack:_parentStack];
-
+    
+    
+    if([self isIPad]){
+        MenuSectionView* pencilSection = [[MenuSectionView alloc] init];
+        pencilSection.delegate = self;
+        pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Pencil"];
+        pencilSection.identifier = @"SettingsSectionMotionControl";
+        if (@available(iOS 13.0, *)) {
+            [pencilSection setSectionWithIcon:[UIImage systemImageNamed:@"pencil.and.outline"] size:19 weight:UIImageSymbolWeightHeavy];
+        }
+        [self addSetting:self.pencilTickStack ofId:@"pencilTickStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
+        [self addSetting:self.pencilTickIntervalStack ofId:@"pencilTickIntervalStack" withInfoTag:NO withDynamicLabel:YES to:pencilSection];
+        [pencilSection addToParentStack:_parentStack];
+    }
+    
+    
     MenuSectionView *gesturesSection = [[MenuSectionView alloc] init];
     gesturesSection.delegate = self;
-    gesturesSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Gestures"];
+    gesturesSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Gestures"];  
     gesturesSection.identifier = @"SettingsSectionGestures";
     if (@available(iOS 13.0, *)) {
         [gesturesSection setSectionWithIcon:[UIImage systemImageNamed:@"hand.draw"] andSize:23];
@@ -2071,7 +2090,11 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         [self.gyroToStickMinOffsetSlider addTarget:self action:@selector(gyroMinStickOffsetSliderMoved:) forControlEvents:UIControlEventValueChanged];
 
-        //Motion control settings
+        
+        
+        // pencil support settings:
+        [self loadPencilSettings:self->tempSettings];
+        
         
         self->settingsViewJustLoaded = false;
     }];
@@ -3257,10 +3280,39 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self saveGameProfileConfigs];
 }
 
+- (void)pencilTickModeChanged:(UISegmentedControl* )sender{
+    [self setHidden:sender.selectedSegmentIndex != ManualTick forStack:self.pencilTickIntervalStack];
+}
+
+- (void)pencilTickIntervalSliderMoved:(UISlider* )sender{
+    [self findDynamicLabelFromStack:self.pencilTickIntervalStack].text = [NSString stringWithFormat:@"  %d μs  ", (uint16_t)sender.value];
+}
+
+- (void)loadPencilSettings:(TemporarySettings*) tempSettings{
+    if([self isIPad]){
+        self.pencilTickSelector.selectedSegmentIndex = tempSettings.pencilTickMode.intValue;
+        [self.pencilTickSelector addTarget:self action:@selector(pencilTickModeChanged:) forControlEvents:UIControlEventValueChanged];
+        [self pencilTickModeChanged:self.pencilTickSelector];
+        
+        [self.pencilTickIntervalSlider setValue:tempSettings.pencilTickIntervalUs.floatValue];
+        [self.pencilTickIntervalSlider addTarget:self action:@selector(pencilTickIntervalSliderMoved:) forControlEvents:UIControlEventValueChanged];
+        [self pencilTickIntervalSliderMoved:self.pencilTickIntervalSlider];
+    }
+}
+
+- (void)populatePencilSettings:(Settings*)currentSettings{
+    if([self isIPad]){
+        currentSettings.pencilTickMode = @(self.pencilTickSelector.selectedSegmentIndex);
+        currentSettings.pencilTickIntervalUs = @(self.pencilTickIntervalSlider.value);
+    }
+}
+
 - (void) saveSettings {
     [self preSavingActions];
 
     Settings* currentSettings = [dataMan retrieveSettings];
+    
+    [self populatePencilSettings:currentSettings];
     
     CGFloat settingsMenuOffset = _rememberFoldStateSwitch.isOn ? _scrollView.contentOffset.y : 0;
     
@@ -3343,7 +3395,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger controllerGyroSwitchMode = self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
-    [dataMan saveSettingsWithBitrate:_bitrate
+    [dataMan saveSettings:currentSettings
+                         withBitrate:_bitrate
                            framerate:framerate
                               height:height
                                width:width

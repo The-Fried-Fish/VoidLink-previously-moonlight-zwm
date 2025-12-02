@@ -240,7 +240,17 @@
 
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
+
 @property (nonatomic, strong) MicHandler *micHandler;
+
+
+
+@property (strong, nonatomic) IBOutlet UIStackView *pencilTickStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *pencilTickSelector;
+
+@property (strong, nonatomic) IBOutlet UIStackView *pencilTickIntervalStack;
+@property (strong, nonatomic) IBOutlet UISlider *pencilTickIntervalSlider;
+
 
 
 #pragma clang diagnostic push

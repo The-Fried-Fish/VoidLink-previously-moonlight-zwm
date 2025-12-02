@@ -228,6 +228,23 @@ static BOOL overridePersistedFoldState = YES;
     [self updateLayout];
 }
 
+- (void)setSectionWithIcon:(UIImage *)icon size:(CGFloat)size weight:(UIImageSymbolWeight)weight API_AVAILABLE(ios(13.0)){
+    if (@available(iOS 13.0, *)) {
+        UIImageSymbolConfiguration *config;
+        if(icon.isSymbolImage) config = [UIImageSymbolConfiguration configurationWithPointSize:size weight:weight];
+        else{
+            config = [UIImageSymbolConfiguration configurationWithPointSize:size];
+            icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        _iconImageView.image = [icon imageWithConfiguration:config];
+    } else {
+        _iconImageView.image = icon;
+    }
+    _iconImageView.tintColor = [ThemeManager textColor];
+    _iconImageView.hidden = (icon == nil);
+    [self updateLayout];
+}
+
 - (void)setLeadingTrailingPadding:(CGFloat)leadingTrailingPadding {
     _leadingTrailingPadding = leadingTrailingPadding;
     [self updateLayout];

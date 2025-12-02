@@ -103,6 +103,12 @@
 @property (nonatomic, retain) NSNumber * controllerMousePointerVelocity;
 @property (nonatomic, retain) NSNumber * controllerMouseExpo;
 
+
+// Pencil settings:
+@property (nonatomic, retain) NSNumber * pencilTickMode;
+@property (nonatomic, retain) NSNumber * pencilTickIntervalUs;
+
+
 - (id) initFromSettings:(Settings*)settings;
 
 @end

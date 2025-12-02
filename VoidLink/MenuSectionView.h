@@ -41,6 +41,7 @@
 
 // 方法
 - (void)setSectionWithIcon:(UIImage *)icon andSize:(CGFloat)size;
+- (void)setSectionWithIcon:(UIImage *)icon size:(CGFloat)size weight:(UIImageSymbolWeight)weight API_AVAILABLE(ios(13.0));
 - (void)addSubStackView:(UIStackView *)stackView;
 - (void)addToParentStack:(UIStackView *)parentStack;
 - (void)removeSubStackView:(UIStackView *)stackView;

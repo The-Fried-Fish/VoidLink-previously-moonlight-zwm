@@ -58,7 +58,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     int localMousePointerMode;
     
     UIResponder* touchHandler;
-    
+    PencilHandler* pencilHandler;
+
     id<UserInteractionDelegate> interactionDelegate;
     NSTimer* interactionTimer;
     BOOL hasUserInteracted;
@@ -127,6 +128,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // tvOS requires RelativeTouchHandler to manage Apple Remote input
     self->touchHandler = [[RelativeTouchHandler alloc] initWithView:self];
 #else
+    
+    pencilHandler = [[PencilHandler alloc] initWithStreamView:self settings:settings];
+    
     // iOS uses touch Mode depending on user preference
         
     switch (settings.touchMode.intValue) {
@@ -753,7 +757,14 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     if (@available(iOS 13.4, *)) { // now only pencil events are restricted
         for (UITouch* touch in touches) {
             if (touch.type == UITouchTypePencil) {
-                if ([self sendStylusEvent:touch]) return;
+                if(settings.pencilTickMode.intValue == PencilTickDisabled){
+                    [self sendStylusEvent:touch];
+                    return;
+                }
+                else{
+                    [pencilHandler touchesBegan:touches withEvent:event];
+                    return;
+                }
             }
         }
     }
@@ -910,7 +921,14 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     for (UITouch* touch in touches) {
         if (touch.type == UITouchTypePencil) {
-            if ([self sendStylusEvent:touch]) return;
+            if(settings.pencilTickMode.intValue == PencilTickDisabled){
+                [self sendStylusEvent:touch];
+                return;
+            }
+            else{
+                [pencilHandler touchesMoved:touches withEvent:event];
+                return;
+            }
         }
         if (@available(iOS 13.4, *)) {
             UITouch *touch = [touches anyObject];
@@ -1015,7 +1033,14 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     if (@available(iOS 13.4, *)){ //now only pencil events are restricted
         for (UITouch* touch in touches) {
             if (touch.type == UITouchTypePencil) {
-                if ([self sendStylusEvent:touch]) return;
+                if(settings.pencilTickMode.intValue == PencilTickDisabled){
+                    [self sendStylusEvent:touch];
+                    return;
+                }
+                else{
+                    [pencilHandler touchesEnded:touches withEvent:event];
+                    return;
+                }
             }
         }
     }
@@ -1046,7 +1071,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     if (@available(iOS 13.4, *)){ //now only pencil events are restricted
         for (UITouch* touch in touches) {
             if (touch.type == UITouchTypePencil) {
-                if ([self sendStylusEvent:touch]) return;
+                [self touchesEnded:touches withEvent:event];
             }
         }
     }

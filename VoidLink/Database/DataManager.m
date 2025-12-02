@@ -55,7 +55,8 @@
     return uid;
 }
 
-- (void) saveSettingsWithBitrate:(NSInteger)bitrate
+- (void) saveSettings:(Settings*)settings
+                     withBitrate:(NSInteger)bitrate
                        framerate:(NSInteger)framerate
                           height:(NSInteger)height
                            width:(NSInteger)width
@@ -125,9 +126,10 @@
              controllerMouseExpo:(CGFloat)controllerMouseExpo
         controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
-
+    
+    __block Settings* settingsToSave = settings;
     [_managedObjectContext performBlockAndWait:^{
-        Settings* settingsToSave = [self retrieveSettings];
+        if(!settingsToSave) settingsToSave = [self retrieveSettings];
         settingsToSave.framerate = [NSNumber numberWithInteger:framerate];
         settingsToSave.bitrate = [NSNumber numberWithInteger:bitrate];
         settingsToSave.height = [NSNumber numberWithInteger:height];

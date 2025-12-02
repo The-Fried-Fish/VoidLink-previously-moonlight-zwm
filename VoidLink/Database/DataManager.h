@@ -83,7 +83,14 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
     transitionWithOrientation,
 };
 
-- (void) saveSettingsWithBitrate:(NSInteger)bitrate
+typedef NS_ENUM(NSInteger, PencilTickMode) {
+    ManualTick,
+    TimestampTick,
+    PencilTickDisabled
+};
+
+- (void) saveSettings:(Settings*)settings
+                     withBitrate:(NSInteger)bitrate
                        framerate:(NSInteger)framerate
                           height:(NSInteger)height
                            width:(NSInteger)width
