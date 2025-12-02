@@ -42,6 +42,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     AVSampleBufferDisplayLayer* _displayLayer;
     int _videoFormat;
     int _frameRate;
+    BOOL _fullRange;
 
     NSMutableArray *_parameterSetBuffers;
     NSData *_masteringDisplayColorVolume;
@@ -150,10 +151,11 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
 # pragma mark DisplayLink vsync callback
 
-- (void)setupWithVideoFormat:(int)videoFormat width:(int)videoWidth height:(int)videoHeight frameRate:(int)frameRate
+- (void)setupWithVideoFormat:(int)videoFormat width:(int)videoWidth height:(int)videoHeight frameRate:(int)frameRate fullRange:(BOOL)fullRange
 {
     self->_videoFormat = videoFormat;
     self->_frameRate = frameRate;
+    self->_fullRange = fullRange;
 
     // reset plot data in case we've already used it for a previous renderer
     [[ImGuiPlots sharedInstance] clearData];
@@ -222,9 +224,9 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 #else
     NSNumber *pixelFormat = nil;
     if (self->_videoFormat & VIDEO_FORMAT_MASK_YUV444) {
-        pixelFormat = @(kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange);
+        pixelFormat = self->_fullRange ? @(kCVPixelFormatType_444YpCbCr10BiPlanarFullRange) : @(kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange);
     } else {
-        pixelFormat = @(kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange);
+        pixelFormat = self->_fullRange ? @(kCVPixelFormatType_420YpCbCr10BiPlanarFullRange) : @(kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange);
     }
     NSMutableDictionary *destinationPixelBufferAttributes = [@{
         (id)kCVPixelBufferPixelFormatTypeKey : pixelFormat
