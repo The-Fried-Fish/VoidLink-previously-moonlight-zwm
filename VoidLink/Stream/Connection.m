@@ -591,7 +591,6 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _callbacks = callbacks;
 
     LiInitializeStreamConfiguration(&_streamConfig);
-    _streamConfig.colorRange = 1; // Full range
     _streamConfig.width = config.width;
     _streamConfig.height = config.height;
     _streamConfig.fps = config.frameRate;
