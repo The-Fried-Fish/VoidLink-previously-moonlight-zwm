@@ -2953,6 +2953,18 @@
         }
       }
     },
+    "iPd-Ra-Lbl.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Full Range\"; ObjectID = \"iPd-Ra-Lbl\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Full Range"
+          }
+        }
+      }
+    },
     "IvI-tw-APj.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Open Settings in Streaming\"; ObjectID = \"IvI-tw-APj\";",
       "extractionState" : "extracted_with_value",

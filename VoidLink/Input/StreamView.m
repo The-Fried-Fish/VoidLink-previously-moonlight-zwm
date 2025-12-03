@@ -960,6 +960,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         case UIKeyboardHIDUsageKeyboardC:
             [interactionDelegate toggleMouseVisible];
             break;
+        case UIKeyboardHIDUsageKeyboardD:
+            [interactionDelegate disconnectAndQuitApp];
+            break;
         default:
             break;
     }

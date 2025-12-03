@@ -49,6 +49,7 @@
 @property (strong, nonatomic) IBOutlet UIStackView *codecStack;
 @property (strong, nonatomic) IBOutlet UIStackView *yuv444Stack;
 @property (strong, nonatomic) IBOutlet UIStackView *pipStack;
+@property (strong, nonatomic) IBOutlet UIStackView *fullRangeStack;
 @property (strong, nonatomic) IBOutlet UIStackView *hdrStack;
 @property (strong, nonatomic) IBOutlet UIStackView *reverseMouseWheelDirectionStack;
 @property (strong, nonatomic) IBOutlet UIStackView *citrixX1MouseStack;
@@ -78,6 +79,7 @@
 @property (strong, nonatomic) IBOutlet UISwitch *hdrSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *yuv444Switch;
 @property (strong, nonatomic) IBOutlet UISwitch *pipSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *fullRangeSwitch;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *reverseMouseWheelDirectionSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *statsOverlaySelector;
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;

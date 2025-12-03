@@ -2197,6 +2197,18 @@
         }
       }
     },
+    "fRl-Ra-Lbl.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Full Range\"; ObjectID = \"fRl-Ra-Lbl\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Full Range"
+          }
+        }
+      }
+    },
     "GbY-52-itv.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Local Volume\"; ObjectID = \"GbY-52-itv\";",
       "extractionState" : "extracted_with_value",
