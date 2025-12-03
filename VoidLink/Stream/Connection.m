@@ -57,6 +57,7 @@ static AVAudioPCMBuffer *pcmBuffer;
 static AVAudioFormat *audioFormat;
 
 static bool muteInBackground;
+static bool fullColorRange;
 
 static VideoDecoderRenderer* renderer;
 
@@ -64,7 +65,7 @@ static BandwidthTracker *bwTracker;
 
 int DrDecoderSetup(int videoFormat, int width, int height, int redrawRate, void* context, int drFlags)
 {
-    [renderer setupWithVideoFormat:videoFormat width:width height:height frameRate:redrawRate];
+    [renderer setupWithVideoFormat:videoFormat width:width height:height frameRate:redrawRate fullRange:fullColorRange];
     lastFrameNumber = 0;
     activeVideoFormat = videoFormat;
     Log(LOG_I, @"Active video format: 0x%x", activeVideoFormat);
@@ -591,7 +592,8 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _callbacks = callbacks;
 
     LiInitializeStreamConfiguration(&_streamConfig);
-    _streamConfig.colorRange = 1; // Full range
+    _streamConfig.colorRange = config.fullColorRange ? 1 : 0;
+    fullColorRange = config.fullColorRange;
     _streamConfig.width = config.width;
     _streamConfig.height = config.height;
     _streamConfig.fps = config.frameRate;

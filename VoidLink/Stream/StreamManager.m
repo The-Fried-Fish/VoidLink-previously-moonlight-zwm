@@ -205,6 +205,8 @@
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
 
+    NSString* colorRange = _config.fullColorRange ? @"Full" : @"Limited";
+
     if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"simplifiedOsdText",
                  fps,
                  stats.networkDroppedFrames / interval,
@@ -221,7 +223,7 @@
                 }
             }
             
-            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@, %@)\n"
                      "Bitrate: %.1f Mbps, Peak: %.1f\n"
                      "%@"
                      "Renderer: %@\n"
@@ -231,6 +233,7 @@
                      _config.height,
                      fps,
                      [_connection getActiveCodecName],
+                     colorRange,
                      avgVideoMbps, peakVideoMbps,
                      hostProcessingString,
                      rendererWithPacing,
@@ -242,7 +245,7 @@
                 rendererWithPacing = @"AVSampleBuffer (Queue Pacing)";
             }
             
-            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@)\n"
+            return [LocalizationHelper localizedStringForKey:@"Video stream: %dx%d %.2f FPS (Codec: %@, %@)\n"
                      "Bitrate: %.1f Mbps, Peak: %.1f, Frames buffered: %.1f\n"
                      "%@"
                      "Renderer: %@\n"
@@ -253,6 +256,7 @@
                      _config.height,
                      fps,
                      [_connection getActiveCodecName],
+                     colorRange,
                      avgVideoMbps, peakVideoMbps, stats.frameQueueMetrics.avg,
                      hostProcessingString,
                      rendererWithPacing,

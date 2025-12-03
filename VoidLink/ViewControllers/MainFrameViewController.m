@@ -828,6 +828,9 @@ static NSMutableSet* hostList;
     _streamConfig.localVolume = streamSettings.localVolume.floatValue;
     _streamConfig.swapABXYButtons = streamSettings.swapABXYButtons;
     _streamConfig.buttonVisualFeedback = streamSettings.buttonVisualFeedback;
+    _streamConfig.enableYUV444 = streamSettings.enableYUV444;
+    _streamConfig.enablePIP = streamSettings.enablePIP;
+    _streamConfig.fullColorRange = streamSettings.fullColorRange;
     _streamConfig.asyncNativeTouchPriority = streamSettings.asyncNativeTouchPriority; // new streamConfig segment
     _streamConfig.gyroMode = [streamSettings.gyroMode intValue];
     _streamConfig.emulatedControllerType = streamSettings.emulatedControllerType.intValue;
@@ -1175,9 +1178,15 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
     [settingsViewController.touchModeSelector1 setEnabled:!_settingsExpandedInStreamView || !(settingsViewController.touchModeSelector1.selectedSegmentIndex == AbsoluteTouch && !settingsViewController.passthroughGesturesSwitch.isOn)];
     [settingsViewController.touchModeSelector2 setEnabled:settingsViewController.touchModeSelector1.enabled];
+    
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];
-    [settingsViewController.yuv444Switch setEnabled:!_settingsExpandedInStreamView];
-    [settingsViewController.hdrSwitch setEnabled:!_settingsExpandedInStreamView && [settingsViewController hdrSupported]];
+    if(_settingsExpandedInStreamView){
+        [settingsViewController.yuv444Switch setEnabled:NO];
+        [settingsViewController.fullColorRangeSwitch setEnabled:NO];
+        [settingsViewController.hdrSwitch setEnabled:NO];
+    }
+    else [settingsViewController updateCodecDependentSwitches];
+    
     [settingsViewController.gyroModeSelector setEnabled:!_settingsExpandedInStreamView || ![streamFrameViewController shallDisableGyroHotSwitch]];
     [settingsViewController.emulatedControllerTypeSelector setEnabled:!_settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.citrixX1MouseStack];

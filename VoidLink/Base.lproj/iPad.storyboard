@@ -584,6 +584,29 @@
                                     <constraint firstAttribute="height" constant="31" id="8mE-tx-T8i"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Rg-St7" userLabel="fullColorRangeStack">
+                                <rect key="frame" x="432" y="1901" width="280" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Color Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Ra-Lbl" userLabel="fullRangeLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="iPd-Ra-Wdt"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Wt-Ch9" userLabel="fullRangeSwitch">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="iPd-Wt-Wdt"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="iPd-Ht-Con"/>
+                                </constraints>
+                            </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="H8p-G9-pnl" userLabel="performanceGraphs Stack">
                                 <rect key="frame" x="440" y="1198" width="380" height="68"/>
                                 <subviews>
@@ -1962,6 +1985,8 @@
                         <outlet property="frameQueueSizeSlider" destination="oZa-8Y-icz" id="Jo1-Fx-UMw"/>
                         <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="82B-r7-Zbh"/>
                         <outlet property="framerateSelector" destination="8hF-kb-2uV" id="dfT-hb-csE"/>
+                        <outlet property="fullColorRangeStack" destination="iPd-Rg-St7" id="iPd-Out-Let"/>
+                        <outlet property="fullColorRangeSwitch" destination="iPd-Wt-Ch9" id="iPd-Out-Swt"/>
                         <outlet property="graphOpacityStack" destination="P6m-Zv-R4H" id="QEV-kA-A3a"/>
                         <outlet property="graphOpacityStepper" destination="DQq-4U-avd" id="Nwr-0I-Q8G"/>
                         <outlet property="gyroModeSelector" destination="aa5-3y-I4d" id="FsX-kH-h7w"/>
