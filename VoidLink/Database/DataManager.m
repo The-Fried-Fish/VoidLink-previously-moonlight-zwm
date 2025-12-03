@@ -162,7 +162,7 @@
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
         settingsToSave.enablePIP = enablePIP;
-        settingsToSave.fullRange = fullRange;
+        settingsToSave.fullColorRange = fullRange;
         settingsToSave.enableHdr = enableHdr;
         settingsToSave.btMouseSupport = btMouseSupport;
         // settingsToSave.absoluteTouchMode = absoluteTouchMode;

@@ -584,10 +584,10 @@
                                     <constraint firstAttribute="height" constant="31" id="8mE-tx-T8i"/>
                                 </constraints>
                             </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Rg-St7" userLabel="fullRangeStack">
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Rg-St7" userLabel="fullColorRangeStack">
                                 <rect key="frame" x="432" y="1901" width="280" height="31"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Ra-Lbl" userLabel="fullRangeLabel">
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Color Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Ra-Lbl" userLabel="fullRangeLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="iPd-Ra-Wdt"/>
@@ -1940,6 +1940,8 @@
                         <outlet property="frameQueueSizeSlider" destination="oZa-8Y-icz" id="Jo1-Fx-UMw"/>
                         <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="82B-r7-Zbh"/>
                         <outlet property="framerateSelector" destination="8hF-kb-2uV" id="dfT-hb-csE"/>
+                        <outlet property="fullColorRangeStack" destination="iPd-Rg-St7" id="iPd-Out-Let"/>
+                        <outlet property="fullColorRangeSwitch" destination="iPd-Wt-Ch9" id="iPd-Out-Swt"/>
                         <outlet property="graphOpacityStack" destination="P6m-Zv-R4H" id="QEV-kA-A3a"/>
                         <outlet property="graphOpacityStepper" destination="DQq-4U-avd" id="Nwr-0I-Q8G"/>
                         <outlet property="gyroModeSelector" destination="aa5-3y-I4d" id="FsX-kH-h7w"/>
@@ -1989,8 +1991,6 @@
                         <outlet property="pinchSensitivityStack" destination="t6B-h4-iY7" id="vab-io-SzJ"/>
                         <outlet property="pipStack" destination="12a-Wi-LlL" id="eTJ-0h-hRB"/>
                         <outlet property="pipSwitch" destination="VTC-Z9-IYM" id="gzC-rU-DoP"/>
-                        <outlet property="fullRangeStack" destination="iPd-Rg-St7" id="iPd-Out-Let"/>
-                        <outlet property="fullRangeSwitch" destination="iPd-Wt-Ch9" id="iPd-Out-Swt"/>
                         <outlet property="pitchSensitivitySlider" destination="HZZ-GL-j2Z" id="4ji-Jt-WdT"/>
                         <outlet property="pitchSensitivityStack" destination="gSn-tW-p9e" id="Gbg-PK-dpf"/>
                         <outlet property="pointerVelocityDividerStack" destination="b1U-nD-gYE" id="ep1-K3-rKj"/>

@@ -2954,13 +2954,31 @@
       }
     },
     "iPd-Ra-Lbl.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Full Range\"; ObjectID = \"iPd-Ra-Lbl\";",
+      "comment" : "Class = \"UILabel\"; text = \"Full Color Range\"; ObjectID = \"iPd-Ra-Lbl\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Full Range"
+            "value" : "Full Color Range"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全色彩范围"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全色彩範圍"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全色彩範圍"
           }
         }
       }

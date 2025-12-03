@@ -21,7 +21,7 @@
 @property int serverCodecModeSupport;
 @property BOOL enableYUV444;
 @property BOOL enablePIP;
-@property BOOL fullRange;
+@property BOOL fullColorRange;
 @property int width;
 @property int height;
 @property int frameRate;

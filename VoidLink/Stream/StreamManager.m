@@ -205,7 +205,7 @@
     double avgVideoMbps = [_connection getBwTracker].averageMbps;
     double peakVideoMbps = [_connection getBwTracker].peakMbps;
 
-    NSString* colorRange = _config.fullRange ? @"Full" : @"Limited";
+    NSString* colorRange = _config.fullColorRange ? @"Full" : @"Limited";
 
     if(overlayLevel == 1) return [LocalizationHelper localizedStringForKey:@"simplifiedOsdText",
                  fps,

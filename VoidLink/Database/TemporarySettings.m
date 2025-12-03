@@ -89,7 +89,7 @@
     self.preferredCodec = settings.preferredCodec;
     self.enableYUV444 = settings.enableYUV444;
     self.enablePIP = settings.enablePIP;
-    self.fullRange = settings.fullRange;
+    self.fullColorRange = settings.fullColorRange;
     self.frameQueueSize = settings.frameQueueSize;
     self.playAudioOnPC = settings.playAudioOnPC;
     self.redirectMic = settings.redirectMic;

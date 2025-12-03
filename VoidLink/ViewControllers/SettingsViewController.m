@@ -435,7 +435,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     settingsViewJustExpanded = true;
 
     // Ensure codec-dependent switches are in correct state when view appears
-    [self updateCodecDependentSwitches];
+    // [self updateCodecDependentSwitches];
 
     /*
     [self checkAndRequestMicPermission];
@@ -755,8 +755,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.fullColorRangeStack ofId:@"fullRangeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.fullRangeStack ofId:@"fullRangeStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
 
@@ -1543,7 +1543,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [_parentStack removeFromSuperview];
     [self initParentStack];
     [self layoutSections];
-    [self updateCodecDependentSwitches]; // Ensure switches are in correct state after layout
+    // [self updateCodecDependentSwitches]; // Ensure switches are in correct state after layout
     [self updateTheme];
         //[self doneRemoveSettingItem];
     Settings *currentSettings = [dataMan retrieveSettings];
@@ -1788,6 +1788,12 @@ BOOL isCustomResolution(int resolutionSelected) {
         else {
             [self.hdrSwitch setOn:self->tempSettings.enableHdr];
         }
+        
+        // Initialize codec-dependent switches together
+        [self.yuv444Switch setOn:self->tempSettings.enableYUV444];
+        [self.fullColorRangeSwitch setOn:self->tempSettings.fullColorRange];
+        [self.codecSelector addTarget:self action:@selector(codecSelectorChanged:) forControlEvents:UIControlEventValueChanged];
+        [self codecSelectorChanged:self.codecSelector];
 
         [self.pipSwitch setOn:self->tempSettings.enablePIP];
         if(@available(iOS 15.0, *)) {
@@ -1796,12 +1802,6 @@ BOOL isCustomResolution(int resolutionSelected) {
             [self.pipSwitch setOn:false];
             [self.pipSwitch setEnabled:false];
         }
-
-        // Initialize codec-dependent switches together
-        [self.yuv444Switch setOn:self->tempSettings.enableYUV444];
-        [self.fullRangeSwitch setOn:self->tempSettings.fullRange];
-        [self.codecSelector addTarget:self action:@selector(codecSelectorChanged:) forControlEvents:UIControlEventValueChanged];
-        [self updateCodecDependentSwitches];
         
         [self.statsOverlaySelector setSelectedSegmentIndex:self->tempSettings.statsOverlayLevel.intValue];
 
@@ -2693,6 +2693,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     return 0;
 }
 
+// a setEnabled method for low iOS version UISlider
 - (void) widget:(UIView*)widget setEnabled:(bool)enabled{
     if([widget isKindOfClass:[UISlider class]]){
         UISlider* widgetPtr = (UISlider* )widget;
@@ -3315,7 +3316,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
-    BOOL fullRange = self.fullRangeSwitch.isOn;
+    BOOL fullRange = self.fullColorRangeSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
     NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector1.selectedSegmentIndex : NativeTouchOnly;
     NSInteger statsOverlayLevel = [self.statsOverlaySelector selectedSegmentIndex];
@@ -3445,37 +3446,32 @@ BOOL isCustomResolution(int resolutionSelected) {
     uint32_t codec = [self getChosenCodecPreference];
     BOOL isAV1 = (codec == CODEC_PREF_AV1);
     BOOL isH264 = (codec == CODEC_PREF_H264);
-
+    
     if (isAV1) {
         // AV1 must use limited range, so disable fullRange and turn it off
-        [self.fullRangeSwitch setOn:NO animated:NO];
-        [self.fullRangeSwitch setEnabled:NO];
-        [self.fullRangeSwitch setUserInteractionEnabled:NO];
+        [self.fullColorRangeSwitch setOn:NO animated:NO];
+        [self.fullColorRangeSwitch setEnabled:NO];
 
         // AV1 doesn't support YUV444, so disable it and turn it off
         [self.yuv444Switch setOn:NO animated:NO];
         [self.yuv444Switch setEnabled:NO];
-        [self.yuv444Switch setUserInteractionEnabled:NO];
     } else {
-        [self.fullRangeSwitch setEnabled:YES];
-        [self.fullRangeSwitch setUserInteractionEnabled:YES];
-
+        [self.fullColorRangeSwitch setEnabled:YES];
         [self.yuv444Switch setEnabled:YES];
-        [self.yuv444Switch setUserInteractionEnabled:YES];
     }
 
     // H264 doesn't support HDR, so disable it and turn it off
     if (isH264) {
         [self.hdrSwitch setOn:NO animated:NO];
         [self.hdrSwitch setEnabled:NO];
-        [self.hdrSwitch setUserInteractionEnabled:NO];
     } else {
         // Only enable HDR if the device supports it
         if ([self hdrSupported]) {
             [self.hdrSwitch setEnabled:YES];
-            [self.hdrSwitch setUserInteractionEnabled:YES];
         }
     }
+    
+    if(![self hdrSupported]) [self.hdrSwitch setOn:NO animated:NO];
 }
 
 @end

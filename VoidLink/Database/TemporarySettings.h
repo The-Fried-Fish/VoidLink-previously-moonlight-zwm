@@ -54,7 +54,7 @@
 } preferredCodec;
 @property (nonatomic) BOOL enableYUV444;
 @property (nonatomic) BOOL enablePIP;
-@property (nonatomic) BOOL fullRange;
+@property (nonatomic) BOOL fullColorRange;
 @property (nonatomic) BOOL reverseMouseWheelDirection;
 @property (nonatomic, retain) NSNumber * asyncNativeTouchPriority;
 @property (nonatomic) BOOL multiController;
