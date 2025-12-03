@@ -89,6 +89,14 @@
 }
 static NSMutableSet* hostList;
 
+- (void)onRealtimeAdaptationResumeRequest:(NSNotification *)note {
+    [self resumeRunningAppAfterResize];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"VLRealtimeAdaptationResumeRequest" object:nil];
+}
+
 - (void)startPairing:(NSString *)PIN {
     // Needs to be synchronous to ensure the alert is shown before any potential
     // failure callback could be invoked.
@@ -104,6 +112,80 @@ static NSMutableSet* hostList;
             }];
         }]];
         [[self activeViewController] presentViewController:self->_pairAlert animated:YES completion:nil];
+    });
+}
+
+- (void)resumeRunningAppAfterResize {
+    static int s_autoAdaptResumeTries = 0;
+    static BOOL s_autoAdaptResumeInFlight = NO;
+    if (s_autoAdaptResumeInFlight) {
+        Log(LOG_W, @"[Auto-Adapt] Resume already in flight; ignoring duplicate request");
+        return;
+    }
+    Log(LOG_I, @"[Auto-Adapt] Resume request received (try %d)", s_autoAdaptResumeTries + 1);
+    // Find a host with a running app. Prefer the selected host if set.
+    TemporaryHost *host = _selectedHost;
+    if (host == nil && hostList.count > 0) {
+        for (TemporaryHost *h in hostList) {
+            if (h.currentGame && ![h.currentGame isEqualToString:@"0"]) {
+                host = h;
+                break;
+            }
+        }
+    }
+    if (host == nil) {
+        Log(LOG_W, @"[Auto-Adapt] No host available to resume after resize");
+        if (s_autoAdaptResumeTries++ < 5) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self resumeRunningAppAfterResize];
+            });
+        } else {
+            s_autoAdaptResumeTries = 0;
+        }
+        return;
+    }
+    // Ensure updateAppsForHost: doesn't early-return
+    _selectedHost = host;
+    TemporaryApp *currentApp = [self findRunningApp:host];
+    if (currentApp == nil && launchedApp != nil) {
+        // Fallback to previously launched app if discovery hasn't populated yet
+        Log(LOG_I, @"[Auto-Adapt] Using previously launched app: %@", launchedApp.name);
+        currentApp = launchedApp;
+    }
+    if (currentApp == nil) {
+        // Fallback: ensure app list is up-to-date and pick the first app
+        [self updateAppsForHost:host];
+        if (host.appList.count == 0) {
+            Log(LOG_W, @"[Auto-Adapt] No apps on host; will retry");
+            if (s_autoAdaptResumeTries++ < 5) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self resumeRunningAppAfterResize];
+                });
+            } else {
+                s_autoAdaptResumeTries = 0;
+            }
+            return;
+        }
+        if (_sortedAppList != nil && _sortedAppList.count > 0) {
+            currentApp = _sortedAppList.firstObject;
+        }
+        if (currentApp == nil) {
+            NSArray *apps = [host.appList allObjects];
+            if (apps.count > 0) {
+                currentApp = apps.firstObject;
+            }
+        }
+    }
+
+    // Prepare stream config (includes resolution update based on window)
+    Log(LOG_I, @"[Auto-Adapt] Resuming app: %@", currentApp.name);
+    s_autoAdaptResumeInFlight = YES;
+    [self prepareToStreamApp:currentApp];
+    [self performSegueWithIdentifier:@"createStreamFrame" sender:nil];
+    s_autoAdaptResumeTries = 0;
+    // Clear in-flight flag after a short grace period to allow future auto-adapt cycles
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        s_autoAdaptResumeInFlight = NO;
     });
 }
 
@@ -1547,6 +1629,9 @@ static NSMutableSet* hostList;
     DataManager* dataMan = [[DataManager alloc] init];
     TemporarySettings* tempSettings = [dataMan getSettings];
     [ThemeManager setUserInterfaceStyle:tempSettings.appTheme.intValue];
+    // Listen for real-time adaptation resume requests
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onRealtimeAdaptationResumeRequest:) name:@"VLRealtimeAdaptationResumeRequest" object:nil];
+    Log(LOG_I, @"[Auto-Adapt] Observer registered on MainFrameViewController");
     
 #if !TARGET_OS_TV
     self.settingsExpandedInStreamView = false; // init this flag

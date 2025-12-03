@@ -757,6 +757,33 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.fullColorRangeStack ofId:@"fullRangeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
+    
+    // Add "Real-time window adaptation" toggle below PiP
+    if (!self.realtimeAdaptationStack) {
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Real-time window adaptation"];
+        label.textColor = [UIColor labelColor];
+        label.numberOfLines = 1;
+        
+        self.realtimeAdaptationSwitch = [[UISwitch alloc] init];
+        BOOL rtEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"VLRealtimeWindowAdaptationEnabled"];
+        self.realtimeAdaptationSwitch.on = rtEnabled;
+        [self.realtimeAdaptationSwitch addTarget:self action:@selector(realtimeAdaptationSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+        
+        UIStackView *row = [[UIStackView alloc] initWithArrangedSubviews:@[label, self.realtimeAdaptationSwitch]];
+        row.axis = UILayoutConstraintAxisHorizontal;
+        row.alignment = UIStackViewAlignmentCenter;
+        row.distribution = UIStackViewDistributionFill;
+        row.spacing = 8.0;
+        row.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        // Hugging/compression priorities to keep switch at right
+        [label setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
+        [self.realtimeAdaptationSwitch setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+        
+        self.realtimeAdaptationStack = row;
+    }
+    [self addSetting:self.realtimeAdaptationStack ofId:@"realtimeAdaptationStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
 
@@ -923,6 +950,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [experimentalSection addToParentStack:_parentStack];
     // [experimentalSection setExpanded:NO];
+}
+
+#pragma mark - Real-time window adaptation
+
+- (void)realtimeAdaptationSwitchFlipped:(UISwitch* )sender {
+    [[NSUserDefaults standardUserDefaults] setBool:sender.isOn forKey:@"VLRealtimeWindowAdaptationEnabled"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
