@@ -135,6 +135,7 @@ import UIKit
             let altitude = touch.altitudeAngle
             let location = self.adjustCoordinatesForVideoArea(point: point)
             let videoSize = self.getVideoAreaSize()
+            let force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
             
             let eventType:UInt8
             
@@ -155,7 +156,7 @@ import UIKit
             delay = eventType == UInt8(LI_TOUCH_EVENT_UP) ? delay : 0
             
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
-                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(location.x/videoSize.width), Float(location.y/videoSize.height), Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude)), 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(location.x/videoSize.width), Float(location.y/videoSize.height), force, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
             }
         }
         
