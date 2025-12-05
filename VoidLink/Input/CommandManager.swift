@@ -98,6 +98,7 @@ import UIKit
         "PADDLE3" : PADDLE3_FLAG,
         "PADDLE4" : PADDLE4_FLAG,
         "MISC" : MISC_FLAG,
+        "OSCHOME" : SPECIAL_FLAG,
         "OSCL2" : 0,
         "L2" : 0,
         "LT" : 0,
