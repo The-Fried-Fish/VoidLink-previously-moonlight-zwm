@@ -755,7 +755,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.fullColorRangeStack ofId:@"fullRangeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.fullColorRangeStack ofId:@"fullColorRangeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
@@ -3316,7 +3316,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
-    BOOL fullRange = self.fullColorRangeSwitch.isOn;
+    BOOL fullColorRange = self.fullColorRangeSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
     NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector1.selectedSegmentIndex : NativeTouchOnly;
     NSInteger statsOverlayLevel = [self.statsOverlaySelector selectedSegmentIndex];
@@ -3388,7 +3388,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                       preferredCodec:preferredCodec
                         enableYUV444:enableYUV444
                            enablePIP:enablePIP
-                           fullRange:fullRange
+                      fullColorRange:fullColorRange
                            enableHdr:enableHdr
                       btMouseSupport:btMouseSupport
                            touchMode:touchMode
@@ -3446,7 +3446,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     uint32_t codec = [self getChosenCodecPreference];
     BOOL isAV1 = (codec == CODEC_PREF_AV1);
     BOOL isH264 = (codec == CODEC_PREF_H264);
-    
+    BOOL isHEVC = (codec == CODEC_PREF_HEVC);
+
     if (isAV1) {
         // AV1 must use limited range, so disable fullRange and turn it off
         [self.fullColorRangeSwitch setOn:NO animated:NO];
@@ -3459,6 +3460,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.fullColorRangeSwitch setEnabled:YES];
         [self.yuv444Switch setEnabled:YES];
     }
+    
+    if(isHEVC || isH264) [self.fullColorRangeSwitch setOn:YES animated:NO];
 
     // H264 doesn't support HDR, so disable it and turn it off
     if (isH264) {
