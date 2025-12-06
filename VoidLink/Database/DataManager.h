@@ -123,7 +123,7 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
                   preferredCodec:(uint32_t)preferredCodec
                     enableYUV444:(BOOL)enableYUV444
                        enablePIP:(BOOL)enablePIP
-                       fullRange:(BOOL)fullRange
+                       fullColorRange:(BOOL)fullColorRange
                        enableHdr:(BOOL)enableHdr
                   btMouseSupport:(BOOL)btMouseSupport
                // absoluteTouchMode:(BOOL)absoluteTouchMode

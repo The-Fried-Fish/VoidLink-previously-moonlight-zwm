@@ -34,6 +34,9 @@ import UIKit
         func switchWidgetProfile()
         func bringUpSoftKeyboard()
         func alterAbsTouchDragWith(mouseButton:Int32)
+        func switchPencilHover()
+        func enablePencilHover()
+        func disablePencilHover()
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -339,6 +342,7 @@ import UIKit
             }
             if !self.functionalButtonString.isEmpty {
                 self.buttonMode = ButtonMode.movable.rawValue
+                if self.functionalButtonString == "PENCILHOVER" {self.buttonMode = ButtonMode.regular.rawValue}
             }
         }
         
@@ -1920,6 +1924,8 @@ import UIKit
             let mouseButton = CommandManager.mouseButtonMappings[Set(self.comboButtonStrings).intersection(CommandManager.mouseButtonMappings.keys).first ?? "MLEFT"] ?? BUTTON_LEFT
             print("mouseButton \(mouseButton)");
             self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:mouseButton)
+        case "PENCILHOVER":
+            self.functionalButtonDelegate?.enablePencilHover()
         default:
             break
         }
@@ -1942,6 +1948,8 @@ import UIKit
         case "ABSTCHDRAG":
             // self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:CommandManager.mouseButtonMappings[self.comboButtonStrings.first ?? "MLEFT"] ?? BUTTON_LEFT)
             self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
+        case "PENCILHOVER":
+            self.functionalButtonDelegate?.disablePencilHover()
         default:
             break
         }

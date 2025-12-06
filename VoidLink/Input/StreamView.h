@@ -70,6 +70,9 @@
 
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton;
 
+- (void)enablePencilHover;
+- (void)disablePencilHover;
+
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse;
 #endif

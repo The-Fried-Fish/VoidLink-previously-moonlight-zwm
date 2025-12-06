@@ -17,6 +17,8 @@ import UIKit
     private var streamAspectRatio: Float
     private var tickInterval: TimeInterval
     private var manualTick: Bool
+    private var manualhoverFlag: Bool = false
+    private var autoHoverFlag: Bool = false
 
     @objc init(streamView: UIView, settings: TemporarySettings) {
         self.streamView = streamView
@@ -135,6 +137,7 @@ import UIKit
             let altitude = touch.altitudeAngle
             let location = self.adjustCoordinatesForVideoArea(point: point)
             let videoSize = self.getVideoAreaSize()
+            let normalizedLocation = CGPoint(x: location.x/videoSize.width, y: location.y/videoSize.height)
             let force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
             
             let eventType:UInt8
@@ -143,7 +146,7 @@ import UIKit
             case .began:
                 eventType = UInt8(LI_TOUCH_EVENT_DOWN)
             case .moved:
-                eventType = UInt8(LI_TOUCH_EVENT_MOVE)
+                eventType = UInt8(manualhoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
             case .ended:
                 eventType = UInt8(LI_TOUCH_EVENT_UP)
             case .cancelled:
@@ -156,10 +159,41 @@ import UIKit
             delay = eventType == UInt8(LI_TOUCH_EVENT_UP) ? delay : 0
             
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
-                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(location.x/videoSize.width), Float(location.y/videoSize.height), force, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), force, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
             }
         }
         
         return dispatchMoment + tickMoment + delay
     }
+    
+    @objc public func switchPencilHoever(){
+        manualhoverFlag = !manualhoverFlag
+    }
+    
+    @objc public func enablePencilHover(){
+        manualhoverFlag = true
+    }
+    
+    @objc public func disablePencilHover(){
+        manualhoverFlag = false
+    }
+
+    private func attachHoverLeave(normalizedLocation:CGPoint){
+        DispatchQueue.global().asyncAfter(deadline: .now()+0.0086) {
+            LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, 0, 0)
+            DispatchQueue.global().asyncAfter(deadline: .now()+0.0086) {
+                // LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, 0, 0)
+            }
+        }
+    }
+    
+    private func preTouchHoverActionAt(normalizedLocation:CGPoint){
+        DispatchQueue.global().asyncAfter(deadline: .now()+0.0086) {
+            LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, 0, 0)
+            DispatchQueue.global().asyncAfter(deadline: .now()+0.0086) {
+                LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, 0, 0)
+            }
+        }
+    }
+
 }

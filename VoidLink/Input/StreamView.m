@@ -1420,6 +1420,18 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     else return;
 }
 
+- (void)switchPencilHover{
+    [pencilHandler switchPencilHoever];
+}
+
+- (void)enablePencilHover{
+    [pencilHandler enablePencilHover];
+}
+
+- (void)disablePencilHover{
+    [pencilHandler disablePencilHover];
+}
+
 
 #if !TARGET_OS_TV
 - (BOOL)isMultipleTouchEnabled {

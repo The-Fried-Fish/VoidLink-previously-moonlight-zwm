@@ -1590,6 +1590,14 @@
     [_motionHandler stopAccelUpdate];
 }
 
+- (void)enablePencilHover{
+    [_streamView enablePencilHover];
+}
+
+- (void)disablePencilHover{
+    [_streamView disablePencilHover];
+}
+
 #if !TARGET_OS_TV
 // Require a confirmation when streaming to activate a system gesture
 - (UIRectEdge)preferredScreenEdgesDeferringSystemGestures {

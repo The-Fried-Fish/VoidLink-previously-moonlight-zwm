@@ -98,6 +98,7 @@ import UIKit
         "PADDLE3" : PADDLE3_FLAG,
         "PADDLE4" : PADDLE4_FLAG,
         "MISC" : MISC_FLAG,
+        "OSCHOME" : SPECIAL_FLAG,
         "OSCL2" : 0,
         "L2" : 0,
         "LT" : 0,
@@ -126,7 +127,16 @@ import UIKit
     @objc public static let vectorTouchPads: [String] = ["LSVPAD", "RSVPAD", "MOUSEPAD", "TRACKBALL"]
     @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let bidirectionalVerticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
-    @objc public static let functionalButtonCmds: [String] = ["SETTINGS", "TOOLBOX", "WIDGETTOOL", "WIDGETPROFILES", "PROFILES", "SOFTKEYBOARD", "ABSTCHDRAG"]
+    @objc public static let functionalButtonCmds: [String] = [
+        "SETTINGS",
+        "TOOLBOX",
+        "WIDGETTOOL",
+        "WIDGETPROFILES",
+        "PROFILES",
+        "SOFTKEYBOARD",
+        "ABSTCHDRAG",
+        "PENCILHOVER"
+    ]
     @objc public static let motionControlButtonCmds: [String] = ["GYRO","GYROPAUSE","ACCEL","MOTION"]
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]
