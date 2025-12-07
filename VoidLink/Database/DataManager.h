@@ -85,7 +85,6 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
 
 typedef NS_ENUM(NSInteger, PencilTickMode) {
     ManualTick,
-    TimestampTick,
     PencilTickDisabled
 };
 
