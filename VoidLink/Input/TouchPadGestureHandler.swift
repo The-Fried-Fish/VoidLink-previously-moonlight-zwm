@@ -16,7 +16,21 @@ import UIKit
     @objc public static var enableHorizontalScroll:Bool = true
     @objc public static var scrollSensitivity:CGFloat = 1.0
     @objc public static var pinchSensitivity:CGFloat = 1.0
+    @objc public static var displayLinkRate:CGFloat = 60
+
+    private static var inertialScroller: InertialScroller = InertialScroller(decelerationRate: 0.915, displayLinkRate: displayLinkRate) {
+        if ctrlDown {return}
+        LiSendHighResScrollEvent(Int16(inertialScroller.vector.dy*7*scrollSensitivity))
+        if TouchPadGestureHandler.enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-inertialScroller.vector.dx*7*scrollSensitivity))}
+    }
+    
+    @objc public static func startInertialScroll(){
+        inertialScroller.timer?.restart()
+    }
+    
     @objc public static func handleGesture(in view: UIView, with event: UIEvent) {
+        inertialScroller.timer?.pause()
+        
         let currentTouches = UITouchUtil.touches(in: view, from: event)
         guard currentTouches.count == 2 else { return }
         
@@ -35,19 +49,22 @@ import UIKit
         let midPointDeltaX = midPointVector.dx
         let midPointDeltaY = midPointVector.dy
         
+        inertialScroller.vector = CGVector(dx: midPointDeltaX, dy: midPointDeltaY)
+        
         let originalPinchDelta = currentDistance-previousDistance;
         let pinchDelta = enablePinch ? originalPinchDelta*7*pinchSensitivity : 0;
         LiSendHighResScrollEvent(Int16(pinchDelta + midPointDeltaY*7*scrollSensitivity))
         if enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*7*scrollSensitivity))}
         
-        if !enablePinch || !ctrlDownForPinch {return};
-        
-        if abs(originalPinchDelta) > abs(midPointDeltaY)*1.3, abs(originalPinchDelta) > abs(midPointDeltaX)*1.3 {
-            LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_DOWN), 0)
-            ctrlDown = true
-        } else {
-            LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_UP), 0)
-            ctrlDown = false
+        if enablePinch, ctrlDownForPinch {
+            let midPointDelta = hypot(midPointDeltaX, midPointDeltaY)
+            if abs(originalPinchDelta) > midPointDelta*1.3, midPointDelta < 2 {
+                LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_DOWN), 0)
+                ctrlDown = true
+            } else {
+                LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["CTRL"]!, CChar(KEY_ACTION_UP), 0)
+                ctrlDown = false
+            }
         }
     }
 }
