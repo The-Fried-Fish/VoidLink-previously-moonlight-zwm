@@ -42,8 +42,13 @@ import UIKit
         case touchPad
     }
     
+    private static let MinAutotapInterval:Int = 50
+    
     private let oscProfileMan: OSCProfilesManager = OSCProfilesManager.sharedManager(CGRectZero)
     private var oscProfile: OSCProfile
+    
+    private let dataMan: DataManager = DataManager()
+    private let tempSettings: TemporarySettings
     
     @objc public var widgetType: WidgetTypeEnum = WidgetTypeEnum.uninitialized
     
@@ -93,6 +98,9 @@ import UIKit
     private var vibrationGenerator = UIImpactFeedbackGenerator(style: .light)
     private var vibrationOn: Bool = false
     
+    private var inertialScroller:InertialScroller
+    @objc public var displayLinkRate:CGFloat = 60;
+    
     // for movable buttons during streaming
     @objc public var relocatedDuringStreaming: Bool = false
 
@@ -120,7 +128,7 @@ import UIKit
 
     @objc public var hasAutoTap: Bool = false
     @objc public var isMousePadWithButtonActions: Bool = false
-    @objc public var hasTrackBall: Bool = false
+    @objc public var hasInertia: Bool = false
     @objc public var isFuncationalButton: Bool = false
     @objc public var hasHapticFeedback: Bool = false
     @objc public var isDirectionPad: Bool = false
@@ -206,7 +214,7 @@ import UIKit
     // trackball
     private var trackballVelocity: CGPoint = .zero
     private var trackballDecelerationTimer: Timer?
-    @objc public var trackballDecelerationRate: CGFloat = 0.93
+    @objc public var decelerationRate: CGFloat = 0.93
     private let trackballVelocityThreshold: CGFloat = 0.1
     
     @objc public var slideThreshold: CGFloat = 6.0
@@ -324,6 +332,8 @@ import UIKit
         }
         self.activePointerIds = []
         self.oscProfile = oscProfileMan.getSelectedProfile()
+        self.tempSettings = dataMan.getSettings()
+        self.inertialScroller = InertialScroller()
         super.init(frame: .zero)
         
         // helps widget panel to hide/show stacks
@@ -375,7 +385,7 @@ import UIKit
         
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
-        self.hasTrackBall = self.touchPadString == "TRACKBALL"
+        self.hasInertia = CommandManager.inertialTouchPads.contains(self.touchPadString)
         self.isFuncationalButton = self.functionalButtonString != ""
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
@@ -384,8 +394,9 @@ import UIKit
     
     // ======================================================================================================
     @objc public func setupAutoTapTimer() {
-        if self.widgetType == WidgetTypeEnum.button {
+        if self.widgetType == WidgetTypeEnum.button, autoTapInterval >= OnScreenWidgetView.MinAutotapInterval {
             self.autoTapTimer = SafeTimer(interval:0.001 * Double(autoTapInterval)) {
+                // print("timer instance \(Unmanaged.passUnretained(self.autoTapTimer!).toOpaque()), \(CACurrentMediaTime())")
                 self.handleButtonDown()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.025) {
                     self.handleButtonUp()
@@ -394,6 +405,12 @@ import UIKit
         }
     }
     
+    @objc public func setupInertialScroller() {
+        if self.hasInertia {
+            self.inertialScroller = InertialScroller(decelerationRate: self.decelerationRate, displayLinkRate: CGFloat(self.tempSettings.framerate.intValue))
+        }
+    }
+
     @objc public func setVibration(style: Int) {
         if #available(iOS 13.0, *) {
             vibrationOn = style < UIImpactFeedbackGenerator.FeedbackStyle.rigid.rawValue + 1
@@ -1106,29 +1123,22 @@ import UIKit
     
     //mousepad-trackball behavior========================================================
     private func startTrackballMomentum() {
-        stopTrackballMomentum()
+        // stopTrackballMomentum()
         
-        trackballDecelerationTimer = Timer.scheduledTimer(withTimeInterval: 1/Double(UIScreen.main.maximumFramesPerSecond), repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            
-            LiSendMouseMoveEvent(
-                Int16(truncatingIfNeeded: Int(self.trackballVelocity.x)),
-                Int16(truncatingIfNeeded: Int(self.trackballVelocity.y))
-            )
-            
-            self.trackballVelocity.x *= self.trackballDecelerationRate
-            self.trackballVelocity.y *= self.trackballDecelerationRate
-            
-            if abs(self.trackballVelocity.x) < self.trackballVelocityThreshold &&
-                abs(self.trackballVelocity.y) < self.trackballVelocityThreshold {
-                self.stopTrackballMomentum()
+        if self.inertialScroller.handler == nil {
+            self.inertialScroller.handler = {
+                LiSendMouseMoveEvent(
+                    Int16(self.inertialScroller.vector.dx*1.7),
+                    Int16(self.inertialScroller.vector.dy*1.7)
+                )
             }
         }
+        
+        self.inertialScroller.timer?.restart()
     }
     
     private func stopTrackballMomentum() {
-        trackballDecelerationTimer?.invalidate()
-        trackballDecelerationTimer = nil
+        self.inertialScroller.timer?.pause()
     }
     
     
@@ -1136,7 +1146,7 @@ import UIKit
     
     //==== Button widget tap down=============================================
     private func handleTapDownOrSlidein() {
-        if autoTapInterval < 50 {
+        if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
             handleButtonDown()
         }
         else{
@@ -1145,11 +1155,11 @@ import UIKit
     }
     
     private func handleFingerUpOrSlideout() {
-        if autoTapInterval < 50 {
+        if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
             handleButtonUp()
         }
         else{
-            self.autoTapTimer?.suspend()
+            self.autoTapTimer?.pause()
             self.handleButtonUp()
         }
     }
@@ -1448,7 +1458,19 @@ import UIKit
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "LSVPAD","RSVPAD","DS4TOUCH":
+                case "LSVPAD":
+                    self.clearLeftStickTouchPadFlag()
+                    self.inertialScroller.timer?.pause()
+                    if quickDoubleTapDetected {
+                        self.showl3r3Indicator()
+                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
+                case "RSVPAD":
+                    self.clearRightStickTouchPadFlag()
+                    self.inertialScroller.timer?.pause()
+                    if quickDoubleTapDetected {
+                        self.showl3r3Indicator()
+                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
+                case "DS4TOUCH":
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
@@ -1694,6 +1716,11 @@ import UIKit
         
         self.deltaX = currentTouchLocation.x - self.latestTouchLocation.x
         self.deltaY = currentTouchLocation.y - self.latestTouchLocation.y
+        
+        if self.hasInertia && firstTouchMoved {
+            self.inertialScroller.vector = UITouchUtil.vector(of: touch, in: self)
+        }
+        
         self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
         self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
     }
@@ -1988,6 +2015,7 @@ import UIKit
             self.handleMousePadButtonActionUp()
         }
         
+        /*
         if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "TRACKBALL" && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
             if(mousePointerMoved){
                 self.startTrackballMomentum()
@@ -1996,7 +2024,7 @@ import UIKit
             else{
                 self.stopTrackballMomentum()
             }
-        }
+        }*/
         
         if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && twoTouchesDetected && touches.count == allSpawnedTouchesCount { // need to enable multi-touch first
             // touches.count == allCapturedTouchesCount means allfingers are lifting
@@ -2015,9 +2043,41 @@ import UIKit
                 self.clearRightStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "LSVPAD":
-                self.clearLeftStickTouchPadFlag()
+                if self.decelerationRate > 0.50001 {
+                    if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
+                    if self.inertialScroller.handler == nil {
+                        self.inertialScroller.handler = {
+                            let weightedDeltaX = self.inertialScroller.vector.dx*1.5167*self.sensitivityFactorX
+                            let weightedDeltaY = self.inertialScroller.vector.dy*1.5167*self.sensitivityFactorY
+                            self.sendLeftStickTouchPadEvent(inputX: weightedDeltaX, inputY: weightedDeltaY)
+                        }
+                    }
+                    self.inertialScroller.timer?.restart()
+                }
+                else {self.clearLeftStickTouchPadFlag()}
             case "RSVPAD":
-                self.clearRightStickTouchPadFlag()
+                if self.decelerationRate > 0.50001 {
+                    if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
+                    if self.inertialScroller.handler == nil {
+                        self.inertialScroller.handler = {
+                            let weightedDeltaX = self.inertialScroller.vector.dx*1.5167*self.sensitivityFactorX
+                            let weightedDeltaY = self.inertialScroller.vector.dy*1.5167*self.sensitivityFactorY
+                            self.sendRightStickTouchPadEvent(inputX: weightedDeltaX, inputY: weightedDeltaY)
+                        }
+                    }
+                    self.inertialScroller.timer?.restart()
+                }
+                else {self.clearRightStickTouchPadFlag()}
+            case "TRACKBALL":
+                if allSpawnedTouchesCount == 1, self.decelerationRate > 0 {
+                    if(mousePointerMoved){
+                        self.startTrackballMomentum()
+                        mousePointerMoved = false //reset flag
+                    }
+                    else{
+                        self.stopTrackballMomentum()
+                    }
+                }
             case "LTPAD":
                 self.onScreenControls.updateLeftTrigger(0x00)
             case "RTPAD":
@@ -2205,6 +2265,10 @@ import UIKit
             leftIndicator.removeFromSuperlayer()
             rightIndicator.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
+            self.inertialScroller.timer?.clean()
+            self.clearLeftStickTouchPadFlag()
+            self.clearRightStickTouchPadFlag()
+            self.autoTapTimer?.clean()
         }
         else{
             self.superViewWidth = (superview?.bounds.size.width)!

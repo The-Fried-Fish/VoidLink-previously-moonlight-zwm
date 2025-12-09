@@ -162,7 +162,7 @@ public class MicHandler: NSObject {
     @objc public func startTapping() {
         // recordedBuffers.removeAll()
         isRecording = true
-        self.timer?.resume()
+        self.timer?.start()
         /*
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { [weak self] in
             guard let self = self else { return }
@@ -175,7 +175,7 @@ public class MicHandler: NSObject {
 
     @objc public func stopTapping(stopEngine:Bool) {
         isRecording = false
-        self.timer?.suspend()
+        self.timer?.pause()
         // engine.inputNode.removeTap(onBus: 0)
         if(stopEngine){
             playerNode.stop()

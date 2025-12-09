@@ -125,6 +125,7 @@ import UIKit
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]
     @objc public static let vectorTouchPads: [String] = ["LSVPAD", "RSVPAD", "MOUSEPAD", "TRACKBALL"]
+    @objc public static let inertialTouchPads: [String] = ["LSVPAD", "RSVPAD", "TRACKBALL"]
     @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let bidirectionalVerticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let functionalButtonCmds: [String] = ["SETTINGS", "TOOLBOX", "WIDGETTOOL", "WIDGETPROFILES", "PROFILES", "SOFTKEYBOARD", "ABSTCHDRAG"]

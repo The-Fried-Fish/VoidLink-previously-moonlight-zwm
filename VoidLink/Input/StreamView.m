@@ -568,7 +568,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.yawFactor = buttonState.yawFactor;
                 widgetView.pitchFactor = buttonState.pitchFactor;
                 widgetView.rollFactor = buttonState.rollFactor;
-                widgetView.trackballDecelerationRate = buttonState.decelerationRate;
+                widgetView.decelerationRate = buttonState.decelerationRate;
                 widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
                 widgetView.minStickOffset = buttonState.minStickOffset;
                 widgetView.buttonMode = buttonState.buttonMode;
@@ -585,6 +585,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
                 [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
                 [widgetView setupAutoTapTimer];
+                [widgetView setupInertialScroller];
             }
         }
     }
@@ -838,8 +839,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (BOOL)handleMouseButtonEvent:(int)buttonAction forTouches:(NSSet *)touches withEvent:(UIEvent *)event {
     
-    
-    // NSLog(@"mouse click time: %f", CACurrentMediaTime()*1000);
 #if !TARGET_OS_TV
     if (@available(iOS 13.4, *)) {
         UITouch* touch = [touches anyObject];
