@@ -193,10 +193,12 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     
     if(TouchPadGestureHandler.ctrlDown) LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[@"CTRL"].shortValue,KEY_ACTION_UP,0);
     
+    [TouchPadGestureHandler startInertialScroll];
+    
     if(multiTouchesDetected){
         if([UITouchUtil touchesIn:streamView from:event].count == touches.count){
-            
-            multiTouchesDetected = false;}
+            multiTouchesDetected = false;
+        }
         return;
     }
     if([UITouchUtil touchesIn:streamView from:event].count == touches.count) multiTouchesDetected = false;

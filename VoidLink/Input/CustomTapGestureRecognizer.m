@@ -90,7 +90,16 @@ static CGFloat screenWidthInPoints;
         _gestureCaptured = false; //reset for next recognition
         if((CACurrentMediaTime() - _gestureCapturedTime) < _tapDownTimeThreshold){
             // lowestTouchPointYCoord = 0.0; //reset for next recognition
-            self.state = UIGestureRecognizerStateRecognized;
+            
+            for(UITouch* touch in touches){
+                CGVector vector = [UITouchUtil vectorOf:touch in:self.view];
+                if(hypot(vector.dx, vector.dy)>2){
+                    self.state = UIGestureRecognizerStateFailed;
+                    break;
+                }
+            }
+            
+            if(self.state != UIGestureRecognizerStateFailed) self.state = UIGestureRecognizerStateRecognized;
             // NSLog(@"gen _lowestTouchPointHeight %f markmark touchesEnd", _lowestTouchPointHeight);
         }
     }
