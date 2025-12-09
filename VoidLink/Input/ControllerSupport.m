@@ -1014,7 +1014,6 @@ double rc_expo(double x, double expo) {
 - (void)sendStickToMouseMoveEventWithStickX:(float)stickX stickY:(float)stickY expo:(float)expo {
     CGFloat mouseDeltaX = _stickToMouseVelocity*rc_expo(stickX, expo);
     CGFloat mouseDeltaY = _stickToMouseVelocity*rc_expo(stickY, expo);
-    NSLog(@"mouseDeltaX %f, mouseDeltaY %f, %f, %ld", mouseDeltaX, mouseDeltaY, CACurrentMediaTime(), (long)_displayLink.preferredFramesPerSecond);
     LiSendMouseMoveEvent(mouseDeltaX, -mouseDeltaY);
 }
 

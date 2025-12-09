@@ -6,47 +6,85 @@
 //  Copyright © 2025 True砖家@Bilibili. All rights reserved.
 //
 
+import Foundation
+import QuartzCore
 
-class SafeTimer {
-    private var timer: DispatchSourceTimer
-    private(set) var isRunning = false
-    private var interval: TimeInterval = 0
-    private var delay: TimeInterval = 0
-    
-    init(interval: TimeInterval = 1.0, queue: DispatchQueue = .global(), delay: TimeInterval = 0, handler: @escaping () -> Void) {
-        timer = DispatchSource.makeTimerSource(queue: queue)
-        timer.schedule(deadline: .now() + delay, repeating: interval)
-        timer.setEventHandler(handler: handler)
+/// SafeTimer: 高精度、可暂停/重启、可彻底清理
+final class SafeTimer {
+    private var timer: DispatchSourceTimer?
+    private let timerQueue: DispatchQueue       // 私有串行队列
+    private let userHandler: () -> Void
+    private let interval: TimeInterval
+    private let delay: TimeInterval
+
+    private var shouldRunHandler: Bool = false  // 控制逻辑上的暂停/恢复
+    private var isCleaned: Bool = false         // 是否已经 clean
+
+    init(interval: TimeInterval = 1.0,
+         delay: TimeInterval = 0,
+         queueLabel: String = "com.example.safetimer",
+         handler: @escaping () -> Void) {
+        
         self.interval = interval
         self.delay = delay
-        // 注意：这里不调用 resume，保持 suspended，等 start() 时才运行
-    }
-    
-    public func resume() {
-        guard !isRunning else { return }
-        timer.resume()
-        isRunning = true
-    }
-    
-    public func suspend() {
-        guard isRunning else { return }
-        timer.suspend()
-        isRunning = false
-    }
-    
-    func restart() {
-        if isRunning {
-            timer.suspend()
-            isRunning = false
+        self.userHandler = handler
+        self.timerQueue = DispatchQueue(label: queueLabel)
+
+        let t = DispatchSource.makeTimerSource(queue: timerQueue)
+        t.schedule(deadline: .now() + delay, repeating: interval)
+
+        t.setEventHandler { [weak self] in
+            guard let self = self, !self.isCleaned else { return }
+            if !self.shouldRunHandler { return }
+            self.userHandler()
         }
-        timer.schedule(deadline: .now() + self.delay, repeating: self.interval) // 重置时间
-        timer.resume()
-        isRunning = true
+
+        t.resume()  // timer 一开始就 resume，避免 suspend/resume 的计数问题
+        self.timer = t
     }
-    
+
     deinit {
-        if !timer.isCancelled {
-            timer.cancel()
+        clean()
+    }
+
+    /// 开始逻辑上的计时
+    func start() {
+        timerQueue.async { [weak self] in
+            guard let self = self, !self.isCleaned else { return }
+            self.shouldRunHandler = true
+        }
+    }
+
+    /// 暂停逻辑上的计时
+    func pause() {
+        timerQueue.async { [weak self] in
+            guard let self = self, !self.isCleaned else { return }
+            self.shouldRunHandler = false
+        }
+    }
+
+    /// 重置下一次触发时间，并开始执行 handler
+    func restart() {
+        timerQueue.async { [weak self] in
+            guard let self = self, let t = self.timer, !self.isCleaned else { return }
+            t.schedule(deadline: .now() + self.delay, repeating: self.interval)
+            self.shouldRunHandler = true
+        }
+    }
+
+    /// 彻底清理 timer，返回后保证 handler 不再执行
+    func clean() {
+        if isCleaned { return }
+        // 同步在 timerQueue 执行，保证已排队事件全部处理完（或跳过）
+        timerQueue.sync {
+            self.isCleaned = true
+            self.shouldRunHandler = false
+
+            if let t = self.timer {
+                t.setEventHandler {}  // 清空 handler
+                t.cancel()            // 取消 timer
+                self.timer = nil
+            }
         }
     }
 }

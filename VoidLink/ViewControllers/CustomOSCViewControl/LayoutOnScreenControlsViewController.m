@@ -157,7 +157,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
             widgetView.yawFactor = buttonState.yawFactor;
             widgetView.pitchFactor = buttonState.pitchFactor;
             widgetView.rollFactor = buttonState.rollFactor;
-            widgetView.trackballDecelerationRate = buttonState.decelerationRate;
+            widgetView.decelerationRate = buttonState.decelerationRate;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
             widgetView.buttonMode = buttonState.buttonMode;
@@ -731,7 +731,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     newWidget.yawFactor = widget.yawFactor;
     newWidget.pitchFactor = widget.pitchFactor;
     newWidget.rollFactor = widget.rollFactor;
-    newWidget.trackballDecelerationRate = widget.trackballDecelerationRate;
+    newWidget.decelerationRate = widget.decelerationRate;
     newWidget.stickIndicatorOffset = widget.stickIndicatorOffset;
     newWidget.minStickOffset = widget.minStickOffset;
     [newWidget setVibrationWithStyle:widget.vibrationStyle];
@@ -977,8 +977,8 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
                                         }];
     [self autoFitLabel:self.autoTapLabel];
 
-    self.decelerationRateStack.hidden = !selectedWidgetView.hasTrackBall;
-    [self.decelerationRateSlider setValue:selectedWidgetView.trackballDecelerationRate];
+    self.decelerationRateStack.hidden = !selectedWidgetView.hasInertia;
+    [self.decelerationRateSlider setValue:selectedWidgetView.decelerationRate];
     [self autoFitLabel:self.decelerationRateLabel];
     [self decelerationRateSliderMoved:self.decelerationRateSlider];
     
@@ -1210,7 +1210,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
 
 - (void)decelerationRateSliderMoved:(UISlider* )sender{
     [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", sender.value]];
-    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.trackballDecelerationRate = sender.value;
+    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.decelerationRate = sender.value;
     return;
 }
 

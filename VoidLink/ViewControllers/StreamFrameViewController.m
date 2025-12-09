@@ -927,6 +927,8 @@
 }
 
 - (void) returnToMainFrame {
+    [_streamView clearOnScreenWidgets];
+    
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
     if (@available(iOS 13.0, *)) {
