@@ -929,6 +929,7 @@
 
 - (void) returnToMainFrame {
     [_streamView clearOnScreenWidgets];
+    if(micHandler) [micHandler clean];
     
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];

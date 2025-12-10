@@ -77,7 +77,7 @@
         <attribute name="playAudioOnPC" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="pointerVelocityModeDivider" optional="YES" attributeType="Float" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="preferredCodec" attributeType="Integer 32" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="redirectMic" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="redirectMic" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="relativeTouchSlideThreshold" optional="YES" attributeType="Float" defaultValueString="6" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="rememberFoldState" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="renderingBackend" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>

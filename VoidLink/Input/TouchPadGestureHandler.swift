@@ -18,7 +18,7 @@ import UIKit
     @objc public static var pinchSensitivity:CGFloat = 1.0
     @objc public static var displayLinkRate:CGFloat = 60
 
-    private static var inertialScroller: InertialScroller = InertialScroller(decelerationRate: 0.915, displayLinkRate: displayLinkRate) {
+    private static var inertialScroller: InertialScroller = InertialScroller(decelerationRate: displayLinkRate > 110 ? 0.96 : 0.9, displayLinkRate: displayLinkRate) {
         if ctrlDown {return}
         LiSendHighResScrollEvent(Int16(inertialScroller.vector.dy*7*scrollSensitivity))
         if TouchPadGestureHandler.enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-inertialScroller.vector.dx*7*scrollSensitivity))}
