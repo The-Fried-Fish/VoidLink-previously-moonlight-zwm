@@ -342,11 +342,11 @@
 
 - (void)reConfigStreamViewRealtime {
     //if(!viewJustLoaded) [self handleViewResize];
-    [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+    [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:NO];
 }
 
 // key implementation of reconfiguring streamview after realtime setting menu is closed.
-- (void)reConfigStreamViewRealtimeAndReloadSettings:(BOOL)reloadSettings{
+- (void)reConfigStreamViewRealtimeAndReloadSettings:(BOOL)reloadSettings reloadOnscreenWidgets:(BOOL)reloadOnscreenWidgets{
     //[self.view removeGestureRecognizer:]
     //first, remove all gesture recognizers:
     for (UIGestureRecognizer *recognizer in _streamView.gestureRecognizers) {
@@ -384,7 +384,7 @@
         // we got self.view passed to streamView class as the topLayerView, will be useful in many cases
     [self->_streamView reloadOnScreenControlsRealtimeWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig]; //reload OSC here.
-    [self->_streamView reloadOnScreenWidgetViews]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    if(viewJustLoaded||reloadOnscreenWidgets) [self->_streamView reloadOnScreenWidgetViews]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
     
     [self reloadAirPlayConfig];
     [self mousePresenceChanged];
@@ -984,7 +984,7 @@
             if (_streamVideoRenderView && _streamView) {
                 [_streamView insertSubview:_streamVideoRenderView atIndex:0];
                 [self handleViewResize]; // Adjust frames as needed
-                [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+                [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:YES];
             }
         }
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
@@ -1518,7 +1518,7 @@
     // _settings.enableGraphs = _settings.statsOverlayEnabled;
     
     // Reconfigure the UI using the current in-memory settings, without reloading from disk
-    [self reConfigStreamViewRealtimeAndReloadSettings:NO];
+    [self reConfigStreamViewRealtimeAndReloadSettings:NO reloadOnscreenWidgets:NO];
 }
 
 - (void)toggleMouseCapture{
@@ -1644,7 +1644,7 @@
     }
     dispatch_block_t block = dispatch_block_create(0, ^{
         [self handleViewResize];
-        [self reConfigStreamViewRealtimeAndReloadSettings:YES];
+        [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:YES];
     });
     _delayedRemoveExtScreen = block;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));

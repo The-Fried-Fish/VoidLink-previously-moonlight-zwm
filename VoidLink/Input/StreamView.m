@@ -1388,7 +1388,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton{
     if([touchHandler isKindOfClass:[AbsoluteTouchHandler class]]){
         AbsoluteTouchHandler* handler = (AbsoluteTouchHandler* )touchHandler;
-        handler.mouseButtonForCursorMove = mouseButton;
+        AbsoluteTouchHandler.mouseButtonForCursorMove = mouseButton;
         [handler pauseLeftButtonDrag];
     }
     else return;

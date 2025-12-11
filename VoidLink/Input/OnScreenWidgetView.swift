@@ -1967,7 +1967,6 @@ import UIKit
         case "SOFTKEYBOARD":
             self.functionalButtonDelegate?.bringUpSoftKeyboard()
         case "ABSTCHDRAG":
-            // self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:CommandManager.mouseButtonMappings[self.comboButtonStrings.first ?? "MLEFT"] ?? BUTTON_LEFT)
             self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
         default:
             break
@@ -2256,7 +2255,13 @@ import UIKit
             }
             if self.motionControlButtonString == "ACCEL" {}
             if self.motionControlButtonString == "MOTION" {}
+            
+            if self.widgetType == WidgetTypeEnum.button && !OnScreenWidgetView.editMode {
+                self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
+                self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
+            }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
+            
             crossMarkLayer.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()
