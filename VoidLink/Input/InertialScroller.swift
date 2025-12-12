@@ -12,10 +12,9 @@ class InertialScroller {
     public lazy var timer: SafeTimer? = {
         SafeTimer(interval: 1/displayLinkRate) { [weak self] in
             guard let self = self, handler != nil else {return}
-            let deceratedDeltaX = self.vector.dx * decelerationRate
-            let deceratedDeltaY = self.vector.dy * decelerationRate
-            self.vector = CGVector(dx: deceratedDeltaX, dy: deceratedDeltaY)
-            if abs(deceratedDeltaX) < self.timerSuspendThreshold && abs(deceratedDeltaY) < self.timerSuspendThreshold {
+            self.vector.dx = self.vector.dx * decelerationRate
+            self.vector.dy = self.vector.dy * decelerationRate
+            if abs(self.vector.dx) < self.timerSuspendThreshold && abs(self.vector.dy) < self.timerSuspendThreshold {
                 self.timer?.pause()
             }
             (self.handler ?? {})()
