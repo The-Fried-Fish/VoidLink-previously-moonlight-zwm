@@ -7,13 +7,14 @@
 //
 
 class InertialScroller {
-    public var decelerationRate: CGFloat
-    
+    public var decelerationRateX: CGFloat
+    public var decelerationRateY: CGFloat
+
     public lazy var timer: SafeTimer? = {
         SafeTimer(interval: 1/displayLinkRate) { [weak self] in
             guard let self = self, handler != nil else {return}
-            self.vector.dx = self.vector.dx * decelerationRate
-            self.vector.dy = self.vector.dy * decelerationRate
+            self.vector.dx = self.vector.dx * decelerationRateX
+            self.vector.dy = self.vector.dy * decelerationRateY
             if abs(self.vector.dx) < self.timerSuspendThreshold && abs(self.vector.dy) < self.timerSuspendThreshold {
                 self.timer?.pause()
             }
@@ -27,7 +28,8 @@ class InertialScroller {
     public var handler: (() -> Void)?
     
     init(decelerationRate: CGFloat = 0.93, displayLinkRate: CGFloat = 60, handler: (() -> Void)? = nil) {
-        self.decelerationRate = decelerationRate
+        self.decelerationRateX = decelerationRate
+        self.decelerationRateY = decelerationRate
         self.displayLinkRate = displayLinkRate
         self.handler = handler
     }

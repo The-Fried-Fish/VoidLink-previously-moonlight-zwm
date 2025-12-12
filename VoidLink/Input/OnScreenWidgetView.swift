@@ -215,7 +215,8 @@ import UIKit
     // trackball
     private var trackballVelocity: CGPoint = .zero
     private var trackballDecelerationTimer: Timer?
-    @objc public var decelerationRate: CGFloat = 0.93
+    @objc public var decelerationRateX: CGFloat = 0.5
+    @objc public var decelerationRateY: CGFloat = 0.5
     private let trackballVelocityThreshold: CGFloat = 0.1
     
     @objc public var slideThreshold: CGFloat = 6.0
@@ -408,7 +409,8 @@ import UIKit
     
     @objc public func setupInertialScroller() {
         if self.hasInertia {
-            self.inertialScroller = InertialScroller(decelerationRate: self.decelerationRate, displayLinkRate: CGFloat(self.tempSettings.framerate.intValue))
+            self.inertialScroller = InertialScroller(decelerationRate: self.decelerationRateX, displayLinkRate: CGFloat(self.tempSettings.framerate.intValue))
+            self.inertialScroller.decelerationRateY = self.decelerationRateY
         }
     }
 
@@ -2001,6 +2003,10 @@ import UIKit
         touchesEnded(touches, with: event)
     }
     
+    private func inertiaEnabled() -> Bool {
+        return self.decelerationRateX > 0.50001 || self.decelerationRateY > 0.50001
+    }
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = false
         super.touchesEnded(touches, with: event)
@@ -2036,7 +2042,7 @@ import UIKit
                 self.clearRightStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "LSVPAD":
-                if self.decelerationRate > 0.50001 {
+                if self.inertiaEnabled() {
                     if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
                     if self.inertialScroller.handler == nil {
                         self.inertialScroller.handler = {
@@ -2049,7 +2055,7 @@ import UIKit
                 }
                 else {self.clearLeftStickTouchPadFlag()}
             case "RSVPAD":
-                if self.decelerationRate > 0.50001 {
+                if self.inertiaEnabled() {
                     if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
                     if self.inertialScroller.handler == nil {
                         var synthesizedDeltaX:CGFloat = 0
@@ -2076,7 +2082,7 @@ import UIKit
                 }
                 else {self.clearRightStickTouchPadFlag()}
             case "TRACKBALL":
-                if allSpawnedTouchesCount == 1, self.decelerationRate > 0 {
+                if allSpawnedTouchesCount == 1, self.inertiaEnabled() {
                     if(mousePointerMoved){
                         self.startTrackballMomentum()
                         mousePointerMoved = false //reset flag

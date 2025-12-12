@@ -34,6 +34,12 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     BorderWidthSliderModeCount
 };
 
+typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
+    decelerationRate2D,
+    decelerationRateY,
+    DecelerationRateSliderModeCount
+};
+
 @end
 
 
@@ -43,6 +49,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     OnScreenWidgetView* selectedWidgetView;
     AlphaSliderMode alphaSliderMode;
     BorderWidthSliderMode borderWidthSliderMode;
+    DecelerationRateSliderMode decelerationRateSliderMode;
     CALayer* selectedControllerLayer;
     CGRect controllerLoadedBounds;
     bool widgetViewSelected;
@@ -157,7 +164,8 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
             widgetView.yawFactor = buttonState.yawFactor;
             widgetView.pitchFactor = buttonState.pitchFactor;
             widgetView.rollFactor = buttonState.rollFactor;
-            widgetView.decelerationRate = buttonState.decelerationRate;
+            widgetView.decelerationRateX = buttonState.decelerationRateX;
+            widgetView.decelerationRateY = buttonState.decelerationRateY;
             widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
             widgetView.minStickOffset = buttonState.minStickOffset;
             widgetView.buttonMode = buttonState.buttonMode;
@@ -353,7 +361,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     }
 }
 
-- (void)switchAlphaSlider:(UISwipeGestureRecognizer *)sender {
+- (void)switchAlphaSlider:(UITapGestureRecognizer *)sender {
     if(!widgetViewSelected) return;
     alphaSliderMode = (alphaSliderMode + 1) % AlphaSliderModeCount;
     [self loadWidgetAlphas];
@@ -381,7 +389,13 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     }
 }
 
-- (void)switchBorderWidthSlider:(UISwipeGestureRecognizer *)sender {
+- (void)switchDecelerationRateSlider:(UITapGestureRecognizer *)sender {
+    if(!widgetViewSelected) return;
+    decelerationRateSliderMode = (decelerationRateSliderMode + 1) % DecelerationRateSliderModeCount;
+    [self loadDecelerationRates];
+}
+
+- (void)switchBorderWidthSlider:(UITapGestureRecognizer *)sender {
     if(!widgetViewSelected) return;
     borderWidthSliderMode = (borderWidthSliderMode + 1) % BorderWidthSliderModeCount;
     OnScreenWidgetView.isTweakingHighlightSize = borderWidthSliderMode == hightlightSize;
@@ -731,7 +745,8 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     newWidget.yawFactor = widget.yawFactor;
     newWidget.pitchFactor = widget.pitchFactor;
     newWidget.rollFactor = widget.rollFactor;
-    newWidget.decelerationRate = widget.decelerationRate;
+    newWidget.decelerationRateX = widget.decelerationRateX;
+    newWidget.decelerationRateY = widget.decelerationRateY;
     newWidget.stickIndicatorOffset = widget.stickIndicatorOffset;
     newWidget.minStickOffset = widget.minStickOffset;
     [newWidget setVibrationWithStyle:widget.vibrationStyle];
@@ -978,9 +993,9 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     [self autoFitLabel:self.autoTapLabel];
 
     self.decelerationRateStack.hidden = !selectedWidgetView.hasInertia;
-    [self.decelerationRateSlider setValue:selectedWidgetView.decelerationRate];
+    [self.decelerationRateSlider setValue:selectedWidgetView.decelerationRateX];
     [self autoFitLabel:self.decelerationRateLabel];
-    [self decelerationRateSliderMoved:self.decelerationRateSlider];
+    [self loadDecelerationRates];
     
     self.mouseDownButtonStack.hidden = !selectedWidgetView.isMousePadWithButtonActions;
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
@@ -1208,9 +1223,23 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     return;
 }
 
+- (void)loadDecelerationRates {
+    self.decelerationRateSlider.value = decelerationRateSliderMode == decelerationRate2D ? selectedWidgetView.decelerationRateX : selectedWidgetView.decelerationRateY;
+    NSString* labelText = [LocalizationHelper localizedStringForKey:decelerationRateSliderMode == decelerationRate2D ? @"Deceleration Rate: %.3f  " : @"DecelerationRateY: %.3f  ", self.decelerationRateSlider.value];
+    [self.decelerationRateLabel setText: labelText];
+}
+
 - (void)decelerationRateSliderMoved:(UISlider* )sender{
-    [self.decelerationRateLabel setText:[LocalizationHelper localizedStringForKey:@"Deceleration Rate: %.3f  ", sender.value]];
-    if(self->selectedWidgetView != nil && self->widgetViewSelected) self->selectedWidgetView.decelerationRate = sender.value;
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        if(decelerationRateSliderMode == decelerationRate2D){
+            self->selectedWidgetView.decelerationRateX = sender.value;
+            self->selectedWidgetView.decelerationRateY = sender.value;
+        }
+        else{
+            self->selectedWidgetView.decelerationRateY = sender.value;
+        }
+    }
+    [self loadDecelerationRates];
     return;
 }
 
@@ -1361,6 +1390,11 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
     self.rollFactorLabel.text = [LocalizationHelper localizedStringForKey:@"Roll Factor"];
     self.rollFactorStack.hidden = YES;
 
+    UITapGestureRecognizer *decelerationRateSliderTapGesture =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(switchDecelerationRateSlider:)];
+    [self.decelerationRateLabel addGestureRecognizer:decelerationRateSliderTapGesture];
+    self.decelerationRateLabel.userInteractionEnabled = true;
     [self.decelerationRateSlider addTarget:self action:@selector(decelerationRateSliderMoved:) forControlEvents:(UIControlEventValueChanged)];
     self.decelerationRateLabel.text = [LocalizationHelper localizedStringForKey:@"Deceleration Rate"];
     self.decelerationRateStack.hidden = YES;
