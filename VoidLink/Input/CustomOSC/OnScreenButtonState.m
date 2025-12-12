@@ -50,7 +50,8 @@
     [encoder encodeFloat:self.yawFactor forKey:@"yawFactor"];
     [encoder encodeFloat:self.pitchFactor forKey:@"pitchFactor"];
     [encoder encodeFloat:self.rollFactor forKey:@"rollFactor"];
-    [encoder encodeFloat:self.decelerationRate forKey:@"decelerationRate"];
+    [encoder encodeFloat:self.decelerationRateX forKey:@"decelerationRateX"];
+    [encoder encodeFloat:self.decelerationRateY forKey:@"decelerationRateY"];
     [encoder encodeFloat:self.stickIndicatorOffset forKey:@"stickIndicatorOffset"];
     [encoder encodeFloat:self.oscLayerSizeFactor forKey:@"oscLayerSizeFactor"];
     [encoder encodeFloat:self.backgroundAlpha forKey:@"backgroundAlpha"];
@@ -83,7 +84,8 @@
         self.yawFactor = [decoder containsValueForKey:@"yawFactor"] ? [decoder decodeFloatForKey:@"yawFactor"] : 1.0;
         self.pitchFactor = [decoder containsValueForKey:@"pitchFactor"] ? [decoder decodeFloatForKey:@"pitchFactor"] : 1.0;
         self.rollFactor = [decoder containsValueForKey:@"rollFactor"] ? [decoder decodeFloatForKey:@"rollFactor"] : 1.0;
-        self.decelerationRate = [decoder decodeFloatForKey:@"decelerationRate"];
+        self.decelerationRateX = [decoder containsValueForKey:@"decelerationRateX"] ? [decoder decodeFloatForKey:@"decelerationRateX"] : 0.5;
+        self.decelerationRateY = [decoder containsValueForKey:@"decelerationRateY"] ? [decoder decodeFloatForKey:@"decelerationRateY"] : 0.5;
         self.stickIndicatorOffset = [decoder decodeFloatForKey:@"stickIndicatorOffset"];
         self.oscLayerSizeFactor = [decoder decodeFloatForKey:@"oscLayerSizeFactor"];
         self.backgroundAlpha = [decoder containsValueForKey:@"backgroundAlpha"] ? [decoder decodeFloatForKey:@"backgroundAlpha"] : 0.5;

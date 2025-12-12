@@ -335,6 +335,10 @@ public class MicHandler: NSObject {
         try engine.start()
     }
     
+    @objc public func clean() {
+        self.timer?.clean()
+    }
+    
     private func notify(_ error: Error) {
         delegate?.micHandler?(self, didFailWithError: error as NSError)
     }

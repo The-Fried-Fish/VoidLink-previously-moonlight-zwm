@@ -111,6 +111,7 @@ import CoreMotion
     
     private var rightStickPhysicalInputX:Double = 0
     private var rightStickPhysicalInputY:Double = 0
+    public var gyroToStickOffset:CGVector = CGVector(dx: 0, dy: 0)
     
     private var leftStickPhysicalInputX:Double = 0
     private var leftStickPhysicalInputY:Double = 0
@@ -302,10 +303,12 @@ import CoreMotion
                 
         if oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick {
             if oscProfile.yawPitchToRightStick {
-                yaw = rightStickTouchInputX + rightStickPhysicalInputX + gyroInputToStickInput(input:yawSource*sensitvityYaw*widgetYawFactor*10)
+                gyroToStickOffset.dx = gyroInputToStickInput(input:yawSource*sensitvityYaw*widgetYawFactor*10)
+                yaw = rightStickTouchInputX + rightStickPhysicalInputX + gyroToStickOffset.dx
                 yaw = self.clampStickInput(input: yaw)
                 
-                pitch = rightStickTouchInputY + rightStickPhysicalInputY - gyroInputToStickInput(input:pitchSource*sensitvityPitch*widgetPitchFactor*10)
+                gyroToStickOffset.dy = -gyroInputToStickInput(input:pitchSource*sensitvityPitch*widgetPitchFactor*10)
+                pitch = rightStickTouchInputY + rightStickPhysicalInputY + gyroToStickOffset.dy
                 pitch = self.clampStickInput(input: pitch)
                 
                 let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: yaw, dy: pitch), withMinOffset: gyroToStickMinOffset)

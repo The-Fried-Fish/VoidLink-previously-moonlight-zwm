@@ -572,7 +572,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.yawFactor = buttonState.yawFactor;
                 widgetView.pitchFactor = buttonState.pitchFactor;
                 widgetView.rollFactor = buttonState.rollFactor;
-                widgetView.decelerationRate = buttonState.decelerationRate;
+                widgetView.decelerationRateX = buttonState.decelerationRateX;
+                widgetView.decelerationRateY = buttonState.decelerationRateY;
                 widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
                 widgetView.minStickOffset = buttonState.minStickOffset;
                 widgetView.buttonMode = buttonState.buttonMode;
@@ -1413,7 +1414,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton{
     if([touchHandler isKindOfClass:[AbsoluteTouchHandler class]]){
         AbsoluteTouchHandler* handler = (AbsoluteTouchHandler* )touchHandler;
-        handler.mouseButtonForCursorMove = mouseButton;
+        AbsoluteTouchHandler.mouseButtonForCursorMove = mouseButton;
         [handler pauseLeftButtonDrag];
     }
     else return;

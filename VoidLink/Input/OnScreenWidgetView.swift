@@ -146,8 +146,9 @@ import UIKit
     @objc public var deltaX: CGFloat
     @objc public var deltaY: CGFloat
     
-    @objc private var weightedDeltaX: Int = 0
-    @objc private var weightedDeltaY: Int = 0
+    private let VectorStickFactor = 1.5167
+    private var weightedDeltaX: Int = 0
+    private var weightedDeltaY: Int = 0
 
     // for LSPAD, RSPAD
     @objc public var offSetX: CGFloat
@@ -217,7 +218,8 @@ import UIKit
     // trackball
     private var trackballVelocity: CGPoint = .zero
     private var trackballDecelerationTimer: Timer?
-    @objc public var decelerationRate: CGFloat = 0.93
+    @objc public var decelerationRateX: CGFloat = 0.5
+    @objc public var decelerationRateY: CGFloat = 0.5
     private let trackballVelocityThreshold: CGFloat = 0.1
     
     @objc public var slideThreshold: CGFloat = 6.0
@@ -411,7 +413,8 @@ import UIKit
     
     @objc public func setupInertialScroller() {
         if self.hasInertia {
-            self.inertialScroller = InertialScroller(decelerationRate: self.decelerationRate, displayLinkRate: CGFloat(self.tempSettings.framerate.intValue))
+            self.inertialScroller = InertialScroller(decelerationRate: self.decelerationRateX, displayLinkRate: CGFloat(self.tempSettings.framerate.intValue))
+            self.inertialScroller.decelerationRateY = self.decelerationRateY
         }
     }
 
@@ -1292,9 +1295,13 @@ import UIKit
     
     
     //=========================================send on screen controller stick/trigger events
-    private func touchInputToStickInput(input: CGFloat) -> CGFloat{
+    private func weightedTouchInputToStickOffset(input: CGFloat) -> CGFloat{
         let target = stickMaxOffset * input / stickInputScale
         return fmax(fmin(target, stickMaxOffset),-stickMaxOffset)
+    }
+    
+    private func stickOffsetToWeightedTouchInput(offset: CGFloat) -> CGFloat {
+        return offset * stickInputScale / stickMaxOffset
     }
     
     private func touchInputToStickBallCoord(input: CGFloat) -> CGFloat {
@@ -1307,9 +1314,9 @@ import UIKit
         return input * (18/stickInputScale)
     }
     
-    private func sendRightStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
-        let targetX = self.touchInputToStickInput(input: inputX)
-        let targetY = -self.touchInputToStickInput(input: inputY)
+    private func sendRightStickTouchPadEvent(weightedTouchX: CGFloat, weightedTouchY: CGFloat){
+        let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
+        let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
         
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
@@ -1321,9 +1328,9 @@ import UIKit
         self.motionHandler.mixOnScreenRightStickAndGyroInput(x: targetX, y: targetY)
     }
     
-    private func sendLeftStickTouchPadEvent(inputX: CGFloat, inputY: CGFloat){
-        let targetX = self.touchInputToStickInput(input: inputX)
-        let targetY = -self.touchInputToStickInput(input: inputY)
+    private func sendLeftStickTouchPadEvent(weightedTouchX: CGFloat, weightedTouchY: CGFloat){
+        let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
+        let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
         
         let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
@@ -1782,32 +1789,32 @@ import UIKit
             case "LSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
-                    self.sendLeftStickTouchPadEvent(inputX: self.offSetX * self.sensitivityFactorX, inputY: self.offSetY * self.sensitivityFactorY)
+                    self.sendLeftStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
                 self.updateTouchLocation(touch: touches.first!)
             case "RSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
-                    self.sendRightStickTouchPadEvent(inputX: self.offSetX * self.sensitivityFactorX, inputY: self.offSetY * self.sensitivityFactorY)
+                    self.sendRightStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
                 self.updateTouchLocation(touch: touches.first!)
             case "LSVPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.weightedDeltaX = Int(self.deltaX*1.5167*self.sensitivityFactorX)
-                    self.weightedDeltaY = Int(self.deltaY*1.5167*self.sensitivityFactorY)
+                    self.weightedDeltaX = Int(self.deltaX*self.VectorStickFactor*self.sensitivityFactorX)
+                    self.weightedDeltaY = Int(self.deltaY*self.VectorStickFactor*self.sensitivityFactorY)
                     if self.firstTouchMoved {
-                        self.sendLeftStickTouchPadEvent(inputX: CGFloat(self.weightedDeltaX), inputY: CGFloat(self.weightedDeltaY))
+                        self.sendLeftStickTouchPadEvent(weightedTouchX: CGFloat(self.weightedDeltaX), weightedTouchY: CGFloat(self.weightedDeltaY))
                     }
                     self.updateTouchLocation(touch: touches.first!)
                 }
             case "RSVPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.weightedDeltaX = Int(self.deltaX*1.5167*self.sensitivityFactorX)
-                    self.weightedDeltaY = Int(self.deltaY*1.5167*self.sensitivityFactorY)
+                    self.weightedDeltaX = Int(self.deltaX*self.VectorStickFactor*self.sensitivityFactorX)
+                    self.weightedDeltaY = Int(self.deltaY*self.VectorStickFactor*self.sensitivityFactorY)
                     if self.firstTouchMoved {
-                        self.sendRightStickTouchPadEvent(inputX: CGFloat(self.weightedDeltaX), inputY: CGFloat(self.weightedDeltaY))
+                        self.sendRightStickTouchPadEvent(weightedTouchX: CGFloat(self.weightedDeltaX), weightedTouchY: CGFloat(self.weightedDeltaY))
                     }
                     self.updateTouchLocation(touch: touches.first!)
                 }
@@ -1973,7 +1980,6 @@ import UIKit
         case "SOFTKEYBOARD":
             self.functionalButtonDelegate?.bringUpSoftKeyboard()
         case "ABSTCHDRAG":
-            // self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:CommandManager.mouseButtonMappings[self.comboButtonStrings.first ?? "MLEFT"] ?? BUTTON_LEFT)
             self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
         case "PENCILHOVER":
             self.functionalButtonDelegate?.disablePencilHover()
@@ -2005,6 +2011,10 @@ import UIKit
         touchesEnded(touches, with: event)
     }
     
+    private func inertiaEnabled() -> Bool {
+        return self.decelerationRateX > 0.50001 || self.decelerationRateY > 0.50001
+    }
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = false
         super.touchesEnded(touches, with: event)
@@ -2022,18 +2032,7 @@ import UIKit
         if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
             self.handleMousePadButtonActionUp()
         }
-        
-        /*
-        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "TRACKBALL" && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
-            if(mousePointerMoved){
-                self.startTrackballMomentum()
-                mousePointerMoved = false //reset flag
-            }
-            else{
-                self.stopTrackballMomentum()
-            }
-        }*/
-        
+                
         if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && twoTouchesDetected && touches.count == allSpawnedTouchesCount { // need to enable multi-touch first
             // touches.count == allCapturedTouchesCount means allfingers are lifting
             if(self.mouseButtonAction == MouseButtonAction.hovering) {self.sendMouseRightButtonClickEvent()}
@@ -2051,33 +2050,47 @@ import UIKit
                 self.clearRightStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "LSVPAD":
-                if self.decelerationRate > 0.50001 {
+                if self.inertiaEnabled() {
                     if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
                     if self.inertialScroller.handler == nil {
                         self.inertialScroller.handler = {
-                            let weightedDeltaX = self.inertialScroller.vector.dx*1.5167*self.sensitivityFactorX
-                            let weightedDeltaY = self.inertialScroller.vector.dy*1.5167*self.sensitivityFactorY
-                            self.sendLeftStickTouchPadEvent(inputX: weightedDeltaX, inputY: weightedDeltaY)
+                            let weightedDeltaX = self.inertialScroller.vector.dx*self.VectorStickFactor*self.sensitivityFactorX
+                            let weightedDeltaY = self.inertialScroller.vector.dy*self.VectorStickFactor*self.sensitivityFactorY
+                            self.sendLeftStickTouchPadEvent(weightedTouchX: weightedDeltaX, weightedTouchY: weightedDeltaY)
                         }
                     }
                     self.inertialScroller.timer?.restart()
                 }
                 else {self.clearLeftStickTouchPadFlag()}
             case "RSVPAD":
-                if self.decelerationRate > 0.50001 {
+                if self.inertiaEnabled() {
                     if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
                     if self.inertialScroller.handler == nil {
-                        self.inertialScroller.handler = {
-                            let weightedDeltaX = self.inertialScroller.vector.dx*1.5167*self.sensitivityFactorX
-                            let weightedDeltaY = self.inertialScroller.vector.dy*1.5167*self.sensitivityFactorY
-                            self.sendRightStickTouchPadEvent(inputX: weightedDeltaX, inputY: weightedDeltaY)
+                        var synthesizedDeltaX:CGFloat = 0
+                        var synthesizedDeltaY:CGFloat = 0
+                        self.inertialScroller.handler = { [self] in
+                            let weightedScrollerVector = CGVector(dx: self.inertialScroller.vector.dx*self.VectorStickFactor*self.sensitivityFactorX, dy: self.inertialScroller.vector.dy*self.VectorStickFactor*self.sensitivityFactorY)
+
+                            if self.motionHandler.gyroMixInputStarted() {
+                                let normailizedGyroVector = CGVector(dx: self.stickOffsetToWeightedTouchInput(offset: self.motionHandler.gyroToStickOffset.dx), dy: -self.stickOffsetToWeightedTouchInput(offset: self.motionHandler.gyroToStickOffset.dy))
+                                
+                                let xConvergent = normailizedGyroVector.dx.sign != weightedScrollerVector.dx.sign && abs(normailizedGyroVector.dx) <= abs(weightedScrollerVector.dx)
+                                let yConvergent = normailizedGyroVector.dy.sign != weightedScrollerVector.dy.sign && abs(normailizedGyroVector.dy) <= abs(weightedScrollerVector.dy)
+                                
+                                synthesizedDeltaX = xConvergent ? normailizedGyroVector.dx + weightedScrollerVector.dx : weightedScrollerVector.dx
+                                synthesizedDeltaY = yConvergent ? normailizedGyroVector.dy + weightedScrollerVector.dy : weightedScrollerVector.dy
+
+                                self.inertialScroller.vector.dx = synthesizedDeltaX/(self.VectorStickFactor*self.sensitivityFactorX)
+                                self.inertialScroller.vector.dy = synthesizedDeltaY/(self.VectorStickFactor*self.sensitivityFactorY)
+                            }
+                            self.sendRightStickTouchPadEvent(weightedTouchX: weightedScrollerVector.dx, weightedTouchY: weightedScrollerVector.dy)
                         }
                     }
                     self.inertialScroller.timer?.restart()
                 }
                 else {self.clearRightStickTouchPadFlag()}
             case "TRACKBALL":
-                if allSpawnedTouchesCount == 1, self.decelerationRate > 0 {
+                if allSpawnedTouchesCount == 1, self.inertiaEnabled() {
                     if(mousePointerMoved){
                         self.startTrackballMomentum()
                         mousePointerMoved = false //reset flag
@@ -2264,7 +2277,13 @@ import UIKit
             }
             if self.motionControlButtonString == "ACCEL" {}
             if self.motionControlButtonString == "MOTION" {}
+            
+            if self.widgetType == WidgetTypeEnum.button && !OnScreenWidgetView.editMode {
+                self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
+                self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
+            }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
+            
             crossMarkLayer.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()

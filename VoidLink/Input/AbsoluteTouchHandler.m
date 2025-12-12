@@ -26,6 +26,8 @@
 // How far the finger can move before it can override the double tap deadzone
 #define DOUBLE_TAP_DEAD_ZONE_DELTA 0.025f
 
+static int mouseButtonForCursorMove = BUTTON_LEFT;
+
 @implementation AbsoluteTouchHandler {
     StreamView* streamView;
     
@@ -79,9 +81,7 @@
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
     self->touchPointSpawnedAtUpperScreenEdge = false;
-    
-    _mouseButtonForCursorMove = BUTTON_LEFT;
-    
+        
     leftClickDelay = ((CGFloat)settings.leftClickDelayMs.intValue)/1000;
     
     return self;
@@ -94,7 +94,7 @@
     if([self touchDidntMoveOnScreen:movingTouchLocation]){
         if(_delayMouseLeftClick){
             LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
-            if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
+            if(mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, mouseButtonForCursorMove);
         }
         LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, BUTTON_RIGHT);
         dispatch_time_t delayShort = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC));
@@ -166,7 +166,7 @@
         LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
         dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
         dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, self->_mouseButtonForCursorMove);
+            LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, mouseButtonForCursorMove);
         });
     }
 }
@@ -185,7 +185,7 @@
     currentTouchesCount = currentTouches.count;
     
     if(currentTouchesCount == 2){
-        if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
+        if(mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, mouseButtonForCursorMove);
         if(passthroughGestures) [TouchPadGestureHandler handleGestureIn:streamView with:event];
     }
      
@@ -201,10 +201,10 @@
         [longPressTimer invalidate];
         longPressTimer = nil;
         
-        NSTimeInterval dragDelay = _mouseButtonForCursorMove == BUTTON_LEFT ? leftClickTimeThreshold : 0;
+        NSTimeInterval dragDelay = mouseButtonForCursorMove == BUTTON_LEFT ? leftClickTimeThreshold : 0;
         
         if(_delayMouseLeftClick && (CACurrentMediaTime()-touchBeganTimeStamp>dragDelay) && !dragButtonDown){
-            LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, _mouseButtonForCursorMove);
+            LiSendMouseButtonEvent(BUTTON_ACTION_PRESS, mouseButtonForCursorMove);
             dragButtonDown = true;
         }
     }
@@ -244,7 +244,7 @@
             }
             else if(!rightButtonClicked){
                     LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_LEFT);
-                    if(_mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, _mouseButtonForCursorMove);
+                    if(mouseButtonForCursorMove!=BUTTON_LEFT) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, mouseButtonForCursorMove);
                     LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_RIGHT);
             }
         }
@@ -289,6 +289,13 @@
     return isAdjacent;
 }
 
++ (int)mouseButtonForCursorMove {
+    return mouseButtonForCursorMove;
+}
+
++ (void)setMouseButtonForCursorMove:(int)button {
+    mouseButtonForCursorMove = button;
+}
 
 @end
 
