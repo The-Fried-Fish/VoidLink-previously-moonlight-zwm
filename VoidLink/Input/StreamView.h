@@ -56,6 +56,7 @@
 - (void) clearOnScreenWidgets;
 - (void) reloadOnScreenWidgetViews;
 - (void) saveRelocatedWidgetViews;
+- (bool) isOnScreenWidgetEnabled;
 
 - (CGSize) getVideoAreaSize;
 - (CGPoint) adjustCoordinatesForVideoArea:(CGPoint)point;
