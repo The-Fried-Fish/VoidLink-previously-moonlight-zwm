@@ -63,6 +63,7 @@
     BOOL _userIsInteracting;
     bool viewJustLoaded;
     bool viewIsBeingResized;
+    bool previousOnScreenWidgetEnabled;
     CGSize _keyboardSize;
     PlotMetrics _decodeMetrics;
     PlotMetrics _frameDropMetrics;
@@ -384,7 +385,12 @@
         // we got self.view passed to streamView class as the topLayerView, will be useful in many cases
     [self->_streamView reloadOnScreenControlsRealtimeWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig]; //reload OSC here.
-    if(viewJustLoaded||reloadOnscreenWidgets) [self->_streamView reloadOnScreenWidgetViews]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    
+    bool onScreenWidgetSwitched = previousOnScreenWidgetEnabled != [_streamView isOnScreenWidgetEnabled];
+    bool needReload = onScreenWidgetSwitched && !previousOnScreenWidgetEnabled;
+    if(viewJustLoaded||reloadOnscreenWidgets||needReload) [_streamView reloadOnScreenWidgetViews]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    if(onScreenWidgetSwitched && previousOnScreenWidgetEnabled) [_streamView clearOnScreenWidgets];
+    previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
     
     [self reloadAirPlayConfig];
     [self mousePresenceChanged];
@@ -471,6 +477,7 @@
     [super viewDidAppear:animated];
     viewJustLoaded = false;
     _deviceWindow = self.view.window;
+    previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
     if (@available(iOS 13.0, *)) {
         UIScreen *currentScreen = self.view.window.windowScene.screen;
         if (UIScreen.screens.count > 1 && [self isAirPlayEnabled] && currentScreen == UIScreen.mainScreen) {
