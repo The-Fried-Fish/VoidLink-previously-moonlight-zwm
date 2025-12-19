@@ -51,6 +51,7 @@ static float volume = 1.0;
 static int audioFrameSize;
 
 static bool useSystemAudioEngine;
+static bool audioSessionInterrupted;
 static AVAudioEngine *audioEngine;
 static AVAudioPlayerNode *audioPlayerNode;
 static AVAudioPCMBuffer *pcmBuffer;
@@ -295,7 +296,7 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
     DataManager* dataMan = [[DataManager alloc] init];
     TemporarySettings* tempSettings = [dataMan getSettings];
     bool useBluetoothD2P = tempSettings.useBuiltinMic || !tempSettings.redirectMic;
-    AVAudioSessionCategoryOptions bluetoothAudioOption = useBluetoothD2P ? AVAudioSessionCategoryOptionAllowBluetoothA2DP : AVAudioSessionCategoryOptionAllowBluetooth;
+    AVAudioSessionCategoryOptions bluetoothAudioOption = useBluetoothD2P ? AVAudioSessionCategoryOptionAllowBluetoothA2DP : AVAudioSessionCategoryOptionAllowBluetoothHFP;
     AVAudioSessionCategoryOptions volumeMixOption = tempSettings.duckOtherApps ? AVAudioSessionCategoryOptionDuckOthers : AVAudioSessionCategoryOptionMixWithOthers;
     AVAudioSession *session = [AVAudioSession sharedInstance];
     [session setCategory:tempSettings.redirectMic ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryPlayback
@@ -304,7 +305,8 @@ int ArInit(int audioConfiguration, POPUS_MULTISTREAM_CONFIGURATION opusConfig, v
                    error:nil];
     if(tempSettings.redirectMic) if(@available(iOS 13.0, *)) [session setAllowHapticsAndSystemSoundsDuringRecording:YES error:nil];
     [session setActive:YES error:nil];
-    
+    audioSessionInterrupted = false;
+
     AudioEngineInit(audioConfig.sampleRate, audioConfig.channelCount);
 
     return 0;
@@ -437,7 +439,7 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
                 }
             }
             // 播放
-            [audioPlayerNode scheduleBuffer:buffer completionHandler:nil];
+            if(!audioSessionInterrupted) [audioPlayerNode scheduleBuffer:buffer completionHandler:nil];
         }
         
         else{
@@ -534,6 +536,7 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     LiInterruptConnection();
     [audioPlayerNode stop];
     [audioEngine stop];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     // We dispatch this async to get out because this can be invoked
     // on a thread inside common and we don't want to deadlock. It also avoids
@@ -543,6 +546,27 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
         LiStopConnection();
         [initLock unlock];
     });
+}
+
+- (void)handleAudioSessionInterruption:(NSNotification *)notification {
+    NSDictionary *info = notification.userInfo;
+    AVAudioSessionInterruptionType type =
+        [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    
+    switch (type) {
+        case AVAudioSessionInterruptionTypeBegan:
+            audioSessionInterrupted = true;
+            [audioPlayerNode stop];
+            [audioEngine stop];
+            break;
+        case AVAudioSessionInterruptionTypeEnded:
+            AudioEngineInit(audioConfig.sampleRate, audioConfig.channelCount);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5*NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                audioSessionInterrupted = false;
+            });
+        default:
+            break;
+    }
 }
 
 -(id) initWithConfig:(StreamConfiguration*)config renderer:(VideoDecoderRenderer*)myRenderer connectionCallbacks:(id<ConnectionCallbacks>)callbacks
@@ -662,7 +686,12 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     _clCallbacks.rumbleTriggers = ClRumbleTriggers;
     _clCallbacks.setMotionEventState = ClSetMotionEventState;
     _clCallbacks.setControllerLED = ClSetControllerLED;
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+           selector:@selector(handleAudioSessionInterruption:)
+               name:AVAudioSessionInterruptionNotification
+             object:nil];
+    
     return self;
 }
 
