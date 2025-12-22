@@ -41,10 +41,20 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
 }
 
 - (NSArray*) getHostAddressList {
-    NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:3];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
 
     if (_host.localAddress != nil) {
         [array addObject:_host.localAddress];
+    }
+    if(_host.activeAddressPool.count>0){
+        for(NSString* address in _host.activeAddressPool){
+            if([address containsString:@":"]) break;
+            [array addObject:address];
+        }
+        for(NSString* address in _host.activeAddressPool){
+            if(![address containsString:@":"]) break;
+            [array addObject:address];
+        }
     }
     if (_host.address != nil) {
         [array addObject:_host.address];
@@ -61,6 +71,7 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
     // to preserve insertion order of addresses.
     for (int i = 0; i < [array count]; i++) {
         NSString *addr1 = [array objectAtIndex:i];
+        NSLog(@"iterates discovery addrs %@, host: %@", addr1, _host.name);
         
         for (int j = 1; j < [array count]; j++) {
             if (i == j) {
@@ -104,6 +115,8 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
             receivedResponse = [self checkResponse:serverInfoResp];
             if (receivedResponse) {
                 _host.activeAddress = address;
+                if(!_host.activeAddressPool) _host.activeAddressPool = [[NSMutableSet alloc] init];
+                [_host.activeAddressPool addObject:address];
                 [serverInfoResp populateHost:_host];
                 
                 // Update the database using the response

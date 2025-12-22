@@ -30,6 +30,7 @@
     NSString* _uniqueId;
     NSData* _cert;
     BOOL shouldDiscover;
+    DataManager* dataMan;
 }
 
 - (id)initWithHosts:(NSArray *)hosts andCallback:(id<DiscoveryCallback>)callback {
@@ -52,6 +53,7 @@
     [CryptoManager generateKeyPairUsingSSL];
     _uniqueId = [IdManager getUniqueId];
     _cert = [CryptoManager readCertFromFile];
+    DataManager* dataMan = [[DataManager alloc] init];
     return self;
 }
 
@@ -139,6 +141,8 @@
     if ([serverInfoResponse isStatusOk]) {
         host = [[TemporaryHost alloc] init];
         host.activeAddress = host.address = hostAddress;
+        if(!host.activeAddressPool) host.activeAddressPool = [[NSMutableSet alloc] init];
+        [host.activeAddressPool addObject:host.activeAddress];
         host.state = StateOnline;
         [serverInfoResponse populateHost:host];
         
@@ -284,8 +288,9 @@
             existingHost.externalAddress = host.externalAddress;
         }
         existingHost.activeAddress = host.activeAddress;
+        [existingHost.activeAddressPool addObject:host.activeAddress];
         existingHost.state = host.state;
-        return NO;
+        return NO; // returning a "NO" here means Updating addresses of existing host
     }
     else {
         @synchronized (_hostQueue) {

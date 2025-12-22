@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, retain) NSString *name;
 @property (atomic, retain) NSString *uuid;
 @property (atomic, retain) NSSet *appList;
+@property (atomic, retain) NSMutableSet * activeAddressPool;
 
 - (id) initFromHost:(Host*)host;
 

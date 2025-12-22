@@ -765,6 +765,10 @@ static NSMutableSet* hostList;
                         [hostNotFoundAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self hideLoadingFrame:^{
+                                if([error isEqualToString:[LocalizationHelper localizedStringForKey:@"Host information updated"]]){
+                                    DataManager* dataMan = [[DataManager alloc] init];
+                                    [dataMan updateHost:host];
+                                }
                                 [[self activeViewController] presentViewController:hostNotFoundAlert animated:YES completion:nil];
                             }];
                         });
