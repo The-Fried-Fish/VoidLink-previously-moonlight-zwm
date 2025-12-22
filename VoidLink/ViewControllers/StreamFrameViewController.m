@@ -376,7 +376,6 @@
     }
     else [micHandler stopTappingWithStopEngine:false];
     
-    Connection.useSystemAudioEngine = _settings.audioEngine.intValue == SystemAudioEngine;
     Connection.muteInBackground = _settings.muteInBackground;
     
     if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];

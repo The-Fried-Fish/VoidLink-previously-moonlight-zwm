@@ -3110,7 +3110,37 @@
       }
     },
     "iZL-dA-jk9.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[1] = \"5.1‑channel\"; ObjectID = \"iZL-dA-jk9\";",
+      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[1] = \"Stereo(SDL)\"; ObjectID = \"iZL-dA-jk9\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Stereo(SDL)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双声道(SDL)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙聲道(SDL)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙聲道(SDL)"
+          }
+        }
+      }
+    },
+    "iZL-dA-jk9.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[2] = \"5.1‑channel\"; ObjectID = \"iZL-dA-jk9\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
@@ -3139,8 +3169,8 @@
         }
       }
     },
-    "iZL-dA-jk9.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[2] = \"7.1‑channel\"; ObjectID = \"iZL-dA-jk9\";",
+    "iZL-dA-jk9.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; iZL-dA-jk9.segmentTitles[3] = \"7.1‑channel\"; ObjectID = \"iZL-dA-jk9\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {

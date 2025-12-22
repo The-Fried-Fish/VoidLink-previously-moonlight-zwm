@@ -16,6 +16,7 @@ import Collections
 @objcMembers
 public class MicHandler: NSObject {
 
+    private var notificationTokens = [NSObjectProtocol]()
     private let engine = AVAudioEngine()
     private let playerNode = AVAudioPlayerNode()
     private var audioSink: Any?
@@ -48,6 +49,16 @@ public class MicHandler: NSObject {
 
     @objc public init(useBuiltinMic:Bool) {
         super.init()
+        
+        let token = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            self?.handleInterruption(notification)
+        }
+        notificationTokens.append(token)
+
         self.useBuiltinMic = useBuiltinMic
         do {
             try configureSession()
@@ -140,6 +151,29 @@ public class MicHandler: NSObject {
     
     /* ----------- Audio Session -------------*/
     
+    private func handleInterruption(_ notification: Notification) {
+        guard let info = notification.userInfo,
+              let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue)
+        else { return }
+
+        switch type {
+        case .began:
+            self.stopTapping(stopEngine: true)
+        case .ended:
+            do {
+                try configureEngine()
+            } catch {
+                notify(error)
+            }
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+                self.startTapping()
+            }
+        @unknown default:
+            break
+        }
+    }
+
     private func configureOpus(sampleRate: Int32, channels: Int) throws {
         var err: Int32 = 0
         guard let enc = opus_encoder_create(sampleRate, Int32(channels), OPUS_APPLICATION_VOIP, &err), err == OPUS_OK else {
@@ -336,6 +370,10 @@ public class MicHandler: NSObject {
     }
     
     @objc public func clean() {
+        for token in notificationTokens {
+            NotificationCenter.default.removeObserver(token)
+        }
+        notificationTokens.removeAll()
         self.timer?.clean()
     }
     

@@ -27,11 +27,6 @@ typedef NS_ENUM(NSInteger, ControllerGyroSwitchMode) {
     ControllerGyroSwitchHoldDown
 };
 
-typedef NS_ENUM(NSInteger, AudioEngine) {
-    SystemAudioEngine,
-    SDLAudioEngine
-};
-
 typedef NS_ENUM(NSInteger, TouchMode) {
     RelativeTouch,
     NativeTouch,
