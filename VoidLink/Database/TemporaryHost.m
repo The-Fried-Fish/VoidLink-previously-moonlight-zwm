@@ -28,6 +28,17 @@
     self = [self init];
     
     self.address = host.address;
+    
+    NSSet *classes = [NSSet setWithObjects: [NSMutableSet class], nil];
+    NSError *error = nil;
+    self.activeAddressPool = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:host.activeAddressPool error:&error];
+    if(self.activeAddressPool){
+        for(NSString* address in _activeAddressPool){
+            NSLog(@"%@, persisted addr: %@", host.name, address);
+        }
+    }
+    else self.activeAddressPool = [[NSMutableSet alloc] init];
+    
     self.externalAddress = host.externalAddress;
     self.localAddress = host.localAddress;
     self.ipv6Address = host.ipv6Address;
@@ -57,7 +68,7 @@
     return self;
 }
 
-- (void) propagateChangesToParent:(Host*)parentHost {
+- (void) propagateChangesToParent:(Host*)parentHost { // update persisted host data
     // Avoid overwriting existing data with nil if
     // we don't have everything populated in the temporary
     // host.
@@ -73,6 +84,15 @@
     if (self.ipv6Address != nil) {
         parentHost.ipv6Address = self.ipv6Address;
     }
+    
+    if(self.activeAddressPool.count>0){
+        NSError *error;
+        parentHost.activeAddressPool = [NSKeyedArchiver archivedDataWithRootObject:self.activeAddressPool requiringSecureCoding:YES error:&error];
+    }
+    else [self.activeAddressPool addObject:self.activeAddress];
+    
+    // NSLog(@"Persisting activeAddressPool, pool count %lu ... %f, host: %@", (unsigned long)self.activeAddressPool.count, CACurrentMediaTime(), self.name);
+    
     // try to fix invalid mac happens in some cases
     // 添加主机crash问题重点关注
     if (!(self.mac == nil || [self.mac isEqualToString:@"00:00:00:00:00:00"])) parentHost.mac = self.mac;

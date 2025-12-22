@@ -228,6 +228,7 @@ static NSString* NV_SERVICE_TYPE = @"_nvstream._tcp";
         Log(LOG_I, @"IPv6 address chosen: %@ -> %@", [service hostName], host.ipv6Address);
         
         host.activeAddress = host.localAddress;
+        // [host.activeAddressPool addObject:host.localAddress];
         host.name = service.hostName;
         [self.callback updateHost:host];
     });

@@ -8,6 +8,7 @@
         <relationship name="host" maxCount="1" deletionRule="Nullify" destinationEntity="Host" inverseName="appList" inverseEntity="Host" syncable="YES"/>
     </entity>
     <entity name="Host" representedClassName="Host" syncable="YES" codeGenerationType="class">
+        <attribute name="activeAddressPool" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="externalAddress" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="ipv6Address" optional="YES" attributeType="String" syncable="YES"/>
