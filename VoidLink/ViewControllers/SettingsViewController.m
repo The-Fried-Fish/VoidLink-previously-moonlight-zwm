@@ -876,7 +876,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.muteInBackgroundStack ofId:@"muteInBackgroundStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
     // [self addSetting:self.audioEngineStack ofId:@"audioEngineStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     // cancel audio engine selector due to system engine is unable to playback multi-channel audio
-    [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
+    [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
     [audioSection addToParentStack:_parentStack];
     // [audioSection setExpanded:NO];
 
@@ -1423,6 +1423,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"physicaStickMinOffsetTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"audioConfigStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"audioConfigStackTip"];
+        showOnlineDocAction = false;
+    }
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
@@ -1908,22 +1912,30 @@ BOOL isCustomResolution(int resolutionSelected) {
         self.audioEngineSelector.selectedSegmentIndex = self->tempSettings.audioEngine.intValue;
         
         if (@available(iOS 18.0, tvOS 18.0, *)) {}else{
-            [self.audioConfigSelector removeSegmentAtIndex:1 animated:false];
-            [self.audioConfigSelector removeSegmentAtIndex:1 animated:false]; // segment 2 goes away when you remove index 2
+            [self.audioConfigSelector removeSegmentAtIndex:2 animated:false];
+            [self.audioConfigSelector removeSegmentAtIndex:2 animated:false]; // segment 2 goes away when you remove index 2
+            /*
             [self.audioConfigSelector setTitle:[LocalizationHelper localizedStringForKey:@"Stereo (surround sound available for iOS18+)"] forSegmentAtIndex:0];
-            [self.audioConfigSelector setEnabled:NO];
+            [self.audioConfigSelector setEnabled:NO];*/
         }
         switch ([self->tempSettings.audioConfig integerValue]) {
             case 2:
                 [self.audioConfigSelector setSelectedSegmentIndex:0];
                 break;
-            case 6:
+            case 3:
                 [self.audioConfigSelector setSelectedSegmentIndex:1];
                 break;
-            case 8:
+            case 6:
                 [self.audioConfigSelector setSelectedSegmentIndex:2];
                 break;
+            case 8:
+                [self.audioConfigSelector setSelectedSegmentIndex:3];
+                break;
         }
+        // 2 - stereo (system)
+        // 3 - stereo (SDL)
+        // 6 - 5.1 (SDL)
+        // 8 - 7.1 (SDL)
 
         // Unlock Display Orientation setting
         bool unlockDisplayOrientationSelectorEnabled = [self isFullScreenRequired] || [self isIPhone];//need "requires fullscreen" enabled in the app bunddle to make runtime orientation limitation working
@@ -3280,7 +3292,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     NSInteger framerate = [self getChosenFrameRate];
 
-    NSInteger audioConfig = [@[@2, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
+    NSInteger audioConfig = [@[@2, @3, @6, @8][[self.audioConfigSelector selectedSegmentIndex]] integerValue];
+    // 2 - stereo (system)
+    // 3 - stereo (SDL)
+    // 6 - 5.1 (SDL)
+    // 8 - 7.1 (SDL)
+
     NSInteger renderingBackend = [self.renderingBackendSelector selectedSegmentIndex];
     NSInteger framePacingMode = [self.framePacingModeSelector selectedSegmentIndex];
     NSInteger onscreenControls = [self.onScreenWidgetSelector selectedSegmentIndex];
