@@ -37,6 +37,7 @@
     NSInteger _lastSelectedResolutionIndex;
     bool settingsViewJustLoaded;
     bool settingsViewJustExpanded;
+    bool settingsViewAlreadyAppeared;
     uint16_t oswLayoutFingers;
     CustomEdgeSlideGestureRecognizer *slideToCloseSettingsViewRecognizer;
     NSMutableDictionary *_settingStackDict;
@@ -429,6 +430,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
+- (bool)contentOffsetRestored{
+    return fabs(_scrollView.contentOffset.y - tempSettings.settingsMenuOffset.floatValue)<2;
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:NO];
 
@@ -511,7 +516,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self reloadGameProfileConfigs];
     
     self->tempSettings = [self->dataMan getSettings];
- }
+    
+    if(!settingsViewAlreadyAppeared){
+        _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
+        _scrollView.hidden = true;
+    }
+}
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:NO];
@@ -520,16 +530,17 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [self updateResolutionTable];
     
-    // _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
-    /// cancel restoring contentOffset
-    
     [self.customResolutionSwitch addTarget:self action:@selector(customResolutionSwitched:) forControlEvents:UIControlEventValueChanged];
     [self.customResolutionSwitch setOn: isCustomResolution(self->tempSettings.resolutionSelected.intValue)];
     [self.resolutionSelector setEnabled:!self.customResolutionSwitch.isOn];
     
     [self touchModeChanged:self.touchModeSelector1]; // a special fix for iOS 14 to set hidden for the "enableOswStack"
+    
+    if(!settingsViewAlreadyAppeared && ![self contentOffsetRestored]) _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, tempSettings.settingsMenuOffset.floatValue);
+    _scrollView.hidden = false;
 
     settingsViewJustExpanded = false;
+    settingsViewAlreadyAppeared = true;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -1689,6 +1700,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
         self->settingsViewJustLoaded = true;
         self->settingsViewJustExpanded = true;
+        self->settingsViewAlreadyAppeared = false;
 
         // Always run settings in dark mode because we want the light fonts
         if (@available(iOS 13.0, tvOS 13.0, *)) {
