@@ -390,8 +390,9 @@ static CGRect layoutViewBounds;
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.widgetLabel;
         buttonState.identifier = widgetView.identifier;
-        buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView and:buttonState];
-        buttonState.heightFactor = [self normalizeSizeHeightFactor:widgetView and:buttonState];
+        buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView];
+        buttonState.heightFactor = [self normalizeSizeHeightFactorWith:widgetView];
+        buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.labelAlpha = widgetView.labelAlpha;
         buttonState.borderAlpha = widgetView.borderAlpha;
@@ -410,6 +411,7 @@ static CGRect layoutViewBounds;
         buttonState.decelerationRateY = widgetView.decelerationRateY;
         buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
         buttonState.widgetShape = widgetView.shape;
+        buttonState.walkModeThreshold = widgetView.dWheelWalkModeThreshold;
         buttonState.minStickOffset = widgetView.minStickOffset;
         buttonState.buttonMode = widgetView.buttonMode;
         
@@ -430,12 +432,19 @@ static CGRect layoutViewBounds;
     return referenceLen;
 }
 
-- (CGFloat)normalizeSizeWidthFactorWith:(OnScreenWidgetView* )widget and:(OnScreenButtonState* )buttonstate{
+- (CGFloat)normalizeSizeWidthFactorWith:(OnScreenWidgetView* )widget{
     return widget.bounds.size.width/[self getReferenceLen] * 10000;
 }
 
-- (CGFloat)normalizeSizeHeightFactor:(OnScreenWidgetView* )widget and:(OnScreenButtonState* )buttonstate{
+- (CGFloat)normalizeSizeHeightFactorWith:(OnScreenWidgetView* )widget{
     return widget.bounds.size.height/[self getReferenceLen] * 10000;
+}
+
+- (CGFloat)normalizeComponentSizeFactorWith:(OnScreenWidgetView* )widget{
+    if(widget.isStickWheel) {
+        return widget.denormalizedComponentSizeFactor*widget.baselineDiameter/[self getReferenceLen] * 10000;
+    }
+    return 1;
 }
 
 

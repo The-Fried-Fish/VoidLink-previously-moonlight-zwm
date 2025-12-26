@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,6 +24,9 @@
 		188973D32E386A670025E48C /* widgetTemplatesIPhone.bin in Resources */ = {isa = PBXBuildFile; fileRef = 188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */; };
 		18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */; };
 		189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 189AD2992DE7446000E24B88 /* HostCollectionViewController.m */; };
+		18A0EE252EFB9B5A00BA853A /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 18A0EE242EFB9B5A00BA853A /* SVGKit */; };
+		18A0EE272EFB9B5A00BA853A /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 18A0EE262EFB9B5A00BA853A /* SVGKitSwift */; };
+		18A0EE2C2EFBCCFD00BA853A /* GraphicUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A0EE2B2EFBCCFD00BA853A /* GraphicUtils.swift */; };
 		18A765BD2ECD51FB004784AA /* ControllerUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A765BC2ECD51FB004784AA /* ControllerUtil.swift */; };
 		18B317032EE67A3A009B62C2 /* InertialScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B317022EE67A39009B62C2 /* InertialScroller.swift */; };
 		18E4BCEA2E891895000A8657 /* MotionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E4BCE92E891895000A8657 /* MotionHandler.swift */; };
@@ -182,6 +185,7 @@
 		18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadGestureHandler.swift; sourceTree = "<group>"; };
 		189AD2962DE743B700E24B88 /* HostCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HostCollectionViewController.h; sourceTree = "<group>"; };
 		189AD2992DE7446000E24B88 /* HostCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HostCollectionViewController.m; sourceTree = "<group>"; };
+		18A0EE2B2EFBCCFD00BA853A /* GraphicUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphicUtils.swift; sourceTree = "<group>"; };
 		18A765BC2ECD51FB004784AA /* ControllerUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerUtil.swift; sourceTree = "<group>"; };
 		18B317022EE67A39009B62C2 /* InertialScroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InertialScroller.swift; sourceTree = "<group>"; };
 		18BF141D2E0D7A00009DEE4F /* VoidLink v1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VoidLink v1.0.xcdatamodel"; sourceTree = "<group>"; };
@@ -401,11 +405,17 @@
 		FBDE86E519F82297001C18A8 /* UIAppView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAppView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		18A0EE282EFBCBFB00BA853A /* SVGs */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SVGs; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		FB290CEB19B2C406004C83CF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18A0EE272EFB9B5A00BA853A /* SVGKitSwift in Frameworks */,
+				18A0EE252EFB9B5A00BA853A /* SVGKit in Frameworks */,
 				9890CF6B203B7EE1006C4B06 /* libxml2.tbd in Frameworks */,
 				98CFB82F1CAD481B0048EF74 /* libmoonlight-common.a in Frameworks */,
 				FB8946ED19F6AFE800339C8A /* libopus.a in Frameworks */,
@@ -650,6 +660,7 @@
 				1888C1912E24C33100108730 /* AboutViewController.swift */,
 				FB89463719F6473800339C8A /* Launch Screen.xib */,
 				FB290D0819B2C406004C83CF /* Images.xcassets */,
+				18A0EE282EFBCBFB00BA853A /* SVGs */,
 				FB290D0519B2C406004C83CF /* Limelight.xcdatamodeld */,
 				FB1D59981BBCCD7E00F482CA /* AppCollectionView.h */,
 				FB1D59991BBCCD7E00F482CA /* AppCollectionView.m */,
@@ -764,6 +775,7 @@
 			isa = PBXGroup;
 			children = (
 				18729EDD2E8BD68800101194 /* UUIDHelper.swift */,
+				18A0EE2B2EFBCCFD00BA853A /* GraphicUtils.swift */,
 				97E20DD42E2164A9000D5DCA /* BandwidthTracker.h */,
 				97E20DD52E2164A9000D5DCA /* BandwidthTracker.m */,
 				97E20DD62E2164A9000D5DCA /* FloatBuffer.h */,
@@ -925,6 +937,9 @@
 			dependencies = (
 				98AB2E861CAD468B0089BB98 /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				18A0EE282EFBCBFB00BA853A /* SVGs */,
+			);
 			name = VoidLink;
 			productName = Limelight;
 			productReference = FB290CEE19B2C406004C83CF /* VoidLink.app */;
@@ -960,6 +975,7 @@
 			packageReferences = (
 				F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */,
 				182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */,
+				18A0EE232EFB9B5A00BA853A /* XCRemoteSwiftPackageReference "SVGKit" */,
 			);
 			productRefGroup = FB290CEF19B2C406004C83CF /* Products */;
 			projectDirPath = "";
@@ -1047,6 +1063,7 @@
 				18A765BD2ECD51FB004784AA /* ControllerUtil.swift in Sources */,
 				84E1CDEC2C4F67D300547904 /* CommandManager.swift in Sources */,
 				847D2FDB2DDA015F00937A62 /* MenuSectionView.m in Sources */,
+				18A0EE2C2EFBCCFD00BA853A /* GraphicUtils.swift in Sources */,
 				FB53E1431BE5DC4400CD6ECE /* IdManager.m in Sources */,
 				189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */,
 				9897B6A1221260EF00966419 /* VoidController.m in Sources */,
@@ -1445,6 +1462,14 @@
 				minimumVersion = 1.1.4;
 			};
 		};
+		18A0EE232EFB9B5A00BA853A /* XCRemoteSwiftPackageReference "SVGKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SVGKit/SVGKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/OpenSSL-Package.git";
@@ -1470,6 +1495,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 182760F52E83E2EA00EC1C5C /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
+		};
+		18A0EE242EFB9B5A00BA853A /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18A0EE232EFB9B5A00BA853A /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		18A0EE262EFB9B5A00BA853A /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18A0EE232EFB9B5A00BA853A /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
 		};
 		F74BEF9B2C1A705600224667 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;

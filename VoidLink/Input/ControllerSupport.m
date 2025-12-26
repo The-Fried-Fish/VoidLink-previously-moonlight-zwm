@@ -1220,9 +1220,9 @@ double rc_expo(double x, double expo) {
                 CGFloat rightStickYRaw = gamepad.rightThumbstick.yAxis.value * self->stickMaxOffset;
 
                 
-                CGVector leftStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(leftStickXRaw, leftStickYRaw) withMinOffset:self->_leftStickMinOffset];
-                
-                CGVector rightStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(rightStickXRaw, rightStickYRaw) withMinOffset:self->_rightStickMinOffset];
+                CGVector leftStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(leftStickXRaw, leftStickYRaw) minOffset:self->_leftStickMinOffset circulate:false];
+
+                CGVector rightStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(rightStickXRaw, rightStickYRaw) minOffset:self->_rightStickMinOffset circulate:false];
                 
                 leftStickX = self->_controllerMouseEnabledFlag ? 0 : leftStickOffset.dx;
                 leftStickY = self->_controllerMouseEnabledFlag ? 0 : leftStickOffset.dy;
