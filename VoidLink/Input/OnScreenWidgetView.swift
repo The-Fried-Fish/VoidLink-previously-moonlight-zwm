@@ -564,7 +564,8 @@ import SVGKit
     
     @objc public func tweakLabelAlpha(alpha:CGFloat){
         labelAlpha = alpha
-        label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+        // label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+        self.setupAtrributedText()
     }
     
     @objc public func tweakBorderAlpha(alpha:CGFloat){
@@ -704,17 +705,55 @@ import SVGKit
         self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
     }
     
+    func containsNonLatin(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            if !(0x0000...0x024F).contains(scalar.value) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func setupAtrributedText(){
+        let text = self.widgetLabel
+        let attr = NSAttributedString(
+            string: text,
+            attributes: [
+                .foregroundColor: UIColor(white: 1.0, alpha: labelAlpha),     // 填充色
+                .strokeColor: UIColor.black.withAlphaComponent(labelAlpha*0.43),          // 描边色
+                .strokeWidth: containsNonLatin(text) ? -1 : -4                    // 负值 = 同时填充
+            ]
+        )
+        label.attributedText = attr
+    }
+    
     private func setupView() {
-        label.text = self.widgetLabel
-        label.font = UIFont.boldSystemFont(ofSize: 19)
+        // label.text = self.widgetLabel
+        // label.font = UIFont.boldSystemFont(ofSize: 19)
+        // label.font = UIFont.systemFont(ofSize: 19, weight: .medium, design: .rounded)
+        
+        let baseFont = UIFont.boldSystemFont(ofSize: self.shape == "round" ? 22 : 19)
+        if #available(iOS 13.0, *) {
+            if let desc = baseFont.fontDescriptor.withDesign(.rounded) {
+                label.font = UIFont(descriptor: desc, size: 0)
+            } else {
+                label.font = baseFont
+            }
+        } else {
+            label.font = baseFont
+        }
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.1  // Adjust the scale factor as needed
-        
-        label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
         label.textAlignment = .center
-        label.shadowColor = .black
-        label.shadowOffset = CGSize(width: 1, height: 1)
+
+        // label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+        // label.shadowColor = .black
+        // label.shadowOffset = CGSize(width: 0, height: 0)
+        
+        self.setupAtrributedText()
+                
         label.translatesAutoresizingMaskIntoConstraints = false // enable auto alignment for the label
         
         self.translatesAutoresizingMaskIntoConstraints = true // this is mandatory to prevent unexpected key view location change
@@ -738,7 +777,7 @@ import SVGKit
             if(self.borderWidth < 1) {self.layer.borderWidth = 1}
             else {self.layer.borderWidth = self.borderWidth}
             if OnScreenWidgetView.editMode { //display label in edit mode to make the pad more visible
-                label.text = self.widgetLabel
+                // label.text = self.widgetLabel
                 if CommandManager.stickWheels.contains(self.touchPadString) {label.isHidden = true}
             }
             else{
@@ -755,7 +794,6 @@ import SVGKit
             self.layer.cornerRadius = self.frame.width/2
             // self.layer.borderWidth = self.borderWidth
             label.minimumScaleFactor = 0.15  // Adjust the scale factor for oscButtons
-            label.font = UIFont.boldSystemFont(ofSize: 22)
         }
         if self.shape == "square" || self.shape == "largeSquare" {
             //just do nothing here
