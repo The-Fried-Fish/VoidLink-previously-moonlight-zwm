@@ -58,6 +58,7 @@
     [encoder encodeFloat:self.backgroundAlpha forKey:@"backgroundAlpha"];
     [encoder encodeFloat:self.labelAlpha forKey:@"labelAlpha"];
     [encoder encodeFloat:self.borderAlpha forKey:@"borderAlpha"];
+    [encoder encodeFloat:self.highlightAlpha forKey:@"highlightAlpha"];
     [encoder encodeFloat:self.borderWidth forKey:@"borderWidth"];
     [encoder encodeFloat:self.highlightSizeFactor forKey:@"highlightSizeFactor"];
     [encoder encodeObject:self.widgetShape forKey:@"widgetShape"];
@@ -94,6 +95,7 @@
         self.backgroundAlpha = [decoder containsValueForKey:@"backgroundAlpha"] ? [decoder decodeFloatForKey:@"backgroundAlpha"] : 0.5;
         self.labelAlpha = [decoder containsValueForKey:@"labelAlpha"] ? [decoder decodeFloatForKey:@"labelAlpha"] : 0.82;
         self.borderAlpha = [decoder containsValueForKey:@"borderAlpha"] ? [decoder decodeFloatForKey:@"borderAlpha"] : 0.19;
+        self.highlightAlpha = [decoder containsValueForKey:@"highlightAlpha"] ? [decoder decodeFloatForKey:@"highlightAlpha"] : 0.77;
         self.borderWidth = [decoder decodeFloatForKey:@"borderWidth"];
         self.highlightSizeFactor = [decoder containsValueForKey:@"highlightSizeFactor"] ? [decoder decodeFloatForKey:@"highlightSizeFactor"] : 1.0;
         self.widgetShape = [decoder decodeObjectForKey:@"widgetShape"];

@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     widgetAlpha,
     labelAlpha,
     borderAlpha,
+    highlightAlpha,
     AlphaSliderModeCount
 };
 
@@ -87,7 +88,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 - (void) viewWillDisappear:(BOOL)animated{
     OnScreenWidgetView.editMode = false;
-    OnScreenWidgetView.isTweakingHighlightSize = false;
+    OnScreenWidgetView.isTweakingHighlight = false;
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"OscLayoutCloseNotification" object:self];
 }
@@ -125,7 +126,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 - (void)reloadOnScreenWidgetViews{
     NSLog(@"reloadOnScreenWidgets %f", CACurrentMediaTime());
-    OnScreenWidgetView.isTweakingHighlightSize = false;
+    OnScreenWidgetView.isTweakingHighlight = false;
     OnScreenWidgetView.editMode = true;
     [self hideStickIndicators];
 
@@ -180,6 +181,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
             [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha tweakBorderAlpha:NO];
             [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
             [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
+            [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
             [widgetView adjustBorderWithWidth:buttonState.borderWidth];
             [self.onScreenWidgetViews addObject:widgetView];
         }
@@ -366,23 +368,49 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (void)switchAlphaSlider:(UITapGestureRecognizer *)sender {
     if(!widgetViewSelected) return;
     alphaSliderMode = (alphaSliderMode + 1) % AlphaSliderModeCount;
+    OnScreenWidgetView.isTweakingHighlight = alphaSliderMode == highlightAlpha || borderWidthSliderMode == hightlightSize;
     [self loadWidgetAlphas];
+}
+
+- (void)setHiddenForWidgetHighlights{
+    selectedWidgetView.buttonDownVisualEffectLayer.hidden = !OnScreenWidgetView.isTweakingHighlight;
+    selectedWidgetView.l3r3Indicator.hidden = !selectedWidgetView.hasL3R3Indicator || !OnScreenWidgetView.isTweakingHighlight;
+    (selectedWidgetView.lrudIndicatorBall.hidden
+     = selectedWidgetView.upIndicator.hidden
+     = selectedWidgetView.downIndicator.hidden
+     = selectedWidgetView.leftIndicator.hidden
+     = selectedWidgetView.rightIndicator.hidden
+     = !selectedWidgetView.isDirectionPad
+     && !OnScreenWidgetView.isTweakingHighlight);
 }
 
 - (void)loadWidgetAlphas{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        [self setHiddenForWidgetHighlights];
         switch(alphaSliderMode){
             case widgetAlpha:
+                [self.widgetAlphaSlider setMaximumValue:1];
+                [self.widgetAlphaSlider setMinimumValue:-1];
                 [self.widgetAlphaSlider setValue: self->selectedWidgetView.backgroundAlpha];
                 [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Alpha: %.2f", _widgetAlphaSlider.value]];
                 break;
             case labelAlpha:
+                [self.widgetAlphaSlider setMaximumValue:1];
+                [self.widgetAlphaSlider setMinimumValue:-1];
                 [self.widgetAlphaSlider setValue: self->selectedWidgetView.labelAlpha];
                 [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Label alpha: %.2f", _widgetAlphaSlider.value]];
                 break;
             case borderAlpha:
+                [self.widgetAlphaSlider setMaximumValue:1];
+                [self.widgetAlphaSlider setMinimumValue:-1];
                 [self.widgetAlphaSlider setValue: self->selectedWidgetView.borderAlpha];
                 [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Border alpha: %.2f", _widgetAlphaSlider.value]];
+                break;
+            case highlightAlpha:
+                [self.widgetAlphaSlider setMaximumValue:1];
+                [self.widgetAlphaSlider setMinimumValue:0];
+                [self.widgetAlphaSlider setValue: self->selectedWidgetView.highlightAlpha];
+                [self.widgetAlphaLabel setText:[LocalizationHelper localizedStringForKey:@"Highlight alpha: %.2f", _widgetAlphaSlider.value]];
                 break;
             case AlphaSliderModeCount:
             default:
@@ -400,18 +428,20 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (void)switchBorderWidthSlider:(UITapGestureRecognizer *)sender {
     if(!widgetViewSelected) return;
     borderWidthSliderMode = (borderWidthSliderMode + 1) % BorderWidthSliderModeCount;
-    OnScreenWidgetView.isTweakingHighlightSize = borderWidthSliderMode == hightlightSize;
+    OnScreenWidgetView.isTweakingHighlight = alphaSliderMode == highlightAlpha || borderWidthSliderMode == hightlightSize;
     [self loadWidgetWidths];
 }
 
 - (void)loadWidgetWidths{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        [self setHiddenForWidgetHighlights];
         switch(borderWidthSliderMode){
             case widgetBorderWidth:
                 [self.widgetBorderWidthSlider setMinimumValue:0];
                 [self.widgetBorderWidthSlider setMaximumValue:8];
                 [self.widgetBorderWidthSlider setValue:selectedWidgetView.borderWidth animated:NO];
                 
+                /*
                 selectedWidgetView.buttonDownVisualEffectLayer.hidden = true;
                 selectedWidgetView.l3r3Indicator.hidden = true;
                 
@@ -420,7 +450,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
                  = selectedWidgetView.downIndicator.hidden
                  = selectedWidgetView.leftIndicator.hidden
                  = selectedWidgetView.rightIndicator.hidden
-                 = true);
+                 = true); */
                 
                 [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Border width: %.2f", _widgetBorderWidthSlider.value]];
                 break;
@@ -429,15 +459,17 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
                 [self.widgetBorderWidthSlider setMinimumValue:0];
                 [self.widgetBorderWidthSlider setMaximumValue:2];
                 [self.widgetBorderWidthSlider setValue:selectedWidgetView.highlightSizeFactor animated:NO];
-                selectedWidgetView.buttonDownVisualEffectLayer.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-                selectedWidgetView.l3r3Indicator.hidden = !selectedWidgetView.hasL3R3Indicator;
+                /*
+                selectedWidgetView.buttonDownVisualEffectLayer.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton && !OnScreenWidgetView.isTweakingHighlight;
+                selectedWidgetView.l3r3Indicator.hidden = !selectedWidgetView.hasL3R3Indicator && !OnScreenWidgetView.isTweakingHighlight;
                 
                 (selectedWidgetView.lrudIndicatorBall.hidden
                  = selectedWidgetView.upIndicator.hidden
                  = selectedWidgetView.downIndicator.hidden
                  = selectedWidgetView.leftIndicator.hidden
                  = selectedWidgetView.rightIndicator.hidden
-                 = !selectedWidgetView.isDirectionPad);
+                 = !selectedWidgetView.isDirectionPad
+                 && !OnScreenWidgetView.isTweakingHighlight); */
 
                 [self.widgetBorderWidthLabel setText:[LocalizationHelper localizedStringForKey:@"Highlight size: %.2f", _widgetBorderWidthSlider.value]];
                 break;
@@ -773,6 +805,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [newWidget adjustTransparencyWithAlpha:widget.backgroundAlpha tweakBorderAlpha:NO];
     [newWidget tweakLabelAlphaWithAlpha:widget.labelAlpha];
     [newWidget tweakBorderAlphaWithAlpha:widget.borderAlpha];
+    [newWidget tweakHighlightAlphaWithAlpha:widget.highlightAlpha];
     [newWidget adjustBorderWithWidth:widget.borderWidth];
     [self.onScreenWidgetViews addObject:newWidget];
     self->selectedWidgetView = newWidget;
@@ -996,10 +1029,8 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self loadWidgetAlphas];
     [self autoFitLabel:self.widgetAlphaLabel];
     
-    // [self.widgetBorderWidthSlider setValue:self->selectedWidgetView.borderWidth];
     [self loadWidgetWidths];
     [self autoFitLabel:self.widgetBorderWidthLabel];
-    // [self widgetBorderWidthSliderMoved:self.widgetBorderWidthSlider];
     
     self.autoTapStack.hidden = !selectedWidgetView.hasAutoTap;
     // [self.autoTapSlider setValue:self->selectedWidgetView.autoTapInterval];
@@ -1117,6 +1148,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 
 - (void)widgetAlphaSliderMoved:(UISlider* )sender{
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         switch(alphaSliderMode){
             case widgetAlpha:
@@ -1128,6 +1162,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
             case borderAlpha:
                 [self->selectedWidgetView tweakBorderAlphaWithAlpha:sender.value];
                 break;
+            case highlightAlpha:
+                [self->selectedWidgetView tweakHighlightAlphaWithAlpha:sender.value];
+                break;
             case AlphaSliderModeCount:
             default:
                 break;
@@ -1138,6 +1175,8 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     if(self->selectedControllerLayer != nil && self->controllerLayerSelected){
         [self.layoutOSC adjustControllerLayerOpacityWith:self->selectedControllerLayer and:sender.value];
     }
+    
+    [CATransaction commit];
 }
 
 - (void)widgetBorderWidthSliderMoved:(UISlider* )sender{

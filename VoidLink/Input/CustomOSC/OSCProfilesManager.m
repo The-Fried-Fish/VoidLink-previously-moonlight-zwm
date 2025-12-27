@@ -396,6 +396,7 @@ static CGRect layoutViewBounds;
         buttonState.backgroundAlpha = widgetView.backgroundAlpha;
         buttonState.labelAlpha = widgetView.labelAlpha;
         buttonState.borderAlpha = widgetView.borderAlpha;
+        buttonState.highlightAlpha = widgetView.highlightAlpha;
         buttonState.borderWidth = widgetView.borderWidth;
         buttonState.highlightSizeFactor = widgetView.highlightSizeFactor;
         buttonState.autoTapInterval = widgetView.autoTapInterval;

@@ -464,7 +464,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 
 - (void) clearOnScreenWidgets{
-    OnScreenWidgetView.isTweakingHighlightSize = false;
+    OnScreenWidgetView.isTweakingHighlight = false;
     for (UIView *subview in self->streamFrameTopLayerView.subviews) {
         // 检查子视图是否是特定类型的实例
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -588,6 +588,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];
                 [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
                 [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
+                [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
                 [widgetView setupAutoTapTimer];
                 [widgetView setupInertialScroller];
             }

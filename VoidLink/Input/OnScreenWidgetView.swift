@@ -90,6 +90,7 @@ import SVGKit
     @objc public var componentAlpha: CGFloat = 1
     @objc public var labelAlpha: CGFloat = 0.82
     @objc public var borderAlpha: CGFloat = 0.1
+    @objc public var highlightAlpha: CGFloat = 0.77
     @objc public var vibrationStyle: Int = 6
     @objc public var latestTouchLocation: CGPoint
     @objc public var selfViewOnTheRight: Bool = false
@@ -164,6 +165,7 @@ import SVGKit
     // for LSPAD, RSPAD
     @objc public var offSetX: CGFloat
     @objc public var offSetY: CGFloat
+    private var touchCenteredOffset: Bool = false
     private let crossMarkColor: CGColor = UIColor(white: 1, alpha: 0.70).cgColor
     private let stickBallColor: CGColor = UIColor(white: 1, alpha: 0.75).cgColor
     private var stickInputScale: CGFloat = 35
@@ -260,7 +262,7 @@ import SVGKit
     @objc public let buttonDownVisualEffectLayer = CAShapeLayer()
     @objc public var buttonDownVisualEffectStandardWidth: CGFloat
     @objc public var highlightSizeFactor: CGFloat = 1.0
-    @objc static public var isTweakingHighlightSize: Bool = false
+    @objc static public var isTweakingHighlight: Bool = false
     
     // discreteWheels
     private var tickCycle: UInt8 = UIScreen.main.maximumFramesPerSecond > 110 ? 20 : 10
@@ -385,6 +387,12 @@ import SVGKit
                 self.sensitivityFactorX = 0.42
                 self.sensitivityFactorY = 0.42
                 self.componentSizeFactor = 2.8
+            }
+            if self.isDirectionPad {
+                self.widthFactor = 2
+                self.heightFactor = 2
+                self.sensitivityFactorX = 0
+                self.sensitivityFactorY = 0
             }
         }
                 
@@ -570,18 +578,29 @@ import SVGKit
     
     @objc public func tweakBorderAlpha(alpha:CGFloat){
         borderAlpha = alpha
-        defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
+        defaultBorderColor = UIColor(white: borderAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
         self.layer.borderColor = defaultBorderColor
     }
     
+    @objc public func tweakHighlightAlpha(alpha:CGFloat){
+        highlightAlpha = alpha
+        self.buttonDownVisualEffectLayer.borderColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: highlightAlpha).cgColor
+        self.l3r3Indicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.lrudIndicatorBall.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.upIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.downIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.leftIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.rightIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+    }
+
     private func tweakAlpha(tweakBorderAlpha:Bool){
         // setup default border from self.backgroundAlpha
-        let realBackgroundAlpha = self.backgroundAlpha - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
-        self.backgroundColor = UIColor(white: 0.2, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
+        let realBackgroundAlpha = abs(self.backgroundAlpha) - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
+        self.backgroundColor = UIColor(white:self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
         
         if tweakBorderAlpha {
             borderAlpha = realBackgroundAlpha * 1.01
-            defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
+            defaultBorderColor = UIColor(white: self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
             self.layer.borderColor = defaultBorderColor
         }
         
@@ -719,8 +738,8 @@ import SVGKit
         let attr = NSAttributedString(
             string: text,
             attributes: [
-                .foregroundColor: UIColor(white: 1.0, alpha: labelAlpha),     // 填充色
-                .strokeColor: UIColor.black.withAlphaComponent(labelAlpha*0.43),          // 描边色
+                .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),     // 填充色
+                .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),          // 描边色
                 .strokeWidth: containsNonLatin(text) ? -1 : -4                    // 负值 = 同时填充
             ]
         )
@@ -846,7 +865,7 @@ import SVGKit
         l3r3Indicator.path = path.cgPath
         l3r3Indicator.borderColor = voidlinkPurple
         self.l3r3Indicator.position = CGPointMake(self.bounds.width/2, self.bounds.height/2)
-        if !OnScreenWidgetView.isTweakingHighlightSize {l3r3Indicator.isHidden = true}
+        if !OnScreenWidgetView.isTweakingHighlight {l3r3Indicator.isHidden = true}
         
         if l3r3Indicator.superlayer == nil {
             self.layer.addSublayer(l3r3Indicator)
@@ -1165,7 +1184,7 @@ import SVGKit
         lrudIndicatorBall.shadowRadius = 0;
         lrudIndicatorBall.shadowOpacity = 0.8
         lrudIndicatorBall.name = "lrudBall"
-        if !OnScreenWidgetView.isTweakingHighlightSize {lrudIndicatorBall.isHidden = true}
+        if !OnScreenWidgetView.isTweakingHighlight {lrudIndicatorBall.isHidden = true}
         
         // Set the fill color (inside of the circle)
         lrudIndicatorBall.fillColor = stickBallColor  // Light fill with some transparency
@@ -1191,7 +1210,7 @@ import SVGKit
     
     private func showLrudDirectionIndicator(with indicatorLayer:CAShapeLayer){
         // show the indicator based on the touchBeganLocation
-        indicatorLayer.position = touchBeganLocation
+        indicatorLayer.position = touchCenteredOffset ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
 
         if indicatorLayer.isHidden {
             indicatorLayer.isHidden = false
@@ -1208,9 +1227,13 @@ import SVGKit
         
         let radians  = atan2(-offSetY,offSetX)
         let degrees = radians * 180 / .pi
-        let nearZeroPoint = abs(offSetX) < 16/sensitivityFactorX && abs(offSetY) < 16/sensitivityFactorY
+        
+        let nearZeroPoint = sensitivityFactorX == 0 || sensitivityFactorY == 0 ? false : abs(offSetX) < 16/sensitivityFactorX && abs(offSetY) < 16/sensitivityFactorY
         // NSLog("deltaX: %f, detalY: %f", deltaX, deltaY)
         
+        if self.stickWheelAxis.isHidden {
+            self.stickWheelAxis.isHidden = false
+        }
         
         var pressedButtonMask = 0;
         if abs(degrees) < triggeringAngle {
@@ -1426,7 +1449,7 @@ import SVGKit
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            if !OnScreenWidgetView.isTweakingHighlightSize {buttonDownVisualEffectLayer.isHidden = true}
+            if !OnScreenWidgetView.isTweakingHighlight {buttonDownVisualEffectLayer.isHidden = true}
             CATransaction.commit()
         }
     }
@@ -1449,22 +1472,33 @@ import SVGKit
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
-        self.setupLrudBall()
+        // self.setupLrudBall()
         
         setupLrudDirectionLayer(directionLayer: upIndicator)
-        upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1)
+        let offset = upIndicator.borderWidth/(2*upIndicator.bounds.width)
+        upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1-offset)
         setupLrudDirectionLayer(directionLayer: downIndicator)
-        downIndicator.anchorPoint = CGPoint(x: 0.5, y: 0)
+        downIndicator.anchorPoint = CGPoint(x: 0.5, y: 0+offset)
         setupLrudDirectionLayer(directionLayer: leftIndicator)
-        leftIndicator.anchorPoint = CGPoint(x: 1, y: 0.5)
+        leftIndicator.anchorPoint = CGPoint(x: 1-offset, y: 0.5)
         setupLrudDirectionLayer(directionLayer: rightIndicator)
-        rightIndicator.anchorPoint = CGPoint(x: 0, y: 0.5)
+        rightIndicator.anchorPoint = CGPoint(x: 0+offset, y: 0.5)
                 
-        if !OnScreenWidgetView.isTweakingHighlightSize {
+        if !OnScreenWidgetView.isTweakingHighlight {
             leftIndicator.isHidden = true
             rightIndicator.isHidden = true
             upIndicator.isHidden = true
             downIndicator.isHidden = true
+        }
+        
+        if !touchCenteredOffset {
+            let axisdiameter = self.getDiameter(lengthFactor: 0.35)
+            let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
+            self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis-0.75.svg", in: self.layer, targetSize: axisSize)
+            GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.6))
+            self.stickWheelAxis.removeFromSuperlayer()
+            self.layer.addSublayer(self.stickWheelAxis)
+            self.stickWheelAxis.isHidden = false
         }
         
         CATransaction.commit()
@@ -1511,7 +1545,7 @@ import SVGKit
         }
 
         buttonDownVisualEffectLayer.position = CGPointMake(self.bounds.midX, self.bounds.midY)
-        if !OnScreenWidgetView.isTweakingHighlightSize {buttonDownVisualEffectLayer.isHidden = true}
+        if !OnScreenWidgetView.isTweakingHighlight {buttonDownVisualEffectLayer.isHidden = true}
         
         CATransaction.commit()
     }
@@ -1714,7 +1748,16 @@ import SVGKit
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "DPAD", "WASDPAD", "ARROWPAD":
-                    if allSpawnedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
+                    if allSpawnedTouchesCount == 1 {
+                        // showLrudBall(at: touchBeganLocation)
+                        CATransaction.begin()
+                        CATransaction.setDisableActions(true)
+                        self.stickWheelAxis.position = touchCenteredOffset ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+                        self.stickWheelAxis.isHidden = false
+                        CATransaction.commit()
+                        self.getVector(touch: touches.first!)
+                        self.handleLrudTouchMove()
+                    }
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                         DispatchQueue.global(qos: .userInteractive).async {
@@ -1960,9 +2003,10 @@ import SVGKit
             self.inertialScroller.vector = UITouchUtil.vector(of: touch, in: self)
         }
         
-        let touchCentered = !self.isStickWheel
-        self.offSetX = touchCentered ? currentTouchLocation.x - self.touchBeganLocation.x : currentTouchLocation.x - self.bounds.midX
-        self.offSetY = touchCentered ? currentTouchLocation.y - self.touchBeganLocation.y : currentTouchLocation.y - self.bounds.midY
+        touchCenteredOffset = (!self.isStickWheel
+                             && !(self.isDirectionPad && sensitivityFactorX==0 && sensitivityFactorY==0))
+        self.offSetX = touchCenteredOffset ? currentTouchLocation.x - self.touchBeganLocation.x : currentTouchLocation.x - self.bounds.midX
+        self.offSetY = touchCenteredOffset ? currentTouchLocation.y - self.touchBeganLocation.y : currentTouchLocation.y - self.bounds.midY
     }
     
     private func updateTouchLocation(touch: UITouch){
@@ -2337,16 +2381,19 @@ import SVGKit
             case "RTPAD":
                 self.onScreenControls.updateRightTrigger(0x00)
             case "WASDPAD":
+                self.stickWheelAxis.isHidden = touchCenteredOffset
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD":
+                self.stickWheelAxis.isHidden = touchCenteredOffset
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_UP), 0)
             case "DPAD":
+                self.stickWheelAxis.isHidden = touchCenteredOffset
                 self.onScreenControls.releaseControllerButton(LEFT_FLAG)
                 self.onScreenControls.releaseControllerButton(RIGHT_FLAG)
                 self.onScreenControls.releaseControllerButton(UP_FLAG)
@@ -2358,7 +2405,7 @@ import SVGKit
             }
         }
         
-        if !OnScreenWidgetView.isTweakingHighlightSize {
+        if !OnScreenWidgetView.isTweakingHighlight {
             if CommandManager.stickTouchPads.contains(touchPadString){
                 self.l3r3Indicator.isHidden = true
             }
