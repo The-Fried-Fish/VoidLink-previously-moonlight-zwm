@@ -301,9 +301,9 @@ import SVGKit
                 self.motionControlButtonString = Set(self.comboButtonStrings).intersection(Set(CommandManager.motionControlButtonCmds)).first ?? ""
 
                 switch self.cmdString {
-                case "LSPAD", "LSVPAD":
+                case "LSPAD", "LSVPAD", "LSWHEEL":
                     self.comboButtonStrings = ["OSCL3"]
-                case "RSPAD", "RSVPAD":
+                case "RSPAD", "RSVPAD", "RSWHEEL":
                     self.comboButtonStrings = ["OSCR3"]
                 case "DS4TOUCH":
                     self.comboButtonStrings = ["DS4TCHBTN"]
@@ -1726,6 +1726,9 @@ import SVGKit
                 case "LSWHEEL","RSWHEEL":
                     self.getVector(touch: touches.first!)
                     self.handleStickWheelMove(touch: touches.first!)
+                    if quickDoubleTapDetected {
+                        self.showl3r3Indicator()
+                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "LSPAD","RSPAD":
                     self.showStickIndicator()
                     if quickDoubleTapDetected {
