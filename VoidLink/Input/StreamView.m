@@ -597,6 +597,31 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [widgetView setupInertialScroller];
             }
         }
+        
+        uint64_t buttonIndex = 9999999;
+        UIView* deepestButton;
+        for (UIView *subview in self->streamFrameTopLayerView.subviews) {
+            if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
+                OnScreenWidgetView* widget = (OnScreenWidgetView* ) subview;
+                if(widget.widgetType == WidgetTypeEnumButton){
+                    uint64_t index = [self->streamFrameTopLayerView.subviews indexOfObject:subview];
+                    if (index<buttonIndex){
+                        buttonIndex = index;
+                        deepestButton = subview;
+                    }
+                }
+            }
+        }
+        if(!deepestButton) return;
+        
+        for (UIView *subview in self->streamFrameTopLayerView.subviews) {
+            if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
+                OnScreenWidgetView* widget = (OnScreenWidgetView* ) subview;
+                if(widget.widgetType == WidgetTypeEnumTouchPad){
+                    [self->streamFrameTopLayerView insertSubview:subview belowSubview:deepestButton];
+                }
+            }
+        }
     }
 }
 
