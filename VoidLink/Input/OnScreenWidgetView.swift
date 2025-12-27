@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVGKit
 
 @objc class OnScreenWidgetView: UIView, OscInstanceReceiverDelegate {
     // receiving the OnScreenControls instance from delegate
@@ -71,18 +72,28 @@ import UIKit
     @objc public var logicallyDown: Bool = false
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
-    
+    @objc public var componentSizeFactor: CGFloat = 2.88
+
     @objc public var buttonMode: Int = 0
     @objc private var tapToToggleFlag: Bool = true
     
     @objc public var sizeReference: Int = WidgetSizeReference.longSide.rawValue
-    @objc public var deNormalizedWidthFactor: CGFloat = 1.0
-    @objc public var deNormalizedHeightFactor: CGFloat = 1.0
+    @objc public var baselineDiameter:CGFloat = 0
+    private var baselineWidth:CGFloat = 0
+    private var baselineHeight:CGFloat = 0
+    private var baselineWidthLargeSquare:CGFloat = 0
+    private var baselineHeightLargeSquare:CGFloat = 0
+    @objc public var denormalizedWidthFactor: CGFloat = 1.0
+    @objc public var denormalizedHeightFactor: CGFloat = 1.0
+    @objc public var denormalizedComponentSizeFactor: CGFloat = 1.0
+
     
     @objc public var borderWidth: CGFloat = 0.0
     @objc public var backgroundAlpha: CGFloat = 0.5
+    @objc public var componentAlpha: CGFloat = 1
     @objc public var labelAlpha: CGFloat = 0.82
-    @objc public var borderAlpha: CGFloat = 0.19
+    @objc public var borderAlpha: CGFloat = 0.1
+    @objc public var highlightAlpha: CGFloat = 0.77
     @objc public var vibrationStyle: Int = 6
     @objc public var latestTouchLocation: CGPoint
     @objc public var selfViewOnTheRight: Bool = false
@@ -110,6 +121,7 @@ import UIKit
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasMinStickOffset: Bool = false
     @objc public var hasStickIndicator: Bool = false
+    @objc public var hasComponent: Bool = false
     @objc public var hasSensitivityX: Bool = false
     @objc public var sensitivityXMin: CGFloat = 0
     @objc public var sensitivityXMax: CGFloat = 8
@@ -136,10 +148,13 @@ import UIKit
     @objc public var hasHapticFeedback: Bool = false
     @objc public var isDirectionPad: Bool = false
     @objc public var hasL3R3Indicator: Bool = false
+    
+    @objc public var isStickWheel: Bool = false
 
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
     public let stickMaxOffset: CGFloat = 0x7FFE
+    public var stickOffsetVector: CGVector = CGVector(dx: 0, dy: 0)
     
     
     // for LSVPAD, RSVPAD
@@ -153,6 +168,7 @@ import UIKit
     // for LSPAD, RSPAD
     @objc public var offSetX: CGFloat
     @objc public var offSetY: CGFloat
+    private var touchCenteredOffset: Bool = false
     private let crossMarkColor: CGColor = UIColor(white: 1, alpha: 0.70).cgColor
     private let stickBallColor: CGColor = UIColor(white: 1, alpha: 0.75).cgColor
     private var stickInputScale: CGFloat = 35
@@ -160,6 +176,12 @@ import UIKit
     private let stickBallMaxOffset = 18.0
     @objc public var crossMarkLayer = CAShapeLayer()
     
+    // LSWHEEL/RSWHEEL
+    @objc public var stickWheelLayer = CALayer()
+    @objc public var stickWheelLayerSmall = CALayer()
+    @objc public var stickWheelAxis = CALayer()
+    @objc public var dWheelWalkModeThreshold: CGFloat
+
     // this is for all stick pads and mouse Pad
     @objc public var sensitivityFactorX: CGFloat = 1.0
     @objc public var sensitivityFactorY: CGFloat = 1.0
@@ -198,7 +220,7 @@ import UIKit
     private var previousButtonMask = Direction.initialStatus.rawValue
     
     // OnScreenControls instance
-    private var onScreenControls: OnScreenControls
+    @objc public var onScreenControls: OnScreenControls
     
     // key / button label
     private let label: UILabel
@@ -243,7 +265,7 @@ import UIKit
     @objc public let buttonDownVisualEffectLayer = CAShapeLayer()
     @objc public var buttonDownVisualEffectStandardWidth: CGFloat
     @objc public var highlightSizeFactor: CGFloat = 1.0
-    @objc static public var isTweakingHighlightSize: Bool = false
+    @objc static public var isTweakingHighlight: Bool = false
     
     // discreteWheels
     private var tickCycle: UInt8 = UIScreen.main.maximumFramesPerSecond > 110 ? 20 : 10
@@ -282,9 +304,9 @@ import UIKit
                 self.motionControlButtonString = Set(self.comboButtonStrings).intersection(Set(CommandManager.motionControlButtonCmds)).first ?? ""
 
                 switch self.cmdString {
-                case "LSPAD", "LSVPAD":
+                case "LSPAD", "LSVPAD", "LSWHEEL":
                     self.comboButtonStrings = ["OSCL3"]
-                case "RSPAD", "RSVPAD":
+                case "RSPAD", "RSVPAD", "RSWHEEL":
                     self.comboButtonStrings = ["OSCR3"]
                 case "DS4TOUCH":
                     self.comboButtonStrings = ["DS4TCHBTN"]
@@ -339,6 +361,7 @@ import UIKit
         self.oscProfile = oscProfileMan.getSelectedProfile()
         self.tempSettings = dataMan.getSettings()
         self.inertialScroller = InertialScroller()
+        dWheelWalkModeThreshold = stickMaxOffset*0.5
         super.init(frame: .zero)
         
         // helps widget panel to hide/show stacks
@@ -358,7 +381,26 @@ import UIKit
             }
         }
         
-        self.tweakBorderAlpha(alpha: 0.19) // fix default borderAlpha offset
+        if self.widgetType == WidgetTypeEnum.touchPad {
+            if self.isStickWheel {
+                self.widthFactor = 2
+                self.heightFactor = 2.6
+                self.backgroundAlpha = 1
+                self.componentAlpha = self.backgroundAlpha
+                self.borderAlpha = 0.05
+                self.sensitivityFactorX = 0.42
+                self.sensitivityFactorY = 0.42
+                self.componentSizeFactor = 2.8
+            }
+            if self.isDirectionPad {
+                self.widthFactor = 2
+                self.heightFactor = 2
+                self.sensitivityFactorX = 0
+                self.sensitivityFactorY = 0
+            }
+        }
+                
+        self.tweakBorderAlpha(alpha: self.borderAlpha) // fix default borderAlpha offset
 
         setupView()
         
@@ -369,10 +411,11 @@ import UIKit
     }
     
     @objc public func accessWidgetAttributes(){
-        self.hasMinStickOffset = CommandManager.stickTouchPads.contains(self.touchPadString)
+        self.hasMinStickOffset = (CommandManager.stickTouchPads.contains(self.touchPadString)
+                                  || CommandManager.stickWheels.contains(self.touchPadString))
         self.hasStickIndicator = CommandManager.nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
-        self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString)
+        self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.stickWheels.contains(self.touchPadString)
         self.hasSlideThreshold = CommandManager.mousePad.contains(self.touchPadString)
         
         if CommandManager.bidirectionalVerticalTouchPads.contains(self.touchPadString){
@@ -395,7 +438,10 @@ import UIKit
         self.isFuncationalButton = self.functionalButtonString != ""
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
-        self.hasL3R3Indicator = !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
+        self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
+        
+        self.hasComponent = self.isStickWheel
+        self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
     }
     
     // ======================================================================================================
@@ -462,8 +508,20 @@ import UIKit
     }
     
     @objc public func adjustTransparency(alpha: CGFloat, tweakBorderAlpha:Bool){
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
         self.backgroundAlpha = alpha
-        self.tweakAlpha(tweakBorderAlpha: tweakBorderAlpha)
+        if self.hasComponent {
+            self.componentAlpha = self.backgroundAlpha
+            self.tweakAlpha(tweakBorderAlpha: false)
+            if self.isStickWheel {self.setupStickWheelLayers()}
+        }
+        else{
+            self.tweakAlpha(tweakBorderAlpha: tweakBorderAlpha)
+        }
+        
+        CATransaction.commit()
     }
     
     @objc public func adjustBorder(width: CGFloat){
@@ -475,7 +533,8 @@ import UIKit
     
     @objc public func resizeWidgetView(){
         guard let superview = superview else { return }
-        
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         
         // Deactivate existing constraints if necessary
         NSLayoutConstraint.deactivate(self.constraints)
@@ -502,27 +561,50 @@ import UIKit
         
         // Re-setup widgetView style
         setupView()
+        
+        CATransaction.commit()
+    }
+    
+    @objc public func resizeComponent(){
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        if widgetType == WidgetTypeEnum.touchPad, CommandManager.stickWheels.contains(touchPadString) {
+            setupStickWheelLayers()
+        }
+        CATransaction.commit()
     }
     
     @objc public func tweakLabelAlpha(alpha:CGFloat){
         labelAlpha = alpha
-        label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+        // label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+        self.setupAtrributedText()
     }
     
     @objc public func tweakBorderAlpha(alpha:CGFloat){
         borderAlpha = alpha
-        defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
+        defaultBorderColor = UIColor(white: borderAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
         self.layer.borderColor = defaultBorderColor
     }
     
+    @objc public func tweakHighlightAlpha(alpha:CGFloat){
+        highlightAlpha = alpha
+        self.buttonDownVisualEffectLayer.borderColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: highlightAlpha).cgColor
+        self.l3r3Indicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.lrudIndicatorBall.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.upIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.downIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.leftIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.rightIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+    }
+
     private func tweakAlpha(tweakBorderAlpha:Bool){
         // setup default border from self.backgroundAlpha
-        let realBackgroundAlpha = self.backgroundAlpha - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
-        self.backgroundColor = UIColor(white: 0.2, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
+        let realBackgroundAlpha = abs(self.backgroundAlpha) - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
+        self.backgroundColor = UIColor(white:self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
         
         if tweakBorderAlpha {
             borderAlpha = realBackgroundAlpha * 1.01
-            defaultBorderColor = UIColor(white: 0.2, alpha: borderAlpha).cgColor
+            defaultBorderColor = UIColor(white: self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
             self.layer.borderColor = defaultBorderColor
         }
         
@@ -555,45 +637,79 @@ import UIKit
         // print("referenceLen \(referenceLen), \(CACurrentMediaTime())")
         return nearestEven(sizeFactor/10000*referenceLen);
     }
-
-    private func changeAndActivateContraints(){
-        let isNormalizedSizeFactor = self.widthFactor > 6;
-        let isNormalizedHeightFactor = self.heightFactor > 6;
-        
+    
+    private func getBaselineLenths(){
         let longSideLen = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
         let shortSideLen = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
         
-        let baselineDiameter:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 60 : 60*shortSideLen/longSideLen
-        print("baselineDiameter \(baselineDiameter), \(CACurrentMediaTime())")
+        baselineDiameter = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 60 : 60*shortSideLen/longSideLen
         
-        let baselineWidth:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 70 : 70*shortSideLen/longSideLen
-        let baselineHeight:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 65 : 65*shortSideLen/longSideLen
-        let baselineWidthLargeSquare:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 170 : 170*shortSideLen/longSideLen
-        let baselineHeightLargeSquare:CGFloat = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 150 : 150*shortSideLen/longSideLen
+        baselineWidth = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 70 : 70*shortSideLen/longSideLen
+        baselineHeight = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 65 : 65*shortSideLen/longSideLen
+        
+        baselineWidthLargeSquare = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 170 : 170*shortSideLen/longSideLen
+        baselineHeightLargeSquare = self.sizeReference == WidgetSizeReference.longSide.rawValue ? 150 : 150*shortSideLen/longSideLen
+    }
+    
+    private func getDiameter(lengthFactor:CGFloat) -> CGFloat {
+        self.getBaselineLenths()
+        let isNormalizedSizeFactor = lengthFactor > 6;
+        return isNormalizedSizeFactor ? denormalizeSize(sizeFactor:lengthFactor) : CGFloat(Int(baselineDiameter * lengthFactor / 2) * 2)
+    }
+    
+    private func getRecSize(widthFactor:CGFloat, heightFactor:CGFloat) -> CGSize {
+        let isNormalizedSizeFactor = widthFactor > 6;
+        let isNormalizedHeightFactor = heightFactor > 6;
+        
+        self.getBaselineLenths()
+
+        let width = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:widthFactor) :  CGFloat(Int(baselineWidth * widthFactor / 2) * 2)
+        let height = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:heightFactor) :  CGFloat(Int(baselineHeight * heightFactor / 2) * 2)
+                
+        return CGSize(width:width, height: height)
+    }
+    
+    private func getLargeRecSize(widthFactor:CGFloat, heightFactor:CGFloat) -> CGSize {
+        let isNormalizedSizeFactor = self.widthFactor > 6;
+        let isNormalizedHeightFactor = self.heightFactor > 6;
+    
+        self.getBaselineLenths()
+        
+        let width = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(baselineWidthLargeSquare * self.widthFactor / 2) * 2)
+        let height = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(baselineHeightLargeSquare * self.heightFactor / 2) * 2)
+
+        return CGSize(width:width, height: height)
+    }
+    
+
+    private func changeAndActivateContraints(){
 
         if self.shape == "round"{ // we'll make custom osc buttons round & smaller
+            let diameter = getDiameter(lengthFactor: self.widthFactor)
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(baselineDiameter * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) : CGFloat(Int(baselineDiameter * self.widthFactor / 2) * 2)),])
+                self.widthAnchor.constraint(equalToConstant: diameter),
+                self.heightAnchor.constraint(equalToConstant: diameter),])
             // 实时调整大小时isNormalized 为 false。加载数据时 isNormalized 为 true
             // baselineDiameter 仅在 实时调整大小时生效，从存储恢复时总是会恢复denormalizeSize()尺寸
-            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineDiameter : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineDiameter : self.widthFactor;
+            self.denormalizedWidthFactor = diameter/baselineDiameter;
+            self.denormalizedHeightFactor = diameter/baselineDiameter;
             //此处的 deNormalized 用于slider显示值
         }
         if self.shape == "square" {
+            let widgetSize = getRecSize(widthFactor: self.widthFactor, heightFactor: self.heightFactor)
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant: isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(baselineWidth * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant: isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(baselineHeight * self.heightFactor / 2) * 2)),])
-            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineWidth : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/baselineHeight : self.heightFactor;
+                self.widthAnchor.constraint(equalToConstant: widgetSize.width),
+                self.heightAnchor.constraint(equalToConstant: widgetSize.height),])
+            self.denormalizedWidthFactor = widgetSize.width/baselineWidth;
+            self.denormalizedHeightFactor = widgetSize.height/baselineHeight;
         }
         if self.shape == "largeSquare" { // override all shape strings
+            let widgetSize = getLargeRecSize(widthFactor: self.widthFactor, heightFactor: self.heightFactor)
             NSLayoutConstraint.activate([
-                self.widthAnchor.constraint(equalToConstant:isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor) :  CGFloat(Int(baselineWidthLargeSquare * self.widthFactor / 2) * 2)),
-                self.heightAnchor.constraint(equalToConstant:isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor) :  CGFloat(Int(baselineHeightLargeSquare * self.heightFactor / 2) * 2)),])
-            self.deNormalizedWidthFactor = isNormalizedSizeFactor ? denormalizeSize(sizeFactor:self.widthFactor)/baselineWidthLargeSquare : self.widthFactor;
-            self.deNormalizedHeightFactor = isNormalizedHeightFactor ? denormalizeSize(sizeFactor:self.heightFactor)/150 : self.heightFactor;
+                self.widthAnchor.constraint(equalToConstant:widgetSize.width),
+                self.heightAnchor.constraint(equalToConstant:widgetSize.height),])
+            self.denormalizedWidthFactor = widgetSize.width/baselineWidthLargeSquare;
+            self.denormalizedHeightFactor = widgetSize.height/baselineHeightLargeSquare;
         }
         
         NSLayoutConstraint.activate([
@@ -612,17 +728,55 @@ import UIKit
         self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
     }
     
+    func containsNonLatin(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            if !(0x0000...0x024F).contains(scalar.value) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func setupAtrributedText(){
+        let text = self.widgetLabel
+        let attr = NSAttributedString(
+            string: text,
+            attributes: [
+                .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),     // 填充色
+                .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),          // 描边色
+                .strokeWidth: containsNonLatin(text) ? -1 : -4                    // 负值 = 同时填充
+            ]
+        )
+        label.attributedText = attr
+    }
+    
     private func setupView() {
-        label.text = self.widgetLabel
-        label.font = UIFont.boldSystemFont(ofSize: 19)
+        // label.text = self.widgetLabel
+        // label.font = UIFont.boldSystemFont(ofSize: 19)
+        // label.font = UIFont.systemFont(ofSize: 19, weight: .medium, design: .rounded)
+        
+        let baseFont = UIFont.boldSystemFont(ofSize: self.shape == "round" ? 22 : 19)
+        if #available(iOS 13.0, *) {
+            if let desc = baseFont.fontDescriptor.withDesign(.rounded) {
+                label.font = UIFont(descriptor: desc, size: 0)
+            } else {
+                label.font = baseFont
+            }
+        } else {
+            label.font = baseFont
+        }
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.1  // Adjust the scale factor as needed
-        
-        label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
         label.textAlignment = .center
-        label.shadowColor = .black
-        label.shadowOffset = CGSize(width: 1, height: 1)
+
+        // label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
+        // label.shadowColor = .black
+        // label.shadowOffset = CGSize(width: 0, height: 0)
+        
+        self.setupAtrributedText()
+                
         label.translatesAutoresizingMaskIntoConstraints = false // enable auto alignment for the label
         
         self.translatesAutoresizingMaskIntoConstraints = true // this is mandatory to prevent unexpected key view location change
@@ -646,7 +800,8 @@ import UIKit
             if(self.borderWidth < 1) {self.layer.borderWidth = 1}
             else {self.layer.borderWidth = self.borderWidth}
             if OnScreenWidgetView.editMode { //display label in edit mode to make the pad more visible
-                label.text = self.widgetLabel
+                // label.text = self.widgetLabel
+                if CommandManager.stickWheels.contains(self.touchPadString) {label.isHidden = true}
             }
             else{
                 label.isHidden = self.widgetLabel.uppercased() == self.touchPadString // allow touchPad label to be display if it's different from touchPad cmdString
@@ -662,7 +817,6 @@ import UIKit
             self.layer.cornerRadius = self.frame.width/2
             // self.layer.borderWidth = self.borderWidth
             label.minimumScaleFactor = 0.15  // Adjust the scale factor for oscButtons
-            label.font = UIFont.boldSystemFont(ofSize: 22)
         }
         if self.shape == "square" || self.shape == "largeSquare" {
             //just do nothing here
@@ -689,6 +843,9 @@ import UIKit
             if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
             if self.lrudIndicatorBall.superlayer == nil {self.lrudIndicatorBall = createStickBall()}
         }
+        if self.isStickWheel {
+            self.setupStickWheelLayers()
+        }
     }
     
     @objc public func setupL3R3Indicator() {
@@ -712,7 +869,7 @@ import UIKit
         l3r3Indicator.path = path.cgPath
         l3r3Indicator.borderColor = voidlinkPurple
         self.l3r3Indicator.position = CGPointMake(self.bounds.width/2, self.bounds.height/2)
-        if !OnScreenWidgetView.isTweakingHighlightSize {l3r3Indicator.isHidden = true}
+        if !OnScreenWidgetView.isTweakingHighlight {l3r3Indicator.isHidden = true}
         
         if l3r3Indicator.superlayer == nil {
             self.layer.addSublayer(l3r3Indicator)
@@ -906,7 +1063,97 @@ import UIKit
     }
     
     //================================================================================================
+    /// stickWheel
+    private func
+    setupStickWheelLayers(){
+        
+        let diameter = self.getDiameter(lengthFactor: self.componentSizeFactor)
+        self.denormalizedComponentSizeFactor = diameter/baselineDiameter
+        
+        // let tintColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 1)
+        let tintColor = UIColor(
+            red: 0x48 / 255.0,
+            green: 0xF5 / 255.0,
+            blue: 0xFF / 255.0,
+            alpha: componentAlpha
+        )
+
+        let axisdiameter = self.getDiameter(lengthFactor: 0.5)
+        let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
+        self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis.svg", in: self.layer, targetSize: axisSize)
+        self.stickWheelAxis.removeFromSuperlayer()
+        self.layer.insertSublayer(self.stickWheelAxis, at: 0)
+        // GraphicUtils.changeColor(layer: self.stickWheelAxis, color: .white.withAlphaComponent(1))
+        self.stickWheelAxis.isHidden = false
+
+        
+        self.stickWheelLayer = GraphicUtils.makeCenteredSVGLayer(from: "StickWheel.svg", in: self.layer, targetSize: CGSize(width: diameter, height: diameter))
+        self.stickWheelLayer.removeFromSuperlayer()
+        self.layer.insertSublayer(self.stickWheelLayer, at: 0)
+        GraphicUtils.changeColor(layer: self.stickWheelLayer, color: tintColor)
+        self.stickWheelLayer.setAffineTransform(.identity)
+        self.stickWheelLayer.isHidden = !OnScreenWidgetView.editMode
+        
+        
+        let smallWheelSize = CGSize(width: diameter*0.56766, height: diameter*0.56766)
+        self.stickWheelLayerSmall = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelSmall.svg", in: self.layer, targetSize: smallWheelSize)
+        self.stickWheelLayerSmall.removeFromSuperlayer()
+        self.layer.insertSublayer(self.stickWheelLayerSmall, below: stickWheelLayer)
+        GraphicUtils.changeColor(layer: self.stickWheelLayerSmall, color: tintColor)
+        self.stickWheelLayerSmall.setAffineTransform(.identity)
+        self.stickWheelLayerSmall.isHidden = !OnScreenWidgetView.editMode
+        
+    }
     
+    private func setHiddenForStickWheelLayer(hidden:Bool){
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        self.stickWheelLayer.isHidden = hidden;
+        self.stickWheelLayerSmall.isHidden = hidden;
+        CATransaction.commit()
+    }
+    
+    private func handleStickWheelMove(touch:UITouch){
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        
+        let isInWalkMode = hypot(stickOffsetVector.dx, stickOffsetVector.dy) < dWheelWalkModeThreshold
+        
+        let angle = atan2(offSetY, offSetX) + .pi/2
+        let transform = CGAffineTransform(rotationAngle: angle)
+        if isInWalkMode {
+            self.stickWheelLayerSmall.setAffineTransform(transform)
+        }
+        else {
+            self.stickWheelLayer.setAffineTransform(transform)
+        }
+        
+        if touch.phase == .began {
+            self.stickWheelLayer.isHidden = isInWalkMode
+            self.stickWheelLayerSmall.isHidden = !isInWalkMode
+        }
+        else if self.stickWheelLayer.isHidden != isInWalkMode {
+            self.stickWheelLayer.isHidden = isInWalkMode
+            self.stickWheelLayerSmall.isHidden = !isInWalkMode
+        }
+        
+        CATransaction.commit()
+        
+        switch self.touchPadString {
+        case "LSWHEEL":
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.weightedDeltaX = 1
+                self.sendLeftStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY, circulate: true)
+            }
+        case "RSWHEEL":
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.weightedDeltaX = 1
+                self.sendRightStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY, circulate: true)
+            }
+        default:
+            break
+        }
+    }
     
     
     //=====LRUD(left right up & down buttons) touchPad touch =========================================
@@ -941,7 +1188,7 @@ import UIKit
         lrudIndicatorBall.shadowRadius = 0;
         lrudIndicatorBall.shadowOpacity = 0.8
         lrudIndicatorBall.name = "lrudBall"
-        if !OnScreenWidgetView.isTweakingHighlightSize {lrudIndicatorBall.isHidden = true}
+        if !OnScreenWidgetView.isTweakingHighlight {lrudIndicatorBall.isHidden = true}
         
         // Set the fill color (inside of the circle)
         lrudIndicatorBall.fillColor = stickBallColor  // Light fill with some transparency
@@ -967,7 +1214,7 @@ import UIKit
     
     private func showLrudDirectionIndicator(with indicatorLayer:CAShapeLayer){
         // show the indicator based on the touchBeganLocation
-        indicatorLayer.position = touchBeganLocation
+        indicatorLayer.position = touchCenteredOffset ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
 
         if indicatorLayer.isHidden {
             indicatorLayer.isHidden = false
@@ -984,9 +1231,13 @@ import UIKit
         
         let radians  = atan2(-offSetY,offSetX)
         let degrees = radians * 180 / .pi
-        let nearZeroPoint = abs(offSetX) < 16/sensitivityFactorX && abs(offSetY) < 16/sensitivityFactorY
+        
+        let nearZeroPoint = sensitivityFactorX == 0 || sensitivityFactorY == 0 ? false : abs(offSetX) < 16/sensitivityFactorX && abs(offSetY) < 16/sensitivityFactorY
         // NSLog("deltaX: %f, detalY: %f", deltaX, deltaY)
         
+        if self.stickWheelAxis.isHidden {
+            self.stickWheelAxis.isHidden = false
+        }
         
         var pressedButtonMask = 0;
         if abs(degrees) < triggeringAngle {
@@ -1202,7 +1453,7 @@ import UIKit
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            if !OnScreenWidgetView.isTweakingHighlightSize {buttonDownVisualEffectLayer.isHidden = true}
+            if !OnScreenWidgetView.isTweakingHighlight {buttonDownVisualEffectLayer.isHidden = true}
             CATransaction.commit()
         }
     }
@@ -1225,22 +1476,33 @@ import UIKit
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
-        self.setupLrudBall()
+        // self.setupLrudBall()
         
         setupLrudDirectionLayer(directionLayer: upIndicator)
-        upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1)
+        let offset = upIndicator.borderWidth/(2*upIndicator.bounds.width)
+        upIndicator.anchorPoint = CGPoint(x: 0.5, y: 1-offset)
         setupLrudDirectionLayer(directionLayer: downIndicator)
-        downIndicator.anchorPoint = CGPoint(x: 0.5, y: 0)
+        downIndicator.anchorPoint = CGPoint(x: 0.5, y: 0+offset)
         setupLrudDirectionLayer(directionLayer: leftIndicator)
-        leftIndicator.anchorPoint = CGPoint(x: 1, y: 0.5)
+        leftIndicator.anchorPoint = CGPoint(x: 1-offset, y: 0.5)
         setupLrudDirectionLayer(directionLayer: rightIndicator)
-        rightIndicator.anchorPoint = CGPoint(x: 0, y: 0.5)
+        rightIndicator.anchorPoint = CGPoint(x: 0+offset, y: 0.5)
                 
-        if !OnScreenWidgetView.isTweakingHighlightSize {
+        if !OnScreenWidgetView.isTweakingHighlight {
             leftIndicator.isHidden = true
             rightIndicator.isHidden = true
             upIndicator.isHidden = true
             downIndicator.isHidden = true
+        }
+        
+        if !touchCenteredOffset {
+            let axisdiameter = self.getDiameter(lengthFactor: 0.35)
+            let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
+            self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis-0.75.svg", in: self.layer, targetSize: axisSize)
+            GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.6))
+            self.stickWheelAxis.removeFromSuperlayer()
+            self.layer.addSublayer(self.stickWheelAxis)
+            self.stickWheelAxis.isHidden = false
         }
         
         CATransaction.commit()
@@ -1264,7 +1526,7 @@ import UIKit
         CATransaction.setDisableActions(true)
         self.buttonDownVisualEffectStandardWidth = 8
         if self.shape == "round" {
-            if deNormalizedWidthFactor < 1.3 {self.buttonDownVisualEffectStandardWidth = 15.3} // wider visual effect for osc buttons
+            if denormalizedWidthFactor < 1.3 {self.buttonDownVisualEffectStandardWidth = 15.3} // wider visual effect for osc buttons
             else {self.buttonDownVisualEffectStandardWidth = 9}
         }
         
@@ -1287,7 +1549,7 @@ import UIKit
         }
 
         buttonDownVisualEffectLayer.position = CGPointMake(self.bounds.midX, self.bounds.midY)
-        if !OnScreenWidgetView.isTweakingHighlightSize {buttonDownVisualEffectLayer.isHidden = true}
+        if !OnScreenWidgetView.isTweakingHighlight {buttonDownVisualEffectLayer.isHidden = true}
         
         CATransaction.commit()
     }
@@ -1297,7 +1559,8 @@ import UIKit
     //=========================================send on screen controller stick/trigger events
     private func weightedTouchInputToStickOffset(input: CGFloat) -> CGFloat{
         let target = stickMaxOffset * input / stickInputScale
-        return fmax(fmin(target, stickMaxOffset),-stickMaxOffset)
+        // return fmax(fmin(target, stickMaxOffset),-stickMaxOffset)
+        return target
     }
     
     private func stickOffsetToWeightedTouchInput(offset: CGFloat) -> CGFloat {
@@ -1314,7 +1577,7 @@ import UIKit
         return input * (18/stickInputScale)
     }
     
-    private func sendRightStickTouchPadEvent(weightedTouchX: CGFloat, weightedTouchY: CGFloat){
+    private func sendRightStickTouchPadEvent(weightedTouchX: CGFloat, weightedTouchY: CGFloat, circulate: Bool=false){
         let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
         let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
         
@@ -1322,13 +1585,13 @@ import UIKit
                                        && oscProfile.yawPitchToRightStick)
         if !mixRightStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
             
-            let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), withMinOffset: minStickOffset)
-            self.onScreenControls.sendRightStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
+            stickOffsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), minOffset: minStickOffset, circulate: circulate)
+            self.onScreenControls.sendRightStickTouchPadEvent(stickOffsetVector.dx, stickOffsetVector.dy)
         }
         self.motionHandler.mixOnScreenRightStickAndGyroInput(x: targetX, y: targetY)
     }
     
-    private func sendLeftStickTouchPadEvent(weightedTouchX: CGFloat, weightedTouchY: CGFloat){
+    private func sendLeftStickTouchPadEvent(weightedTouchX:CGFloat, weightedTouchY:CGFloat, circulate:Bool=false){
         let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
         let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
         
@@ -1336,8 +1599,8 @@ import UIKit
                                        && oscProfile.rollToLeftStick)
         if !mixLeftStickInputToGyro || (self.motionHandler.gyroMixInputStarted() != true) {
             
-            let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), withMinOffset: minStickOffset)
-            self.onScreenControls.sendLeftStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
+            stickOffsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), minOffset: minStickOffset, circulate: circulate)
+            self.onScreenControls.sendLeftStickTouchPadEvent(stickOffsetVector.dx, stickOffsetVector.dy)
         }
         self.motionHandler.mixOnScreenLeftStickAndGyroInput(x: targetX, y: targetY)
     }
@@ -1448,7 +1711,10 @@ import UIKit
             let touch = touches.first
             // get touchBeganLocation
             
-            if OnScreenWidgetView.editMode {self.touchBeganLocation = touch!.location(in: superview)}
+            if OnScreenWidgetView.editMode {
+                self.touchBeganLocation = touch!.location(in: superview)
+                self.highlightBorder(highlighted: true)
+            }
             else {
                 if widgetType == WidgetTypeEnum.button, self.buttonMode == ButtonMode.movable.rawValue {self.touchBeganLocation = touch!.location(in: superview)}
                 else {self.touchBeganLocation = touch!.location(in: self)}
@@ -1464,6 +1730,12 @@ import UIKit
         if !OnScreenWidgetView.editMode {
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
                 switch self.touchPadString {
+                case "LSWHEEL","RSWHEEL":
+                    self.getVector(touch: touches.first!)
+                    self.handleStickWheelMove(touch: touches.first!)
+                    if quickDoubleTapDetected {
+                        self.showl3r3Indicator()
+                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "LSPAD","RSPAD":
                     self.showStickIndicator()
                     if quickDoubleTapDetected {
@@ -1486,7 +1758,16 @@ import UIKit
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "DPAD", "WASDPAD", "ARROWPAD":
-                    if allSpawnedTouchesCount == 1 {showLrudBall(at: touchBeganLocation)}
+                    if allSpawnedTouchesCount == 1 {
+                        // showLrudBall(at: touchBeganLocation)
+                        CATransaction.begin()
+                        CATransaction.setDisableActions(true)
+                        self.stickWheelAxis.position = touchCenteredOffset ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+                        self.stickWheelAxis.isHidden = false
+                        CATransaction.commit()
+                        self.getVector(touch: touches.first!)
+                        self.handleLrudTouchMove()
+                    }
                     if quickDoubleTapDetected {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                         DispatchQueue.global(qos: .userInteractive).async {
@@ -1732,8 +2013,10 @@ import UIKit
             self.inertialScroller.vector = UITouchUtil.vector(of: touch, in: self)
         }
         
-        self.offSetX = currentTouchLocation.x - self.touchBeganLocation.x
-        self.offSetY = currentTouchLocation.y - self.touchBeganLocation.y
+        touchCenteredOffset = (!self.isStickWheel
+                             && !(self.isDirectionPad && sensitivityFactorX==0 && sensitivityFactorY==0))
+        self.offSetX = touchCenteredOffset ? currentTouchLocation.x - self.touchBeganLocation.x : currentTouchLocation.x - self.bounds.midX
+        self.offSetY = touchCenteredOffset ? currentTouchLocation.y - self.touchBeganLocation.y : currentTouchLocation.y - self.bounds.midY
     }
     
     private func updateTouchLocation(touch: UITouch){
@@ -1786,6 +2069,8 @@ import UIKit
                 }
                 self.updateTouchLocation(touch: touches.first!)
                 break
+            case "LSWHEEL", "RSWHEEL":
+                self.handleStickWheelMove(touch: touches.first!)
             case "LSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
@@ -2043,6 +2328,12 @@ import UIKit
         // then other types of pads or buttons with touchPad function
         if !OnScreenWidgetView.editMode && !self.touchPadString.isEmpty {
             switch self.touchPadString{
+            case "LSWHEEL":
+                self.clearLeftStickTouchPadFlag()
+                self.setHiddenForStickWheelLayer(hidden: true)
+            case "RSWHEEL":
+                self.clearRightStickTouchPadFlag()
+                self.setHiddenForStickWheelLayer(hidden: true)
             case "LSPAD":
                 self.clearLeftStickTouchPadFlag()
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
@@ -2104,16 +2395,19 @@ import UIKit
             case "RTPAD":
                 self.onScreenControls.updateRightTrigger(0x00)
             case "WASDPAD":
+                self.stickWheelAxis.isHidden = touchCenteredOffset
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD":
+                self.stickWheelAxis.isHidden = touchCenteredOffset
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_UP), 0)
             case "DPAD":
+                self.stickWheelAxis.isHidden = touchCenteredOffset
                 self.onScreenControls.releaseControllerButton(LEFT_FLAG)
                 self.onScreenControls.releaseControllerButton(RIGHT_FLAG)
                 self.onScreenControls.releaseControllerButton(UP_FLAG)
@@ -2125,7 +2419,7 @@ import UIKit
             }
         }
         
-        if !OnScreenWidgetView.isTweakingHighlightSize {
+        if !OnScreenWidgetView.isTweakingHighlight {
             if CommandManager.stickTouchPads.contains(touchPadString){
                 self.l3r3Indicator.isHidden = true
             }
@@ -2181,6 +2475,8 @@ import UIKit
             
             // Trigger layout update
             superview.layoutIfNeeded()
+            
+            self.highlightBorder(highlighted: false)
             
             setupView(); //re-setup widgetView style
             
@@ -2265,6 +2561,17 @@ import UIKit
         } else {
             // 毫秒
             return "\(ms)ms"
+        }
+    }
+    
+    private func highlightBorder(highlighted:Bool) {
+        if highlighted {
+            self.layer.borderWidth = 2
+            self.layer.borderColor = voidlinkPurple
+        }
+        else {
+            self.layer.borderWidth = self.borderWidth
+            self.layer.borderColor = self.defaultBorderColor
         }
     }
     

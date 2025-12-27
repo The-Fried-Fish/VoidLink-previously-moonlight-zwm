@@ -24,6 +24,7 @@
 (y) ? (buttonFlags | (x)) : (buttonFlags & ~(x)))
 
 static NSMutableSet* touchesCapturedByOnScreenControls;
+static OnScreenControls* sharedInstance;
 static CGRect standardRoundButtonBounds;
 static CGRect standardRectangleButtonBounds;
 static CGRect standardStickBounds;
@@ -149,6 +150,14 @@ static float L3_Y;
 
 + (NSMutableSet* )touchesCapturedByOnScreenControls{
     return touchesCapturedByOnScreenControls;
+}
+
++ (OnScreenControls* )shared{
+    return sharedInstance;
+}
+
++ (void)setShared:(OnScreenControls*) instance{
+    sharedInstance = instance;
 }
 
 - (void) sendRightStickTouchPadEvent:(CGFloat) stickX : (CGFloat) stickY{
@@ -317,7 +326,7 @@ static float L3_Y;
 
     _activeCustomOscButtonPositionDict = [[NSMutableDictionary alloc] init];
     touchesCapturedByOnScreenControls = [[NSMutableSet alloc] init];
-    
+        
     return self;
 }
 

@@ -311,7 +311,7 @@ import CoreMotion
                 pitch = rightStickTouchInputY + rightStickPhysicalInputY + gyroToStickOffset.dy
                 pitch = self.clampStickInput(input: pitch)
                 
-                let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: yaw, dy: pitch), withMinOffset: gyroToStickMinOffset)
+                let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: yaw, dy: pitch), minOffset: gyroToStickMinOffset)
                 
                 self.onScreenControls.sendRightStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
             }
@@ -322,7 +322,7 @@ import CoreMotion
                 let mixedLeftStickOffsetX = self.clampStickInput(input: rollIntegral+leftStickTouchInputX+leftStickPhysicalInputX)
                 let mixedLeftStickOffsetY = self.clampStickInput(input: leftStickTouchInputY+leftStickPhysicalInputY)
 
-                let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: mixedLeftStickOffsetX, dy: mixedLeftStickOffsetY), withMinOffset: gyroToStickMinOffset)
+                let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: mixedLeftStickOffsetX, dy: mixedLeftStickOffsetY), minOffset: gyroToStickMinOffset)
                 
                 self.onScreenControls.sendLeftStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
             }

@@ -1219,6 +1219,18 @@
         }
       }
     },
+    "Afv-Tt-8Fo.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Walkmode threshold\"; ObjectID = \"Afv-Tt-8Fo\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Walkmode threshold"
+          }
+        }
+      }
+    },
     "AN9-U4-nUG.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Yaw&Pitch → Right Stick\"; ObjectID = \"AN9-U4-nUG\";",
       "extractionState" : "extracted_with_value",
@@ -2787,6 +2799,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "陀螺儀"
+          }
+        }
+      }
+    },
+    "kcX-kR-3gl.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Component size\"; ObjectID = \"kcX-kR-3gl\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Component size"
           }
         }
       }

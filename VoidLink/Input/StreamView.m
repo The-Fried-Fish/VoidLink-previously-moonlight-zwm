@@ -161,6 +161,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     // we'll render on-screen controls on the toplayer too:
     _onScreenControls = [[OnScreenControls alloc] initWithView:self->streamFrameTopLayerView controllerSup:controllerSupport streamConfig:streamConfig];  // don't delete, this is mandatory
+    OnScreenControls.shared = _onScreenControls;
     /*
     // here we pass the tap recognizer to the onscreencontrols obj
     if (settings.touchMode.intValue == RelativeTouch){
@@ -467,7 +468,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 
 - (void) clearOnScreenWidgets{
-    OnScreenWidgetView.isTweakingHighlightSize = false;
+    OnScreenWidgetView.isTweakingHighlight = false;
     for (UIView *subview in self->streamFrameTopLayerView.subviews) {
         // 检查子视图是否是特定类型的实例
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -561,6 +562,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
                 widgetView.widthFactor = buttonState.widthFactor;
                 widgetView.heightFactor = buttonState.heightFactor;
+                widgetView.componentSizeFactor = buttonState.componentSizeFactor;
                 widgetView.borderWidth = buttonState.borderWidth;
                 widgetView.highlightSizeFactor = buttonState.highlightSizeFactor;
                 widgetView.autoTapInterval = buttonState.autoTapInterval;
@@ -576,6 +578,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 widgetView.decelerationRateY = buttonState.decelerationRateY;
                 widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
                 widgetView.minStickOffset = buttonState.minStickOffset;
+                widgetView.dWheelWalkModeThreshold = buttonState.walkModeThreshold;
                 widgetView.buttonMode = buttonState.buttonMode;
                 // Add the widgetView to the view controller's view
                 [self->streamFrameTopLayerView addSubview:widgetView]; // add keyboard button to the stream frame view. must add it to the target view before setting location.
@@ -589,6 +592,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [widgetView adjustBorderWithWidth:buttonState.borderWidth];
                 [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
                 [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
+                [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
                 [widgetView setupAutoTapTimer];
                 [widgetView setupInertialScroller];
             }

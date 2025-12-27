@@ -192,12 +192,29 @@ import GameController
         }
     }
     
-    @objc static func compensated(offsetVector: CGVector, withMinOffset minOffset: CGFloat) -> CGVector{
+    @objc static func compensated(offsetVector: CGVector, minOffset: CGFloat, circulate:Bool=false) -> CGVector{
         let vectorHypot = hypot(offsetVector.dx, offsetVector.dy)
         guard vectorHypot > 0 else {return CGVector(dx: 0, dy: 0)}
         let targetHypot = minOffset + (stickMaxOffset-minOffset)*(vectorHypot/stickMaxOffset)
-        let compensatedX = targetHypot * (offsetVector.dx/vectorHypot)
-        let compensatedY = targetHypot * (offsetVector.dy/vectorHypot)
-        return CGVector(dx: compensatedX, dy: compensatedY)
+        var compensatedX = targetHypot * (offsetVector.dx/vectorHypot)
+        var compensatedY = targetHypot * (offsetVector.dy/vectorHypot)
+        
+        if circulate {
+            return circulated(offsetVector: CGVector(dx: compensatedX, dy: compensatedY))
+        }
+        else {
+            compensatedX = max(min(compensatedX, stickMaxOffset),-stickMaxOffset)
+            compensatedY = max(min(compensatedY, stickMaxOffset),-stickMaxOffset)
+            return CGVector(dx: compensatedX, dy: compensatedY)
+        }
+    }
+    
+    @objc static func circulated(offsetVector: CGVector) -> CGVector{
+        let vectorHypot = hypot(offsetVector.dx, offsetVector.dy)
+        guard vectorHypot > 0 else {return CGVector(dx: 0, dy: 0)}
+        let targetHypot = min(vectorHypot, stickMaxOffset)
+        let circulatedX = targetHypot*(offsetVector.dx/vectorHypot)
+        let circulatedY = targetHypot*(offsetVector.dy/vectorHypot)
+        return CGVector(dx: circulatedX, dy: circulatedY)
     }
 }

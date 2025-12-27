@@ -546,6 +546,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    if(OnScreenControls.shared){
+        [OnScreenControls.shared clearLeftStickTouchPadFlag];
+        [OnScreenControls.shared clearRightStickTouchPadFlag];
+    }
+    else LiSendControllerEvent(0, 0, 0, 0, 0, 0, 0);
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -2610,14 +2615,20 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)gyroMinStickOffsetSliderMoved:(UISlider* )sender{
     [self findDynamicLabelFromStack:_gyroToStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
+    if(settingsViewJustExpanded) return;
+    LiSendControllerEvent(0, 0, 0, _rollToLeftStickSwitch.isOn?sender.value:0, 0, _yawPitchToRightStickSwitch.isOn?sender.value:0, 0);
 }
 
 - (void)leftStickMinOffsetSliderMoved:(UISlider* )sender{
     [self findDynamicLabelFromStack:_leftStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
+    if(settingsViewJustExpanded) return;
+    LiSendControllerEvent(0, 0, 0, sender.value, 0, 0, 0);
 }
 
 - (void)rightStickMinOffsetSliderMoved:(UISlider* )sender{
     [self findDynamicLabelFromStack:_rightStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
+    if(settingsViewJustExpanded) return;
+    LiSendControllerEvent(0, 0, 0, 0, 0, sender.value, 0);
 }
 
 - (void)invokeOscLayout{

@@ -44,6 +44,7 @@
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
     [encoder encodeFloat:self.widthFactor forKey:@"widthFactor"];
     [encoder encodeFloat:self.heightFactor forKey:@"heightFactor"];
+    [encoder encodeFloat:self.componentSizeFactor forKey:@"componentSizeFactor"];
     [encoder encodeFloat:self.sensitivityFactorX forKey:@"sensitivityFactorX"];
     [encoder encodeFloat:self.sensitivityFactorY forKey:@"sensitivityFactorY"];
     [encoder encodeFloat:self.slideThreshold forKey:@"slideThreshold"];
@@ -57,9 +58,11 @@
     [encoder encodeFloat:self.backgroundAlpha forKey:@"backgroundAlpha"];
     [encoder encodeFloat:self.labelAlpha forKey:@"labelAlpha"];
     [encoder encodeFloat:self.borderAlpha forKey:@"borderAlpha"];
+    [encoder encodeFloat:self.highlightAlpha forKey:@"highlightAlpha"];
     [encoder encodeFloat:self.borderWidth forKey:@"borderWidth"];
     [encoder encodeFloat:self.highlightSizeFactor forKey:@"highlightSizeFactor"];
     [encoder encodeObject:self.widgetShape forKey:@"widgetShape"];
+    [encoder encodeFloat:self.walkModeThreshold forKey:@"walkModeThreshold"];
     [encoder encodeFloat:self.minStickOffset forKey:@"minStickOffset"];
 }
 
@@ -78,6 +81,7 @@
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];
         self.heightFactor = [decoder decodeFloatForKey:@"heightFactor"];
+        self.componentSizeFactor = [decoder containsValueForKey:@"componentSizeFactor"] ? [decoder decodeFloatForKey:@"componentSizeFactor"] : 1.0;
         self.sensitivityFactorX = [decoder containsValueForKey:@"sensitivityFactorX"] ? [decoder decodeFloatForKey:@"sensitivityFactorX"] : 1.0;
         self.sensitivityFactorY = [decoder containsValueForKey:@"sensitivityFactorY"] ? [decoder decodeFloatForKey:@"sensitivityFactorY"] : 1.0;
         self.slideThreshold = [decoder containsValueForKey:@"slideThreshold"] ? [decoder decodeFloatForKey:@"slideThreshold"] : 6.0;
@@ -91,9 +95,11 @@
         self.backgroundAlpha = [decoder containsValueForKey:@"backgroundAlpha"] ? [decoder decodeFloatForKey:@"backgroundAlpha"] : 0.5;
         self.labelAlpha = [decoder containsValueForKey:@"labelAlpha"] ? [decoder decodeFloatForKey:@"labelAlpha"] : 0.82;
         self.borderAlpha = [decoder containsValueForKey:@"borderAlpha"] ? [decoder decodeFloatForKey:@"borderAlpha"] : 0.19;
+        self.highlightAlpha = [decoder containsValueForKey:@"highlightAlpha"] ? [decoder decodeFloatForKey:@"highlightAlpha"] : 0.77;
         self.borderWidth = [decoder decodeFloatForKey:@"borderWidth"];
         self.highlightSizeFactor = [decoder containsValueForKey:@"highlightSizeFactor"] ? [decoder decodeFloatForKey:@"highlightSizeFactor"] : 1.0;
         self.widgetShape = [decoder decodeObjectForKey:@"widgetShape"];
+        self.walkModeThreshold = [decoder containsValueForKey:@"walkModeThreshold"] ? [decoder decodeFloatForKey:@"walkModeThreshold"] : 16383;
         self.minStickOffset = [decoder decodeFloatForKey:@"minStickOffset"];
     }
     return self;

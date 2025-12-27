@@ -5305,6 +5305,18 @@
         }
       }
     },
+    "Wil-pj-Gru.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Walkmode threshold\"; ObjectID = \"Wil-pj-Gru\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Walkmode threshold"
+          }
+        }
+      }
+    },
     "x9i-JN-FSn.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Roll factor\"; ObjectID = \"x9i-JN-FSn\";",
       "extractionState" : "extracted_with_value",
@@ -5355,6 +5367,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "輕按任意小工具載入設定（各小工具獨立）"
+          }
+        }
+      }
+    },
+    "XMg-F0-m2y.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Component Size\"; ObjectID = \"XMg-F0-m2y\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Component Size"
           }
         }
       }
