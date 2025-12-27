@@ -1707,7 +1707,10 @@ import SVGKit
             let touch = touches.first
             // get touchBeganLocation
             
-            if OnScreenWidgetView.editMode {self.touchBeganLocation = touch!.location(in: superview)}
+            if OnScreenWidgetView.editMode {
+                self.touchBeganLocation = touch!.location(in: superview)
+                self.highlightBorder(highlighted: true)
+            }
             else {
                 if widgetType == WidgetTypeEnum.button, self.buttonMode == ButtonMode.movable.rawValue {self.touchBeganLocation = touch!.location(in: superview)}
                 else {self.touchBeganLocation = touch!.location(in: self)}
@@ -2465,6 +2468,8 @@ import SVGKit
             // Trigger layout update
             superview.layoutIfNeeded()
             
+            self.highlightBorder(highlighted: false)
+            
             setupView(); //re-setup widgetView style
             
             if self.widgetType == WidgetTypeEnum.touchPad{
@@ -2548,6 +2553,17 @@ import SVGKit
         } else {
             // 毫秒
             return "\(ms)ms"
+        }
+    }
+    
+    private func highlightBorder(highlighted:Bool) {
+        if highlighted {
+            self.layer.borderWidth = 2
+            self.layer.borderColor = voidlinkPurple
+        }
+        else {
+            self.layer.borderWidth = self.borderWidth
+            self.layer.borderColor = self.defaultBorderColor
         }
     }
     
