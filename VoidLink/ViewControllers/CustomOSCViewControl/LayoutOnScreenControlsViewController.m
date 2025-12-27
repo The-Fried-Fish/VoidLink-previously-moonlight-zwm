@@ -1790,7 +1790,11 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     // UITouch *touch = [touches anyObject]; // Get the first touch in the set
     _widgetPanelStack.userInteractionEnabled = true;
     
-    if(selectedWidgetView) [self.view insertSubview:selectedWidgetView belowSubview:_widgetPanelStack];
+    if(selectedWidgetView){
+        [self.view insertSubview:selectedWidgetView belowSubview:_widgetPanelStack];
+        if(selectedWidgetView.widgetType == WidgetTypeEnumTouchPad) [self.view sendSubviewToBack:selectedWidgetView];
+
+    }
 
     
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
