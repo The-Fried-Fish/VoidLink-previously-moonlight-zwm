@@ -2582,7 +2582,6 @@ import SVGKit
                 self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
             }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
-            
             crossMarkLayer.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()
@@ -2591,6 +2590,9 @@ import SVGKit
             leftIndicator.removeFromSuperlayer()
             rightIndicator.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
+            stickWheelAxis.removeFromSuperlayer()
+            stickWheelLayer.removeFromSuperlayer()
+            stickWheelLayerSmall.removeFromSuperlayer()
             self.inertialScroller.timer?.clean()
             self.clearLeftStickTouchPadFlag()
             self.clearRightStickTouchPadFlag()
