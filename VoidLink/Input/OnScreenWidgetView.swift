@@ -740,7 +740,7 @@ import SVGKit
             attributes: [
                 .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),     // 填充色
                 .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),          // 描边色
-                .strokeWidth: containsNonLatin(text) ? -1 : -4                    // 负值 = 同时填充
+                .strokeWidth: widgetType == .touchPad ? 7 : (containsNonLatin(text) ? -1 : -4)                   // 负值 = 同时填充
             ]
         )
         label.attributedText = attr
