@@ -834,6 +834,15 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 /* show pop up notification that lets users choose to save the current OSC layout configuration as a profile they can load when they want. User can also choose to cancel out of this pop up */
 - (IBAction) saveTapped:(id)sender {
+    
+    /*
+    OSCProfile* targetProfile = [profilesManager getAllProfiles][3];
+    OSCProfile* currentProfile = [profilesManager getSelectedProfile];
+    currentProfile.name = @"RPG游戏示例 / RPG example (ZZZ in Genshin style)";
+    // currentProfile.name = @"Default";
+    [profilesManager replaceProfile:targetProfile withProfile:currentProfile];
+     */
+    
     [self clearSickInput];
     [OSCProfilesManager setLayoutViewBounds:self.view.bounds];
     
