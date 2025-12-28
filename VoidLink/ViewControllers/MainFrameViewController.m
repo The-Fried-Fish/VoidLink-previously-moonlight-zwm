@@ -1681,6 +1681,19 @@ static NSMutableSet* hostList;
         GCController* controller = note.object;
         [self unregisterControllerCallbacks:controller];
     }];
+    
+    [self prewarmSoftKeyboard];
+}
+
+- (void)prewarmSoftKeyboard {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UITextField *tf = [[UITextField alloc] initWithFrame:CGRectZero];
+        tf.hidden = YES;
+        [[UIApplication sharedApplication].windows.firstObject addSubview:tf];
+        [tf becomeFirstResponder];
+        [tf resignFirstResponder];
+        [tf removeFromSuperview];
+    });
 }
 
 -(void)viewDidLayoutSubviews{
