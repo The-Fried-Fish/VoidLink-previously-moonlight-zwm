@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
 };
 
 typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
-    decelerationRate2D,
+    decelerationRateX,
     decelerationRateY,
     DecelerationRateSliderModeCount
 };
@@ -1337,16 +1337,15 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 }
 
 - (void)loadDecelerationRates {
-    self.decelerationRateSlider.value = decelerationRateSliderMode == decelerationRate2D ? selectedWidgetView.decelerationRateX : selectedWidgetView.decelerationRateY;
-    NSString* labelText = [LocalizationHelper localizedStringForKey:decelerationRateSliderMode == decelerationRate2D ? @"Deceleration Rate: %.3f  " : @"DecelerationRateY: %.3f  ", self.decelerationRateSlider.value];
+    self.decelerationRateSlider.value = decelerationRateSliderMode == decelerationRateX ? selectedWidgetView.decelerationRateX : selectedWidgetView.decelerationRateY;
+    NSString* labelText = [LocalizationHelper localizedStringForKey:decelerationRateSliderMode == decelerationRateX ? @"DecelerationRateX: %.3f  " : @"DecelerationRateY: %.3f  ", self.decelerationRateSlider.value];
     [self.decelerationRateLabel setText: labelText];
 }
 
 - (void)decelerationRateSliderMoved:(UISlider* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        if(decelerationRateSliderMode == decelerationRate2D){
+        if(decelerationRateSliderMode == decelerationRateX){
             self->selectedWidgetView.decelerationRateX = sender.value;
-            self->selectedWidgetView.decelerationRateY = sender.value;
         }
         else{
             self->selectedWidgetView.decelerationRateY = sender.value;
