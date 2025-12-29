@@ -2558,7 +2558,7 @@ import SVGKit
     
     private func highlightBorder(highlighted:Bool) {
         if highlighted {
-            self.layer.borderWidth = 2
+            self.layer.borderWidth = 3
             self.layer.borderColor = voidlinkPurple
         }
         else {

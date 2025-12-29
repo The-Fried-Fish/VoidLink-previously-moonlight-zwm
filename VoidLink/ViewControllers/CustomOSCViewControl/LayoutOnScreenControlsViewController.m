@@ -836,9 +836,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (IBAction) saveTapped:(id)sender {
     
     /*
-    OSCProfile* targetProfile = [profilesManager getAllProfiles][3];
+    OSCProfile* targetProfile = [profilesManager getAllProfiles][0];
     OSCProfile* currentProfile = [profilesManager getSelectedProfile];
-    currentProfile.name = @"RPG游戏示例 / RPG example (ZZZ in Genshin style)";
+    // currentProfile.name = @"RPG游戏示例 / RPG example (ZZZ in Genshin style)";
     currentProfile.name = @"Default";
     [profilesManager replaceProfile:targetProfile withProfile:currentProfile];
     */
