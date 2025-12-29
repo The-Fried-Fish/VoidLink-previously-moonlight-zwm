@@ -1074,7 +1074,7 @@ import SVGKit
             alpha: componentAlpha
         )
 
-        let axisdiameter = self.getDiameter(lengthFactor: 0.5)
+        let axisdiameter = self.getDiameter(lengthFactor: UIDevice.current.userInterfaceIdiom == .phone ? 0.35 : 0.5)
         let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
         self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis.svg", in: self.layer, targetSize: axisSize)
         self.stickWheelAxis.removeFromSuperlayer()
@@ -1492,10 +1492,10 @@ import SVGKit
         }
         
         if !touchCenteredOffset {
-            let axisdiameter = self.getDiameter(lengthFactor: 0.35)
+            let axisdiameter = self.getDiameter(lengthFactor: UIDevice.current.userInterfaceIdiom == .phone ? 0.27 : 0.35)
             let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
             self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis-0.75.svg", in: self.layer, targetSize: axisSize)
-            GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.6))
+            GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.5))
             self.stickWheelAxis.removeFromSuperlayer()
             self.layer.addSublayer(self.stickWheelAxis)
             self.stickWheelAxis.isHidden = false
