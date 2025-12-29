@@ -1751,25 +1751,25 @@
         }
       }
     },
-    "Deceleration Rate: %.3f  " : {
+    "DecelerationRateX: %.3f  " : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "减速率: %.3f  "
+            "value" : "减速率X: %.3f  "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "減速率: %.3f  "
+            "value" : "減速率X: %.3f  "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "減速率: %.3f  "
+            "value" : "減速率X: %.3f  "
           }
         }
       }

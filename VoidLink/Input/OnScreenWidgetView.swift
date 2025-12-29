@@ -744,7 +744,7 @@ import SVGKit
             attributes: [
                 .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),     // 填充色
                 .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),          // 描边色
-                .strokeWidth: containsNonLatin(text) ? -1 : -4                    // 负值 = 同时填充
+                .strokeWidth: widgetType == .touchPad ? 7 : (containsNonLatin(text) ? -1 : -4)                   // 负值 = 同时填充
             ]
         )
         label.attributedText = attr
@@ -1078,7 +1078,7 @@ import SVGKit
             alpha: componentAlpha
         )
 
-        let axisdiameter = self.getDiameter(lengthFactor: 0.5)
+        let axisdiameter = self.getDiameter(lengthFactor: UIDevice.current.userInterfaceIdiom == .phone ? 0.35 : 0.5)
         let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
         self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis.svg", in: self.layer, targetSize: axisSize)
         self.stickWheelAxis.removeFromSuperlayer()
@@ -1496,10 +1496,10 @@ import SVGKit
         }
         
         if !touchCenteredOffset {
-            let axisdiameter = self.getDiameter(lengthFactor: 0.35)
+            let axisdiameter = self.getDiameter(lengthFactor: UIDevice.current.userInterfaceIdiom == .phone ? 0.27 : 0.35)
             let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
             self.stickWheelAxis = GraphicUtils.makeCenteredSVGLayer(from: "StickWheelAxis-0.75.svg", in: self.layer, targetSize: axisSize)
-            GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.6))
+            GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.5))
             self.stickWheelAxis.removeFromSuperlayer()
             self.layer.addSublayer(self.stickWheelAxis)
             self.stickWheelAxis.isHidden = false
@@ -2566,7 +2566,7 @@ import SVGKit
     
     private func highlightBorder(highlighted:Bool) {
         if highlighted {
-            self.layer.borderWidth = 2
+            self.layer.borderWidth = 3
             self.layer.borderColor = voidlinkPurple
         }
         else {
@@ -2590,7 +2590,6 @@ import SVGKit
                 self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
             }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
-            
             crossMarkLayer.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()
@@ -2599,6 +2598,9 @@ import SVGKit
             leftIndicator.removeFromSuperlayer()
             rightIndicator.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
+            stickWheelAxis.removeFromSuperlayer()
+            stickWheelLayer.removeFromSuperlayer()
+            stickWheelLayerSmall.removeFromSuperlayer()
             self.inertialScroller.timer?.clean()
             self.clearLeftStickTouchPadFlag()
             self.clearRightStickTouchPadFlag()

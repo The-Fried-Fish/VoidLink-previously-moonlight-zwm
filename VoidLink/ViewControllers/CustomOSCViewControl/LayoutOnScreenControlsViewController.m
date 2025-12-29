@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, BorderWidthSliderMode) {
 };
 
 typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
-    decelerationRate2D,
+    decelerationRateX,
     decelerationRateY,
     DecelerationRateSliderModeCount
 };
@@ -834,6 +834,15 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 /* show pop up notification that lets users choose to save the current OSC layout configuration as a profile they can load when they want. User can also choose to cancel out of this pop up */
 - (IBAction) saveTapped:(id)sender {
+    
+    /*
+    OSCProfile* targetProfile = [profilesManager getAllProfiles][0];
+    OSCProfile* currentProfile = [profilesManager getSelectedProfile];
+    // currentProfile.name = @"RPG游戏示例 / RPG example (ZZZ in Genshin style)";
+    currentProfile.name = @"Default";
+    [profilesManager replaceProfile:targetProfile withProfile:currentProfile];
+    */
+    
     [self clearSickInput];
     [OSCProfilesManager setLayoutViewBounds:self.view.bounds];
     
@@ -1328,16 +1337,15 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 }
 
 - (void)loadDecelerationRates {
-    self.decelerationRateSlider.value = decelerationRateSliderMode == decelerationRate2D ? selectedWidgetView.decelerationRateX : selectedWidgetView.decelerationRateY;
-    NSString* labelText = [LocalizationHelper localizedStringForKey:decelerationRateSliderMode == decelerationRate2D ? @"Deceleration Rate: %.3f  " : @"DecelerationRateY: %.3f  ", self.decelerationRateSlider.value];
+    self.decelerationRateSlider.value = decelerationRateSliderMode == decelerationRateX ? selectedWidgetView.decelerationRateX : selectedWidgetView.decelerationRateY;
+    NSString* labelText = [LocalizationHelper localizedStringForKey:decelerationRateSliderMode == decelerationRateX ? @"DecelerationRateX: %.3f  " : @"DecelerationRateY: %.3f  ", self.decelerationRateSlider.value];
     [self.decelerationRateLabel setText: labelText];
 }
 
 - (void)decelerationRateSliderMoved:(UISlider* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        if(decelerationRateSliderMode == decelerationRate2D){
+        if(decelerationRateSliderMode == decelerationRateX){
             self->selectedWidgetView.decelerationRateX = sender.value;
-            self->selectedWidgetView.decelerationRateY = sender.value;
         }
         else{
             self->selectedWidgetView.decelerationRateY = sender.value;

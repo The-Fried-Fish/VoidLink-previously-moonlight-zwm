@@ -229,7 +229,8 @@ static CGRect layoutViewBounds;
     NSMutableArray *profiles = [self getAllProfiles];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    NSString* persistedKey = @"widgetProfileUpdated-20251015";
+    // NSString* persistedKey = @"widgetProfileUpdated-20251015";
+    NSString* persistedKey = @"widgetProfileUpdated-20251229";
     BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
     
     if(profiles.count == 0 || needImportDefaultTemplates){
