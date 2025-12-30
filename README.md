@@ -41,7 +41,7 @@ https://ifdian.net/a/zhuanjia <br>
 
 <br>
 
-# 贡献者 Contributors
+# 主要贡献者 Main Contributors
 [@TrueZhuangJia](https://github.com/TrueZhuangJia) <br>
 [@All contributors from moonlight-iOS](https://github.com/moonlight-stream/moonlight-ios/graphs/contributors) <br>
 [@stefanilijev97](https://github.com/stefanilijev97/stefanilijev97) <br>
@@ -53,7 +53,10 @@ https://ifdian.net/a/zhuanjia <br>
 [@xzzpig](https://github.com/xzzpig) <br>
 [@qiin2333](https://github.com/qiin2333) <br>
 [@King0fSpace](https://github.com/King0fSpace) <br>
-
+完整贡献者名单： <br>
+All contributors： <br>
+[中文](https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/nlttrqmdgdzhcwak) <br>
+[English](https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/cuqwnht9w7t1o95v) <br>
 
 # 应用截图 ScreenShots
 ## Host view
