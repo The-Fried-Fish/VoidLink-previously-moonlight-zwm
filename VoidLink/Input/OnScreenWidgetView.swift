@@ -797,8 +797,9 @@ import SVGKit
         
         if self.widgetType == WidgetTypeEnum.touchPad {
             self.shape = "largeSquare" // override shape from user input
-            if(self.borderWidth < 1) {self.layer.borderWidth = 1}
-            else {self.layer.borderWidth = self.borderWidth}
+            // if(self.borderWidth < 1) {self.layer.borderWidth = 1}
+            // else {self.layer.borderWidth = self.borderWidth}
+            self.layer.borderWidth = self.borderWidth
             if OnScreenWidgetView.editMode { //display label in edit mode to make the pad more visible
                 // label.text = self.widgetLabel
                 if CommandManager.stickWheels.contains(self.touchPadString) {label.isHidden = true}
