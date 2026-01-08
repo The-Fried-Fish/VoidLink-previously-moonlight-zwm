@@ -189,6 +189,8 @@ import GameController
         case .rightTrigger: return "RT"
             
         case .null: return SwiftLocalizationHelper.localizedString(forKey: "Null")
+            
+        default: return "UNKNOWN"
         }
     }
     
