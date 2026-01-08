@@ -391,6 +391,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self rightStickMinOffsetSliderMoved:self.rightStickMinOffsetSlider];
     
     [self.synthPhysicalInputSwitch setOn:oscProfile.synthesizePhysicalStick];
+    
+    [self.pressureCurveSwitch setOn:oscProfile.pressureCurveEnabled];
 }
 
 - (void)saveGameProfileConfigs{
@@ -411,6 +413,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.reverseGyroHoldButton == self.reverseHoldButtonSwitch.isOn
                              && (int16_t)(oscProfile.physicalLeftStickMinOffset) == (int16_t)self.leftStickMinOffsetSlider.value
                              && (int16_t)(oscProfile.physicalRightStickMinOffset) == (int16_t)self.rightStickMinOffsetSlider.value
+                             && oscProfile.pressureCurveEnabled == self.pressureCurveSwitch.isOn
                              );
 
     if(!configNotChanged){
@@ -426,6 +429,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.reverseGyroHoldButton = self.reverseHoldButtonSwitch.isOn;
         oscProfile.physicalLeftStickMinOffset = (int16_t)self.leftStickMinOffsetSlider.value;
         oscProfile.physicalRightStickMinOffset = (int16_t)self.rightStickMinOffsetSlider.value;
+        oscProfile.pressureCurveEnabled = self.pressureCurveSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
     }
 }
@@ -850,12 +854,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         MenuSectionView* pencilSection = [[MenuSectionView alloc] init];
         pencilSection.delegate = self;
         pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Pencil"];
-        pencilSection.identifier = @"SettingsSectionMotionControl";
+        pencilSection.identifier = @"SettingsSectionPencil";
         if (@available(iOS 13.0, *)) {
             [pencilSection setSectionWithIcon:[UIImage systemImageNamed:@"pencil.and.outline"] size:19 weight:UIImageSymbolWeightHeavy];
         }
         [self addSetting:self.pencilTickStack ofId:@"pencilTickStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilTickIntervalStack ofId:@"pencilTickIntervalStack" withInfoTag:NO withDynamicLabel:YES to:pencilSection];
+        [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [pencilSection addToParentStack:_parentStack];
     }
     
@@ -3334,6 +3339,15 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:self.pencilTickIntervalStack].text = [NSString stringWithFormat:@"  %d μs  ", (uint16_t)sender.value];
 }
 
+- (void)pressureCurveSwitchFlipped:(UISwitch* )sender{
+    if(sender.isOn && !settingsViewJustLoaded){
+        PressureCurveViewController* pressureCurveVC = [[PressureCurveViewController alloc] init];
+        pressureCurveVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        self.definesPresentationContext = true;
+        [self presentViewController:pressureCurveVC animated:YES completion:nil];
+    }
+}
+
 - (void)loadPencilSettings:(TemporarySettings*) tempSettings{
     if([self isIPad]){
         self.pencilTickSelector.selectedSegmentIndex = tempSettings.pencilTickMode.intValue;
@@ -3343,6 +3357,9 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.pencilTickIntervalSlider setValue:tempSettings.pencilTickIntervalUs.floatValue];
         [self.pencilTickIntervalSlider addTarget:self action:@selector(pencilTickIntervalSliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self pencilTickIntervalSliderMoved:self.pencilTickIntervalSlider];
+        
+        [self.pressureCurveSwitch setOn:true];
+        [self.pressureCurveSwitch addTarget:self action:@selector(pressureCurveSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     }
 }
 

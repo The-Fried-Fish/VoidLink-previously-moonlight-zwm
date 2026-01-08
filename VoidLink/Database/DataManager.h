@@ -79,8 +79,8 @@ typedef NS_ENUM(NSInteger, WidgetSizeTransition) {
 };
 
 typedef NS_ENUM(NSInteger, PencilTickMode) {
-    ManualTick,
-    PencilTickDisabled
+    PencilTickDisabled,
+    ManualTick
 };
 
 - (void) saveSettings:(Settings*)settings

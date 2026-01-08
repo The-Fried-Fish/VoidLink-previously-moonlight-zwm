@@ -240,6 +240,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *rightStickMinOffsetStack;
 @property (strong, nonatomic) IBOutlet UISlider *rightStickMinOffsetSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *pressureCurveStack;
+@property (strong, nonatomic) IBOutlet UISwitch *pressureCurveSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 

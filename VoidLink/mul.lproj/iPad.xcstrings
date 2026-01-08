@@ -1267,6 +1267,36 @@
         }
       }
     },
+    "b1N-z8-12w.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pressure Curve\"; ObjectID = \"b1N-z8-12w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pressure Curve"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔压曲线"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓曲線"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓曲線"
+          }
+        }
+      }
+    },
     "bfV-QT-eKw.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Use Built-in Mic\"; ObjectID = \"bfV-QT-eKw\";",
       "extractionState" : "extracted_with_value",
@@ -1628,7 +1658,37 @@
       }
     },
     "bVv-CW-kN8.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[0] = \"Manual\"; ObjectID = \"bVv-CW-kN8\";",
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[0] = \"Off\"; ObjectID = \"bVv-CW-kN8\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Off"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "bVv-CW-kN8.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"Manual\"; ObjectID = \"bVv-CW-kN8\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
@@ -1636,29 +1696,23 @@
             "state" : "new",
             "value" : "Manual"
           }
-        }
-      }
-    },
-    "bVv-CW-kN8.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"Timestamp\"; ObjectID = \"bVv-CW-kN8\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
+        },
+        "zh-Hans" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Timestamp"
+            "state" : "translated",
+            "value" : "手动"
           }
-        }
-      }
-    },
-    "bVv-CW-kN8.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[2] = \"Off\"; ObjectID = \"bVv-CW-kN8\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
+        },
+        "zh-Hant" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Off"
+            "state" : "translated",
+            "value" : "手動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動"
           }
         }
       }
@@ -4570,6 +4624,24 @@
             "state" : "new",
             "value" : "Pencil Tick"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔触Tick"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆觸Tick"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆觸Tick"
+          }
         }
       }
     },
@@ -5337,6 +5409,24 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Tick Interval"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tick周期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tick 週期"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tick 週期"
           }
         }
       }

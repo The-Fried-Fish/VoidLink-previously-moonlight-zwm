@@ -36,7 +36,6 @@
     [encoder encodeBool:self.yawPitchToRightStick forKey:@"yawPitchToRightStick"];
     [encoder encodeBool:self.rollToLeftStick forKey:@"rollToLeftStick"];
     [encoder encodeBool:self.synthesizePhysicalStick forKey:@"synthesizePhysicalStick"];
-    [encoder encodeInt64:self.mapGyroTo forKey:@"mapGyroTo"];
     [encoder encodeFloat:self.gyroSensitivityYaw forKey:@"gyroSensitivityYaw"];
     [encoder encodeFloat:self.gyroSensitivityPitch forKey:@"gyroSensitivityPitch"];
     [encoder encodeFloat:self.gyroSensitivityRoll forKey:@"gyroSensitivityRoll"];
@@ -50,12 +49,21 @@
     [encoder encodeBool:self.reverseGyroHoldButton forKey:@"reverseGyroHoldButton"];
     [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
+    [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
+    [encoder encodeBool:self.pressureCurveEnabled forKey:@"pressureCurveEnabled"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
     if (self = [super init]) {
         self.name = [decoder decodeObjectForKey:@"name"];
-        self.buttonStatesEncoded = [decoder decodeObjectForKey:@"buttonStates"];
+        self.buttonStatesEncoded =
+            [decoder decodeObjectOfClasses:
+                [NSSet setWithObjects:
+                    [NSMutableArray class],
+                    [NSArray class],
+                    [NSData class],
+                    nil]
+                                       forKey:@"buttonStates"];
         self.isSelected = [decoder decodeBoolForKey:@"isSelected"];
         self.mapGyroTo = [decoder containsValueForKey:@"mapGyroTo"] ? [decoder decodeInt64ForKey:@"mapGyroTo"] : mapGyroToMouse;
         self.yawPitchToRightStick = [decoder containsValueForKey:@"yawPitchToRightStick"] ? [decoder decodeBoolForKey:@"yawPitchToRightStick"] : true;
@@ -74,6 +82,16 @@
         self.reverseGyroHoldButton = [decoder containsValueForKey:@"reverseGyroHoldButton"] ? [decoder decodeBoolForKey:@"reverseGyroHoldButton"] : false;
         self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
+        self.pressureCurvePoints =
+            [decoder containsValueForKey:@"pressureCurvePoints"]
+            ? [decoder decodeObjectOfClasses:
+                    [NSSet setWithObjects:
+                    [NSArray class],
+                    [NSNumber class],
+                                    nil]
+                                            forKey:@"pressureCurvePoints"]
+            : @[@0.0, @0.0, @1.0, @1.0];
+        self.pressureCurveEnabled = [decoder containsValueForKey:@"pressureCurveEnabled"] ? [decoder decodeBoolForKey:@"pressureCurveEnabled"] : false;
     }
     
     return self;
@@ -101,6 +119,8 @@
     copy.reverseGyroHoldButton = self.reverseGyroHoldButton;
     copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
+    copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
+    copy.pressureCurveEnabled = self.pressureCurveEnabled;
     return copy;
 }
 

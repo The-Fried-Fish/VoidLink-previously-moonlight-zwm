@@ -10,22 +10,43 @@
 import UIKit
 
 @objc class PencilHandler: UIResponder {
-
+    @objc static var sharedInstance: PencilHandler?
+    
     /// 用来处理所有 touch 事件的宿主视图
     weak var streamView: UIView?
     // private var tickTimer: SafeTimer
     private var streamAspectRatio: Float
     private var tickInterval: TimeInterval
     private var manualTick: Bool
-    private var manualhoverFlag: Bool = false
+    private var pencilTickEnabled: Bool
+    private var pressureCurveEnabled: Bool = false
+    private var manualHoverFlag: Bool = false
     private var autoHoverFlag: Bool = false
+
+    private var pressureLUT = PressureCurveLUT(curve: PressureCurve())
 
     @objc init(streamView: UIView, settings: TemporarySettings) {
         self.streamView = streamView
         streamAspectRatio = settings.width.floatValue/settings.height.floatValue
         tickInterval = TimeInterval(settings.pencilTickIntervalUs.floatValue/1000000)
         manualTick = settings.pencilTickMode.intValue == PencilTickMode.ManualTick.rawValue
+        pencilTickEnabled = settings.pencilTickMode.intValue != PencilTickMode.PencilTickDisabled.rawValue
         super.init()
+        setupPressureLUT()
+        PencilHandler.sharedInstance = self
+    }
+    
+    public func setupPressureLUT(){
+        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+        let oscProfile = oscProfileMan.getSelectedProfile()
+        pressureCurveEnabled = oscProfile.pressureCurveEnabled
+        let persistedCurvePoints = PressureCurve.importCurvePoints(oscProfile.pressureCurvePoints)
+        let curve = PressureCurve()
+        curve.polylinePoints = persistedCurvePoints
+        curve.buildCurveSegments()
+        DispatchQueue.main.asyncAfter(deadline: .now()) {
+            self.pressureLUT = PressureCurveLUT(curve: curve)
+        }
     }
 
     // MARK: - Touch Events
@@ -34,16 +55,15 @@ import UIKit
         guard let event = event else { return }
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
-            _ = self.sendStylusEvent(touchBatch: coalesced)
+            _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
         }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let event = event else { return }
-        
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
-            _ = self.sendStylusEvent(touchBatch: coalesced)
+            _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
         }
     }
 
@@ -51,7 +71,7 @@ import UIKit
         guard let event = event else { return }
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
-            _ = self.sendStylusEvent(touchBatch: coalesced)
+            _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
         }
     }
 
@@ -102,9 +122,6 @@ import UIKit
 
     
     func getRotation(fromAzimuthAngle azimuthAngle: Float) -> UInt16 {
-        // iOS 的 azimuthAngle 为 0 表示指向西
-        // VoidLink 期望 0 表示指向北
-        // 所以顺时针旋转 90 度来转换
         var rotationAngle = (azimuthAngle - .pi / 2) * (180.0 / .pi)  // 弧度转角度
         if rotationAngle < 0 {
             rotationAngle += 360
@@ -113,9 +130,6 @@ import UIKit
     }
     
     func getTilt(fromAltitudeAngle altitudeAngle: Float) -> UInt8 {
-        // iOS 的 altitudeAngle 为 0 表示笔与触摸面平行
-        // VoidLink 期望 tilt 为 0 表示笔垂直触摸面
-        // 所以 tilt = 90 - altitude
         let altitudeDegs = abs(Int16(altitudeAngle * (180.0 / .pi)))
         return UInt8(90 - min(90, Int(altitudeDegs)))
     }
@@ -125,13 +139,10 @@ import UIKit
         
         var tickMoment: TimeInterval = 0
         var previousTimeStamp: TimeInterval = 0
-        let dispatchMoment: DispatchTime = .now()
         var delay:TimeInterval = 0
+        var dispatchMoment: DispatchTime = .now()
 
         for touch in touchBatch {
-            if previousTimeStamp == 0 {previousTimeStamp = touch.timestamp}
-            tickMoment += (manualTick ? tickInterval : touch.timestamp - previousTimeStamp)
-            
             let point = touch.location(in: streamView)
             let azimuth = touch.azimuthAngle(in: streamView)
             let altitude = touch.altitudeAngle
@@ -139,14 +150,15 @@ import UIKit
             let videoSize = self.getVideoAreaSize()
             let normalizedLocation = CGPoint(x: location.x/videoSize.width, y: location.y/videoSize.height)
             let force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
-            
+            let targetForce = pressureCurveEnabled ? self.pressureLUT.value(at: force) : force
+
             let eventType:UInt8
             
             switch touch.phase {
             case .began:
                 eventType = UInt8(LI_TOUCH_EVENT_DOWN)
             case .moved:
-                eventType = UInt8(manualhoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
+                eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
             case .ended:
                 eventType = UInt8(LI_TOUCH_EVENT_UP)
             case .cancelled:
@@ -158,8 +170,17 @@ import UIKit
             delay = manualTick ? 0.0086 : 0.017
             delay = eventType == UInt8(LI_TOUCH_EVENT_UP) ? delay : 0
             
+            if previousTimeStamp == 0 {
+                previousTimeStamp = touch.timestamp
+                tickMoment = 0
+                dispatchMoment = .now()
+            }
+            else {
+                tickMoment += (manualTick ? tickInterval : touch.timestamp - previousTimeStamp)
+            }
+            
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
-                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), force, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), targetForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
             }
         }
         
@@ -167,15 +188,15 @@ import UIKit
     }
     
     @objc public func switchPencilHoever(){
-        manualhoverFlag = !manualhoverFlag
+        manualHoverFlag = !manualHoverFlag
     }
     
     @objc public func enablePencilHover(){
-        manualhoverFlag = true
+        manualHoverFlag = true
     }
     
     @objc public func disablePencilHover(){
-        manualhoverFlag = false
+        manualHoverFlag = false
     }
 
     private func attachHoverLeave(normalizedLocation:CGPoint){

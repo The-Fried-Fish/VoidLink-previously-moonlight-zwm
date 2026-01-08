@@ -697,6 +697,29 @@
         }
       }
     },
+    "Adjust the pressure curve by adding or dragging the purple squares." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过添加或移动紫色方块点调整笔压曲线。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過新增或移動紫色方塊點來調整筆壓曲線。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過新增或移動紫色方塊點來調整筆壓曲線。"
+          }
+        }
+      }
+    },
     "Alias (optional)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2052,6 +2075,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "將按鈕拖放到此垃圾桶以將其從介面中移除"
+          }
+        }
+      }
+    },
+    "Draw freely and vary pen pressure naturally." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请随意绘制，笔压自然变化即可。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請隨意繪製，筆壓自然變化即可。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請隨意繪製，筆壓自然變化即可。"
           }
         }
       }
@@ -4033,6 +4079,29 @@
         }
       }
     },
+    "No" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "否"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "否"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "否"
+          }
+        }
+      }
+    },
     "No video received from host." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4626,6 +4695,29 @@
         }
       }
     },
+    "Pen Pressure Curve" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔压曲线"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓曲線"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓曲線"
+          }
+        }
+      }
+    },
     "Pencil" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5157,6 +5249,75 @@
         }
       }
     },
+    "Pressure curve saved with current on-screen widget profile!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔压曲线已随屏显控件配置保存！"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓曲線已隨螢幕小工具設定儲存！"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓曲線已隨螢幕小工具設定儲存！"
+          }
+        }
+      }
+    },
+    "Pressure Range Test" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔压范围测试"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓範圍測試"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓範圍測試"
+          }
+        }
+      }
+    },
+    "Pressure-range-test" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔压范围测试"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓範圍測試"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆壓範圍測試"
+          }
+        }
+      }
+    },
     "Profile %@ duplicated from current layout" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5683,6 +5844,52 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "效能渲染模式 [或可] 以更低的延遲處理更高的位元速率，但電池消耗可能更高，且該模式不支援子母畫面。如遇到問題請使用平衡模式。"
+          }
+        }
+      }
+    },
+    "Reset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置"
+          }
+        }
+      }
+    },
+    "Reset the pen pressure curve by starting from the pen pressure test?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是否从笔压范围测试开始重置笔压曲线？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是否從筆壓範圍測試開始重置筆壓曲線？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是否從筆壓範圍測試開始重置筆壓曲線？"
           }
         }
       }
@@ -7380,6 +7587,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "偏航係數: %.2f"
+          }
+        }
+      }
+    },
+    "Yes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }

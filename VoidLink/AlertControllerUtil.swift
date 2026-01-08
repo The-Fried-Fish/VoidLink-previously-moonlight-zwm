@@ -20,6 +20,7 @@ import UIKit
     
     @objc public static var actionCancelled:Bool = false
     @objc public static var alertController:UIAlertController = UIAlertController()
+    @objc public static var cancelButtonString:String = "Cancel"
 
     @objc class func showAlert(
         in viewController: UIViewController,
@@ -38,11 +39,13 @@ import UIKit
         let confirmAction = UIAlertAction(title: "\(remainingSeconds)", style: .default) { _ in
             actionCancelled = false
             completion?()
+            cancelButtonString = "Cancel"
         }
         
-        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Cancel"), style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: cancelButtonString), style: .cancel) { _ in
             actionCancelled = true
             completion?()
+            cancelButtonString = "Cancel"
         }
         
         confirmAction.isEnabled = false

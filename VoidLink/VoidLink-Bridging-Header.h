@@ -9,4 +9,5 @@
 #import "OSCProfilesManager.h"
 #import "opus.h"
 #import "opus_defines.h"
+#import "ThemeManager.h"
 // #import "RelativeTouchHandler.h"

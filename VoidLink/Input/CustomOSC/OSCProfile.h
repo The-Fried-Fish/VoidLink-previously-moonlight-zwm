@@ -48,7 +48,8 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property (nonatomic, assign) bool reverseGyroHoldButton;
 @property (nonatomic, assign) int controllerGyroSwitchHold;
 @property (nonatomic, assign) int controllerGyroSwitchToggle;
-
+@property NSArray<NSNumber *> *pressureCurvePoints;
+@property (nonatomic, assign) bool pressureCurveEnabled;
 
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected;
 

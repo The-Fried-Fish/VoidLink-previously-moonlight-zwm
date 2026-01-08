@@ -936,6 +936,7 @@
 - (void) returnToMainFrame {
     [_streamView clearOnScreenWidgets];
     if(micHandler) [micHandler clean];
+    PencilHandler.sharedInstance = nil;
     
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
