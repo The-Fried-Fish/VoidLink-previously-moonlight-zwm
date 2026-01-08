@@ -417,6 +417,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              );
 
     if(!configNotChanged){
+        oscProfile = [oscProfileMan getSelectedProfile];
         oscProfile.mapGyroTo = self.mapGyroToSelector.selectedSegmentIndex;
         oscProfile.yawPitchToRightStick = self.yawPitchToRightStickSwitch.isOn;
         oscProfile.rollToLeftStick = self.rollToLeftStickSwitch.isOn;
