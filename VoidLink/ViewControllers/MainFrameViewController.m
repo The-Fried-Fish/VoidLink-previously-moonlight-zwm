@@ -604,7 +604,7 @@ static NSMutableSet* hostList;
     Log(LOG_D, @"Long clicked host: %@", host.name);
     NSString* message;
     
-    NSString* hostAddress = [host.activeAddress componentsSeparatedByString:@":"].firstObject;
+    NSString* hostAddress = [Utils addressPortStringToAddress:host.activeAddress];
     
     switch (host.state) {
         case StateOffline:

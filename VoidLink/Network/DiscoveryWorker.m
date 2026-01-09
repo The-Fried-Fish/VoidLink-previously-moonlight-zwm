@@ -46,16 +46,17 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
     if (_host.localAddress != nil) {
         [array addObject:_host.localAddress];
     }
-    if(_host.activeAddressPool.count>0){
-        for(NSString* address in _host.activeAddressPool){
-            if([address containsString:@":"]) break;
-            [array addObject:address];
-        }
-        for(NSString* address in _host.activeAddressPool){
-            if(![address containsString:@":"]) break;
-            [array addObject:address];
-        }
+    
+    NSArray *poolSnapshot = [_host.activeAddressPool copy];
+    for (NSString *address in poolSnapshot) {
+        if ([address containsString:@":"]) break;
+        [array addObject:address];
     }
+    for (NSString *address in poolSnapshot) {
+        if (![address containsString:@":"]) break;
+        [array addObject:address];
+    }
+    
     if (_host.address != nil) {
         [array addObject:_host.address];
     }
