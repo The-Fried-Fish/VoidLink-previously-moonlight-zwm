@@ -33,7 +33,7 @@
 #import "DataManager.h"
 #import "ThemeManager.h"
 #import "FixedTintImageView.h"
-#import "VoidLink-Swift.h" // not used yet.
+#import "VoidLink-Swift.h"
 
 #if !TARGET_OS_TV
 #import "SettingsViewController.h"
@@ -1683,6 +1683,30 @@ static NSMutableSet* hostList;
     }];
     
     [self prewarmSoftKeyboard];
+        
+    [IAPManager.shared fetchProducts];
+
+    /*
+    if (@available(iOS 15.0, *)) {
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            switch (info.status) {
+                case PurchaseStatusPurchased:
+                    NSLog(@"PurchaseStatus Purchased");
+                    break;
+                case PurchaseStatusNotPurchased:
+                    NSLog(@"PurchaseStatus NotPurchased");
+                    break;
+                case PurchaseStatusRevoked:
+                    NSLog(@"PurchaseStatus Revoked");
+                    break;
+                default:
+                    break;
+            }
+            NSLog(@"PurchaseStatus Valid: %d", info.valid);
+            NSLog(@"PurchaseStatus Expiration: %@", info.expirationDate);
+        }];
+    }
+    */
 }
 
 - (void)prewarmSoftKeyboard {

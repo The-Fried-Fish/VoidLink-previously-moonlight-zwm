@@ -40,6 +40,14 @@ import UIKit
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         let oscProfile = oscProfileMan.getSelectedProfile()
         pressureCurveEnabled = oscProfile.pressureCurveEnabled
+        
+        if #available(iOS 15.0, *) {
+            IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+                self.pressureCurveEnabled = self.pressureCurveEnabled && info.valid
+                self.pencilTickEnabled = self.pencilTickEnabled && info.valid
+            }
+        }
+        
         let persistedCurvePoints = PressureCurve.importCurvePoints(oscProfile.pressureCurvePoints)
         let curve = PressureCurve()
         curve.polylinePoints = persistedCurvePoints

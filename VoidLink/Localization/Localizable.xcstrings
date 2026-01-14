@@ -3085,22 +3085,28 @@
     "Host information updated" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The address has been added to the host. You won’t need to enter it manually next time."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主机信息已更新"
+            "value" : "已为主机添加地址，下次无须手动输入该地址。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主機資訊已更新"
+            "value" : "已為主機新增位址，下次無須手動輸入該位址。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主機資訊已更新"
+            "value" : "已為主機新增位址，下次無須手動輸入該位址。"
           }
         }
       }
@@ -3377,6 +3383,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法變更預設版面配置"
+          }
+        }
+      }
+    },
+    "Learn More" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "了解更多"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "了解更多"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "了解更多"
           }
         }
       }
@@ -4102,6 +4131,35 @@
         }
       }
     },
+    "No purchase found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No purchase found for [%@]. If you’ve already purchased it, please try Restore Purchase."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到「%@」的购买记录。如果您此前已购买，请尝试「恢复购买」。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未偵測到「%@」的購買紀錄。若您先前已購買，請嘗試「回復購買」。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未偵測到「%@」的購買紀錄。若您先前已購買，請嘗試「回復購買」。"
+          }
+        }
+      }
+    },
     "No video received from host." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4737,6 +4795,61 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手寫筆"
+          }
+        }
+      }
+    },
+    "Pencil Pro Pack" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil 专业套装"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil 專業套裝"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil 專業套裝"
+          }
+        }
+      }
+    },
+    "PencilProPackDescription" : {
+      "extractionState" : "manual"
+    },
+    "PencilProPackURL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/vrwqg8xco75n9c9z"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/sl96pxao4a0oid1x"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/sl96pxao4a0oid1x"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/sl96pxao4a0oid1x"
           }
         }
       }
@@ -5913,6 +6026,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要重新啟動App"
+          }
+        }
+      }
+    },
+    "Restore Purchase" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复购买"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回復購買"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回復購買"
           }
         }
       }
@@ -7244,6 +7380,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回撤"
+          }
+        }
+      }
+    },
+    "Unlock Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即刻解锁"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即刻解鎖"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即刻解鎖"
           }
         }
       }

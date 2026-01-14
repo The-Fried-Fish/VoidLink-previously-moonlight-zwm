@@ -467,6 +467,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(reloadGameProfileConfigs)
                                                  name:@"OscLayoutCloseNotification"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(pencilProPurchaseAborted)
+                                                 name:@"PencilProPurchaseAbortedNotification"
+                                               object:nil];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         if(self.mainFrameViewController.settingsExpandedInStreamView){
@@ -3334,6 +3338,24 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)pencilTickModeChanged:(UISegmentedControl* )sender{
     [self setHidden:sender.selectedSegmentIndex != ManualTick forStack:self.pencilTickIntervalStack];
+    
+    if(settingsViewJustExpanded) return;
+    
+    if (@available(iOS 15.0, *)) {
+        if(sender.selectedSegmentIndex != ManualTick) return;
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            if(!info.valid){
+                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            }
+        }];
+    }
+}
+
+- (void)pencilProPurchaseAborted{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.pencilTickSelector.selectedSegmentIndex = PencilTickDisabled;
+        [self pencilTickModeChanged:self.pencilTickSelector];
+    });
 }
 
 - (void)pencilTickIntervalSliderMoved:(UISlider* )sender{

@@ -1688,31 +1688,31 @@
       }
     },
     "bVv-CW-kN8.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"Manual\"; ObjectID = \"bVv-CW-kN8\";",
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"Manual (240Hz)\"; ObjectID = \"bVv-CW-kN8\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Manual"
+            "value" : "Manual (240Hz)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "手动"
+            "state" : "needs_review",
+            "value" : "手动 (240Hz)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動"
+            "state" : "needs_review",
+            "value" : "手動 (240Hz)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動"
+            "state" : "needs_review",
+            "value" : "手動 (240Hz)"
           }
         }
       }

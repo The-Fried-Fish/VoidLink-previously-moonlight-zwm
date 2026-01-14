@@ -288,7 +288,7 @@ final class PressureCurveView: UIView {
 
     private func drawCurve(_ ctx: CGContext) {
         ctx.setStrokeColor(UIColor.systemBlue.cgColor)
-        ctx.setLineWidth(3)
+        ctx.setLineWidth(5)
         let points = curve.sampleCurve(stepsPerSegment: 60)
         for (i,p) in points.enumerated() {
             let mapped = map(p)
@@ -300,7 +300,7 @@ final class PressureCurveView: UIView {
     private func drawTangents(_ ctx: CGContext) {
         let pts = curve.tangentPoints
         ctx.setStrokeColor(UIColor.systemPurple.cgColor)
-        ctx.setLineWidth(1.5)
+        ctx.setLineWidth(2.5)
         for i in 0..<pts.count {
             let p = map(pts[i])
             if i==0 { ctx.move(to:p) } else { ctx.addLine(to:p) }
@@ -374,15 +374,12 @@ final class PressureCurveView: UIView {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        
         if testStage == .drawingStage {
             let altitude = touches.first!.altitudeAngle
             let force = (touches.first!.force/touches.first!.maximumPossibleForce)/sin(altitude)
             pressures.append(force)
             return
         }
-
         
         guard
             let touch = touches.first,
@@ -519,6 +516,19 @@ class PressureCurveViewController: UIViewController {
             curveView.widthAnchor.constraint(equalToConstant: curveWidth),
             curveView.heightAnchor.constraint(equalToConstant: curveHeight)
         ])
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(pencilProPurchaseAborted(_:)),
+            name: AddOnProduct.PencilProPack.purchaseAbortedNotification(),
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(persistCurve),
+            name: AddOnProduct.PencilProPack.purchaseSucceededNotification(),
+            object: nil
+        )
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -545,6 +555,10 @@ class PressureCurveViewController: UIViewController {
             }
         )
 
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
     }
     
     private func loadPersistedCurve() {
@@ -618,7 +632,16 @@ class PressureCurveViewController: UIViewController {
 
     @objc private func resetTapped() {
         curveView.curve.polylinePoints = [CGPoint(x: 0, y: 0), CGPoint(x: 1, y: 1)]
-        curveView.setNeedsDisplay()
+        DispatchQueue.main.async {
+            self.curveView.setNeedsDisplay()
+        }
+    }
+    
+    @objc private func pencilProPurchaseAborted(_ notification: Notification) {
+        guard let interruption = notification.object as? PurchaseInterruption else { return }
+        if interruption != .learnMore {
+            resetTapped()
+        }
     }
     
     @objc private func pressureRangeTest() {
@@ -636,25 +659,41 @@ class PressureCurveViewController: UIViewController {
                 self.setupNavigationBar()
             })
     }
-
-    @objc private func saveTapped() {
-        
+    
+    @objc private func persistCurve() {
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         let selectedProfile = oscProfileMan.getSelectedProfile()
         selectedProfile.pressureCurvePoints = PressureCurve.exportCurvePoints(curveView.curve)
         oscProfileMan.replaceSelectedProfile(with: selectedProfile, overwriteDefault: true)
         
-        AlertControllerUtil.showAlert(
-            in: self,
-            title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
-            message: SwiftLocalizationHelper.localizedString(forKey:"Pressure curve saved with current on-screen widget profile!"),
-            withCancel: false,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
-            countdown: 0,
-            completion: {
-                PencilHandler.sharedInstance?.setupPressureLUT()
+        DispatchQueue.main.async {
+            AlertControllerUtil.showAlert(
+                in: self,
+                title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
+                message: SwiftLocalizationHelper.localizedString(forKey:"Pressure curve saved with current on-screen widget profile!"),
+                withCancel: false,
+                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
+                countdown: 0,
+                completion: {
+                    PencilHandler.sharedInstance?.setupPressureLUT()
+                })
+        }
+    }
+
+    @objc private func saveTapped() {
+        if #available(iOS 15.0, *) {
+            IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+                if info.valid {
+                    self.persistCurve()
+                }
+                else{
+                    IAPManager.inAppPurchaseAction(viewController: self, product: .PencilProPack)
+                }
             }
-            )
+        }
+        else {
+            return
+        }
     }
 
     @objc private func exitTapped() {
