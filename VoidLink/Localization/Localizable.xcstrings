@@ -3039,22 +3039,28 @@
     "Host information updated" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The address has been added to the host. You won’t need to enter it manually next time."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主机信息已更新"
+            "value" : "已为主机添加地址，下次无须手动输入该地址。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主機資訊已更新"
+            "value" : "已為主機新增位址，下次無須手動輸入該位址。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主機資訊已更新"
+            "value" : "已為主機新增位址，下次無須手動輸入該位址。"
           }
         }
       }
