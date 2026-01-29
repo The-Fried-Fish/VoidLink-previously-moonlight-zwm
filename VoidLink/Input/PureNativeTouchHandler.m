@@ -15,8 +15,8 @@
 #include <Limelight.h>
 
 @implementation PureNativeTouchHandler {
-    StreamView* streamView;
     TemporarySettings* currentSettings;
+    __weak StreamView* streamView;
     bool activateCoordSelector;
     CGFloat pointerVelocityDividerLocationByPoints;
     

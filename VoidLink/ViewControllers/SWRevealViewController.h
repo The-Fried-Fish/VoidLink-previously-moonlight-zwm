@@ -206,7 +206,7 @@ typedef NS_ENUM(NSInteger, SWRevealToggleAnimationType)
 - (void)setRightViewController:(UIViewController *)rightViewController animated:(BOOL)animated;
 
 // Front view controller, can be nil on initialization but must be supplied by the time the view is loaded
-@property (nonatomic) UIViewController *frontViewController;
+@property (nonatomic, weak) UIViewController *frontViewController;
 - (void)setFrontViewController:(UIViewController *)frontViewController animated:(BOOL)animated;
 
 // Sets the frontViewController using a default set of chained animations consisting on moving the

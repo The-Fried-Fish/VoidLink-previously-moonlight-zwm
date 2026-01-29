@@ -207,7 +207,6 @@ static CGRect layoutViewBounds;
 #pragma mark - Getters
 
 - (NSMutableArray *) getAllProfiles {
-    
     NSData *profilesArrayEncoded = [[NSUserDefaults standardUserDefaults] objectForKey: @"OSCProfiles"];    // Get the encoded array of encoded OSC profiles from persistent storage
     NSSet *classes = [NSSet setWithObjects:[NSString class], [NSMutableData class], [NSMutableArray class], [OSCProfile class], [OnScreenButtonState class], nil];
     
@@ -226,6 +225,7 @@ static CGRect layoutViewBounds;
 }
 
 - (OSCProfile *) getSelectedProfile {
+    NSLog(@"getAllProfiles test %f", CACurrentMediaTime());
     NSMutableArray *profiles = [self getAllProfiles];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
@@ -344,25 +344,27 @@ static CGRect layoutViewBounds;
 - (NSMutableArray* ) convertOnScreenControllerAndWidgetsToButtonStates:(NSMutableArray *) oscButtonLayers {
     /* iterate through each OSC button the user sees on screen, create an 'OnScreenButtonState' object from each button, encode each object, and then add each object to an array */
     /*
-    NSSet *validPositionButtonNames = [NSSet setWithObjects:
-        @"l2Button",
-        @"l1Button",
-        @"dPad",
-        @"selectButton",
-        @"leftStickBackground",
-        @"rightStickBackground",
-        @"r2Button",
-        @"r1Button",
-        @"aButton",
-        @"bButton",
-        @"xButton",
-        @"yButton",
-        @"startButton",
-        nil]; */
+     NSSet *validPositionButtonNames = [NSSet setWithObjects:
+     @"l2Button",
+     @"l1Button",
+     @"dPad",
+     @"selectButton",
+     @"leftStickBackground",
+     @"rightStickBackground",
+     @"r2Button",
+     @"r1Button",
+     @"aButton",
+     @"bButton",
+     @"xButton",
+     @"yButton",
+     @"startButton",
+     nil]; */
     NSMutableArray *buttonStatesEncoded = [[NSMutableArray alloc] init];
     
     // save on-screen game controller buttons & sticks as buttonstate:
     for (CALayer *oscButtonLayer in oscButtonLayers) {
+        if(oscButtonLayer.isHidden) continue;
+        
         CGPoint normalizedPosition = [self normalizeWidgetPosition:oscButtonLayer.position];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:oscButtonLayer.name buttonType:LegacyOnScreenControls andPosition:normalizedPosition];
         // add hidden attr here
@@ -390,7 +392,7 @@ static CGRect layoutViewBounds;
         CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.center];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.widgetLabel;
-        buttonState.identifier = widgetView.identifier;
+        buttonState.sequence = widgetView.sequence;
         buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView];
         buttonState.heightFactor = [self normalizeSizeHeightFactorWith:widgetView];
         buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];

@@ -32,7 +32,10 @@
 
 - (void) encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:self.name forKey:@"name"];
-    [encoder encodeObject:([self.identifier isEqualToString:@""]||!self.identifier) ? [UUIDHelper newUUID] : self.identifier forKey:@"identifier"];
+    [encoder encodeBool:self.folded forKey:@"folded"];
+    [encoder encodeInt32:self.revealMode forKey:@"revealMode"];
+    [encoder encodeInt32:self.sequence forKey:@"sequence"];
+    [encoder encodeObject:self.sequenceSet forKey:@"sequenceSet"];
     [encoder encodeObject:self.alias forKey:@"alias"];
     [encoder encodeInt:self.widgetType forKey:@"buttonType"]; // keep original key
     [encoder encodeInt:self.sizeReference forKey:@"sizeReference"];
@@ -69,7 +72,10 @@
 - (id) initWithCoder:(NSCoder*)decoder {
     if (self = [super init]) {
         self.name = [decoder decodeObjectForKey:@"name"];
-        self.identifier = [decoder containsValueForKey:@"identifier"] ? [decoder decodeObjectForKey:@"identifier"] : [UUIDHelper newUUID];
+        self.folded = [decoder containsValueForKey:@"folded"] ? [decoder decodeBoolForKey:@"folded"] : false;
+        self.revealMode = [decoder containsValueForKey:@"revealMode"] ? [decoder decodeInt32ForKey:@"revealMode"] : exclusive;
+        self.sequence = [decoder containsValueForKey:@"sequence"] ? [decoder decodeInt32ForKey:@"sequence"] : -1;
+        self.sequenceSet = [decoder containsValueForKey:@"sequenceSet"] ? [decoder decodeObjectForKey:@"sequenceSet"] : [NSSet set];
         self.alias = [decoder decodeObjectForKey:@"alias"];
         self.widgetType = [decoder decodeIntForKey:@"buttonType"];
         self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;

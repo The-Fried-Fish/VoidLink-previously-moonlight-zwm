@@ -72,7 +72,7 @@
     UIView* menuSeparator;
     UIView* snapshot;
     SettingsViewController* settingsViewController;
-    StreamFrameViewController* streamFrameViewController;
+    __weak StreamFrameViewController* streamFrameViewController;
     id navBarAppearanceStandard;
     bool _viewJustAppeared;
     TemporaryApp * launchedApp;
@@ -1257,6 +1257,7 @@ static NSMutableSet* hostList;
         streamFrameViewController.mainFrameViewcontroller = self;
         streamFrameViewController.streamConfig = _streamConfig;
     }
+    NSLog(@"streamVC seque... %lu %f",(uintptr_t)streamFrameViewController , CACurrentMediaTime());
 }
 
 - (void) showLoadingFrame:(void (^)(void))completion {

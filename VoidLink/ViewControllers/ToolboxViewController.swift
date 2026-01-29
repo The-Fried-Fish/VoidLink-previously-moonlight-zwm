@@ -10,7 +10,7 @@ import UIKit
 
 @objc protocol ToolboxSpecialEntryDelegate: NSObjectProtocol {
     @objc optional func openWidgetLayoutTool()
-    @objc optional func switchWidgetProfile()
+    @objc optional func openWidgetProfileTable(pickProfile: Bool)
     @objc optional func bringUpSoftKeyboard()
     @objc optional func enterPip()
     @objc optional func toggleStatsOverlay()
@@ -18,7 +18,7 @@ import UIKit
 }
 
 
-@objc public class ToolboxViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+@objc public class ToolboxViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
     
     @objc weak var specialEntryDelegate: ToolboxSpecialEntryDelegate?
     public let tableView = UITableView()
@@ -30,6 +30,8 @@ import UIKit
     private let viewBackgroundColor = UIColor(white: 0.2, alpha: 0.8);
     private let highlightColor = UIColor(white: 0.55, alpha: 0.8);
     private let titleLabel = UILabel()
+    private var contentView = UIView()
+
     @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip", "toggleStatsOverlay", "disconnectAndQuitApp"]
     private let specialEntryAliasDic : [String:String] = [
         "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch on-screen widget profile ]"),
@@ -48,6 +50,7 @@ import UIKit
     }
     
     override public func viewDidLoad() {
+        
         super.viewDidLoad()
         
         setupViews()
@@ -58,6 +61,11 @@ import UIKit
         
         // Register the cell class
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissSelf))
+        tap.delegate = self
+        view.addGestureRecognizer(tap)
+        
         //pass self to the CommandManager
         CommandManager.shared.viewController = self
     }
@@ -75,21 +83,21 @@ import UIKit
         //setupConstraints()
     }
 
-    
     private func setupViews() {
-        
+        contentView = UIView(frame: self.view.frame)
+                
         // Set corner radius
-        view.layer.cornerRadius = 20  // Adjust the corner radius
-        view.layer.masksToBounds = true
+        contentView.layer.cornerRadius = 20  // Adjust the corner radius
+        contentView.layer.masksToBounds = true
         
         // Set up the title label
         titleLabel.text = SwiftLocalizationHelper.localizedString(forKey: "Toolbox")
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)  // Adjust font size as needed
         titleLabel.textColor = UIColor.white  // Adjust color as needed
         titleLabel.textAlignment = .center
-        view.addSubview(titleLabel)
+        contentView.addSubview(titleLabel)
         
-        view.backgroundColor = viewBackgroundColor
+        contentView.backgroundColor = viewBackgroundColor
         tableView.backgroundColor = .clear
         tableView.rowHeight = isIPhone() ? 47 : 60
         tableView.separatorColor = .white.withAlphaComponent(0.33)
@@ -107,12 +115,14 @@ import UIKit
         pinButton.titleLabel?.font = UIFont.systemFont(ofSize: 20)
 
         // Add subviews
-        view.addSubview(tableView)
-        view.addSubview(addButton)
-        view.addSubview(deleteButton)
-        view.addSubview(editButton)
-        view.addSubview(exitButton)
-        view.addSubview(pinButton)
+        contentView.addSubview(tableView)
+        contentView.addSubview(addButton)
+        contentView.addSubview(deleteButton)
+        contentView.addSubview(editButton)
+        contentView.addSubview(exitButton)
+        contentView.addSubview(pinButton)
+        
+        self.view.addSubview(contentView)
         
         // Setup button targets
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
@@ -134,14 +144,10 @@ import UIKit
     }
     
     @objc public func setupConstraints() {
-        
-        guard view.superview != nil else {
-            return
-        }
                 
         NSLayoutConstraint.deactivate(view.constraints)
 
-        view.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         addButton.translatesAutoresizingMaskIntoConstraints = false
@@ -154,47 +160,47 @@ import UIKit
         NSLayoutConstraint.activate([
             
             // Set the width and height of the view
-            view.widthAnchor.constraint(equalTo: view.superview!.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.52),
-            view.heightAnchor.constraint(equalTo: view.superview!.heightAnchor, multiplier: 0.93),
+            contentView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.52),
+            contentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.93),
             // Set the width and height of the view
             //view.leadingAnchor.constraint(equalTo: view.superview!.leadingAnchor, constant: 60),
             //view.trailingAnchor.constraint(equalTo: view.superview!.trailingAnchor, constant: -60),
 
             // Center the view horizontally and vertically
-            view.centerXAnchor.constraint(equalTo: view.superview!.centerXAnchor),
-            view.centerYAnchor.constraint(equalTo: view.superview!.centerYAnchor),
+            contentView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            contentView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             // ViewTitle constrains
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13.5),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 13.5),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
             
             // TableView constraints
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -60),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            tableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50),
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -60),
             
             // ExitButton constraints
-            exitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            exitButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            exitButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+            exitButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // EditButton constraints
             editButton.leadingAnchor.constraint(equalTo: exitButton.trailingAnchor, constant: 25),
-            editButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            editButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // AddButton constraints
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            addButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25),
+            addButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // DeleteButton constraints
             deleteButton.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -25),
-            deleteButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            deleteButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // DeleteButton constraints
             pinButton.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -25),
-            pinButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            pinButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
         ])
     }
 
@@ -357,8 +363,12 @@ import UIKit
             else {
                 let command = CommandManager.shared.getAllCommands()[indexPath.row-specialEntries.count]
                 sendKeyboardCommand(command)
+                if !viewPinned {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        self.dismiss(animated: false, completion: nil)
+                    }
+                } // dimiss the view in sending mode & the view is not pinned
             }
-            if !viewPinned { dismiss(animated: false, completion: nil) } // dimiss the view in sending mode & the view is not pinned
         }
         else {
             let specialEntrySelected = indexPath.row < specialEntries.count
@@ -372,30 +382,42 @@ import UIKit
     }
     
     private func handleSpecialEntries(index:Int){
-        usleep(1000*100)
-        dismiss(animated: true, completion: nil)
-        switch specialEntries[index] as? String {
-        case "widgetLayoutTool":
-            specialEntryDelegate?.openWidgetLayoutTool!()
-        case "widgetSwitchTool":
-            specialEntryDelegate?.switchWidgetProfile?()
-        case "bringUpSoftKeyboard":
-            specialEntryDelegate?.bringUpSoftKeyboard?()
-        case "enterPip":
-            specialEntryDelegate?.enterPip?()
-        case "toggleStatsOverlay":
-            specialEntryDelegate?.toggleStatsOverlay?()
-        case "disconnectAndQuitApp":
-            specialEntryDelegate?.disconnectAndQuitApp?()
-        default: break
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            self.dismiss(animated: false, completion: nil)
+            switch self.specialEntries[index] as? String {
+            case "widgetLayoutTool":
+                self.specialEntryDelegate?.openWidgetLayoutTool!()
+            case "widgetSwitchTool":
+                self.specialEntryDelegate?.openWidgetProfileTable?(pickProfile: false)
+            case "bringUpSoftKeyboard":
+                self.specialEntryDelegate?.bringUpSoftKeyboard?()
+            case "enterPip":
+                self.specialEntryDelegate?.enterPip?()
+            case "toggleStatsOverlay":
+                self.specialEntryDelegate?.toggleStatsOverlay?()
+            case "disconnectAndQuitApp":
+                self.specialEntryDelegate?.disconnectAndQuitApp?()
+            default: break
+            }
         }
     }
     
     
     private func sendKeyboardCommand(_ cmd: RemoteCommand) {
         print("Sending key-value")
-        let keyboardCmdStrings = CommandManager.shared.extractKeyStringsFromComboCommand(from: cmd.cmdString)
+        let keyboardCmdStrings = CommandManager.shared.extractKeyStrings(from: cmd.cmdString)
         CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings!)
+    }
+    
+    public func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldReceive touch: UITouch
+    ) -> Bool {
+        return touch.view == view
+    }
+    
+    @objc private func dismissSelf(){
+        dismiss(animated: false, completion: nil)
     }
 }
   

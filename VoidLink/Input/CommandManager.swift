@@ -135,9 +135,22 @@ import UIKit
         "WIDGETTOOL",
         "WIDGETPROFILES",
         "PROFILES",
+        "PICKPROFILE",
+        "PICKPRFL",
         "SOFTKEYBOARD",
         "ABSTCHDRAG",
-        "PENCILHOVER"
+        "FOLDER",
+        "PRESSURECURVE",
+        "PENCILHOVER",
+        "BRUSH",
+        "ERASER",
+        "NOSINGLETOUCH"
+    ]
+    @objc public static let pencilProButtonCmds: [String] = [
+        "PENCILHOVER",
+        "BRUSH",
+        "ERASER",
+        "NOSINGLETOUCH"
     ]
     @objc public static let motionControlButtonCmds: [String] = ["GYRO","GYROPAUSE","ACCEL","MOTION"]
 
@@ -146,6 +159,8 @@ import UIKit
     @objc public static let keyboardButtonMappings: [String: Int16] = [
         // Windows Key Codes
         "NULL": 0xFF,
+        "BRUSH": 0xFF,
+        "ERASER": 0xFF,
         "CTRL": 0x11,        // VK_CONTROL
         "SHIFT": 0x10,       // VK_SHIFT
         "ALT": 0x12,         // VK_MENU
@@ -431,7 +446,8 @@ import UIKit
     }
     
     // extractKeyStrings from keyboardCMDString
-    @objc public func extractKeyStringsFromComboCommand(from input: String) -> [String]? {
+    @objc public func extractKeyStrings(from keyboardCmd: String) -> [String]? {
+        let keyboardCmd = keyboardCmd.uppercased()
         let keys = CommandManager.keyboardButtonMappings.keys.joined(separator: "|")
         let pattern = "^(?:(\(keys))(?:\\+(\(keys))*)*)$"
         
@@ -439,14 +455,14 @@ import UIKit
             print("Failed to create regex")
             return nil
         }
-        let range = NSRange(location: 0, length: input.utf16.count)
-        guard let match = regex.firstMatch(in: input, options: [], range: range) else {
-            print("No match found for input: \(input)")
+        let range = NSRange(location: 0, length: keyboardCmd.utf16.count)
+        guard let match = regex.firstMatch(in: keyboardCmd, options: [], range: range) else {
+            print("No match found for input: \(keyboardCmd)")
             return nil
         }
         // print("Regex matched for input: \(input)")
         
-        let matchedString = (input as NSString).substring(with: match.range(at: 0))
+        let matchedString = (keyboardCmd as NSString).substring(with: match.range(at: 0))
         let keyStrings = matchedString.split(separator: "+").map { String($0) }
         
         guard !keyStrings.isEmpty else {
@@ -479,7 +495,8 @@ import UIKit
     }
     
     //super combo key button strings
-    @objc public func extractSinglCmdStringsFromComboKeys(from input: String) -> [String]? {
+    @objc public func extractCmdStrings(from input: String) -> [String]? {
+        let input = input.uppercased()
         let combinedStrings =  [CommandManager.keyboardButtonMappings.keys.map { $0 as String },
                                 CommandManager.oscButtonMappings.keys.map { $0 as String },
                                 CommandManager.mouseButtonMappings.keys.map { $0 as String },
@@ -535,7 +552,7 @@ import UIKit
     @objc public func addCommand(_ command: RemoteCommand) -> Bool {
         command.cmdString = command.cmdString.uppercased() // convert all letters to upper case
         if(command.alias.trimmingCharacters(in: .whitespacesAndNewlines).count == 0) {command.alias = command.cmdString} // copy cmd string as alias when alias is empty
-        let keyStrings = extractKeyStringsFromComboCommand(from: command.cmdString)
+        let keyStrings = extractKeyStrings(from: command.cmdString)
         if (keyStrings == nil) {return false}  // in case of non-keyboard command strings, return false
         commands.append(command)
         saveCommands()
@@ -581,8 +598,9 @@ import UIKit
         }
     }
     
-    @objc public func sendKeyComboCommand(keyboardCmdStrings: [String], delay: TimeInterval = 0.2, index: Int = 0) { // we need a large delay for WAN streaming
+    @objc public func sendKeyComboCommand(keyboardCmdStrings: [String]?, delay: TimeInterval = 0.2, index: Int = 0) { // we need a large delay for WAN streaming
         // 如果已处理完所有按键，则开始释放按键
+        guard let keyboardCmdStrings = keyboardCmdStrings else { return }
         guard index < keyboardCmdStrings.count else {
             // 释放按键
             for keyStr in keyboardCmdStrings.reversed() { // 从后往前释放按键

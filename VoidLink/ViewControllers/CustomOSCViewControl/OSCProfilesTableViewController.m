@@ -19,7 +19,7 @@
 
 const double NAV_BAR_HEIGHT = 50;
 
-@interface OSCProfilesTableViewController ()
+@interface OSCProfilesTableViewController () <UIGestureRecognizerDelegate>
 
 @end
 
@@ -42,9 +42,15 @@ const double NAV_BAR_HEIGHT = 50;
     return [self getCurrentOrientation]; // 90 Degree rotation not allowed in streaming or app view
 }
 
+/*
 - (void) viewDidDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] postNotificationName:@"OscLayoutTableViewCloseNotification" object:self]; // notify other view that oscLayoutManager is closing
     [super viewDidDisappear:animated];
+}*/
+
+- (void) viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"OscLayoutTableViewCloseNotification" object:self]; // notify other view that oscLayoutManager is closing
 }
 
 
@@ -88,6 +94,17 @@ const double NAV_BAR_HEIGHT = 50;
     self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5]; // set background color & transparency
     // self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2]; // set background color & transparency
 
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(dismissSelf)];
+    tap.cancelsTouchesInView = NO;
+    tap.delegate = (id<UIGestureRecognizerDelegate>)self;
+
+    [self.view addGestureRecognizer:tap];
+}
+
+- (void)dismissSelf {
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
@@ -180,6 +197,7 @@ const double NAV_BAR_HEIGHT = 50;
     //[self dismissViewControllerAnimated:YES completion:nil];
     //[selfparentLayoutOSCViewController]
     [self.tableView reloadData]; // table view will be refreshed by calling reloadData
+    // if(_pickProfileEnabled) return;
     if (self.needToUpdateOscLayoutTVC) {    // tells the presenting view controller to lay out the on screen buttons according to the selected profile's instructions
         self.needToUpdateOscLayoutTVC();
     }
@@ -215,7 +233,7 @@ const double NAV_BAR_HEIGHT = 50;
 }
 
 - (IBAction) exitTapped:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 #pragma mark - UIDocumentPickerDelegate
@@ -438,5 +456,13 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     [self profileViewRefresh]; // update OSC layout when table view option is changed
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+        shouldReceiveTouch:(UITouch *)touch {
+    if (_pickProfileEnabled && [touch.view isDescendantOfView:self.tableView]) {
+        return true;
+    }
+    if(touch.view == self.view) return true;
+    return false;
+}
 
 @end

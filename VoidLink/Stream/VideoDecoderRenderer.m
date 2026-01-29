@@ -36,7 +36,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 @implementation VideoDecoderRenderer {
     dispatch_queue_t _sq, _vtq;
     StreamView* _view;
-    id<ConnectionCallbacks> _callbacks;
+    __weak id<ConnectionCallbacks> _callbacks;
     float _streamAspectRatio;
 
     AVSampleBufferDisplayLayer* _displayLayer;

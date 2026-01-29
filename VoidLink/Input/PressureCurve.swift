@@ -675,7 +675,7 @@ class PressureCurveViewController: UIViewController {
                 buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
                 countdown: 0,
                 completion: {
-                    PencilHandler.sharedInstance?.setupPressureLUT()
+                    PencilHandler.shared?.setupPressureLUT()
                 })
         }
     }

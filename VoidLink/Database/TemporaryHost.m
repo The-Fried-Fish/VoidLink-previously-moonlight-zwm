@@ -29,7 +29,7 @@
     
     self.address = host.address;
     
-    NSSet *classes = [NSSet setWithObjects: [NSMutableSet class], nil];
+    NSSet *classes = [NSSet setWithObjects: [NSMutableSet class], [NSString class], nil];
     NSError *error = nil;
     self.activeAddressPool = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:host.activeAddressPool error:&error];
     if(self.activeAddressPool){

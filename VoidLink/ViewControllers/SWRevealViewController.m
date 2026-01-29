@@ -645,7 +645,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     UIView* _separatorLine;
     NSMutableArray *_animationQueue;
     BOOL _userInteractionStore;
-    UIViewController *_primaryViewController;
+    __weak UIViewController *_primaryViewController;
     
 }
 

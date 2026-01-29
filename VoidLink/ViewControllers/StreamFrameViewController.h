@@ -34,8 +34,9 @@
 @property (nonatomic) StreamConfiguration* streamConfig;
 @property (nonatomic, strong) AVPictureInPictureController *pipController API_AVAILABLE(ios(9.0));
 @property (nonatomic, strong) AVPictureInPictureControllerContentSource *pipContentSource API_AVAILABLE(ios(15.0)); // Needed for iOS 15+ layer-based PiP
-@property (nonatomic, assign) MainFrameViewController *mainFrameViewcontroller;
+@property (nonatomic, weak) MainFrameViewController *mainFrameViewcontroller;
 @property (nonatomic, assign) bool micStreamInitialized;
+@property (nonatomic, assign) bool viewJustLoaded;
 
 @property (nonatomic, strong) MetalViewController *metalViewController;
 @property (nonatomic, strong) ImGuiRenderer *imguiView;

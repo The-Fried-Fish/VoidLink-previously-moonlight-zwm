@@ -24,7 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property NSString *name;
 @property NSString *alias;
-@property NSString *identifier;
+@property (nonatomic, assign) BOOL folded;
+@property (nonatomic, assign) uint8_t revealMode;
+@property (nonatomic, assign) int16_t sequence;
+@property NSMutableSet *sequenceSet;
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, assign) uint8_t buttonMode;
@@ -84,6 +87,11 @@ typedef NS_ENUM(NSInteger, ButtonMode) {
     regular,
     tapToToggle,
     movable
+};
+
+typedef NS_ENUM(NSInteger, RevealMode) {
+    coexist,
+    exclusive
 };
 
 - (id) initWithButtonName:(NSString*)name buttonType:(uint8_t)buttonType andPosition:(CGPoint)position;

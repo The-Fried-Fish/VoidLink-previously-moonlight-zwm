@@ -29,7 +29,7 @@
 static int mouseButtonForCursorMove = BUTTON_LEFT;
 
 @implementation AbsoluteTouchHandler {
-    StreamView* streamView;
+    __weak StreamView* streamView;
     
     bool multiTouchesDetected;
     bool passthroughGestures;
@@ -108,7 +108,6 @@ static int mouseButtonForCursorMove = BUTTON_LEFT;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     rightButtonClicked = false;
 
-    
     if([UITouchUtil touchesIn:streamView from:event].count>=2){
         multiTouchesDetected = true;
         [longPressTimer invalidate];

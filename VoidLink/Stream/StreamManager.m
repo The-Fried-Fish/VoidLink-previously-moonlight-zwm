@@ -117,6 +117,7 @@
 - (void) stopStream
 {
     [_connection terminate];
+    _callbacks = nil;
 }
 
 - (BOOL) launchApp:(HttpManager*)hMan receiveSessionUrl:(NSString**)sessionUrl {

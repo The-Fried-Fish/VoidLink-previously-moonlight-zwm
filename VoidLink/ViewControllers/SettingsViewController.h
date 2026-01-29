@@ -256,7 +256,11 @@
 @property (strong, nonatomic) IBOutlet UIStackView *pencilTickIntervalStack;
 @property (strong, nonatomic) IBOutlet UISlider *pencilTickIntervalSlider;
 
+@property (weak, nonatomic) IBOutlet UIStackView *doubleTapShortcutStack;
+@property (weak, nonatomic) IBOutlet UISwitch *doubleTapShortcutSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *pencilPausesNativeTouchStack;
+@property (weak, nonatomic) IBOutlet UISwitch *pencilPausesNativeTouchSwitch;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"

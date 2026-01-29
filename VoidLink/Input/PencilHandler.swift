@@ -9,12 +9,13 @@
 
 import UIKit
 
-@objc class PencilHandler: UIResponder {
-    @objc static var sharedInstance: PencilHandler?
+@objc class PencilHandler: UIResponder, UIPencilInteractionDelegate {
+    @objc static var shared: PencilHandler?
     
     /// 用来处理所有 touch 事件的宿主视图
     weak var streamView: UIView?
     // private var tickTimer: SafeTimer
+    private var pencilInteraction: Any?
     private var streamAspectRatio: Float
     private var tickInterval: TimeInterval
     private var manualTick: Bool
@@ -22,6 +23,12 @@ import UIKit
     private var pressureCurveEnabled: Bool = false
     private var manualHoverFlag: Bool = false
     private var autoHoverFlag: Bool = false
+    private(set) var pencilProEnabled: Bool = false
+    @objc static private(set) var isDrawing: Bool = false
+    @objc static private(set) var pencilPausesNativeTouch: Bool = false
+
+    // static private let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+    static private var selectedProfile:OSCProfile?
 
     private var pressureLUT = PressureCurveLUT(curve: PressureCurve())
 
@@ -33,22 +40,36 @@ import UIKit
         pencilTickEnabled = settings.pencilTickMode.intValue != PencilTickMode.PencilTickDisabled.rawValue
         super.init()
         setupPressureLUT()
-        PencilHandler.sharedInstance = self
+        PencilHandler.shared = self
     }
     
     public func setupPressureLUT(){
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
-        let oscProfile = oscProfileMan.getSelectedProfile()
-        pressureCurveEnabled = oscProfile.pressureCurveEnabled
+        PencilHandler.selectedProfile = oscProfileMan.getSelectedProfile()
+        guard let selectedProfile = PencilHandler.selectedProfile else {return}
+        
+        if selectedProfile.eraserShortcut != "" {
+            doubleTapShorcuts.append(selectedProfile.eraserShortcut)
+        }
+        if selectedProfile.brushShortcut != "" {
+            doubleTapShorcuts.append(selectedProfile.brushShortcut)
+        }
+        
+        pressureCurveEnabled = selectedProfile.pressureCurveEnabled
         
         if #available(iOS 15.0, *) {
             IAPManager.checkPurchaseInfo(.PencilProPack) { info in
                 self.pressureCurveEnabled = self.pressureCurveEnabled && info.valid
                 self.pencilTickEnabled = self.pencilTickEnabled && info.valid
+                self.pencilProEnabled = info.valid
+                PencilHandler.pencilPausesNativeTouch = selectedProfile.pencilPausesNativeTouch && info.valid
+                if info.valid {
+                    self.setupPencilInteraction(view: self.streamView)
+                }
             }
         }
         
-        let persistedCurvePoints = PressureCurve.importCurvePoints(oscProfile.pressureCurvePoints)
+        let persistedCurvePoints = PressureCurve.importCurvePoints(selectedProfile.pressureCurvePoints)
         let curve = PressureCurve()
         curve.polylinePoints = persistedCurvePoints
         curve.buildCurveSegments()
@@ -61,6 +82,7 @@ import UIKit
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let event = event else { return }
+        PencilHandler.isDrawing = true
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
@@ -189,13 +211,16 @@ import UIKit
             
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
                 LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), targetForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                if eventType == UInt8(LI_TOUCH_EVENT_UP) {
+                    PencilHandler.isDrawing = false
+                }
             }
         }
         
         return dispatchMoment + tickMoment + delay
     }
     
-    @objc public func switchPencilHoever(){
+    @objc public func switchPencilHover(){
         manualHoverFlag = !manualHoverFlag
     }
     
@@ -206,7 +231,146 @@ import UIKit
     @objc public func disablePencilHover(){
         manualHoverFlag = false
     }
+    
+    @available(iOS 12.1, *)
+    private func setupPencilInteraction(view:UIView?) {
+        let interaction = UIPencilInteraction()
+        guard let view else { return }
+        interaction.delegate = self
+        view.addInteraction(interaction)
+        pencilInteraction = interaction
+    }
 
+    @available(iOS 12.1, *)
+    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
+        if !pencilProEnabled {return}
+        if doubleTapShorcuts.isEmpty {return}
+        let keyStrings = CommandManager.shared.extractKeyStrings(from: doubleTapShorcuts[shorcutIndex])
+        CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyStrings, delay: 0.1)
+        shorcutIndex = (shorcutIndex + 1) % doubleTapShorcuts.count
+    }
+    
+    @available(iOS 17.5, *)
+    func pencilInteraction(
+        _ interaction: UIPencilInteraction,
+        didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze
+    ) {
+        switch squeeze.phase {
+        case .began:
+            break
+        case .ended, .cancelled:
+            break
+        default:
+            break
+        }
+    }
+
+    @objc static private(set) var eraserShortcut:String = ""
+    @objc static private(set) var brushShortcut:String = ""
+    private var doubleTapShorcuts: Array<String> = []
+    private var shorcutIndex: Int = 0
+    
+    @objc func replaceBrush(with shortcut:String){
+        if let i = doubleTapShorcuts.indices.last {
+            doubleTapShorcuts[i] = shortcut
+        }
+    }
+    
+    @objc func replaceEraser(with shortcut:String){
+        if let i = doubleTapShorcuts.indices.first {
+            doubleTapShorcuts[i] = shortcut
+        }
+    }
+
+    @objc static public func enterDoubleTapShortcuts(in viewController: UIViewController){
+        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+        selectedProfile = oscProfileMan.getSelectedProfile()
+        guard let selectedProfile = selectedProfile else {return}
+        
+        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Eraser Shortcut"),
+                                      message: SwiftLocalizationHelper.localizedString(forKey: "Enter eraser keyboard shortcut:"),
+                                      preferredStyle: .alert)
+        
+        alert.addTextField { textField in
+            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: e, ctrl+e, alt+e ...")
+            textField.keyboardType = .asciiCapable
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+            textField.text = selectedProfile.eraserShortcut
+        }
+
+        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+            let keyboardShortcut = alert.textFields?[0].text ?? ""
+            let keyStrings = CommandManager.shared.extractKeyStrings(from: keyboardShortcut)
+            if keyStrings?.count ?? 0 > 0 || keyboardShortcut == "" {
+                eraserShortcut = keyboardShortcut
+            }
+            enterBrushShortcut(in: viewController)
+        }
+        
+        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        
+        alert.addAction(learnMoreAction)
+        alert.addAction(okAction)
+
+        viewController.present(alert, animated: true, completion: {
+        })
+
+    }
+    
+    @objc static public func enterBrushShortcut(in viewController: UIViewController){
+                
+        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Brush Shortcut"),
+                                      message: SwiftLocalizationHelper.localizedString(forKey: "Enter brush keyboard shortcut:"),
+                                      preferredStyle: .alert)
+        
+        alert.addTextField { textField in
+            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: b, ctrl+b, alt+b ...")
+            textField.keyboardType = .asciiCapable
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+            textField.text = selectedProfile?.brushShortcut
+        }
+
+        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+            let keyboardShortcut = alert.textFields?[0].text ?? ""
+            let keyStrings = CommandManager.shared.extractKeyStrings(from: keyboardShortcut)
+            if keyStrings?.count ?? 0 > 0 || keyboardShortcut == "" {
+                brushShortcut = keyboardShortcut
+            }
+            
+            if selectedProfile?.brushShortcut != brushShortcut
+                || selectedProfile?.eraserShortcut != eraserShortcut {
+                guard let selectedProfile = selectedProfile else {return}
+                let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+                selectedProfile.brushShortcut = brushShortcut
+                selectedProfile.eraserShortcut = eraserShortcut
+                oscProfileMan.replaceSelectedProfile(with: selectedProfile, overwriteDefault: true)
+            }
+        }
+        
+        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+             
+        alert.addAction(learnMoreAction)
+        alert.addAction(okAction)
+
+        viewController.present(alert, animated: true, completion: {
+            
+        })
+
+    }
+
+
+    
+    
     private func attachHoverLeave(normalizedLocation:CGPoint){
         DispatchQueue.global().asyncAfter(deadline: .now()+0.0086) {
             LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, 0, 0)

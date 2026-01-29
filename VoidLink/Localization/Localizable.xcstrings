@@ -1192,6 +1192,29 @@
         }
       }
     },
+    "Brush Shortcut" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔刷快捷键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆刷快速鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆刷快速鍵"
+          }
+        }
+      }
+    },
     "Calibrating..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2033,6 +2056,35 @@
         }
       }
     },
+    "doubleTapShortcutStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brush shortcut: %@\nEraser shortcut: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔刷快捷键: %@\n橡皮擦快捷键: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆刷快速鍵: %@\n橡皮擦快速鍵: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆刷快速鍵: %@\n橡皮擦快速鍵: %@"
+          }
+        }
+      }
+    },
     "Down" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2281,6 +2333,29 @@
         }
       }
     },
+    "Enter brush keyboard shortcut:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入笔刷快捷键:"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入筆刷快速鍵："
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入筆刷快速鍵："
+          }
+        }
+      }
+    },
     "Enter Custom Resolution" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2300,6 +2375,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "輸入自訂解析度"
+          }
+        }
+      }
+    },
+    "Enter eraser keyboard shortcut:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入橡皮擦快捷键："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入橡皮擦快速鍵:"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入橡皮擦快速鍵:"
           }
         }
       }
@@ -2398,6 +2496,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "\n在主機上輸入以下 PIN 碼：%@\n\n如果您的主機電腦正在執行 Sunshine，請導覽至 Sunshine Web UI 以輸入 PIN"
+          }
+        }
+      }
+    },
+    "Eraser Shortcut" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橡皮擦快捷键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橡皮擦快速鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橡皮擦快速鍵"
+          }
+        }
+      }
+    },
+    "Example: b, ctrl+b, alt+b ..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如: b, ctrl+b, alt+b …"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如: b, ctrl+b, alt+b …"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如: b, ctrl+b, alt+b …"
+          }
+        }
+      }
+    },
+    "Example: e, ctrl+e, alt+e ..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如: e, ctrl+e, alt+e …"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如: e, ctrl+e, alt+e …"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如: e, ctrl+e, alt+e …"
           }
         }
       }
@@ -4818,6 +4985,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pencil 專業套裝"
+          }
+        }
+      }
+    },
+    "pencilKeyboardCmdURL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ma82z70rdt6u99b4#32535f99"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/nm6l9yixu0idsybg#32535f99"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/nm6l9yixu0idsybg#32535f99"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/nm6l9yixu0idsybg#32535f99"
           }
         }
       }

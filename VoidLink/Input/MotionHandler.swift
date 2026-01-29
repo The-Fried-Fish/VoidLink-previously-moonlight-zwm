@@ -15,7 +15,7 @@ import CoreMotion
     func gyroMixInputStarted() -> Bool
 }
 
-@objc class MotionHandler: NSObject, OscInstanceReceiverDelegate, OnScreenWidgetStickMixedInputDelegate{
+@objc class MotionHandler: NSObject, OnScreenWidgetStickMixedInputDelegate{
     public func mixOnScreenRightStickAndGyroInput(x: CGFloat, y: CGFloat) {
         rightStickTouchInputX = x
         rightStickTouchInputY = y
@@ -28,48 +28,46 @@ import CoreMotion
     }
     
     @objc public func mixPhysicalRightStickAndGyroInput(x: CGFloat, y: CGFloat) {
-        rightStickPhysicalInputX = oscProfile.synthesizePhysicalStick ? x : 0
-        rightStickPhysicalInputY = oscProfile.synthesizePhysicalStick ? y : 0
+        rightStickPhysicalInputX = synthesizePhysicalStick ? x : 0
+        rightStickPhysicalInputY = synthesizePhysicalStick ? y : 0
     }
     
     @objc public func mixPhysicalLeftStickAndGyroInput(x: CGFloat, y: CGFloat) {
         // rollIntegral = 0
-        leftStickPhysicalInputX = oscProfile.synthesizePhysicalStick ? x : 0
-        leftStickPhysicalInputY = oscProfile.synthesizePhysicalStick ? y : 0
+        leftStickPhysicalInputX = synthesizePhysicalStick ? x : 0
+        leftStickPhysicalInputY = synthesizePhysicalStick ? y : 0
     }
 
     public func gyroMixInputStarted() -> Bool {
         return gyroIsWorking
     }
     
-    func getOnScreenControlsInstance(_ sender: Any!) {
-        if let controls = sender as? OnScreenControls {
-            self.onScreenControls = controls
-            print("ClassA received OnScreenControls instance: \(controls)")
-        } else {
-            print("ClassA received an unknown sender")
-        }
-    }
+    private static let sharedInstance = MotionHandler()
     
-    static let shared = MotionHandler()
-    
-    @objc class func sharedInstance() -> MotionHandler {
-        let sharedInstance = MotionHandler.shared
-        sharedInstance.oscProfile = sharedInstance.oscProfileMan.getSelectedProfile()
-        sharedInstance.sensitvityYaw = sharedInstance.oscProfile.gyroSensitivityYaw
-        sharedInstance.sensitvityPitch = sharedInstance.oscProfile.gyroSensitivityPitch
-        sharedInstance.sensitvityRoll = sharedInstance.oscProfile.gyroSensitivityRoll
-        sharedInstance.gyroToStickMinOffset =  sharedInstance.oscProfile.gyroToStickMinOffset
+    @objc class func shared(profile: OSCProfile?) -> MotionHandler {
+        let sharedInstance = MotionHandler.sharedInstance
+        guard let profile = profile else { return sharedInstance }
+        sharedInstance.mapGyroTo = profile.mapGyroTo
+        sharedInstance.synthesizePhysicalStick = profile.synthesizePhysicalStick
+        sharedInstance.rollToLeftStick = profile.rollToLeftStick
+        sharedInstance.yawPitchToRightStick = profile.yawPitchToRightStick
+        sharedInstance.sensitvityYaw = profile.gyroSensitivityYaw
+        sharedInstance.sensitvityPitch = profile.gyroSensitivityPitch
+        sharedInstance.sensitvityRoll = profile.gyroSensitivityRoll
+        sharedInstance.gyroToStickMinOffset =  profile.gyroToStickMinOffset
+        sharedInstance.onScreenControls = OnScreenControls.shared()
         return sharedInstance
     }
-
-    private var oscProfileMan: OSCProfilesManager
-    private var oscProfile: OSCProfile
 
     @objc public var gyroControlStarted: Bool = false
     private var gyroIsWorking: Bool = false
     private var accelControlStarted: Bool = false
     private let motionManager = CMMotionManager()
+    
+    private var synthesizePhysicalStick:Bool = false
+    private var mapGyroTo:MapGyroTo = .mapGyroToControllerStick
+    private var rollToLeftStick:Bool = false
+    private var yawPitchToRightStick:Bool = false
     public var sensitvityYaw:CGFloat = 1.0
     public var sensitvityPitch:CGFloat = 1.0
     public var sensitvityRoll:CGFloat = 1.0
@@ -82,7 +80,7 @@ import CoreMotion
     public var gyroStarter:Any?
     private var windowScene: Any?
     
-    @objc public var onScreenControls: OnScreenControls = OnScreenControls.init()
+    @objc public var onScreenControls: OnScreenControls?
     public let stickMaxOffset: CGFloat = 0x7FFE
     private var stickInputScale: CGFloat = 35
     
@@ -124,8 +122,7 @@ import CoreMotion
     }
     
     @objc public override init() {
-        self.oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
-        self.oscProfile = oscProfileMan.getSelectedProfile()
+        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         super.init()
         if #available(iOS 13.0, *) {
             let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -295,14 +292,16 @@ import CoreMotion
         
         gyroIsWorking = true
         
-        if oscProfile.mapGyroTo == MapGyroTo.mapGyroToMouse {
+        if mapGyroTo == MapGyroTo.mapGyroToMouse {
             yaw = yawSource*sensitvityYaw*widgetYawFactor*30
             pitch = pitchSource*sensitvityPitch*widgetPitchFactor*30
             LiSendMouseMoveEvent(Int16(yaw),Int16(pitch))
         }
-                
-        if oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick {
-            if oscProfile.yawPitchToRightStick {
+        
+        //guard let onScreenControls = onScreenControls else { return }
+        
+        if mapGyroTo == MapGyroTo.mapGyroToControllerStick {
+            if yawPitchToRightStick {
                 gyroToStickOffset.dx = gyroInputToStickInput(input:yawSource*sensitvityYaw*widgetYawFactor*10)
                 yaw = rightStickTouchInputX + rightStickPhysicalInputX + gyroToStickOffset.dx
                 yaw = self.clampStickInput(input: yaw)
@@ -313,9 +312,9 @@ import CoreMotion
                 
                 let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: yaw, dy: pitch), minOffset: gyroToStickMinOffset)
                 
-                self.onScreenControls.sendRightStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
+                onScreenControls?.sendRightStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
             }
-            if oscProfile.rollToLeftStick {
+            if rollToLeftStick {
                 roll = gyroInputToStickInput(input:rollSource*sensitvityRoll*widgetRollFactor*0.2)
                 rollIntegral = rollIntegral + roll
                 
@@ -324,24 +323,26 @@ import CoreMotion
 
                 let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: mixedLeftStickOffsetX, dy: mixedLeftStickOffsetY), minOffset: gyroToStickMinOffset)
                 
-                self.onScreenControls.sendLeftStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
+                onScreenControls?.sendLeftStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
             }
         }
 }
     
     private func clearGyroInput(interruptNonGyroInput:Bool, resetLeftStick:Bool=false){
-        if oscProfile.yawPitchToRightStick{
-            self.onScreenControls.sendRightStickTouchPadEvent(rightStickPhysicalInputX+rightStickTouchInputX-yawBias, rightStickPhysicalInputY+rightStickTouchInputY-pitchBias)
+        // guard let onScreenControls = onScreenControls else { return }
+
+        if yawPitchToRightStick{
+            onScreenControls?.sendRightStickTouchPadEvent(rightStickPhysicalInputX+rightStickTouchInputX-yawBias, rightStickPhysicalInputY+rightStickTouchInputY-pitchBias)
         }
-        if oscProfile.rollToLeftStick{
+        if rollToLeftStick{
             if resetLeftStick {
                 rollIntegral = 0
-                self.onScreenControls.sendLeftStickTouchPadEvent(leftStickPhysicalInputX+leftStickTouchInputX-rollBias,leftStickPhysicalInputY+leftStickTouchInputY)
+                onScreenControls?.sendLeftStickTouchPadEvent(leftStickPhysicalInputX+leftStickTouchInputX-rollBias,leftStickPhysicalInputY+leftStickTouchInputY)
             }
         }
         if(interruptNonGyroInput){
-            self.onScreenControls.clearLeftStickTouchPadFlag()
-            self.onScreenControls.clearRightStickTouchPadFlag()
+            onScreenControls?.clearLeftStickTouchPadFlag()
+            onScreenControls?.clearRightStickTouchPadFlag()
         }
     }
     

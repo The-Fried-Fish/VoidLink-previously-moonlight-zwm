@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 + (void)initContextWithView:(StreamView*)view andSettings:(TemporarySettings*)settings;
++ (void)cleanUpContext;
 
 - (bool)doesNeedResetCoords;
 - (void)updatePointerCoords:(UITouch *)touch;

@@ -103,8 +103,8 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     return newPosition;
 }
 
-- (void)reloadLegacyOnScreenControls{
-    [self.layoutOSC updateControls];  // creates and saves a 'Default' OSC profile or loads the o//ne the user selected on the previous screen
+- (void)reloadLegacyOnScreenControls:(OSCProfile* )profile{
+    [self.layoutOSC updateLegacyWidgetsWith:profile];  // creates and saves a 'Default' OSC profile or loads the o//ne the user selected on the previous screen
     [self addInnerAnalogSticksToOuterAnalogLayers];
     [self.layoutOSC.layoutChanges removeAllObjects];  // since a new OSC profile is being loaded, this will remove all previous layout changes made from the array
     [self OSCLayoutChanged];    // fades the 'Undo Button' out
@@ -123,74 +123,94 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     else return longSide;
 }
 
+- (void)dummytest{
+    
+}
 
-- (void)reloadOnScreenWidgetViews{
-    NSLog(@"reloadOnScreenWidgets %f", CACurrentMediaTime());
-    OnScreenWidgetView.isTweakingHighlight = false;
-    OnScreenWidgetView.editMode = true;
-    [self hideStickIndicators];
-
+- (void)clearOnScreenWidgets{
     for (UIView *subview in self.view.subviews) {
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
             [subview removeFromSuperview];
         }
     }
-    
     [self.onScreenWidgetViews removeAllObjects];
+}
+
+- (void)reloadOnScreenWidgetViews{
+    OnScreenWidgetView.isTweakingHighlight = false;
+    OnScreenWidgetView.editMode = true;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self hideStickIndicators];
+        [self clearOnScreenWidgets];
+
+        int16_t sequence = -1;
+        
+        // _activeCustomOscButtonPositionDict will be updated every time when the osc profile is reloaded
+        OSCProfile *oscProfile = [self->profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
+        NSLog(@"reloadOnScreenWidgets %lu", oscProfile.buttonStatesEncoded.count);
+        bool hasLegacyWidget = false;
+        for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
+            // OnScreenButtonState* buttonState = [NSKeyedUnarchiver unarchivedObjectOfClass:[OnScreenButtonState class] fromData:buttonStateEncoded error:nil];
+            OnScreenButtonState* buttonState = [self->profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
+            NSLog(@"reloadOnScreenWidgets name %@", buttonState.name);
+            if(buttonState.widgetType == CustomOnScreenWidget){
+                OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
+                widgetView.sequence = buttonState.sequence == -1 ? ++sequence : buttonState.sequence;
+                widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
+                widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
+                widgetView.widthFactor = buttonState.widthFactor;
+                widgetView.heightFactor = buttonState.heightFactor;
+                widgetView.componentSizeFactor = buttonState.componentSizeFactor;
+                widgetView.borderWidth = buttonState.borderWidth;
+                widgetView.highlightSizeFactor = buttonState.highlightSizeFactor;
+                widgetView.autoTapInterval = buttonState.autoTapInterval;
+                [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
+                widgetView.mouseButtonAction = buttonState.mouseButtonAction;
+                widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
+                widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
+                widgetView.slideThreshold = buttonState.slideThreshold;
+                widgetView.yawFactor = buttonState.yawFactor;
+                widgetView.pitchFactor = buttonState.pitchFactor;
+                widgetView.rollFactor = buttonState.rollFactor;
+                widgetView.decelerationRateX = buttonState.decelerationRateX;
+                widgetView.decelerationRateY = buttonState.decelerationRateY;
+                widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
+                widgetView.dWheelWalkModeThreshold = buttonState.walkModeThreshold;
+                widgetView.minStickOffset = buttonState.minStickOffset;
+                widgetView.buttonMode = buttonState.buttonMode;
+                // Add the widgetView to the view controller's view
+                [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
+                buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
+                [widgetView setLocationWithPosition:buttonState.position];
+                widgetView.sizeReference = [self getCurrentWidgetSizeReference];
+                [widgetView resizeWidgetView]; // resize must be called after relocation
+                [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha tweakBorderAlpha:NO];
+                [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
+                [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
+                [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
+                [widgetView adjustBorderWithWidth:buttonState.borderWidth];
+                [self.onScreenWidgetViews addObject:widgetView];
+            }
+            else if(buttonState.widgetType == LegacyOnScreenControls) hasLegacyWidget = true;
+        }
+        NSLog(@"reloadOnScreenWidgets hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
+        if(hasLegacyWidget) [self reloadLegacyOnScreenControls:oscProfile];
+        else{
+            for(CALayer* layer in self.layoutOSC.OSCButtonLayerPool){
+                [layer removeFromSuperlayer];
+            }
+            [self.layoutOSC.OSCButtonLayerPool removeAllObjects];
+        }
+    });
 
     
-    NSLog(@"reload os Key here");
-    
-    // _activeCustomOscButtonPositionDict will be updated every time when the osc profile is reloaded
-    OSCProfile *oscProfile = [profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
-    for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
-        // OnScreenButtonState* buttonState = [NSKeyedUnarchiver unarchivedObjectOfClass:[OnScreenButtonState class] fromData:buttonStateEncoded error:nil];
-        OnScreenButtonState* buttonState = [profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
-        if(buttonState.widgetType == CustomOnScreenWidget){
-            OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape]; //reconstruct widgetView
-            widgetView.identifier = buttonState.identifier;
-            NSLog(@"cmd: %@, id: %@", buttonState.name, widgetView.identifier);
-            widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
-            widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
-            widgetView.widthFactor = buttonState.widthFactor;
-            widgetView.heightFactor = buttonState.heightFactor;
-            widgetView.componentSizeFactor = buttonState.componentSizeFactor;
-            widgetView.borderWidth = buttonState.borderWidth;
-            widgetView.highlightSizeFactor = buttonState.highlightSizeFactor;
-            widgetView.autoTapInterval = buttonState.autoTapInterval;
-            [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
-            widgetView.mouseButtonAction = buttonState.mouseButtonAction;
-            widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
-            widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
-            widgetView.slideThreshold = buttonState.slideThreshold;
-            widgetView.yawFactor = buttonState.yawFactor;
-            widgetView.pitchFactor = buttonState.pitchFactor;
-            widgetView.rollFactor = buttonState.rollFactor;
-            widgetView.decelerationRateX = buttonState.decelerationRateX;
-            widgetView.decelerationRateY = buttonState.decelerationRateY;
-            widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
-            widgetView.dWheelWalkModeThreshold = buttonState.walkModeThreshold;
-            widgetView.minStickOffset = buttonState.minStickOffset;
-            widgetView.buttonMode = buttonState.buttonMode;
-            // Add the widgetView to the view controller's view
-            [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
-            buttonState.position = [self denormalizeWidgetPosition:buttonState.position];
-            [widgetView setLocationWithPosition:buttonState.position];
-            widgetView.sizeReference = [self getCurrentWidgetSizeReference];
-            [widgetView resizeWidgetView]; // resize must be called after relocation
-            [widgetView adjustTransparencyWithAlpha:buttonState.backgroundAlpha tweakBorderAlpha:NO];
-            [widgetView tweakLabelAlphaWithAlpha:buttonState.labelAlpha];
-            [widgetView tweakBorderAlphaWithAlpha:buttonState.borderAlpha];
-            [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
-            [widgetView adjustBorderWithWidth:buttonState.borderWidth];
-            [self.onScreenWidgetViews addObject:widgetView];
-        }
-    }
 }
 
 - (void) viewDidLoad {
     [super viewDidLoad];
     profilesManager = [OSCProfilesManager sharedManager:self.view.bounds];
+    NSLog(@"self.view.bounds %f, %f", self.view.bounds.size.width, self.view.bounds.size.height);
     self.onScreenWidgetViews = [[NSMutableSet alloc] init]; // will be revised to read persisted data , somewhere else
     [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
     
@@ -220,7 +240,6 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     self.layoutOSC._level = OnScreenControlsLevelCustom;
     self.layoutOSC.layoutToolVC = self;
     //[self.layoutOSC show];  // draw on screen controls
-    [self.layoutOSC show];  // draw on screen controls
 
     [self addInnerAnalogSticksToOuterAnalogLayers]; // allows inner and analog sticks to be dragged together around the screen together as one unit which is the expected behavior
     
@@ -269,6 +288,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     widgetPanelStoredCenter = self.widgetPanelStack.center;
     [super viewDidAppear:animated];
     [self profileRefresh];
+    [self setupWidgetPanel];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -285,7 +305,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reloadOnScreenWidgetViews)
+                                             selector:@selector(dummytest)
                                                  name:@"OscLayoutProfileSelctedInTableView"   // This is a special notification for reloading the on screen keyboard buttons. which can't be executed by _oscProfilesTableViewController.needToUpdateOscLayoutTVC code block, and has to be triggered by a notification
                                                object:nil];
     
@@ -324,8 +344,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     _oscProfilesTableViewController.layoutViewBounds = self.view.bounds;
     [OSCProfilesManager setLayoutViewBounds:self.view.bounds];
     [OSCProfilesManager setOnScreenWidgetViewsSet:self.onScreenWidgetViews];   // pass the keyboard button dict to profiles manager
+    
     [self reloadOnScreenWidgetViews];
-    [self reloadLegacyOnScreenControls];
+    // [self reloadLegacyOnScreenControls];
 }
 
 - (void)handleEnterBackground{
@@ -740,8 +761,8 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     NSString *widgetShape = [widgetInitParams[@"shape"] lowercaseString];
         
     widgetInitParams[@"cmdString"] = cmdString;
-    bool noValidKeyboardString = [CommandManager.shared extractKeyStringsFromComboCommandFrom:cmdString] == nil; // this is a invalid string.
-    bool noValidSuperComboButtonString = [CommandManager.shared extractSinglCmdStringsFromComboKeysFrom:cmdString] == nil; // this is a invalid string.
+    bool noValidKeyboardString = [CommandManager.shared extractKeyStringsFrom:cmdString] == nil; // this is a invalid string.
+    bool noValidSuperComboButtonString = [CommandManager.shared extractCmdStringsFrom:cmdString] == nil; // this is a invalid string.
     bool noValidMouseButtonString = ![CommandManager.mouseButtonMappings.allKeys containsObject:cmdString];
     bool noValidTouchPadString = ![CommandManager.touchPadCmds containsObject:cmdString];
     bool noValidOscButtonString = ![CommandManager.oscButtonMappings.allKeys containsObject:cmdString];
@@ -765,8 +786,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 - (void) updateWidget:(OnScreenWidgetView* )widget byParams:(NSMutableDictionary* )widgetInitParams createNew:(bool)createNew{
     if(![self isWidgetParamsValid:widgetInitParams]) return;
-    OnScreenWidgetView* newWidget = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"]]; //reconstruct widgetView
-    newWidget.identifier = createNew ? [UUIDHelper newUUID] : widget.identifier;
+    OSCProfile* profile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
+    OnScreenWidgetView* newWidget = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile]; //reconstruct widgetView
+    newWidget.sequence = widget.sequence;
     newWidget.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     newWidget.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     newWidget.widthFactor = widget.widthFactor;
@@ -798,7 +820,10 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.view insertSubview:newWidget belowSubview:self.widgetPanelStack];
     [newWidget accessWidgetAttributes];
 
-    if(createNew) [newWidget setLocationWithPosition:CGPointMake(90, 130)];
+    if(createNew){
+        [newWidget setLocationWithPosition:CGPointMake(90, 130)];
+        newWidget.sequence = [newWidget getAvailableSequence];
+    }
     else [newWidget setLocationWithPosition:widget.center];
     newWidget.sizeReference = widget.sizeReference;
     [newWidget resizeWidgetView]; // resize must be called after relocation
@@ -819,14 +844,17 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (void) createWidgetFromParams: (NSMutableDictionary*) widgetInitParams{
     if(![self isWidgetParamsValid:widgetInitParams]) return;
     //saving & present the keyboard button:
-    OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"]];
-    widgetView.identifier = [UUIDHelper newUUID];
+    OSCProfile* profile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
+    OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile];
+    [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
+    widgetView.hidden = true;
+    widgetView.sequence = [widgetView getAvailableSequence];
     widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     [self.onScreenWidgetViews addObject:widgetView];
     // Add the widgetView to the view controller's view
-    [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
     [widgetView setLocationWithPosition:CGPointMake(90, 130)];
+    widgetView.hidden = false;
     [widgetView resizeWidgetView];
     [widgetView setVibrationWithStyle:UIImpactFeedbackStyleLight];
 }
@@ -834,7 +862,6 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 /* show pop up notification that lets users choose to save the current OSC layout configuration as a profile they can load when they want. User can also choose to cancel out of this pop up */
 - (IBAction) saveTapped:(id)sender {
-    
     /*
     OSCProfile* targetProfile = [profilesManager getAllProfiles][0];
     OSCProfile* currentProfile = [profilesManager getSelectedProfile];
@@ -846,7 +873,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self clearSickInput];
     [OSCProfilesManager setLayoutViewBounds:self.view.bounds];
     
-    if([self->profilesManager updateSelectedProfile:self.layoutOSC.OSCButtonLayers]){
+    if([self->profilesManager updateSelectedProfile:self.layoutOSC.OSCButtonLayerPool]){
         UIAlertController * savedAlertController = [UIAlertController alertControllerWithTitle: [NSString stringWithFormat:@""] message: [LocalizationHelper localizedStringForKey:@"Current profile updated successfully"] preferredStyle:UIAlertControllerStyleAlert];
         [savedAlertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }]];
@@ -904,7 +931,6 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
  */
 
 - (void)widgetViewTapped: (NSNotification *)notification{
-    
     [self hideStickIndicators];
     
     [self clearSickInput];
@@ -1064,7 +1090,15 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     self.buttonModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
     [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:0];
     [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:1];
+    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton
+     || [selectedWidgetView.functionalButtonString containsString:@"ABSTCHDRAG"]
+                      forSegmentAtIndex:3];
     [self.buttonModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonMode];
+    
+    self.collectedWidgetsStack.hidden = !selectedWidgetView.isFolder;
+    [self.collectedWidgetsSelector setSelectedSegmentIndex:selectedWidgetView.folded ? 1 :0];
+    [self.revealModeSelector setSelectedSegmentIndex:selectedWidgetView.revealMode];
+    [OnScreenWidgetView setCollectionWithHidden:selectedWidgetView.folded for:selectedWidgetView];
 
     [self autoFitStack:self.widgetPanelStack];
     
@@ -1225,6 +1259,19 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (void)buttonModeChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         selectedWidgetView.buttonMode = _buttonModeSelector.selectedSegmentIndex;
+    }
+}
+
+- (void)collectionHiddenChanged:(UISegmentedControl* )sender{
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        [OnScreenWidgetView setCollectionWithHidden:sender.selectedSegmentIndex==1 for:selectedWidgetView];
+    }
+}
+
+- (void)revealModeChanged:(UISegmentedControl* )sender{
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        selectedWidgetView.revealMode = sender.selectedSegmentIndex;
+        [OnScreenWidgetView setCollectionWithHidden:selectedWidgetView.folded for:selectedWidgetView];
     }
 }
 
@@ -1538,7 +1585,12 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.buttonModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.buttonModeStack.hidden = YES;
 
-    
+    [self.collectedWidgetsSelector addTarget:self action:@selector(collectionHiddenChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.collectedWidgetsSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
+    [self.revealModeSelector addTarget:self action:@selector(revealModeChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.revealModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
+    self.collectedWidgetsStack.hidden = YES;
+
     if([self isIPhone]){
         [self.vibrationStyleSelector addTarget:self action:@selector(vibrationStyleChanged:) forControlEvents:(UIControlEventValueChanged)];
         self.vibrationStyleStack.hidden = YES;
@@ -1637,8 +1689,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 }
 
 - (void)handleProfileTablViewDismiss{
-    [self profileRefresh];
     if(_quickSwitchEnabled) [self dismissViewControllerAnimated:NO completion:nil];
+    else [self setupWidgetPanel];
+    // setup: current profile lable, button width slider, button height slider & button alpha slider
 }
 
 /* Basically the same method as loadTapped, without parameter*/
@@ -1652,10 +1705,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     else {
         storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
     }
-    
-    // setup: current profile lable, button width slider, button height slider & button alpha slider
-    [self setupWidgetPanel];
-    
+        
     //initialiaze _oscProfilesTableViewController
     self->_oscProfilesTableViewController = [storyboard instantiateViewControllerWithIdentifier:@"OSCProfilesTableViewController"];
     
@@ -1664,20 +1714,22 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     self->_oscProfilesTableViewController.needToUpdateOscLayoutTVC = ^() {   // a block that will be called when the modally presented 'OSCProfilesTableViewController' VC is dismissed. By the time the 'OSCProfilesTableViewController' VC is dismissed the user would have potentially selected a different OSC profile with a different layout and they want to see this layout on this 'LayoutOnScreenControlsViewController.' This block of code will load the profile and then hide/show and move each OSC button to their appropriate position
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
-        [weakSelf reloadLegacyOnScreenControls];
-        strongSelf->_oscProfilesTableViewController.currentOSCButtonLayers = weakSelf.layoutOSC.OSCButtonLayers; //pass updated OSCLayout to OSCProfileTableView again
+        [weakSelf reloadOnScreenWidgetViews];
+        strongSelf->_oscProfilesTableViewController.currentOSCButtonLayers = weakSelf.layoutOSC.OSCButtonLayerPool; //pass updated OSCLayout to OSCProfileTableView again
     };
     
     [self.oscProfilesTableViewController profileViewRefresh]; // execute this will make sure OSCLayout is updated from persisted profile, not any cache.
-    [self reloadOnScreenWidgetViews];
+    NSLog(@"profileRefresh %f", CACurrentMediaTime());
+    // [self reloadOnScreenWidgetViews];
 
     // [self presentViewController:vc animated:YES completion:nil];
 }
 
-- (void) presentProfilesTableView{
-    [self saveTapped:nil];
+- (void) presentProfilesTableViewWithPickProfile:(bool)pickProfile{
     [self hideStickIndicators];
     selectedWidgetView = nil;
+    // if(pickProfile) [self clearOnScreenWidgets];
+    
     UIStoryboard *storyboard;
     BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
     if (isIPhone) {
@@ -1692,21 +1744,24 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     
     __weak typeof(self) weakSelf = self;
     _oscProfilesTableViewController.needToUpdateOscLayoutTVC = ^() {   // a block that will be called when the modally presented 'OSCProfilesTableViewController' VC is dismissed. By the time the 'OSCProfilesTableViewController' VC is dismissed the user would have potentially selected a different OSC ofile with a different layout and they want to see this layout on this 'LayoutOnScreenControlsViewController.' This block of code will load the proffile and then hide/show and move each OSC button to their appropriate position
-        [weakSelf reloadLegacyOnScreenControls];
+        if(!pickProfile || true) [weakSelf reloadOnScreenWidgetViews];
     };
 
     self.widgetPanelStack.hidden = YES;
     
-    _oscProfilesTableViewController.currentOSCButtonLayers = self.layoutOSC.OSCButtonLayers;
+    _oscProfilesTableViewController.currentOSCButtonLayers = self.layoutOSC.OSCButtonLayerPool;
     
     // _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    [self presentViewController:_oscProfilesTableViewController animated:YES completion:nil];
+    // _oscProfilesTableViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    _oscProfilesTableViewController.pickProfileEnabled = pickProfile;
+    [self presentViewController:_oscProfilesTableViewController animated:NO completion:nil];
 }
 
 /* Presents the view controller that lists all OSC profiles the user can choose from */
 - (IBAction) loadTapped:(id)sender {
-    [self presentProfilesTableView];
+    [self saveTapped:nil];
+    [self presentProfilesTableViewWithPickProfile:false];
 }
 
 
@@ -1847,6 +1902,10 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     
     trashCanButton.tintColor = trashCanButton.titleLabel.textColor = trashCanStoryBoardColor;
     widgetPanelMovedByTouch = false;
+}
+
+- (void)dealloc{
+    NSLog(@"dealloc layoutToolVC %f ...", CACurrentMediaTime());
 }
 
 

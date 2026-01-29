@@ -17,12 +17,7 @@
 
 @class ControllerSupport;
 @class StreamConfiguration;
-
-// sending self as an instance to OnScreenWidgetView or other related classes
-@protocol OscInstanceReceiverDelegate <NSObject>
-- (void)getOnScreenControlsInstance:(id)sender; // Renamed delegate method
-@end
-
+@class LayoutOnScreenControls;
 
 static const float D_PAD_DIST = 10;
 static const float BUTTON_DIST = 20;
@@ -51,11 +46,6 @@ typedef NS_ENUM(NSInteger, OnScreenControlsLevel) {
     OnScreenControlsLevelAutoGCExtendedGamepadWithStickButtons
 };
 
-
-
-
-@property (nonatomic, weak) id<OscInstanceReceiverDelegate> instanceReceiverDelegate; // Delegate property
-- (void)sendInstance;
 
 // @property (nonatomic, assign) CustomTapGestureRecognizer* mouseRightClickTapRecognizer; // this object will be passed to onscreencontrols class for areVirtualControllerTaps flag setting
 @property (nonatomic, assign) bool isLayingOut;
@@ -105,7 +95,7 @@ typedef NS_ENUM(NSInteger, OnScreenControlsLevel) {
 
 @property OnScreenControlsLevel _level;
 
-@property NSMutableArray *OSCButtonLayers;
+@property NSMutableSet *OSCButtonLayerPool;
 @property NSMutableDictionary* layerVibrationStyleDic;
 
 
@@ -128,18 +118,19 @@ typedef NS_ENUM(NSInteger, OnScreenControlsLevel) {
 - (BOOL) handleTouchUpEvent:(NSSet*)touches;
 - (BOOL) handleTouchMovedEvent:(NSSet*)touches;
 - (void) setLevel:(OnScreenControlsLevel)level;
-- (void) show;
+- (void) showLegacyWidgetsWith:(OSCProfile* )profile;
+- (void) regenLayerPool;
 - (void) setupComplexControls;
-- (void) drawButtons;
+- (void) drawButtons:(OSCProfile* _Nullable)profile;
 - (void) drawBumpers;
-- (void) updateControls;
+- (void) updateLegacyWidgetsWith:(OSCProfile* _Nullable )profile;
 - (OnScreenControlsLevel) getLevel;
-- (void) setDPadCenter;
-- (void) setAnalogStickPositions;
-- (void) positionAndResizeSingleControllerLayers;
-- (void) resizeControllerLayerWith:(CALayer*)layer and:(CGFloat)sizeFactor;
-- (void) adjustControllerLayerOpacityWith:(CALayer*)layer and:(CGFloat)alpha;
-+ (CGFloat) getControllerLayerSizeFactor:(CALayer*)layer;
-- (CGFloat) getControllerLayerOpacity:(CALayer*)layer;
+- (void) setDPadCenter:(OSCProfile *_Nonnull)profile;;
+- (void) setAnalogStickPositions:(OSCProfile *_Nonnull)profile;
+- (void) positionAndResizeSingleControllerLayers:(OSCProfile *_Nonnull)profile;
+- (void) resizeControllerLayerWith:(CALayer*_Nonnull)layer and:(CGFloat)sizeFactor;
+- (void) adjustControllerLayerOpacityWith:(CALayer*_Nonnull)layer and:(CGFloat)alpha;
++ (CGFloat) getControllerLayerSizeFactor:(CALayer*_Nonnull)layer;
+- (CGFloat) getControllerLayerOpacity:(CALayer*_Nonnull)layer;
 
 @end

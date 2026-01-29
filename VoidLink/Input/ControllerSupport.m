@@ -42,8 +42,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     
     NSLock *_controllerStreamLock;
     NSMutableDictionary *_voidControllers;
-    id<ControllerSupportDelegate> _delegate;
     StreamConfiguration* _streamConfig;
+    __weak id<ControllerSupportDelegate> _delegate;
     
     float accumulatedDeltaX;
     float accumulatedDeltaY;
@@ -75,8 +75,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     VoidController *_oscController;
     NSMutableSet* _activeGCControllers;
     TemporarySettings* tempSettings;
-    OSCProfilesManager* oscProfileMan;
     OSCProfile* oscProfile;
+    OSCProfilesManager* oscProfileMan;
 
 #define EMULATING_SELECT     0x1
 #define EMULATING_SPECIAL    0x2
@@ -98,7 +98,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     bool _controllerGyroSwitchHoldPressed;
     ControllerGyroSwitchMode _gyroSwitchMode;
 
-    MotionHandler* motionHandler;
+    __weak MotionHandler* motionHandler;
 }
 
 // UPDATE_BUTTON_FLAG(controller, flag, pressed)
@@ -1723,6 +1723,7 @@ double rc_expo(double x, double expo) {
     _oscController.playerIndex = 0;
 
     oscProfile = [oscProfileMan getSelectedProfile];
+    motionHandler = [MotionHandler sharedWithProfile:oscProfile];
     DataManager* dataMan = [[DataManager alloc] init];
     tempSettings = [dataMan getSettings];
 
@@ -1965,7 +1966,6 @@ double rc_expo(double x, double expo) {
     _controllerMouseEnabledFlag = false;
     
     _gyroEnabledFlag = false;
-    motionHandler = [MotionHandler sharedInstance];
     oscProfileMan = [OSCProfilesManager sharedManager:CGRectZero];
 
     [self updateCommonConfig:streamConfig];

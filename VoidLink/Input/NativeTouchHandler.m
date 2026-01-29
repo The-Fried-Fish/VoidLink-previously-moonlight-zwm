@@ -15,9 +15,10 @@
 #include <Limelight.h>
 
 @implementation NativeTouchHandler {
-    StreamView* streamView;
     TemporarySettings* currentSettings;
+    __weak StreamView* streamView;
     bool activateCoordSelector;
+    bool singleTouchDisabled;
     CGFloat pointerVelocityDividerLocationByPoints;
     
     bool asyncNativeTouch;
@@ -187,9 +188,17 @@
 }
 
 
-- (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType{
+- (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType withEvent:(UIEvent *)event{
     //if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
     if([blacklistedTouches containsObject:@((uintptr_t)touch)]) return;
+    
+    if(singleTouchDisabled
+       && [UITouchUtil touchesIn:streamView from:event].count != 2
+       && touchType != LI_TOUCH_EVENT_UP) return;
+    
+    if(PencilHandler.pencilPausesNativeTouch
+      && PencilHandler.isDrawing
+      && touchType != LI_TOUCH_EVENT_UP) return;
     
     CGPoint targetCoords;
     //NSLog(@"selecting coords: %d", touch.phase == UITouchPhaseMoved);
@@ -216,7 +225,7 @@
             if([OnScreenControls.touchesCapturedByOnScreenControls containsObject:touch]) continue;
             [self handleTouchDown:touch]; //generate & populate pointerId
             if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
-            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
+            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN withEvent:event];
         }
     });
     else{
@@ -225,7 +234,7 @@
             if([OnScreenControls.touchesCapturedByOnScreenControls containsObject:touch]) continue;
             [self handleTouchDown:touch]; //generate & populate pointerId
             if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
-            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
+            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN withEvent:event];
         }
     }
 }
@@ -235,7 +244,7 @@
         for (UITouch* touch in touches){
             if([OnScreenControls.touchesCapturedByOnScreenControls containsObject:touch]) continue;
             if(self->activateCoordSelector) [self updatePointerObjInDict:touch];
-            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE];
+            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE withEvent:event];
             [[self getPointerObjFromDict:touch] doesNeedResetCoords];
         }
     });
@@ -248,7 +257,7 @@
                 [OnScreenControls.touchesCapturedByOnScreenControls removeObject:touch];
                 continue;
             }
-            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
+            [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP withEvent:event]; //send touch event before remove pointerId
             [self removePointerId:touch]; //then remove pointerId
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
             [self->blacklistedTouches removeObject:@((uintptr_t)touch)];
@@ -287,6 +296,10 @@
     NativeTouchPointer *pointer = [pointerObjDict objectForKey:@((uintptr_t)touch)];
     if(pointer == nil) return CGPointMake(0, 0);
     return pointer.useRelativeCoords ? pointer.latestRelativePoint : pointer.latestPoint;
+}
+
+- (void)setAllowSingleTouchEnabled:(BOOL)enabled{
+    singleTouchDisabled = !enabled;
 }
 
 @end

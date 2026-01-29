@@ -3031,6 +3031,36 @@
         }
       }
     },
+    "hZw-pC-Qxm.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Pencil Pauses Native Touch\"; ObjectID = \"hZw-pC-Qxm\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pencil Pauses Native Touch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用笔时暂停多点触控"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用筆時暫停多點觸控"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用筆時暫停多點觸控"
+          }
+        }
+      }
+    },
     "iel-xl-xd9.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Profile:\"; ObjectID = \"iel-xl-xd9\";",
       "extractionState" : "extracted_with_value",
@@ -4009,6 +4039,18 @@
         }
       }
     },
+    "MyP-Aq-htW.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"       Reveal mode  \"; ObjectID = \"MyP-Aq-htW\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "       Reveal mode  "
+          }
+        }
+      }
+    },
     "MzN-ZR-qyM.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; MzN-ZR-qyM.segmentTitles[0] = \"Auto\"; ObjectID = \"MzN-ZR-qyM\";",
       "extractionState" : "extracted_with_value",
@@ -4705,6 +4747,30 @@
         }
       }
     },
+    "Qr8-Df-7Zu.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; Qr8-Df-7Zu.segmentTitles[0] = \"coexist\"; ObjectID = \"Qr8-Df-7Zu\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "coexist"
+          }
+        }
+      }
+    },
+    "Qr8-Df-7Zu.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; Qr8-Df-7Zu.segmentTitles[1] = \"exclusive\"; ObjectID = \"Qr8-Df-7Zu\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "exclusive"
+          }
+        }
+      }
+    },
     "Qs9-iS-YoW.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Divider Position\"; ObjectID = \"Qs9-iS-YoW\";",
       "extractionState" : "extracted_with_value",
@@ -4981,6 +5047,30 @@
         }
       }
     },
+    "sch-0e-nfa.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; sch-0e-nfa.segmentTitles[0] = \"display\"; ObjectID = \"sch-0e-nfa\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "display"
+          }
+        }
+      }
+    },
+    "sch-0e-nfa.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; sch-0e-nfa.segmentTitles[1] = \"hide\"; ObjectID = \"sch-0e-nfa\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "hide"
+          }
+        }
+      }
+    },
     "shy-hG-9wY.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Remember Menu Fold/Expand\"; ObjectID = \"shy-hG-9wY\";",
       "extractionState" : "extracted_with_value",
@@ -5185,6 +5275,36 @@
         }
       }
     },
+    "v5f-j3-pEc.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Double Tap Shorcut\"; ObjectID = \"v5f-j3-pEc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Double Tap Shorcut"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轻点两下快捷键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輕點兩下快速鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輕點兩下快速鍵"
+          }
+        }
+      }
+    },
     "v8l-hf-kiR.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Rendering Mode (Experimental)\"; ObjectID = \"v8l-hf-kiR\";",
       "extractionState" : "extracted_with_value",
@@ -5385,6 +5505,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Walkmode threshold"
+          }
+        }
+      }
+    },
+    "WLg-7a-5wu.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Collected widgets   \"; ObjectID = \"WLg-7a-5wu\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Collected widgets   "
           }
         }
       }

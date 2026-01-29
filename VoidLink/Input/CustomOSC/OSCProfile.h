@@ -50,6 +50,11 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property (nonatomic, assign) int controllerGyroSwitchToggle;
 @property NSArray<NSNumber *> *pressureCurvePoints;
 @property (nonatomic, assign) bool pressureCurveEnabled;
+@property (nonatomic, assign) bool doubleTapShorcutEnabled;
+@property NSString *brushShortcut;
+@property NSString *eraserShortcut;
+@property (nonatomic, assign) bool pencilPausesNativeTouch;
+
 
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected;
 

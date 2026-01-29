@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSMutableSet<UITouch *>* touchesCapturedByOnScreenButtons;
 
 - (id)initWithView:(StreamView* )view andSettings:(TemporarySettings*)settings;
-
+- (void)setAllowSingleTouchEnabled:(BOOL)enabled;
 
 @end
 

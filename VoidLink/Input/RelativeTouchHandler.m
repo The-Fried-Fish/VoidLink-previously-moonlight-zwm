@@ -42,7 +42,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     UIGestureRecognizer* remoteLongPressRecognizer;
 #endif
     
-    StreamView* streamView;
+    __weak StreamView* streamView;
 }
 
 - (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings {

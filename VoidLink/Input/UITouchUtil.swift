@@ -11,7 +11,7 @@ import UIKit
 @objc class UITouchUtil: NSObject {
     @objc public static func touches(in view: UIView, from event: UIEvent?) -> Set<UITouch> {
         guard (event?.allTouches) != nil else { return [] }
-        return event?.allTouches?.filter({ $0.view == view }) ?? []
+        return event?.allTouches?.filter({ $0.view == view && $0.type == .direct}) ?? []
     }
     
     @objc public static func distance(between touch1: UITouch?, and touch2: UITouch?, in view: UIView?) -> CGFloat {

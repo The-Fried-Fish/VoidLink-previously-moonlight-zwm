@@ -51,11 +51,20 @@
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
     [encoder encodeBool:self.pressureCurveEnabled forKey:@"pressureCurveEnabled"];
+    [encoder encodeBool:self.doubleTapShorcutEnabled forKey:@"doubleTapShorcutEnabled"];
+    [encoder encodeObject:self.brushShortcut forKey:@"brushShortcut"];
+    [encoder encodeObject:self.eraserShortcut forKey:@"eraserShortcut"];
+    [encoder encodeBool:self.pencilPausesNativeTouch forKey:@"pencilPausesNativeTouch"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
     if (self = [super init]) {
-        self.name = [decoder decodeObjectForKey:@"name"];
+        self.name =
+            [decoder decodeObjectOfClasses:
+                [NSSet setWithObjects:
+                    [NSString class],
+                    nil]
+                                       forKey:@"name"];
         self.buttonStatesEncoded =
             [decoder decodeObjectOfClasses:
                 [NSSet setWithObjects:
@@ -92,6 +101,27 @@
                                             forKey:@"pressureCurvePoints"]
             : @[@0.0, @0.0, @1.0, @1.0];
         self.pressureCurveEnabled = [decoder containsValueForKey:@"pressureCurveEnabled"] ? [decoder decodeBoolForKey:@"pressureCurveEnabled"] : false;
+        
+        self.doubleTapShorcutEnabled = [decoder containsValueForKey:@"doubleTapShorcutEnabled"] ? [decoder decodeBoolForKey:@"doubleTapShorcutEnabled"] : false;
+        self.brushShortcut =
+        [decoder containsValueForKey:@"brushShortcut"]
+        ? [decoder decodeObjectOfClasses:
+                [NSSet setWithObjects:
+                    [NSString class],
+                    nil]
+                                       forKey:@"brushShortcut"]
+        : @"";
+        
+        self.eraserShortcut =
+        [decoder containsValueForKey:@"eraserShortcut"]
+        ? [decoder decodeObjectOfClasses:
+            [NSSet setWithObjects:
+                [NSString class],
+                nil]
+                                   forKey:@"eraserShortcut"]
+        : @"";
+        
+        self.pencilPausesNativeTouch = [decoder containsValueForKey:@"pencilPausesNativeTouch"] ? [decoder decodeBoolForKey:@"pencilPausesNativeTouch"] : false;
     }
     
     return self;
@@ -121,6 +151,10 @@
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
     copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
     copy.pressureCurveEnabled = self.pressureCurveEnabled;
+    copy.doubleTapShorcutEnabled = self.doubleTapShorcutEnabled;
+    copy.brushShortcut = [self.brushShortcut mutableCopy]; // NSString → NSMutableString
+    copy.eraserShortcut = [self.eraserShortcut mutableCopy]; // NSString → NSMutableString
+    copy.pencilPausesNativeTouch = self.pencilPausesNativeTouch;
     return copy;
 }
 

@@ -63,4 +63,8 @@ static StreamView* streamView;
     NSLog(@"stream wdith %f, stream height %f", streamViewWidth, streamViewHeight);
 }
 
++ (void)cleanUpContext {
+    streamView = nil;
+}
+
 @end
