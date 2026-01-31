@@ -2888,8 +2888,8 @@
                                                     <constraint firstAttribute="width" constant="180" id="TbL-OE-jvg"/>
                                                 </constraints>
                                                 <segments>
-                                                    <segment title="display"/>
-                                                    <segment title="hide"/>
+                                                    <segment title="unfold"/>
+                                                    <segment title="fold"/>
                                                 </segments>
                                                 <color key="tintColor" systemColor="systemGray3Color"/>
                                                 <color key="selectedSegmentTintColor" red="0.23087820410000001" green="0.4576539993" blue="0.51765710119999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>

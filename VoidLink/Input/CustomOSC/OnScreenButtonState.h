@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL folded;
 @property (nonatomic, assign) uint8_t revealMode;
 @property (nonatomic, assign) int16_t sequence;
-@property NSMutableSet *sequenceSet;
+@property (nonatomic, assign) int16_t parentSequence;
+@property NSSet *sequenceSet;
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, assign) uint8_t buttonMode;

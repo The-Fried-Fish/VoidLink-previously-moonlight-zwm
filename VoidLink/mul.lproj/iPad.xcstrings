@@ -4048,6 +4048,24 @@
             "state" : "new",
             "value" : "       Reveal mode  "
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "        展开模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "        展開模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "        展開模式"
+          }
         }
       }
     },
@@ -4756,6 +4774,24 @@
             "state" : "new",
             "value" : "coexist"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共存"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共存"
+          }
         }
       }
     },
@@ -4767,6 +4803,24 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "exclusive"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "互斥"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "互斥"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "互斥"
           }
         }
       }
@@ -5048,25 +5102,61 @@
       }
     },
     "sch-0e-nfa.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; sch-0e-nfa.segmentTitles[0] = \"display\"; ObjectID = \"sch-0e-nfa\";",
+      "comment" : "Class = \"UISegmentedControl\"; sch-0e-nfa.segmentTitles[0] = \"unfold\"; ObjectID = \"sch-0e-nfa\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "display"
+            "value" : "unfold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展開"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展開"
           }
         }
       }
     },
     "sch-0e-nfa.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; sch-0e-nfa.segmentTitles[1] = \"hide\"; ObjectID = \"sch-0e-nfa\";",
+      "comment" : "Class = \"UISegmentedControl\"; sch-0e-nfa.segmentTitles[1] = \"fold\"; ObjectID = \"sch-0e-nfa\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "hide"
+            "value" : "fold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收起"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收起"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收起"
           }
         }
       }
@@ -5517,6 +5607,24 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Collected widgets   "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已收纳控件   "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已收納小工具   "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已收納小工具   "
           }
         }
       }

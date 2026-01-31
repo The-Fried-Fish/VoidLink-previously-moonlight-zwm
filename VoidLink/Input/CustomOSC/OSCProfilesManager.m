@@ -291,6 +291,7 @@ static CGRect layoutViewBounds;
      */
     OSCProfile *selectedProfile = [self getSelectedProfile];
     selectedProfile.buttonStatesEncoded = buttonStatesEncoded;
+    selectedProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     [self replaceSelectedProfileWith:selectedProfile overwriteDefault:NO];
     return true;
 }
@@ -389,10 +390,14 @@ static CGRect layoutViewBounds;
     // save on-screen widget views (keyboard & mouse command) as buttonstate:
     _widgetSizeTransition = keepWidgetSize;
     for(OnScreenWidgetView* widgetView in OnScreenWidgetViews){
-        CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.center];
+        CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.storedCenter];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.widgetLabel;
         buttonState.sequence = widgetView.sequence;
+        buttonState.sequenceSet = widgetView.sequenceSet;
+        buttonState.parentSequence = widgetView.parentSequence;
+        buttonState.folded = widgetView.folded;
+        buttonState.revealMode = widgetView.revealMode;
         buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView];
         buttonState.heightFactor = [self normalizeSizeHeightFactorWith:widgetView];
         buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];
@@ -421,7 +426,6 @@ static CGRect layoutViewBounds;
         
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
         [buttonStatesEncoded addObject: buttonStateEncoded];
-
     }
     return buttonStatesEncoded;
 }
@@ -477,7 +481,7 @@ static CGRect layoutViewBounds;
 
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data {
     OnScreenButtonState* buttonState;
-    buttonState = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [OnScreenButtonState class], nil]
+    buttonState = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [OnScreenButtonState class], [NSSet class], nil]
                                                     fromData:data
                                                     error:nil];
     return buttonState;

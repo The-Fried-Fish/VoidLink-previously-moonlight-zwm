@@ -10,7 +10,18 @@ import UIKit
 import SVGKit
 
 @objc class OnScreenWidgetView: UIView {
-        
+    @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
+    @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
+        mapping[key] = widget
+    }
+    @objc public static func removeWidgetFromMappings(key:Int16) {
+        mapping.removeValue(forKey: key)
+    }
+    @objc public static func clearMappings() {
+        mapping.removeAll()
+    }
+    @objc public static var unfoldedExclusiveFolderSequence:Int16 = -1
+
     @objc public weak var guidelineDelegate: OnScreenWidgetGuidelineUpdateDelegate?
     @objc protocol OnScreenWidgetGuidelineUpdateDelegate: AnyObject {
         func updateGuidelinesForOnScreenWidget(_ sender: Any)
@@ -263,8 +274,9 @@ import SVGKit
     private var tickFlag: UInt8 = 0
 
     @objc public var folded: Bool = false
-    @objc public var revealMode: RevealMode = .exclusive
+    @objc public var revealMode: RevealMode = .coexist
     @objc public var sequenceSet: Set<Int16> = Set()
+    @objc public var parentSequence: Int16 = -1
     private weak var capturer: OnScreenWidgetView?
     
     @objc init(cmdString: String, buttonLabel: String, shape:String, profile:OSCProfile) {
@@ -1415,17 +1427,21 @@ import SVGKit
         }
     }
     
-    private func handleFingerUpOrSlideout() {
+    
+    private func handleFingerUpOrSlideout(leaveFunctionalButtonAlone: Bool = false, event: UIEvent? = nil) {
+        print("handleFingerUpOrSlideout triggered, \(self.widgetLabel) \(CACurrentMediaTime())")
         if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
-            handleButtonUp()
+            handleButtonUp(leaveFunctionalButtonAlone:leaveFunctionalButtonAlone, event:event)
         }
         else{
             self.autoTapTimer?.pause()
-            self.handleButtonUp()
+            self.handleButtonUp(leaveFunctionalButtonAlone: leaveFunctionalButtonAlone)
         }
     }
     
     private func handleButtonDown() {
+        if !self.isUserInteractionEnabled {return}
+
         if !OnScreenWidgetView.editMode, !self.functionalButtonString.isEmpty {self.handleFunctionalButtonDown()}
                         
         if !OnScreenWidgetView.editMode {self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
@@ -1460,7 +1476,8 @@ import SVGKit
         }
     }
     
-    private func handleButtonUp() {
+    private func handleButtonUp(leaveFunctionalButtonAlone:Bool = false, event: UIEvent? = nil) {
+        if !self.isUserInteractionEnabled {return}
         if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
         
         if !OnScreenWidgetView.editMode && !self.motionControlButtonString.isEmpty{
@@ -1470,7 +1487,7 @@ import SVGKit
         self.buttonUpVisualEffect()
 
         if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
-            self.handleFunctionalButtonUp()
+            if !leaveFunctionalButtonAlone {self.handleFunctionalButtonUp(event:event)}
         }
         
         // legacy keyboard button combo connected by "+"
@@ -1817,9 +1834,9 @@ import SVGKit
                     if(self.tapToToggleFlag) {self.handleTapDownOrSlidein()}
                     else {self.handleFingerUpOrSlideout()}
                     self.tapToToggleFlag = !self.tapToToggleFlag
-                case .slideToToggle:
+                case .slideToToggle where !self.isFolder:
                     self.handleButtonSliding(touches: touches)
-                case .slideAndHold:
+                case .slideAndHold where !self.isFolder:
                     self.handleButtonSliding(touches: touches)
                 default:
                     self.handleTapDownOrSlidein()
@@ -1843,11 +1860,11 @@ import SVGKit
             capturer = nil
             currentLocation = touch.location(in: superview)
                 forEachWidget { (widget) in
+                    guard widget != self else {return}
                     if widget.isFolder {
-                        if self.frame.intersects(widget.frame), !self.sequenceSet.contains(widget.sequence) {
+                        if isLocation(currentLocation, in: widget), !self.sequenceSet.contains(widget.sequence) {
                             // self.layer.borderColor = UIColor.systemYellow.cgColor
                             widget.highlightBorder(highlighted: true)
-                            if widget == self {return}
                             capturer = widget
                             return
                         }
@@ -1856,7 +1873,13 @@ import SVGKit
                 }
         }
         else {
-            if self.buttonMode == .movable {currentLocation = touch.location(in: superview)}
+            if self.buttonMode == .movable {
+                currentLocation = touch.location(in: superview)
+                for sequence in self.sequenceSet {
+                    let widget = OnScreenWidgetView.mapping[sequence]
+                    if widget?.isHidden == true {widget?.center = currentLocation}
+                }
+            }
             else {return}
         }
         
@@ -1872,7 +1895,10 @@ import SVGKit
         let outOfBoundsX = center.x+offsetX >= (self.superview?.bounds.width)! || center.x+offsetX < 0
         let outOfBoundsY = center.y+offsetY >= (self.superview?.bounds.height)! || center.y+offsetY < 0
 
-        if firstTouchMoved {center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)}
+        if firstTouchMoved {
+            center = CGPoint(x: outOfBoundsX ? center.x : center.x+offsetX, y: outOfBoundsY ? center.y : center.y+offsetY)
+            storedCenter = center
+        }
         
         latestTouchLocation = currentLocation
         
@@ -1919,14 +1945,17 @@ import SVGKit
         }
     }
 
-    private func handleFingerUpAfterSliding(touches: Set<UITouch>) {
+    private func handleFingerUpAfterSliding(touches: Set<UITouch>, event: UIEvent? = nil) {
+        // a special touchUp handling for .slideToToggle
         for touch in touches {
             self.forEachWidget(){ widget in
                 setLock.lock()
                 let captured = widget.capturedTouches.contains(touch)
                 setLock.unlock()
                 if !captured || widget.buttonMode == .regular {return}
-                widget.handleFingerUpOrSlideout()
+                let needReleaseButton = (isLocation(touch.location(in: superview), in: widget)
+                                          || widget.buttonMode == .slideAndHold)
+                if needReleaseButton {widget.handleFingerUpOrSlideout(event: event)}
                 setLock.lock()
                 widget.capturedTouches.remove(touch)
                 setLock.unlock()
@@ -1953,7 +1982,10 @@ import SVGKit
             let locationInSuperView = touch.location(in: self.superview)
             self.forEachWidget{ widget in
                 if widget.widgetType != WidgetTypeEnum.button {return}
-                let isSlidableButton = widget.buttonMode == .slideToToggle || widget.buttonMode == .slideAndHold
+                let isSlidableButton = (widget.buttonMode == .slideToToggle
+                                        || widget.buttonMode == .slideAndHold
+                                        || (widget.buttonMode == .movable && widget != self)
+                )
                 if isLocation(locationInSuperView, in: widget){
                     setLock.lock()
                     let captured = widget.capturedTouches.contains(touch)
@@ -1972,8 +2004,8 @@ import SVGKit
                     setLock.unlock()
                     if !captured || !isSlidableButton {return}
                     // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
-                    if(widget.buttonMode == .slideToToggle){
-                        widget.handleFingerUpOrSlideout()
+                    if(widget.buttonMode == .slideToToggle || widget.buttonMode == .movable){
+                        widget.handleFingerUpOrSlideout(leaveFunctionalButtonAlone: widget.isFuncationalButton)
                         setLock.lock()
                         widget.capturedTouches.remove(touch)
                         setLock.unlock()
@@ -2271,6 +2303,10 @@ import SVGKit
     
     private func handleFunctionalButtonDown(){
         switch self.functionalButtonString {
+        case "FOLDER":
+            if self.buttonMode != .slideAndHold {break}
+            self.folded = false
+            OnScreenWidgetView.set(folded: false, for: self)
         case "ABSTCHDRAG":
             let mouseButton = CommandManager.mouseButtonMappings[Set(self.comboButtonStrings).intersection(CommandManager.mouseButtonMappings.keys).first ?? "MLEFT"] ?? BUTTON_LEFT
             print("mouseButton \(mouseButton)");
@@ -2292,10 +2328,16 @@ import SVGKit
     
     private var singleTouchEnabled:Bool = true
     
-    private func handleFunctionalButtonUp(){
+    private func handleFunctionalButtonUp(event: UIEvent? = nil){
+        print("handleFunctionalButtonUp \(CACurrentMediaTime())")
         if buttonMode == .movable {
-            if moveableButtonLongPressed() {return}
+            if moveableButtonLongPressed() && !UITouchUtil.touches(in: self, from: event).isEmpty {return}
+            print("handleFunctionalButtonUp movable, \(moveableButtonLongPressed()) \(CACurrentMediaTime())")
+
             switch self.functionalButtonString {
+            // case "FOLDER":
+            //    self.folded = !self.folded
+            //    OnScreenWidgetView.set(folded: self.folded, for: self)
             case "NOSINGLETOUCH":
                 if !self.isPencilProEnabled() {break}
                 singleTouchEnabled = !singleTouchEnabled
@@ -2306,6 +2348,9 @@ import SVGKit
             }
         }
         switch self.functionalButtonString {
+        case "FOLDER":
+            self.folded = !self.folded
+            OnScreenWidgetView.set(folded: self.folded, for: self)
         case "SETTINGS":
             self.functionalButtonDelegate?.expandSettingsView()
         case "TOOLBOX":
@@ -2512,8 +2557,9 @@ import SVGKit
         }
                                 
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
+            // print("self.comboButtonStrings \(self.comboButtonStrings),\(CACurrentMediaTime())")
             if self.buttonMode == .slideToToggle || self.buttonMode == .slideAndHold {
-                self.handleFingerUpAfterSliding(touches: touches)
+                self.handleFingerUpAfterSliding(touches: touches, event: event) // .slideAndHold has to be released at touchesEnded, don't deal with it here.
                 setLock.lock()
                 self.capturedTouches.minus(touches)
                 setLock.unlock()
@@ -2532,11 +2578,10 @@ import SVGKit
                 if firstTouchMoved {undoRelocation()}
                 if let capturer = capturer {
                     capturer.highlightBorder(highlighted: false)
-                    guard !self.sequenceSet.contains(capturer.sequence) else { return }
-                    OnScreenWidgetView.put(widget: self, into: capturer)
-                    self.isHidden = capturer.folded
+                    OnScreenWidgetView.putWidget(self, into: capturer)
                 }
             }
+            capturer = nil
 
             guard let superview = superview else { return }
             
@@ -2570,7 +2615,10 @@ import SVGKit
             }
         }
         
-        if self.buttonMode != .tapToToggle {self.handleFingerUpOrSlideout()}
+        if (self.buttonMode != .tapToToggle
+            && self.buttonMode != .slideToToggle
+            && self.buttonMode != .slideAndHold
+            && self == touches.first?.view) {self.handleFingerUpOrSlideout(event:event)}
     }
     
     @objc public func setAutoTapIntervalByText(str: String){
@@ -2685,44 +2733,137 @@ import SVGKit
         return sequence+1
     }
     
-    @objc static func setCollection(hidden:Bool, for folder:OnScreenWidgetView) {
+    private static func setCollection(hidden:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false) {
         guard folder.isFolder else {return}
+        // guard folder.folded != hidden else { return }
         folder.folded = hidden
         folder.setupAtrributedText()
         if hidden {
             folder.forEachWidget{ widget in
-                if widget == folder {return}
-                if folder.sequenceSet.contains(widget.sequence){
-                    DispatchQueue.main.async {widget.isHidden = hidden}
-                    if widget.isFolder {
-                        // OnScreenWidgetView.setCollection(hidden: hidden, for: widget)
+                guard widget != folder else {return}
+                if folder.sequenceSet.contains(widget.sequence), widget != exception{
+                    DispatchQueue.main.async {
+                        widget.isUserInteractionEnabled = false
+                        UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
+                            widget.center = folder.center
+                        },completion: { finished in
+                            widget.isUserInteractionEnabled = !folder.folded
+                            widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
+                            widget.isHidden = folder.folded
+                        })
                     }
                 }
             }
         }
         else{
             folder.forEachWidget{ widget in
-                if widget == folder {return}
-                if folder.sequenceSet.contains(widget.sequence){
-                    DispatchQueue.main.async {widget.isHidden = hidden}
+                guard widget != folder else {return}
+                if folder.sequenceSet.contains(widget.sequence), widget != exception{
+                    DispatchQueue.main.async {
+                        widget.center = folder.storedCenter
+                        widget.isUserInteractionEnabled = false
+                        widget.isHidden = false
+                        UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
+                            widget.center = widget.storedCenter
+                        },completion: { finished in
+                            widget.isUserInteractionEnabled = !folder.folded
+                            widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
+                            widget.isHidden = folder.folded
+                        })
+                    }
                 }
             }
-            if folder.revealMode == .exclusive {
-                folder.forEachWidget{ widget in
-                    if widget == folder {return}
-                    if widget.isFolder, !widget.sequenceSet.contains(folder.sequence) {
-                        OnScreenWidgetView.setCollection(hidden: true, for: widget)
-                    }
+        }
+        if recursive {
+            folder.forEachWidget{ widget in
+                guard widget != folder else {return}
+                guard widget.isFolder, widget != exception else {return}
+                if folder.sequenceSet.contains(widget.sequence){
+                    OnScreenWidgetView.setCollection(hidden: hidden, for: widget, exception: exception, recursive: true)
                 }
             }
         }
     }
     
-    private static func put(widget:OnScreenWidgetView, into folder:OnScreenWidgetView){
-        widget.forEachWidget{ otherWidget in
-            otherWidget.sequenceSet.remove(widget.sequence)
+    @objc static func set(folded:Bool, for folder:OnScreenWidgetView) { // folder综合逻辑
+        guard folder.isFolder else {return}
+        setCollection(hidden: folded, for: folder)
+        if !folded, folder.revealMode == .exclusive {
+            OnScreenWidgetView.unfoldedExclusiveFolderSequence = folder.sequence
+            let currentRootFolder = OnScreenWidgetView.getRootFolder(of: folder) ?? folder
+            var offshootRootFolders:Set<OnScreenWidgetView> = Set()
+            folder.forEachWidget{ widget in
+                guard folder != widget else {return}
+                let rootFolder = getRootFolder(of: widget)
+                guard let rootFolder = rootFolder else {return}
+                offshootRootFolders.insert(rootFolder)
+            }
+            offshootRootFolders.remove(currentRootFolder)
+            
+            guard !folder.sequenceSet.isEmpty else {return}
+            for folder in offshootRootFolders {
+                setCollection(hidden: true, for: folder, recursive: true)
+            }
+            
+            guard currentRootFolder != folder else {return}
+            setCollection(hidden: true, for:currentRootFolder, exception: folder, recursive: true)
         }
+    }
+    
+    private static func getRootFolder(of widget:OnScreenWidgetView) -> OnScreenWidgetView?{
+        var widgetRef:OnScreenWidgetView? = widget
+        var parentFolder:OnScreenWidgetView? = OnScreenWidgetView.mapping[widgetRef?.parentSequence ?? -1]
+        repeat {
+            widgetRef = parentFolder
+            parentFolder = OnScreenWidgetView.mapping[widgetRef?.parentSequence ?? -1]
+        } while parentFolder != nil
+        return widgetRef
+    }
+    
+    private static func getParentFolders(of widget: OnScreenWidgetView) -> Set<OnScreenWidgetView> {
+        var parents = Set<OnScreenWidgetView>()
+        var current = widget
+        while let parent = OnScreenWidgetView.mapping[current.parentSequence] {
+            parents.insert(parent)
+            current = parent
+        }
+        return parents
+    }
+
+    private static func putWidget(_ widget:OnScreenWidgetView, into folder:OnScreenWidgetView){
+        guard !OnScreenWidgetView.getParentFolders(of: folder).contains(widget) else { return }
+        let parentFolder = OnScreenWidgetView.mapping[widget.parentSequence]
+        if parentFolder != nil {
+            parentFolder?.sequenceSet.remove(widget.sequence)
+        }
+        widget.parentSequence = folder.sequence
         folder.sequenceSet.insert(widget.sequence)
+        widget.isHidden = folder.folded
+        if folder.buttonMode == .slideAndHold, widget.isFuncationalButton {
+            widget.buttonMode = .slideToToggle
+        }
+    }
+    
+    @objc static func setFree(widget:OnScreenWidgetView){
+        let parentFolder = OnScreenWidgetView.mapping[widget.parentSequence]
+        if parentFolder != nil {
+            parentFolder?.sequenceSet.remove(widget.sequence)
+        }
+        widget.parentSequence = -1
+    }
+    
+    @objc static func restoreFoldedStates(){
+        var unfoldedExclusiveFolder: OnScreenWidgetView?
+        if unfoldedExclusiveFolderSequence != -1 {
+            unfoldedExclusiveFolder = OnScreenWidgetView.mapping[unfoldedExclusiveFolderSequence]
+            if(unfoldedExclusiveFolder != nil){
+                OnScreenWidgetView.set(folded: false, for: unfoldedExclusiveFolder!)
+            }
+        }
+        
+        for widget in OnScreenWidgetView.mapping.values {
+            OnScreenWidgetView.setCollection(hidden: widget.folded, for: widget, exception: unfoldedExclusiveFolder)
+        }
     }
     
     override func didMoveToSuperview() {

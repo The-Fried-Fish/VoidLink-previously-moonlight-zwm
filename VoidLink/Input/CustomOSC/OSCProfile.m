@@ -31,6 +31,7 @@
 - (void) encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:self.name forKey:@"name"];
     [encoder encodeObject:self.buttonStatesEncoded forKey:@"buttonStates"];
+    [encoder encodeInt32:self.unfoldedExclusiveFolderSequence forKey:@"unfoldedExclusiveFolderSequence"];
     [encoder encodeBool:self.isSelected forKey:@"isSelected"];
     [encoder encodeInt64:self.mapGyroTo forKey:@"mapGyroTo"];
     [encoder encodeBool:self.yawPitchToRightStick forKey:@"yawPitchToRightStick"];
@@ -73,6 +74,7 @@
                     [NSData class],
                     nil]
                                        forKey:@"buttonStates"];
+        self.unfoldedExclusiveFolderSequence = [decoder containsValueForKey:@"unfoldedExclusiveFolderSequence"] ? [decoder decodeInt32ForKey:@"unfoldedExclusiveFolderSequence"] : -1;
         self.isSelected = [decoder decodeBoolForKey:@"isSelected"];
         self.mapGyroTo = [decoder containsValueForKey:@"mapGyroTo"] ? [decoder decodeInt64ForKey:@"mapGyroTo"] : mapGyroToMouse;
         self.yawPitchToRightStick = [decoder containsValueForKey:@"yawPitchToRightStick"] ? [decoder decodeBoolForKey:@"yawPitchToRightStick"] : true;
@@ -131,6 +133,7 @@
     OSCProfile *copy = [[[self class] allocWithZone:zone] init];
     copy.name = [self.name mutableCopy]; // NSString → NSMutableString
     copy.buttonStatesEncoded = [[NSMutableArray alloc] initWithArray:self.buttonStatesEncoded copyItems:YES];
+    copy.unfoldedExclusiveFolderSequence = self.unfoldedExclusiveFolderSequence;
     copy.isSelected = self.isSelected;
     copy.mapGyroTo = self.mapGyroTo;
     copy.yawPitchToRightStick = self.yawPitchToRightStick;

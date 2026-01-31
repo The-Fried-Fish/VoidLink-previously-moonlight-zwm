@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 
 @property NSString *name;
 @property NSMutableArray <NSData *> *buttonStatesEncoded;
+@property (nonatomic, assign) int16_t unfoldedExclusiveFolderSequence;
 @property BOOL isSelected;
 @property (nonatomic, assign) MapGyroTo mapGyroTo;
 @property (nonatomic, assign) bool yawPitchToRightStick;

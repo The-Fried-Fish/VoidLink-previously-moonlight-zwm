@@ -35,6 +35,7 @@
     [encoder encodeBool:self.folded forKey:@"folded"];
     [encoder encodeInt32:self.revealMode forKey:@"revealMode"];
     [encoder encodeInt32:self.sequence forKey:@"sequence"];
+    [encoder encodeInt32:self.parentSequence forKey:@"parentSequence"];
     [encoder encodeObject:self.sequenceSet forKey:@"sequenceSet"];
     [encoder encodeObject:self.alias forKey:@"alias"];
     [encoder encodeInt:self.widgetType forKey:@"buttonType"]; // keep original key
@@ -73,8 +74,9 @@
     if (self = [super init]) {
         self.name = [decoder decodeObjectForKey:@"name"];
         self.folded = [decoder containsValueForKey:@"folded"] ? [decoder decodeBoolForKey:@"folded"] : false;
-        self.revealMode = [decoder containsValueForKey:@"revealMode"] ? [decoder decodeInt32ForKey:@"revealMode"] : exclusive;
+        self.revealMode = [decoder containsValueForKey:@"revealMode"] ? [decoder decodeInt32ForKey:@"revealMode"] : coexist;
         self.sequence = [decoder containsValueForKey:@"sequence"] ? [decoder decodeInt32ForKey:@"sequence"] : -1;
+        self.parentSequence = [decoder containsValueForKey:@"parentSequence"] ? [decoder decodeInt32ForKey:@"parentSequence"] : -1;
         self.sequenceSet = [decoder containsValueForKey:@"sequenceSet"] ? [decoder decodeObjectForKey:@"sequenceSet"] : [NSSet set];
         self.alias = [decoder decodeObjectForKey:@"alias"];
         self.widgetType = [decoder decodeIntForKey:@"buttonType"];

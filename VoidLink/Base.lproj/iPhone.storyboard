@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -156,7 +156,7 @@
                         <viewControllerLayoutGuide type="bottom" id="TWA-bF-hnk"/>
                     </layoutGuides>
                     <view key="view" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Mwx-9q-yJJ">
-                        <rect key="frame" x="0.0" y="0.0" width="1300" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1300" height="1800"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jnu-63-bcf" customClass="ToolBarContainerView">
@@ -315,7 +315,7 @@
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="BVp-3O-vZ7" userLabel="widgetPanelStack" customClass="WidgetPanelStackView">
-                                <rect key="frame" x="375" y="132" width="550" height="786"/>
+                                <rect key="frame" x="375" y="132" width="550" height="813"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile:" textAlignment="center" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f46-Pt-0Pv">
                                         <rect key="frame" x="0.0" y="0.0" width="550" height="28"/>
@@ -799,6 +799,55 @@
                                             <constraint firstAttribute="height" constant="20" id="Qap-bn-YnJ"/>
                                         </constraints>
                                     </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="weV-Li-Itz">
+                                        <rect key="frame" x="0.0" y="793" width="550" height="20"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Collected Widgets   " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="kek-77-Kmg" userLabel="uilabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="120" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="120" id="TPJ-nn-WHY"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" alpha="0.69999998807907104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Oo7-lI-LXT">
+                                                <rect key="frame" x="120" y="0.0" width="161" height="21"/>
+                                                <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <segments>
+                                                    <segment title="unfold"/>
+                                                    <segment title="fold"/>
+                                                </segments>
+                                                <color key="tintColor" systemColor="systemGray2Color"/>
+                                                <color key="selectedSegmentTintColor" red="0.23136288839999999" green="0.45776400810000001" blue="0.5149240678" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            </segmentedControl>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="    Reveal mode   " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.10000000149011612" translatesAutoresizingMaskIntoConstraints="NO" id="YLN-X6-oj9" userLabel="uilabel">
+                                                <rect key="frame" x="281" y="0.0" width="120" height="20"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="120" id="rIX-6N-uU4"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" alpha="0.69999998807907104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="myu-Th-CTZ">
+                                                <rect key="frame" x="401" y="0.0" width="149" height="21"/>
+                                                <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="149" id="UjR-CH-nwX"/>
+                                                </constraints>
+                                                <segments>
+                                                    <segment title="coexist"/>
+                                                    <segment title="exclusive"/>
+                                                </segments>
+                                                <color key="tintColor" systemColor="systemGray2Color"/>
+                                                <color key="selectedSegmentTintColor" red="0.23136288839999999" green="0.45776400810000001" blue="0.5149240678" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            </segmentedControl>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="dxB-cV-EvQ"/>
+                                        </constraints>
+                                    </stackView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -813,7 +862,7 @@
                             <constraint firstItem="Jnu-63-bcf" firstAttribute="top" secondItem="Mwx-9q-yJJ" secondAttribute="top" id="wNr-7F-S0i" userLabel="Toolbar Top Constraint iPhone"/>
                         </constraints>
                     </view>
-                    <size key="freeformSize" width="1300" height="896"/>
+                    <size key="freeformSize" width="1300" height="1800"/>
                     <connections>
                         <outlet property="autoTapField" destination="DOu-sG-eRq" id="Ubj-og-ThW"/>
                         <outlet property="autoTapLabel" destination="IuG-44-1Je" id="YWb-0d-zbB"/>
@@ -823,6 +872,8 @@
                         <outlet property="buttonModeStack" destination="jE7-IB-GTS" id="hKb-gp-eem"/>
                         <outlet property="chevronImageView" destination="76O-3K-aa8" id="yGv-fM-Ohf"/>
                         <outlet property="chevronView" destination="Zll-IP-PFt" id="MGR-C0-h57"/>
+                        <outlet property="collectedWidgetsSelector" destination="Oo7-lI-LXT" id="ufg-er-4aZ"/>
+                        <outlet property="collectedWidgetsStack" destination="weV-Li-Itz" id="SII-3v-ylG"/>
                         <outlet property="componentSizeLabel" destination="kcX-kR-3gl" id="FTP-ar-6Uh"/>
                         <outlet property="componentSizeSlider" destination="hTI-E5-8cp" id="TSO-4T-sF3"/>
                         <outlet property="componentSizeStack" destination="xNe-VP-2ix" id="zBD-X1-BNH"/>
@@ -838,6 +889,7 @@
                         <outlet property="pitchFactorLabel" destination="dEy-ER-Mb3" id="0or-ME-7P1"/>
                         <outlet property="pitchFactorSlider" destination="ol0-mA-VxW" id="bmd-0a-O4H"/>
                         <outlet property="pitchFactorStack" destination="gkc-td-lg4" id="gI0-q7-tO2"/>
+                        <outlet property="revealModeSelector" destination="myu-Th-CTZ" id="9lE-Vs-cxe"/>
                         <outlet property="rollFactorLabel" destination="BNN-vq-Pve" id="4mm-f5-d93"/>
                         <outlet property="rollFactorSlider" destination="Ple-mD-zK4" id="sHy-HC-68W"/>
                         <outlet property="rollFactorStack" destination="7G4-Ms-mkR" id="EzV-6y-77h"/>
@@ -883,7 +935,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ORo-HP-JDj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="157.97101449275362" y="1245.5357142857142"/>
+            <point key="canvasLocation" x="-96" y="1822"/>
         </scene>
         <!--Profiles Table View Controller-->
         <scene sceneID="C7c-yg-gQK">

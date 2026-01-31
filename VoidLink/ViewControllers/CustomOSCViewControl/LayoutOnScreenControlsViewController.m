@@ -128,6 +128,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 }
 
 - (void)clearOnScreenWidgets{
+    [OnScreenWidgetView clearMappings];
     for (UIView *subview in self.view.subviews) {
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
             [subview removeFromSuperview];
@@ -156,7 +157,14 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
             NSLog(@"reloadOnScreenWidgets name %@", buttonState.name);
             if(buttonState.widgetType == CustomOnScreenWidget){
                 OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
+                
                 widgetView.sequence = buttonState.sequence == -1 ? ++sequence : buttonState.sequence;
+                [OnScreenWidgetView setWithWidget:widgetView for:widgetView.sequence];
+                widgetView.sequenceSet = buttonState.sequenceSet;
+                widgetView.parentSequence = buttonState.parentSequence;
+                widgetView.folded = buttonState.folded;
+                widgetView.revealMode = buttonState.revealMode;
+                
                 widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
                 widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
                 widgetView.widthFactor = buttonState.widthFactor;
@@ -194,6 +202,13 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
             }
             else if(buttonState.widgetType == LegacyOnScreenControls) hasLegacyWidget = true;
         }
+        
+        for(OnScreenWidgetView* widget in self.onScreenWidgetViews){
+            [widget accessWidgetAttributes];
+            // if(widget.isFolder) [OnScreenWidgetView setWithFolded:widget.folded for:widget];
+        }
+        
+        [OnScreenWidgetView restoreFoldedStates];
         NSLog(@"reloadOnScreenWidgets hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
         if(hasLegacyWidget) [self reloadLegacyOnScreenControls:oscProfile];
         else{
@@ -789,6 +804,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     OSCProfile* profile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
     OnScreenWidgetView* newWidget = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile]; //reconstruct widgetView
     newWidget.sequence = widget.sequence;
+    newWidget.revealMode = widget.revealMode;
     newWidget.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     newWidget.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     newWidget.widthFactor = widget.widthFactor;
@@ -824,7 +840,12 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
         [newWidget setLocationWithPosition:CGPointMake(90, 130)];
         newWidget.sequence = [newWidget getAvailableSequence];
     }
-    else [newWidget setLocationWithPosition:widget.center];
+    else{
+        [newWidget setLocationWithPosition:widget.center];
+        newWidget.sequenceSet = [widget.sequenceSet mutableCopy];
+        newWidget.parentSequence = widget.parentSequence;
+    }
+    [OnScreenWidgetView setWithWidget:newWidget for:newWidget.sequence];
     newWidget.sizeReference = widget.sizeReference;
     [newWidget resizeWidgetView]; // resize must be called after relocation
     [newWidget adjustTransparencyWithAlpha:widget.backgroundAlpha tweakBorderAlpha:NO];
@@ -849,6 +870,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
     widgetView.hidden = true;
     widgetView.sequence = [widgetView getAvailableSequence];
+    [OnScreenWidgetView setWithWidget:widgetView for:widgetView.sequence];
     widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     [self.onScreenWidgetViews addObject:widgetView];
@@ -1088,17 +1110,21 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     self.mouseButtonDownSelector.selectedSegmentIndex = selectedWidgetView.mouseButtonAction;
     
     self.buttonModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
-    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:0];
-    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:1];
+    // bool slideToToggleEnabled = !selectedWidgetView.isFuncationalButton || selectedWidgetView.isFolder;
+    // [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:0];
+    [self.buttonModeSelector setEnabled:true forSegmentAtIndex:slideToToggle];
+    bool slideAndHoldEnabled = !selectedWidgetView.isFuncationalButton || selectedWidgetView.isFolder;
+    [self.buttonModeSelector setEnabled:slideAndHoldEnabled forSegmentAtIndex:slideAndHold];
+    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFolder forSegmentAtIndex:regular];
     [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton
      || [selectedWidgetView.functionalButtonString containsString:@"ABSTCHDRAG"]
-                      forSegmentAtIndex:3];
+                      forSegmentAtIndex:tapToToggle];
     [self.buttonModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonMode];
     
     self.collectedWidgetsStack.hidden = !selectedWidgetView.isFolder;
     [self.collectedWidgetsSelector setSelectedSegmentIndex:selectedWidgetView.folded ? 1 :0];
     [self.revealModeSelector setSelectedSegmentIndex:selectedWidgetView.revealMode];
-    [OnScreenWidgetView setCollectionWithHidden:selectedWidgetView.folded for:selectedWidgetView];
+    [OnScreenWidgetView setWithFolded:selectedWidgetView.folded for:selectedWidgetView];
 
     [self autoFitStack:self.widgetPanelStack];
     
@@ -1264,14 +1290,14 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 - (void)collectionHiddenChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
-        [OnScreenWidgetView setCollectionWithHidden:sender.selectedSegmentIndex==1 for:selectedWidgetView];
+        [OnScreenWidgetView setWithFolded:sender.selectedSegmentIndex==1 for:selectedWidgetView];
     }
 }
 
 - (void)revealModeChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         selectedWidgetView.revealMode = sender.selectedSegmentIndex;
-        [OnScreenWidgetView setCollectionWithHidden:selectedWidgetView.folded for:selectedWidgetView];
+        [OnScreenWidgetView setWithFolded:selectedWidgetView.folded for:selectedWidgetView];
     }
 }
 
@@ -1772,6 +1798,10 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.layoutOSC updateGuidelinesForOnScreenWidget:widget];
     [self.view bringSubviewToFront:widget];
     trashCanButton.tintColor = trashCanButton.titleLabel.textColor = [self layerIsOverlappingWithTrashcanButton:widget.layer] ? [UIColor redColor] : trashCanStoryBoardColor;
+    
+    if(trashCanButton.tintColor == [UIColor redColor] && selectedWidgetView != nil){
+        [OnScreenWidgetView setFreeWithWidget:selectedWidgetView];
+    }
 
     self.undoButton.alpha = 1.0;
 }
@@ -1861,6 +1891,8 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
     
     if(!isToolbarHidden && self->selectedWidgetView != nil && [self layerIsOverlappingWithTrashcanButton:selectedWidgetView.layer]){
+        [OnScreenWidgetView setFreeWithWidget:selectedWidgetView];
+        [OnScreenWidgetView removeWidgetFromMappingsWithKey:selectedWidgetView.sequence];
         [self->selectedWidgetView removeFromSuperview];
         [self.onScreenWidgetViews removeObject:self->selectedWidgetView];
     }

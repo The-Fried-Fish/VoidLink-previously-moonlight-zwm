@@ -467,6 +467,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void) clearOnScreenWidgets{
     OnScreenWidgetView.isTweakingHighlight = false;
+    [OnScreenWidgetView clearMappings];
     for (UIView *subview in self->_streamFrameTopLayerView.subviews) {
         // 检查子视图是否是特定类型的实例
         if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -503,7 +504,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         }
     }
     
-    NSLog(@"relocatedWidgetDict.allKeys.count %d, %f", relocatedWidgetDict.allKeys.count, CACurrentMediaTime());
+    // NSLog(@"relocatedWidgetDict.allKeys.count %d, %f", relocatedWidgetDict.allKeys.count, CACurrentMediaTime());
     
     if(relocatedWidgetDict.allKeys.count == 0) return;
     
@@ -515,7 +516,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         OnScreenButtonState *newButtonState = [oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
         if([relocatedWidgetDict.allKeys containsObject:@(newButtonState.sequence)]){
             OnScreenWidgetView* widget = [relocatedWidgetDict objectForKey:@(newButtonState.sequence)];
-            newButtonState.position = [oscProfileMan normalizeWidgetPosition:widget.center];
+            newButtonState.position = [oscProfileMan normalizeWidgetPosition:widget.storedCenter];
             NSData *newButtonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:newButtonState requiringSecureCoding:YES error:nil];
             newProfile.buttonStatesEncoded[i] = newButtonStateEncoded;
         }
@@ -560,11 +561,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.sequence = buttonState.sequence == -1 ? i : buttonState.sequence;
                     if(!sequenceGenerated) sequenceGenerated = buttonState.sequence == -1;
                     if(!hasMovableWidget) hasMovableWidget = buttonState.buttonMode == movable;
-                    if(sequenceGenerated){
-                        NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());
-                        buttonState.sequence = widgetView.sequence;
-                        oscProfile.buttonStatesEncoded[i] = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
-                    }
+                    [OnScreenWidgetView setWithWidget:widgetView for:widgetView.sequence];
+                    widgetView.sequenceSet = buttonState.sequenceSet;
+                    widgetView.parentSequence = buttonState.parentSequence;
+                    widgetView.folded = buttonState.folded;
+                    widgetView.revealMode = buttonState.revealMode;
                     
                     widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
                     widgetView.widthFactor = buttonState.widthFactor;
@@ -602,6 +603,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
                     [widgetView setupAutoTapTimer];
                     [widgetView setupInertialScrollerWithFps:self->settings.framerate.intValue];
+                    
+                    if(sequenceGenerated){
+                        // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());
+                        buttonState.sequence = widgetView.sequence;
+                        oscProfile.buttonStatesEncoded[i] = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
+                    }
                 }
                 else if(buttonState.widgetType == LegacyOnScreenControls) hasLegacyWidget = true;
             }
@@ -635,6 +642,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 }
             }
         }
+        
+        [OnScreenWidgetView restoreFoldedStates];
         
         NSLog(@"hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
         // legacy widgets
