@@ -1429,7 +1429,6 @@ import SVGKit
     
     
     private func handleFingerUpOrSlideout(leaveFunctionalButtonAlone: Bool = false, event: UIEvent? = nil) {
-        print("handleFingerUpOrSlideout triggered, \(self.widgetLabel) \(CACurrentMediaTime())")
         if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
             handleButtonUp(leaveFunctionalButtonAlone:leaveFunctionalButtonAlone, event:event)
         }
@@ -1487,6 +1486,7 @@ import SVGKit
         self.buttonUpVisualEffect()
 
         if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
+            // print("handleFingerUpOrSlideout leaveFunctionalButtonAlone, \(leaveFunctionalButtonAlone) \(CACurrentMediaTime())")
             if !leaveFunctionalButtonAlone {self.handleFunctionalButtonUp(event:event)}
         }
         
@@ -1875,10 +1875,6 @@ import SVGKit
         else {
             if self.buttonMode == .movable {
                 currentLocation = touch.location(in: superview)
-                for sequence in self.sequenceSet {
-                    let widget = OnScreenWidgetView.mapping[sequence]
-                    if widget?.isHidden == true {widget?.center = currentLocation}
-                }
             }
             else {return}
         }
@@ -1907,6 +1903,10 @@ import SVGKit
         //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
         if OnScreenWidgetView.editMode {
             guidelineDelegate?.updateGuidelinesForOnScreenWidget(self)
+        }
+        else {
+            if self.widgetType == .button {superview?.bringSubviewToFront(self)}
+            OnScreenWidgetView.updateStreamViewGuidelines(for: self)
         }
     }
     
@@ -1946,19 +1946,31 @@ import SVGKit
     }
 
     private func handleFingerUpAfterSliding(touches: Set<UITouch>, event: UIEvent? = nil) {
-        // a special touchUp handling for .slideToToggle
+        func processWidget(_ widget: OnScreenWidgetView , with touch: UITouch) {
+            setLock.lock()
+            let captured = widget.capturedTouches.contains(touch)
+            setLock.unlock()
+            if !captured || widget.buttonMode == .regular {return}
+            let needReleaseButton = (isLocation(touch.location(in: superview), in: widget) // for slideToToggle & movable+slidable buttons
+                                      || widget.buttonMode == .slideAndHold) // for slideAndHold buttons
+            if needReleaseButton {widget.handleFingerUpOrSlideout(event: event)}
+            setLock.lock()
+            widget.capturedTouches.remove(touch)
+            setLock.unlock()
+        }
+        
+        // only called by self
         for touch in touches {
-            self.forEachWidget(){ widget in
-                setLock.lock()
-                let captured = widget.capturedTouches.contains(touch)
-                setLock.unlock()
-                if !captured || widget.buttonMode == .regular {return}
-                let needReleaseButton = (isLocation(touch.location(in: superview), in: widget)
-                                          || widget.buttonMode == .slideAndHold)
-                if needReleaseButton {widget.handleFingerUpOrSlideout(event: event)}
-                setLock.lock()
-                widget.capturedTouches.remove(touch)
-                setLock.unlock()
+            var exclusiveFolders: Set<OnScreenWidgetView> = Set()
+            self.forEachWidget(){ widget in // self included here.
+                guard widget.revealMode != .exclusive || !isLocation(touch.location(in: superview), in: widget) else {
+                    exclusiveFolders.insert(widget)
+                    return
+                }
+                processWidget(widget, with: touch)
+            }
+            for folder in exclusiveFolders {
+                processWidget(folder, with: touch)
             }
         }
     }
@@ -2329,11 +2341,9 @@ import SVGKit
     private var singleTouchEnabled:Bool = true
     
     private func handleFunctionalButtonUp(event: UIEvent? = nil){
-        print("handleFunctionalButtonUp \(CACurrentMediaTime())")
+        // print("handleFunctionalButtonUp \(self.widgetLabel), event Empty: \(String(describing: event)), \(CACurrentMediaTime())")
         if buttonMode == .movable {
             if moveableButtonLongPressed() && !UITouchUtil.touches(in: self, from: event).isEmpty {return}
-            print("handleFunctionalButtonUp movable, \(moveableButtonLongPressed()) \(CACurrentMediaTime())")
-
             switch self.functionalButtonString {
             // case "FOLDER":
             //    self.folded = !self.folded
@@ -2559,10 +2569,23 @@ import SVGKit
         if !OnScreenWidgetView.editMode && !self.cmdString.contains("+") && !self.comboButtonStrings.isEmpty { // if the command(keystring contains "+", it's a legacy multi-key command
             // print("self.comboButtonStrings \(self.comboButtonStrings),\(CACurrentMediaTime())")
             if self.buttonMode == .slideToToggle || self.buttonMode == .slideAndHold {
-                self.handleFingerUpAfterSliding(touches: touches, event: event) // .slideAndHold has to be released at touchesEnded, don't deal with it here.
+                self.handleFingerUpAfterSliding(touches: touches, event: event)
                 setLock.lock()
                 self.capturedTouches.minus(touches)
                 setLock.unlock()
+            }
+        }
+        
+        if !OnScreenWidgetView.editMode && (self.buttonMode != .tapToToggle
+            && self.buttonMode != .slideToToggle
+            && self.buttonMode != .slideAndHold
+            && self == touches.first?.view) {self.handleFingerUpOrSlideout(event:event)}
+        
+        if !OnScreenWidgetView.editMode && self.buttonMode == .movable {
+            OnScreenWidgetView.removeStreamViewGuidelines()
+            for sequence in self.sequenceSet {
+                let widget = OnScreenWidgetView.mapping[sequence]
+                if widget?.isHidden == true {widget?.center = self.center}
             }
         }
         
@@ -2615,10 +2638,6 @@ import SVGKit
             }
         }
         
-        if (self.buttonMode != .tapToToggle
-            && self.buttonMode != .slideToToggle
-            && self.buttonMode != .slideAndHold
-            && self == touches.first?.view) {self.handleFingerUpOrSlideout(event:event)}
     }
     
     @objc public func setAutoTapIntervalByText(str: String){
@@ -2744,7 +2763,8 @@ import SVGKit
                 if folder.sequenceSet.contains(widget.sequence), widget != exception{
                     DispatchQueue.main.async {
                         widget.isUserInteractionEnabled = false
-                        UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
+                        let duration = folder.buttonMode == .slideAndHold ? 0.05 : 0.15
+                        UIView.animate(withDuration: duration, animations: {
                             widget.center = folder.center
                         },completion: { finished in
                             widget.isUserInteractionEnabled = !folder.folded
@@ -2902,6 +2922,68 @@ import SVGKit
             self.superViewWidth = (superview?.bounds.size.width)!
             self.superViewHeight = (superview?.bounds.size.height)!
         }
+    }
+    
+    private static var horizontalGuideline: UIView = {
+        let v = UIView(
+            frame: CGRect(
+                x: 0,
+                y: 0,
+                width: UIScreen.main.bounds.width * 2,
+                height: 2
+            )
+        )
+        v.backgroundColor = .blue
+        v.isHidden = true
+        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowOffset = .zero
+        v.layer.shadowOpacity = 0.5
+        v.layer.shadowRadius = 2
+        return v
+    }()
+    private static var verticalGuideline: UIView = {
+        let v = UIView(
+            frame: CGRect(
+                x: 0,
+                y: 0,
+                width: 2,
+                height: UIScreen.main.bounds.height * 2
+            )
+        )
+        v.backgroundColor = .blue
+        v.isHidden = true
+        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowOffset = .zero
+        v.layer.shadowOpacity = 0.5
+        v.layer.shadowRadius = 2
+        return v
+    }()
+    
+    private static func updateStreamViewGuidelines(for widget:OnScreenWidgetView){
+        if !widget.moveableButtonLongPressed() {return}
+        if horizontalGuideline.superview == nil {
+            widget.addSubview(horizontalGuideline)
+            widget.addSubview(verticalGuideline)
+            horizontalGuideline.isHidden = false
+            verticalGuideline.isHidden = false
+        }
+        horizontalGuideline.center = CGPoint(x: widget.bounds.midX, y: widget.bounds.midY)
+        verticalGuideline.center = CGPoint(x: widget.bounds.midX, y: widget.bounds.midY)
+        
+        var horizontallyAligned = false
+        var verticallyAligned = false
+        widget.forEachWidget{ otherWidget in
+            guard otherWidget != widget else {return}
+            verticallyAligned = verticallyAligned ? verticallyAligned : widget.center.x > otherWidget.center.x-1 && widget.center.x < otherWidget.center.x+1
+            horizontallyAligned = horizontallyAligned ? horizontallyAligned : widget.center.y > otherWidget.center.y-1 && widget.center.y < otherWidget.center.y+1
+        }
+        horizontalGuideline.backgroundColor = horizontallyAligned ? .yellow : .blue
+        verticalGuideline.backgroundColor = verticallyAligned ? .yellow : .blue
+    }
+    
+    private static func removeStreamViewGuidelines(){
+        horizontalGuideline.removeFromSuperview()
+        verticalGuideline.removeFromSuperview()
     }
     
     deinit {
