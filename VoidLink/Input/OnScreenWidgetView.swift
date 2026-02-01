@@ -2758,49 +2758,43 @@ import SVGKit
         folder.folded = hidden
         folder.setupAtrributedText()
         if hidden {
-            folder.forEachWidget{ widget in
-                guard widget != folder else {return}
-                if folder.sequenceSet.contains(widget.sequence), widget != exception{
-                    DispatchQueue.main.async {
-                        widget.isUserInteractionEnabled = false
-                        let duration = folder.buttonMode == .slideAndHold ? 0.05 : 0.15
-                        UIView.animate(withDuration: duration, animations: {
-                            widget.center = folder.center
-                        },completion: { finished in
-                            widget.isUserInteractionEnabled = !folder.folded
-                            widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
-                            widget.isHidden = folder.folded
-                        })
-                    }
+            for sequence in folder.sequenceSet {
+                guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
+                DispatchQueue.main.async {
+                    widget.isUserInteractionEnabled = false
+                    let duration = folder.buttonMode == .slideAndHold ? 0.05 : 0.15
+                    UIView.animate(withDuration: duration, animations: {
+                        widget.center = folder.center
+                    },completion: { finished in
+                        widget.isUserInteractionEnabled = !folder.folded
+                        widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
+                        widget.isHidden = folder.folded
+                    })
                 }
             }
         }
         else{
-            folder.forEachWidget{ widget in
-                guard widget != folder else {return}
-                if folder.sequenceSet.contains(widget.sequence), widget != exception{
-                    DispatchQueue.main.async {
-                        widget.center = folder.storedCenter
-                        widget.isUserInteractionEnabled = false
-                        widget.isHidden = false
-                        UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
-                            widget.center = widget.storedCenter
-                        },completion: { finished in
-                            widget.isUserInteractionEnabled = !folder.folded
-                            widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
-                            widget.isHidden = folder.folded
-                        })
-                    }
+            for sequence in folder.sequenceSet {
+                guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
+                DispatchQueue.main.async {
+                    widget.center = folder.storedCenter
+                    widget.isUserInteractionEnabled = false
+                    widget.isHidden = false
+                    UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
+                        widget.center = widget.storedCenter
+                    },completion: { finished in
+                        widget.isUserInteractionEnabled = !folder.folded
+                        widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
+                        widget.isHidden = folder.folded
+                    })
                 }
             }
         }
         if recursive {
-            folder.forEachWidget{ widget in
-                guard widget != folder else {return}
-                guard widget.isFolder, widget != exception else {return}
-                if folder.sequenceSet.contains(widget.sequence){
-                    OnScreenWidgetView.setCollection(hidden: hidden, for: widget, exception: exception, recursive: true)
-                }
+            for sequence in folder.sequenceSet {
+                guard let widget = OnScreenWidgetView.mapping[sequence] else {continue}
+                guard widget.isFolder, widget != exception else {continue}
+                OnScreenWidgetView.setCollection(hidden: hidden, for: widget, exception: exception, recursive: true)
             }
         }
     }
