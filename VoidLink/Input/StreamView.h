@@ -60,7 +60,7 @@
                           andConfig:(StreamConfiguration*)streamConfig;
 - (void) clearOnScreenWidgets;
 - (void) reloadOnScreenWidgetViews:(bool)reload;
-- (void) saveRelocatedWidgetViews;
+- (void) saveStreamViewWidgetChanges;
 - (bool) isOnScreenWidgetEnabled;
 
 - (CGSize) getVideoAreaSize;

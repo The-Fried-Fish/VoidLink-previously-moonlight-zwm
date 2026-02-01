@@ -208,6 +208,8 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
             // if(widget.isFolder) [OnScreenWidgetView setWithFolded:widget.folded for:widget];
         }
         
+        OnScreenWidgetView.unfoldedExclusiveFolderSequence = oscProfile.unfoldedExclusiveFolderSequence;
+        [OnScreenWidgetView setPostExclusiveUnfoldeds:oscProfile.postExclusiveUnfoldedSequences];
         [OnScreenWidgetView restoreFoldedStates];
         NSLog(@"reloadOnScreenWidgets hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
         if(hasLegacyWidget) [self reloadLegacyOnScreenControls:oscProfile];

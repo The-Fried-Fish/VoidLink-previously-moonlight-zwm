@@ -11,8 +11,12 @@ import SVGKit
 
 @objc class OnScreenWidgetView: UIView {
     @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
+    @objc public static var isRestoring: Bool = false
     @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
         mapping[key] = widget
+    }
+    @objc public static func widgetFor(key:Int16) -> OnScreenWidgetView? {
+        return mapping[key]
     }
     @objc public static func removeWidgetFromMappings(key:Int16) {
         mapping.removeValue(forKey: key)
@@ -21,6 +25,12 @@ import SVGKit
         mapping.removeAll()
     }
     @objc public static var unfoldedExclusiveFolderSequence:Int16 = -1
+    @objc public static var postExclusiveUnfoldedSequences:Set<Int16> = Set()
+    @objc public static func setPostExclusiveUnfoldeds(_ sequences:NSSet){
+        let sequenceSet:Set<Int16> = sequences as? Set<Int16> ?? Set()
+        postExclusiveUnfoldedSequences = Set(sequenceSet)
+        print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) \(CACurrentMediaTime())")
+    }
 
     @objc public weak var guidelineDelegate: OnScreenWidgetGuidelineUpdateDelegate?
     @objc protocol OnScreenWidgetGuidelineUpdateDelegate: AnyObject {
@@ -274,6 +284,7 @@ import SVGKit
     private var tickFlag: UInt8 = 0
 
     @objc public var folded: Bool = false
+    @objc public var persistedFolded: Bool = false
     @objc public var revealMode: RevealMode = .coexist
     @objc public var sequenceSet: Set<Int16> = Set()
     @objc public var parentSequence: Int16 = -1
@@ -2804,6 +2815,7 @@ import SVGKit
         setCollection(hidden: folded, for: folder)
         if !folded, folder.revealMode == .exclusive {
             OnScreenWidgetView.unfoldedExclusiveFolderSequence = folder.sequence
+            if(!isRestoring) {OnScreenWidgetView.postExclusiveUnfoldedSequences.removeAll()}
             let currentRootFolder = OnScreenWidgetView.getRootFolder(of: folder) ?? folder
             var offshootRootFolders:Set<OnScreenWidgetView> = Set()
             folder.forEachWidget{ widget in
@@ -2821,6 +2833,15 @@ import SVGKit
             
             guard currentRootFolder != folder else {return}
             setCollection(hidden: true, for:currentRootFolder, exception: folder, recursive: true)
+        }
+        if folded, folder.revealMode == .exclusive {
+            OnScreenWidgetView.unfoldedExclusiveFolderSequence = -1
+        }
+        if folder.revealMode == .coexist {
+            if folded {
+                OnScreenWidgetView.postExclusiveUnfoldedSequences.remove(folder.sequence)
+            }
+            else {OnScreenWidgetView.postExclusiveUnfoldedSequences.insert(folder.sequence)}
         }
     }
     
@@ -2867,17 +2888,27 @@ import SVGKit
     }
     
     @objc static func restoreFoldedStates(){
+        isRestoring = true
         var unfoldedExclusiveFolder: OnScreenWidgetView?
         if unfoldedExclusiveFolderSequence != -1 {
             unfoldedExclusiveFolder = OnScreenWidgetView.mapping[unfoldedExclusiveFolderSequence]
-            if(unfoldedExclusiveFolder != nil){
-                OnScreenWidgetView.set(folded: false, for: unfoldedExclusiveFolder!)
-            }
         }
         
         for widget in OnScreenWidgetView.mapping.values {
             OnScreenWidgetView.setCollection(hidden: widget.folded, for: widget, exception: unfoldedExclusiveFolder)
         }
+        
+        if(unfoldedExclusiveFolder != nil){
+            OnScreenWidgetView.set(folded: false, for: unfoldedExclusiveFolder!)
+        }
+        
+        print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) stamp \(CACurrentMediaTime())")
+        for sequence in postExclusiveUnfoldedSequences {
+            guard let folder = OnScreenWidgetView.mapping[sequence] else { continue }
+            OnScreenWidgetView.set(folded: false, for: folder)
+        }
+        
+        isRestoring = false
     }
     
     override func didMoveToSuperview() {

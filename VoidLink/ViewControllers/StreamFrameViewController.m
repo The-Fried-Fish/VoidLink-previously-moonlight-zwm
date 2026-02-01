@@ -761,7 +761,7 @@
 }
 
 - (void)openWidgetLayoutTool{
-    [_streamView saveRelocatedWidgetViews];
+    [_streamView saveStreamViewWidgetChanges];
     _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
     [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
@@ -772,7 +772,7 @@
 }
 
 - (void)openWidgetProfileTableWithPickProfile:(BOOL)pickProfile{
-    [_streamView saveRelocatedWidgetViews];
+    [_streamView saveStreamViewWidgetChanges];
     _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
     [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
@@ -1066,7 +1066,7 @@
     //sleep(1);
     appDidEnterBackgroundWithoutPip = true;
 
-    [_streamView saveRelocatedWidgetViews];
+    [_streamView saveStreamViewWidgetChanges];
 
 #if !TARGET_OS_TV
 #endif
@@ -1150,7 +1150,7 @@
 
 - (void)expandSettingsView{
     self.mainFrameViewcontroller.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
-    [_streamView saveRelocatedWidgetViews];
+    [_streamView saveStreamViewWidgetChanges];
     [self.mainFrameViewcontroller expandSettingsView];
 }
 
@@ -1675,7 +1675,7 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [self->_streamView saveRelocatedWidgetViews];
+    [self->_streamView saveStreamViewWidgetChanges];
 
     if (_isRestoringFromPiP) {
         Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");

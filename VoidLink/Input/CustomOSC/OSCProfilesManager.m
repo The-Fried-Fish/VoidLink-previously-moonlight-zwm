@@ -209,7 +209,7 @@ static CGRect layoutViewBounds;
 - (NSMutableArray *) getAllProfiles {
     NSData *profilesArrayEncoded = [[NSUserDefaults standardUserDefaults] objectForKey: @"OSCProfiles"];    // Get the encoded array of encoded OSC profiles from persistent storage
     NSSet *classes = [NSSet setWithObjects:[NSString class], [NSMutableData class], [NSMutableArray class], [OSCProfile class], [OnScreenButtonState class], nil];
-    
+
     NSMutableArray *profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:profilesArrayEncoded error:nil];    // Decode the encoded array itself, NOT the objects contained in the array
     
     /* Decode each of the encoded profiles, place them into an array, then return the array */
@@ -292,6 +292,7 @@ static CGRect layoutViewBounds;
     OSCProfile *selectedProfile = [self getSelectedProfile];
     selectedProfile.buttonStatesEncoded = buttonStatesEncoded;
     selectedProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
+    selectedProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
     [self replaceSelectedProfileWith:selectedProfile overwriteDefault:NO];
     return true;
 }
@@ -481,7 +482,7 @@ static CGRect layoutViewBounds;
 
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data {
     OnScreenButtonState* buttonState;
-    buttonState = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [OnScreenButtonState class], [NSSet class], nil]
+    buttonState = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSString class], [OnScreenButtonState class], [NSSet class], [NSNumber class], nil]
                                                     fromData:data
                                                     error:nil];
     return buttonState;

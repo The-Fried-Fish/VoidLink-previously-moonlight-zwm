@@ -494,19 +494,29 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     else return longSide;
 }
 
-- (void)saveRelocatedWidgetViews{
+- (void)saveStreamViewWidgetChanges{
+    /*
     NSMutableDictionary* relocatedWidgetDict = [NSMutableDictionary dictionary];
     
     for(UIView* subview in self->_streamFrameTopLayerView.subviews){
         if([subview isKindOfClass:[OnScreenWidgetView class]]){
             OnScreenWidgetView* widget = (OnScreenWidgetView* )subview;
             if(widget.relocatedDuringStreaming) [relocatedWidgetDict setObject:widget forKey:@(widget.sequence)];
+            OnScreenWidgetView* widget = [OnScreenWidgetView widgetForKey:newButtonState.sequence];
+            if(widget.isFolder)
         }
     }
+    */
     
-    // NSLog(@"relocatedWidgetDict.allKeys.count %d, %f", relocatedWidgetDict.allKeys.count, CACurrentMediaTime());
-    
-    if(relocatedWidgetDict.allKeys.count == 0) return;
+    NSMutableSet* relocatedWidgetSequences = [NSMutableSet set];
+    bool hasFolderStateChanged = false;
+    for(OnScreenWidgetView* widget in [OnScreenWidgetView.mapping allValues]){
+        if(widget.relocatedDuringStreaming) [relocatedWidgetSequences addObject:@(widget.sequence)];
+        if(!hasFolderStateChanged) hasFolderStateChanged = widget.folded != widget.persistedFolded;
+    }
+        
+    if(relocatedWidgetSequences.count == 0 && !hasFolderStateChanged) return;
+    NSLog(@"relocatedWidgetSequences.count %lu, hasFolderStateChanged %d    %F", relocatedWidgetSequences.count, hasFolderStateChanged, CACurrentMediaTime());
     
     oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
     OSCProfile *newProfile = [oscProfileMan getSelectedProfile];
@@ -514,13 +524,19 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     for (NSInteger i = 0; i < newProfile.buttonStatesEncoded.count; i++) {
         NSData* buttonStateEncoded = newProfile.buttonStatesEncoded[i];
         OnScreenButtonState *newButtonState = [oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
-        if([relocatedWidgetDict.allKeys containsObject:@(newButtonState.sequence)]){
-            OnScreenWidgetView* widget = [relocatedWidgetDict objectForKey:@(newButtonState.sequence)];
+        OnScreenWidgetView* widget = [OnScreenWidgetView.mapping objectForKey:@(newButtonState.sequence)];
+        NSData *newButtonStateEncoded;
+        if([relocatedWidgetSequences containsObject:@(widget.sequence)]
+           || widget.isFolder){
             newButtonState.position = [oscProfileMan normalizeWidgetPosition:widget.storedCenter];
-            NSData *newButtonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:newButtonState requiringSecureCoding:YES error:nil];
+            newButtonState.folded = widget.folded;
+            newButtonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:newButtonState requiringSecureCoding:YES error:nil];
             newProfile.buttonStatesEncoded[i] = newButtonStateEncoded;
         }
     }
+    
+    newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
+    newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
     
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:NO];
 }
@@ -565,6 +581,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.sequenceSet = buttonState.sequenceSet;
                     widgetView.parentSequence = buttonState.parentSequence;
                     widgetView.folded = buttonState.folded;
+                    widgetView.persistedFolded = buttonState.folded;
                     widgetView.revealMode = buttonState.revealMode;
                     
                     widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
@@ -643,6 +660,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             }
         }
         
+        OnScreenWidgetView.unfoldedExclusiveFolderSequence = oscProfile.unfoldedExclusiveFolderSequence;
+        [OnScreenWidgetView setPostExclusiveUnfoldeds:oscProfile.postExclusiveUnfoldedSequences];
         [OnScreenWidgetView restoreFoldedStates];
         
         NSLog(@"hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
