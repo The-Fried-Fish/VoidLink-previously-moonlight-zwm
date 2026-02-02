@@ -866,7 +866,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                               || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
                               || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
 
-    if([self isIPad] && false){
+    if([self isIPad] && loadPencilSection){
         MenuSectionView* pencilSection = [[MenuSectionView alloc] init];
         pencilSection.delegate = self;
         pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Pencil"];
