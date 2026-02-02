@@ -861,7 +861,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [motionControlSection addToParentStack:_parentStack];
     
     
-    if([self isIPad]){
+    NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+    bool loadPencilSection = ([bundleId isEqualToString:@"com.voidlink.iOS"]
+                              || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
+                              || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
+
+    if([self isIPad] && loadPencilSection){
         MenuSectionView* pencilSection = [[MenuSectionView alloc] init];
         pencilSection.delegate = self;
         pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Pencil"];
