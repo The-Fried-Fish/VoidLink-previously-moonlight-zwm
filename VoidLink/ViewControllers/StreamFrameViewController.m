@@ -80,7 +80,7 @@
     dispatch_block_t _delayedRemoveExtScreen;
     VideoDecoderRenderer *_videoRenderer;
     BOOL _isRestoringFromPiP;
-    CADisplayLink *_displayLink;
+    SafeTimer* safeTimer;
 
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
@@ -438,11 +438,12 @@
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
     
-    [self stopDisplayLink];
+    // [self pauseTimer];
     if(_settings.sendDummyEvent){
-        [self setupDisplayLink];
-        [self startDisplayLink];
+        if(!safeTimer) [self setupTimer];
+        if(!viewJustLoaded) [safeTimer start];
     }
+    else [safeTimer pause];
     
     _motionHandler = [MotionHandler sharedInstance];
     _motionHandler.gyroBiasX = _settings.gyroBiasX.doubleValue;
@@ -463,12 +464,11 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    if(_settings.sendDummyEvent) [self startDisplayLink];
+    // if(_settings.sendDummyEvent) [self startTimer];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self stopDisplayLink];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -538,7 +538,8 @@
                                              selector:@selector(keyboardWillHide)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-
+    
+    [safeTimer start];
     #endif
 }
 
@@ -833,6 +834,8 @@
             NSLog(@"Metal renderer stopped and cleaned up.");
         }
         [[NSNotificationCenter defaultCenter] removeObserver:self];
+        [safeTimer pause];
+        [safeTimer clean];
     }
 }
 
@@ -1658,36 +1661,17 @@
 }
 
 - (void)dealloc {
-    [self stopDisplayLink];
+    NSLog(@"dealloc StreamFrameViewController %f", CACurrentMediaTime());
 }
 
-- (void)setupDisplayLink {
-    if (_displayLink != nil) return;
+- (void)setupTimer {
     TemporarySettings* tempSettings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
-    if (@available(iOS 15.0, tvOS 15.0, *)) {
-        [_displayLink setPreferredFrameRateRange:CAFrameRateRangeMake(tempSettings.framerate.intValue,tempSettings.framerate.intValue, tempSettings.framerate.intValue)];
-    }
-    else {
-        _displayLink.preferredFramesPerSecond = tempSettings.framerate.intValue;
-    }
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTick:)];
-    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    safeTimer = [[SafeTimer alloc] initWithInterval:1.0/tempSettings.framerate.intValue delay:0 queueLabel:@"streamview.timer" handler:^{
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+            LiSendKeyboardEvent(0xFF, KEY_ACTION_UP, 0);
+            // LiSendTouchEvent(LI_TOUCH_EVENT_UP, 200, 1, 1, 0, 0, 0, 0);
+        });
+    }];
 }
-
-- (void)startDisplayLink {
-    _displayLink.paused = NO;
-}
-
-- (void)stopDisplayLink {
-    [_displayLink invalidate];
-    _displayLink = nil;
-}
-
-- (void)displayLinkTick:(CADisplayLink *)link {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        LiSendKeyboardEvent(0xFF, KEY_ACTION_UP, 0);
-    });
-}
-
 
 @end

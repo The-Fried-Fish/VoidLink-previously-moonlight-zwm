@@ -20,7 +20,7 @@ final class SafeTimer: NSObject {
     private var shouldRunHandler: Bool = false  // 控制逻辑上的暂停/恢复
     private var isCleaned: Bool = false         // 是否已经 clean
 
-    init(interval: TimeInterval = 1.0,
+    @objc init(interval: TimeInterval = 1.0,
          delay: TimeInterval = 0,
          queueLabel: String = "com.example.safetimer",
          handler: @escaping () -> Void) {
