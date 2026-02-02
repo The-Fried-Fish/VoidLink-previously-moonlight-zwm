@@ -9,8 +9,8 @@
 import Foundation
 import QuartzCore
 
-/// SafeTimer: 高精度、可暂停/重启、可彻底清理
-final class SafeTimer {
+@objc(SafeTimer)
+final class SafeTimer: NSObject {
     private var timer: DispatchSourceTimer?
     private let timerQueue: DispatchQueue       // 私有串行队列
     private let userHandler: () -> Void
@@ -20,7 +20,7 @@ final class SafeTimer {
     private var shouldRunHandler: Bool = false  // 控制逻辑上的暂停/恢复
     private var isCleaned: Bool = false         // 是否已经 clean
 
-    init(interval: TimeInterval = 1.0,
+    @objc init(interval: TimeInterval = 1.0,
          delay: TimeInterval = 0,
          queueLabel: String = "com.example.safetimer",
          handler: @escaping () -> Void) {
@@ -29,6 +29,8 @@ final class SafeTimer {
         self.delay = delay
         self.userHandler = handler
         self.timerQueue = DispatchQueue(label: queueLabel)
+        
+        super.init()
 
         let t = DispatchSource.makeTimerSource(queue: timerQueue)
         t.schedule(deadline: .now() + delay, repeating: interval)
@@ -48,7 +50,7 @@ final class SafeTimer {
     }
 
     /// 开始逻辑上的计时
-    func start() {
+    @objc func start() {
         timerQueue.async { [weak self] in
             guard let self = self, !self.isCleaned else { return }
             self.shouldRunHandler = true
@@ -56,7 +58,7 @@ final class SafeTimer {
     }
 
     /// 暂停逻辑上的计时
-    func pause() {
+    @objc func pause() {
         timerQueue.async { [weak self] in
             guard let self = self, !self.isCleaned else { return }
             self.shouldRunHandler = false
@@ -64,7 +66,7 @@ final class SafeTimer {
     }
 
     /// 重置下一次触发时间，并开始执行 handler
-    func restart() {
+    @objc func restart() {
         timerQueue.async { [weak self] in
             guard let self = self, let t = self.timer, !self.isCleaned else { return }
             t.schedule(deadline: .now() + self.delay, repeating: self.interval)
@@ -73,7 +75,7 @@ final class SafeTimer {
     }
 
     /// 彻底清理 timer，返回后保证 handler 不再执行
-    func clean() {
+    @objc func clean() {
         if isCleaned { return }
         // 同步在 timerQueue 执行，保证已排队事件全部处理完（或跳过）
         timerQueue.sync {
