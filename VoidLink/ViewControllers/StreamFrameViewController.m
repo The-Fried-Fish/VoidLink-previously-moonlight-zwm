@@ -442,7 +442,7 @@
     // [self pauseTimer];
     if(_settings.sendDummyEvent){
         if(!safeTimer) [self setupTimer];
-        if(!viewJustLoaded) [safeTimer start];
+        if(!_viewJustLoaded) [safeTimer start];
     }
     else [safeTimer pause];
     
