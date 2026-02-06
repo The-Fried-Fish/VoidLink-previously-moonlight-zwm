@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) int highWaterMark;
 @property (nonatomic, readonly) int maxCapacity;
 @property (atomic) BOOL paused;
+- (void)dequeueWithTimeout:(CFTimeInterval)timeout
+                completion:(void (^)(Frame *frame))completion;
 
 + (instancetype)sharedInstance;
 
@@ -23,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)enqueue:(Frame *)frame;
 - (int)enqueue:(Frame *)frame withSlackSize:(int)slack;
 - (nullable Frame *)dequeue;
-- (nullable Frame *)dequeueWithTimeout:(CFTimeInterval)timeout;
+- (nullable Frame *)dequeueWithTimeoutSync:(CFTimeInterval)timeout;
 - (CFTimeInterval)estimatedFramerate;
 - (int)currentSoftCap;
 - (void)waitForEnqueue;

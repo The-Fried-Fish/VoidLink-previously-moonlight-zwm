@@ -794,6 +794,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
+    [self addSetting:self.frameTimebaseStack ofId:@"frameTimebaseStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
 
     [videoSection addToParentStack:_parentStack];
     // [videoSection setExpanded:NO];
@@ -1885,6 +1887,9 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.framePacingModeSelector setSelectedSegmentIndex:framePacingMode];
         [self.framePacingModeSelector addTarget:self action:@selector(framePacingModeChanged:) forControlEvents:UIControlEventValueChanged];
         [self framePacingModeChanged:self.framePacingModeSelector];
+        
+        [self.frameTimebaseSwitch setOn:self->tempSettings.enableFrameTimebase];
+        [self.asyncFrameDequeueSwitch setOn:self->tempSettings.asyncFrameDequeue];
 
         [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
@@ -2303,6 +2308,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
     // Hide frame queue size for Off and Legacy modes
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
+    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
+    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
 
     if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
@@ -3533,6 +3540,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat controllerMousePointerVelocity = self.controllerMouseVelocitySlider.value;
     CGFloat controllerMouseExpo = self.controllerMouseExpoSlider.value;
     NSInteger controllerGyroSwitchMode = self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
+    BOOL enableFrameTimebase = self.frameTimebaseSwitch.isOn;
+    BOOL asyncFrameDequeue = self.asyncFrameDequeueSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettings:currentSettings
@@ -3605,6 +3614,8 @@ BOOL isCustomResolution(int resolutionSelected) {
       controllerMousePointerVelocity:controllerMousePointerVelocity
                  controllerMouseExpo:controllerMouseExpo
             controllerGyroSwitchMode:controllerGyroSwitchMode
+                 enableFrameTimebase:enableFrameTimebase
+                   asyncFrameDequeue:asyncFrameDequeue
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

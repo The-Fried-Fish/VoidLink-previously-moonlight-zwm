@@ -24,6 +24,10 @@ import UIKit
     private var manualHoverFlag: Bool = false
     private var autoHoverFlag: Bool = false
     private(set) var pencilProEnabled: Bool = false
+    private var isFirstMove: Bool = false
+    private var moveEventIndex: Int64 = 0
+    private var initialMoveEventIndexLimit: Int64
+    private var touchBeganForce: Float = 0
     @objc static private(set) var isDrawing: Bool = false
     @objc static private(set) var pencilPausesNativeTouch: Bool = false
 
@@ -38,6 +42,7 @@ import UIKit
         tickInterval = TimeInterval(settings.pencilTickIntervalUs.floatValue/1000000)
         manualTick = settings.pencilTickMode.intValue == PencilTickMode.ManualTick.rawValue
         pencilTickEnabled = settings.pencilTickMode.intValue != PencilTickMode.PencilTickDisabled.rawValue
+        initialMoveEventIndexLimit = UIScreen.main.maximumFramesPerSecond > 60 ? 4 : 2
         super.init()
         setupPressureLUT()
         PencilHandler.shared = self
@@ -83,6 +88,8 @@ import UIKit
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let event = event else { return }
         PencilHandler.isDrawing = true
+        // isFirstMove = true
+        moveEventIndex = 0
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
@@ -95,6 +102,7 @@ import UIKit
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
         }
+        moveEventIndex += 1
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -173,22 +181,24 @@ import UIKit
         var dispatchMoment: DispatchTime = .now()
 
         for touch in touchBatch {
-            let point = touch.location(in: streamView)
+            let point = touch.preciseLocation(in: streamView)
             let azimuth = touch.azimuthAngle(in: streamView)
             let altitude = touch.altitudeAngle
             let location = self.adjustCoordinatesForVideoArea(point: point)
             let videoSize = self.getVideoAreaSize()
             let normalizedLocation = CGPoint(x: location.x/videoSize.width, y: location.y/videoSize.height)
             let force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
-            let targetForce = pressureCurveEnabled ? self.pressureLUT.value(at: force) : force
+            var targetForce = pressureCurveEnabled ? self.pressureLUT.value(at: force) : force
 
             let eventType:UInt8
             
             switch touch.phase {
             case .began:
                 eventType = UInt8(LI_TOUCH_EVENT_DOWN)
+                touchBeganForce = targetForce
             case .moved:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
+                targetForce = moveEventIndex < initialMoveEventIndexLimit ? touchBeganForce : targetForce
             case .ended:
                 eventType = UInt8(LI_TOUCH_EVENT_UP)
             case .cancelled:
@@ -209,8 +219,9 @@ import UIKit
                 tickMoment += (manualTick ? tickInterval : touch.timestamp - previousTimeStamp)
             }
             
+            let sendableForce = targetForce
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
-                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), targetForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), sendableForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
                 if eventType == UInt8(LI_TOUCH_EVENT_UP) {
                     PencilHandler.isDrawing = false
                 }

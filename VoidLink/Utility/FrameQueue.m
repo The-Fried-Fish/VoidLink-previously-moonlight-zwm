@@ -251,7 +251,19 @@
     return frame;
 }
 
-- (Frame *)dequeueWithTimeout:(CFTimeInterval)timeout {
+- (void)dequeueWithTimeout:(CFTimeInterval)timeout
+                completion:(void (^)(Frame *frame))completion {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+        Frame *frame = [self dequeueWithTimeoutSync:timeout];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(frame);
+            }
+        });
+    });
+}
+
+- (Frame *)dequeueWithTimeoutSync:(CFTimeInterval)timeout {
     CFTimeInterval start = CACurrentMediaTime();
     CFTimeInterval deadline = start + timeout;
     int round = 0;

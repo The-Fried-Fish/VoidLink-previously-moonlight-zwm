@@ -1222,6 +1222,9 @@ static NSMutableSet* hostList;
     // Enable frame pacing mode selector only if not in stream view AND not in performance mode
     BOOL shouldEnableFramePacing = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
     [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacing];
+    [settingsViewController.frameTimebaseSwitch setEnabled:shouldEnableFramePacing];
+    [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacing];
+
     // Disable mic switch if sunshine does not support mic redirection
     [settingsViewController.redirectMicSwitch setEnabled:!_settingsExpandedInStreamView||streamFrameViewController.micStreamInitialized];
     if(_settingsExpandedInStreamView && !streamFrameViewController.micStreamInitialized) [settingsViewController.redirectMicSwitch setOn:false];

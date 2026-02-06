@@ -243,6 +243,13 @@
 @property (strong, nonatomic) IBOutlet UIStackView *pressureCurveStack;
 @property (strong, nonatomic) IBOutlet UISwitch *pressureCurveSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *frameTimebaseStack;
+@property (weak, nonatomic) IBOutlet UISwitch *frameTimebaseSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *asyncFrameDequeueStack;
+@property (weak, nonatomic) IBOutlet UISwitch *asyncFrameDequeueSwitch;
+
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 
@@ -261,6 +268,8 @@
 
 @property (weak, nonatomic) IBOutlet UIStackView *pencilPausesNativeTouchStack;
 @property (weak, nonatomic) IBOutlet UISwitch *pencilPausesNativeTouchSwitch;
+
+
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"

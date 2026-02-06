@@ -412,12 +412,13 @@ final class PressureCurveView: UIView {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if testStage == .drawingStage {
+            if pressures.isEmpty { return }
             curve.polylinePoints = PressureCurve.generateLinearCurvePoints(from: pressures)
             testStage = .curveStage
             showGraph = true
             let parentVC = parentViewController as! PressureCurveViewController
             parentVC.setupNavigationBar()
-            parentVC.showCurveStageTips()
+            // parentVC.showCurveStageTips()
         }
         draggingIndex = nil
     }
@@ -479,6 +480,18 @@ class PressureCurveViewController: UIViewController {
         
     private var minPressure: CGFloat = 0
     private var maxPressure: CGFloat = 1
+    private var isFirstLaunch: Bool = {
+        let key = "hasLaunchedPressureCurveTool"
+        let defaults = UserDefaults.standard
+
+        var launchedBefore = defaults.bool(forKey: key)
+
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -532,6 +545,7 @@ class PressureCurveViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        /*
         AlertControllerUtil.cancelButtonString = SwiftLocalizationHelper.localizedString(forKey: "No")
         AlertControllerUtil.showAlert(
             in: self,
@@ -553,14 +567,16 @@ class PressureCurveViewController: UIViewController {
                     self.pressureRangeTest()
                 }
             }
-        )
-
+        ) */
+        if isFirstLaunch {
+            showCurveStageTips()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
     }
-    
+        
     private func loadPersistedCurve() {
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         let persistedCurvePoints = PressureCurve.importCurvePoints(oscProfileMan.getSelectedProfile().pressureCurvePoints)
@@ -625,8 +641,8 @@ class PressureCurveViewController: UIViewController {
             title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
             message: SwiftLocalizationHelper.localizedString(forKey:"Adjust the pressure curve by adding or dragging the purple squares."),
             withCancel: false,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
-            countdown: 0
+            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+            countdown: 6
             )
     }
 
@@ -648,11 +664,13 @@ class PressureCurveViewController: UIViewController {
         AlertControllerUtil.showAlert(
             in: self,
             title: SwiftLocalizationHelper.localizedString(forKey: "Pressure Range Test"),
-            message: SwiftLocalizationHelper.localizedString(forKey:"Draw freely and vary pen pressure naturally."),
-            withCancel: false,
+            message: SwiftLocalizationHelper.localizedString(forKey:"pressureRangeTestTip"),
+            withCancel: true,
             buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
             countdown: 0,
             completion:{
+                if AlertControllerUtil.actionCancelled { return }
+                self.resetTapped()
                 self.curveView.showGraph = false
                 self.curveView.testStage = .drawingStage
                 self.curveView.setNeedsDisplay()
@@ -667,16 +685,32 @@ class PressureCurveViewController: UIViewController {
         oscProfileMan.replaceSelectedProfile(with: selectedProfile, overwriteDefault: true)
         
         DispatchQueue.main.async {
-            AlertControllerUtil.showAlert(
-                in: self,
-                title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
-                message: SwiftLocalizationHelper.localizedString(forKey:"Pressure curve saved with current on-screen widget profile!"),
-                withCancel: false,
-                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
-                countdown: 0,
-                completion: {
-                    PencilHandler.shared?.setupPressureLUT()
-                })
+            if self.isFirstLaunch {
+                AlertControllerUtil.showAlert(
+                    in: self,
+                    title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
+                    message: SwiftLocalizationHelper.localizedString(forKey:"firstPressureCurvePersistTip"),
+                    withCancel: false,
+                    buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+                    countdown: 11,
+                    completion: {
+                        PencilHandler.shared?.setupPressureLUT()
+                    })
+                self.isFirstLaunch = false
+            }
+            else{
+                AlertControllerUtil.autoCompletion = true
+                AlertControllerUtil.showAlert(
+                    in: self,
+                    title: SwiftLocalizationHelper.localizedString(forKey: ""),
+                    message: SwiftLocalizationHelper.localizedString(forKey:"Pressure curve saved"),
+                    withCancel: false,
+                    buttonTitle: "",
+                    countdown: 1,
+                    completion: {
+                        PencilHandler.shared?.setupPressureLUT()
+                    })
+            }
         }
     }
 

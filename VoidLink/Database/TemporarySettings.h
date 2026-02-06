@@ -74,6 +74,8 @@
 @property (nonatomic) BOOL showKeyboardToolbar;
 @property (nonatomic) BOOL unlockDisplayOrientation;
 @property (nonatomic) BOOL enableGraphs;
+@property (nonatomic) BOOL enableFrameTimebase;
+@property (nonatomic) BOOL asyncFrameDequeue;
 @property (nonatomic, retain) NSNumber * frameQueueSize;
 @property (nonatomic, retain) NSNumber * graphOpacity;
 @property (nonatomic, retain) NSNumber * renderingBackend;

@@ -154,6 +154,8 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
   controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
              controllerMouseExpo:(CGFloat)controllerMouseExpo
         controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
+             enableFrameTimebase:(BOOL)enableFrameTimebase
+               asyncFrameDequeue:(BOOL)asyncFrameDequeue
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

@@ -91,6 +91,8 @@
     self.enablePIP = settings.enablePIP;
     self.fullColorRange = settings.fullColorRange;
     self.frameQueueSize = settings.frameQueueSize;
+    self.enableFrameTimebase  = settings.enableFrameTimebase;
+    self.asyncFrameDequeue = settings.asyncFrameDequeue;
     self.playAudioOnPC = settings.playAudioOnPC;
     self.redirectMic = settings.redirectMic;
     self.useBuiltinMic = settings.useBuiltinMic;

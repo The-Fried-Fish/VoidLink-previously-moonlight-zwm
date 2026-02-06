@@ -126,6 +126,8 @@
   controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
              controllerMouseExpo:(CGFloat)controllerMouseExpo
         controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
+             enableFrameTimebase:(BOOL)enableFrameTimebase
+               asyncFrameDequeue:(BOOL)asyncFrameDequeue
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
     
     __block Settings* settingsToSave = settings;
@@ -178,6 +180,8 @@
         settingsToSave.backroundSessionTimer = [NSNumber numberWithInteger:backgroundSessionTimer];
 
         settingsToSave.frameQueueSize = [NSNumber numberWithInteger:frameQueueSize];
+        settingsToSave.enableFrameTimebase = enableFrameTimebase;
+        settingsToSave.asyncFrameDequeue = asyncFrameDequeue;
         settingsToSave.enableGraphs = enableGraphs;
         settingsToSave.graphOpacity = [NSNumber numberWithInteger:graphOpacity];
         settingsToSave.renderingBackend = [NSNumber numberWithInteger:renderingBackend];

@@ -1782,7 +1782,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="v6i-HA-XRx">
-                                <rect key="frame" x="440" y="1405" width="380" height="56.5"/>
+                                <rect key="frame" x="440" y="1545" width="380" height="56.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Switch Gyro by Controller" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="26O-xW-5EH">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1990,6 +1990,46 @@
                                     <constraint firstAttribute="height" constant="31" id="pV0-m0-1pz"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="A31-WC-As7">
+                                <rect key="frame" x="441" y="1363" width="280" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Timebase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cpg-mq-kYj" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="StG-nI-WpK">
+                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="lFV-eP-bfD"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="seO-0F-yIw"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="e0Q-XV-ydj">
+                                <rect key="frame" x="441" y="1402" width="260" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Deueue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X0u-7f-F86" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="110" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="auR-cw-77D">
+                                        <rect key="frame" x="130" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="mZn-6A-4OO"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="UK8-ck-1zc"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -1997,6 +2037,8 @@
                     <connections>
                         <outlet property="appThemeSelector" destination="wi6-L4-KwS" id="mf9-YY-eyE"/>
                         <outlet property="appThemeStack" destination="Wf6-BA-Mdv" id="hlq-bB-S8N"/>
+                        <outlet property="asyncFrameDequeueStack" destination="e0Q-XV-ydj" id="7TK-zc-BqI"/>
+                        <outlet property="asyncFrameDequeueSwitch" destination="auR-cw-77D" id="SYx-KY-cqs"/>
                         <outlet property="audioConfigSelector" destination="iZL-dA-jk9" id="Yja-os-o6g"/>
                         <outlet property="audioConfigStack" destination="qnG-5F-2YY" id="kFX-VK-vuK"/>
                         <outlet property="audioEngineSelector" destination="85A-d5-pLE" id="Ads-EZ-Bpm"/>
@@ -2046,6 +2088,8 @@
                         <outlet property="frameQueueSizeLabel" destination="Ce3-FM-vIh" id="90D-Tq-OGd"/>
                         <outlet property="frameQueueSizeSlider" destination="oZa-8Y-icz" id="Jo1-Fx-UMw"/>
                         <outlet property="frameQueueSizeStack" destination="MML-c1-D5j" id="82B-r7-Zbh"/>
+                        <outlet property="frameTimebaseStack" destination="A31-WC-As7" id="vcp-SE-PuI"/>
+                        <outlet property="frameTimebaseSwitch" destination="StG-nI-WpK" id="yYY-DO-U1D"/>
                         <outlet property="framerateSelector" destination="8hF-kb-2uV" id="dfT-hb-csE"/>
                         <outlet property="fullColorRangeStack" destination="iPd-Rg-St7" id="iPd-Out-Let"/>
                         <outlet property="fullColorRangeSwitch" destination="iPd-Wt-Ch9" id="iPd-Out-Swt"/>
@@ -3106,7 +3150,7 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -3115,13 +3159,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

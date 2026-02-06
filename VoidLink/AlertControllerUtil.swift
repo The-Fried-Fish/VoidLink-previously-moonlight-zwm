@@ -21,6 +21,7 @@ import UIKit
     @objc public static var actionCancelled:Bool = false
     @objc public static var alertController:UIAlertController = UIAlertController()
     @objc public static var cancelButtonString:String = "Cancel"
+    @objc public static var autoCompletion:Bool = false
 
     @objc class func showAlert(
         in viewController: UIViewController,
@@ -51,7 +52,7 @@ import UIKit
         confirmAction.isEnabled = false
         
         if withCancel {alertController.addAction(cancelAction)}
-        if buttonTitle != "" {alertController.addAction(confirmAction)}
+        if buttonTitle != "" && !autoCompletion {alertController.addAction(confirmAction)}
         
         if(countdown == 0) {
             confirmAction.setValue(buttonTitle, forKey: "title")
@@ -72,6 +73,11 @@ import UIKit
                 timer.cancel()
                 confirmAction.isEnabled = true
                 confirmAction.setValue(buttonTitle, forKey: "title")
+                if autoCompletion {
+                    autoCompletion = false
+                    alertController.dismiss(animated: false)
+                    return
+                }
             } else {
                 confirmAction.setValue("\(remainingSeconds)", forKey: "title")
             }

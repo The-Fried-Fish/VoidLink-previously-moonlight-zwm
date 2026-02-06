@@ -2023,6 +2023,18 @@
         }
       }
     },
+    "e1n-pw-04X.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Async Deueue\"; ObjectID = \"e1n-pw-04X\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Async Deueue"
+          }
+        }
+      }
+    },
     "E7F-vx-pnM.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frame Rate\"; ObjectID = \"E7F-vx-pnM\";",
       "extractionState" : "extracted_with_value",
@@ -3951,6 +3963,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "滑鼠按下"
+          }
+        }
+      }
+    },
+    "P4N-i6-1zD.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable Timebase\"; ObjectID = \"P4N-i6-1zD\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable Timebase"
           }
         }
       }

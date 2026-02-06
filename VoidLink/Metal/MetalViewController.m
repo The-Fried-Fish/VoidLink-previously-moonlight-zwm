@@ -129,7 +129,7 @@
         return;
     }
     CFTimeInterval timeout = (1.0f / _framerate) - _renderer.averageGPUTime;
-    Frame *frame = [_frameQueue dequeueWithTimeout:timeout];
+    Frame *frame = [_frameQueue dequeueWithTimeoutSync:timeout];
 
     if (!_renderer.isStopping) {
         // Only render if not paused

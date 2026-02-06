@@ -2065,6 +2065,18 @@
         }
       }
     },
+    "cpg-mq-kYj.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Enable Timebase\"; ObjectID = \"cpg-mq-kYj\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enable Timebase"
+          }
+        }
+      }
+    },
     "CpY-Sb-BDc.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Import\"; ObjectID = \"CpY-Sb-BDc\";",
       "extractionState" : "extracted_with_value",
@@ -5625,6 +5637,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已收納小工具   "
+          }
+        }
+      }
+    },
+    "X0u-7f-F86.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Async Deueue\"; ObjectID = \"X0u-7f-F86\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Async Deueue"
           }
         }
       }

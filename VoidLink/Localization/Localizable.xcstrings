@@ -2131,29 +2131,6 @@
         }
       }
     },
-    "Draw freely and vary pen pressure naturally." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请随意绘制，笔压自然变化即可。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請隨意繪製，筆壓自然變化即可。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請隨意繪製，筆壓自然變化即可。"
-          }
-        }
-      }
-    },
     "Drift Correction" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2859,6 +2836,35 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟工具箱選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
+          }
+        }
+      }
+    },
+    "firstPressureCurvePersistTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pressure curve saved with current on-screen widget profile. Check custom 'On Screen Widget' in 'Touch Control' section of the settings menu, or toolbox menu brought up by right screen edge slide gesture.\nWhen you switch widget profile, pressure curve will change too."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔压曲线已随屏显控件配置保存。见设置菜单‘触控分区’的’屏显控件’ 自定义选项， 或屏幕右边缘滑动手势调出的工具箱菜单。\n切换屏显控件配置时，笔压曲线也将随之变化。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔壓曲線已隨「螢幕小工具」配置儲存。請至設定選單「觸控分區」中的「螢幕小工具」自訂選項，或由螢幕右側邊緣滑動手勢呼叫的工具箱選單查看。\n切換「螢幕小工具」配置時，筆壓曲線也會隨之變化。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔壓曲線已隨「螢幕小工具」配置儲存。請至設定選單「觸控分區」中的「螢幕小工具」自訂選項，或由螢幕右側邊緣滑動手勢呼叫的工具箱選單查看。\n切換「螢幕小工具」配置時，筆壓曲線也會隨之變化。"
           }
         }
       }
@@ -5558,25 +5564,25 @@
         }
       }
     },
-    "Pressure curve saved with current on-screen widget profile!" : {
+    "Pressure curve saved" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔压曲线已随屏显控件配置保存！"
+            "value" : "笔压曲线已保存"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆壓曲線已隨螢幕小工具設定儲存！"
+            "value" : "筆壓曲線已儲存"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆壓曲線已隨螢幕小工具設定儲存！"
+            "value" : "筆壓曲線已儲存"
           }
         }
       }
@@ -5623,6 +5629,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "筆壓範圍測試"
+          }
+        }
+      }
+    },
+    "pressureRangeTestTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will reset the pressure curve. To proceed with the test, tap 'OK' to draw freely and vary pen pressure naturally."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此测试将重置笔压曲线。 \n若继续测试，请点’确认’，并随意绘制。笔压自然变化即可。\n"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此測試將重置筆壓曲線。\n若繼續測試，請點選「確認」，並隨意繪製即可，讓筆壓自然變化。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此測試將重置筆壓曲線。\n若繼續測試，請點選「確認」，並隨意繪製即可，讓筆壓自然變化。"
           }
         }
       }
@@ -7265,6 +7300,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "這是一項實驗性功能，可能導致畫面卡頓。"
+          }
+        }
+      }
+    },
+    "This tip won't be shown again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该提示将不再弹出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該提示將不再彈出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該提示將不再彈出"
           }
         }
       }
