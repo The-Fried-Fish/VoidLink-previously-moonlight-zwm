@@ -936,7 +936,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
     if (_framePacingMode == FramePacingModeLegacy || _framePacingMode == FramePacingModeOff) {
         // Enqueue the next frame
-        [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
+        if(!appDidEnterBackgroundWithoutPip) [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
 
         if (du->frameType == FRAME_TYPE_IDR) {
             // Ensure the layer is visible now
