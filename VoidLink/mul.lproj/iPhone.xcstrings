@@ -2024,13 +2024,31 @@
       }
     },
     "e1n-pw-04X.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Async Deueue\"; ObjectID = \"e1n-pw-04X\";",
+      "comment" : "Class = \"UILabel\"; text = \"Async Frame Deueue\"; ObjectID = \"e1n-pw-04X\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Async Deueue"
+            "value" : "Async Frame Deueue"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "异步帧出队"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非同步取幀"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非同步取幀"
           }
         }
       }
@@ -2193,6 +2211,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手把映射為滑鼠"
+          }
+        }
+      }
+    },
+    "F8d-OQ-PsH.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"SDR Performance Workaround\"; ObjectID = \"F8d-OQ-PsH\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "SDR Performance Workaround"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDR性能优化路径"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDR效能優化路徑"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDR效能優化路徑"
           }
         }
       }

@@ -2867,16 +2867,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="dZ3-os-MKX">
-                                <rect key="frame" x="459" y="2291" width="260" height="31"/>
+                                <rect key="frame" x="459" y="2291" width="312" height="31"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Deueue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e1n-pw-04X" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="110" height="31"/>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Frame Deueue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e1n-pw-04X" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="162" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="19e-9S-OgQ">
-                                        <rect key="frame" x="130" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="182" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="hFO-BO-ck5"/>
                                         </constraints>
@@ -2884,6 +2884,26 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="31" id="O8n-y9-TrQ"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Rw1-5R-Jjf" userLabel="SDR Performance Workaround Stack">
+                                <rect key="frame" x="459" y="2330" width="383" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDR Performance Workaround" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F8d-OQ-PsH" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="233" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y5l-G9-PyG">
+                                        <rect key="frame" x="253" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="Qwc-Ko-5ZE"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="abg-h5-3Ml"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -3022,6 +3042,8 @@
                         <outlet property="scrollSensitivitySlider" destination="Iha-ti-PtK" id="60F-wE-tB0"/>
                         <outlet property="scrollSensitivityStack" destination="1fy-XH-ApD" id="Utf-HX-rrg"/>
                         <outlet property="scrollView" destination="Xq6-9l-Oey" id="nif-2O-JNf"/>
+                        <outlet property="sdrPerformanceWorkaroundStack" destination="Rw1-5R-Jjf" id="W45-rG-DQU"/>
+                        <outlet property="sdrPerformanceWorkaroundSwitch" destination="Y5l-G9-PyG" id="Z5N-lZ-M1S"/>
                         <outlet property="sendDummyEventStack" destination="6yl-Mb-0o6" id="KN5-ty-oTQ"/>
                         <outlet property="sendDummyEventSwitch" destination="OlN-GM-xLT" id="DQ8-Un-c5b"/>
                         <outlet property="singleTapSensitivitySlider" destination="uCa-Oa-7mv" id="50r-4l-FAP"/>

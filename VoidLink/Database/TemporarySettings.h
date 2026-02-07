@@ -53,6 +53,7 @@
     CODEC_PREF_AV1,
 } preferredCodec;
 @property (nonatomic) BOOL enableYUV444;
+@property (nonatomic) BOOL sdrPerformanceWorkaround;
 @property (nonatomic) BOOL enablePIP;
 @property (nonatomic) BOOL fullColorRange;
 @property (nonatomic) BOOL reverseMouseWheelDirection;

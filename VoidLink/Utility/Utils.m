@@ -11,6 +11,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#import <AVFoundation/AVFoundation.h>
+#import <VideoToolbox/VideoToolbox.h>
 #import "LocalizationHelper.h"
 
 @implementation Utils
@@ -147,6 +149,22 @@ NSString *const deviceName = @"roth";
     else {
         return [NSString stringWithFormat:@"%@:%u", address, port];
     }
+}
+
++ (bool)hdrSupported{
+    return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) && (AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10);
+}
+
++ (bool)needUpdateDefaultSettings {
+    NSString *key = @"needUpdateDefaultSettings20260207";
+    BOOL updatedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+
+    if (!updatedBefore) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return YES;
+    }
+    return NO;
 }
 
 @end

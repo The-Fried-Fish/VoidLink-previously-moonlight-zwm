@@ -876,7 +876,8 @@ static NSMutableSet* hostList;
                     _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_HIGH8_444;
                 }
                 else {
-                    _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN8;
+                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported]) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN10; // 8bit performance degradation workaround for av1
+                    else _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN8;
                 }
             }
 #endif
@@ -886,10 +887,13 @@ static NSMutableSet* hostList;
         case CODEC_PREF_HEVC:
             if (VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC)) {
                 if (streamSettings.enableYUV444) {
-                    _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265_REXT8_444;
+                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported]) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265_REXT10_444; // 8bit performance degradation workaround
+                    else _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265_REXT8_444;
                 }
                 else {
-                    _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265;
+                    // _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265;
+                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported]) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265_MAIN10; // 8bit performance degradation workaround
+                    else _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265;
                 }
             }
             // Fall-through
@@ -905,8 +909,10 @@ static NSMutableSet* hostList;
     
     // HEVC is supported if the user wants it (or it's required by the chosen resolution) and the SoC supports it
     if ((_streamConfig.width > 4096 || _streamConfig.height > 4096 || streamSettings.enableHdr) && VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC)) {
-        _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265;
         
+        if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported]) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265_MAIN10; // 8bit performance degradation workaround
+        else _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265;
+
         // HEVC Main10 is supported if the user wants it and the display supports it
         if (streamSettings.enableHdr && (AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10) != 0) {
             if (streamSettings.enableYUV444) {
@@ -1566,6 +1572,28 @@ static NSMutableSet* hostList;
             [ThemeManager setUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
         }
     }
+}
+
+- (void)changeDefaultSettings{
+    if(![Utils needUpdateDefaultSettings]) return;
+    DataManager* dataMan = [[DataManager alloc] init];
+    Settings* settings = [dataMan retrieveSettings];
+    switch ([UIDevice currentDevice].userInterfaceIdiom) {
+        case UIUserInterfaceIdiomPad:
+            settings.sdrPerformanceWorkaround = true;
+            settings.framePacingMode = @(FramePacingModeQueue);
+            break;
+        case UIUserInterfaceIdiomPhone:
+            settings.sdrPerformanceWorkaround = false;
+            settings.framePacingMode = @(FramePacingModeLegacy);
+            break;
+        default:
+            settings.sdrPerformanceWorkaround = true;
+            break;
+    }
+    if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = false;
+    if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = true;
+    [dataMan saveData];
 }
 
 - (void)viewDidLoad{

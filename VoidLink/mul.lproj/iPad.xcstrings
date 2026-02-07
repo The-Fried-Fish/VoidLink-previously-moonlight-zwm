@@ -5641,14 +5641,62 @@
         }
       }
     },
-    "X0u-7f-F86.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Async Deueue\"; ObjectID = \"X0u-7f-F86\";",
+    "WWl-77-twB.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"SDR Performance Workaround\"; ObjectID = \"WWl-77-twB\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Async Deueue"
+            "value" : "SDR Performance Workaround"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDR性能优化路径"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDR效能優化路徑"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDR效能優化路徑"
+          }
+        }
+      }
+    },
+    "X0u-7f-F86.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Async Frame Dequeue\"; ObjectID = \"X0u-7f-F86\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Async Frame Dequeue"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "异步帧出队"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非同步取幀"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "非同步取幀"
           }
         }
       }

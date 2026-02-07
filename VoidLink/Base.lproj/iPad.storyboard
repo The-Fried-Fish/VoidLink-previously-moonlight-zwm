@@ -2011,16 +2011,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="e0Q-XV-ydj">
-                                <rect key="frame" x="441" y="1402" width="260" height="31"/>
+                                <rect key="frame" x="441" y="1402" width="322" height="31"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Deueue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X0u-7f-F86" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="110" height="31"/>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Frame Dequeue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X0u-7f-F86" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="172" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="auR-cw-77D">
-                                        <rect key="frame" x="130" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="192" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="mZn-6A-4OO"/>
                                         </constraints>
@@ -2028,6 +2028,26 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="31" id="UK8-ck-1zc"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ydX-NT-gG0">
+                                <rect key="frame" x="441" y="1441" width="383" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDR Performance Workaround" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WWl-77-twB" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="233" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uIA-Qv-JG5">
+                                        <rect key="frame" x="253" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="Y4C-YH-p1N"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="MGF-Pb-oHQ"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -2177,6 +2197,8 @@
                         <outlet property="scrollSensitivitySlider" destination="6Pz-di-F4h" id="PUc-gr-gEt"/>
                         <outlet property="scrollSensitivityStack" destination="aEs-8U-RwE" id="XPK-Al-tBx"/>
                         <outlet property="scrollView" destination="WRy-3f-gEP" id="V8B-oF-27B"/>
+                        <outlet property="sdrPerformanceWorkaroundStack" destination="ydX-NT-gG0" id="AGD-IL-3DL"/>
+                        <outlet property="sdrPerformanceWorkaroundSwitch" destination="uIA-Qv-JG5" id="tWF-iQ-qPN"/>
                         <outlet property="sendDummyEventStack" destination="RGd-TV-mkU" id="87h-08-4Og"/>
                         <outlet property="sendDummyEventSwitch" destination="eE4-oT-Gzb" id="q51-ds-zJC"/>
                         <outlet property="singleTapSensitivitySlider" destination="j4n-De-TRX" id="5gO-ms-ns2"/>

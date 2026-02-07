@@ -18,8 +18,6 @@
 #import "OSCProfilesManager.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <VideoToolbox/VideoToolbox.h>
-#import <AVFoundation/AVFoundation.h>
 
 #import "LocalizationHelper.h"
 
@@ -788,15 +786,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.fpsStack ofId:@"fpsStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.bitrateStack ofId:@"bitrateStack" withInfoTag:YES withDynamicLabel:YES to:videoSection];
     [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![self hdrSupported] withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![Utils hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.fullColorRangeStack ofId:@"fullColorRangeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
     [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
-    [self addSetting:self.frameTimebaseStack ofId:@"frameTimebaseStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-
     [videoSection addToParentStack:_parentStack];
     // [videoSection setExpanded:NO];
 
@@ -975,7 +970,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.relativeTouchSlideThresholdStack ofId:@"relativeTouchSlideThresholdStack" withInfoTag:YES withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.leftClickDelayStack ofId:@"leftClickDelayStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
+    [self addSetting:self.sdrPerformanceWorkaroundStack ofId:@"sdrPerformanceWorkaroundStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+    // [self addSetting:self.frameTimebaseStack ofId:@"frameTimebaseStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
+    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
 
@@ -1855,12 +1853,13 @@ BOOL isCustomResolution(int resolutionSelected) {
             }
         }];
 
-        if (![self hdrSupported]) {
+        if (![Utils hdrSupported]) {
             [self.hdrSwitch setOn:NO];
             [self.hdrSwitch setEnabled:NO];
         }
         else {
             [self.hdrSwitch setOn:self->tempSettings.enableHdr];
+            [self.hdrSwitch addTarget:self action:@selector(hdrSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         }
         
         // Initialize codec-dependent switches together
@@ -1888,8 +1887,9 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.framePacingModeSelector addTarget:self action:@selector(framePacingModeChanged:) forControlEvents:UIControlEventValueChanged];
         [self framePacingModeChanged:self.framePacingModeSelector];
         
-        [self.frameTimebaseSwitch setOn:self->tempSettings.enableFrameTimebase];
+        // [self.frameTimebaseSwitch setOn:self->tempSettings.enableFrameTimebase];
         [self.asyncFrameDequeueSwitch setOn:self->tempSettings.asyncFrameDequeue];
+        [self.sdrPerformanceWorkaroundSwitch setOn:self->tempSettings.sdrPerformanceWorkaround];
 
         [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
@@ -2223,6 +2223,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+- (void)hdrSwitchFlipped:(UISwitch* )sender{
+    /*
+    if(!sender.isOn
+       && [Utils hdrSupported]
+       && ![self isIPhone]) [self.sdrPerformanceWorkaroundSwitch setOn:true];
+     */
+}
+
 - (bool)isOswEnabled{
     return [self isNotNativeTouchOnly] && self.onScreenWidgetSelector.selectedSegmentIndex != OnScreenControlsLevelOff;
 }
@@ -2308,8 +2316,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
     // Hide frame queue size for Off and Legacy modes
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
-    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
-    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
+    // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
+    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.asyncFrameDequeueStack];
 
     if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
@@ -3502,6 +3510,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL useBuiltinMic = self.useBuiltinMicSwitch.isOn;
     uint32_t preferredCodec = [self getChosenCodecPreference];
     BOOL enableYUV444 = self.yuv444Switch.isOn;
+    BOOL sdrPerformanceWorkaround = self.sdrPerformanceWorkaroundSwitch.isOn;
     BOOL enablePIP = self.pipSwitch.isOn;
     BOOL fullColorRange = self.fullColorRangeSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
@@ -3540,7 +3549,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat controllerMousePointerVelocity = self.controllerMouseVelocitySlider.value;
     CGFloat controllerMouseExpo = self.controllerMouseExpoSlider.value;
     NSInteger controllerGyroSwitchMode = self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
-    BOOL enableFrameTimebase = self.frameTimebaseSwitch.isOn;
+    BOOL enableFrameTimebase = false;
     BOOL asyncFrameDequeue = self.asyncFrameDequeueSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
@@ -3616,6 +3625,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             controllerGyroSwitchMode:controllerGyroSwitchMode
                  enableFrameTimebase:enableFrameTimebase
                    asyncFrameDequeue:asyncFrameDequeue
+            sdrPerformanceWorkaround:sdrPerformanceWorkaround
               backgroundSessionTimer:backgroundSessionTimer];
 }
 
@@ -3661,12 +3671,12 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.hdrSwitch setEnabled:NO];
     } else {
         // Only enable HDR if the device supports it
-        if ([self hdrSupported]) {
+        if ([Utils hdrSupported]) {
             [self.hdrSwitch setEnabled:YES];
         }
     }
     
-    if(![self hdrSupported]) [self.hdrSwitch setOn:NO animated:NO];
+    if(![Utils hdrSupported]) [self.hdrSwitch setOn:NO animated:NO];
 }
 
 @end

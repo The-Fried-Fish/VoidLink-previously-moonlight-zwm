@@ -128,6 +128,7 @@
         controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
              enableFrameTimebase:(BOOL)enableFrameTimebase
                asyncFrameDequeue:(BOOL)asyncFrameDequeue
+        sdrPerformanceWorkaround:(BOOL)sdrPerformanceWorkaround
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
     
     __block Settings* settingsToSave = settings;
@@ -165,6 +166,7 @@
         settingsToSave.useBuiltinMic = useBuiltinMic;
         settingsToSave.preferredCodec = preferredCodec;
         settingsToSave.enableYUV444 = enableYUV444;
+        settingsToSave.sdrPerformanceWorkaround = sdrPerformanceWorkaround;
         settingsToSave.enablePIP = enablePIP;
         settingsToSave.fullColorRange = fullColorRange;
         settingsToSave.enableHdr = enableHdr;

@@ -156,6 +156,7 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
         controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
              enableFrameTimebase:(BOOL)enableFrameTimebase
                asyncFrameDequeue:(BOOL)asyncFrameDequeue
+        sdrPerformanceWorkaround:(BOOL)sdrPerformanceWorkaround
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

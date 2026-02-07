@@ -249,6 +249,10 @@
 @property (weak, nonatomic) IBOutlet UIStackView *asyncFrameDequeueStack;
 @property (weak, nonatomic) IBOutlet UISwitch *asyncFrameDequeueSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *sdrPerformanceWorkaroundStack;
+@property (weak, nonatomic) IBOutlet UISwitch *sdrPerformanceWorkaroundSwitch;
+
+
 
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 

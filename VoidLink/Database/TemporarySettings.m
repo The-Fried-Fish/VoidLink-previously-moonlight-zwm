@@ -88,6 +88,7 @@
     self.audioConfig = settings.audioConfig;
     self.preferredCodec = settings.preferredCodec;
     self.enableYUV444 = settings.enableYUV444;
+    self.sdrPerformanceWorkaround = settings.sdrPerformanceWorkaround;
     self.enablePIP = settings.enablePIP;
     self.fullColorRange = settings.fullColorRange;
     self.frameQueueSize = settings.frameQueueSize;
