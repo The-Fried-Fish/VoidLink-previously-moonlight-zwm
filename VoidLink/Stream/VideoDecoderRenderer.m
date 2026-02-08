@@ -53,12 +53,19 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     CADisplayLink *_displayLink;
     FrameQueue *_frameQueue;
+    uint8_t queueSize;
+    bool isFirstFrame;
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
     FramePacingMode _framePacingMode;
     bool _enableTimebase;
     bool _asyncFrameDequeue;
+    
+    bool isIPhone;
+    
+    // CMTime playTime;
+    // NSTimeInterval previousLinkTime;
 }
 
 - (void)reinitializeDisplayLayer
@@ -139,12 +146,17 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     _framePacingMode = tempSettings.framePacingMode.integerValue;
     _asyncFrameDequeue = tempSettings.asyncFrameDequeue;
     _enableTimebase = false;
+    queueSize = tempSettings.frameQueueSize.intValue;
+    isFirstFrame = true;
+    isIPhone = [Utils isIPhone];
 
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];
     [_frameQueue setHighWaterMark:(int)[tempSettings.frameQueueSize integerValue]];
+    //[_frameQueue setHighWaterMark:5];
 
     [self reinitializeDisplayLayer];
+    NSTimeInterval interval = 1.0/tempSettings.framerate.intValue;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reinitializeDisplayLayer)
@@ -271,37 +283,52 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 // DisplayLink calls us every vsync we we try to present the most recent frame. We try to maintain a user-configurable buffer
 // of 1-5 frames. If the buffer is full, every other frame is dropped which just appears to the user as a lower framerate stream.
 - (void)renderModeAVSB:(CADisplayLink *)link {
+    // NSTimeInterval current = link.targetTimestamp;
+    // NSLog(@"link %f", link.duration);
+    // previousLinkTime = current;
     
     CFTimeInterval start = link.timestamp;
-    CFTimeInterval deadline = link.targetTimestamp;
+    CFTimeInterval nextFrameTime = link.targetTimestamp;
     static CFTimeInterval lastTargetLocal = 0.0f;
     CFTimeInterval dl0 = CACurrentMediaTime();
-    
+     
+    /*
     static int lateCallbacks = 0;
-    if (dl0 > deadline) {
+    if (dl0 > nextFrameTime) {
         // we already missed it, count how often this happens
         lateCallbacks++;
         return;
-    }
+    }*/
     
     [self checkDisplayLayer];
     
-    static CFTimeInterval avgOverhead = 0.004f; // averaged each callback
-    CFTimeInterval waitFor = deadline - dl0 - avgOverhead;
+    CFTimeInterval waitFor = nextFrameTime - dl0;
+    
     if (waitFor < 0.001f) {
-        waitFor = 0.0f;
+        waitFor = isIPhone ? waitFor : 0.0f;
     }
     
-    if(_asyncFrameDequeue){
-        [_frameQueue dequeueWithTimeout:waitFor completion:^(Frame *frame) {
+    if(isFirstFrame ? _frameQueue.count>0 : true){
+    // if(true){
+        if(isFirstFrame) isFirstFrame = false;
+        if(_asyncFrameDequeue){
+            [_frameQueue dequeueWithTimeout:waitFor completion:^(Frame *frame) {
+                if (frame) {
+                    // LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
+                    [self renderFrame:frame atTime:CMTimeMakeWithSeconds(nextFrameTime, NSEC_PER_SEC)];
+                }
+            }];
+        }
+        else{
+            Frame *frame = [_frameQueue dequeueWithTimeoutSync:waitFor];
             if (frame) {
-                CFTimeInterval dl1 = CACurrentMediaTime();
+                // CFTimeInterval dl1 = CACurrentMediaTime();
                 
                 // LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
                 
                 // The system works best with properly timed video frames, which we time to the end of the next vsync period,
                 // the earliest they can be displayed due to double-buffering.
-                CFTimeInterval targetLocal = deadline + link.duration;
+                CFTimeInterval targetLocal = nextFrameTime;
                 
                 [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetLocal, NSEC_PER_SEC)];
                 
@@ -313,7 +340,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 // Update metrics
                 if (lastTargetLocal != 0) {
                     CFTimeInterval frametime = targetLocal - lastTargetLocal;
-                    if (frametime > deadline - start + 0.0005f) {
+                    if (frametime > nextFrameTime - start + 0.0005f) {
                         // we missed a callback
                         // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
                     }
@@ -322,49 +349,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                     }
                 }
                 lastTargetLocal = targetLocal;
-                
-                // weighted moving average of how much time displayLink needs after dequeuing a frame.
-                // This is used to avoid overshooting a vsync by waiting too long.
-                const double alpha = 0.1f;
-                avgOverhead = ((CACurrentMediaTime() - dl1) * alpha) + (avgOverhead * (1.0 - alpha));
             }
-        }];
-    }
-    else{
-        Frame *frame = [_frameQueue dequeueWithTimeoutSync:waitFor];
-        if (frame) {
-            CFTimeInterval dl1 = CACurrentMediaTime();
-            
-            // LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
-            
-            // The system works best with properly timed video frames, which we time to the end of the next vsync period,
-            // the earliest they can be displayed due to double-buffering.
-            CFTimeInterval targetLocal = deadline + link.duration;
-            
-            [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetLocal, NSEC_PER_SEC)];
-            
-    #ifdef DISPLAYLINK_VERBOSE
-            Log(LOG_I, @"[%.3f] rendering frame %d, waitFor %.3f ms, overhead %.3f ms, lateCallbacks %d, queue size %d",
-                deadline, frame.frameNumber, waitFor * 1000.0, avgOverhead * 1000.0, lateCallbacks, [_frameQueue count]);
-    #endif
-            
-            // Update metrics
-            if (lastTargetLocal != 0) {
-                CFTimeInterval frametime = targetLocal - lastTargetLocal;
-                if (frametime > deadline - start + 0.0005f) {
-                    // we missed a callback
-                    // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
-                }
-                if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-                    [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
-                }
-            }
-            lastTargetLocal = targetLocal;
-            
-            // weighted moving average of how much time displayLink needs after dequeuing a frame.
-            // This is used to avoid overshooting a vsync by waiting too long.
-            const double alpha = 0.1f;
-            avgOverhead = ((CACurrentMediaTime() - dl1) * alpha) + (avgOverhead * (1.0 - alpha));
         }
     }
 }

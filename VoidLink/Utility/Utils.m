@@ -167,6 +167,10 @@ NSString *const deviceName = @"roth";
     return NO;
 }
 
++ (BOOL)isIPhone{
+    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+}
+
 @end
 
 @implementation NSString (NSStringWithTrim)

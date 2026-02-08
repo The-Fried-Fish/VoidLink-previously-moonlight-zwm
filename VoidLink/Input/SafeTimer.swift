@@ -73,6 +73,10 @@ final class SafeTimer: NSObject {
             self.shouldRunHandler = true
         }
     }
+    
+    @objc func isRunning() -> Bool {
+        return shouldRunHandler;
+    }
 
     /// 彻底清理 timer，返回后保证 handler 不再执行
     @objc func clean() {

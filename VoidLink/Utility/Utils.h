@@ -33,6 +33,7 @@ FOUNDATION_EXPORT NSString *const deviceName;
 + (NSString*) addressAndPortToAddressPortString:(NSString*)address port:(unsigned short)port;
 + (bool)hdrSupported;
 + (bool)needUpdateDefaultSettings;
++ (BOOL)isIPhone;
 
 #if !TARGET_OS_TV
 + (void) launchUrl:(NSString*)urlString;
