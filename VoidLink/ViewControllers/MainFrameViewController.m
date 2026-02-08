@@ -1584,14 +1584,15 @@ static NSMutableSet* hostList;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
         case UIUserInterfaceIdiomPhone:
-            settings.sdrPerformanceWorkaround = false;
-            settings.framePacingMode = @(FramePacingModeLegacy);
+            settings.sdrPerformanceWorkaround = true;
+            settings.framePacingMode = @(FramePacingModeQueue);
             break;
         default:
             settings.sdrPerformanceWorkaround = true;
+            settings.framePacingMode = @(FramePacingModeQueue);
             break;
     }
-    if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = false;
+    if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = true;
     if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = true;
     [dataMan saveData];
 }
