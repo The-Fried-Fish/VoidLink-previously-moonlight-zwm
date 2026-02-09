@@ -980,61 +980,61 @@
       }
     },
     "53H-ST-OtY.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Balanced\"; ObjectID = \"53H-ST-OtY\";",
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[0] = \"Standard\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Balanced"
+            "value" : "Standard"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "平衡"
+            "value" : "标准"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "平衡"
+            "value" : "標準"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "平衡"
+            "value" : "標準"
           }
         }
       }
     },
     "53H-ST-OtY.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Performance\"; ObjectID = \"53H-ST-OtY\";",
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Metal\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Performance"
+            "value" : "Metal"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性能"
+            "value" : "Metal"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "效能"
+            "value" : "Metal"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "效能"
+            "value" : "Metal"
           }
         }
       }

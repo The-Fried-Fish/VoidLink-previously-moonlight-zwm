@@ -2282,7 +2282,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     // Check if the rendering backend has actually changed
     if (previousBackend != sender.selectedSegmentIndex) {
         // Show alert to prompt user to restart the app
-        NSString *message = [LocalizationHelper localizedStringForKey: sender.selectedSegmentIndex == 1 ? @"PerfModeTip" : @"Rendering mode change requires app restart"];
+        NSString *message = [LocalizationHelper localizedStringForKey: sender.selectedSegmentIndex == 1 ? @"metalRenderTip" : @"Rendering mode change requires app restart"];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Restart Required"]
                                                                                  message:message
@@ -2303,8 +2303,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         UIAlertAction *laterAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Later"]
                                                                style:UIAlertActionStyleCancel
                                                              handler:^(UIAlertAction * _Nonnull action) {
-            // Save settings immediately to persist the renderer change
-            [self saveSettings];
+            self.renderingBackendSelector.selectedSegmentIndex = labs(self.renderingBackendSelector.selectedSegmentIndex - 1);
         }];
         
         [alertController addAction:laterAction];

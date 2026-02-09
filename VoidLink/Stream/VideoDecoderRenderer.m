@@ -288,7 +288,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     // previousLinkTime = current;
     
     CFTimeInterval start = link.timestamp;
-    CFTimeInterval nextFrameTime = link.targetTimestamp;
+    CFTimeInterval targetTime = link.targetTimestamp;
     static CFTimeInterval lastTargetLocal = 0.0f;
     CFTimeInterval dl0 = CACurrentMediaTime();
      
@@ -302,7 +302,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     
     [self checkDisplayLayer];
     
-    CFTimeInterval waitFor = nextFrameTime - dl0;
+    CFTimeInterval waitFor = targetTime - dl0;
     
     if (waitFor < 0.001f) {
         waitFor = isIPhone ? waitFor : 0.0f;
@@ -315,7 +315,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
             [_frameQueue dequeueWithTimeout:waitFor completion:^(Frame *frame) {
                 if (frame) {
                     // LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
-                    [self renderFrame:frame atTime:CMTimeMakeWithSeconds(nextFrameTime, NSEC_PER_SEC)];
+                    [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetTime, NSEC_PER_SEC)];
                 }
             }];
         }
@@ -328,7 +328,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 
                 // The system works best with properly timed video frames, which we time to the end of the next vsync period,
                 // the earliest they can be displayed due to double-buffering.
-                CFTimeInterval targetLocal = nextFrameTime;
+                CFTimeInterval targetLocal = targetTime;
                 
                 [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetLocal, NSEC_PER_SEC)];
                 
@@ -340,7 +340,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
                 // Update metrics
                 if (lastTargetLocal != 0) {
                     CFTimeInterval frametime = targetLocal - lastTargetLocal;
-                    if (frametime > nextFrameTime - start + 0.0005f) {
+                    if (frametime > targetTime - start + 0.0005f) {
                         // we missed a callback
                         // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
                     }
