@@ -56,6 +56,7 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property NSString *brushShortcut;
 @property NSString *eraserShortcut;
 @property (nonatomic, assign) bool pencilPausesNativeTouch;
+@property (nonatomic, assign) bool disablePencilSlideGestures;
 
 
 - (id) initWithName:(NSString*)name buttonStates:(NSMutableArray*)buttonStates isSelected:(BOOL)isSelected;

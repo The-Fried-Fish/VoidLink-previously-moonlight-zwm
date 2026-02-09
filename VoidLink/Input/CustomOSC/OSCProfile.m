@@ -57,6 +57,7 @@
     [encoder encodeObject:self.brushShortcut forKey:@"brushShortcut"];
     [encoder encodeObject:self.eraserShortcut forKey:@"eraserShortcut"];
     [encoder encodeBool:self.pencilPausesNativeTouch forKey:@"pencilPausesNativeTouch"];
+    [encoder encodeBool:self.disablePencilSlideGestures forKey:@"disablePencilSlideGestures"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
@@ -134,6 +135,7 @@
         : @"";
         
         self.pencilPausesNativeTouch = [decoder containsValueForKey:@"pencilPausesNativeTouch"] ? [decoder decodeBoolForKey:@"pencilPausesNativeTouch"] : false;
+        self.disablePencilSlideGestures = [decoder containsValueForKey:@"disablePencilSlideGestures"] ? [decoder decodeBoolForKey:@"disablePencilSlideGestures"] : false;
     }
     
     return self;
@@ -169,6 +171,7 @@
     copy.brushShortcut = [self.brushShortcut mutableCopy]; // NSString → NSMutableString
     copy.eraserShortcut = [self.eraserShortcut mutableCopy]; // NSString → NSMutableString
     copy.pencilPausesNativeTouch = self.pencilPausesNativeTouch;
+    copy.disablePencilSlideGestures = self.disablePencilSlideGestures;
     return copy;
 }
 

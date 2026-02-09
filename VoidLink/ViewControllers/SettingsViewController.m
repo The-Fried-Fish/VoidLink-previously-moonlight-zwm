@@ -393,6 +393,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.pressureCurveSwitch setOn:oscProfile.pressureCurveEnabled];
     [self.doubleTapShortcutSwitch setOn:oscProfile.doubleTapShorcutEnabled];
     [self.pencilPausesNativeTouchSwitch setOn:oscProfile.pencilPausesNativeTouch];
+    [self.disablePencilSlideGestureSwitch setOn:oscProfile.disablePencilSlideGestures];
 }
 
 - (void)saveGameProfileConfigs{
@@ -416,6 +417,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.pressureCurveEnabled == self.pressureCurveSwitch.isOn
                              && oscProfile.doubleTapShorcutEnabled == self.doubleTapShortcutSwitch.isOn
                              && oscProfile.pencilPausesNativeTouch == self.pencilPausesNativeTouchSwitch.isOn
+                             && oscProfile.disablePencilSlideGestures == self.disablePencilSlideGestureSwitch.isOn
                              );
 
     if(!configNotChanged){
@@ -435,6 +437,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.pressureCurveEnabled = self.pressureCurveSwitch.isOn;
         oscProfile.doubleTapShorcutEnabled = self.doubleTapShortcutSwitch.isOn;
         oscProfile.pencilPausesNativeTouch = self.pencilPausesNativeTouchSwitch.isOn;
+        oscProfile.disablePencilSlideGestures = self.disablePencilSlideGestureSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
     }
 }
@@ -876,6 +879,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
+        [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [pencilSection addToParentStack:_parentStack];
     }
     
@@ -3393,6 +3397,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self pencilTickModeChanged:self.pencilTickSelector];
         [self.doubleTapShortcutSwitch setOn:false];
         [self.pencilPausesNativeTouchSwitch setOn:false];
+        [self.disablePencilSlideGestureSwitch setOn:false];
     });
 }
 
@@ -3414,6 +3419,19 @@ BOOL isCustomResolution(int resolutionSelected) {
         if (@available(iOS 15.0, *)) {
             [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
                 if(info.valid) [PencilHandler enterDoubleTapShortcutsIn:self];
+                else {
+                    [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+                }
+            }];
+        }
+    }
+}
+
+- (void)disablePencilSlideGestureSwitchFlipped:(UISwitch* )sender{
+    if(sender.isOn && !settingsViewJustLoaded){
+        if (@available(iOS 15.0, *)) {
+            [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+                if(info.valid) nil;
                 else {
                     [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
                 }
@@ -3444,6 +3462,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         [self.pressureCurveSwitch addTarget:self action:@selector(pressureCurveSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.doubleTapShortcutSwitch addTarget:self action:@selector(doubleTapShortcutSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+        [self.disablePencilSlideGestureSwitch addTarget:self action:@selector(disablePencilSlideGestureSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.pencilPausesNativeTouchSwitch addTarget:self action:@selector(pencilPausesNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     }
 }

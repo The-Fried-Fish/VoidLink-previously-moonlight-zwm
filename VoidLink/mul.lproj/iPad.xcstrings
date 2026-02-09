@@ -5509,6 +5509,36 @@
         }
       }
     },
+    "w3d-5s-dH3.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Disable Pencil Slide Gesture\"; ObjectID = \"w3d-5s-dH3\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disable Pencil Slide Gesture"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭 Pencil 滑动手势"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉 Pencil 滑動手勢"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉 Pencil 滑動手勢"
+          }
+        }
+      }
+    },
     "wi6-L4-KwS.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; wi6-L4-KwS.segmentTitles[0] = \"System\"; ObjectID = \"wi6-L4-KwS\";",
       "extractionState" : "extracted_with_value",
@@ -5847,7 +5877,7 @@
     },
     "Ylu-hT-Cuz.text" : {
       "comment" : "Class = \"UILabel\"; text = \"The recommended value is 2. 1 frame provides the lowest latency, but may require an Ethernet connection.\"; ObjectID = \"Ylu-hT-Cuz\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

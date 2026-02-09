@@ -49,6 +49,7 @@
     ControllerSupport *_controllerSupport;
     StreamManager *_streamMan;
     TemporarySettings *_settings;
+    OSCProfile* _oscProfile;
     NSTimer *_inactivityTimer;
     NSTimer *_statsUpdateTimer;
     PaddedLabel *_overlayView;
@@ -281,6 +282,7 @@
 
 - (void)configGestures{
     _slideToSettingsRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
+    _slideToSettingsRecognizer.excludePencilEvent = _oscProfile.disablePencilSlideGestures;
     _slideToSettingsRecognizer.edgeTolerance = _settings.edgeSlidingSensitivity.floatValue;
     _slideToSettingsRecognizer.edges = _settings.slideToSettingsScreenEdge.intValue;
     _slideToSettingsRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
@@ -290,6 +292,7 @@
     
     
     _slideToToolboxRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(bringUpToolboxMenu)];
+    _slideToToolboxRecognizer.excludePencilEvent = _oscProfile.disablePencilSlideGestures;
     _slideToToolboxRecognizer.edgeTolerance = _settings.edgeSlidingSensitivity.floatValue;
     if(_settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft) _slideToToolboxRecognizer.edges = UIRectEdgeRight;
     else _slideToToolboxRecognizer.edges = UIRectEdgeLeft;  // _commandManager triggered by sliding from another side.
@@ -360,6 +363,8 @@
     if (reloadSettings) {
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     }
+    _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
+    
     overlayLevel = _settings.statsOverlayLevel.intValue;
     [self setupOverlayView];
     
