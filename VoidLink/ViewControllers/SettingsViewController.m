@@ -475,7 +475,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                                  name:@"OscLayoutCloseNotification"
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(pencilProPurchaseAborted)
+                                             selector:@selector(pencilProPurchaseAborted:)
                                                  name:@"PencilProPurchaseAbortedNotification"
                                                object:nil];
 
@@ -3381,23 +3381,39 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     if(settingsViewJustExpanded) return;
     
-    if (@available(iOS 15.0, *)) {
-        if(sender.selectedSegmentIndex != ManualTick) return;
-        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
-            if(!info.valid){
-                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
-            }
-        }];
-    }
+    if(sender.selectedSegmentIndex != ManualTick) return;
+    [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+        if(!info.valid){
+            [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+        }
+    }];
 }
 
-- (void)pencilProPurchaseAborted{
+- (void)pencilProPurchaseAborted:(NSNotification *)notification{
     dispatch_async(dispatch_get_main_queue(), ^{
         self.pencilTickSelector.selectedSegmentIndex = PencilTickDisabled;
         [self pencilTickModeChanged:self.pencilTickSelector];
+        [self.pressureCurveSwitch setOn:false];
         [self.doubleTapShortcutSwitch setOn:false];
         [self.pencilPausesNativeTouchSwitch setOn:false];
         [self.disablePencilSlideGestureSwitch setOn:false];
+        
+        
+        NSNumber *value = notification.userInfo[@"interruption"];
+        if (!value) return;
+
+        PurchaseInterruption interruption = value.intValue;
+
+        if(interruption == PurchaseInterruptionLowOSVersion){
+            [AlertControllerUtil showAlertIn:self
+                                       title:@""
+                                     message:[LocalizationHelper localizedStringForKey:@"PencilProPackLowOSVersionTip"]
+                                  withCancel:NO
+                                 buttonTitle:[LocalizationHelper localizedStringForKey:@"OK"]
+                                   countdown:0
+                                      action:nil
+                                  completion:nil];
+        }
     });
 }
 
@@ -3416,37 +3432,31 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)doubleTapShortcutSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){
-        if (@available(iOS 15.0, *)) {
-            [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
-                if(info.valid) [PencilHandler enterDoubleTapShortcutsIn:self];
-                else {
-                    [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
-                }
-            }];
-        }
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            if(info.valid) [PencilHandler enterDoubleTapShortcutsIn:self];
+            else {
+                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            }
+        }];
     }
 }
 
 - (void)disablePencilSlideGestureSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){
-        if (@available(iOS 15.0, *)) {
-            [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
-                if(info.valid) nil;
-                else {
-                    [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
-                }
-            }];
-        }
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            if(info.valid) nil;
+            else {
+                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            }
+        }];
     }
 }
 
 - (void)pencilPausesNativeTouchSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){
-        if (@available(iOS 15.0, *)) {
-            [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
-                if(!info.valid) [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
-            }];
-        }
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            if(!info.valid) [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+        }];
     }
 }
 

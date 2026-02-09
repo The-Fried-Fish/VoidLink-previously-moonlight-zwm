@@ -5056,6 +5056,35 @@
     "PencilProPackDescription" : {
       "extractionState" : "manual"
     },
+    "PencilProPackLowOSVersionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil Pro Pack is coming soon on iOS 12–14."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil Pro Pack 即将支持 iOS 12–14。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil Pro Pack 即將支援 iOS 12–14。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil Pro Pack 即將支援 iOS 12–14。"
+          }
+        }
+      }
+    },
     "PencilProPackURL" : {
       "extractionState" : "manual",
       "localizations" : {

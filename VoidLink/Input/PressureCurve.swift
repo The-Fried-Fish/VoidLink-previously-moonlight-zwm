@@ -658,6 +658,15 @@ class PressureCurveViewController: UIViewController {
         if interruption != .learnMore {
             resetTapped()
         }
+        if interruption == .lowOSVersion {
+            AlertControllerUtil.showAlert(
+                in: self,
+                title: "",
+                message: SwiftLocalizationHelper.localizedString(forKey:"PencilProPackLowOSVersionTip"),
+                withCancel: false,
+                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
+                countdown: 0)
+        }
     }
     
     @objc private func pressureRangeTest() {
@@ -715,18 +724,13 @@ class PressureCurveViewController: UIViewController {
     }
 
     @objc private func saveTapped() {
-        if #available(iOS 15.0, *) {
-            IAPManager.checkPurchaseInfo(.PencilProPack) { info in
-                if info.valid {
-                    self.persistCurve()
-                }
-                else{
-                    IAPManager.inAppPurchaseAction(viewController: self, product: .PencilProPack)
-                }
+        IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+            if info.valid {
+                self.persistCurve()
             }
-        }
-        else {
-            return
+            else{
+                IAPManager.inAppPurchaseAction(viewController: self, product: .PencilProPack)
+            }
         }
     }
 

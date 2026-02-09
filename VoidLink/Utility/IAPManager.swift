@@ -19,6 +19,7 @@ import StoreKit
     case unlockNow
     case restore
     case learnMore
+    case lowOSVersion
 }
 
 @objc public class PurchaseInfo: NSObject {
@@ -221,21 +222,21 @@ import StoreKit
                     await transaction.finish()
                     NotificationCenter.default.post(name: product.purchaseSucceededNotification(), object: nil)
                 case .unverified(_, let err):
-                    NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow)
+                    NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
                     await MainActor.run {
                         self.delegate?.iapManagerDidFailWithError(err)
                     }
                 }
             case .userCancelled:
-                NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow)
+                NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
                 break
             default:
-                NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow)
+                NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
                 break
             }
         } catch {
             await MainActor.run {
-                NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow)
+                NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
                 self.delegate?.iapManagerDidFailWithError(error)
             }
         }
@@ -301,36 +302,38 @@ import StoreKit
     }
     
     // MARK: Utils
-    @available(iOS 15.0, *)
     @objc static public func checkPurchaseInfo(
         _ product: AddOnProduct,
         completion: @escaping (PurchaseInfo) -> Void
     ) {
         let productID = product.productId()
-        Task {
-            var status: PurchaseStatus = .notPurchased
-            var expiration: Date? = nil
-
-            for await verificationResult in Transaction.currentEntitlements {
-                if case .verified(let transaction) = verificationResult,
-                   transaction.productID == productID {
-
-                    // 有退款 / 撤销
-                    if transaction.revocationDate != nil {
-                        status = .revoked
-                    } else {
-                        status = .purchased
-                        expiration = transaction.expirationDate
+        if #available(iOS 15.0, *) {
+            Task {
+                var status: PurchaseStatus = .notPurchased
+                var expiration: Date? = nil
+                for await verificationResult in Transaction.currentEntitlements {
+                    if case .verified(let transaction) = verificationResult,
+                       transaction.productID == productID {
+                        
+                        // 有退款 / 撤销
+                        if transaction.revocationDate != nil {
+                            status = .revoked
+                        } else {
+                            status = .purchased
+                            expiration = transaction.expirationDate
+                        }
+                        break
                     }
-                    break
+                }
+                let info = PurchaseInfo(status: status, expirationDate: expiration as NSDate?)
+                
+                await MainActor.run {
+                    completion(info)
                 }
             }
-
-            let info = PurchaseInfo(status: status, expirationDate: expiration as NSDate?)
-
-            await MainActor.run {
-                completion(info)
-            }
+        }
+        else {
+            NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.lowOSVersion, userInfo:["interruption": PurchaseInterruption.lowOSVersion.rawValue])
         }
     }
     
@@ -365,7 +368,7 @@ import StoreKit
                             // Fallback on earlier versions
                         }
                     } catch {
-                        NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.restore)
+                        NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.restore, userInfo:["interruption": PurchaseInterruption.restore.rawValue])
                         print("Restore failed: \(error)")
                     }
                 }
@@ -375,7 +378,7 @@ import StoreKit
         }
         
         let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
-            NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.learnMore)
+            NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.learnMore, userInfo:["interruption": PurchaseInterruption.learnMore.rawValue])
             if let url = URL(string: product.productURL()) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
