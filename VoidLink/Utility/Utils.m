@@ -156,7 +156,7 @@ NSString *const deviceName = @"roth";
 }
 
 + (bool)needUpdateDefaultSettings {
-    NSString *key = @"needUpdateDefaultSettings20260207";
+    NSString *key = @"needUpdateDefaultSettings20260209";
     BOOL updatedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
 
     if (!updatedBefore) {

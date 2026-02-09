@@ -1718,6 +1718,8 @@ static NSMutableSet* hostList;
     [self prewarmSoftKeyboard];
         
     [IAPManager.shared fetchProducts];
+    
+    [self changeDefaultSettings];
 
     /*
     if (@available(iOS 15.0, *)) {
