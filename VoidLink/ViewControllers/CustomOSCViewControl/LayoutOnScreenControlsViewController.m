@@ -1114,11 +1114,11 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     self.buttonModeStack.hidden = selectedWidgetView.widgetType != WidgetTypeEnumButton;
     // bool slideToToggleEnabled = !selectedWidgetView.isFuncationalButton || selectedWidgetView.isFolder;
     // [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton forSegmentAtIndex:0];
-    [self.buttonModeSelector setEnabled:true forSegmentAtIndex:slideToToggle];
-    bool slideAndHoldEnabled = !selectedWidgetView.isFuncationalButton || selectedWidgetView.isFolder;
+    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFunctionalButton forSegmentAtIndex:slideToToggle];
+    bool slideAndHoldEnabled = !selectedWidgetView.isFunctionalButton || selectedWidgetView.isFolder;
     [self.buttonModeSelector setEnabled:slideAndHoldEnabled forSegmentAtIndex:slideAndHold];
     [self.buttonModeSelector setEnabled:!selectedWidgetView.isFolder forSegmentAtIndex:regular];
-    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFuncationalButton
+    [self.buttonModeSelector setEnabled:!selectedWidgetView.isFunctionalButton
      || [selectedWidgetView.functionalButtonString containsString:@"ABSTCHDRAG"]
                       forSegmentAtIndex:tapToToggle];
     [self.buttonModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonMode];

@@ -157,7 +157,7 @@ import SVGKit
     @objc public var hasAutoTap: Bool = false
     @objc public var isMousePadWithButtonActions: Bool = false
     @objc public var hasInertia: Bool = false
-    @objc public var isFuncationalButton: Bool = false
+    @objc public var isFunctionalButton: Bool = false
     @objc public var hasHapticFeedback: Bool = false
     @objc public var isDirectionPad: Bool = false
     @objc public var hasL3R3Indicator: Bool = false
@@ -392,15 +392,15 @@ import SVGKit
             if !self.motionControlButtonString.isEmpty {
                 self.buttonMode = .tapToToggle
             }
-            if !self.functionalButtonString.isEmpty {
-                self.buttonMode = .movable
-                if self.functionalButtonString == "PENCILHOVER" {self.buttonMode = .regular}
-            }
             if self.cmdString.contains("BRUSH"){
                 self.functionalButtonString = "BRUSH"
             }
             if self.cmdString.contains("ERASER"){
                 self.functionalButtonString = "ERASER"
+            }
+            if !self.functionalButtonString.isEmpty {
+                self.buttonMode = .movable
+                if self.functionalButtonString == "PENCILHOVER" {self.buttonMode = .regular}
             }
         }
         
@@ -460,7 +460,7 @@ import SVGKit
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasInertia = CommandManager.inertialTouchPads.contains(self.touchPadString)
-        self.isFuncationalButton = self.functionalButtonString != ""
+        self.isFunctionalButton = self.functionalButtonString != ""
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
         self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
@@ -2028,7 +2028,7 @@ import SVGKit
                     if !captured || !isSlidableButton {return}
                     // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
                     if(widget.buttonMode == .slideToToggle || widget.buttonMode == .movable){
-                        widget.handleFingerUpOrSlideout(leaveFunctionalButtonAlone: widget.isFuncationalButton)
+                        widget.handleFingerUpOrSlideout(leaveFunctionalButtonAlone: widget.isFunctionalButton)
                         setLock.lock()
                         widget.capturedTouches.remove(touch)
                         setLock.unlock()
@@ -2874,9 +2874,10 @@ import SVGKit
         widget.parentSequence = folder.sequence
         folder.sequenceSet.insert(widget.sequence)
         widget.isHidden = folder.folded
-        if folder.buttonMode == .slideAndHold, widget.isFuncationalButton {
+        /*
+        if folder.buttonMode == .slideAndHold, widget.isFunctionalButton {
             widget.buttonMode = .slideToToggle
-        }
+        } */
     }
     
     @objc static func setFree(widget:OnScreenWidgetView){
