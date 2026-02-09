@@ -1505,11 +1505,11 @@ import SVGKit
         if !OnScreenWidgetView.editMode && self.cmdString.contains("+") && !self.cmdString.contains("-"){
             if buttonMode == .movable, moveableButtonLongPressed() {return}
             self.buttonDownVisualEffect()
-            var keyboardCmdStrings = CommandManager.shared.extractKeyStrings(from: self.cmdString)!
-            keyboardCmdStrings.removeAll{
+            var autoReleaseComboButtons = CommandManager.shared.extractAutoReleaseButtonStrings(from: self.cmdString)!
+            autoReleaseComboButtons.removeAll{
                 Set(CommandManager.pencilProButtonCmds).contains($0)
             }
-            CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings) // send multi-key command
+            CommandManager.shared.sendAutoReleaseComboCommand(cmdString: autoReleaseComboButtons) // send multi-key command
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.buttonUpVisualEffect()
             }

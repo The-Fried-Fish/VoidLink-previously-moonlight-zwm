@@ -256,8 +256,8 @@ import UIKit
     func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
         if !pencilProEnabled {return}
         if doubleTapShorcuts.isEmpty {return}
-        let keyStrings = CommandManager.shared.extractKeyStrings(from: doubleTapShorcuts[shorcutIndex])
-        CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyStrings, delay: 0.1)
+        let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: doubleTapShorcuts[shorcutIndex])
+        CommandManager.shared.sendAutoReleaseComboCommand(cmdString: keyStrings, delay: 0.1)
         shorcutIndex = (shorcutIndex + 1) % doubleTapShorcuts.count
     }
     
@@ -311,10 +311,10 @@ import UIKit
         }
 
         let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
-            let keyboardShortcut = alert.textFields?[0].text ?? ""
-            let keyStrings = CommandManager.shared.extractKeyStrings(from: keyboardShortcut)
-            if keyStrings?.count ?? 0 > 0 || keyboardShortcut == "" {
-                eraserShortcut = keyboardShortcut
+            let comboButtons = alert.textFields?[0].text ?? ""
+            let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
+            if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
+                eraserShortcut = comboButtons
             }
             enterBrushShortcut(in: viewController)
         }
@@ -348,10 +348,10 @@ import UIKit
         }
 
         let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
-            let keyboardShortcut = alert.textFields?[0].text ?? ""
-            let keyStrings = CommandManager.shared.extractKeyStrings(from: keyboardShortcut)
-            if keyStrings?.count ?? 0 > 0 || keyboardShortcut == "" {
-                brushShortcut = keyboardShortcut
+            let comboButtons = alert.textFields?[0].text ?? ""
+            let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
+            if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
+                brushShortcut = comboButtons
             }
             
             if selectedProfile?.brushShortcut != brushShortcut

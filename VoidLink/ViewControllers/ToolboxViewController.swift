@@ -405,8 +405,8 @@ import UIKit
     
     private func sendKeyboardCommand(_ cmd: RemoteCommand) {
         print("Sending key-value")
-        let keyboardCmdStrings = CommandManager.shared.extractKeyStrings(from: cmd.cmdString)
-        CommandManager.shared.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings!)
+        let keyboardCmdStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: cmd.cmdString)
+        CommandManager.shared.sendAutoReleaseComboCommand(cmdString: keyboardCmdStrings!)
     }
     
     public func gestureRecognizer(

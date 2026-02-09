@@ -446,23 +446,25 @@ import UIKit
     }
     
     // extractKeyStrings from keyboardCMDString
-    @objc public func extractKeyStrings(from keyboardCmd: String) -> [String]? {
-        let keyboardCmd = keyboardCmd.uppercased()
-        let keys = CommandManager.keyboardButtonMappings.keys.joined(separator: "|")
+    @objc public func extractAutoReleaseButtonStrings(from cmd: String) -> [String]? {
+        let cmd = cmd.uppercased()
+        let mergedKeys = (Set(CommandManager.keyboardButtonMappings.keys)
+                        .union(Set(CommandManager.mouseButtonMappings.keys)))
+        let keys = mergedKeys.joined(separator: "|")
         let pattern = "^(?:(\(keys))(?:\\+(\(keys))*)*)$"
-        
+
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
             print("Failed to create regex")
             return nil
         }
-        let range = NSRange(location: 0, length: keyboardCmd.utf16.count)
-        guard let match = regex.firstMatch(in: keyboardCmd, options: [], range: range) else {
-            print("No match found for input: \(keyboardCmd)")
+        let range = NSRange(location: 0, length: cmd.utf16.count)
+        guard let match = regex.firstMatch(in: cmd, options: [], range: range) else {
+            print("No match found for input: \(cmd)")
             return nil
         }
         // print("Regex matched for input: \(input)")
         
-        let matchedString = (keyboardCmd as NSString).substring(with: match.range(at: 0))
+        let matchedString = (cmd as NSString).substring(with: match.range(at: 0))
         let keyStrings = matchedString.split(separator: "+").map { String($0) }
         
         guard !keyStrings.isEmpty else {
@@ -473,7 +475,8 @@ import UIKit
         var validKeyStrings: [String] = []
         
         for key in keyStrings {
-            if CommandManager.keyboardButtonMappings.keys.contains(key) {
+            if (CommandManager.keyboardButtonMappings.keys.contains(key)
+                || CommandManager.mouseButtonMappings.keys.contains(key)) {
                 validKeyStrings.append(key)
             } else {
                 print(" '\(key)' is not defined in key mappings")
@@ -552,7 +555,7 @@ import UIKit
     @objc public func addCommand(_ command: RemoteCommand) -> Bool {
         command.cmdString = command.cmdString.uppercased() // convert all letters to upper case
         if(command.alias.trimmingCharacters(in: .whitespacesAndNewlines).count == 0) {command.alias = command.cmdString} // copy cmd string as alias when alias is empty
-        let keyStrings = extractKeyStrings(from: command.cmdString)
+        let keyStrings = extractAutoReleaseButtonStrings(from: command.cmdString)
         if (keyStrings == nil) {return false}  // in case of non-keyboard command strings, return false
         commands.append(command)
         saveCommands()
@@ -591,39 +594,41 @@ import UIKit
         }
     }
     
-    
     private func saveCommands() {
         if let data = try? NSKeyedArchiver.archivedData(withRootObject: commands, requiringSecureCoding: false) {
             UserDefaults.standard.set(data, forKey: "savedCommands")
         }
     }
     
-    @objc public func sendKeyComboCommand(keyboardCmdStrings: [String]?, delay: TimeInterval = 0.2, index: Int = 0) { // we need a large delay for WAN streaming
+    @objc public func sendAutoReleaseComboCommand(cmdString: [String]?, delay: TimeInterval = 0.2, index: Int = 0) { // we need a large delay for WAN streaming
         // 如果已处理完所有按键，则开始释放按键
-        guard let keyboardCmdStrings = keyboardCmdStrings else { return }
-        guard index < keyboardCmdStrings.count else {
+        guard let cmdString = cmdString else { return }
+        guard index < cmdString.count else {
             // 释放按键
-            for keyStr in keyboardCmdStrings.reversed() { // 从后往前释放按键
-                if let keyCode = CommandManager.keyboardButtonMappings[keyStr] {
-                    LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_UP), 0)  // 释放按键
+            DispatchQueue.main.asyncAfter(deadline: .now()) {
+                for keyStr in cmdString.reversed() { // 从后往前释放按键
+                    if let keyCode = CommandManager.keyboardButtonMappings[keyStr] {
+                        LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_UP), 0)  // 释放按键
+                    }
+                    if let mouseButtonCode = CommandManager.mouseButtonMappings[keyStr]{
+                        LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), mouseButtonCode)
+                    }
                 }
             }
             return
         }
-         
         // 获取当前按键的映射值
-        if let keyCode = CommandManager.keyboardButtonMappings[keyboardCmdStrings[index]] {
+        if let keyCode = CommandManager.keyboardButtonMappings[cmdString[index]] {
             // 发送当前按键的按下事件
             LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_DOWN), 0)
-
-            // 延迟后递归处理下一个按键
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                self.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings, delay: delay, index: index + 1)
-            }
+        } else if let mouseButtonCode = CommandManager.mouseButtonMappings[cmdString[index]]{
+            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), mouseButtonCode)
         } else {
-            print("No mapping found for \(keyboardCmdStrings[index])")
-            // 如果当前按键没有映射，跳过当前按键并继续下一个
-            self.sendKeyComboCommand(keyboardCmdStrings: keyboardCmdStrings, delay: delay, index: index + 1)
+            print("No mapping found for \(cmdString[index])")
+        }
+        // 延迟后递归处理下一个按键
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            self.sendAutoReleaseComboCommand(cmdString: cmdString, delay: delay, index: index + 1)
         }
     }
     

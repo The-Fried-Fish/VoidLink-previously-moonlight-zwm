@@ -778,7 +778,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     NSString *widgetShape = [widgetInitParams[@"shape"] lowercaseString];
         
     widgetInitParams[@"cmdString"] = cmdString;
-    bool noValidKeyboardString = [CommandManager.shared extractKeyStringsFrom:cmdString] == nil; // this is a invalid string.
+    bool noValidKeyboardString = [CommandManager.shared extractAutoReleaseButtonStringsFrom:cmdString] == nil; // this is a invalid string.
     bool noValidSuperComboButtonString = [CommandManager.shared extractCmdStringsFrom:cmdString] == nil; // this is a invalid string.
     bool noValidMouseButtonString = ![CommandManager.mouseButtonMappings.allKeys containsObject:cmdString];
     bool noValidTouchPadString = ![CommandManager.touchPadCmds containsObject:cmdString];
