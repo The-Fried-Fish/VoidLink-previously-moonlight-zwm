@@ -5450,61 +5450,61 @@
       }
     },
     "VWB-YB-Ptj.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; VWB-YB-Ptj.segmentTitles[0] = \"Stage Manager\"; ObjectID = \"VWB-YB-Ptj\";",
+      "comment" : "Class = \"UISegmentedControl\"; VWB-YB-Ptj.segmentTitles[0] = \"Duplicate\"; ObjectID = \"VWB-YB-Ptj\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Stage Manager"
+            "value" : "Duplicate"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "台前调度(可全屏)"
+            "value" : "复制"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度(可全螢幕)"
+            "value" : "複製"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度(可全螢幕)"
+            "value" : "複製"
           }
         }
       }
     },
     "VWB-YB-Ptj.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; VWB-YB-Ptj.segmentTitles[1] = \"AirPlay (mirroring)\"; ObjectID = \"VWB-YB-Ptj\";",
+      "comment" : "Class = \"UISegmentedControl\"; VWB-YB-Ptj.segmentTitles[1] = \"External Display Only\"; ObjectID = \"VWB-YB-Ptj\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "AirPlay (mirroring)"
+            "value" : "External Display Only"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "隔空播放(镜像)"
+            "state" : "translated",
+            "value" : "仅外屏"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕鏡像輸出"
+            "value" : "僅外螢幕"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "螢幕鏡像輸出"
+            "state" : "translated",
+            "value" : "僅外螢幕"
           }
         }
       }

@@ -5156,61 +5156,61 @@
       }
     },
     "Tue-Qh-8zP.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; Tue-Qh-8zP.segmentTitles[0] = \"Stage Manager\"; ObjectID = \"Tue-Qh-8zP\";",
+      "comment" : "Class = \"UISegmentedControl\"; Tue-Qh-8zP.segmentTitles[0] = \"Duplicate\"; ObjectID = \"Tue-Qh-8zP\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Stage Manager"
+            "value" : "Duplicate"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "台前调度(可全屏)"
+            "value" : "复制"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度(可全螢幕)"
+            "value" : "複製"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幕前調度(可全螢幕)"
+            "value" : "複製"
           }
         }
       }
     },
     "Tue-Qh-8zP.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; Tue-Qh-8zP.segmentTitles[1] = \"AirPlay\"; ObjectID = \"Tue-Qh-8zP\";",
+      "comment" : "Class = \"UISegmentedControl\"; Tue-Qh-8zP.segmentTitles[1] = \"External Display Only\"; ObjectID = \"Tue-Qh-8zP\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "AirPlay"
+            "value" : "External Display Only"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隔空播放(镜像)"
+            "value" : "仅外屏"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕鏡像輸出"
+            "value" : "僅外螢幕"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕鏡像輸出"
+            "value" : "僅外螢幕"
           }
         }
       }
