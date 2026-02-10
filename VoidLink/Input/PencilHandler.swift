@@ -62,7 +62,6 @@ import UIKit
         
         PencilHandler.squeezeStartShortcut = selectedProfile.squeezeStartShortcut
         PencilHandler.squeezeEndShortcut = selectedProfile.squeezeEndShortcut
-
         pressureCurveEnabled = selectedProfile.pressureCurveEnabled
         
         if #available(iOS 15.0, *) {
@@ -259,9 +258,9 @@ import UIKit
     func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
         if !pencilProEnabled {return}
         if doubleTapShorcuts.isEmpty {return}
-        let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: doubleTapShorcuts[shorcutIndex])
+        let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: doubleTapShorcuts[shortcutIndex])
         CommandManager.shared.sendAutoReleaseComboCommand(cmdString: keyStrings, delay: 0.1)
-        shorcutIndex = (shorcutIndex + 1) % doubleTapShorcuts.count
+        shortcutIndex = (shortcutIndex + 1) % doubleTapShorcuts.count
     }
     
     @available(iOS 17.5, *)
@@ -270,7 +269,7 @@ import UIKit
         didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze
     ) {
         if !pencilProEnabled {return}
-        let keepPressedUntilRelease = PencilHandler.squeezeEndShortcut == "NULL"
+        let keepPressedUntilRelease = PencilHandler.squeezeEndShortcut.uppercased() == "NULL"
         let squeezePressKeyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: PencilHandler.squeezeStartShortcut)
         let squeezeReleaseKeyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: PencilHandler.squeezeEndShortcut)
         
@@ -294,7 +293,7 @@ import UIKit
     @objc static private(set) var eraserShortcut:String = ""
     @objc static private(set) var brushShortcut:String = ""
     private var doubleTapShorcuts: Array<String> = []
-    private var shorcutIndex: Int = 0
+    private var shortcutIndex: Int = 0
     
     @objc func replaceBrush(with shortcut:String){
         if let i = doubleTapShorcuts.indices.last {
