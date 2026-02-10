@@ -710,31 +710,31 @@
       }
     },
     "53H-ST-OtY.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Metal\"; ObjectID = \"53H-ST-OtY\";",
+      "comment" : "Class = \"UISegmentedControl\"; 53H-ST-OtY.segmentTitles[1] = \"Metal (Experimental)\"; ObjectID = \"53H-ST-OtY\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Metal"
+            "value" : "Metal (Experimental)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Metal"
+            "value" : "Metal (实验性)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Metal"
+            "value" : "Metal (實驗性)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Metal"
+            "value" : "Metal (實驗性)"
           }
         }
       }
@@ -1771,7 +1771,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "捏筆快速鍵"
           }
         }
@@ -5431,38 +5431,38 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "輕點兩下快速鍵"
           }
         }
       }
     },
     "v8l-hf-kiR.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Rendering Mode (Experimental)\"; ObjectID = \"v8l-hf-kiR\";",
+      "comment" : "Class = \"UILabel\"; text = \"Rendering Mode\"; ObjectID = \"v8l-hf-kiR\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Rendering Mode (Experimental)"
+            "value" : "Rendering Mode"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "渲染模式（实验性）"
+            "value" : "渲染模式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "渲染模式（實驗性）"
+            "value" : "渲染模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "渲染模式（實驗性）"
+            "value" : "渲染模式"
           }
         }
       }

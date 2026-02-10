@@ -3930,25 +3930,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hold up! \n\n- Standard render has better performance on most devices now.\n\n- Changing the rendering mode requires restarting the application to ensure a clean start.\n\n- Metal rendering is an experimental feature that may cause performance degradation on some devices.\n\n- Metal render currently is unable to handle HDR content correctly on most devices.\n\n- Metal rendering mode does not support PiP.\n\n- Tapping “Quit Now” means I acknowledge the above information."
+            "value" : "\nHold up! \n\n- Standard render has better performance on most devices now.\n\n- Changing the rendering mode requires restarting the application to ensure a clean start.\n\n- Metal rendering is an experimental feature that may cause performance degradation on some devices.\n\n- Metal render currently is unable to handle HDR content correctly on most devices.\n\n- Metal rendering mode does not support PiP.\n\n- Tapping “Quit Now” means I acknowledge the above information."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "等等！\n\n- 标准渲染模式目前在大多数设备上具有更好的性能。\n\n- 切换渲染模式需要重启应用程序，以确保一次干净的启动。\n\n- Metal 渲染是一项实验性功能，在某些设备上可能会导致性能下降。\n\n- Metal 渲染模式下不支持画中画。\n\n- 目前 Metal 渲染器在大多数设备上无法正确处理 HDR 内容。\n\n点击“立即退出”表示我已知晓并认可以上信息。"
+            "value" : "\n等等！\n\n- 标准渲染模式目前在大多数设备上具有更好的性能。\n\n- 切换渲染模式需要重启应用程序，以确保一次干净的启动。\n\n- Metal 渲染是一项实验性功能，在某些设备上可能会导致性能下降。\n\n- Metal 渲染模式下不支持画中画。\n\n- 目前 Metal 渲染器在大多数设备上无法正确处理 HDR 内容。\n\n点击“立即退出”表示我已知晓并认可以上信息。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "等等！\n\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。\n\n点选「立即结束」表示我已了解并同意上述说明。"
+            "value" : "\n等等！\n\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。\n\n点选「立即结束」表示我已了解并同意上述说明。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "等等！\n\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。\n\n点选「立即结束」表示我已了解并同意上述说明。"
+            "value" : "\n等等！\n\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。\n\n点选「立即结束」表示我已了解并同意上述说明。"
           }
         }
       }
