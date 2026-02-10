@@ -1147,19 +1147,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="kFw-d7-BTn" userLabel="HDRStack">
-                                <rect key="frame" x="18" y="1618" width="280" height="31"/>
+                                <rect key="frame" x="18" y="1618" width="185" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HDR" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7nX-ra-hKS">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="DsK-co-fY5"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="35" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kgb-YU-AFW" userLabel="HDR Switch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="55" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="RZD-Lv-5Ti"/>
                                         </constraints>
@@ -1664,19 +1661,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="hnG-J3-IuI" userLabel="yuv444Stack">
-                                <rect key="frame" x="15" y="1673" width="280" height="31"/>
+                                <rect key="frame" x="15" y="1673" width="229" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YUV 4:4:4" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5JB-m0-nUF" userLabel="yuv444Label">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="WpR-me-hc7"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="79" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OZK-ba-DD9" userLabel="yuv444Switch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="99" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="sEv-HV-fKh"/>
                                         </constraints>
@@ -1820,19 +1814,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="hvN-TZ-ziV" userLabel="pipStack">
-                                <rect key="frame" x="437" y="1618" width="280" height="31"/>
+                                <rect key="frame" x="437" y="1618" width="230.5" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable PiP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Ul-P6-eUk" userLabel="pipLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="BBk-4S-vkO"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="80.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mgR-dj-4gu" userLabel="pipSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="100.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="ke0-cJ-jZt"/>
                                         </constraints>
@@ -1843,19 +1834,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="fRg-Rn-St7" userLabel="fullColorRangeStack">
-                                <rect key="frame" x="437" y="1659" width="280" height="31"/>
+                                <rect key="frame" x="437" y="1659" width="274.5" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Color Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fRl-Ra-Lbl" userLabel="fullRangeLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="fRl-Ra-Wdt"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="124.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fRs-Wt-Ch9" userLabel="fullRangeSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="144.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="fRs-Wt-Wdt"/>
                                         </constraints>

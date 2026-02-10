@@ -876,7 +876,7 @@ static NSMutableSet* hostList;
                     _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_HIGH8_444;
                 }
                 else {
-                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported]) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN10; // 8bit performance degradation workaround for av1
+                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported] && false) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN10; // 8bit performance degradation workaround for av1
                     else _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN8;
                 }
             }
@@ -1580,15 +1580,15 @@ static NSMutableSet* hostList;
     Settings* settings = [dataMan retrieveSettings];
     switch ([UIDevice currentDevice].userInterfaceIdiom) {
         case UIUserInterfaceIdiomPad:
-            settings.sdrPerformanceWorkaround = true;
+            settings.sdrPerformanceWorkaround = false;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
         case UIUserInterfaceIdiomPhone:
-            settings.sdrPerformanceWorkaround = true;
+            settings.sdrPerformanceWorkaround = false;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
         default:
-            settings.sdrPerformanceWorkaround = true;
+            settings.sdrPerformanceWorkaround = false;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
     }

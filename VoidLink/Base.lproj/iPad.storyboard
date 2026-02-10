@@ -184,19 +184,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="dH7-Sy-EdJ" userLabel="HDRStack">
-                                <rect key="frame" x="23" y="1899" width="280" height="31"/>
+                                <rect key="frame" x="23" y="1899" width="185" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HDR" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2w1-Vw-GVy">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="9mp-gd-Zxi"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="35" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wIq-fF-X8l" userLabel="HDR Switch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="55" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="hJy-Aj-ymJ"/>
                                         </constraints>
@@ -429,19 +426,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Qfd-bG-FSa" userLabel="yuv444Stack">
-                                <rect key="frame" x="20" y="1954" width="280" height="31"/>
+                                <rect key="frame" x="20" y="1954" width="229" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YUV 4:4:4" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MNm-86-RGl" userLabel="yuv444Label">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="foL-nr-sZ9"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="79" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jIQ-jh-tvP" userLabel="yuv444Switch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="99" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="a86-Rl-9pP"/>
                                         </constraints>
@@ -563,19 +557,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="12a-Wi-LlL" userLabel="pipStack">
-                                <rect key="frame" x="432" y="1860" width="280" height="31"/>
+                                <rect key="frame" x="432" y="1860" width="230.5" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable PiP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3rP-dh-TJi" userLabel="pipLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="ir2-ut-mD3"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="80.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-Z9-IYM" userLabel="pipSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="100.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="ADb-7C-hgx"/>
                                         </constraints>
@@ -586,19 +577,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Rg-St7" userLabel="fullColorRangeStack">
-                                <rect key="frame" x="432" y="1901" width="280" height="31"/>
+                                <rect key="frame" x="432" y="1901" width="274.5" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Color Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Ra-Lbl" userLabel="fullRangeLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="130" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="iPd-Ra-Wdt"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="124.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iPd-Wt-Ch9" userLabel="fullRangeSwitch">
-                                        <rect key="frame" x="150" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="144.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="iPd-Wt-Wdt"/>
                                         </constraints>
@@ -3208,19 +3196,19 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -6619,6 +6619,35 @@
         }
       }
     },
+    "sdrPerformanceWorkaroundStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommended to enable when streaming in SDR.\nIf you experience overexposed visuals, restart the Sunshine service and disable this option."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建议进行SDR串流时打开。\n如出现画面过曝问题，重启Sunshine服务本并关闭此选项。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建議在進行 SDR 串流時啟用此選項。\n若出現畫面過曝的問題，請重新啟動 Sunshine 服務，並停用此選項。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建議在進行 SDR 串流時啟用此選項。\n若出現畫面過曝的問題，請重新啟動 Sunshine 服務，並停用此選項。"
+          }
+        }
+      }
+    },
     "Searching for PCs on your network..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8259,25 +8288,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Enabling the YUV 4:4:4 option provides higher color fidelity but also requires greater bandwidth.\n\n- Since Apple does not provide an API to determine whether a device supports hardware decoding of YUV 4:4:4 video, you will need to enable this option manually to verify compatibility. On some devices, this may cause issues such as loss of video brightness."
+            "value" : "When enabling YUV 4:4:4, it is recommended to also enable “SDR Performance Workaround.”"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 开启YUV 4:4:4 选项可提供更高色彩保真度, 但对带宽要求也更高. \n\n- 由于Apple并未提供API判断设备是否支持YUV 4:4:4视频硬解码, 您需要自行打开该选项确认是否可用. 某些设备会因此产生视频亮度丢失的问题."
+            "value" : "开启YUV 4:4:4 时，建议同时开启“SDR性能优化路径“"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 啟用 YUV 4:4:4 選項可提供更高的色彩保真度，但也需要更大的頻寬。\n\n- 由於 Apple 未提供 API 來判斷裝置是否支援 YUV 4:4:4 視訊的硬體解碼，您需要手動啟用此選項以驗證相容性。在某些裝置上，這可能會導致視訊亮度遺失等問題。"
+            "value" : "啟用 YUV 4:4:4 時，建議同時啟用「SDR 效能優化路徑」。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 啟用 YUV 4:4:4 選項可提供更高的色彩保真度，但也需要更大的頻寬。\n\n- 由於 Apple 未提供 API 來判斷裝置是否支援 YUV 4:4:4 視訊的硬體解碼，您需要手動啟用此選項以驗證相容性。在某些裝置上，這可能會導致視訊亮度遺失等問題。"
+            "value" : "啟用 YUV 4:4:4 時，建議同時啟用「SDR 效能優化路徑」。"
           }
         }
       }
