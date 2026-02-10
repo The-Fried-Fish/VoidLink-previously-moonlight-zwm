@@ -1188,6 +1188,7 @@ static NSMutableSet* hostList;
     // [settingsViewController widget:settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.optimizeGamesStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
+    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.sdrPerformanceWorkaroundStack];
     [settingsViewController.touchModeSelector1 setEnabled:!_settingsExpandedInStreamView || !(settingsViewController.touchModeSelector1.selectedSegmentIndex == AbsoluteTouch && !settingsViewController.passthroughGesturesSwitch.isOn)];
     [settingsViewController.touchModeSelector2 setEnabled:settingsViewController.touchModeSelector1.enabled];
     
