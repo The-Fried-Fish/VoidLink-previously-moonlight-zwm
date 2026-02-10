@@ -270,6 +270,9 @@
 @property (weak, nonatomic) IBOutlet UIStackView *doubleTapShortcutStack;
 @property (weak, nonatomic) IBOutlet UISwitch *doubleTapShortcutSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *squeezeShortcutStack;
+@property (weak, nonatomic) IBOutlet UISwitch *squeezeShortcutSwitch;
+
 @property (weak, nonatomic) IBOutlet UIStackView *pencilPausesNativeTouchStack;
 @property (weak, nonatomic) IBOutlet UISwitch *pencilPausesNativeTouchSwitch;
 

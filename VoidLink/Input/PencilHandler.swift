@@ -60,6 +60,9 @@ import UIKit
             doubleTapShorcuts.append(selectedProfile.brushShortcut)
         }
         
+        PencilHandler.squeezeStartShortcut = selectedProfile.squeezeStartShortcut
+        PencilHandler.squeezeEndShortcut = selectedProfile.squeezeEndShortcut
+
         pressureCurveEnabled = selectedProfile.pressureCurveEnabled
         
         if #available(iOS 15.0, *) {
@@ -266,10 +269,22 @@ import UIKit
         _ interaction: UIPencilInteraction,
         didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze
     ) {
+        if !pencilProEnabled {return}
+        let keepPressedUntilRelease = PencilHandler.squeezeEndShortcut == "NULL"
+        let squeezePressKeyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: PencilHandler.squeezeStartShortcut)
+        let squeezeReleaseKeyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: PencilHandler.squeezeEndShortcut)
+        
+        guard let squeezePressKeyStrings = squeezePressKeyStrings else {return}
+        guard squeezePressKeyStrings.count>0 else {return}
+
         switch squeeze.phase {
         case .began:
+            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezePressKeyStrings, delay: 0.1, pressOnly: true)}
+            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezePressKeyStrings, delay: 0.1)}
             break
         case .ended, .cancelled:
+            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezePressKeyStrings, releaseOnly: true)}
+            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezeReleaseKeyStrings, delay: 0.1)}
             break
         default:
             break
@@ -378,9 +393,93 @@ import UIKit
         })
 
     }
-
-
     
+    @objc static private(set) var squeezeStartShortcut:String = ""
+    @objc static private(set) var squeezeEndShortcut:String = ""
+    
+    @objc static public func enterSqueezeShortcuts(in viewController: UIViewController){
+        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+        selectedProfile = oscProfileMan.getSelectedProfile()
+        guard let selectedProfile = selectedProfile else {return}
+        
+        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
+                                      message: SwiftLocalizationHelper.localizedString(forKey: "enterSqueezePressShort"),
+                                      preferredStyle: .alert)
+        
+        alert.addTextField { textField in
+            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: e, ctrl+e, alt+e ...")
+            textField.keyboardType = .asciiCapable
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+            textField.text = selectedProfile.squeezeStartShortcut
+        }
+
+        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+            let comboButtons = alert.textFields?[0].text ?? ""
+            let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
+            if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
+                squeezeStartShortcut = comboButtons
+            }
+            enterSqueezeEndShortcut(in: viewController)
+        }
+        
+        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        
+        alert.addAction(learnMoreAction)
+        alert.addAction(okAction)
+
+        viewController.present(alert, animated: true, completion: {
+        })
+    }
+
+    @objc static public func enterSqueezeEndShortcut(in viewController: UIViewController){
+                
+        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
+                                      message: SwiftLocalizationHelper.localizedString(forKey: "enterSqueezeReleaseShort"),
+                                      preferredStyle: .alert)
+        
+        alert.addTextField { textField in
+            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: b, ctrl+b, alt+b ...")
+            textField.keyboardType = .asciiCapable
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+            textField.text = selectedProfile?.squeezeEndShortcut
+        }
+
+        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+            let comboButtons = alert.textFields?[0].text ?? ""
+            let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
+            if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
+                squeezeEndShortcut = comboButtons
+            }
+            
+            if selectedProfile?.squeezeEndShortcut != squeezeEndShortcut
+                || selectedProfile?.squeezeStartShortcut != squeezeStartShortcut {
+                guard let selectedProfile = selectedProfile else {return}
+                let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+                selectedProfile.squeezeEndShortcut = squeezeEndShortcut
+                selectedProfile.squeezeStartShortcut = squeezeStartShortcut
+                oscProfileMan.replaceSelectedProfile(with: selectedProfile, overwriteDefault: true)
+            }
+        }
+        
+        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+             
+        alert.addAction(learnMoreAction)
+        alert.addAction(okAction)
+
+        viewController.present(alert, animated: true, completion: {
+            
+        })
+    }
     
     private func attachHoverLeave(normalizedLocation:CGPoint){
         DispatchQueue.global().asyncAfter(deadline: .now()+0.0086) {

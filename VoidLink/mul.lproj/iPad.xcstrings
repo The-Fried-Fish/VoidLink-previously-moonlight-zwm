@@ -1747,6 +1747,36 @@
         }
       }
     },
+    "ccv-UD-RYW.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Squeeze Shortcut\"; ObjectID = \"ccv-UD-RYW\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Squeeze Shortcut"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "捏笔快捷键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏筆快速鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "捏筆快速鍵"
+          }
+        }
+      }
+    },
     "Ce3-FM-vIh.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frames to Buffer\"; ObjectID = \"Ce3-FM-vIh\";",
       "extractionState" : "extracted_with_value",
@@ -5378,18 +5408,18 @@
       }
     },
     "v5f-j3-pEc.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Double Tap Shorcut\"; ObjectID = \"v5f-j3-pEc\";",
+      "comment" : "Class = \"UILabel\"; text = \"Double Tap Shortcut\"; ObjectID = \"v5f-j3-pEc\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Double Tap Shorcut"
+            "value" : "Double Tap Shortcut"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "轻点两下快捷键"
           }
         },
@@ -5401,7 +5431,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "輕點兩下快速鍵"
           }
         }

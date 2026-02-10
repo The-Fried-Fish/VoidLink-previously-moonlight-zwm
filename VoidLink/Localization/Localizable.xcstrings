@@ -2477,6 +2477,64 @@
         }
       }
     },
+    "enterSqueezePressShort" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter shortcut on squeeze Press:"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入捏笔时发送的快捷键："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入捏筆時傳送的快速鍵："
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入捏筆時傳送的快速鍵："
+          }
+        }
+      }
+    },
+    "enterSqueezeReleaseShort" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter shortcut on squeeze release\nIf you want squeeze-press shortcut keys pressed until release, enter 'null':"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入松开时发送的快捷键\n如果需要按住捏笔快捷键直到松开，请输入’null’："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入在鬆開時要發送的快速鍵\n如果需要按住捏筆快速鍵直到鬆開，請輸入 “null”："
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入在鬆開時要發送的快速鍵\n如果需要按住捏筆快速鍵直到鬆開，請輸入 “null”："
+          }
+        }
+      }
+    },
     "Eraser Shortcut" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7047,6 +7105,58 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "軟體鍵盤手勢可根據最低位置的觸控點，定位遠端文字輸入的位置，並將串流畫面提升至適當高度。\n詳情請參閱線上說明文件。"
+          }
+        }
+      }
+    },
+    "Squeeze Shortcut" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏笔快捷键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏筆快速鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏筆快速鍵"
+          }
+        }
+      }
+    },
+    "squeezeShortcutStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortcut on squeeze press: %@\nShortcut on squeeze release: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏笔时发送快捷键：%@\n松开时发送快捷键：%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏筆時發送快速鍵：%@\n鬆開時發送快速鍵：%@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "捏筆時發送快速鍵：%@\n鬆開時發送快速鍵：%@"
           }
         }
       }

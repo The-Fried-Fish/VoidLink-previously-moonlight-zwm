@@ -392,6 +392,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [self.pressureCurveSwitch setOn:oscProfile.pressureCurveEnabled];
     [self.doubleTapShortcutSwitch setOn:oscProfile.doubleTapShorcutEnabled];
+    [self.squeezeShortcutSwitch setOn:oscProfile.squeezeShorcutEnabled];
     [self.pencilPausesNativeTouchSwitch setOn:oscProfile.pencilPausesNativeTouch];
     [self.disablePencilSlideGestureSwitch setOn:oscProfile.disablePencilSlideGestures];
 }
@@ -416,6 +417,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && (int16_t)(oscProfile.physicalRightStickMinOffset) == (int16_t)self.rightStickMinOffsetSlider.value
                              && oscProfile.pressureCurveEnabled == self.pressureCurveSwitch.isOn
                              && oscProfile.doubleTapShorcutEnabled == self.doubleTapShortcutSwitch.isOn
+                             && oscProfile.squeezeShorcutEnabled == self.squeezeShortcutSwitch.isOn
                              && oscProfile.pencilPausesNativeTouch == self.pencilPausesNativeTouchSwitch.isOn
                              && oscProfile.disablePencilSlideGestures == self.disablePencilSlideGestureSwitch.isOn
                              );
@@ -436,6 +438,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.physicalRightStickMinOffset = (int16_t)self.rightStickMinOffsetSlider.value;
         oscProfile.pressureCurveEnabled = self.pressureCurveSwitch.isOn;
         oscProfile.doubleTapShorcutEnabled = self.doubleTapShortcutSwitch.isOn;
+        oscProfile.squeezeShorcutEnabled = self.squeezeShortcutSwitch.isOn;
         oscProfile.pencilPausesNativeTouch = self.pencilPausesNativeTouchSwitch.isOn;
         oscProfile.disablePencilSlideGestures = self.disablePencilSlideGestureSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
@@ -878,6 +881,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self addSetting:self.pencilTickIntervalStack ofId:@"pencilTickIntervalStack" withInfoTag:NO withDynamicLabel:YES to:pencilSection];
         [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
+        [self addSetting:self.squeezeShortcutStack ofId:@"squeezeShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [pencilSection addToParentStack:_parentStack];
@@ -1495,6 +1499,14 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"doubleTapShortcutStackTip"
                    , [oscProfile.brushShortcut isEqualToString:@""] ? [LocalizationHelper localizedStringForKey:@"Null"] : oscProfile.brushShortcut
                    , [oscProfile.eraserShortcut isEqualToString:@""] ? [LocalizationHelper localizedStringForKey:@"Null"] : oscProfile.eraserShortcut
+        ];
+        showOnlineDocAction = false;
+    }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"squeezeShortcutStack"]){
+        oscProfile = [oscProfileMan getSelectedProfile];
+        tipText = [LocalizationHelper localizedStringForKey:@"squeezeShortcutStackTip"
+                   , [oscProfile.squeezeStartShortcut isEqualToString:@""] ? [LocalizationHelper localizedStringForKey:@"Null"] : oscProfile.squeezeStartShortcut
+                   , [oscProfile.squeezeEndShortcut isEqualToString:@""] ? [LocalizationHelper localizedStringForKey:@"Null"] : oscProfile.squeezeEndShortcut
         ];
         showOnlineDocAction = false;
     }
@@ -3395,6 +3407,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self pencilTickModeChanged:self.pencilTickSelector];
         [self.pressureCurveSwitch setOn:false];
         [self.doubleTapShortcutSwitch setOn:false];
+        [self.squeezeShortcutSwitch setOn:false];
         [self.pencilPausesNativeTouchSwitch setOn:false];
         [self.disablePencilSlideGestureSwitch setOn:false];
         
@@ -3441,6 +3454,17 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
+- (void)squeezeShortcutSwitchFlipped:(UISwitch* )sender{
+    if(sender.isOn && !settingsViewJustLoaded){
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            if(info.valid) [PencilHandler enterSqueezeShortcutsIn:self];
+            else {
+                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            }
+        }];
+    }
+}
+
 - (void)disablePencilSlideGestureSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){
         [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
@@ -3472,6 +3496,11 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         [self.pressureCurveSwitch addTarget:self action:@selector(pressureCurveSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.doubleTapShortcutSwitch addTarget:self action:@selector(doubleTapShortcutSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+        
+        [self.squeezeShortcutSwitch addTarget:self action:@selector(squeezeShortcutSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+        if (@available(iOS 17.5, *)) nil;
+        else [self.squeezeShortcutSwitch setEnabled:false];
+        
         [self.disablePencilSlideGestureSwitch addTarget:self action:@selector(disablePencilSlideGestureSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.pencilPausesNativeTouchSwitch addTarget:self action:@selector(pencilPausesNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     }

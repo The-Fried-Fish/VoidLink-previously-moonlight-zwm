@@ -56,6 +56,9 @@
     [encoder encodeBool:self.doubleTapShorcutEnabled forKey:@"doubleTapShorcutEnabled"];
     [encoder encodeObject:self.brushShortcut forKey:@"brushShortcut"];
     [encoder encodeObject:self.eraserShortcut forKey:@"eraserShortcut"];
+    [encoder encodeBool:self.squeezeShorcutEnabled forKey:@"squeezeShorcutEnabled"];
+    [encoder encodeObject:self.squeezeStartShortcut forKey:@"squeezeStartShortcut"];
+    [encoder encodeObject:self.squeezeEndShortcut forKey:@"squeezeEndShortcut"];
     [encoder encodeBool:self.pencilPausesNativeTouch forKey:@"pencilPausesNativeTouch"];
     [encoder encodeBool:self.disablePencilSlideGestures forKey:@"disablePencilSlideGestures"];
 }
@@ -134,6 +137,25 @@
                                    forKey:@"eraserShortcut"]
         : @"";
         
+        self.squeezeShorcutEnabled = [decoder containsValueForKey:@"squeezeShorcutEnabled"] ? [decoder decodeBoolForKey:@"squeezeShorcutEnabled"] : false;
+        self.squeezeStartShortcut =
+        [decoder containsValueForKey:@"squeezeStartShortcut"]
+        ? [decoder decodeObjectOfClasses:
+                [NSSet setWithObjects:
+                    [NSString class],
+                    nil]
+                                       forKey:@"squeezeStartShortcut"]
+        : @"";
+        
+        self.squeezeEndShortcut =
+        [decoder containsValueForKey:@"squeezeEndShortcut"]
+        ? [decoder decodeObjectOfClasses:
+                [NSSet setWithObjects:
+                    [NSString class],
+                    nil]
+                                       forKey:@"squeezeEndShortcut"]
+        : @"";
+
         self.pencilPausesNativeTouch = [decoder containsValueForKey:@"pencilPausesNativeTouch"] ? [decoder decodeBoolForKey:@"pencilPausesNativeTouch"] : false;
         self.disablePencilSlideGestures = [decoder containsValueForKey:@"disablePencilSlideGestures"] ? [decoder decodeBoolForKey:@"disablePencilSlideGestures"] : false;
     }
@@ -170,6 +192,9 @@
     copy.doubleTapShorcutEnabled = self.doubleTapShorcutEnabled;
     copy.brushShortcut = [self.brushShortcut mutableCopy]; // NSString → NSMutableString
     copy.eraserShortcut = [self.eraserShortcut mutableCopy]; // NSString → NSMutableString
+    copy.squeezeShorcutEnabled = self.squeezeShorcutEnabled;
+    copy.squeezeStartShortcut = [self.squeezeStartShortcut mutableCopy]; // NSString → NSMutableString
+    copy.squeezeEndShortcut = [self.squeezeEndShortcut mutableCopy]; // NSString → NSMutableString
     copy.pencilPausesNativeTouch = self.pencilPausesNativeTouch;
     copy.disablePencilSlideGestures = self.disablePencilSlideGestures;
     return copy;

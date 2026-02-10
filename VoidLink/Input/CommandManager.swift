@@ -600,12 +600,26 @@ import UIKit
         }
     }
     
-    @objc public func sendAutoReleaseComboCommand(cmdString: [String]?, delay: TimeInterval = 0.2, index: Int = 0) { // we need a large delay for WAN streaming
+    @objc public func sendAutoReleaseComboCommand(cmdString: [String]?, delay: TimeInterval = 0.2, index: Int = 0, pressOnly: Bool = false, releaseOnly:Bool = false) { // we need a large delay for WAN streaming
         // 如果已处理完所有按键，则开始释放按键
         guard let cmdString = cmdString else { return }
+        
+        if releaseOnly {
+            for keyStr in cmdString.reversed() {
+                if let keyCode = CommandManager.keyboardButtonMappings[keyStr] {
+                    LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_UP), 0)  // 释放按键
+                }
+                if let mouseButtonCode = CommandManager.mouseButtonMappings[keyStr]{
+                    LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), mouseButtonCode)
+                }
+            }
+            return
+        }
+        
         guard index < cmdString.count else {
             // 释放按键
             DispatchQueue.main.asyncAfter(deadline: .now()) {
+                if pressOnly {return}
                 for keyStr in cmdString.reversed() { // 从后往前释放按键
                     if let keyCode = CommandManager.keyboardButtonMappings[keyStr] {
                         LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_UP), 0)  // 释放按键
