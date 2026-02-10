@@ -1048,6 +1048,35 @@
         }
       }
     },
+    "betterPerformanceLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/pruyeo2a5imihey5"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/hxns3rgbcqhtyq0t"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/hxns3rgbcqhtyq0t"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/hxns3rgbcqhtyq0t"
+          }
+        }
+      }
+    },
     "Bitrate: %.1f Mbps" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6227,29 +6256,6 @@
         }
       }
     },
-    "Rendering mode change requires app restart" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改渲染模式需要重启应用以确保干净启动。您是否要立即退出应用？"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
-          }
-        }
-      }
-    },
     "renderingBackendStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7157,6 +7163,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "捏筆時發送快速鍵：%@\n鬆開時發送快速鍵：%@"
+          }
+        }
+      }
+    },
+    "standardRenderTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n- Standard render has better performance on most devices now.\n\n- Changing the rendering mode requires restarting the application to ensure a clean start."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n- 标准渲染模式目前在大多数设备上具有更好的性能。\n\n- 更改渲染模式需要重启应用以确保干净启动。您是否要立即退出应用？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
           }
         }
       }

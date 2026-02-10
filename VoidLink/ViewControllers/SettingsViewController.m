@@ -2298,14 +2298,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     // Check if the rendering backend has actually changed
     if (previousBackend != sender.selectedSegmentIndex) {
         // Show alert to prompt user to restart the app
-        NSString *message = [LocalizationHelper localizedStringForKey: sender.selectedSegmentIndex == 1 ? @"metalRenderTip" : @"Rendering mode change requires app restart"];
+        NSString *message = [LocalizationHelper localizedStringForKey: sender.selectedSegmentIndex == 1 ? @"metalRenderTip" : @"standardRenderTip"];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Restart Required"]
                                                                                  message:message
                                                                           preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction *quitAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Quit Now"]
-                                                              style:UIAlertActionStyleDestructive
+                                                              style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * _Nonnull action) {
 
             Settings* directSettings = [self->dataMan retrieveSettings];
@@ -2316,10 +2316,14 @@ BOOL isCustomResolution(int resolutionSelected) {
             exit(0);
         }];
         
-        UIAlertAction *laterAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Later"]
+        UIAlertAction *laterAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Learn More"]
                                                                style:UIAlertActionStyleCancel
                                                              handler:^(UIAlertAction * _Nonnull action) {
-            self.renderingBackendSelector.selectedSegmentIndex = labs(self.renderingBackendSelector.selectedSegmentIndex - 1);
+            self.renderingBackendSelector.selectedSegmentIndex = 0;
+            NSURL *url = [NSURL URLWithString:[LocalizationHelper localizedStringForKey:@"betterPerformanceLink"]];
+            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+            }
         }];
         
         [alertController addAction:laterAction];
