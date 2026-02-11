@@ -600,12 +600,12 @@ import UIKit
         }
     }
     
-    @objc public func sendAutoReleaseComboCommand(cmdString: [String]?, delay: TimeInterval = 0.2, index: Int = 0, pressOnly: Bool = false, releaseOnly:Bool = false) { // we need a large delay for WAN streaming
+    @objc public func sendAutoReleaseComboCommand(cmdStrings: [String]?, delay: TimeInterval = 0.2, index: Int = 0, pressOnly: Bool = false, releaseOnly:Bool = false) { // we need a large delay for WAN streaming
         // 如果已处理完所有按键，则开始释放按键
-        guard let cmdString = cmdString else { return }
+        guard let cmdStrings = cmdStrings else { return }
         
         if releaseOnly {
-            for keyStr in cmdString.reversed() {
+            for keyStr in cmdStrings.reversed() {
                 if let keyCode = CommandManager.keyboardButtonMappings[keyStr] {
                     LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_UP), 0)  // 释放按键
                 }
@@ -616,11 +616,11 @@ import UIKit
             return
         }
         
-        guard index < cmdString.count else {
+        guard index < cmdStrings.count else {
             // 释放按键
             DispatchQueue.main.asyncAfter(deadline: .now()) {
                 if pressOnly {return}
-                for keyStr in cmdString.reversed() { // 从后往前释放按键
+                for keyStr in cmdStrings.reversed() { // 从后往前释放按键
                     if let keyCode = CommandManager.keyboardButtonMappings[keyStr] {
                         LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_UP), 0)  // 释放按键
                     }
@@ -632,17 +632,17 @@ import UIKit
             return
         }
         // 获取当前按键的映射值
-        if let keyCode = CommandManager.keyboardButtonMappings[cmdString[index]] {
+        if let keyCode = CommandManager.keyboardButtonMappings[cmdStrings[index]] {
             // 发送当前按键的按下事件
             LiSendKeyboardEvent(keyCode, Int8(KEY_ACTION_DOWN), 0)
-        } else if let mouseButtonCode = CommandManager.mouseButtonMappings[cmdString[index]]{
+        } else if let mouseButtonCode = CommandManager.mouseButtonMappings[cmdStrings[index]]{
             LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), mouseButtonCode)
         } else {
-            print("No mapping found for \(cmdString[index])")
+            print("No mapping found for \(cmdStrings[index])")
         }
         // 延迟后递归处理下一个按键
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.sendAutoReleaseComboCommand(cmdString: cmdString, delay: delay, index: index + 1)
+            self.sendAutoReleaseComboCommand(cmdStrings: cmdStrings, delay: delay, index: index + 1, pressOnly: pressOnly, releaseOnly: releaseOnly)
         }
     }
     

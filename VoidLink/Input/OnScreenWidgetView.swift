@@ -398,7 +398,7 @@ import SVGKit
             if self.cmdString.contains("ERASER"){
                 self.functionalButtonString = "ERASER"
             }
-            if !self.functionalButtonString.isEmpty {
+            if self.isFunctionalButton {
                 self.buttonMode = .movable
                 if self.functionalButtonString == "PENCILHOVER" {self.buttonMode = .regular}
             }
@@ -460,7 +460,7 @@ import SVGKit
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasInertia = CommandManager.inertialTouchPads.contains(self.touchPadString)
-        self.isFunctionalButton = self.functionalButtonString != ""
+        self.isFunctionalButton = self.functionalButtonString != "" || self.cmdString.contains("+")
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
         self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
@@ -1509,7 +1509,7 @@ import SVGKit
             autoReleaseComboButtons.removeAll{
                 Set(CommandManager.pencilProButtonCmds).contains($0)
             }
-            CommandManager.shared.sendAutoReleaseComboCommand(cmdString: autoReleaseComboButtons) // send multi-key command
+            CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: autoReleaseComboButtons) // send multi-key command
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.buttonUpVisualEffect()
             }

@@ -259,7 +259,7 @@ import UIKit
         if !pencilProEnabled {return}
         if doubleTapShorcuts.isEmpty {return}
         let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: doubleTapShorcuts[shortcutIndex])
-        CommandManager.shared.sendAutoReleaseComboCommand(cmdString: keyStrings, delay: 0.1)
+        CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: keyStrings, delay: 0.1)
         shortcutIndex = (shortcutIndex + 1) % doubleTapShorcuts.count
     }
     
@@ -278,12 +278,12 @@ import UIKit
 
         switch squeeze.phase {
         case .began:
-            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezePressKeyStrings, delay: 0.1, pressOnly: true)}
-            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezePressKeyStrings, delay: 0.1)}
+            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezePressKeyStrings, delay: 0.1, pressOnly: true)}
+            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezePressKeyStrings, delay: 0.1)}
             break
         case .ended, .cancelled:
-            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezePressKeyStrings, releaseOnly: true)}
-            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdString: squeezeReleaseKeyStrings, delay: 0.1)}
+            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezePressKeyStrings, releaseOnly: true)}
+            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezeReleaseKeyStrings, delay: 0.1)}
             break
         default:
             break
