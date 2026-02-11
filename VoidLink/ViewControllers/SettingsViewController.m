@@ -2342,7 +2342,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     // Hide frame queue size for Off and Legacy modes
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
     // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
-    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.asyncFrameDequeueStack];
+    // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.asyncFrameDequeueStack];
 
     if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];
@@ -2922,6 +2922,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack{
     // CGFloat previousSpacing = stack.spacing;
+    if(!stack) return;
     if(hidden){
         stack.hidden = YES;
         [self->hiddenStacks addObject:stack];
