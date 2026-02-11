@@ -2830,6 +2830,9 @@ import SVGKit
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
                 DispatchQueue.main.async {
                     widget.isUserInteractionEnabled = false
+                    if widget.widgetType == .touchPad {
+                        widget.highlightBorder(highlighted: true)
+                    }
                     let duration = folder.buttonMode == .slideAndHold ? 0.05 : 0.15
                     UIView.animate(withDuration: duration, animations: {
                         widget.center = folder.center
@@ -2837,6 +2840,9 @@ import SVGKit
                         widget.isUserInteractionEnabled = !folder.folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
+                        if widget.widgetType == .touchPad {
+                            widget.highlightBorder(highlighted: false)
+                        }
                     })
                 }
             }
@@ -2848,12 +2854,18 @@ import SVGKit
                     widget.center = folder.storedCenter
                     widget.isUserInteractionEnabled = false
                     widget.isHidden = false
+                    if widget.widgetType == .touchPad {
+                        widget.highlightBorder(highlighted: true)
+                    }
                     UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
                         widget.center = widget.storedCenter
                     },completion: { finished in
                         widget.isUserInteractionEnabled = !folder.folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
+                        if widget.widgetType == .touchPad {
+                            widget.highlightBorder(highlighted: false)
+                        }
                     })
                 }
             }
