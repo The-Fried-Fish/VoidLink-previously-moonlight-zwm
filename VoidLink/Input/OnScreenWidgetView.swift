@@ -470,9 +470,10 @@ import SVGKit
         self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
         
         self.hasTrackPoint = (CommandManager.vectorTouchPads.contains(self.touchPadString)
+                              || self.isStickWheel
                               || (self.widgetType == WidgetTypeEnum.button
                                   && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))
-    }
+    } 
     
     // ======================================================================================================
     @objc public func setupAutoTapTimer() {
