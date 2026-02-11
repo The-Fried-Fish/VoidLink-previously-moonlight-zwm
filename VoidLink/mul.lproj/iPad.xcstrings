@@ -343,6 +343,36 @@
         }
       }
     },
+    "5q5-ug-Fg4.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Touch Point Tracking\"; ObjectID = \"5q5-ug-Fg4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Touch Point Tracking"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触点跟踪"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸點追蹤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸點追蹤"
+          }
+        }
+      }
+    },
     "6Cy-aH-DXp.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Curve Exponent\"; ObjectID = \"6Cy-aH-DXp\";",
       "extractionState" : "extracted_with_value",

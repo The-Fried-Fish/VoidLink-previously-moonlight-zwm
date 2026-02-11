@@ -11,7 +11,7 @@ import Foundation
 import SVGKit
 
 @objc public class GraphicUtils: NSObject {
-    @objc public class func makeSVGLayer(
+    @objc public static func makeSVGLayer(
         from file: String,
         in container: CALayer,
         at normalizedPosition: CGPoint = .zero,
@@ -35,7 +35,7 @@ import SVGKit
         )
     }
     
-    public class func makeCenteredSVGLayer(
+    public static func makeCenteredSVGLayer(
         from svg: SVGKImage,
         in container: CALayer,
         targetSize: CGSize
@@ -47,7 +47,7 @@ import SVGKit
         )
     }
 
-    @objc public class func _makeSVGLayer(
+    @objc public static func _makeSVGLayer(
         from svg: SVGKImage,
         in container: CALayer,
         at normalizedPosition: CGPoint = .zero,
@@ -106,11 +106,35 @@ import SVGKit
         return wrappedLayer
     }
     
-    @objc public class func changeColor(layer: CALayer, color: UIColor) {
+    @objc public static func changeColor(layer: CALayer, color: UIColor) {
         if let shape = layer as? CAShapeLayer {
             shape.fillColor = color.cgColor
             shape.strokeColor = color.cgColor
         }
         layer.sublayers?.forEach { changeColor(layer: $0, color: color) }
+    }
+    
+    @objc public static func makeTouchTrackpoint(in view:UIView) -> CAShapeLayer {
+        var trackPoint = CAShapeLayer()
+        let path = UIBezierPath(
+            arcCenter: CGPoint(x: 0, y: 0),
+            radius: Utils.isIPhone() ? 12 : 15,
+            startAngle: 0,
+            endAngle: CGFloat.pi * 2,
+            clockwise: true
+        )
+
+        trackPoint = CAShapeLayer()
+        trackPoint.path = path.cgPath
+
+        trackPoint.fillColor = UIColor.white.withAlphaComponent(0.3).cgColor
+        trackPoint.strokeColor = UIColor.clear.cgColor
+        trackPoint.lineWidth = 0
+        
+        view.layer.addSublayer(trackPoint)
+        trackPoint.position = view.center
+        trackPoint.isHidden = true
+
+        return trackPoint
     }
 }

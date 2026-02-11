@@ -104,6 +104,7 @@
         <attribute name="touchMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="touchMoveEventInterval" optional="YES" attributeType="Integer 16" defaultValueString="320" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="touchPointerVelocityFactor" optional="YES" attributeType="Float" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="touchPointTracking" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="uniqueId" attributeType="String" syncable="YES"/>
         <attribute name="unlockDisplayOrientation" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="useBuiltinMic" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>

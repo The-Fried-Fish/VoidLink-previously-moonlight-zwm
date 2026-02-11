@@ -110,6 +110,7 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
                    optimizeGames:(BOOL)optimizeGames
                  multiController:(BOOL)multiController
             buttonVisualFeedback:(BOOL)buttonVisualFeedback
+              touchPointTracking:(BOOL)touchPointTracking
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
                      redirectMic:(BOOL)redirectMic

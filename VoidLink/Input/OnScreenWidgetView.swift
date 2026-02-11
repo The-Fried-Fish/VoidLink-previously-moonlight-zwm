@@ -468,6 +468,10 @@ import SVGKit
         
         self.hasComponent = self.isStickWheel
         self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
+        
+        self.hasTrackPoint = (CommandManager.vectorTouchPads.contains(self.touchPadString)
+                              || (self.widgetType == WidgetTypeEnum.button
+                                  && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))
     }
     
     // ======================================================================================================
@@ -866,6 +870,7 @@ import SVGKit
         if CommandManager.stickTouchPads.contains(touchPadString) {setupL3R3Indicator()}
         if CommandManager.verticalTouchPads.contains(touchPadString) {setupL3R3Indicator()}
         if CommandManager.mousePadWithButtonActions.contains(self.touchPadString) {setupL3R3Indicator()}
+        if self.hasTrackPoint {setupTrackPoint()}
         if self.hasStickIndicator {
             if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
             if self.lrudIndicatorBall.superlayer == nil {self.lrudIndicatorBall = createStickBall()}
@@ -905,6 +910,21 @@ import SVGKit
         CATransaction.commit()
     }
     
+    @objc var hasTrackPoint: Bool = false
+    @objc static var trackPointEnabled: Bool = false
+    private var trackPoint:CAShapeLayer = CAShapeLayer()
+    @objc public func setupTrackPoint() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        // 1. 创建圆形路径
+        
+        
+        trackPoint.removeFromSuperlayer()
+        trackPoint = GraphicUtils.makeTouchTrackpoint(in: self)
+        
+        CATransaction.commit()
+    }
+
     private func showl3r3Indicator(){
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
             CATransaction.begin()
@@ -1740,6 +1760,7 @@ import SVGKit
         self.firstTouchMoved = false
         self.tickFlag = 0
         super.touchesBegan(touches, with: event)
+        
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button || CommandManager.mousePadWithButtonActions.contains(self.touchPadString);
 
         if !OnScreenWidgetView.editMode && self.touchPadString == "TRACKBALL" {
@@ -1862,6 +1883,16 @@ import SVGKit
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     OnScreenWidgetView.updateStreamViewGuidelines(for: self)
                 }
+            }
+            
+            if self.hasTrackPoint, self.widgetType == .touchPad, OnScreenWidgetView.trackPointEnabled {
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                if let touch = touches.first {
+                    trackPoint.isHidden = false
+                    trackPoint.position = touch.location(in: self)
+                }
+                CATransaction.commit()
             }
         }
         // here is in edit mode:
@@ -2066,6 +2097,18 @@ import SVGKit
                     if self.moveableButtonLongPressed() { // temporarily relocate special buttons
                         self.moveByTouch(touch: touch)
                     }
+                }
+            }
+            
+            if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
+                if let touch = touches.first {
+                    CATransaction.begin()
+                    CATransaction.setDisableActions(true)
+                    if trackPoint.isHidden {
+                        trackPoint.isHidden = false
+                    }
+                    trackPoint.position = touch.location(in: self)
+                    CATransaction.commit()
                 }
             }
         }
@@ -2609,6 +2652,10 @@ import SVGKit
             }
         }
         
+        if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
+            trackPoint.isHidden = true
+        }
+
         CATransaction.commit()
         
         if OnScreenWidgetView.editMode {

@@ -392,6 +392,7 @@
     
     bool onScreenWidgetSwitched = previousOnScreenWidgetEnabled != [_streamView isOnScreenWidgetEnabled];
     bool needReload = onScreenWidgetSwitched && !previousOnScreenWidgetEnabled;
+    OnScreenWidgetView.trackPointEnabled = _settings.touchPointTracking;
     [_streamView reloadOnScreenWidgetViews:_viewJustLoaded||reloadOnscreenWidgets||needReload]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
     
     if(onScreenWidgetSwitched && previousOnScreenWidgetEnabled) [_streamView clearOnScreenWidgets];

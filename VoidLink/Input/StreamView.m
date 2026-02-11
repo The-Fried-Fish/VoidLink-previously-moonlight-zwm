@@ -543,7 +543,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void) reloadOnScreenWidgetViews:(bool)reload{
     NSLog(@"reloadOnScreenWidgets in streamview %f", CACurrentMediaTime());
-
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         if(!self->oscProfileMan) self->oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
         OSCProfile *oscProfile = [self->oscProfileMan getSelectedProfile]; //returns the currently selected OSCProfile
@@ -626,6 +626,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                         buttonState.sequence = widgetView.sequence;
                         oscProfile.buttonStatesEncoded[i] = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
                     }
+                    
+                    [widgetView accessWidgetAttributes];
                 }
                 else if(buttonState.widgetType == LegacyOnScreenControls) hasLegacyWidget = true;
             }

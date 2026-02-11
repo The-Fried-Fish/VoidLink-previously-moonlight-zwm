@@ -822,6 +822,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
     [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
+    [self addSetting:self.trackTouchPointStack ofId:@"trackTouchPointStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
     [touchControlSection addToParentStack:_parentStack];
     // [touchAndControlSection setExpanded:NO];
     
@@ -1920,6 +1921,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.multiControllerSwitch setOn:self->tempSettings.multiController];
         [self.swapAbxySwitch setOn:self->tempSettings.swapABXYButtons];
         [self.buttonVisualFeedbackSwitch setOn:self->tempSettings.buttonVisualFeedback];
+        
+        [self.trackTouchPointSwitch setOn:self->tempSettings.touchPointTracking];
+        [self.trackTouchPointSwitch addTarget:self action:@selector(trackTouchPointSwitchFlipped:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
+
         [self.delayLeftClickSwitch setOn:self->tempSettings.delayLeftClick];
 
         [self.hapticEngineSelector setSelectedSegmentIndex:self->tempSettings.hapticEngine.intValue];
@@ -2997,6 +3002,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self handleOswGestureChange];
 }
 
+- (void)trackTouchPointSwitchFlipped:(UISwitch *)sender{
+    OnScreenWidgetView.trackPointEnabled = sender.isOn;
+}
+
 - (BOOL)manuallyChangedFPS {
     NSString *key = @"manuallyChangedFPS";
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -3571,6 +3580,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL multiController = self.multiControllerSwitch.isOn;
     BOOL swapABXYButtons = self.swapAbxySwitch.isOn;
     BOOL buttonVisualFeedback = self.buttonVisualFeedbackSwitch.isOn;
+    BOOL touchPointTracking = self.trackTouchPointSwitch.isOn;
     NSInteger gyroMode = self.gyroModeSelector.selectedSegmentIndex;
     NSInteger emulatedControllerType = [self segmentIndexToControllerType:self.emulatedControllerTypeSelector.selectedSegmentIndex]; //self.emulatedControllerTypeSelector.selectedSegmentIndex;
     BOOL audioOnPC = self.audioOnPcSwitch.isOn;
@@ -3648,6 +3658,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                        optimizeGames:optimizeGames
                      multiController:multiController
                 buttonVisualFeedback:buttonVisualFeedback
+                  touchPointTracking:touchPointTracking
                      swapABXYButtons:swapABXYButtons
                            audioOnPC:audioOnPC
                          redirectMic:redirectMic

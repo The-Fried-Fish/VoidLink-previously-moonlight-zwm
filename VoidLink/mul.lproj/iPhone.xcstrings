@@ -1483,6 +1483,36 @@
         }
       }
     },
+    "BQ1-w6-Opg.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Touch Point Tracking\"; ObjectID = \"BQ1-w6-Opg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Touch Point Tracking"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触点跟踪"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸點追蹤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸點追蹤"
+          }
+        }
+      }
+    },
     "bsU-vw-dTl.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Slide Distance Threshold\"; ObjectID = \"bsU-vw-dTl\";",
       "extractionState" : "extracted_with_value",

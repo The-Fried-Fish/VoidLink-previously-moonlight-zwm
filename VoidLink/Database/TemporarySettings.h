@@ -60,6 +60,7 @@
 @property (nonatomic, retain) NSNumber * asyncNativeTouchPriority;
 @property (nonatomic) BOOL multiController;
 @property (nonatomic) BOOL buttonVisualFeedback;
+@property (nonatomic) BOOL touchPointTracking;
 @property (nonatomic) BOOL swapABXYButtons;
 @property (nonatomic) BOOL playAudioOnPC;
 @property (nonatomic) BOOL redirectMic;

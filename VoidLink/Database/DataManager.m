@@ -81,7 +81,8 @@
              showKeyboardToolbar:(BOOL)showKeyboardToolbar
                    optimizeGames:(BOOL)optimizeGames
                  multiController:(BOOL)multiController
-               buttonVisualFeedback:(BOOL)buttonVisualFeedback
+            buttonVisualFeedback:(BOOL)buttonVisualFeedback
+              touchPointTracking:(BOOL)touchPointTracking
                  swapABXYButtons:(BOOL)swapABXYButtons
                        audioOnPC:(BOOL)audioOnPC
                      redirectMic:(BOOL)redirectMic
@@ -160,6 +161,7 @@
         settingsToSave.optimizeGames = optimizeGames;
         settingsToSave.multiController = multiController;
         settingsToSave.buttonVisualFeedback = buttonVisualFeedback;
+        settingsToSave.touchPointTracking = touchPointTracking;
         settingsToSave.swapABXYButtons = swapABXYButtons;
         settingsToSave.playAudioOnPC = audioOnPC;
         settingsToSave.redirectMic = redirectMic;
