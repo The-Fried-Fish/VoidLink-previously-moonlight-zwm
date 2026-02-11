@@ -818,8 +818,6 @@
                                         <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
                                         <segments>
                                             <segment title="Off"/>
-                                            <segment title="Simple"/>
-                                            <segment title="Full"/>
                                             <segment title="Custom"/>
                                         </segments>
                                         <color key="tintColor" red="0.6716768741607666" green="0.61711704730987549" blue="0.99902987480163574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

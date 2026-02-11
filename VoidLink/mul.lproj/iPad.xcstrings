@@ -4928,67 +4928,7 @@
       }
     },
     "qSU-wh-tqA.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; qSU-wh-tqA.segmentTitles[1] = \"Simple\"; ObjectID = \"qSU-wh-tqA\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Simple"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "简单"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "簡單"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "簡單"
-          }
-        }
-      }
-    },
-    "qSU-wh-tqA.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; qSU-wh-tqA.segmentTitles[2] = \"Full\"; ObjectID = \"qSU-wh-tqA\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Full"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完整"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完整"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完整"
-          }
-        }
-      }
-    },
-    "qSU-wh-tqA.segmentTitles[3]" : {
-      "comment" : "Class = \"UISegmentedControl\"; qSU-wh-tqA.segmentTitles[3] = \"Custom\"; ObjectID = \"qSU-wh-tqA\";",
+      "comment" : "Class = \"UISegmentedControl\"; qSU-wh-tqA.segmentTitles[1] = \"Custom\"; ObjectID = \"qSU-wh-tqA\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {

@@ -2130,7 +2130,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
         // this setting will be affected by touchMode, must be loaded before them.
         NSInteger onscreenControlsLevel = [self->tempSettings.onscreenControls integerValue];
-        [self.onScreenWidgetSelector setSelectedSegmentIndex:onscreenControlsLevel];
+        [self.onScreenWidgetSelector setSelectedSegmentIndex:MAX(onscreenControlsLevel,OnScreenControlsLevelCustom)];
         [self.onScreenWidgetSelector addTarget:self action:@selector(onScreenWidgetChanged) forControlEvents:UIControlEventValueChanged];
         [self onScreenWidgetChanged];
 

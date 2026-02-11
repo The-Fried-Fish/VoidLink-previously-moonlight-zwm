@@ -31,13 +31,13 @@ static const float BUTTON_DIST = 20;
     CGFloat _dPadSizeFactor;
 }
 
-+ (NSMutableDictionary *)layerVibrationStyleDic;
++ (NSMutableDictionary *_Nullable)layerVibrationStyleDic;
 
 typedef NS_ENUM(NSInteger, OnScreenControlsLevel) {
     OnScreenControlsLevelOff,
+    OnScreenControlsLevelCustom,
     OnScreenControlsLevelSimple,
     OnScreenControlsLevelFull,
-    OnScreenControlsLevelCustom,
     OnScreenControlsLevelAuto, // move it here instead of delete , to ensure integrity of the codes
 
     // Internal levels selected by ControllerSupport
