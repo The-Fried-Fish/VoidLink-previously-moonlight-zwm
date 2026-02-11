@@ -876,7 +876,7 @@ static NSMutableSet* hostList;
                     _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_HIGH8_444;
                 }
                 else {
-                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported] && false) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN10; // 8bit performance degradation workaround for av1
+                    if(streamSettings.sdrPerformanceWorkaround && [Utils hdrSupported]) _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN10; // 8bit performance degradation workaround for av1
                     else _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_MAIN8;
                 }
             }

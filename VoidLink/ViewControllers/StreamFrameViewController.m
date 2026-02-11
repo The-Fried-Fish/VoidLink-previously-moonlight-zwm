@@ -1334,7 +1334,8 @@
     if(strcmp(stageName, "video stream establishment")==0){
         if(!_settings.enableHdr
            && _settings.sdrPerformanceWorkaround
-           && [Utils hdrSupported]){
+           && [Utils hdrSupported]
+           && LiGetCurrentHostDisplayHdrMode()){
             dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC));
             dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSArray* hdrCommand = [CommandManager.shared extractAutoReleaseButtonStringsFrom:@"WIN+ALT+B"];
