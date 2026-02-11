@@ -1856,6 +1856,13 @@ import SVGKit
                     setLock.unlock()
                 }
             }
+            
+            if self.widgetType == WidgetTypeEnum.button && self.buttonMode == .movable {
+                movableButtonReleased = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    OnScreenWidgetView.updateStreamViewGuidelines(for: self)
+                }
+            }
         }
         // here is in edit mode:
         else{
@@ -2345,8 +2352,9 @@ import SVGKit
         }
     }
     
+    private var movableButtonReleased:Bool = true
     private func moveableButtonLongPressed() -> Bool{
-        return CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
+        return !movableButtonReleased && CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
     }
     
     private var singleTouchEnabled:Bool = true
@@ -2593,6 +2601,7 @@ import SVGKit
             && self == touches.first?.view) {self.handleFingerUpOrSlideout(event:event)}
         
         if !OnScreenWidgetView.editMode && self.buttonMode == .movable {
+            movableButtonReleased = true
             OnScreenWidgetView.removeStreamViewGuidelines()
             for sequence in self.sequenceSet {
                 let widget = OnScreenWidgetView.mapping[sequence]
