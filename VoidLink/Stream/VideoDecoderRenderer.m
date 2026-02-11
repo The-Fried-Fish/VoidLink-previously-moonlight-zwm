@@ -441,21 +441,22 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_displayLink invalidate];
 }
-- (void)cleanup
-{
-    [_frameQueue stop];
 
-    if (_renderingBackend == RENDER_AVSB) {
-        [_displayLink invalidate];
-    }
-
-    @synchronized(self) {
-        if (_decompressionSession != NULL) {
-            VTDecompressionSessionInvalidate(_decompressionSession);
-            CFRelease(_decompressionSession);
-            _decompressionSession = nil;
+- (void)cleanup{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_frameQueue stop];
+        
+        if (self->_renderingBackend == RENDER_AVSB) {
+            [self->_displayLink invalidate];
         }
-    }
+        @synchronized(self) {
+            if (self->_decompressionSession != NULL) {
+                VTDecompressionSessionInvalidate(self->_decompressionSession);
+                CFRelease(self->_decompressionSession);
+                self->_decompressionSession = nil;
+            }
+        }
+    });
 }
 
 #define NALU_START_PREFIX_SIZE 3

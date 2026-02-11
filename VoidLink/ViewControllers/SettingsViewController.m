@@ -1689,7 +1689,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [_favoriteSettingStackIdentifiers removeAllObjects];
         //for(NSInteger i = 0; i < parentStack.arrangedSubviews.count; i++){
         for(NSInteger i = 0; i < _parentStack.arrangedSubviews.count; i++){
-            [_favoriteSettingStackIdentifiers addObject:_parentStack.arrangedSubviews[i].accessibilityIdentifier];
+            if(_parentStack.arrangedSubviews[i].accessibilityIdentifier) [_favoriteSettingStackIdentifiers addObject:_parentStack.arrangedSubviews[i].accessibilityIdentifier];
         }
     }
     [[NSUserDefaults standardUserDefaults] setObject:_favoriteSettingStackIdentifiers forKey:@"FavoriteSettingStackIdentifiers"];
