@@ -232,8 +232,9 @@ const double NAV_BAR_HEIGHT = 50;
     [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
-- (IBAction) exitTapped:(id)sender {
-    [self dismissViewControllerAnimated:NO completion:nil];
+- (IBAction) restoreTapped:(id)sender {
+    [profilesManager importDefaultTemplates];
+    [self profileViewRefresh];
 }
 
 #pragma mark - UIDocumentPickerDelegate

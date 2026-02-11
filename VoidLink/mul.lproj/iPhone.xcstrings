@@ -4838,31 +4838,31 @@
       }
     },
     "sUC-Ur-7eI.title" : {
-      "comment" : "Class = \"UIBarButtonItem\"; title = \"Exit\"; ObjectID = \"sUC-Ur-7eI\";",
+      "comment" : "Class = \"UIBarButtonItem\"; title = \"Restore\"; ObjectID = \"sUC-Ur-7eI\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Exit"
+            "value" : "Restore"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出"
+            "value" : "恢复模板"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "退出"
+            "state" : "needs_review",
+            "value" : "恢復範本"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "退出"
+            "state" : "needs_review",
+            "value" : "恢復範本"
           }
         }
       }

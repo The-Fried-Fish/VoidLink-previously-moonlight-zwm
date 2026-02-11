@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 // - (NSData* )getSelectedEncodedProfile;
 - (void) importEncodedProfiles:(NSMutableArray* )profilesEncoded;
 - (OnScreenButtonState *)unarchiveButtonStateEncoded:(NSData *)data;
+- (void) updateDefaultTemplates;
 - (void) importDefaultTemplates;
 
 #pragma mark - Setters

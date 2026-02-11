@@ -183,7 +183,6 @@ static CGRect layoutViewBounds;
     return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
 
-
 - (void) importDefaultTemplates{
     NSString *filePath = [[NSBundle mainBundle] pathForResource: [self isIPhone] ? @"widgetTemplatesIPhone": @"widgetTemplates" ofType:@"bin"];
     if (filePath) {
@@ -196,6 +195,34 @@ static CGRect layoutViewBounds;
             NSSet *classes = [NSSet setWithObjects: [NSMutableData class], [NSMutableArray class], nil];
             profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:&error];
             [self importEncodedProfiles:profilesEncoded];
+            [self setProfileToSelected:0];
+        }
+    }
+}
+
+- (void) updateDefaultTemplates{
+    NSString *filePath = [[NSBundle mainBundle] pathForResource: [self isIPhone] ? @"widgetTemplatesIPhone": @"widgetTemplates" ofType:@"bin"];
+    if (filePath) {
+        // 2. 读取二进制数据
+        NSError *error;
+        NSData *fileData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+        if (fileData && !error) {
+            NSSet *classes = [NSSet setWithObjects:[NSString class], [NSMutableData class], [NSMutableArray class], [OSCProfile class], [OnScreenButtonState class], nil];
+            NSMutableArray *defaultProfilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:nil];    // Decode the encoded array itself, NOT the objects contained in the array
+            OSCProfile *defaultProfileDecoded;
+            NSMutableArray *targetProfilesDecoded = [self getAllProfiles];
+            for (NSData *profileEncoded in defaultProfilesEncoded) {
+                defaultProfileDecoded = [NSKeyedUnarchiver unarchivedObjectOfClasses: classes fromData:profileEncoded error: nil];
+                OSCProfile *targetProfile = [self findProfileByName:defaultProfileDecoded.name inProfileArray:targetProfilesDecoded];
+                if(targetProfile){
+                    uint64_t targetIndex = [targetProfilesDecoded indexOfObject:targetProfile];
+                    targetProfilesDecoded[targetIndex] = defaultProfileDecoded;
+                }
+            }
+            NSMutableArray* targetPofilesEncoded = [self encodedProfilesFromArray:targetProfilesDecoded];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:targetPofilesEncoded requiringSecureCoding:YES error:nil];
+            [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
             [self setProfileToSelected:0];
         }
     }
@@ -230,11 +257,12 @@ static CGRect layoutViewBounds;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     // NSString* persistedKey = @"widgetProfileUpdated-20251015";
-    NSString* persistedKey = @"widgetProfileUpdated-20251229";
+    NSString* persistedKey = @"widgetProfileUpdated-20260212";
     BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
     
     if(profiles.count == 0 || needImportDefaultTemplates){
-        [self importDefaultTemplates];
+        if(profiles.count == 0) [self importDefaultTemplates];
+        else [self updateDefaultTemplates];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:persistedKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         profiles = [self getAllProfiles];

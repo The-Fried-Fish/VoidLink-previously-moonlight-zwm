@@ -269,7 +269,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
      [profilesManager importDefaultTemplates];
      }*/
     if (![profilesManager findProfileByName:DEFAULT_TEMPLATE_NAME1 inProfileArray:allProfiles]){
-        [profilesManager importDefaultTemplates];
+        // [profilesManager updateDefaultTemplates];
     }
         
     /* This will animate the toolbar with a subtle up and down motion intended to telegraph to the user that they can hide the toolbar if they wish*/
