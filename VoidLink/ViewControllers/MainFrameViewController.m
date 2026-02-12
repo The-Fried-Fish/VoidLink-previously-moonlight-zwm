@@ -1581,20 +1581,21 @@ static NSMutableSet* hostList;
     Settings* settings = [dataMan retrieveSettings];
     switch ([UIDevice currentDevice].userInterfaceIdiom) {
         case UIUserInterfaceIdiomPad:
-            settings.sdrPerformanceWorkaround = false;
+            settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
         case UIUserInterfaceIdiomPhone:
-            settings.sdrPerformanceWorkaround = false;
+            settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
         default:
-            settings.sdrPerformanceWorkaround = false;
+            settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
             break;
     }
     if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = true;
     if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = true;
+    settings.touchMoveEventInterval = @(1333);
     [dataMan saveData];
 }
 

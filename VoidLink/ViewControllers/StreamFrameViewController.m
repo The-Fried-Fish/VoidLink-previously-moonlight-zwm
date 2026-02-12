@@ -1333,14 +1333,17 @@
     
     // 8bit 444 degration workaround
     if(strcmp(stageName, "video stream establishment")==0){
+        NSLog(@"sendAutoReleaseComboCommandWithCmdStrings %f", CACurrentMediaTime());
         if(!_settings.enableHdr
            && _settings.sdrPerformanceWorkaround
            && [Utils hdrSupported]
-           && LiGetCurrentHostDisplayHdrMode()){
-            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC));
+           ){
+            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
             dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSArray* hdrCommand = [CommandManager.shared extractAutoReleaseButtonStringsFrom:@"WIN+ALT+B"];
-                [CommandManager.shared sendAutoReleaseComboCommandWithCmdStrings:hdrCommand delay:0.15 index:0 pressOnly:false releaseOnly:false];
+                if(LiGetCurrentHostDisplayHdrMode()){
+                    NSArray* hdrCommand = [CommandManager.shared extractAutoReleaseButtonStringsFrom:@"WIN+ALT+B"];
+                    [CommandManager.shared sendAutoReleaseComboCommandWithCmdStrings:hdrCommand delay:0.15 index:0 pressOnly:false releaseOnly:false];
+                }
             });
         }
     }
