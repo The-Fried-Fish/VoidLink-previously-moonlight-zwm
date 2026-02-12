@@ -29,7 +29,7 @@ import SVGKit
     @objc public static func setPostExclusiveUnfoldeds(_ sequences:NSSet){
         let sequenceSet:Set<Int16> = sequences as? Set<Int16> ?? Set()
         postExclusiveUnfoldedSequences = Set(sequenceSet)
-        print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) \(CACurrentMediaTime())")
+        // print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) \(CACurrentMediaTime())")
     }
 
     @objc public weak var guidelineDelegate: OnScreenWidgetGuidelineUpdateDelegate?
@@ -2607,8 +2607,11 @@ import SVGKit
             default:
                 break
             }
+            if self.widgetType == .touchPad {
+                self.handleButtonUp()
+            }
         }
-        
+                
         if !OnScreenWidgetView.isTweakingHighlight {
             if CommandManager.stickTouchPads.contains(touchPadString){
                 self.l3r3Indicator.isHidden = true
@@ -2974,7 +2977,7 @@ import SVGKit
             OnScreenWidgetView.set(folded: false, for: unfoldedExclusiveFolder!)
         }
         
-        print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) stamp \(CACurrentMediaTime())")
+        // print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) stamp \(CACurrentMediaTime())")
         for sequence in postExclusiveUnfoldedSequences {
             guard let folder = OnScreenWidgetView.mapping[sequence] else { continue }
             OnScreenWidgetView.set(folded: false, for: folder)
