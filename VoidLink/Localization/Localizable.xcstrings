@@ -617,6 +617,35 @@
         }
       }
     },
+    "=gyroRsvpad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gyro+RStick"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "陀螺仪+右摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "陀螺儀+右搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "陀螺儀+右搖桿"
+          }
+        }
+      }
+    },
     "=jump" : {
       "extractionState" : "manual",
       "localizations" : {
