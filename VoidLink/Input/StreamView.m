@@ -538,7 +538,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
     
-    [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:NO];
+    [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
 }
 
 - (void) reloadOnScreenWidgetViews:(bool)reload{
