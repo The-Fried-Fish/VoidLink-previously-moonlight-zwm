@@ -215,15 +215,16 @@
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    dispatch_async(dispatch_get_global_queue(touchDownQos, 0), ^{
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         for (UITouch* touch in touches){
             // continue to the next loop if current touch is already captured by OSC. works only in regular native touch
             [self handleTouchDown:touch]; //generate & populate pointerId
             if(self->activateCoordSelector) [self populatePointerObjIntoDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_DOWN];
         }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(self->trackPointEnabled){
+        
+        if(self->trackPointEnabled){
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [CATransaction begin];
                 [CATransaction setDisableActions:YES];
                 for (UITouch* touch in touches){
@@ -233,13 +234,13 @@
                     trackPoint.hidden = false;
                 }
                 [CATransaction commit];
-            }
-        });
+            });
+        }
     });
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         for (UITouch* touch in touches){
             if(self->activateCoordSelector) [self updatePointerObjInDict:touch];
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_MOVE];
@@ -247,8 +248,8 @@
         }
     });
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if(self->trackPointEnabled){
+    if(self->trackPointEnabled){
+        dispatch_async(dispatch_get_main_queue(), ^{
             [CATransaction begin];
             [CATransaction setDisableActions:YES];
             for (UITouch* touch in touches){
@@ -257,12 +258,12 @@
                 trackPoint.position = [touch locationInView:self->streamView];
             }
             [CATransaction commit];
-        }
-    });
+        });
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         for (UITouch* touch in touches){
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
             [self removePointerId:touch]; //then remove pointerId
@@ -271,8 +272,16 @@
         }
     });
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if(self->trackPointEnabled){
+    if(self->trackPointEnabled){
+        if(touches.count == [UITouchUtil touchesIn:streamView from:event].count){
+            [CATransaction begin];
+            [CATransaction setDisableActions:YES];
+            for(CAShapeLayer* trackPoint in trackPointPool) trackPoint.hidden = true;
+            [CATransaction commit];
+            return;
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
             [CATransaction begin];
             [CATransaction setDisableActions:YES];
             for (UITouch* touch in touches){
@@ -281,8 +290,8 @@
                 trackPoint.hidden = true;
             }
             [CATransaction commit];
-        }
-    });
+        });
+    }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -325,6 +334,9 @@
     pointerIdPool= nil;
     unassignedPointerIds = nil;
     blacklistedTouches = nil;
+    for(CAShapeLayer* layer in trackPointPool){
+        [layer removeFromSuperlayer];
+    }
     trackPointPool = nil;
     pointerObjDict = nil;
 }

@@ -2996,6 +2996,7 @@ import SVGKit
                 self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
             }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
+            trackPoint.removeFromSuperlayer()
             crossMarkLayer.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()
