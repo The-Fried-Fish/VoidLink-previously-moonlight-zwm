@@ -210,9 +210,10 @@ import SVGKit
 
     // check quick double tap:
     private var quickDoubleTapDetected: Bool
+    private var temporarilyMovable: Bool = false
     private var touchTapTimeInterval: TimeInterval
     private var touchTapTimeStamp: TimeInterval
-    private let QUICK_TAP_TIME_INTERVAL = 0.2
+    private var QUICK_TAP_TIME_INTERVAL = 0.2
     @objc public var stickIndicatorOffset: CGFloat = 120
     
     // for all LRUD pads
@@ -771,9 +772,9 @@ import SVGKit
     }
     
     private func setupAtrributedText(){
-        let text = self.widgetLabel
+        let text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
         let attr = NSAttributedString(
-            string: self.folded ? "[\(self.widgetLabel)]" : self.widgetLabel,
+            string: self.folded ? "[\(text)]" : text,
             attributes: [
                 .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),     // 填充色
                 .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),          // 描边色
@@ -880,6 +881,9 @@ import SVGKit
         }
         if self.isStickWheel {
             self.setupStickWheelLayers()
+        }
+        if self.isFolder {
+            QUICK_TAP_TIME_INTERVAL = 0.15
         }
     }
     
@@ -1778,7 +1782,9 @@ import SVGKit
             touchTapTimeInterval = currentTime - touchTapTimeStamp
             touchTapTimeStamp = currentTime
             quickDoubleTapDetected = touchTapTimeInterval < QUICK_TAP_TIME_INTERVAL
-            
+            if quickDoubleTapDetected, self.isFolder, self.buttonMode == .slideAndHold {
+                self.temporarilyMovable = true
+            }
             
             if OnScreenWidgetView.editMode {
                 self.touchBeganLocation = touch.location(in: superview)
@@ -1925,10 +1931,7 @@ import SVGKit
                 }
         }
         else {
-            if self.buttonMode == .movable {
-                currentLocation = touch.location(in: superview)
-            }
-            else {return}
+            currentLocation = touch.location(in: superview)
         }
         
         if !firstTouchMoved, !self.isAdjacentPoints(currentLocation, from: latestTouchLocation, tolerance: 1) {
@@ -2094,10 +2097,10 @@ import SVGKit
             if self.widgetType == WidgetTypeEnum.button {
                 if self.buttonMode == .slideToToggle || self.buttonMode == .slideAndHold  {self.handleButtonSliding(touches: touches)}
             }
-            
-            if self.buttonMode == .movable{
+            print("self.temporarilyMovable \(self.temporarilyMovable) \(CACurrentMediaTime())")
+            if self.buttonMode == .movable || self.temporarilyMovable{
                 if let touch = touches.first {
-                    if self.moveableButtonLongPressed() { // temporarily relocate special buttons
+                    if self.moveableButtonLongPressed() || self.temporarilyMovable { // temporarily relocate special buttons
                         self.moveByTouch(touch: touch)
                     }
                 }
@@ -2427,15 +2430,27 @@ import SVGKit
             self.folded = !self.folded
             OnScreenWidgetView.set(folded: self.folded, for: self)
         case "SETTINGS":
-            self.functionalButtonDelegate?.expandSettingsView()
+            temporaryDisableFolderButtonAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.functionalButtonDelegate?.expandSettingsView()
+            }
         case "TOOLBOX":
             self.functionalButtonDelegate?.bringUpToolboxMenu()
         case "WIDGETTOOL":
-            self.functionalButtonDelegate?.openWidgetLayoutTool()
+            temporaryDisableFolderButtonAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.functionalButtonDelegate?.openWidgetLayoutTool()
+            }
         case "PROFILES","WIDGETPROFILES":
-            self.functionalButtonDelegate?.openWidgetProfileTable(pickProfile: false)
+            temporaryDisableFolderButtonAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.functionalButtonDelegate?.openWidgetProfileTable(pickProfile: false)
+            }
         case "PICKPROFILE","PICKPRFL":
-            self.functionalButtonDelegate?.openWidgetProfileTable(pickProfile: true)
+            temporaryDisableFolderButtonAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.functionalButtonDelegate?.openWidgetProfileTable(pickProfile: true)
+            }
         case "SOFTKEYBOARD":
             self.functionalButtonDelegate?.bringUpSoftKeyboard()
         case "ABSTCHDRAG":
@@ -2463,6 +2478,12 @@ import SVGKit
         }
     }
 
+    private func temporaryDisableFolderButtonAnimation(){
+        OnScreenWidgetView.enableFolderAnimation = false
+        DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + 0.17) {
+            OnScreenWidgetView.enableFolderAnimation = true
+        }
+    }
     
     private func clearRightStickTouchPadFlag(){
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
@@ -2661,6 +2682,8 @@ import SVGKit
         if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
             trackPoint.isHidden = true
         }
+        
+        self.temporarilyMovable = false
 
         CATransaction.commit()
         
@@ -2825,6 +2848,7 @@ import SVGKit
         return sequence+1
     }
     
+    @objc static var enableFolderAnimation:Bool = true
     private static func setCollection(hidden:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false) {
         guard folder.isFolder else {return}
         // guard folder.folded != hidden else { return }
@@ -2838,7 +2862,7 @@ import SVGKit
                     if widget.widgetType == .touchPad {
                         widget.highlightBorder(highlighted: true)
                     }
-                    let duration = folder.buttonMode == .slideAndHold ? 0.05 : 0.15
+                    let duration = OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0
                     UIView.animate(withDuration: duration, animations: {
                         widget.center = folder.center
                     },completion: { finished in
@@ -2862,7 +2886,7 @@ import SVGKit
                     if widget.widgetType == .touchPad {
                         widget.highlightBorder(highlighted: true)
                     }
-                    UIView.animate(withDuration: folder.buttonMode == .slideAndHold ? 0.05 : 0.15, animations: {
+                    UIView.animate(withDuration: OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0, animations: {
                         widget.center = widget.storedCenter
                     },completion: { finished in
                         widget.isUserInteractionEnabled = !folder.folded
@@ -2975,6 +2999,9 @@ import SVGKit
         
         if(unfoldedExclusiveFolder != nil){
             OnScreenWidgetView.set(folded: false, for: unfoldedExclusiveFolder!)
+            if OnScreenWidgetView.mapping[unfoldedExclusiveFolder!.parentSequence]?.buttonMode == .slideAndHold {
+                unfoldedExclusiveFolder?.isHidden = true
+            }
         }
         
         // print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) stamp \(CACurrentMediaTime())")
