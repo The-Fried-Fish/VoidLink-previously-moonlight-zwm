@@ -1887,7 +1887,7 @@ import SVGKit
                 }
             }
             
-            if self.widgetType == WidgetTypeEnum.button && self.buttonMode == .movable {
+            if self.widgetType == WidgetTypeEnum.button && (self.buttonMode == .movable || self.temporarilyMovable) {
                 movableButtonReleased = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     OnScreenWidgetView.updateStreamViewGuidelines(for: self)
@@ -2097,12 +2097,10 @@ import SVGKit
             if self.widgetType == WidgetTypeEnum.button {
                 if self.buttonMode == .slideToToggle || self.buttonMode == .slideAndHold  {self.handleButtonSliding(touches: touches)}
             }
-            print("self.temporarilyMovable \(self.temporarilyMovable) \(CACurrentMediaTime())")
-            if self.buttonMode == .movable || self.temporarilyMovable{
+
+            if (self.buttonMode == .movable || self.temporarilyMovable) && self.moveableButtonLongPressed() {
                 if let touch = touches.first {
-                    if self.moveableButtonLongPressed() || self.temporarilyMovable { // temporarily relocate special buttons
-                        self.moveByTouch(touch: touch)
-                    }
+                    self.moveByTouch(touch: touch)
                 }
             }
             
@@ -2670,7 +2668,7 @@ import SVGKit
             && self.buttonMode != .slideAndHold
             && self == touches.first?.view) {self.handleFingerUpOrSlideout(event:event)}
         
-        if !OnScreenWidgetView.editMode && self.buttonMode == .movable {
+        if !OnScreenWidgetView.editMode && (self.buttonMode == .movable || self.temporarilyMovable) {
             movableButtonReleased = true
             OnScreenWidgetView.removeStreamViewGuidelines()
             for sequence in self.sequenceSet {
