@@ -1595,7 +1595,7 @@ static NSMutableSet* hostList;
     }
     if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = true;
     if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = true;
-    settings.touchMoveEventInterval = @(1333);
+    settings.touchMoveEventInterval = [Utils isIPhone] ? @(30) : @(0);
     [dataMan saveData];
 }
 

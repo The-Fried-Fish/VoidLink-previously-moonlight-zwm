@@ -65,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void) duplicateSelectedProfileWithName:(NSString*)name;
 
-- (bool) updateSelectedProfile:(NSMutableArray *) oscButtonLayers;
+- (bool) updateSelectedProfile:(NSMutableSet *) oscButtonLayers;
+
 /**
  * Delete current selected profile.
  */

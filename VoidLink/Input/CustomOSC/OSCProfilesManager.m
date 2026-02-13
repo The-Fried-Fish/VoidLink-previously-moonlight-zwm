@@ -257,7 +257,7 @@ static CGRect layoutViewBounds;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     // NSString* persistedKey = @"widgetProfileUpdated-20251015";
-    NSString* persistedKey = @"widgetProfileUpdated-20260212";
+    NSString* persistedKey = @"widgetProfileUpdated-20260213";
     BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
     
     if(profiles.count == 0 || needImportDefaultTemplates){
@@ -310,7 +310,7 @@ static CGRect layoutViewBounds;
 }
 
 
-- (bool) updateSelectedProfile:(NSMutableArray *) oscButtonLayers {
+- (bool) updateSelectedProfile:(NSMutableSet *) oscButtonLayers {
     NSMutableArray* buttonStatesEncoded = [self convertOnScreenControllerAndWidgetsToButtonStates:oscButtonLayers];
     if([self getIndexOfSelectedProfile]==0) return false;
     /*
@@ -371,7 +371,7 @@ static CGRect layoutViewBounds;
     return position;
 }
 
-- (NSMutableArray* ) convertOnScreenControllerAndWidgetsToButtonStates:(NSMutableArray *) oscButtonLayers {
+- (NSMutableArray* ) convertOnScreenControllerAndWidgetsToButtonStates:(NSMutableSet *) oscButtonLayers {
     /* iterate through each OSC button the user sees on screen, create an 'OnScreenButtonState' object from each button, encode each object, and then add each object to an array */
     /*
      NSSet *validPositionButtonNames = [NSSet setWithObjects:
