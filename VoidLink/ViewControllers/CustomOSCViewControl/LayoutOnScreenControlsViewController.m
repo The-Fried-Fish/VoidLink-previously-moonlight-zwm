@@ -1119,7 +1119,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.buttonModeSelector setEnabled:slideAndHoldEnabled forSegmentAtIndex:slideAndHold];
     [self.buttonModeSelector setEnabled:!selectedWidgetView.isFolder forSegmentAtIndex:regular];
     [self.buttonModeSelector setEnabled:!selectedWidgetView.isFunctionalButton
-     || [selectedWidgetView.functionalButtonString containsString:@"ABSTCHDRAG"]
+     || selectedWidgetView.isTapToToggleException
                       forSegmentAtIndex:tapToToggle];
     [self.buttonModeSelector setSelectedSegmentIndex:selectedWidgetView.buttonMode];
     

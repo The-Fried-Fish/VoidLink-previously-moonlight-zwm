@@ -158,6 +158,7 @@ import SVGKit
     @objc public var isMousePadWithButtonActions: Bool = false
     @objc public var hasInertia: Bool = false
     @objc public var isFunctionalButton: Bool = false
+    @objc public var isTapToToggleException: Bool = false
     @objc public var hasHapticFeedback: Bool = false
     @objc public var isDirectionPad: Bool = false
     @objc public var hasL3R3Indicator: Bool = false
@@ -462,6 +463,10 @@ import SVGKit
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasInertia = CommandManager.inertialTouchPads.contains(self.touchPadString)
         self.isFunctionalButton = self.functionalButtonString != "" || self.cmdString.contains("+")
+        self.isTapToToggleException = (self.functionalButtonString == "NOSINGLETOUCH"
+                                       || self.functionalButtonString == "PENCILHOVER"
+                                       || self.functionalButtonString == "ABSTCHDRAG"
+                                    )
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
         self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
