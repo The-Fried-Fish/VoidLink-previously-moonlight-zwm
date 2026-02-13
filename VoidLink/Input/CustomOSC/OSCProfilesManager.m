@@ -166,10 +166,12 @@ static CGRect layoutViewBounds;
 - (void) importEncodedProfiles:(NSMutableArray* )profilesEncoded {
     NSMutableArray* targetProfiles = [_currentProfiles mutableCopy]; //_currentProfiles is availabled as long as getAllProfiles was called before calling this method (_currentProfiles avoids frequent accessing persisted data)
     OSCProfile* profile;
+    /*
     profile = [self findProfileByName:DEFAULT_TEMPLATE_NAME1 inProfileArray:targetProfiles];
     if(profile && targetProfiles.count > 1) [targetProfiles removeObject:profile];
     profile = [self findProfileByName:DEFAULT_TEMPLATE_NAME2 inProfileArray:targetProfiles];
     if(profile && targetProfiles.count > 1) [targetProfiles removeObject:profile];
+     */
     if(targetProfiles.count > 0) [targetProfiles removeObjectAtIndex:0];
     NSMutableArray* localEncodedPofiles = [self encodedProfilesFromArray:targetProfiles];
     [profilesEncoded addObjectsFromArray:localEncodedPofiles];
