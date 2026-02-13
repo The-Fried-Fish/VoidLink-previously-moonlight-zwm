@@ -1347,11 +1347,12 @@ static NSMutableSet* hostList;
     }
 }
 
-- (BOOL)isFirstLaunch {
-    NSString *key = @"appHasLaunchedBefore";
-    BOOL launchedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
+- (BOOL)needPopupAboutView {
+    // NSString *key = @"appHasLaunchedBefore";
+    NSString *key = @"needPopupAboutView20260215";
+    BOOL keyExists = [[NSUserDefaults standardUserDefaults] boolForKey:key];
 
-    if (!launchedBefore) {
+    if (!keyExists) {
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
         [[NSUserDefaults standardUserDefaults] synchronize]; // iOS 12+ 可省略
         return YES;
@@ -1964,7 +1965,7 @@ static NSMutableSet* hostList;
     //[self simulateSettingsButtonPress]; //force reload resolution table in the setting
     //[self simulateSettingsButtonPress];
     [self updateResolutionAccordingly];
-    if([self isFirstLaunch])[self helpButtonTapped];
+    if([self needPopupAboutView])[self helpButtonTapped];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

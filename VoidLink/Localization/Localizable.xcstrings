@@ -4118,29 +4118,6 @@
         }
       }
     },
-    "Join us" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "加入我们"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "加入我們"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "加入我們"
-          }
-        }
-      }
-    },
     "Label alpha: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4275,6 +4252,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "了解更多"
+          }
+        }
+      }
+    },
+    "Learn more & join us" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "了解并加入社区"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "瞭解並加入社群"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "瞭解並加入社群"
           }
         }
       }
@@ -8695,6 +8695,29 @@
         }
       }
     },
+    "VoidLink has better performance now!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink现已具备更强性能！"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink現已具備更強效能!"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink現已具備更強效能!"
+          }
+        }
+      }
+    },
     "Waiting for controller..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8775,7 +8798,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "开发者: True砖家 (B站)"
           }
         },
@@ -8920,7 +8943,7 @@
         }
       }
     },
-    "闽ICP备17012590号-3A\n主办单位：福州创图信息技术有限公司" : {
+    "闽ICP备17012590号-3A   主办单位：福州创图信息技术有限公司" : {
 
     }
   },
