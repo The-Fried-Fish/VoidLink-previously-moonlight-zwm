@@ -1231,6 +1231,7 @@ static NSMutableSet* hostList;
     [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacing];
     // [settingsViewController.frameTimebaseSwitch setEnabled:shouldEnableFramePacing];
     // [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacing];
+    [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.frameQueueSizeStack];
 
     // Disable mic switch if sunshine does not support mic redirection
     [settingsViewController.redirectMicSwitch setEnabled:!_settingsExpandedInStreamView||streamFrameViewController.micStreamInitialized];

@@ -153,7 +153,6 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];
     [_frameQueue setHighWaterMark:(int)[tempSettings.frameQueueSize integerValue]];
-    //[_frameQueue setHighWaterMark:5];
 
     [self reinitializeDisplayLayer];
     NSTimeInterval interval = 1.0/tempSettings.framerate.intValue;
