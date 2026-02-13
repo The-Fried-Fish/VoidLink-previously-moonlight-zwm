@@ -220,6 +220,7 @@ import StoreKit
                         self.delegate?.iapManagerDidPurchase(product)
                     }
                     await transaction.finish()
+                    IAPManager.handlePurchaseSuccess(product)
                     NotificationCenter.default.post(name: product.purchaseSucceededNotification(), object: nil)
                 case .unverified(_, let err):
                     NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
@@ -242,6 +243,25 @@ import StoreKit
         }
     }
 
+    @objc static func handlePurchaseSuccess(_ product: AddOnProduct) {
+        switch product {
+        case .PencilProPack:
+            let dataMan = DataManager()
+            let settings = dataMan.retrieveSettings()
+            settings?.onscreenControls = 1
+            dataMan.saveData()
+            let profileMan = OSCProfilesManager.sharedManager(.zero)
+            let profiles = profileMan.getAllProfiles()
+            guard profiles.count > 1 else { break }
+            guard let targetProfile = profiles[1] as? OSCProfile else { break }
+            if targetProfile.name == "Pencil Pro" {
+                profileMan.setProfileToSelected(1)
+            }
+        default:
+            break
+        }
+    }
+    
     private func purchaseLegacy(_ product: AddOnProduct) {
         let productId = product.productId()
         print("products \(skProducts.count)")
