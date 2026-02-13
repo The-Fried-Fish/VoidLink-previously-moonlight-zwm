@@ -2006,9 +2006,9 @@ import SVGKit
             let captured = widget.capturedTouches.contains(touch)
             setLock.unlock()
             if !captured || widget.buttonMode == .regular {return}
-            let needReleaseButton = (isLocation(touch.location(in: superview), in: widget) // for slideToToggle & movable+slidable buttons
-                                      || widget.buttonMode == .slideAndHold) // for slideAndHold buttons
-            if needReleaseButton {widget.handleFingerUpOrSlideout(event: event)}
+            // let needReleaseButton =  (isLocation(touch.location(in: superview), in: widget) // for slideToToggle & movable+slidable buttons
+            //                           || widget.buttonMode == .slideAndHold) // for slideAndHold buttons
+            widget.handleFingerUpOrSlideout(event: event)
             setLock.lock()
             widget.capturedTouches.remove(touch)
             setLock.unlock()
