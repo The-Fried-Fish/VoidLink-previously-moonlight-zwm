@@ -358,8 +358,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 // Legacy frame pacing callback - matches upstream/Integration behavior exactly
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
-    if(appDidEnterBackgroundWithoutPip) return;
-    
     VIDEO_FRAME_HANDLE handle;
     PDECODE_UNIT du;
     
@@ -408,7 +406,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         Log(LOG_I, @"Setting timebase for stream to %d / %d", pts.value, pts.timescale);
     }
 
-    if(!appDidEnterBackgroundWithoutPip) [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
+    if(appDidEnterBackgroundWithoutPip) [self->_displayLayer flush];
+    else [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
 
 #ifdef DISPLAYLINK_VERBOSE
     // Some OS-level metrics I'm not sure what to do with
@@ -921,7 +920,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
     if (_framePacingMode == FramePacingModeLegacy || _framePacingMode == FramePacingModeOff) {
         // Enqueue the next frame
-        if(!appDidEnterBackgroundWithoutPip) [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
+        if(appDidEnterBackgroundWithoutPip) [self->_displayLayer flush];
+        else [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
 
         if (du->frameType == FRAME_TYPE_IDR) {
             // Ensure the layer is visible now
