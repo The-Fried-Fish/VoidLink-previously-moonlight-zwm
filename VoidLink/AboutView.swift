@@ -61,7 +61,7 @@ public struct AboutView: View {
                 .padding()
 
             
-            Text(SwiftLocalizationHelper.localizedString(forKey: "VoidLink has better performance now!"))
+            Text(SwiftLocalizationHelper.localizedString(forKey: "VoidLink delivers better performance now!"))
                 .multilineTextAlignment(.center)
                 .font(Font.callout.bold())
                 .lineLimit(nil)
