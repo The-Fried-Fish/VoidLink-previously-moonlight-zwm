@@ -34,6 +34,7 @@ FOUNDATION_EXPORT NSString *const deviceName;
 + (bool)hdrSupported;
 + (bool)needUpdateDefaultSettings;
 + (BOOL)isIPhone;
++ (BOOL)isIPad;
 
 #if !TARGET_OS_TV
 + (void) launchUrl:(NSString*)urlString;

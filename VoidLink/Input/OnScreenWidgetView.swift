@@ -2475,7 +2475,12 @@ import SVGKit
             eraserShortcut = eraserShortcut.replacingOccurrences(of: "ERASER", with: "")
             self.functionalButtonDelegate?.replaceEraser(shortcut: eraserShortcut)
         case "PRESSURECURVE":
-            self.functionalButtonDelegate?.presentPressureCurveVC()
+            if ["com.voidlink.iOS"
+                , "com.voidlinkextreme.iOS"
+                , "com.voidlink.tf.debug10.iOS"
+            ].contains(Bundle.main.bundleIdentifier) && Utils.isIPad() {
+                self.functionalButtonDelegate?.presentPressureCurveVC()
+            }
         default:
             break
         }

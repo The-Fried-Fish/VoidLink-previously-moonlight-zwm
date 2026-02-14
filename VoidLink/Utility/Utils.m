@@ -157,7 +157,7 @@ NSString *const deviceName = @"roth";
 
 + (bool)needUpdateDefaultSettings {
     // NSString *key = @"needUpdateDefaultSettings20260209";
-    NSString *key = @"needUpdateDefaultSettings20260212";
+    NSString *key = @"needUpdateDefaultSettings20260215";
     BOOL updatedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
 
     if (!updatedBefore) {
@@ -170,6 +170,10 @@ NSString *const deviceName = @"roth";
 
 + (BOOL)isIPhone{
     return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+}
+
++ (BOOL)isIPad{
+    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad);
 }
 
 @end

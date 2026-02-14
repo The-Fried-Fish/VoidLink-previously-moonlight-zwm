@@ -593,10 +593,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone;
 }
 
-- (BOOL)isIPad {
-    return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
-}
-
 - (CGFloat)getStandardNavBarHeight{
     return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
 }
@@ -871,7 +867,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                               || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
                               || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
 
-    if([self isIPad] && loadPencilSection){
+    if([Utils isIPad] && loadPencilSection){
         MenuSectionView* pencilSection = [[MenuSectionView alloc] init];
         pencilSection.delegate = self;
         pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Pencil"];
@@ -3505,7 +3501,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)loadPencilSettings:(TemporarySettings*) tempSettings{
-    if([self isIPad]){
+    if([Utils isIPad]){
         self.pencilTickSelector.selectedSegmentIndex = tempSettings.pencilTickMode.intValue;
         [self.pencilTickSelector addTarget:self action:@selector(pencilTickModeChanged:) forControlEvents:UIControlEventValueChanged];
         [self pencilTickModeChanged:self.pencilTickSelector];
@@ -3527,7 +3523,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)populatePencilSettings:(Settings*)currentSettings{
-    if([self isIPad]){
+    if([Utils isIPad]){
         currentSettings.pencilTickMode = @(self.pencilTickSelector.selectedSegmentIndex);
         currentSettings.pencilTickIntervalUs = @(self.pencilTickIntervalSlider.value);
     }
