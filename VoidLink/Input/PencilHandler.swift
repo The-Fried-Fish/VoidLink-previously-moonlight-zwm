@@ -42,7 +42,8 @@ import UIKit
         tickInterval = TimeInterval(settings.pencilTickIntervalUs.floatValue/1000000)
         manualTick = settings.pencilTickMode.intValue == PencilTickMode.ManualTick.rawValue
         pencilTickEnabled = settings.pencilTickMode.intValue != PencilTickMode.PencilTickDisabled.rawValue
-        initialMoveEventIndexLimit = UIScreen.main.maximumFramesPerSecond > 60 ? 4 : 2
+        // initialMoveEventIndexLimit = UIScreen.main.maximumFramesPerSecond > 60 ? 4 : 2
+        initialMoveEventIndexLimit = 0
         super.init()
         setupPressureLUT()
         PencilHandler.shared = self
