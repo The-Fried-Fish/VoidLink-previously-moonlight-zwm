@@ -3733,9 +3733,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         // AV1 doesn't support YUV444, so disable it and turn it off
         [self.yuv444Switch setOn:NO animated:NO];
         [self.yuv444Switch setEnabled:NO];
-        [self.sdrPerformanceWorkaroundSwitch setOn:NO animated:NO];
-        [self.sdrPerformanceWorkaroundSwitch setEnabled:NO];
-
     } else {
         [self.fullColorRangeSwitch setEnabled:YES];
         [self.yuv444Switch setEnabled:YES];
