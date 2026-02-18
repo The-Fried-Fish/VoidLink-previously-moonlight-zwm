@@ -481,6 +481,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(pencilProPurchaseAborted:)
                                                  name:@"PencilProPurchaseAbortedNotification"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(pencilProPurchaseSucceeded:)
+                                                 name:@"PencilProPurchaseSucceededNotification"
+                                               object:nil];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         if(self.mainFrameViewController.settingsExpandedInStreamView){
@@ -3444,6 +3448,10 @@ BOOL isCustomResolution(int resolutionSelected) {
                                   completion:nil];
         }
     });
+}
+
+- (void)pencilProPurchaseSucceeded:(NSNotification *)notification{
+    self.onScreenWidgetSelector.selectedSegmentIndex = OnScreenControlsLevelCustom;
 }
 
 - (void)pencilTickIntervalSliderMoved:(UISlider* )sender{

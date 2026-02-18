@@ -251,6 +251,7 @@ import StoreKit
             settings?.onscreenControls = 1
             dataMan.saveData()
             let profileMan = OSCProfilesManager.sharedManager(.zero)
+            profileMan.updateDefaultTemplates()
             let profiles = profileMan.getAllProfiles()
             guard profiles.count > 1 else { break }
             guard let targetProfile = profiles[1] as? OSCProfile else { break }

@@ -222,14 +222,26 @@ static CGRect layoutViewBounds;
             NSMutableArray *defaultProfilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:nil];    // Decode the encoded array itself, NOT the objects contained in the array
             OSCProfile *defaultProfileDecoded;
             NSMutableArray *targetProfilesDecoded = [self getAllProfiles];
+            OSCProfile *newPencilProProfile;
+            bool pencilProProfileExisted = false;
             for (NSData *profileEncoded in defaultProfilesEncoded) {
                 defaultProfileDecoded = [NSKeyedUnarchiver unarchivedObjectOfClasses: classes fromData:profileEncoded error: nil];
                 OSCProfile *targetProfile = [self findProfileByName:defaultProfileDecoded.name inProfileArray:targetProfilesDecoded];
+                if([defaultProfileDecoded.name isEqualToString:@"Pencil Pro"]){
+                    newPencilProProfile = [defaultProfileDecoded mutableCopy];
+                }
                 if(targetProfile){
+                    if([targetProfile.name isEqualToString:@"Pencil Pro"]){
+                        pencilProProfileExisted = true;
+                    }
                     uint64_t targetIndex = [targetProfilesDecoded indexOfObject:targetProfile];
                     targetProfilesDecoded[targetIndex] = defaultProfileDecoded;
                 }
             }
+            if(newPencilProProfile && !pencilProProfileExisted){
+                if(newPencilProProfile) [targetProfilesDecoded insertObject:newPencilProProfile atIndex:1];
+            }
+            
             NSMutableArray* targetPofilesEncoded = [self encodedProfilesFromArray:targetProfilesDecoded];
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject:targetPofilesEncoded requiringSecureCoding:YES error:nil];
             [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"OSCProfiles"];
