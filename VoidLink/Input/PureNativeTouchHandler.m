@@ -266,32 +266,24 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, moveEventIntervalNSec), dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         for (UITouch* touch in touches){
             [self sendTouchEvent:touch withTouchtype:LI_TOUCH_EVENT_UP]; //send touch event before remove pointerId
-            [self removePointerId:touch]; //then remove pointerId
+            
+            if(self->trackPointEnabled){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    uint8_t pointerId = [self retrievePointerIdFromDict:touch];
+                    CAShapeLayer* trackPoint = self->trackPointPool[pointerId];
+                    [CATransaction begin];
+                    [CATransaction setDisableActions:YES];
+                    trackPoint.hidden = true;
+                    [CATransaction commit];
+                    [self removePointerId:touch];
+                });
+            }
+            else [self removePointerId:touch];
+            
             if(self->activateCoordSelector) [self removePointerObjFromDict:touch];
             [self->blacklistedTouches removeObject:@((uintptr_t)touch)];
         }
     });
-    
-    if(self->trackPointEnabled){
-        if(touches.count == [UITouchUtil touchesIn:streamView from:event].count){
-            [CATransaction begin];
-            [CATransaction setDisableActions:YES];
-            for(CAShapeLayer* trackPoint in trackPointPool) trackPoint.hidden = true;
-            [CATransaction commit];
-            return;
-        }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [CATransaction begin];
-            [CATransaction setDisableActions:YES];
-            for (UITouch* touch in touches){
-                uint8_t pointerId = [self retrievePointerIdFromDict:touch];
-                CAShapeLayer* trackPoint = self->trackPointPool[pointerId];
-                trackPoint.hidden = true;
-            }
-            [CATransaction commit];
-        });
-    }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
