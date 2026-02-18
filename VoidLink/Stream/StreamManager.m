@@ -114,6 +114,11 @@
     });
 }
 
+- (void) setNeedRequeuing:(bool)needRequeuing{
+    [_videoRenderer.frameQueue clear];
+    _videoRenderer.needRequeuing = needRequeuing;
+}
+
 - (void) stopStream
 {
     [_connection terminate];

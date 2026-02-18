@@ -982,7 +982,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.leftClickDelayStack ofId:@"leftClickDelayStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     // [self addSetting:self.frameTimebaseStack ofId:@"frameTimebaseStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    // [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
+    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
 
@@ -2292,6 +2292,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         // Set pacing method to Queue and disable selector
         [self.framePacingModeSelector setSelectedSegmentIndex:FramePacingModeQueue];
         [self.framePacingModeSelector setEnabled:NO];
+        [self setHidden:true forStack:self.asyncFrameDequeueStack];
     } else {
         // Balanced mode (AVSB renderer) - enable PiP toggle if iOS 15+
         if (@available(iOS 15.0, *)) {
@@ -2301,6 +2302,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             [self.pipSwitch setEnabled:NO];
         }
         [self.framePacingModeSelector setEnabled:YES];
+        [self setHidden:false forStack:self.asyncFrameDequeueStack];
     }
 
     // Get the current settings to compare with the new selection
@@ -2331,6 +2333,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                                                                style:UIAlertActionStyleCancel
                                                              handler:^(UIAlertAction * _Nonnull action) {
             self.renderingBackendSelector.selectedSegmentIndex = 0;
+            [self renderingBackendChanged:self.renderingBackendSelector];
             NSURL *url = [NSURL URLWithString:[LocalizationHelper localizedStringForKey:@"betterPerformanceLink"]];
             if ([[UIApplication sharedApplication] canOpenURL:url]) {
                 [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -2347,7 +2350,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     // Hide frame queue size for Off and Legacy modes
     [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
     // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
-    // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.asyncFrameDequeueStack];
+    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue
+                    || self.renderingBackendSelector.selectedSegmentIndex != 0) forStack:self.asyncFrameDequeueStack];
 
     if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
         [self.enableGraphsSwitch setOn:NO];

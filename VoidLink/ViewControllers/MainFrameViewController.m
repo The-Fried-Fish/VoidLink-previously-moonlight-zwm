@@ -1168,6 +1168,15 @@ static NSMutableSet* hostList;
     _settingsViewExpanded = position != FrontViewPositionLeft;
     if (position == FrontViewPositionLeft) {
         self.navigationItem.leftBarButtonItems = @[_settingsButton];
+        
+        if(streamFrameViewController.streamMan){
+            NSLog(@"setNeedRequeuing %f", CACurrentMediaTime());
+            double delayInSeconds = 0.1;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                [self->streamFrameViewController.streamMan setNeedRequeuing:true];
+            });
+        }
     }
     else {
         self.navigationItem.leftBarButtonItems = @[];
@@ -1227,10 +1236,10 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.appThemeStack];
     [settingsViewController.renderingBackendSelector setEnabled:!_settingsExpandedInStreamView];
     // Enable frame pacing mode selector only if not in stream view AND not in performance mode
-    BOOL shouldEnableFramePacing = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
-    [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacing];
+    BOOL shouldEnableFramePacingSelector = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
+    [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacingSelector];
     // [settingsViewController.frameTimebaseSwitch setEnabled:shouldEnableFramePacing];
-    // [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacing];
+    [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacingSelector && settingsViewController.framePacingModeSelector.selectedSegmentIndex == FramePacingModeQueue];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.frameQueueSizeStack];
 
     // Disable mic switch if sunshine does not support mic redirection

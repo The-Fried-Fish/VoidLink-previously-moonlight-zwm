@@ -47,7 +47,6 @@
 
 @implementation StreamFrameViewController {
     ControllerSupport *_controllerSupport;
-    StreamManager *_streamMan;
     TemporarySettings *_settings;
     OSCProfile* _oscProfile;
     NSTimer *_inactivityTimer;
@@ -1092,6 +1091,7 @@
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     appDidEnterBackgroundWithoutPip = false;
+    [_streamMan setNeedRequeuing:true];
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
@@ -1338,11 +1338,15 @@
            && _settings.sdrPerformanceWorkaround
            && [Utils hdrSupported]
            ){
-            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
+            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC));
             dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 if(LiGetCurrentHostDisplayHdrMode()){
                     NSArray* hdrCommand = [CommandManager.shared extractAutoReleaseButtonStringsFrom:@"WIN+ALT+B"];
                     [CommandManager.shared sendAutoReleaseComboCommandWithCmdStrings:hdrCommand delay:0.15 index:0 pressOnly:false releaseOnly:false];
+                    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC));
+                    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [self->_streamMan setNeedRequeuing:true];
+                    });
                 }
             });
         }
@@ -1711,6 +1715,11 @@
 
     Log(LOG_I, @"View size changed, terminating stream");
     
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC));
+    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self->_streamMan setNeedRequeuing:true];
+    });
+
     double delayInSeconds = 0.2;
     if (_delayedRemoveExtScreen) {
         dispatch_block_cancel(_delayedRemoveExtScreen);

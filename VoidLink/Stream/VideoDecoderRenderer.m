@@ -52,9 +52,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     VTDecompressionSessionRef _decompressionSession;
 
     CADisplayLink *_displayLink;
-    FrameQueue *_frameQueue;
     uint8_t queueSize;
-    bool isFirstFrame;
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
@@ -145,9 +143,10 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 
     _framePacingMode = tempSettings.framePacingMode.integerValue;
     _asyncFrameDequeue = tempSettings.asyncFrameDequeue;
+    NSLog(@"_asyncFrameDequeue %d", _asyncFrameDequeue);
     _enableTimebase = false;
     queueSize = tempSettings.frameQueueSize.intValue;
-    isFirstFrame = true;
+    _needRequeuing = true;
     isIPhone = [Utils isIPhone];
 
     _frameQueue = [FrameQueue sharedInstance];
@@ -155,7 +154,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     [_frameQueue setHighWaterMark:(int)[tempSettings.frameQueueSize integerValue]];
 
     [self reinitializeDisplayLayer];
-    NSTimeInterval interval = 1.0/tempSettings.framerate.intValue;
+    // NSTimeInterval interval = 1.0/tempSettings.framerate.intValue;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reinitializeDisplayLayer)
@@ -261,7 +260,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     // Check for issues with the SampleBuffer, this should be much less likely since
     // AVSB is not actually decoding the frames anymore
     if (self->_displayLayer.status == AVQueuedSampleBufferRenderingStatusFailed) {
-        Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
+        // Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
 
         // Recreate the display layer. We are already on the main thread,
         // so this is safe to do right here.
@@ -277,10 +276,11 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
 #pragma mark DisplayLink - Frame Pacing - Vsync with FrameQueue
 
+/*
 // This frame pacing method was inspired by the behavior of moonlight-qt's Pacer class, although it has evolved
 // a few additional features. Incoming frames from Sunshine are asynchronously processed into a queue by the VideoRecv thread.
 // DisplayLink calls us every vsync we we try to present the most recent frame. We try to maintain a user-configurable buffer
-// of 1-5 frames. If the buffer is full, every other frame is dropped which just appears to the user as a lower framerate stream.
+// of 1-5 frames. If the buffer is full, every other frame is dropped which just appears to the user as a lower framerate stream. */
 - (void)renderModeAVSB:(CADisplayLink *)link {
     // NSTimeInterval current = link.targetTimestamp;
     // NSLog(@"link %f", link.duration);
@@ -303,13 +303,17 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     
     CFTimeInterval waitFor = targetTime - dl0;
     
+    /*
     if (waitFor < 0.001f) {
-        waitFor = isIPhone ? waitFor : 0.0f;
+        NSLog(@"waitFor %f", waitFor);
+        // waitFor = isIPhone ? waitFor : 0.0f;
+        waitFor = 0.0f;
     }
+    */
     
-    if(isFirstFrame ? _frameQueue.count>0 : true){
+    if(_needRequeuing ? _frameQueue.count>queueSize-1 : true){
     // if(true){
-        if(isFirstFrame) isFirstFrame = false;
+        _needRequeuing = false;
         if(_asyncFrameDequeue){
             [_frameQueue dequeueWithTimeout:waitFor completion:^(Frame *frame) {
                 if (frame) {
