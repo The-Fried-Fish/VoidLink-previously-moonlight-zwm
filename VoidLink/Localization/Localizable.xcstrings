@@ -3577,7 +3577,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 关闭 = 无帧步进控制，即为之前的“最低延迟”.\n\n- 传统模式，相当于之前的“最高流畅度” (尽管已经不是最流畅的选项)."
+            "value" : "- 关闭 = 无帧步进控制，即为moonlight的“最低延迟”.\n\n- 传统模式，相当于之前的“最高流畅度” (尽管已经不是最流畅的选项)."
           }
         },
         "zh-Hant" : {
@@ -4477,6 +4477,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "- 被視窗捕獲：滑鼠游標被限制在應用程式視窗內。\n\n- 隱藏：不顯示本機滑鼠游標。\n\n- 可見：顯示 iOS 本機滑鼠游標，減少延遲感。\n\n​​請勿使用「隱藏/可見」模式操作任何需用滑鼠控制視角的遊戲。​​"
+          }
+        }
+      }
+    },
+    "lowest latency" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低延迟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低延遲"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低延遲"
           }
         }
       }

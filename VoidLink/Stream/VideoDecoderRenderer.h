@@ -20,6 +20,7 @@
 @property (atomic, readonly) PlotMetrics frameQueueMetrics;
 @property (atomic, assign) bool needRequeuing;
 @property (nonatomic, strong) FrameQueue* frameQueue;
+@property (atomic, readonly) int32_t queueSize;
 
 @property (nonatomic, strong, readonly) AVSampleBufferDisplayLayer *displayLayer;
 

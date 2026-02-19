@@ -52,7 +52,6 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     VTDecompressionSessionRef _decompressionSession;
 
     CADisplayLink *_displayLink;
-    uint8_t queueSize;
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
@@ -145,13 +144,13 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     _asyncFrameDequeue = tempSettings.asyncFrameDequeue;
     NSLog(@"_asyncFrameDequeue %d", _asyncFrameDequeue);
     _enableTimebase = false;
-    queueSize = tempSettings.frameQueueSize.intValue;
-    _needRequeuing = true;
+    _queueSize = tempSettings.frameQueueSize.intValue;
+    _needRequeuing = _queueSize>0;
     isIPhone = [Utils isIPhone];
 
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];
-    [_frameQueue setHighWaterMark:(int)[tempSettings.frameQueueSize integerValue]];
+    [_frameQueue setHighWaterMark:MAX(1, _queueSize)];
 
     [self reinitializeDisplayLayer];
     // NSTimeInterval interval = 1.0/tempSettings.framerate.intValue;
@@ -310,8 +309,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         waitFor = 0.0f;
     }
     */
-    
-    if(_needRequeuing ? _frameQueue.count>queueSize-1 : true){
+        
+    if(_needRequeuing ? _frameQueue.count>MAX(_queueSize-1,0) : true){
     // if(true){
         _needRequeuing = false;
         if(_asyncFrameDequeue){

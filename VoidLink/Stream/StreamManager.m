@@ -115,6 +115,7 @@
 }
 
 - (void) setNeedRequeuing:(bool)needRequeuing{
+    if (_videoRenderer.queueSize==0) return;
     [_videoRenderer.frameQueue clear];
     _videoRenderer.needRequeuing = needRequeuing;
 }

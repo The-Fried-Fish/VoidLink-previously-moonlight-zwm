@@ -1994,7 +1994,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self updateBitrateText];
         [self updateResolutionDisplayLabel];
 
-        [self.frameQueueSizeSlider setMinimumValue:1];
+        [self.frameQueueSizeSlider setMinimumValue:0];
         [self.frameQueueSizeSlider setMaximumValue:5];
         [self.frameQueueSizeSlider setValue:self->tempSettings.frameQueueSize.intValue];
         [self.frameQueueSizeSlider addTarget:self action:@selector(frameQueueSizeSliderMoved:) forControlEvents:UIControlEventValueChanged];
@@ -3381,7 +3381,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void) frameQueueSizeSliderMoved:(UISlider* )sender {
     assert(self.frameQueueSizeSlider.value >= 0 && self.frameQueueSizeSlider.value <= 5);
-    [self findDynamicLabelFromStack:_frameQueueSizeStack].text = [NSString stringWithFormat:@"  %d  ", (int)self.frameQueueSizeSlider.value];
+    int queueSize = self.frameQueueSizeSlider.value;
+    [self findDynamicLabelFromStack:_frameQueueSizeStack].text = queueSize==0 ? [LocalizationHelper localizedStringForKey:@"lowest latency"] : [NSString stringWithFormat: @"  %d  ", queueSize];
 }
 
 - (void) enableGraphsChanged:(UISwitch* )sender {
