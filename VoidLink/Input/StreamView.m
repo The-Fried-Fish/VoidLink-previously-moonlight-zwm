@@ -40,6 +40,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
     KeyboardInputField* keyInputField;
     BOOL isInputingText;
+    bool isPencilHovering;
     NSMutableSet* keysDown;
     float streamAspectRatio;
     
@@ -208,6 +209,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         continuousMouseWheelRecognizer.allowedScrollTypesMask = UIScrollTypeMaskContinuous;
         continuousMouseWheelRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
         [self addGestureRecognizer:continuousMouseWheelRecognizer];
+        
+        isPencilHovering = false;
     }
     
 #if defined(__IPHONE_16_1) || defined(__TVOS_16_1)
@@ -794,14 +797,21 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged:
             type = LI_TOUCH_EVENT_HOVER;
+            isPencilHovering = true;
             break;
 
         case UIGestureRecognizerStateEnded:
             type = LI_TOUCH_EVENT_HOVER_LEAVE;
             break;
-
         default:
             return;
+    }
+    
+    if(gesture.state==UIGestureRecognizerStateEnded){
+        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.016 * NSEC_PER_SEC));
+        dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
+            self->isPencilHovering = false;
+        });
     }
 
     CGPoint location = [self adjustCoordinatesForVideoArea:[gesture locationInView:self]];
@@ -1019,7 +1029,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 // don't require this, but we do it anyway for them too.
                 // Cursor movement without a button held down is handled
                 // in pointerInteraction:regionForRequest:defaultRegion.
-                [self updateCursorLocation:[touch locationInView:self] isMouse:YES];
+                if(!isPencilHovering) [self updateCursorLocation:[touch locationInView:self] isMouse:YES];
                 return;
             }
         }
@@ -1210,7 +1220,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // Move the cursor on the host if no buttons are pressed.
     // Motion with buttons pressed in handled in touchesMoved:
     if (lastMouseButtonMask == 0) {
-        [self updateCursorLocation:request.location isMouse:YES];
+       if(!isPencilHovering) [self updateCursorLocation:request.location isMouse:YES];
     }
     
     // The pointer interaction should cover the video region only
