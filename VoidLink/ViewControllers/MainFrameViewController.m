@@ -1607,7 +1607,7 @@ static NSMutableSet* hostList;
             break;
     }
     
-    if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
+    // if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
     
     settings.pencilTickIntervalUs = @(1750);
     
