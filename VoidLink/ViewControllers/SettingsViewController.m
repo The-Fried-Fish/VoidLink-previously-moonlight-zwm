@@ -795,13 +795,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![Utils hdrSupported] withDynamicLabel:NO to:videoSection];
     [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.sdrPerformanceWorkaroundStack ofId:@"sdrPerformanceWorkaroundStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.fullColorRangeStack ofId:@"fullColorRangeStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [videoSection addToParentStack:_parentStack];
+    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
     // [videoSection setExpanded:NO];
+    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
 
+    
     touchControlSection = [[MenuSectionView alloc] init];
     touchControlSection.delegate = self;
     touchControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch Control"];
@@ -982,7 +983,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.leftClickDelayStack ofId:@"leftClickDelayStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
     [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     // [self addSetting:self.frameTimebaseStack ofId:@"frameTimebaseStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
+    [self addSetting:self.fullColorRangeStack ofId:@"fullColorRangeStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
     [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
     [self addDynamicLabelForStack:self.graphOpacityStack];
 
@@ -1515,7 +1516,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"sdrPerformanceWorkaroundStackTip"];
         showOnlineDocAction = false;
     }
-
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"asyncFrameDequeueStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"asyncFrameDequeueStackTip"];
+        showOnlineDocAction = false;
+    }
     
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
@@ -3748,6 +3752,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.yuv444Switch setEnabled:NO];
     } else {
         [self.fullColorRangeSwitch setEnabled:YES];
+        [self.fullColorRangeSwitch setOn:YES];
         [self.yuv444Switch setEnabled:YES];
     }
     

@@ -1467,6 +1467,35 @@
         }
       }
     },
+    "asyncFrameDequeueStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Disabled: may improve visual smoothness\n- Enabled: may improve control input responsiveness"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 关闭：或改善画面连贯性\n- 开启：或改善控制输入响应延迟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 關閉：或改善畫面連貫性\n- 開啟：或改善控制輸入響應延遲"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 關閉：或改善畫面連貫性\n- 開啟：或改善控制輸入響應延遲"
+          }
+        }
+      }
+    },
     "Audio" : {
       "extractionState" : "manual",
       "localizations" : {
