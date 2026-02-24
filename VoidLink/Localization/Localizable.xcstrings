@@ -1594,6 +1594,35 @@
         }
       }
     },
+    "autoHoverStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resolves compatibility issues with certain PC software (such as SAI2) that cannot function properly without hover state."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "用于解决部分PC软件（如SAI2）没有悬浮状态则无法正常使用的问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此功能用於解決部分 PC 軟體（例如 SAI2）在沒有懸浮狀態時無法正常使用的問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此功能用於解決部分 PC 軟體（例如 SAI2）在沒有懸浮狀態時無法正常使用的問題。"
+          }
+        }
+      }
+    },
     "Autotap timer   " : {
       "extractionState" : "manual",
       "localizations" : {

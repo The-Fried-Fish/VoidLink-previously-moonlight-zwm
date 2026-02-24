@@ -395,6 +395,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.squeezeShortcutSwitch setOn:oscProfile.squeezeShorcutEnabled];
     [self.pencilPausesNativeTouchSwitch setOn:oscProfile.pencilPausesNativeTouch];
     [self.disablePencilSlideGestureSwitch setOn:oscProfile.disablePencilSlideGestures];
+    [self.autoHoverSwitch setOn:oscProfile.autoPencilHover];
 }
 
 - (void)saveGameProfileConfigs{
@@ -420,6 +421,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.squeezeShorcutEnabled == self.squeezeShortcutSwitch.isOn
                              && oscProfile.pencilPausesNativeTouch == self.pencilPausesNativeTouchSwitch.isOn
                              && oscProfile.disablePencilSlideGestures == self.disablePencilSlideGestureSwitch.isOn
+                             && oscProfile.autoPencilHover == self.autoHoverSwitch.isOn
                              );
 
     if(!configNotChanged){
@@ -441,7 +443,9 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.squeezeShorcutEnabled = self.squeezeShortcutSwitch.isOn;
         oscProfile.pencilPausesNativeTouch = self.pencilPausesNativeTouchSwitch.isOn;
         oscProfile.disablePencilSlideGestures = self.disablePencilSlideGestureSwitch.isOn;
+        oscProfile.autoPencilHover = self.autoHoverSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
+        if(PencilHandler.shared) [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
     }
 }
 
@@ -885,6 +889,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.squeezeShortcutStack ofId:@"squeezeShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
+        [self addSetting:self.autoHoverStack ofId:@"autoHoverStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [pencilSection addToParentStack:_parentStack];
@@ -1520,7 +1525,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"asyncFrameDequeueStackTip"];
         showOnlineDocAction = false;
     }
-    
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"autoHoverStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"autoHoverStackTip"];
+        showOnlineDocAction = false;
+    }
 
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
 
@@ -3439,6 +3447,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.squeezeShortcutSwitch setOn:false];
         [self.pencilPausesNativeTouchSwitch setOn:false];
         [self.disablePencilSlideGestureSwitch setOn:false];
+        [self.autoHoverSwitch setOn:false];
         
         
         NSNumber *value = notification.userInfo[@"interruption"];
@@ -3512,7 +3521,21 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)pencilPausesNativeTouchSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){
         [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
-            if(!info.valid) [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            if(info.valid) nil;
+            else {
+                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            }
+        }];
+    }
+}
+
+- (void)autoHoverSwitchFlipped:(UISwitch* )sender{
+    if(sender.isOn && !settingsViewJustLoaded){
+        [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
+            if(info.valid) nil;
+            else {
+                [IAPManager inAppPurchaseActionWithViewController:self product:AddOnProductPencilProPack];
+            }
         }];
     }
 }
@@ -3536,6 +3559,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         [self.disablePencilSlideGestureSwitch addTarget:self action:@selector(disablePencilSlideGestureSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.pencilPausesNativeTouchSwitch addTarget:self action:@selector(pencilPausesNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+        [self.autoHoverSwitch addTarget:self action:@selector(autoHoverSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
     }
 }
 

@@ -59,6 +59,7 @@
     [encoder encodeBool:self.squeezeShorcutEnabled forKey:@"squeezeShorcutEnabled"];
     [encoder encodeObject:self.squeezeStartShortcut forKey:@"squeezeStartShortcut"];
     [encoder encodeObject:self.squeezeEndShortcut forKey:@"squeezeEndShortcut"];
+    [encoder encodeBool:self.autoPencilHover forKey:@"autoPencilHover"];
     [encoder encodeBool:self.pencilPausesNativeTouch forKey:@"pencilPausesNativeTouch"];
     [encoder encodeBool:self.disablePencilSlideGestures forKey:@"disablePencilSlideGestures"];
 }
@@ -156,6 +157,7 @@
                                        forKey:@"squeezeEndShortcut"]
         : @"";
 
+        self.autoPencilHover = [decoder containsValueForKey:@"autoPencilHover"] ? [decoder decodeBoolForKey:@"autoPencilHover"] : false;
         self.pencilPausesNativeTouch = [decoder containsValueForKey:@"pencilPausesNativeTouch"] ? [decoder decodeBoolForKey:@"pencilPausesNativeTouch"] : false;
         self.disablePencilSlideGestures = [decoder containsValueForKey:@"disablePencilSlideGestures"] ? [decoder decodeBoolForKey:@"disablePencilSlideGestures"] : false;
     }
