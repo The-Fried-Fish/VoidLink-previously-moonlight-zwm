@@ -49,10 +49,15 @@ import UIKit
         PencilHandler.shared = self
     }
     
-    public func setupPressureLUT(){
-        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
-        PencilHandler.selectedProfile = oscProfileMan.getSelectedProfile()
-        guard let selectedProfile = PencilHandler.selectedProfile else {return}
+    @objc public func setupPressureLUT(profile:OSCProfile? = nil){
+        var selectedProfile:OSCProfile
+        if profile == nil {
+            let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+            selectedProfile = oscProfileMan.getSelectedProfile()
+        }
+        else{
+            selectedProfile = profile!
+        }
         
         if selectedProfile.eraserShortcut != "" {
             doubleTapShorcuts.append(selectedProfile.eraserShortcut)

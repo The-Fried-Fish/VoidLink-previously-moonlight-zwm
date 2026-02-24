@@ -675,6 +675,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             if([self isOscEnabled]) [self reloadLegacyWidgets:oscProfile];
             else [self disableOnScreenControls];
         }
+        
+        if(reload && !OnScreenWidgetView.editMode){
+            [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
+        }
     });
 }
 
