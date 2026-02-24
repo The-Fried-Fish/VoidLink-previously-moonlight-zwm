@@ -114,6 +114,9 @@ final class PressureCurve {
     
     func value(at x: CGFloat) -> CGFloat {
         
+        guard let firstPoint = polylinePoints.first else { return 0 }
+        if x < firstPoint.x {return 0}
+        
         let xClamped = min(max(x, 0), 1)
         let segments = cachedSegments
 
@@ -230,7 +233,7 @@ final class PressureCurveView: UIView {
     let curve = PressureCurve()
     
     private var draggingIndex: Int? = nil
-    private let hitRadius: CGFloat = 22
+    private let hitRadius: CGFloat = 35
     
     enum PressureTestStage: UInt8 {
         case drawingStage
@@ -288,7 +291,7 @@ final class PressureCurveView: UIView {
 
     private func drawCurve(_ ctx: CGContext) {
         ctx.setStrokeColor(UIColor.systemBlue.cgColor)
-        ctx.setLineWidth(5)
+        ctx.setLineWidth(6)
         let points = curve.sampleCurve(stepsPerSegment: 60)
         for (i,p) in points.enumerated() {
             let mapped = map(p)
@@ -300,7 +303,7 @@ final class PressureCurveView: UIView {
     private func drawTangents(_ ctx: CGContext) {
         let pts = curve.tangentPoints
         ctx.setStrokeColor(UIColor.systemPurple.cgColor)
-        ctx.setLineWidth(2.5)
+        ctx.setLineWidth(2)
         for i in 0..<pts.count {
             let p = map(pts[i])
             if i==0 { ctx.move(to:p) } else { ctx.addLine(to:p) }
@@ -309,9 +312,9 @@ final class PressureCurveView: UIView {
 
         for p in pts {
             let c = map(p)
-            let r: CGFloat = 4
+            let r: CGFloat = 16
             ctx.setFillColor(UIColor.systemPurple.cgColor)
-            ctx.fill(CGRect(x:c.x-r, y:c.y-r, width:r*2, height:r*2))
+            ctx.fill(CGRect(x:c.x-r/2, y:c.y-r/2, width:r, height:r))
         }
     }
 
@@ -390,7 +393,9 @@ final class PressureCurveView: UIView {
         var point = unmap(location)
         
         if draggingIndex == 0 {
-            point.x = 0
+            let nextPoint = curve.polylinePoints[idx+1]
+            point.x = min(max(point.x, 0), nextPoint.x)
+            // point.x = 0
             point.y = min(max(point.y, 0), 1)
         }
         else if draggingIndex == curve.polylinePoints.count-1 {
@@ -499,8 +504,8 @@ class PressureCurveViewController: UIViewController {
         self.view.isOpaque = false
         self.view.backgroundColor = UIColor.clear // 半透明遮罩
         
-        let curveWidth: CGFloat = 400
-        let curveHeight: CGFloat = 400
+        let curveWidth: CGFloat = 530
+        let curveHeight: CGFloat = 530
         curveView = PressureCurveView(frame: CGRect(x: 0, y: 0, width: curveWidth, height: curveHeight))
         curveView.center = self.view.center
         curveView.backgroundColor = .white

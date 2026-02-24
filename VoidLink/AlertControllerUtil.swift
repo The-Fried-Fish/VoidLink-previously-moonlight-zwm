@@ -75,6 +75,7 @@ import UIKit
                 confirmAction.setValue(buttonTitle, forKey: "title")
                 if autoCompletion {
                     autoCompletion = false
+                    completion?()
                     alertController.dismiss(animated: false)
                     return
                 }
