@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, MapGyroTo) {
 @property (nonatomic, assign) bool squeezeShorcutEnabled;
 @property NSString *squeezeStartShortcut;
 @property NSString *squeezeEndShortcut;
-@property (nonatomic, assign) bool autoPencilHover;
+@property (nonatomic, assign) bool autoPencilHoverTermination;
 @property (nonatomic, assign) bool pencilPausesNativeTouch;
 @property (nonatomic, assign) bool disablePencilSlideGestures;
 

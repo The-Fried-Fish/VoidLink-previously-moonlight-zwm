@@ -1594,7 +1594,7 @@
         }
       }
     },
-    "autoHoverStackTip" : {
+    "autoHoverTerminationStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {

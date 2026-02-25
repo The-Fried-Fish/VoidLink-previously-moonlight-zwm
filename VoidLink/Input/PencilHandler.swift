@@ -22,7 +22,7 @@ import UIKit
     private var pencilTickEnabled: Bool
     private var pressureCurveEnabled: Bool = false
     private var manualHoverFlag: Bool = false
-    @objc static var autoHoverEnabled: Bool = false
+    @objc static var autoHoverTerminationEnabled: Bool = true
     private(set) var pencilProEnabled: Bool = false
     private var isFirstMove: Bool = false
     private var moveEventIndex: Int64 = 0
@@ -77,6 +77,8 @@ import UIKit
             print("squeezeShorcutEnabled \(CACurrentMediaTime())")
         }
         
+        // PencilHandler.autoHoverTerminationEnabled = selectedProfile.autoPencilHoverTermination
+        
         pressureCurveEnabled = selectedProfile.pressureCurveEnabled
         
         if #available(iOS 15.0, *) {
@@ -85,7 +87,6 @@ import UIKit
                 self.pencilTickEnabled = self.pencilTickEnabled && info.valid
                 self.pencilProEnabled = info.valid
                 PencilHandler.pencilPausesNativeTouch = selectedProfile.pencilPausesNativeTouch && info.valid
-                PencilHandler.autoHoverEnabled = selectedProfile.autoPencilHover && info.valid
                 if info.valid {
                     self.setupPencilInteraction(view: self.streamView)
                 }
@@ -212,7 +213,7 @@ import UIKit
             
             switch touch.phase {
             case .began:
-                eventType = UInt8(LI_TOUCH_EVENT_DOWN)
+                eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_DOWN)
                 touchBeganForce = targetForce
             case .moved:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
@@ -240,18 +241,23 @@ import UIKit
             let sendableForce = targetForce
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
                 
+                /*
                 if PencilHandler.autoHoverEnabled, eventType == UInt8(LI_TOUCH_EVENT_DOWN) {
                     LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
                 }
+                */
                 
                 LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), sendableForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
                 
-                if PencilHandler.autoHoverEnabled, eventType == UInt8(LI_TOUCH_EVENT_UP) {
+                if eventType == UInt8(LI_TOUCH_EVENT_UP) {
                     PencilHandler.isDrawing = false
                     LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
-                    DispatchQueue.global().asyncAfter(deadline: .now() + 0.015){
-                        if !PencilHandler.isDrawing {
-                            LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                    
+                    if PencilHandler.autoHoverTerminationEnabled {
+                        DispatchQueue.global().asyncAfter(deadline: .now() + 0.0086){
+                            if !PencilHandler.isDrawing {
+                                LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                            }
                         }
                     }
                 }

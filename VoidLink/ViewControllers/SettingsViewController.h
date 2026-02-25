@@ -281,8 +281,8 @@
 @property (weak, nonatomic) IBOutlet UIStackView *disablePencilSlideGestureStack;
 @property (weak, nonatomic) IBOutlet UISwitch *disablePencilSlideGestureSwitch;
 
-@property (weak, nonatomic) IBOutlet UIStackView *autoHoverStack;
-@property (weak, nonatomic) IBOutlet UISwitch *autoHoverSwitch;
+@property (weak, nonatomic) IBOutlet UIStackView *autoHoverTerminationStack;
+@property (weak, nonatomic) IBOutlet UISwitch *autoHoverTerminationSwitch;
 
 
 #pragma clang diagnostic push

@@ -2089,16 +2089,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="OBt-d7-mew">
-                                <rect key="frame" x="3145" y="426" width="235" height="31"/>
+                                <rect key="frame" x="3145" y="426" width="268.5" height="31"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto Hover" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q78-aY-mIe" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="85" height="31"/>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto End Hover" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q78-aY-mIe" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="118.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hOj-4u-Swl">
-                                        <rect key="frame" x="105" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="138.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="Akr-jH-mSd"/>
                                         </constraints>
@@ -2123,8 +2123,8 @@
                         <outlet property="audioEngineStack" destination="scn-bo-PfV" id="tP0-YG-e8V"/>
                         <outlet property="audioOnPcStack" destination="Bbr-Wj-Z75" id="c2K-3R-whg"/>
                         <outlet property="audioOnPcSwitch" destination="81a-Jw-eV9" id="Oig-tg-V1I"/>
-                        <outlet property="autoHoverStack" destination="OBt-d7-mew" id="wI7-Y6-XY9"/>
-                        <outlet property="autoHoverSwitch" destination="hOj-4u-Swl" id="OTR-I9-gSB"/>
+                        <outlet property="autoHoverTerminationStack" destination="OBt-d7-mew" id="wI7-Y6-XY9"/>
+                        <outlet property="autoHoverTerminationSwitch" destination="hOj-4u-Swl" id="OTR-I9-gSB"/>
                         <outlet property="backgroundSessionTimerSlider" destination="lRU-fd-AsU" id="oRL-1o-xNh"/>
                         <outlet property="backgroundSessionTimerStack" destination="z5W-q6-Y1z" id="2MJ-Y7-uui"/>
                         <outlet property="bitrateLabel" destination="lMt-4H-fkV" id="mpE-bW-R48"/>
@@ -3238,19 +3238,19 @@
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <image name="video.and.waveform" catalog="system" width="128" height="94"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
