@@ -395,7 +395,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.squeezeShortcutSwitch setOn:oscProfile.squeezeShorcutEnabled];
     [self.pencilPausesNativeTouchSwitch setOn:oscProfile.pencilPausesNativeTouch];
     [self.disablePencilSlideGestureSwitch setOn:oscProfile.disablePencilSlideGestures];
-    // [self.autoHoverTerminationSwitch setOn:oscProfile.autoPencilHoverTermination];
+    [self.autoHoverTerminationSwitch setOn:oscProfile.autoPencilHoverTermination];
 }
 
 - (void)saveGameProfileConfigs{
@@ -421,7 +421,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.squeezeShorcutEnabled == self.squeezeShortcutSwitch.isOn
                              && oscProfile.pencilPausesNativeTouch == self.pencilPausesNativeTouchSwitch.isOn
                              && oscProfile.disablePencilSlideGestures == self.disablePencilSlideGestureSwitch.isOn
-                             // && oscProfile.autoPencilHoverTermination == self.autoHoverTerminationSwitch.isOn
+                             && oscProfile.autoPencilHoverTermination == self.autoHoverTerminationSwitch.isOn
                              );
 
     if(!configNotChanged){
@@ -443,7 +443,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.squeezeShorcutEnabled = self.squeezeShortcutSwitch.isOn;
         oscProfile.pencilPausesNativeTouch = self.pencilPausesNativeTouchSwitch.isOn;
         oscProfile.disablePencilSlideGestures = self.disablePencilSlideGestureSwitch.isOn;
-        // oscProfile.autoPencilHoverTermination = self.autoHoverTerminationSwitch.isOn;
+        oscProfile.autoPencilHoverTermination = self.autoHoverTerminationSwitch.isOn;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
         if(PencilHandler.shared) [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
     }
@@ -889,7 +889,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.squeezeShortcutStack ofId:@"squeezeShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
-        // [self addSetting:self.autoHoverTerminationStack ofId:@"autoHoverTerminationStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
+        [self addSetting:self.autoHoverTerminationStack ofId:@"autoHoverTerminationStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [pencilSection addToParentStack:_parentStack];

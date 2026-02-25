@@ -157,9 +157,9 @@
                                        forKey:@"squeezeEndShortcut"]
         : @"";
 
-        self.autoPencilHoverTermination = [decoder containsValueForKey:@"autoPencilHoverTermination"] ? [decoder decodeBoolForKey:@"autoPencilHoverTermination"] : true;
         self.pencilPausesNativeTouch = [decoder containsValueForKey:@"pencilPausesNativeTouch"] ? [decoder decodeBoolForKey:@"pencilPausesNativeTouch"] : false;
         self.disablePencilSlideGestures = [decoder containsValueForKey:@"disablePencilSlideGestures"] ? [decoder decodeBoolForKey:@"disablePencilSlideGestures"] : false;
+        self.autoPencilHoverTermination = [decoder containsValueForKey:@"autoPencilHoverTermination"] ? [decoder decodeBoolForKey:@"autoPencilHoverTermination"] : false;
     }
     
     return self;
@@ -199,6 +199,7 @@
     copy.squeezeEndShortcut = [self.squeezeEndShortcut mutableCopy]; // NSString → NSMutableString
     copy.pencilPausesNativeTouch = self.pencilPausesNativeTouch;
     copy.disablePencilSlideGestures = self.disablePencilSlideGestures;
+    copy.autoPencilHoverTermination = self.autoPencilHoverTermination;
     return copy;
 }
 

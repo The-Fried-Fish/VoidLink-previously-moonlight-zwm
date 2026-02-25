@@ -785,7 +785,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     CGPoint location = [self adjustCoordinatesForVideoArea:[event locationInView:self]];
     CGSize videoSize = [self getVideoAreaSize];
     
-    CGFloat pressure = (event.force / event.maximumPossibleForce) / sin(event.altitudeAngle);
+    // CGFloat pressure = (event.force / event.maximumPossibleForce) / sin(event.altitudeAngle);
     
     return LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height,
                           (event.force / event.maximumPossibleForce) / sin(event.altitudeAngle),
@@ -802,7 +802,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         case UIGestureRecognizerStateChanged:
             type = LI_TOUCH_EVENT_HOVER;
             isPencilHovering = true;
-            if(PencilHandler.autoHoverTerminationEnabled) PencilHandler.autoHoverTerminationEnabled = false;
+            if(!PencilHandler.hoverSupported) PencilHandler.hoverSupported = true;
             break;
 
         case UIGestureRecognizerStateEnded:
@@ -813,7 +813,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     }
     
     if(gesture.state==UIGestureRecognizerStateEnded){
-        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.016 * NSEC_PER_SEC));
+        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.008 * NSEC_PER_SEC));
         dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
             self->isPencilHovering = false;
         });
@@ -838,7 +838,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     }
 #endif
     
-    LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height,
+    if(!PencilHandler.autoHoverTermination) LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height,
                    distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
 }
 

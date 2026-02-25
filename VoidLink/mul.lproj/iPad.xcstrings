@@ -4748,31 +4748,31 @@
       }
     },
     "q78-aY-mIe.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Auto End Hover\"; ObjectID = \"q78-aY-mIe\";",
+      "comment" : "Class = \"UILabel\"; text = \"Disable Hovering\"; ObjectID = \"q78-aY-mIe\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Auto End Hover"
+            "value" : "Disable Hovering"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自动停止悬停"
+            "state" : "translated",
+            "value" : "关闭悬停"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自動停止懸停"
+            "state" : "translated",
+            "value" : "關閉懸停"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自動停止懸停"
+            "state" : "translated",
+            "value" : "關閉懸停"
           }
         }
       }
