@@ -1665,9 +1665,22 @@
 }
 
 - (void)presentPressureCurveVC{
-    PressureCurveViewController* pressureCurveVC = [[PressureCurveViewController alloc] init];
-    pressureCurveVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    [self presentViewController:pressureCurveVC animated:YES completion:nil];
+    if(_oscProfile.pressureCurveEnabled){
+        PressureCurveViewController* pressureCurveVC = [[PressureCurveViewController alloc] init];
+        pressureCurveVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:pressureCurveVC animated:YES completion:nil];
+    }
+    else{
+        AlertControllerUtil.autoCompletion = true;
+        [AlertControllerUtil showAlertIn:self
+                                        title:@""
+                                      message:[LocalizationHelper localizedStringForKey:@"Please enable pressure curve in settings menu"]
+                                   withCancel:NO
+                                  buttonTitle:@""
+                                    countdown:2
+                                       action:^{}
+                                   completion:^{}];
+    }
 }
 
 #if !TARGET_OS_TV

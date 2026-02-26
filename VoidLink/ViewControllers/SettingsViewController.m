@@ -1529,9 +1529,13 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"hoverModeStackTip"];
         showOnlineDocAction = false;
     }
-
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"pencilTickStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"pencilTickStackTip"];
+        showOnlineDocAction = true;
+        onlineDocLink = [LocalizationHelper localizedStringForKey:@"PencilProPackURL"];
+    }
+    
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
-
     
     /*
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];

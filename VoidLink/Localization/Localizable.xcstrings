@@ -5920,6 +5920,35 @@
         }
       }
     },
+    "pencilTickStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil Tick allows high frequency pencil touch events passed through to the host."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔触 Tick 允许将高密度笔触事件透传至PC端。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆觸 Tick 允許將高頻率筆觸事件透傳至 PC 端。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆觸 Tick 允許將高頻率筆觸事件透傳至 PC 端。"
+          }
+        }
+      }
+    },
     "Performance" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6118,6 +6147,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "將裝置靜置於平面上，然後點「開始」。"
+          }
+        }
+      }
+    },
+    "Please enable pressure curve in settings menu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在设置菜单中开启笔压曲线"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在設定選單中開啟筆壓曲線"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在設定選單中開啟筆壓曲線"
           }
         }
       }
