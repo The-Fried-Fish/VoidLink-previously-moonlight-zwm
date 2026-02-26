@@ -23,7 +23,8 @@ import UIKit
     private var pressureCurveEnabled: Bool = false
     private var manualHoverFlag: Bool = false
     @objc static var hoverSupported: Bool = false
-    @objc static private(set) var autoHoverTermination: Bool = false
+    // @objc static private(set) var autoHoverTermination: Bool = false
+    @objc static private(set) var hoverMode: PencilHoverMode = .HoverPencil
     private(set) var pencilProEnabled: Bool = false
     private var isFirstMove: Bool = false
     private var moveEventIndex: Int64 = 0
@@ -78,7 +79,8 @@ import UIKit
             print("squeezeShorcutEnabled \(CACurrentMediaTime())")
         }
         
-        PencilHandler.autoHoverTermination = selectedProfile.autoPencilHoverTermination
+        // PencilHandler.autoHoverTermination = selectedProfile.autoPencilHoverTermination
+        PencilHandler.hoverMode = selectedProfile.pencilHoverMode
         
         pressureCurveEnabled = selectedProfile.pressureCurveEnabled
         
@@ -227,7 +229,7 @@ import UIKit
                 eventType = UInt8(LI_TOUCH_EVENT_MOVE)
             }
 
-            delay = manualTick ? 0.0086 : 0
+            delay = manualTick ? 0.0086 : 0.0086
             delay = eventType == UInt8(LI_TOUCH_EVENT_UP) ? delay : 0
             
             if previousTimeStamp == 0 {
@@ -252,7 +254,7 @@ import UIKit
                 
                 if eventType == UInt8(LI_TOUCH_EVENT_UP) {
                     PencilHandler.isDrawing = false
-                    if PencilHandler.autoHoverTermination || !PencilHandler.hoverSupported {
+                    if PencilHandler.hoverMode == .HoverDisabled || !PencilHandler.hoverSupported {
                         LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
                         DispatchQueue.global().asyncAfter(deadline: .now() + 0.0086){
                             if !PencilHandler.isDrawing {

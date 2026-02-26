@@ -2088,24 +2088,30 @@
                                     <constraint firstAttribute="height" constant="31" id="Olu-X2-Rc1"/>
                                 </constraints>
                             </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="OBt-d7-mew">
-                                <rect key="frame" x="3145" y="426" width="279.5" height="31"/>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="WtH-Ii-ZUv">
+                                <rect key="frame" x="3145" y="426" width="380" height="56.5"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable Hovering" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q78-aY-mIe" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="129.5" height="31"/>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hover Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DhB-EF-mDt">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hOj-4u-Swl">
-                                        <rect key="frame" x="149.5" y="0.0" width="132" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="130" id="Akr-jH-mSd"/>
-                                        </constraints>
-                                    </switch>
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="t12-bo-icS">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Disabled"/>
+                                            <segment title="Pencil"/>
+                                            <segment title="Mouse"/>
+                                            <segment title="Both"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="31" id="pOK-3B-UtZ"/>
+                                    <constraint firstAttribute="height" constant="56.5" id="YUg-QH-BXv"/>
+                                    <constraint firstAttribute="width" constant="380" id="n3K-F6-rQ2"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -2123,8 +2129,6 @@
                         <outlet property="audioEngineStack" destination="scn-bo-PfV" id="tP0-YG-e8V"/>
                         <outlet property="audioOnPcStack" destination="Bbr-Wj-Z75" id="c2K-3R-whg"/>
                         <outlet property="audioOnPcSwitch" destination="81a-Jw-eV9" id="Oig-tg-V1I"/>
-                        <outlet property="autoHoverTerminationStack" destination="OBt-d7-mew" id="wI7-Y6-XY9"/>
-                        <outlet property="autoHoverTerminationSwitch" destination="hOj-4u-Swl" id="OTR-I9-gSB"/>
                         <outlet property="backgroundSessionTimerSlider" destination="lRU-fd-AsU" id="oRL-1o-xNh"/>
                         <outlet property="backgroundSessionTimerStack" destination="z5W-q6-Y1z" id="2MJ-Y7-uui"/>
                         <outlet property="bitrateLabel" destination="lMt-4H-fkV" id="mpE-bW-R48"/>
@@ -2188,6 +2192,8 @@
                         <outlet property="hapticEngineStack" destination="MUp-Hc-VgH" id="XuW-ww-cmv"/>
                         <outlet property="hdrStack" destination="dH7-Sy-EdJ" id="cJm-bj-Aqo"/>
                         <outlet property="hdrSwitch" destination="wIq-fF-X8l" id="Ozz-h0-nJL"/>
+                        <outlet property="hoverModeSelector" destination="t12-bo-icS" id="0d6-QD-Mtg"/>
+                        <outlet property="hoverModeStack" destination="WtH-Ii-ZUv" id="BvA-MP-rmE"/>
                         <outlet property="leftClickDelaySlider" destination="Mh4-1P-bSv" id="Tbj-Y0-t1x"/>
                         <outlet property="leftClickDelayStack" destination="q0S-CP-V6v" id="0lz-MN-OEb"/>
                         <outlet property="leftStickMinOffsetSlider" destination="KtJ-qH-KJX" id="vIV-4l-gbA"/>

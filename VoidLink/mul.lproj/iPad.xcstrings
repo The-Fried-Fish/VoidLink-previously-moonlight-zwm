@@ -2257,6 +2257,36 @@
         }
       }
     },
+    "DhB-EF-mDt.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Hover Mode\"; ObjectID = \"DhB-EF-mDt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Hover Mode"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "悬停模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "懸停模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "懸停模式"
+          }
+        }
+      }
+    },
     "dOF-FW-cBU.text" : {
       "comment" : "Class = \"UILabel\"; text = \"                                    \"; ObjectID = \"dOF-FW-cBU\";",
       "extractionState" : "extracted_with_value",
@@ -4749,7 +4779,7 @@
     },
     "q78-aY-mIe.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Disable Hovering\"; ObjectID = \"q78-aY-mIe\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5289,6 +5319,126 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "效能圖表"
+          }
+        }
+      }
+    },
+    "t12-bo-icS.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; t12-bo-icS.segmentTitles[0] = \"Disabled\"; ObjectID = \"t12-bo-icS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "t12-bo-icS.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; t12-bo-icS.segmentTitles[1] = \"Pencil\"; ObjectID = \"t12-bo-icS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Pencil"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil"
+          }
+        }
+      }
+    },
+    "t12-bo-icS.segmentTitles[2]" : {
+      "comment" : "Class = \"UISegmentedControl\"; t12-bo-icS.segmentTitles[2] = \"Mouse\"; ObjectID = \"t12-bo-icS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mouse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠"
+          }
+        }
+      }
+    },
+    "t12-bo-icS.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; t12-bo-icS.segmentTitles[3] = \"Both\"; ObjectID = \"t12-bo-icS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Both"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同时悬停"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時懸停"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時懸停"
           }
         }
       }

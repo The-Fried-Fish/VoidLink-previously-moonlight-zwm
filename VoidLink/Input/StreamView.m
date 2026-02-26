@@ -213,6 +213,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         isPencilHovering = false;
     }
     
+    
 #if defined(__IPHONE_16_1) || defined(__TVOS_16_1)
     if (@available(iOS 16.1, *)) {
         UIHoverGestureRecognizer *stylusHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(sendStylusHoverEvent:)];
@@ -796,17 +797,20 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void)sendStylusHoverEvent:(UIHoverGestureRecognizer*)gesture API_AVAILABLE(ios(13.0)) {
     uint8_t type;
-    
+
     switch (gesture.state) {
         case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged:
             type = LI_TOUCH_EVENT_HOVER;
             isPencilHovering = true;
             if(!PencilHandler.hoverSupported) PencilHandler.hoverSupported = true;
+            // if(gesture.state == UIGestureRecognizerStateChanged) NSLog(@"UIGestureRecognizerStateChanged %f", CACurrentMediaTime());
+
             break;
 
         case UIGestureRecognizerStateEnded:
             type = LI_TOUCH_EVENT_HOVER_LEAVE;
+            // NSLog(@"UIGestureRecognizerStateEnded %f", CACurrentMediaTime());
             break;
         default:
             return;
@@ -838,8 +842,25 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     }
 #endif
     
-    if(!PencilHandler.autoHoverTermination) LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height,
-                   distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
+    
+    dispatch_after(0, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE,0), ^{// Code to execute after the delay
+        if(PencilHandler.isDrawing) return;
+        switch (PencilHandler.hoverMode) {
+            case HoverPencil:
+                LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height, distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
+                break;
+            case HoverMouse:
+                [self updateCursorLocation:location isMouse:YES];
+                break;
+            case HoverDisabled:
+                break;
+            case HoverBoth:
+                LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height, distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
+                [self updateCursorLocation:location isMouse:YES];
+            default:
+                break;
+        }
+    });
 }
 
 #endif
@@ -1225,7 +1246,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // Move the cursor on the host if no buttons are pressed.
     // Motion with buttons pressed in handled in touchesMoved:
     if (lastMouseButtonMask == 0) {
-       if(!isPencilHovering) [self updateCursorLocation:request.location isMouse:YES];
+        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC));
+        dispatch_after(delayTime, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE,0), ^{
+            if(!self->isPencilHovering) [self updateCursorLocation:request.location isMouse:YES];
+        });
     }
     
     // The pointer interaction should cover the video region only

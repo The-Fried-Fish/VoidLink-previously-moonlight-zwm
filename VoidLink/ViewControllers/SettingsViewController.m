@@ -395,7 +395,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.squeezeShortcutSwitch setOn:oscProfile.squeezeShorcutEnabled];
     [self.pencilPausesNativeTouchSwitch setOn:oscProfile.pencilPausesNativeTouch];
     [self.disablePencilSlideGestureSwitch setOn:oscProfile.disablePencilSlideGestures];
-    [self.autoHoverTerminationSwitch setOn:oscProfile.autoPencilHoverTermination];
+    self.hoverModeSelector.selectedSegmentIndex = oscProfile.pencilHoverMode;
 }
 
 - (void)saveGameProfileConfigs{
@@ -421,7 +421,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.squeezeShorcutEnabled == self.squeezeShortcutSwitch.isOn
                              && oscProfile.pencilPausesNativeTouch == self.pencilPausesNativeTouchSwitch.isOn
                              && oscProfile.disablePencilSlideGestures == self.disablePencilSlideGestureSwitch.isOn
-                             && oscProfile.autoPencilHoverTermination == self.autoHoverTerminationSwitch.isOn
+                             && oscProfile.pencilHoverMode == self.hoverModeSelector.selectedSegmentIndex
                              );
 
     if(!configNotChanged){
@@ -443,7 +443,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.squeezeShorcutEnabled = self.squeezeShortcutSwitch.isOn;
         oscProfile.pencilPausesNativeTouch = self.pencilPausesNativeTouchSwitch.isOn;
         oscProfile.disablePencilSlideGestures = self.disablePencilSlideGestureSwitch.isOn;
-        oscProfile.autoPencilHoverTermination = self.autoHoverTerminationSwitch.isOn;
+        oscProfile.pencilHoverMode = self.hoverModeSelector.selectedSegmentIndex;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
         if(PencilHandler.shared) [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
     }
@@ -889,7 +889,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.squeezeShortcutStack ofId:@"squeezeShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.autoHoverTerminationStack ofId:@"autoHoverTerminationStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
+        [self addSetting:self.hoverModeStack ofId:@"hoverModeStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
         [pencilSection addToParentStack:_parentStack];
@@ -1525,8 +1525,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"asyncFrameDequeueStackTip"];
         showOnlineDocAction = false;
     }
-    if([sender.superview.accessibilityIdentifier isEqualToString: @"autoHoverTerminationStack"]){
-        tipText = [LocalizationHelper localizedStringForKey:@"autoHoverTerminationStackTip"];
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"hoverModeStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"hoverModeStackTip"];
         showOnlineDocAction = false;
     }
 
@@ -3034,7 +3034,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     NSInteger fps = [self getChosenFrameRate];
-    [self.touchMoveEventIntervalSlider setValue: fps>60 ? 1/((CGFloat)fps)*0.5*1000000-1500 : 3530];
     [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
     [self updateBitrate];
 }
@@ -3447,7 +3446,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.squeezeShortcutSwitch setOn:false];
         [self.pencilPausesNativeTouchSwitch setOn:false];
         [self.disablePencilSlideGestureSwitch setOn:false];
-        [self.autoHoverTerminationSwitch setOn:false];
         
         
         NSNumber *value = notification.userInfo[@"interruption"];
