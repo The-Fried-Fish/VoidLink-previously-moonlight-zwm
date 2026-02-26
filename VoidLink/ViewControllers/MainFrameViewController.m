@@ -1601,12 +1601,15 @@ static NSMutableSet* hostList;
         default:
             settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
-            if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = true;
+            if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = false;
             if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = false;
             settings.touchMoveEventInterval = @(0);
             break;
     }
     
+    if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.framerate = @(120);
+    if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = @(60);
+
     // if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
     
     settings.pencilTickIntervalUs = @(1750);

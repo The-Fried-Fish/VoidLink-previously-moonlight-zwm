@@ -3033,7 +3033,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
-    NSInteger fps = [self getChosenFrameRate];
+    // NSInteger fps = [self getChosenFrameRate];
     [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
     [self updateBitrate];
 }
