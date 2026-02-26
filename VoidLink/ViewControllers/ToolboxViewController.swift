@@ -119,7 +119,7 @@ import UIKit
         contentView.addSubview(addButton)
         contentView.addSubview(deleteButton)
         contentView.addSubview(editButton)
-        contentView.addSubview(exitButton)
+        // contentView.addSubview(exitButton)
         contentView.addSubview(pinButton)
         
         self.view.addSubview(contentView)
@@ -153,7 +153,7 @@ import UIKit
         addButton.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.translatesAutoresizingMaskIntoConstraints = false
-        exitButton.translatesAutoresizingMaskIntoConstraints = false
+        // exitButton.translatesAutoresizingMaskIntoConstraints = false
         pinButton.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -183,11 +183,11 @@ import UIKit
             tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -60),
             
             // ExitButton constraints
-            exitButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
-            exitButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            // exitButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+            // exitButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // EditButton constraints
-            editButton.leadingAnchor.constraint(equalTo: exitButton.trailingAnchor, constant: 25),
+            editButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
             editButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // AddButton constraints

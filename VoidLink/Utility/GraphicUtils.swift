@@ -118,7 +118,7 @@ import SVGKit
         var trackPoint = CAShapeLayer()
         let path = UIBezierPath(
             arcCenter: CGPoint(x: 0, y: 0),
-            radius: Utils.isIPhone() ? 12 : 15,
+            radius: GenericUtils.isIPhone() ? 12 : 15,
             startAngle: 0,
             endAngle: CGFloat.pi * 2,
             clockwise: true

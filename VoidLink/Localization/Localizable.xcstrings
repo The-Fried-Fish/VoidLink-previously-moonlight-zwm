@@ -2954,6 +2954,35 @@
         }
       }
     },
+    "enableOswForNativeTouchSwitchTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabling this option will turn off the on-screen controls and physical mouse.\nApple Pencil will also be unable to function properly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭此选项将禁用屏显控件、物理鼠标。Apple Pencil 也将无法正常使用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉此選項將停用螢幕控制元件與實體滑鼠。Apple Pencil 也將無法正常使用。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉此選項將停用螢幕控制元件與實體滑鼠。Apple Pencil 也將無法正常使用。"
+          }
+        }
+      }
+    },
     "Enter a new command and alias" : {
       "extractionState" : "manual",
       "localizations" : {

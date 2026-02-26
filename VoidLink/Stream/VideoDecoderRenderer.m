@@ -62,9 +62,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     FramePacingMode _framePacingMode;
     bool _enableTimebase;
     bool _asyncFrameDequeue;
-    
-    bool isIPhone;
-    
+        
     // CMTime playTime;
     // NSTimeInterval previousLinkTime;
 }
@@ -150,7 +148,6 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     _enableTimebase = false;
     _queueSize = tempSettings.frameQueueSize.intValue;
     _needRequeuing = _queueSize>0;
-    isIPhone = [Utils isIPhone];
 
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];

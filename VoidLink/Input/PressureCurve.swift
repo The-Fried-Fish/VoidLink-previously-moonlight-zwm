@@ -485,18 +485,7 @@ class PressureCurveViewController: UIViewController {
         
     private var minPressure: CGFloat = 0
     private var maxPressure: CGFloat = 1
-    private var isFirstLaunch: Bool = {
-        let key = "hasLaunchedPressureCurveTool"
-        let defaults = UserDefaults.standard
-
-        var launchedBefore = defaults.bool(forKey: key)
-
-        if !launchedBefore {
-            defaults.set(true, forKey: key)
-            return true
-        }
-        return false
-    }()
+    private var isFirstLaunch: Bool = GenericUtils.isFirstLaunchPressureCurveTool()
 
     override func viewDidLoad() {
         super.viewDidLoad()

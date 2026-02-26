@@ -646,11 +646,10 @@ static NSMutableSet* hostList;
         }]];
     }
     else if (host.pairState == PairStatePaired) {
-        /*
         [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"View All Apps"] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action){
             self->_showHiddenApps = YES;
-            [self hostClicked:host view:view];
-        }]]; */
+            [self appButtonTappedForHost:host];
+        }]];
         
 #if !TARGET_OS_TV
       
@@ -1587,7 +1586,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)changeDefaultSettings{
-    if(![Utils needUpdateDefaultSettings]) return;
+    if(![GenericUtils needUpdateDefaultSettings]) return;
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* settings = [dataMan retrieveSettings];
     switch ([UIDevice currentDevice].userInterfaceIdiom) {
@@ -1603,12 +1602,11 @@ static NSMutableSet* hostList;
             settings.framePacingMode = @(FramePacingModeQueue);
             if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = false;
             if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = false;
-            settings.touchMoveEventInterval = @(0);
             break;
     }
     
     if([UIScreen mainScreen].maximumFramesPerSecond > 110) settings.framerate = @(120);
-    if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = @(60);
+    if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.framerate = @(60);
 
     // if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
     

@@ -857,6 +857,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             case HoverBoth:
                 LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height, distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
                 [self updateCursorLocation:location isMouse:YES];
+                break;
             default:
                 break;
         }

@@ -155,28 +155,6 @@ NSString *const deviceName = @"roth";
     return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) && (AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10);
 }
 
-+ (bool)needUpdateDefaultSettings {
-    // NSString *key = @"needUpdateDefaultSettings20260209";
-    // NSString *key = @"needUpdateDefaultSettings20260219-1";
-    NSString *key = @"needUpdateDefaultSettings20260226-1";
-    BOOL updatedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
-
-    if (!updatedBefore) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        return YES;
-    }
-    return NO;
-}
-
-+ (BOOL)isIPhone{
-    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
-}
-
-+ (BOOL)isIPad{
-    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad);
-}
-
 @end
 
 @implementation NSString (NSStringWithTrim)

@@ -177,7 +177,7 @@ static CGRect layoutViewBounds;
                               || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
                               || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
 
-    if(!importPencilProProfile && [Utils isIPad]){
+    if(!importPencilProProfile && [GenericUtils isIPad]){
         [profilesEncoded removeObjectAtIndex:1];
     }
 

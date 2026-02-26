@@ -2478,7 +2478,7 @@ import SVGKit
             if ["com.voidlink.iOS"
                 , "com.voidlinkextreme.iOS"
                 , "com.voidlink.tf.debug10.iOS"
-            ].contains(Bundle.main.bundleIdentifier) && Utils.isIPad() {
+            ].contains(Bundle.main.bundleIdentifier) && GenericUtils.isIPad() {
                 self.functionalButtonDelegate?.presentPressureCurveVC()
             }
         default:
