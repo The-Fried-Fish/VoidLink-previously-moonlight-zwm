@@ -222,11 +222,11 @@ import UIKit
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
                 targetForce = moveEventIndex < initialMoveEventIndexLimit ? touchBeganForce : targetForce
             case .ended:
-                eventType = UInt8(LI_TOUCH_EVENT_UP)
+                eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
             case .cancelled:
-                eventType = UInt8(LI_TOUCH_EVENT_UP)
+                eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
             default:
-                eventType = UInt8(LI_TOUCH_EVENT_MOVE)
+                eventType = UInt8(LI_TOUCH_EVENT_HOVER)
             }
 
             delay = manualTick ? 0.0086 : 0.0086
