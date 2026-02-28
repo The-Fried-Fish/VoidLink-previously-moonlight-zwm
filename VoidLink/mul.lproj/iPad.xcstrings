@@ -1718,31 +1718,31 @@
       }
     },
     "bVv-CW-kN8.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"High Density\"; ObjectID = \"bVv-CW-kN8\";",
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"HD\"; ObjectID = \"bVv-CW-kN8\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "High Density"
+            "value" : "HD"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "高密度"
+            "state" : "needs_review",
+            "value" : "HD"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "高密度"
+            "state" : "needs_review",
+            "value" : "HD"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "高密度"
+            "state" : "needs_review",
+            "value" : "HD"
           }
         }
       }
@@ -4844,19 +4844,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔迹模式"
+            "value" : "笔迹类型"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆跡模式"
+            "value" : "筆跡類型"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆跡模式"
+            "value" : "筆跡類型"
           }
         }
       }
