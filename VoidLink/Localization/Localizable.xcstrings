@@ -2798,6 +2798,29 @@
         }
       }
     },
+    "Drawing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绘画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繪畫"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繪畫"
+          }
+        }
+      }
+    },
     "Drift Correction" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4090,25 +4113,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When “both” is selected, you’ll get flickering cursor on host.\nThis is not a Pencil Pro Pack function."
+            "value" : "When “both” is selected, you’ll get flickering cursor on host.\nThis is not a Drawing Toolkit function."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "当选择“同时悬停”时，PC端的光标将会闪烁。\n此功能是Pencil基础功能的一部分，不属于Pencil Pro Pack。 "
+            "state" : "needs_review",
+            "value" : "当选择“同时悬停”时，PC端的光标将会闪烁。\n此功能是Pencil基础功能的一部分，不属于Drawing Toolkit。 "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Pencil Pro Pack。"
+            "state" : "needs_review",
+            "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Pencil Pro Pack。"
+            "state" : "needs_review",
+            "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
           }
         }
       }
@@ -5926,25 +5949,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pencil Tick allows high frequency pencil touch events passed through to the host."
+            "value" : "Allows high density stroke passed through to the host."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔触 Tick 允许将高密度笔触事件透传至PC端。"
+            "value" : "允许将高密度笔迹透传至PC端。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆觸 Tick 允許將高頻率筆觸事件透傳至 PC 端。"
+            "value" : "允許將高密度筆跡透傳至 PC 端。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆觸 Tick 允許將高頻率筆觸事件透傳至 PC 端。"
+            "value" : "允許將高密度筆跡透傳至 PC 端。"
           }
         }
       }

@@ -1310,19 +1310,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔压曲线"
+            "value" : "压力曲线"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆壓曲線"
+            "value" : "壓力曲線"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆壓曲線"
+            "value" : "壓力曲線"
           }
         }
       }
@@ -1688,61 +1688,61 @@
       }
     },
     "bVv-CW-kN8.segmentTitles[0]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[0] = \"Off\"; ObjectID = \"bVv-CW-kN8\";",
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[0] = \"Regular\"; ObjectID = \"bVv-CW-kN8\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Off"
+            "value" : "Regular"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭"
+            "value" : "常规"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉"
+            "value" : "常規"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉"
+            "value" : "常規"
           }
         }
       }
     },
     "bVv-CW-kN8.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"Manual (240Hz)\"; ObjectID = \"bVv-CW-kN8\";",
+      "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[1] = \"High Density\"; ObjectID = \"bVv-CW-kN8\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Manual (240Hz)"
+            "value" : "High Density"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "手动 (240Hz)"
+            "state" : "translated",
+            "value" : "高密度"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "手動 (240Hz)"
+            "state" : "translated",
+            "value" : "高密度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "手動 (240Hz)"
+            "state" : "translated",
+            "value" : "高密度"
           }
         }
       }
@@ -1789,20 +1789,20 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "捏笔快捷键"
+            "state" : "translated",
+            "value" : "捏合快捷键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "捏筆快速鍵"
+            "value" : "捏合快速鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "捏筆快速鍵"
+            "value" : "捏合快速鍵"
           }
         }
       }
@@ -2367,6 +2367,29 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Title"
+          }
+        }
+      }
+    },
+    "Drawing Toolkit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[绘画进阶套件]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「繪畫進階套件」"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「繪畫進階套件」"
           }
         }
       }
@@ -3134,31 +3157,31 @@
       }
     },
     "hZw-pC-Qxm.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Pencil Pauses Native Touch\"; ObjectID = \"hZw-pC-Qxm\";",
+      "comment" : "Class = \"UILabel\"; text = \"Drawing Pauses Native Touch\"; ObjectID = \"hZw-pC-Qxm\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Pencil Pauses Native Touch"
+            "value" : "Drawing Pauses Native Touch"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用笔时暂停多点触控"
+            "value" : "绘画时暂停多点触控"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用筆時暫停多點觸控"
+            "value" : "繪畫時暫停多點觸控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用筆時暫停多點觸控"
+            "value" : "繪畫時暫停多點觸控"
           }
         }
       }
@@ -4805,34 +4828,35 @@
             "value" : "關閉懸停"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Qat-gL-qiL.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Pencil Tick\"; ObjectID = \"Qat-gL-qiL\";",
+      "comment" : "Class = \"UILabel\"; text = \"Stroke Type\"; ObjectID = \"Qat-gL-qiL\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Pencil Tick"
+            "value" : "Stroke Type"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔触Tick"
+            "value" : "笔迹模式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆觸Tick"
+            "value" : "筆跡模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "筆觸Tick"
+            "value" : "筆跡模式"
           }
         }
       }
@@ -5354,31 +5378,31 @@
       }
     },
     "t12-bo-icS.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; t12-bo-icS.segmentTitles[1] = \"Pencil\"; ObjectID = \"t12-bo-icS\";",
+      "comment" : "Class = \"UISegmentedControl\"; t12-bo-icS.segmentTitles[1] = \"Stylus\"; ObjectID = \"t12-bo-icS\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Pencil"
+            "value" : "Stylus"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pencil"
+            "value" : "手写笔"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pencil"
+            "value" : "手寫筆"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pencil"
+            "value" : "手寫筆"
           }
         }
       }
@@ -5690,31 +5714,31 @@
       }
     },
     "w3d-5s-dH3.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Disable Pencil Slide Gesture\"; ObjectID = \"w3d-5s-dH3\";",
+      "comment" : "Class = \"UILabel\"; text = \"Disable Slide Gesture for Pencil\"; ObjectID = \"w3d-5s-dH3\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Disable Pencil Slide Gesture"
+            "value" : "Disable Slide Gesture for Pencil"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭 Pencil 滑动手势"
+            "value" : "关闭手写笔滑动手势"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉 Pencil 滑動手勢"
+            "value" : "關閉手寫筆滑動手勢"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉 Pencil 滑動手勢"
+            "value" : "關閉手寫筆滑動手勢"
           }
         }
       }

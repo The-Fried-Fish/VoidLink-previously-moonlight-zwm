@@ -57,7 +57,7 @@ import StoreKit
     func productName() -> String {
         switch self {
         case .PencilProPack:
-            return SwiftLocalizationHelper.localizedString(forKey: "Pencil Pro Pack")
+            return SwiftLocalizationHelper.localizedString(forKey: "Drawing Toolkit")
         default:
             return ""
         }
