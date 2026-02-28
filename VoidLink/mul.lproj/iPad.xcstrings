@@ -1778,30 +1778,30 @@
       }
     },
     "ccv-UD-RYW.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Squeeze Shortcut\"; ObjectID = \"ccv-UD-RYW\";",
+      "comment" : "Class = \"UILabel\"; text = \"Custom Squeeze Keyboard Shortcut\"; ObjectID = \"ccv-UD-RYW\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Squeeze Shortcut"
+            "value" : "Custom Squeeze Keyboard Shortcut"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "捏合快捷键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "捏合快速鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "捏合快速鍵"
           }
         }
@@ -5582,13 +5582,13 @@
       }
     },
     "v5f-j3-pEc.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Double Tap Shortcut\"; ObjectID = \"v5f-j3-pEc\";",
+      "comment" : "Class = \"UILabel\"; text = \"Custom Double Tap Keyboard Shortcut\"; ObjectID = \"v5f-j3-pEc\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Double Tap Shortcut"
+            "value" : "Custom Double Tap Keyboard Shortcut"
           }
         },
         "zh-Hans" : {
@@ -5599,13 +5599,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "輕點兩下快速鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "輕點兩下快速鍵"
           }
         }

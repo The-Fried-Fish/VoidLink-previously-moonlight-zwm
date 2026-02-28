@@ -375,7 +375,7 @@ import StoreKit
                                       message: SwiftLocalizationHelper.localizedString(forKey: "No purchase found", product.productName()),
                                       preferredStyle: .alert)
 
-        let unlockAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Unlock Now"), style: .default) { _ in
+        let unlockAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Purchase Now"), style: .default) { _ in
             IAPManager.shared.purchase(product)
         }
         
