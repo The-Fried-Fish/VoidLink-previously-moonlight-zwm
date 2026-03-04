@@ -1898,21 +1898,21 @@ import SVGKit
                     OnScreenWidgetView.updateStreamViewGuidelines(for: self)
                 }
             }
-            
-            if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                if let touch = touches.first {
-                    trackPoint.isHidden = false
-                    trackPoint.position = touch.location(in: self)
-                }
-                CATransaction.commit()
-            }
         }
         // here is in edit mode:
         else{
             self.handleButtonDown()
             NotificationCenter.default.post(name: Notification.Name("OnScreenWidgetViewSelected"),object: self) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
+        }
+        
+        if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            if let touch = touches.first {
+                trackPoint.isHidden = false
+                trackPoint.position = touch.location(in: self)
+            }
+            CATransaction.commit()
         }
     }
     
@@ -2108,18 +2108,6 @@ import SVGKit
                     self.moveByTouch(touch: touch)
                 }
             }
-            
-            if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
-                if let touch = touches.first {
-                    CATransaction.begin()
-                    CATransaction.setDisableActions(true)
-                    if trackPoint.isHidden {
-                        trackPoint.isHidden = false
-                    }
-                    trackPoint.position = touch.location(in: self)
-                    CATransaction.commit()
-                }
-            }
         }
         
         // Move the widgetView based on touch movement in relocation mode
@@ -2129,6 +2117,18 @@ import SVGKit
                 }
             self.lrudIndicatorBall.removeFromSuperlayer()
             self.crossMarkLayer.removeFromSuperlayer()
+        }
+        
+        if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
+            if let touch = touches.first {
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                if trackPoint.isHidden {
+                    trackPoint.isHidden = false
+                }
+                trackPoint.position = touch.location(in: self)
+                CATransaction.commit()
+            }
         }
     }
     

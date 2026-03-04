@@ -56,6 +56,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     bool widgetViewSelected;
     bool controllerLayerSelected;
     bool viewWillBeResized;
+    bool originalTrackPointEnabled;
     __weak IBOutlet NSLayoutConstraint *toolbarTopConstraintiPhone;
     __weak IBOutlet NSLayoutConstraint *toolbarTopConstraintiPad;
     UIColor* trashCanStoryBoardColor;
@@ -150,6 +151,12 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
         // _activeCustomOscButtonPositionDict will be updated every time when the osc profile is reloaded
         OSCProfile *oscProfile = [self->profilesManager getSelectedProfile]; //returns the currently selected OSCProfile
         NSLog(@"reloadOnScreenWidgets %lu", oscProfile.buttonStatesEncoded.count);
+        
+        if(!_quickSwitchEnabled){
+            self->originalTrackPointEnabled = OnScreenWidgetView.trackPointEnabled;
+            OnScreenWidgetView.trackPointEnabled = true;
+        }
+        
         bool hasLegacyWidget = false;
         for (NSData *buttonStateEncoded in oscProfile.buttonStatesEncoded) {
             // OnScreenButtonState* buttonState = [NSKeyedUnarchiver unarchivedObjectOfClass:[OnScreenButtonState class] fromData:buttonStateEncoded error:nil];
@@ -566,7 +573,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 - (IBAction) closeTapped:(id)sender {
     [self clearSickInput];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        OnScreenWidgetView.trackPointEnabled = self->originalTrackPointEnabled;
+    }];
 }
 
 - (IBAction) trashCanTapped:(id)sender {
@@ -1717,7 +1726,11 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 }
 
 - (void)handleProfileTablViewDismiss{
-    if(_quickSwitchEnabled) [self dismissViewControllerAnimated:NO completion:nil];
+    if(_quickSwitchEnabled){
+        [self clearOnScreenWidgets];
+        [self dismissViewControllerAnimated:NO completion:^{
+        }];
+    }
     else [self setupWidgetPanel];
     // setup: current profile lable, button width slider, button height slider & button alpha slider
 }
@@ -1772,7 +1785,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     
     __weak typeof(self) weakSelf = self;
     _oscProfilesTableViewController.needToUpdateOscLayoutTVC = ^() {   // a block that will be called when the modally presented 'OSCProfilesTableViewController' VC is dismissed. By the time the 'OSCProfilesTableViewController' VC is dismissed the user would have potentially selected a different OSC ofile with a different layout and they want to see this layout on this 'LayoutOnScreenControlsViewController.' This block of code will load the proffile and then hide/show and move each OSC button to their appropriate position
-        if(!pickProfile || true) [weakSelf reloadOnScreenWidgetViews];
+        if(!pickProfile) [weakSelf reloadOnScreenWidgetViews];
     };
 
     self.widgetPanelStack.hidden = YES;
