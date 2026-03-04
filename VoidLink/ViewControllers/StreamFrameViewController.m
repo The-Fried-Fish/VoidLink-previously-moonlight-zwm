@@ -1074,7 +1074,7 @@
     //[self.pipController startPictureInPicture];
     //sleep(1);
     appDidEnterBackgroundWithoutPip = true;
-
+    NSLog(@"applicationWillResignActive %f", CACurrentMediaTime());
     [_streamView saveStreamViewWidgetChanges];
 
 #if !TARGET_OS_TV
@@ -1719,27 +1719,42 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [self->_streamView saveStreamViewWidgetChanges];
 
-    if (_isRestoringFromPiP) {
-        Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
-        return;
+    // handle view size change for on-screen widgets
+    CGSize oldSize = self.view.bounds.size;
+    CGFloat scaleX = size.width  / oldSize.width;
+    CGFloat scaleY = size.height / oldSize.height;
+    for(OnScreenWidgetView* widget in OnScreenWidgetView.mapping.allValues){
+        CGPoint oldCenter = widget.center;
+        CGPoint oldStoredCenter = widget.storedCenter;
+        [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+            widget.center = CGPointMake(oldCenter.x * scaleX,oldCenter.y * scaleY);
+            widget.storedCenter = CGPointMake(oldStoredCenter.x * scaleX,oldStoredCenter.y * scaleY);
+        } completion:nil];
     }
 
-    Log(LOG_I, @"View size changed, terminating stream");
     
     dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC));
     dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self->_streamMan setNeedRequeuing:true];
     });
 
+    /*
+    if (_isRestoringFromPiP) {
+        Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
+        return;
+    } */
+
+    // Log(LOG_I, @"View size changed, terminating stream");
+
     double delayInSeconds = 0.2;
     if (_delayedRemoveExtScreen) {
         dispatch_block_cancel(_delayedRemoveExtScreen);
     }
+        
     dispatch_block_t block = dispatch_block_create(0, ^{
         [self handleViewResize];
-        [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:YES];
+        [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:NO];
     });
     _delayedRemoveExtScreen = block;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
