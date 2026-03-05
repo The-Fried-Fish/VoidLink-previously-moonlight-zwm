@@ -2874,7 +2874,7 @@ import SVGKit
                     UIView.animate(withDuration: duration, animations: {
                         widget.center = folder.center
                     },completion: { finished in
-                        widget.isUserInteractionEnabled = !folder.folded
+                        widget.isUserInteractionEnabled = !hidden
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
                         if widget.widgetType == .touchPad {
@@ -2888,8 +2888,9 @@ import SVGKit
             for sequence in folder.sequenceSet {
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
                 DispatchQueue.main.async {
-                    widget.center = folder.storedCenter
                     widget.isUserInteractionEnabled = false
+                    widget.capturedTouches.removeAllObjects()
+                    widget.center = folder.storedCenter
                     widget.isHidden = false
                     if widget.widgetType == .touchPad {
                         widget.highlightBorder(highlighted: true)
