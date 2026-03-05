@@ -871,6 +871,7 @@ static NSMutableSet* hostList;
         case CODEC_PREF_AV1:
 #if defined(__IPHONE_16_0) || defined(__TVOS_16_0)
             if (VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1)) {
+                _streamConfig.fullColorRange = false;
                 if (streamSettings.enableYUV444) {
                     _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_AV1_HIGH8_444;
                 }
@@ -1589,11 +1590,14 @@ static NSMutableSet* hostList;
     if(![GenericUtils needUpdateDefaultSettings]) return;
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* settings = [dataMan retrieveSettings];
+    
+    settings.preferredCodec = VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) ? CODEC_PREF_HEVC : CODEC_PREF_H264;
+    
     switch ([UIDevice currentDevice].userInterfaceIdiom) {
         case UIUserInterfaceIdiomPhone:
             settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
-            settings.asyncFrameDequeue = true;
+            settings.asyncFrameDequeue = false;
             settings.touchMoveEventInterval = @(45);
             break;
         case UIUserInterfaceIdiomPad:

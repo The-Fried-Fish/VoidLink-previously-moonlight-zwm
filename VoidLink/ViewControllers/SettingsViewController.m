@@ -1875,7 +1875,8 @@ BOOL isCustomResolution(int resolutionSelected) {
             
             switch (self->tempSettings.preferredCodec) {
                 case CODEC_PREF_AUTO:
-                    [self.codecSelector setSelectedSegmentIndex:self.codecSelector.numberOfSegments - 1];
+                    [self.codecSelector setSelectedSegmentIndex:VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) ? CODEC_PREF_HEVC-1 : CODEC_PREF_H264-1];
+                    [self codecSelectorChanged:self.codecSelector];
                     break;
                     
                 case CODEC_PREF_AV1:
@@ -3280,24 +3281,16 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (uint32_t) getChosenCodecPreference {
     // Auto is always the last segment
-    if (self.codecSelector.selectedSegmentIndex == self.codecSelector.numberOfSegments - 1) {
-        return CODEC_PREF_AUTO;
-    }
-    else {
         switch (self.codecSelector.selectedSegmentIndex) {
             case 0:
                 return CODEC_PREF_H264;
-                
             case 1:
                 return CODEC_PREF_HEVC;
-                
             case 2:
                 return CODEC_PREF_AV1;
-                
             default:
-                abort();
+                return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) ? CODEC_PREF_HEVC : CODEC_PREF_H264;
         }
-    }
 }
 
 - (NSInteger) getChosenStreamHeight {
@@ -3788,7 +3781,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL isAV1 = (codec == CODEC_PREF_AV1);
     BOOL isH264 = (codec == CODEC_PREF_H264);
     BOOL isHEVC = (codec == CODEC_PREF_HEVC);
-
+    
     if (isAV1) {
         // AV1 must use limited range, so disable fullRange and turn it off
         [self.fullColorRangeSwitch setOn:NO animated:NO];

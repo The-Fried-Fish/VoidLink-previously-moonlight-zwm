@@ -487,36 +487,6 @@
         }
       }
     },
-    "5Y7-To-ca2.segmentTitles[3]" : {
-      "comment" : "Class = \"UISegmentedControl\"; 5Y7-To-ca2.segmentTitles[3] = \"Auto\"; ObjectID = \"5Y7-To-ca2\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Auto"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自動"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自動"
-          }
-        }
-      }
-    },
     "6g1-G6-jZx.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; 6g1-G6-jZx.segmentTitles[0] = \"3 Finger Tap\"; ObjectID = \"6g1-G6-jZx\";",
       "extractionState" : "extracted_with_value",

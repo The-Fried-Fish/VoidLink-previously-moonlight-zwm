@@ -1129,13 +1129,12 @@
                                         <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="3" translatesAutoresizingMaskIntoConstraints="NO" id="5Y7-To-ca2" userLabel="Codec Selector">
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="5Y7-To-ca2" userLabel="Codec Selector">
                                         <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
                                         <segments>
                                             <segment title="H.264"/>
                                             <segment title="HEVC"/>
                                             <segment title="AV1"/>
-                                            <segment title="Auto"/>
                                         </segments>
                                         <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="selectedSegmentTintColor" systemColor="linkColor"/>
