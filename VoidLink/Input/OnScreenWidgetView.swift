@@ -2898,6 +2898,7 @@ import SVGKit
                     UIView.animate(withDuration: OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0, animations: {
                         widget.center = widget.storedCenter
                     },completion: { finished in
+                        widget.capturedTouches.removeAllObjects()
                         widget.isUserInteractionEnabled = !folder.folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
