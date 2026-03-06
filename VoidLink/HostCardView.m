@@ -8,7 +8,7 @@
 
 #import "HostCardView.h"
 #import "LocalizationHelper.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
 #import "FixedTintImageView.h"
 
 
@@ -574,7 +574,7 @@ static const float REFRESH_CYCLE = 2.0f;
         case StateOffline:
             [_hostSpinner stopAnimating];
             // _iconBackgroundView.backgroundColor = _userIterfaceStyle == UIUserInterfaceStyleDark ? [UIColor appBackgroundColorDark] : [UIColor appBackgroundColorLight];
-            _iconBackgroundView.backgroundColor = [ThemeManager appBackgroundColor];
+            _iconBackgroundView.backgroundColor = [ThemeManager offlineHostIconBackgroundColor];
             _statusLabel.textColor = [ThemeManager textColorGray];
             _statusLabel.text = [LocalizationHelper localizedStringForKey: @"Offline"];
             _statusIcon.tintColor = [ThemeManager textColorGray];

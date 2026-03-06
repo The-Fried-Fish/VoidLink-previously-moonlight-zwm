@@ -25,7 +25,7 @@
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
 #import "OSCProfilesManager.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
 #import "NativeTouchPointer.h"
 
 #include <sys/socket.h>
@@ -585,7 +585,7 @@
 }
 
 - (void)updateTheme {
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    self.view.backgroundColor = [ThemeManager menuBackgroundColor];
     _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
     _spinner.color = [ThemeManager textColor];
 }

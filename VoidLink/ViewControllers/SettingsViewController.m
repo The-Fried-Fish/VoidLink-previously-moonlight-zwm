@@ -12,7 +12,7 @@
 #import "SettingsViewController.h"
 #import "TemporarySettings.h"
 #import "DataManager.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
 #import "Connection.h"
 #import "Plot.h"
 #import "OSCProfilesManager.h"
@@ -474,7 +474,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateTheme)
-                                                 name:ThemeDidChangeNotification
+                                                 name:ThemeManager.ThemeDidChangeNotification
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -790,7 +790,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     videoSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Video"];
     videoSection.identifier = @"SettingsSectionVideo";
     if (@available(iOS 13.0, *)) {
-        [videoSection setSectionWithIcon:[UIImage systemImageNamed:@"waveform"] andSize:20];
+        [videoSection setSectionWithIcon:[UIImage systemImageNamed:@"waveform"] size:13 sizeConstraint:-17];
     }
     [self addSetting:self.resolutionStack ofId:@"resolutionStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
     [self addSetting:self.fpsStack ofId:@"fpsStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
@@ -812,7 +812,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     touchControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch Control"];
     touchControlSection.identifier = @"SettingsSectionTouch&Controller";
     if (@available(iOS 13.0, *)) {
-        [touchControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] andSize:20.5];
+        [touchControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] size:22 sizeConstraint:-15];
     }
     [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
@@ -836,7 +836,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     controllerSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Controller"];
     controllerSection.identifier = @"SettingsSectionController";
     if (@available(iOS 13.0, *)) {
-        [controllerSection setSectionWithIcon:[UIImage systemImageNamed:@"gamecontroller"] andSize:30];
+        [controllerSection setSectionWithIcon:[UIImage systemImageNamed:@"gamecontroller"] size:30 sizeConstraint:-12];
     }
     [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
     [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
@@ -854,10 +854,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     motionControlSection.delegate = self;
     motionControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Motion Control"];
     motionControlSection.identifier = @"SettingsSectionMotionControl";
-    if (@available(iOS 13.0, *)) {
-        // [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] andSize:23];
-        [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] andSize:23];
-    }
+    if (@available(iOS 13.0, *)) [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] size:23 sizeConstraint:-20];
     [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
     [self addSetting:self.reverseHoldButtonStack ofId:@"reverseHoldButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
     [self addSetting:self.mapGyroToStack ofId:@"mapGyroToStack" withInfoTag:YES withDynamicLabel:NO to:motionControlSection];
@@ -882,7 +879,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Drawing Toolkit"];
         pencilSection.identifier = @"SettingsSectionPencil";
         if (@available(iOS 13.0, *)) {
-            [pencilSection setSectionWithIcon:[UIImage systemImageNamed:@"pencil.and.outline"] size:19 weight:UIImageSymbolWeightHeavy];
+            [pencilSection setSectionWithIcon:[UIImage systemImageNamed:@"pencil.and.outline"] size:19 weight:UIImageSymbolWeightHeavy sizeConstraint:-17.5];
         }
         [self addSetting:self.pencilTickStack ofId:@"pencilTickStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
         [self addSetting:self.pencilTickIntervalStack ofId:@"pencilTickIntervalStack" withInfoTag:NO withDynamicLabel:YES to:pencilSection];
@@ -901,7 +898,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     gesturesSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Gestures"];  
     gesturesSection.identifier = @"SettingsSectionGestures";
     if (@available(iOS 13.0, *)) {
-        [gesturesSection setSectionWithIcon:[UIImage systemImageNamed:@"hand.draw"] andSize:23];
+        [gesturesSection setSectionWithIcon:[UIImage systemImageNamed:@"hand.draw"] size:23 sizeConstraint:-13.3];
     }
     
     [self addSetting:self.softKeyboardGestureStack ofId:@"softKeyboardGestureStack" withInfoTag:YES withDynamicLabel:NO to:gesturesSection];
@@ -917,7 +914,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     peripheralSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Peripherals"];
     peripheralSection.identifier = @"SettingsSectionPeripherals";
     if (@available(iOS 13.0, *)) {
-        [peripheralSection setSectionWithIcon:[UIImage imageNamed:@"cable.connector.video"] andSize:20];
+        [peripheralSection setSectionWithIcon:[UIImage imageNamed:@"cable.connector.video"] size:20 sizeConstraint:-17.9];
     }
     if (@available(iOS 13.0, *)) {
         [self addSetting:self.externalDisplayModeStack ofId:@"externalDisplayModeStack" withInfoTag:YES withDynamicLabel:NO to:peripheralSection];
@@ -935,7 +932,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     audioSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Audio"];
     audioSection.identifier = @"SettingsSectionAudio";
     if (@available(iOS 13.0, *)) {
-        [audioSection setSectionWithIcon:[UIImage imageNamed:@"speaker.wave.2"] andSize:20];
+        [audioSection setSectionWithIcon:[UIImage imageNamed:@"speaker.wave.2"] size:20 sizeConstraint:-16.7];
     }
     
     [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
@@ -957,7 +954,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     otherSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Others"];
     otherSection.identifier = @"SettingsSectionOthers";
     if (@available(iOS 13.0, *)) {
-        [otherSection setSectionWithIcon:[UIImage systemImageNamed:@"cube"] andSize:20.5];
+        [otherSection setSectionWithIcon:[UIImage systemImageNamed:@"cube"] size:20.5 sizeConstraint:-17];
     }
     [self addSetting:self.statsOverlayStack ofId:@"statsOverlayStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.unlockDisplayOrientationStack ofId:@"unlockDisplayOrientationStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
@@ -977,7 +974,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     experimentalSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Experimental"];
     experimentalSection.identifier = @"SettingsSectionExperimental";
     if (@available(iOS 13.0, *)) {
-        [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] andSize:20];
+        [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] size:20 sizeConstraint:-19];
     }
     
     [self addSetting:self.touchModeStack2 ofId:@"touchModeStack2" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
@@ -3388,8 +3385,9 @@ BOOL isCustomResolution(int resolutionSelected) {
     for (UIView *subview in view.subviews) {
         if ([subview isKindOfClass:[MenuSectionView class]]) {
             MenuSectionView *section = (MenuSectionView *)subview;
+            section.titleLabel.textColor = [ThemeManager sectionLabelTextColor];
             section.iconImageView.tintColor = [UIColor clearColor];
-            section.iconImageView.tintColor = [ThemeManager textColor];
+            section.iconImageView.tintColor = [ThemeManager sectionLabelTextColor];
             section.separatorLine.backgroundColor = [UIColor clearColor];
             section.separatorLine.backgroundColor = [ThemeManager separatorColor];
         }
@@ -3399,7 +3397,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)updateTheme{
     self.view.backgroundColor = [UIColor clearColor];
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
+    self.view.backgroundColor = [ThemeManager menuBackgroundColor];
     [self updateThemeForMenuSections:self.view];
     [self updateThemeForLabels:self.view];
     [self updateThemeForSelectors:self.view];

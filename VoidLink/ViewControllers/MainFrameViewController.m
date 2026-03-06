@@ -31,7 +31,6 @@
 #import "Plot.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "DataManager.h"
-#import "ThemeManager.h"
 #import "FixedTintImageView.h"
 #import "VoidLink-Swift.h"
 
@@ -376,7 +375,7 @@ static NSMutableSet* hostList;
     // [self.view bringSubviewToFront:self.collectionView];
     self.hostCollectionVC.view.hidden = YES;
     self.collectionView.hidden = NO;
-    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
+    self.collectionView.backgroundColor = [ThemeManager hostViewBackgroundColor];
     //self.view.backgroundColor = [ThemeManager appBackgroundColor];
 
     [self.collectionView setContentOffset:CGPointZero animated:NO];
@@ -1481,7 +1480,7 @@ static NSMutableSet* hostList;
     else{
         self.navigationController.navigationBar.backgroundColor = [UIColor clearColor]; // old ios depend on this, do not remove
         self.navigationController.navigationBar.barTintColor = [UIColor clearColor]; // ios 14 depend on this, do not remove
-        self.navigationController.navigationBar.barTintColor = [ThemeManager appBackgroundColor]; // ios 14 depend on this, do not remove
+        self.navigationController.navigationBar.barTintColor = [ThemeManager hostViewBackgroundColor]; // ios 14 depend on this, do not remove
     }
 }
 
@@ -1490,7 +1489,7 @@ static NSMutableSet* hostList;
         Class appearanceClass = NSClassFromString(@"UINavigationBarAppearance");
         navBarAppearanceStandard = [[appearanceClass alloc] init];
         [navBarAppearanceStandard performSelector:@selector(configureWithOpaqueBackground)]; // 不透明
-        [navBarAppearanceStandard setValue:[ThemeManager appBackgroundColor] forKey:@"backgroundColor"]; // 设置你需要的背景色
+        [navBarAppearanceStandard setValue:[ThemeManager hostViewBackgroundColor] forKey:@"backgroundColor"]; // 设置你需要的背景色
         [navBarAppearanceStandard setValue:nil forKey:@"shadowColor"]; // 设置你需要的背景色
         NSDictionary* titleTextAttributes = @{
             NSForegroundColorAttributeName: [ThemeManager textColor]
@@ -1547,12 +1546,12 @@ static NSMutableSet* hostList;
 }
 
 - (void)updateTheme {
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
-    self.hostCollectionVC.view.backgroundColor = [ThemeManager appBackgroundColor];
-    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
+    self.view.backgroundColor = [ThemeManager hostViewBackgroundColor];
+    self.hostCollectionVC.view.backgroundColor = [ThemeManager hostViewBackgroundColor];
+    self.collectionView.backgroundColor = [ThemeManager hostViewBackgroundColor];
 
     if (@available(iOS 13.0, *)) {
-        [navBarAppearanceStandard setValue:[ThemeManager appBackgroundColor] forKey:@"backgroundColor"];
+        [navBarAppearanceStandard setValue:[ThemeManager hostViewBackgroundColor] forKey:@"backgroundColor"];
         NSDictionary* titleTextAttributes = @{
             NSForegroundColorAttributeName: [ThemeManager textColor]
         };
@@ -1999,7 +1998,7 @@ static NSMutableSet* hostList;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateTheme)
-                                                 name:ThemeDidChangeNotification
+                                                 name:ThemeManager.ThemeDidChangeNotification
                                                object:nil];
 
     /* this makes background color works*/

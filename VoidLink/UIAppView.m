@@ -12,7 +12,7 @@
 
 #import "UIAppView.h"
 #import "AppAssetManager.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
 
 static const float REFRESH_CYCLE = 1.0f;
 

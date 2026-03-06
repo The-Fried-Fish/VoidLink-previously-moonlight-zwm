@@ -9,7 +9,7 @@
 #import "HostCollectionViewController.h"
 #import "HostCardView.h"
 #import "TemporaryHost.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
 
 static const CGFloat cellOffsetY = 20;
 
@@ -104,7 +104,7 @@ static const CGFloat cellOffsetY = 20;
 }
 
 - (void)updateTheme {
-    self.collectionView.backgroundColor = [ThemeManager appBackgroundColor];
+    self.collectionView.backgroundColor = [ThemeManager hostViewBackgroundColor];
     for (HostCell *cell in [self.collectionView visibleCells]) {
         [cell.cardView updateTheme];
     }

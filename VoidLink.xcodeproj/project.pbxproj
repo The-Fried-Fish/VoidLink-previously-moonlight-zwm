@@ -34,9 +34,9 @@
 		18D43D7F2F050240008C326F /* PressureCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D43D7E2F050240008C326F /* PressureCurve.swift */; };
 		18E4BCEA2E891895000A8657 /* MotionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E4BCE92E891895000A8657 /* MotionHandler.swift */; };
 		18FCADAF2ECAC23200787A96 /* PencilHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FCADAE2ECAC23200787A96 /* PencilHandler.swift */; };
+		2A7113FD2F5A6C65001D852D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7113FC2F5A6C65001D852D /* ThemeManager.swift */; };
 		2AC1E3832F507D80004F76C0 /* GenericUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC1E3822F507D80004F76C0 /* GenericUtils.swift */; };
 		840751B32BF49C050096B657 /* CustomTapGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 840751B22BF49C050096B657 /* CustomTapGestureRecognizer.m */; };
-		841BAC922DE35D6B00DA639E /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 841BAC912DE35D6B00DA639E /* ThemeManager.m */; };
 		84203F232C5F24C00032EEED /* OnScreenWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84203F222C5F24C00032EEED /* OnScreenWidgetView.swift */; };
 		84351B0E2C29ACCB00A77989 /* LayoutOnScreenControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B072C29ACCA00A77989 /* LayoutOnScreenControls.m */; };
 		84351B0F2C29ACCB00A77989 /* OnScreenButtonState.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B092C29ACCA00A77989 /* OnScreenButtonState.m */; };
@@ -199,12 +199,11 @@
 		18D43D7E2F050240008C326F /* PressureCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureCurve.swift; sourceTree = "<group>"; };
 		18E4BCE92E891895000A8657 /* MotionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionHandler.swift; sourceTree = "<group>"; };
 		18FCADAE2ECAC23200787A96 /* PencilHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilHandler.swift; sourceTree = "<group>"; };
+		2A7113FC2F5A6C65001D852D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		2AC1E3822F507D80004F76C0 /* GenericUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericUtils.swift; sourceTree = "<group>"; };
 		693B3A9A218638CD00982F7B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		840751B12BF49B5A0096B657 /* CustomTapGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomTapGestureRecognizer.h; sourceTree = "<group>"; };
 		840751B22BF49C050096B657 /* CustomTapGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomTapGestureRecognizer.m; sourceTree = "<group>"; };
-		841BAC8F2DE35BEC00DA639E /* ThemeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
-		841BAC912DE35D6B00DA639E /* ThemeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeManager.m; sourceTree = "<group>"; };
 		84203F222C5F24C00032EEED /* OnScreenWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnScreenWidgetView.swift; sourceTree = "<group>"; };
 		84351B062C29ACCA00A77989 /* OnScreenButtonState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnScreenButtonState.h; sourceTree = "<group>"; };
 		84351B072C29ACCA00A77989 /* LayoutOnScreenControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutOnScreenControls.m; sourceTree = "<group>"; };
@@ -661,8 +660,7 @@
 				FB290D0319B2C406004C83CF /* AppDelegate.m */,
 				848F45682DDCD0D600581E36 /* HostCardView.h */,
 				848F45692DDCD12500581E36 /* HostCardView.m */,
-				841BAC8F2DE35BEC00DA639E /* ThemeManager.h */,
-				841BAC912DE35D6B00DA639E /* ThemeManager.m */,
+				2A7113FC2F5A6C65001D852D /* ThemeManager.swift */,
 				847D2FD82DDA00C800937A62 /* MenuSectionView.h */,
 				847D2FDA2DDA015F00937A62 /* MenuSectionView.m */,
 				FBDE86E419F82297001C18A8 /* UIAppView.h */,
@@ -1099,6 +1097,7 @@
 				1817B61E2E6FD04D000D938D /* SafeTimer.swift in Sources */,
 				FBD3495019FF2174002D2A60 /* SettingsViewController.m in Sources */,
 				843CC7F02C1E757D00BBC475 /* NativeTouchPointer.m in Sources */,
+				2A7113FD2F5A6C65001D852D /* ThemeManager.swift in Sources */,
 				FB89462C19F646E200339C8A /* HttpManager.m in Sources */,
 				FB89462D19F646E200339C8A /* MDNSManager.m in Sources */,
 				84351B0F2C29ACCB00A77989 /* OnScreenButtonState.m in Sources */,
@@ -1108,7 +1107,6 @@
 				FB4678FA1A55FFAD00377732 /* DiscoveryManager.m in Sources */,
 				18D43D7F2F050240008C326F /* PressureCurve.swift in Sources */,
 				180E6E372E93BFDB0067C73A /* AlertControllerUtil.swift in Sources */,
-				841BAC922DE35D6B00DA639E /* ThemeManager.m in Sources */,
 				98D5856D1C0EA79600F6CC00 /* TemporaryHost.m in Sources */,
 				FB89463519F646E200339C8A /* MainFrameViewController.m in Sources */,
 				FBD1C8E21A8AD71400C6703C /* Logger.m in Sources */,

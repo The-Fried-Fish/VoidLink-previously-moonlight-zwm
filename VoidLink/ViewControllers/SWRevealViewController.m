@@ -31,7 +31,7 @@
 
 #import "SWRevealViewController.h"
 #import "LocalizationHelper.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
 
 
 #pragma mark - StatusBar Helper Function
@@ -147,7 +147,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     _rearNavView.translatesAutoresizingMaskIntoConstraints = NO;
     _safeAreaPadding.translatesAutoresizingMaskIntoConstraints = NO;
     // _rearNavView.backgroundColor = [UIColor lightGrayColor]; // 设置背景色以便查看
-    _safeAreaPadding.backgroundColor = [ThemeManager appBackgroundColor];
+    _safeAreaPadding.backgroundColor = [ThemeManager menuBackgroundColor];
     
     // NSLog(@"_c.rearViewRevealWidth: %f", _c.rearViewRevealWidth);
     // _rearNavView.frame = CGRectMake(0, 0, _c.rearViewRevealWidth, 100);
@@ -837,21 +837,21 @@ const int FrontViewPositionNone = 0xff;
 }
 
 - (void)updateTheme {
-    _contentView.backgroundColor = [ThemeManager appBackgroundColor];
-    _contentView.rearNavView.backgroundColor = [ThemeManager appBackgroundColor];
-    _contentView.safeAreaPadding.backgroundColor = [ThemeManager appBackgroundColor];
+    _contentView.backgroundColor = [ThemeManager menuBackgroundColor];
+    _contentView.rearNavView.backgroundColor = [ThemeManager menuBackgroundColor];
+    _contentView.safeAreaPadding.backgroundColor = [ThemeManager menuBackgroundColor];
     _separatorLine.backgroundColor = [ThemeManager separatorColor];
     
     if (@available(iOS 13.0, *)) {
         UINavigationBarAppearance *navBarAppearanceStandard = _dockedNavBar.standardAppearance;
-        navBarAppearanceStandard.backgroundColor = [ThemeManager appBackgroundColor];
+        navBarAppearanceStandard.backgroundColor = [ThemeManager menuBackgroundColor];
         navBarAppearanceStandard.titleTextAttributes = @{
             NSForegroundColorAttributeName: [ThemeManager textColor]
         };
         _dockedNavBar.standardAppearance = navBarAppearanceStandard;
         _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
     } else {
-        _dockedNavBar.barTintColor = [ThemeManager appBackgroundColor];
+        _dockedNavBar.barTintColor = [ThemeManager menuBackgroundColor];
     }
 }
 
@@ -860,7 +860,7 @@ const int FrontViewPositionNone = 0xff;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateTheme)
-                                                 name:ThemeDidChangeNotification
+                                                 name:ThemeManager.ThemeDidChangeNotification
                                                object:nil];
     [self updateTheme];
 }
@@ -938,7 +938,7 @@ const int FrontViewPositionNone = 0xff;
         [_separatorLine.bottomAnchor constraintEqualToAnchor:_contentView.bottomAnchor constant:0],
         //[_separatorLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:self.bounds.size.width-60],
         [_separatorLine.leadingAnchor constraintEqualToAnchor:_contentView.frontView.leadingAnchor constant:0],
-        [_separatorLine.trailingAnchor constraintEqualToAnchor:_contentView.frontView.leadingAnchor constant:2], //mark: settingMenuLayout
+        [_separatorLine.trailingAnchor constraintEqualToAnchor:_contentView.frontView.leadingAnchor constant:0.7], //mark: settingMenuLayout
     ]];
 }
 
@@ -954,7 +954,7 @@ const int FrontViewPositionNone = 0xff;
     if (@available(iOS 13.0, *)) {
         UINavigationBarAppearance *navBarAppearanceStandard = [[UINavigationBarAppearance alloc] init];
         [navBarAppearanceStandard configureWithOpaqueBackground]; // 不透明
-        navBarAppearanceStandard.backgroundColor =[ThemeManager appBackgroundColor];; // 设置你需要的背景色
+        navBarAppearanceStandard.backgroundColor =[ThemeManager menuBackgroundColor];; // 设置你需要的背景色
         navBarAppearanceStandard.shadowColor = nil; // 去掉底部分割线（可选）
         navBarAppearanceStandard.titleTextAttributes = @{
             NSForegroundColorAttributeName: [ThemeManager textColor]
@@ -965,7 +965,7 @@ const int FrontViewPositionNone = 0xff;
         _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
     } else {
         _dockedNavBar.barTintColor = [UIColor clearColor];
-        _dockedNavBar.barTintColor = [ThemeManager appBackgroundColor];
+        _dockedNavBar.barTintColor = [ThemeManager menuBackgroundColor];
         _dockedNavBar.shadowImage = [UIImage new]; // remove bottom line for navbar
     }
 

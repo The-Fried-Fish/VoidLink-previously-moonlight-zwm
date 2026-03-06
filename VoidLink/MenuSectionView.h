@@ -25,6 +25,7 @@
 @property (nonatomic, strong) UIStackView *rootStackView;
 @property (nonatomic, assign) CGFloat leadingTrailingPadding;
 @property (nonatomic, assign) CGFloat separatorLinePadding;
+@property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, copy) NSString *sectionTitle;
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, assign) BOOL isExpanded;
@@ -40,8 +41,8 @@
 @property (nonatomic, weak) id<MenuSectionDelegate> delegate; // Delegate property
 
 // 方法
-- (void)setSectionWithIcon:(UIImage *)icon andSize:(CGFloat)size;
-- (void)setSectionWithIcon:(UIImage *)icon size:(CGFloat)size weight:(UIImageSymbolWeight)weight API_AVAILABLE(ios(13.0));
+- (void)setSectionWithIcon:(UIImage *)icon size:(CGFloat)size sizeConstraint:(CGFloat)constant;
+- (void)setSectionWithIcon:(UIImage *)icon size:(CGFloat)size weight:(UIImageSymbolWeight)weight sizeConstraint:(CGFloat)constant API_AVAILABLE(ios(13.0));
 - (void)addSubStackView:(UIStackView *)stackView;
 - (void)addToParentStack:(UIStackView *)parentStack;
 - (void)removeSubStackView:(UIStackView *)stackView;
