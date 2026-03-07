@@ -101,7 +101,7 @@ VoidLink uses microphone to stream your voice to gaming PC. Microphone redirecti
 		<string>audio</string>
 	</array>
 	<key>UIDesignRequiresCompatibility</key>
-	<true/>
+	<false/>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>
