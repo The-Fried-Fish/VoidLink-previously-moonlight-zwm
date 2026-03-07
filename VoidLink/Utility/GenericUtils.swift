@@ -49,4 +49,14 @@ import Foundation
     @objc static func isIPad() -> Bool {
         return UIDevice.current.userInterfaceIdiom == .pad
     }
+        
+    @objc static let liquidGlassEnabled: Bool = {
+        if #available(iOS 26.0, tvOS 26.0, *) {
+            let useLegacyUI = Bundle.main.object(forInfoDictionaryKey: "UIDesignRequiresCompatibility") as? Bool
+            return useLegacyUI != true
+        } else {
+            return false
+        }
+    }()
+
 }

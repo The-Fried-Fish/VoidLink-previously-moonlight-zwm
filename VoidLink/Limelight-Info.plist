@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>GCSupportsGameMode</key>
-	<true/>
 	<key>CADisableMinimumFrameDuration</key>
 	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
@@ -58,31 +56,24 @@
 	<string>Bluetooth access allows Moonlight to connect to Citrix X1 mice.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Bluetooth access allows Moonlight to connect to Citrix X1 mice.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>VoidLink需要麦克风访问权限。现阶段，麦克风重定向仅支持Sunshine基地版，且麦克风音频流【未经加密】。
-
-VoidLink uses microphone to stream your voice to gaming PC. Microphone redirection currently works with Sunshine-Foundation (a fork of Sunshine) only, and the mic audio stream is NOT ENCRYPTED at this stage.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_nvstream._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>VoidLink uses the local network to connect to your gaming PC for streaming.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>VoidLink需要麦克风访问权限。现阶段，麦克风重定向仅支持Sunshine基地版，且麦克风音频流【未经加密】。
+
+VoidLink uses microphone to stream your voice to gaming PC. Microphone redirection currently works with Sunshine-Foundation (a fork of Sunshine) only, and the mic audio stream is NOT ENCRYPTED at this stage.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>VoidLink uses the device Gyro and Acceleration data to emulate motion controls when streaming.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
-			<key>UIWindowSceneSessionRoleExternalDisplay</key>
-			<array>
-				<dict>
-					<key>UISceneDelegateClassName</key>
-					<string>SceneDelegate</string>
-					<key>UISceneConfigurationName</key>
-					<string>External Display Configuration</string>
-				</dict>
-			</array>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
@@ -92,9 +83,16 @@ VoidLink uses microphone to stream your voice to gaming PC. Microphone redirecti
 					<string>SceneDelegate</string>
 				</dict>
 			</array>
+			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>External Display Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>SceneDelegate</string>
+				</dict>
+			</array>
 		</dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
@@ -102,6 +100,8 @@ VoidLink uses microphone to stream your voice to gaming PC. Microphone redirecti
 	<array>
 		<string>audio</string>
 	</array>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>
