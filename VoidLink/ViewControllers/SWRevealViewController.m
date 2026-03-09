@@ -938,7 +938,7 @@ const int FrontViewPositionNone = 0xff;
         [_separatorLine.bottomAnchor constraintEqualToAnchor:_contentView.bottomAnchor constant:0],
         //[_separatorLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:self.bounds.size.width-60],
         [_separatorLine.leadingAnchor constraintEqualToAnchor:_contentView.frontView.leadingAnchor constant:0],
-        [_separatorLine.trailingAnchor constraintEqualToAnchor:_contentView.frontView.leadingAnchor constant:0.7], //mark: settingMenuLayout
+        [_separatorLine.trailingAnchor constraintEqualToAnchor:_contentView.frontView.leadingAnchor constant:GenericUtils.menuSeparatorWidth], //mark: settingMenuLayout
     ]];
 }
 

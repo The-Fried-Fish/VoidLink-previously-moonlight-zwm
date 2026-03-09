@@ -59,4 +59,6 @@ import Foundation
         }
     }()
 
+    @objc static let menuSeparatorWidth: CGFloat = 0.7
+    @objc static let menuSectionSeparatorWidth: CGFloat = 0.7
 }
