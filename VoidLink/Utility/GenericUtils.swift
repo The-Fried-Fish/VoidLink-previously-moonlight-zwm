@@ -61,4 +61,24 @@ import Foundation
 
     @objc static let menuSeparatorWidth: CGFloat = 0.7
     @objc static let menuSectionSeparatorWidth: CGFloat = 0.7
+    
+    @objc static var hostViewNavigationBarHeight: CGFloat {
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            return liquidGlassEnabled ? 54 : 44
+        case .pad:
+            return liquidGlassEnabled ? 54 : 50
+        default:
+            return liquidGlassEnabled ? 54 : 50
+        }
+    }
+    
+    @objc static var settingsMenuNavigationBarHeight: CGFloat {
+        // return isIPhone() ? 44 : hostViewNavigationBarHeight
+        return liquidGlassEnabled ? hostViewNavigationBarHeight+5 : hostViewNavigationBarHeight
+    }
+    
+    @objc static var dockedNavBarTopAnchorOffset: CGFloat {
+        return liquidGlassEnabled ? 10 : 0
+    }
 }

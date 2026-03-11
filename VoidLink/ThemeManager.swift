@@ -204,7 +204,7 @@ class ThemeManager: NSObject {
                 let traits = UITraitCollection(userInterfaceStyle: .dark)
                 return UIColor.label.resolvedColor(with: traits)
             } else {
-                return UIColor.black
+                return UIColor.white
             }
         }
     }

@@ -1389,22 +1389,26 @@ static NSMutableSet* hostList;
 
 - (UIBarButtonItem *)createAddHostButton{
     // 创建按钮
+    
+    bool liquidGlassEnabled = GenericUtils.liquidGlassEnabled;
+    // bool liquidGlassEnabled = false;
+
     CGFloat buttonHeight = 30;
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.backgroundColor = GenericUtils.liquidGlassEnabled ? UIColor.whiteColor : [ThemeManager appPrimaryColor]; // #0A85FF
+    button.backgroundColor = liquidGlassEnabled ? [ThemeManager appPrimaryColor] : [ThemeManager appPrimaryColor]; // #0A85FF
     button.layer.cornerRadius = buttonHeight/2;
-    button.clipsToBounds = !GenericUtils.liquidGlassEnabled;
+    button.clipsToBounds = !liquidGlassEnabled;
 
     // 设置图标（SF Symbol）
 
     if (@available(iOS 13.0, *)) {
         UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration
-                                              configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 18.7 :17
-                                              weight:GenericUtils.liquidGlassEnabled ? UIImageSymbolWeightRegular :UIImageSymbolWeightMedium];
+                                              configurationWithPointSize:liquidGlassEnabled ? 18.7 :17
+                                              weight:liquidGlassEnabled ? UIImageSymbolWeightRegular :UIImageSymbolWeightMedium];
         UIImage *image = [UIImage systemImageNamed:@"plus.circle" withConfiguration:config];
         [button setImage:image forState:UIControlStateNormal];
-        button.imageEdgeInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 7.6, 0.75, 0) : UIEdgeInsetsZero;;
-        NSString* buttonStringHead = GenericUtils.liquidGlassEnabled ? @"  " : @"";
+        button.imageEdgeInsets = liquidGlassEnabled ? UIEdgeInsetsMake(0, 7.6, 0.75, 0) : UIEdgeInsetsZero;;
+        NSString* buttonStringHead = liquidGlassEnabled ? @"  " : @"";
         [button setTitle: [buttonStringHead stringByAppendingString:
                            [LocalizationHelper localizedStringForKey:@" Add Host"]]
                 forState:UIControlStateNormal]; // 注意空格用于间隔
@@ -1413,10 +1417,10 @@ static NSMutableSet* hostList;
     }
     // [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
 
-    button.titleLabel.font = [UIFont systemFontOfSize:GenericUtils.liquidGlassEnabled ? 17 : 16 weight:UIFontWeightMedium];
+    button.titleLabel.font = [UIFont systemFontOfSize:liquidGlassEnabled ? 17 : 16 weight:UIFontWeightMedium];
     // 文字颜色设置为 tintColor 控制
-    if(GenericUtils.liquidGlassEnabled) button.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0.9, 0);
-    button.tintColor = GenericUtils.liquidGlassEnabled ? [ThemeManager appPrimaryColor] : UIColor.whiteColor;
+    if(liquidGlassEnabled) button.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0.9, 0);
+    button.tintColor = liquidGlassEnabled ? [ThemeManager appPrimaryColor] : UIColor.whiteColor;
     [button setTitleColor:button.tintColor forState:UIControlStateNormal];
     // button.tintColor = UIColor.whiteColor;
     // [button setTitleColor:button.tintColor forState:UIControlStateNormal];
@@ -1484,10 +1488,6 @@ static NSMutableSet* hostList;
     }
 }
 
-- (CGFloat)getStandardNavBarHeight{
-    return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
-}
-
 - (void)applyNavBarAppearance{
     if (@available(iOS 13.0, *)) {
         self.navigationController.navigationBar.standardAppearance.backgroundColor = [UIColor clearColor]; // old ios depend on this, do not remove
@@ -1519,6 +1519,12 @@ static NSMutableSet* hostList;
 
     self->_addHostButton = [self createAddHostButton];
     self->_helpButton = [self createHelpButton];
+    if (GenericUtils.liquidGlassEnabled) {
+        if (@available(iOS 26.0, *)) {
+            // _addHostButton.hidesSharedBackground = true;
+            // _helpButton.hidesSharedBackground = true;
+        }
+    }
     //[self setupHostViewTitle];
 
 
@@ -1535,6 +1541,10 @@ static NSMutableSet* hostList;
         UIImage *image = [[UIImage systemImageNamed:@"sidebar.left" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_settingsButton setImage:image];
         _settingsButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
+        if(GenericUtils.liquidGlassEnabled){
+            // if(@available(iOS 26.0, *)) _settingsButton.hidesSharedBackground = YES;
+            _settingsButton.tintColor = [ThemeManager appPrimaryColor];
+        }
     } else {
         [_settingsButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
     }
