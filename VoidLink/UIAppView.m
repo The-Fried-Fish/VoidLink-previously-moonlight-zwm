@@ -178,7 +178,7 @@ static UIImage* noImage;
         if (@available(iOS 13.0, *)) {
             UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23];
             UIImageView* playIcon = [[UIImageView alloc] initWithImage:[[UIImage systemImageNamed:@"play.circle.fill" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-            //playIcon.tintColor = [[ThemeManager widgetBackgroundColor] colorWithAlphaComponent:0.85];
+            //playIcon.tintColor = [ThemeManager.widgetBackgroundColor colorWithAlphaComponent:0.85];
             playIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.55];
 
             _appOverlay = playIcon;
@@ -202,7 +202,7 @@ static UIImage* noImage;
             UIImage* appIconImage = [[UIImage imageNamed:@"icon-pc-app"] imageWithConfiguration:config];
             UIImageView* appIcon = [[UIImageView alloc] initWithImage:[appIconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
             
-            //layIcon.tintColor = [[ThemeManager widgetBackgroundColor] colorWithAlphaComponent:0.85];
+            //layIcon.tintColor = [ThemeManager.widgetBackgroundColor colorWithAlphaComponent:0.85];
             appIcon.tintColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
 
             _appOverlay = appIcon;

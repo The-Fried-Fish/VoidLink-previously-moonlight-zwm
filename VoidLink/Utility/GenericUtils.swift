@@ -88,4 +88,17 @@ import Foundation
     @objc static var dockedNavBarTopAnchorOffset: CGFloat {
         return liquidGlassEnabled ? 10 : 0
     }
+    
+    @available(iOS 26.0, *)
+    @objc static func applyOffTintColor(_ view: UIView) {
+        let name = String(describing: type(of: view))
+        if name.contains("UISwitchModernVisualElement") {
+            view.backgroundColor = ThemeManager.liquidGlassSwitchOffTint
+            view.layer.cornerRadius = view.bounds.height/2
+            view.clipsToBounds = true
+        }
+        for sub in view.subviews {
+            applyOffTintColor(sub)
+        }
+    }
 }

@@ -54,7 +54,7 @@
     MenuSectionView *otherSection;
     MenuSectionView *experimentalSection;
     NSMutableSet* hiddenStacks;
-    
+        
     GCController *capturedController;
 }
 
@@ -750,7 +750,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     label.textAlignment = NSTextAlignmentCenter;
     // label.adjustsFontSizeToFitWidth = YES;
     label.accessibilityIdentifier = @"dynamicLabel";
-    label.textColor = [ThemeManager appPrimaryColor];
+    label.textColor = ThemeManager.appPrimaryColor;
     label.font = [UIFont systemFontOfSize:16 weight:UIFontWeightMedium];
     label.translatesAutoresizingMaskIntoConstraints = NO;
     [stack addSubview:label];
@@ -1120,7 +1120,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         view.layer.cornerRadius = 6;
         view.layer.masksToBounds = YES;
         view.clipsToBounds = YES;
-        view.backgroundColor = [ThemeManager appPrimaryColorWithAlpha];
+        view.backgroundColor = ThemeManager.appPrimaryColorWithAlpha;
     } completion:^(BOOL finished){
         if(completion) completion();
     }];
@@ -1324,7 +1324,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
     button.accessibilityIdentifier = @"infoButton";
     button.translatesAutoresizingMaskIntoConstraints = NO;
-    button.tintColor = [ThemeManager appPrimaryColor];
+    button.tintColor = ThemeManager.appPrimaryColor;
     
     [button addTarget:self action:@selector(infoButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -3333,7 +3333,7 @@ BOOL isCustomResolution(int resolutionSelected) {
             if (@available(iOS 13.0, *)) {
                 label.layer.filters = nil;
                 label.textColor = [UIColor clearColor];
-                label.textColor = [ThemeManager textColor];
+                label.textColor = ThemeManager.textColor;
             } else {
                 UIView *view = label;
                 bool isPartOfSelector = false;
@@ -3357,9 +3357,9 @@ BOOL isCustomResolution(int resolutionSelected) {
             UISegmentedControl *selector = (UISegmentedControl *)subview;
             if (@available(iOS 13.0, *)) {
                 selector.selectedSegmentTintColor = [UIColor clearColor];
-                selector.selectedSegmentTintColor = [ThemeManager appSecondaryColor];
+                selector.selectedSegmentTintColor = ThemeManager.appSecondaryColor;
             } else {
-                selector.tintColor = [ThemeManager appSecondaryColor];
+                selector.tintColor = ThemeManager.appSecondaryColor;
             }
         }
         [self updateThemeForSelectors:subview];
@@ -3371,9 +3371,22 @@ BOOL isCustomResolution(int resolutionSelected) {
         if ([subview isKindOfClass:[UISlider class]]) {
             UISlider *slider = (UISlider *)subview;
             slider.tintColor = [UIColor clearColor];
-            slider.tintColor = [ThemeManager appSecondaryColor];
+            slider.tintColor = ThemeManager.appSecondaryColor;
+            if(GenericUtils.liquidGlassEnabled) slider.maximumTrackTintColor = ThemeManager.liquidGlassSliderMaxTrackTint;
         }
         [self updateThemeForSliders:subview];
+    }
+}
+
+- (void)updateThemeForSwitches:(UIView *)view {
+    if (@available(iOS 26.0, *)) {
+        for (UIView *subview in view.subviews) {
+            if ([subview isKindOfClass:[UISwitch class]]) {
+                UISwitch *uiSwitch = (UISwitch *)subview;
+                [GenericUtils applyOffTintColor:uiSwitch];
+            }
+            [self updateThemeForSwitches:subview];
+        }
     }
 }
 
@@ -3381,11 +3394,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     for (UIView *subview in view.subviews) {
         if ([subview isKindOfClass:[MenuSectionView class]]) {
             MenuSectionView *section = (MenuSectionView *)subview;
-            section.titleLabel.textColor = [ThemeManager sectionLabelTextColor];
+            section.titleLabel.textColor = ThemeManager.sectionLabelTextColor;
             section.iconImageView.tintColor = [UIColor clearColor];
-            section.iconImageView.tintColor = [ThemeManager sectionLabelTextColor];
+            section.iconImageView.tintColor = ThemeManager.sectionLabelTextColor;
             section.separatorLine.backgroundColor = [UIColor clearColor];
-            section.separatorLine.backgroundColor = [ThemeManager separatorColor];
+            section.separatorLine.backgroundColor = ThemeManager.separatorColor;
         }
         [self updateThemeForMenuSections:subview];
     }
@@ -3393,11 +3406,12 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)updateTheme{
     self.view.backgroundColor = [UIColor clearColor];
-    self.view.backgroundColor = [ThemeManager menuBackgroundColor];
+    self.view.backgroundColor = ThemeManager.menuBackgroundColor;
     [self updateThemeForMenuSections:self.view];
     [self updateThemeForLabels:self.view];
     [self updateThemeForSelectors:self.view];
     [self updateThemeForSliders:self.view];
+    if(GenericUtils.liquidGlassEnabled) [self updateThemeForSwitches:self.view];
 }
 
 - (void) frameQueueSizeSliderMoved:(UISlider* )sender {

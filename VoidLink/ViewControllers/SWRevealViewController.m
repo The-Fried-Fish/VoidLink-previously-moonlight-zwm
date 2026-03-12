@@ -147,7 +147,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     _rearNavView.translatesAutoresizingMaskIntoConstraints = NO;
     _safeAreaPadding.translatesAutoresizingMaskIntoConstraints = NO;
     // _rearNavView.backgroundColor = [UIColor lightGrayColor]; // 设置背景色以便查看
-    _safeAreaPadding.backgroundColor = [ThemeManager menuBackgroundColor];
+    _safeAreaPadding.backgroundColor = ThemeManager.menuBackgroundColor;
     
     // NSLog(@"_c.rearViewRevealWidth: %f", _c.rearViewRevealWidth);
     // _rearNavView.frame = CGRectMake(0, 0, _c.rearViewRevealWidth, 100);
@@ -838,21 +838,21 @@ const int FrontViewPositionNone = 0xff;
 }
 
 - (void)updateTheme {
-    _contentView.backgroundColor = [ThemeManager menuBackgroundColor];
-    _contentView.rearNavView.backgroundColor = [ThemeManager menuBackgroundColor];
-    _contentView.safeAreaPadding.backgroundColor = [ThemeManager menuBackgroundColor];
-    _separatorLine.backgroundColor = [ThemeManager separatorColor];
+    _contentView.backgroundColor = ThemeManager.menuBackgroundColor;
+    _contentView.rearNavView.backgroundColor = ThemeManager.menuBackgroundColor;
+    _contentView.safeAreaPadding.backgroundColor = ThemeManager.menuBackgroundColor;
+    _separatorLine.backgroundColor = ThemeManager.separatorColor;
     
     if (@available(iOS 13.0, *)) {
         UINavigationBarAppearance *navBarAppearanceStandard = _dockedNavBar.standardAppearance;
-        navBarAppearanceStandard.backgroundColor = [ThemeManager menuBackgroundColor];
+        navBarAppearanceStandard.backgroundColor = ThemeManager.menuBackgroundColor;
         navBarAppearanceStandard.titleTextAttributes = @{
-            NSForegroundColorAttributeName: [ThemeManager textColor]
+            NSForegroundColorAttributeName: ThemeManager.textColor
         };
         _dockedNavBar.standardAppearance = navBarAppearanceStandard;
         _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
     } else {
-        _dockedNavBar.barTintColor = [ThemeManager menuBackgroundColor];
+        _dockedNavBar.barTintColor = ThemeManager.menuBackgroundColor;
     }
 }
 
@@ -921,7 +921,7 @@ const int FrontViewPositionNone = 0xff;
     // 分隔线
     _separatorLine = [[UIView alloc] init];
     _separatorLine.accessibilityIdentifier = @"menuSeparator";
-    _separatorLine.backgroundColor = [ThemeManager separatorColor];
+    _separatorLine.backgroundColor = ThemeManager.separatorColor;
     _separatorLine.translatesAutoresizingMaskIntoConstraints = NO;
     [_contentView.frontView addSubview:_separatorLine];
     _separatorLine.hidden = YES;
@@ -955,10 +955,10 @@ const int FrontViewPositionNone = 0xff;
     if (@available(iOS 13.0, *)) {
         UINavigationBarAppearance *navBarAppearanceStandard = [[UINavigationBarAppearance alloc] init];
         [navBarAppearanceStandard configureWithOpaqueBackground]; // 不透明
-        navBarAppearanceStandard.backgroundColor =[ThemeManager menuBackgroundColor];; // 设置你需要的背景色
+        navBarAppearanceStandard.backgroundColor =ThemeManager.menuBackgroundColor;; // 设置你需要的背景色
         navBarAppearanceStandard.shadowColor = nil; // 去掉底部分割线（可选）
         navBarAppearanceStandard.titleTextAttributes = @{
-            NSForegroundColorAttributeName: [ThemeManager textColor]
+            NSForegroundColorAttributeName: ThemeManager.textColor
         };
         navBarAppearanceStandard.shadowColor = [UIColor clearColor];
         navBarAppearanceStandard.backgroundImage = nil;
@@ -967,7 +967,7 @@ const int FrontViewPositionNone = 0xff;
         _dockedNavBar.shadowImage = nil;
     } else {
         _dockedNavBar.barTintColor = [UIColor clearColor];
-        _dockedNavBar.barTintColor = [ThemeManager menuBackgroundColor];
+        _dockedNavBar.barTintColor = ThemeManager.menuBackgroundColor;
         _dockedNavBar.shadowImage = [UIImage new]; // remove bottom line for navbar
     }
 
@@ -1015,7 +1015,7 @@ const int FrontViewPositionNone = 0xff;
         backButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(20, 10, 0, 0);
         if(GenericUtils.liquidGlassEnabled){
             // if(@available(iOS 26.0, *)) backButton.hidesSharedBackground = YES;
-            backButton.tintColor = [ThemeManager appPrimaryColor];
+            backButton.tintColor = ThemeManager.appPrimaryColor;
         }
     } else {
         [backButton setTitle:[LocalizationHelper localizedStringForKey:@"Collapse"]];
@@ -1042,7 +1042,7 @@ const int FrontViewPositionNone = 0xff;
         [_disconnectButton setImage:image];
         if(GenericUtils.liquidGlassEnabled) _disconnectButton.imageInsets = UIEdgeInsetsMake(5, 5, 5, 5);
         
-        _disconnectButton.tintColor = [ThemeManager appPrimaryColor];
+        _disconnectButton.tintColor = ThemeManager.appPrimaryColor;
     } else {
         [_disconnectButton setTitle:[LocalizationHelper localizedStringForKey:@"Disconnect"]];
     }
@@ -1066,7 +1066,7 @@ const int FrontViewPositionNone = 0xff;
         UIImage *image = [[UIImage systemImageNamed:@"ellipsis.circle" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_moreButton setImage:image];
         _moreButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.75) : UIEdgeInsetsMake(20, 0, 0, -10);
-        if(GenericUtils.liquidGlassEnabled) _moreButton.tintColor = [ThemeManager appPrimaryColor];
+        if(GenericUtils.liquidGlassEnabled) _moreButton.tintColor = ThemeManager.appPrimaryColor;
     } else {
         [_moreButton setTitle:[LocalizationHelper localizedStringForKey:@"Options"]];
     }
