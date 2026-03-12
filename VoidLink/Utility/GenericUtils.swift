@@ -75,7 +75,14 @@ import Foundation
     
     @objc static var settingsMenuNavigationBarHeight: CGFloat {
         // return isIPhone() ? 44 : hostViewNavigationBarHeight
-        return liquidGlassEnabled ? hostViewNavigationBarHeight+5 : hostViewNavigationBarHeight
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            return liquidGlassEnabled ? hostViewNavigationBarHeight+5 : hostViewNavigationBarHeight
+        case .pad:
+            return liquidGlassEnabled ? hostViewNavigationBarHeight+9 : hostViewNavigationBarHeight
+        default:
+            return liquidGlassEnabled ? hostViewNavigationBarHeight+9 : hostViewNavigationBarHeight
+        }
     }
     
     @objc static var dockedNavBarTopAnchorOffset: CGFloat {
