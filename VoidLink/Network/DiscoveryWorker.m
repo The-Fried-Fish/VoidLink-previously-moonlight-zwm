@@ -117,7 +117,7 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
             if (receivedResponse) {
                 _host.activeAddress = address;
                 if(!_host.activeAddressPool) _host.activeAddressPool = [[NSMutableSet alloc] init];
-                [_host.activeAddressPool addObject:address];
+                if(address) [_host.activeAddressPool addObject:address];
                 [serverInfoResp populateHost:_host];
                 
                 // Update the database using the response

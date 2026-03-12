@@ -89,7 +89,7 @@
         NSError *error;
         parentHost.activeAddressPool = [NSKeyedArchiver archivedDataWithRootObject:self.activeAddressPool requiringSecureCoding:YES error:&error];
     }
-    else [self.activeAddressPool addObject:self.activeAddress];
+    else if(self.activeAddress) [self.activeAddressPool addObject:self.activeAddress];
     
     // NSLog(@"Persisting activeAddressPool, pool count %lu ... %f, host: %@", (unsigned long)self.activeAddressPool.count, CACurrentMediaTime(), self.name);
     

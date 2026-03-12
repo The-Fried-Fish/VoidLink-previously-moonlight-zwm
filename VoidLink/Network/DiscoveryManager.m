@@ -142,7 +142,7 @@
         host = [[TemporaryHost alloc] init];
         host.activeAddress = host.address = hostAddress;
         if(!host.activeAddressPool) host.activeAddressPool = [[NSMutableSet alloc] init];
-        [host.activeAddressPool addObject:host.activeAddress];
+        if(host.activeAddress) [host.activeAddressPool addObject:host.activeAddress];
         host.state = StateOnline;
         [serverInfoResponse populateHost:host];
         
@@ -288,7 +288,7 @@
             existingHost.externalAddress = host.externalAddress;
         }
         existingHost.activeAddress = host.activeAddress;
-        [existingHost.activeAddressPool addObject:host.activeAddress];
+        if(host.activeAddress) [existingHost.activeAddressPool addObject:host.activeAddress];
         existingHost.state = host.state;
         return NO; // returning a "NO" here means Updating addresses of existing host
     }
