@@ -383,11 +383,11 @@ static NSMutableSet* hostList;
     self.collectionView.backgroundColor = [ThemeManager hostViewBackgroundColor];
     //self.view.backgroundColor = [ThemeManager appBackgroundColor];
 
-    [self.collectionView setContentOffset:CGPointZero animated:NO];
+    // [self.collectionView setContentOffset:CGPointZero animated:NO];
     
     [self attachWaterMark];
     self.navigationItem.rightBarButtonItems = @[_upButton];
-    self.revealViewController.mainFrameIsInHostView = false;
+    self.revealViewController.mainFrameIsInHostView = false;  
     // [self disableNavigation];
     [self updateTitle];
     [self alreadyPaired];
@@ -1417,7 +1417,7 @@ static NSMutableSet* hostList;
     }
     // [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
 
-    button.titleLabel.font = [UIFont systemFontOfSize:liquidGlassEnabled ? 17 : 16 weight:UIFontWeightMedium];
+    button.titleLabel.font = [UIFont systemFontOfSize:liquidGlassEnabled ? 16 : 16 weight:UIFontWeightMedium];
     // 文字颜色设置为 tintColor 控制
     if(liquidGlassEnabled) button.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0.9, 0);
     button.tintColor = liquidGlassEnabled ? [ThemeManager appPrimaryColor] : UIColor.whiteColor;
@@ -1558,10 +1558,10 @@ static NSMutableSet* hostList;
     
     if (@available(iOS 13.0, *)) {
         [_upButton setTitle:@""];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:21.5 weight:UIImageSymbolWeightMedium];
-        UIImage *image = [[UIImage systemImageNamed:@"tv" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 16 : 21.5 weight:UIImageSymbolWeightMedium];
+        UIImage *image = [[UIImage systemImageNamed:GenericUtils.liquidGlassEnabled ? @"macwindow.on.rectangle" : @"tv" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_upButton setImage:image];
-        _upButton.imageInsets = UIEdgeInsetsMake(25, 20, 0, 15);
+        _upButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 1) : UIEdgeInsetsMake(25, 20, 0, 15);
     } else {
         [_upButton setTitle:[LocalizationHelper localizedStringForKey:@"Select New Host"]];
     }
