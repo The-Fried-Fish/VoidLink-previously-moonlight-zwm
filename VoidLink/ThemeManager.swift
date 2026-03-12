@@ -144,7 +144,49 @@ class ThemeManager: NSObject {
     
     @objc static var separatorColor: UIColor {
         _ = setPublicUIStyle()
-        
+        switch userInterfaceStyle() {
+        case .light:
+            if #available(iOS 13.0, *) {
+                let lightTraits = UITraitCollection(userInterfaceStyle: .light)
+                return GenericUtils.liquidGlassEnabled ? legacySepratorColor : UIColor.separator.resolvedColor(with: lightTraits)
+            } else {
+                return UIColor(
+                    red: 214.0/255.0,
+                    green: 214.0/255.0,
+                    blue: 218.0/255.0,
+                    alpha: 1
+                )
+            }
+        default:
+            if #available(iOS 13.0, *) {
+                let darkTraits = UITraitCollection(userInterfaceStyle: .dark)
+                return GenericUtils.liquidGlassEnabled ? legacySepratorColor : UIColor.separator.resolvedColor(with: darkTraits)
+            } else {return UIColor(white: 0.28, alpha: 1)}
+        }
+    }
+    
+    @objc static var legacySepratorColor: UIColor {
+        _ = setPublicUIStyle()
+        switch userInterfaceStyle() {
+        case .light:
+            return UIColor(
+                red: 0.23529411764705882,
+                green: 0.23529411764705882,
+                blue: 0.2627450980392157,
+                alpha: 0.29
+            )
+        default:
+            return UIColor(
+                red: 0.32941176470588235,
+                green: 0.32941176470588235,
+                blue: 0.34509803921568627,
+                alpha: 0.6
+            )
+        }
+    }
+
+    @objc static var hostCardSeparatorColor: UIColor {
+        _ = setPublicUIStyle()
         switch userInterfaceStyle() {
         case .light:
             if #available(iOS 13.0, *) {
@@ -163,17 +205,6 @@ class ThemeManager: NSObject {
                 let darkTraits = UITraitCollection(userInterfaceStyle: .dark)
                 return UIColor.separator.resolvedColor(with: darkTraits)
             } else {return UIColor(white: 0.28, alpha: 1)}
-        }
-    }
-    
-    @objc static var hostCardSeparatorColor: UIColor {
-        _ = setPublicUIStyle()
-        
-        switch userInterfaceStyle() {
-        case .light:
-            return UIColor(white: 0.1, alpha: 0.28)
-        default:
-            return UIColor(white: 0.28, alpha: 1)
         }
     }
     

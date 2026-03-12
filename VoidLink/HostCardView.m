@@ -475,7 +475,7 @@ static const float REFRESH_CYCLE = 2.0f;
     self.backgroundColor = ThemeManager.widgetBackgroundColor;
     _hostNameLabel.textColor = ThemeManager.textColor;
     [_appButton setTitleColor:ThemeManager.appPrimaryColor forState:UIControlStateNormal];
-    _separatorLine.backgroundColor = ThemeManager.separatorColor;
+    _separatorLine.backgroundColor = ThemeManager.hostCardSeparatorColor;
     
     backgroundLayer.hidden = NO;
     [self updateBackgroundLayerTheme];
