@@ -3171,7 +3171,7 @@
                                     <constraint firstAttribute="height" constant="44" id="lQr-5u-g05"/>
                                 </constraints>
                                 <items>
-                                    <navigationItem title="Widget Profiles" id="Q2V-XF-4jq">
+                                    <navigationItem title="Widget Profiles" largeTitleDisplayMode="never" style="editor" id="Q2V-XF-4jq">
                                         <leftBarButtonItems>
                                             <barButtonItem title="ExportAll" width="70" style="plain" id="Bhn-IO-Wlt" userLabel="Export Data">
                                                 <connections>
@@ -3221,12 +3221,13 @@
                     <size key="freeformSize" width="1133" height="744"/>
                     <connections>
                         <outlet property="profileTableViewNavigationBar" destination="62V-DN-FUk" id="c3i-qa-4ix"/>
+                        <outlet property="profileTableViewNavigationItem" destination="Q2V-XF-4jq" id="TmF-ZM-NKC"/>
                         <outlet property="tableView" destination="BA3-hd-bDp" id="Jzl-sP-ANp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K4u-Tz-tXU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3742" y="955"/>
+            <point key="canvasLocation" x="3712" y="958"/>
         </scene>
     </scenes>
     <resources>

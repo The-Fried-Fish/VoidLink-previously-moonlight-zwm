@@ -20,8 +20,10 @@
 const double NAV_BAR_HEIGHT = 50;
 
 @interface OSCProfilesTableViewController () <UIGestureRecognizerDelegate>
+@property (weak, nonatomic) IBOutlet UINavigationItem *profileTableViewNavigationItem;
 
 @end
+
 
 @implementation OSCProfilesTableViewController {
     OSCProfilesManager *profilesManager;
@@ -70,6 +72,11 @@ const double NAV_BAR_HEIGHT = 50;
 
     self.profileTableViewNavigationBar.layer.masksToBounds = true;  // 使圆角生效
     self.profileTableViewNavigationBar.layer.mask = maskLayer;
+    if (GenericUtils.liquidGlassEnabled) {
+        if (@available(iOS 13.0, *)) {
+            self.profileTableViewNavigationBar.layer.backgroundColor = UIColor.systemFillColor.CGColor;
+        }
+    }
     
     self.tableView.layer.cornerRadius = 15;  // 设置圆角半径
     self.tableView.layer.masksToBounds = true;  // 使圆角生效
@@ -101,6 +108,17 @@ const double NAV_BAR_HEIGHT = 50;
     tap.delegate = (id<UIGestureRecognizerDelegate>)self;
 
     [self.view addGestureRecognizer:tap];
+    
+    if(GenericUtils.liquidGlassEnabled){
+        if (@available(iOS 26.0, *)) {
+            for(UIBarButtonItem* button in self.profileTableViewNavigationItem.leftBarButtonItems){
+                button.hidesSharedBackground = true;
+            }
+            for(UIBarButtonItem* button in self.profileTableViewNavigationItem.rightBarButtonItems){
+                button.hidesSharedBackground = true;
+            }
+        }
+    }
 }
 
 - (void)dismissSelf {
