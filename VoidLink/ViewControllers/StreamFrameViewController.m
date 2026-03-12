@@ -585,9 +585,9 @@
 }
 
 - (void)updateTheme {
-    self.view.backgroundColor = [ThemeManager menuBackgroundColor];
-    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
-    _spinner.color = [ThemeManager textColor];
+    self.view.backgroundColor = ThemeManager.menuBackgroundColor;
+    _stageLabel.textColor = [ThemeManager.textColor colorWithAlphaComponent:0.9];
+    _spinner.color = ThemeManager.textColor;
 }
 
 - (void)viewDidLoad

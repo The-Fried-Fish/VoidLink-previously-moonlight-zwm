@@ -78,7 +78,7 @@ static BOOL overridePersistedFoldState = YES;
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.contentMode = UIViewContentModeScaleAspectFit;
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconImageView.tintColor = [ThemeManager textColor];
+    _iconImageView.tintColor = ThemeManager.textColor;
     [_headerView addSubview:_iconImageView];
     
     // 标题标签
@@ -86,7 +86,7 @@ static BOOL overridePersistedFoldState = YES;
     _titleLabel.text = _sectionTitle;
     _titleLabel.accessibilityIdentifier = @"menuSectionTitleLabel";
     _titleLabel.font = [UIFont systemFontOfSize:19.5 weight:UIFontWeightMedium];
-    _titleLabel.textColor = [ThemeManager textColor];
+    _titleLabel.textColor = ThemeManager.textColor;
     _titleLabel.textAlignment = NSTextAlignmentLeft;
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [_headerView addSubview:_titleLabel];
@@ -118,7 +118,7 @@ static BOOL overridePersistedFoldState = YES;
     
     // 分隔线
     _separatorLine = [[UIView alloc] init];
-    _separatorLine.backgroundColor = [ThemeManager separatorColor];
+    _separatorLine.backgroundColor = ThemeManager.separatorColor;
     _separatorLine.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self addSubview:_separatorLine];
@@ -216,7 +216,7 @@ static BOOL overridePersistedFoldState = YES;
     } else {
         _iconImageView.image = icon;
     }
-    _iconImageView.tintColor = [ThemeManager textColor];
+    _iconImageView.tintColor = ThemeManager.textColor;
     _iconImageView.hidden = (icon == nil);
     
     // 图标约束
@@ -242,7 +242,7 @@ static BOOL overridePersistedFoldState = YES;
     } else {
         _iconImageView.image = icon;
     }
-    _iconImageView.tintColor = [ThemeManager textColor];
+    _iconImageView.tintColor = ThemeManager.textColor;
     _iconImageView.hidden = (icon == nil);
     
     // 图标约束

@@ -373,6 +373,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             
             [customToolbarView setItems:[NSArray arrayWithObjects:doneBarButton, windowsBarButton, escapeBarButton, tabBarButton, shiftBarButton, controlBarButton, altBarButton, deleteBarButton, flexibleSpace, nil]];
+            if (@available(iOS 26.0, *)) {
+                for(UIBarButtonItem *button in customToolbarView.items){
+                    button.hidesSharedBackground = true;
+                }
+            }
             keyInputField.inputAccessoryView = customToolbarView;
         }
     #endif

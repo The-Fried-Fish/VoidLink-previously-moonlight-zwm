@@ -104,7 +104,7 @@ static const CGFloat cellOffsetY = 20;
 }
 
 - (void)updateTheme {
-    self.collectionView.backgroundColor = [ThemeManager hostViewBackgroundColor];
+    self.collectionView.backgroundColor = ThemeManager.hostViewBackgroundColor;
     for (HostCell *cell in [self.collectionView visibleCells]) {
         [cell.cardView updateTheme];
     }

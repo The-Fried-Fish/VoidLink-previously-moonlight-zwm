@@ -507,7 +507,7 @@ class PressureCurveViewController: UIViewController {
         container.layer.cornerRadius = 12
         container.layer.masksToBounds = true
         container.layer.borderWidth = 2
-        container.layer.borderColor = ThemeManager.separatorColor().cgColor
+        container.layer.borderColor = ThemeManager.separatorColor.cgColor
         container.addSubview(curveView)
         self.loadPersistedCurve()
         self.curveView.showGraph = true
