@@ -16,11 +16,6 @@
 
 @interface DataManager : NSObject
 
-typedef NS_ENUM(NSUInteger, UINavigationBarHeight) {
-    UINavigationBarHeightIPad = 50,
-    UINavigationBarHeightIPhone = 44
-};
-
 typedef NS_ENUM(NSInteger, ControllerGyroSwitchMode) {
     ControllerGyroSwitchDisabled,
     ControllerGyroSwitchPressToToggle,

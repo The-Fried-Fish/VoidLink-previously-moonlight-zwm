@@ -165,8 +165,9 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
         // reserve height for navigation bar
     ]];
 
-    CGFloat navBarHeight = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
-    
+    // CGFloat navBarHeight = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
+    CGFloat navBarHeight = GenericUtils.settingsMenuNavigationBarHeight;
+
     [NSLayoutConstraint activateConstraints:@[
         [_rearNavView.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor constant:navBarHeight],
         [_rearNavView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
@@ -911,7 +912,7 @@ const int FrontViewPositionNone = 0xff;
     }
     else{
         // _rearViewRevealWidth = _rearViewRevealWidth + 20;
-        [self setupNavigationBar];
+        // [self setupNavigationBar];
     }
 }
 
@@ -963,6 +964,7 @@ const int FrontViewPositionNone = 0xff;
         navBarAppearanceStandard.backgroundImage = nil;
         _dockedNavBar.standardAppearance = navBarAppearanceStandard;
         _dockedNavBar.scrollEdgeAppearance = navBarAppearanceStandard;
+        _dockedNavBar.shadowImage = nil;
     } else {
         _dockedNavBar.barTintColor = [UIColor clearColor];
         _dockedNavBar.barTintColor = [ThemeManager menuBackgroundColor];
@@ -989,7 +991,7 @@ const int FrontViewPositionNone = 0xff;
 
     // 设置导航栏约束
     [NSLayoutConstraint activateConstraints:@[
-        [_dockedNavBar.topAnchor constraintEqualToAnchor:_contentView.rearNavView.topAnchor],
+        [_dockedNavBar.topAnchor constraintEqualToAnchor:_contentView.rearNavView.topAnchor constant:GenericUtils.dockedNavBarTopAnchorOffset],
         [_dockedNavBar.bottomAnchor constraintEqualToAnchor:_contentView.rearNavView.bottomAnchor],
         [_dockedNavBar.leadingAnchor constraintEqualToAnchor:_contentView.rearNavView.leadingAnchor],
         [_dockedNavBar.widthAnchor constraintEqualToConstant:_rearViewRevealWidth],
@@ -1006,10 +1008,15 @@ const int FrontViewPositionNone = 0xff;
     [backButton setAction:@selector(foldRearView)];
     if (@available(iOS 13.0, *)) {
         [backButton setTitle:nil];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23 weight:UIImageSymbolWeightMedium ];
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 18 : 23 weight:UIImageSymbolWeightMedium];
+
         UIImage *image = [[UIImage systemImageNamed:@"sidebar.left" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [backButton setImage:image];
-        backButton.imageInsets = UIEdgeInsetsMake(20, 10, 0, 0);
+        backButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(20, 10, 0, 0);
+        if(GenericUtils.liquidGlassEnabled){
+            // if(@available(iOS 26.0, *)) backButton.hidesSharedBackground = YES;
+            backButton.tintColor = [ThemeManager appPrimaryColor];
+        }
     } else {
         [backButton setTitle:[LocalizationHelper localizedStringForKey:@"Collapse"]];
     }
@@ -1024,10 +1031,17 @@ const int FrontViewPositionNone = 0xff;
     [_disconnectButton setAction:@selector(disconnectRemoteSession)];
     if (@available(iOS 13.0, *)) {
         [_disconnectButton setTitle:nil];
-        UIImage *image = [[UIImage imageNamed:@"disconnect.svg" ]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImage *image;
         
+        if(GenericUtils.liquidGlassEnabled){
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:16 weight:UIImageSymbolWeightSemibold];
+            image = [[UIImage systemImageNamed:@"rectangle.portrait.and.arrow.right" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        else image = [[UIImage imageNamed:@"disconnect.svg" ]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
         [_disconnectButton setImage:image];
-        //_disconnectButton.imageInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+        if(GenericUtils.liquidGlassEnabled) _disconnectButton.imageInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+        
         _disconnectButton.tintColor = [ThemeManager appPrimaryColor];
     } else {
         [_disconnectButton setTitle:[LocalizationHelper localizedStringForKey:@"Disconnect"]];
@@ -1047,10 +1061,12 @@ const int FrontViewPositionNone = 0xff;
     //[moreButton setAction:@selector(moreButtonTapped:)];
     if (@available(iOS 13.0, *)) {
         [_moreButton setTitle:nil];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:23 weight:UIImageSymbolWeightMedium ];
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 18 : 23
+                                weight:GenericUtils.liquidGlassEnabled ? UIImageSymbolWeightMedium : UIImageSymbolWeightMedium];
         UIImage *image = [[UIImage systemImageNamed:@"ellipsis.circle" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_moreButton setImage:image];
-        _moreButton.imageInsets = UIEdgeInsetsMake(20, 0, 0, -10);
+        _moreButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.75) : UIEdgeInsetsMake(20, 0, 0, -10);
+        if(GenericUtils.liquidGlassEnabled) _moreButton.tintColor = [ThemeManager appPrimaryColor];
     } else {
         [_moreButton setTitle:[LocalizationHelper localizedStringForKey:@"Options"]];
     }

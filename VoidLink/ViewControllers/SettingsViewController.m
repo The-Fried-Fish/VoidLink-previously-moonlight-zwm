@@ -267,7 +267,7 @@ CGSize resolutionTable[RESOLUTION_TABLE_SIZE];
     }
     
     // Add a bit of padding so the view doesn't end right at the button of the display
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.contentSize.width, _parentStack.frame.size.height + [self getStandardNavBarHeight] + 20);
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.contentSize.width, _parentStack.frame.size.height + GenericUtils.settingsMenuNavigationBarHeight + 20);
     double delayInSeconds = 3;
     // Convert the delay into a dispatch_time_t value
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
@@ -601,10 +601,6 @@ BOOL isCustomResolution(int resolutionSelected) {
     return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone;
 }
 
-- (CGFloat)getStandardNavBarHeight{
-    return [self isIPhone] ? UINavigationBarHeightIPhone : UINavigationBarHeightIPad;
-}
-
 - (void)initParentStack{
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
     // 可选：确保 scrollView 开启垂直滚动
@@ -619,7 +615,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(!_parentStack.superview){
         [self.scrollView addSubview:_parentStack];
         [NSLayoutConstraint activateConstraints:@[
-            [_parentStack.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: currentSettingsMenuMode == AllSettings ? [self getStandardNavBarHeight] : [self getStandardNavBarHeight]+10],
+            [_parentStack.topAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.topAnchor constant: currentSettingsMenuMode == AllSettings ? GenericUtils.settingsMenuNavigationBarHeight : GenericUtils.settingsMenuNavigationBarHeight+10],
             [_parentStack.bottomAnchor constraintEqualToAnchor:self.scrollView.contentLayoutGuide.bottomAnchor constant:-20],
         ]];
     }
