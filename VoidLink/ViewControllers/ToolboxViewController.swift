@@ -95,12 +95,20 @@ import UIKit
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)  // Adjust font size as needed
         titleLabel.textColor = UIColor.white  // Adjust color as needed
         titleLabel.textAlignment = .center
-        contentView.addSubview(titleLabel)
+        if !GenericUtils.isIPhone() {contentView.addSubview(titleLabel)}
         
         contentView.backgroundColor = viewBackgroundColor
         tableView.backgroundColor = .clear
-        tableView.rowHeight = isIPhone() ? 47 : 60
+        tableView.rowHeight = isIPhone() ? 49.9 : 60
         tableView.separatorColor = .white.withAlphaComponent(0.33)
+        
+        if GenericUtils.liquidGlassEnabled {
+            tableView.separatorColor = .white.withAlphaComponent(GenericUtils.isIPhone() ? 0.185 : 0.13)
+        }
+        else{
+            tableView.separatorColor = .white.withAlphaComponent(0.3)
+        }
+        
         tableView.separatorInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         // Configure buttons
         addButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Add / Duplicate"), for: .normal)
@@ -131,7 +139,6 @@ import UIKit
         exitButton.addTarget(self, action: #selector(exitButtonTapped), for: .touchUpInside)
         pinButton.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
         pinButton.contentEdgeInsets = UIEdgeInsets(top: 7, left: 20, bottom: 7, right: 20)
-
     }
     
     public override func updateViewConstraints() {
@@ -170,16 +177,10 @@ import UIKit
             contentView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             contentView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            // ViewTitle constrains
-            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 13.5),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            
-            
             // TableView constraints
             tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            tableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50),
+            tableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant:GenericUtils.isIPhone() ? 6 : 50),
             tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -60),
             
             // ExitButton constraints
@@ -202,6 +203,15 @@ import UIKit
             pinButton.trailingAnchor.constraint(equalTo: deleteButton.leadingAnchor, constant: -25),
             pinButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
         ])
+        
+        // ViewTitle constrains
+        if !GenericUtils.isIPhone() {
+            NSLayoutConstraint.activate([
+                titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 13.5),
+                titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+                titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            ])
+        }
     }
 
 
