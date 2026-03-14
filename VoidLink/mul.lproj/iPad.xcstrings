@@ -4742,7 +4742,7 @@
     },
     "Q2V-XF-4jq.title" : {
       "comment" : "Class = \"UINavigationItem\"; title = \"Widget Profiles\"; ObjectID = \"Q2V-XF-4jq\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
