@@ -344,30 +344,30 @@
       }
     },
     "5pN-Sn-SCN.title" : {
-      "comment" : "Class = \"UINavigationItem\"; title = \"Controller & Widget Profiles\"; ObjectID = \"5pN-Sn-SCN\";",
-      "extractionState" : "extracted_with_value",
+      "comment" : "Class = \"UINavigationItem\"; title = \"Widget Profiles\"; ObjectID = \"5pN-Sn-SCN\";",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Controller & Widget Profiles"
+            "value" : "Widget Profiles"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "屏显控件布局"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "螢幕小工具佈局"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "螢幕小工具佈局"
           }
         }

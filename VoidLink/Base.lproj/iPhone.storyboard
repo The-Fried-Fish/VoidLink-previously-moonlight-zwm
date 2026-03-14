@@ -950,29 +950,33 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.5" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="kTH-ez-aKD">
-                                <rect key="frame" x="80" y="112" width="692" height="261"/>
+                                <rect key="frame" x="80" y="156" width="692" height="217"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
-                            <navigationBar alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zsA-6X-Qc5">
+                            <navigationBar alpha="0.77500000000000002" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zsA-6X-Qc5">
                                 <rect key="frame" x="80" y="112" width="692" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="R90-2b-UrU"/>
                                 </constraints>
+                                <color key="barTintColor" red="0.81960784310000001" green="0.81960784310000001" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <items>
-                                    <navigationItem title="Controller &amp; Widget Profiles" id="5pN-Sn-SCN">
+                                    <navigationItem style="editor" id="5pN-Sn-SCN">
                                         <leftBarButtonItems>
                                             <barButtonItem title="ExportAll" id="D9X-7p-9oc">
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <action selector="exportDataTapped:" destination="0K8-kQ-xlN" id="Sam-Ct-kqC"/>
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem title="Import" id="Z9M-yq-an2">
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <action selector="importDataTapped:" destination="0K8-kQ-xlN" id="OaF-8j-7Wy"/>
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem title="Restore" id="sUC-Ur-7eI">
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <action selector="restoreTapped:" destination="0K8-kQ-xlN" id="lAJ-eO-ez7"/>
                                                 </connections>
@@ -980,11 +984,13 @@
                                         </leftBarButtonItems>
                                         <rightBarButtonItems>
                                             <barButtonItem title="Duplicate" width="80" style="plain" id="bue-hp-CWD">
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <action selector="duplicateTapped:" destination="0K8-kQ-xlN" id="Gb7-bx-nxp"/>
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem title="Delete" width="80" style="plain" id="ghM-zc-sr6">
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <action selector="deleteTapped:" destination="0K8-kQ-xlN" id="h6N-Gl-oiW"/>
                                                 </connections>
@@ -1002,12 +1008,13 @@
                             <constraint firstItem="kTH-ez-aKD" firstAttribute="leading" secondItem="bTO-bs-q93" secondAttribute="leading" constant="80" id="Ujg-Sw-4hq"/>
                             <constraint firstAttribute="trailing" secondItem="zsA-6X-Qc5" secondAttribute="trailing" constant="80" id="YKK-qs-mZR"/>
                             <constraint firstItem="zsA-6X-Qc5" firstAttribute="top" secondItem="bTO-bs-q93" secondAttribute="topMargin" constant="16" id="gZg-eJ-rnP"/>
-                            <constraint firstItem="kTH-ez-aKD" firstAttribute="top" secondItem="zsA-6X-Qc5" secondAttribute="top" id="txs-Df-ANQ"/>
+                            <constraint firstItem="kTH-ez-aKD" firstAttribute="top" secondItem="zsA-6X-Qc5" secondAttribute="bottom" id="txs-Df-ANQ"/>
                         </constraints>
                     </view>
                     <size key="freeformSize" width="852" height="393"/>
                     <connections>
                         <outlet property="profileTableViewNavigationBar" destination="zsA-6X-Qc5" id="13u-ks-fVC"/>
+                        <outlet property="profileTableViewNavigationItem" destination="5pN-Sn-SCN" id="Ybc-XZ-vcP"/>
                         <outlet property="tableView" destination="kTH-ez-aKD" id="pqR-CC-Kfh"/>
                     </connections>
                 </viewController>
@@ -3105,16 +3112,16 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
