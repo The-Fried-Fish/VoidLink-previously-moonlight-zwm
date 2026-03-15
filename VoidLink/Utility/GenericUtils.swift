@@ -62,6 +62,10 @@ import Foundation
     @objc static let menuSeparatorWidth: CGFloat = 0.7
     @objc static let menuSectionSeparatorWidth: CGFloat = 0.7
     
+    @objc static var legacyToolbarHeight: CGFloat {
+        return 44
+    }
+    
     @objc static var hostViewNavigationBarHeight: CGFloat {
         switch UIDevice.current.userInterfaceIdiom {
         case .phone:
