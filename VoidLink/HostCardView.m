@@ -325,7 +325,6 @@ static const float REFRESH_CYCLE = 2.0f;
     if (@available(iOS 13.0, *)) {
         UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:buttonHeight*0.263];
         [self.launchButton setImage:[UIImage systemImageNamed:@"play.fill" withConfiguration:config] forState:UIControlStateNormal];
-        
     } else {
         // Fallback on earlier versions
     }
