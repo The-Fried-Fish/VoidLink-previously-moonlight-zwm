@@ -53,7 +53,9 @@ import GameController
 @objc class ControllerUtil: NSObject {
     
     static private let stickMaxOffset:CGFloat = 0x7FFE
-    
+    @objc static var navigationActionTriggered:Bool = false
+    @objc static private(set) var navigationActionTriggeredPrivate:Bool = false
+
     @objc static func listen(
         controller: GCController,
         swapABXY: Bool,
@@ -73,6 +75,22 @@ import GameController
         
         // 单一 gamepad.valueChangedHandler
         gamepad.valueChangedHandler = { gamepad, element in
+            navigationActionTriggeredPrivate = (gamepad.dpad.up.isPressed
+                                             || gamepad.dpad.down.isPressed
+                                             || gamepad.dpad.left.isPressed
+                                             || gamepad.dpad.right.isPressed
+                                             || gamepad.rightThumbstick.xAxis.value != 0
+                                             || gamepad.rightThumbstick.yAxis.value != 0
+                                             || gamepad.leftThumbstick.xAxis.value != 0
+                                             || gamepad.leftThumbstick.yAxis.value != 0)
+            if navigationActionTriggeredPrivate { navigationActionTriggered = true}
+            else {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.02) {
+                    if !navigationActionTriggeredPrivate {
+                        navigationActionTriggered = false
+                    }
+                }
+            }
             handler(buttonDict, gamepad, element)
         }
     }
@@ -155,6 +173,8 @@ import GameController
         }
         return result
     }
+    
+    @objc static var activeGCControllers:NSMutableSet = NSMutableSet()
     
     @objc static func string(for button: ControllerButton) -> String {
         switch button {

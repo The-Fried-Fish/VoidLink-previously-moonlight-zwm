@@ -73,7 +73,6 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
     OnScreenControls *_osc;
     VoidController *_oscController;
-    NSMutableSet* _activeGCControllers;
     TemporarySettings* tempSettings;
     OSCProfile* oscProfile;
     OSCProfilesManager* oscProfileMan;
@@ -1218,7 +1217,6 @@ double rc_expo(double x, double expo) {
                 
                 CGFloat rightStickXRaw = gamepad.rightThumbstick.xAxis.value * self->stickMaxOffset;
                 CGFloat rightStickYRaw = gamepad.rightThumbstick.yAxis.value * self->stickMaxOffset;
-
                 
                 CGVector leftStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(leftStickXRaw, leftStickYRaw) minOffset:self->_leftStickMinOffset circulate:false];
 
@@ -1601,7 +1599,7 @@ double rc_expo(double x, double expo) {
 -(VoidController* )assignController:(GCController*)controller {
     NSLog(@"run assignController");
 
-    bool newGCControllerArrival = ![_activeGCControllers containsObject:controller];
+    bool newGCControllerArrival = ![ControllerUtil.activeGCControllers containsObject:controller];
     
     if(!newGCControllerArrival){
         VoidController* voidController = [_voidControllers objectForKey:@(controller.playerIndex)];
@@ -1623,7 +1621,7 @@ double rc_expo(double x, double expo) {
             VoidController* voidController = [[VoidController alloc] init];
 
 
-            [_activeGCControllers addObject:controller];
+            [ControllerUtil.activeGCControllers addObject:controller];
             controller.playerIndex = i;
             voidController.playerIndex = i;
             [self updateVoidController:voidController withGCController:controller];
@@ -1701,9 +1699,9 @@ double rc_expo(double x, double expo) {
 - (void)assignControllers{
     for (GCController* controller in [GCController controllers]) {
         NSLog(@"controller count: iterating");
-
+        
         if ([ControllerSupport isSupportedGamepad:controller]) {
-            NSLog(@"controller count: is supported,is contained by dict: %d", [_activeGCControllers containsObject:controller]);
+            NSLog(@"controller count: is supported,is contained by dict: %d", [ControllerUtil.activeGCControllers containsObject:controller]);
                 NSLog(@"controller obj +1 in dic");
                 [self assignController:controller];
                 NSLog(@"controller obj num in dict: %lu", (unsigned long)_voidControllers.allValues.count);
@@ -1820,7 +1818,7 @@ double rc_expo(double x, double expo) {
     _delegate = delegate;
     _controllerStreamLock = [[NSLock alloc] init];
     _voidControllers = [[NSMutableDictionary alloc] init];
-    _activeGCControllers = [[NSMutableSet alloc] init];
+    [ControllerUtil.activeGCControllers removeAllObjects];
     _controllerNumbers = 0;
     
     _captureMouse = (streamConfig.localMousePointerMode == 0);
@@ -1873,8 +1871,8 @@ double rc_expo(double x, double expo) {
         
         [self unregisterControllerCallbacks:controller];
         
-        if([self->_activeGCControllers containsObject:controller]){
-            [self->_activeGCControllers removeObject:controller];
+        if([ControllerUtil.activeGCControllers containsObject:controller]){
+            [ControllerUtil.activeGCControllers removeObject:controller];
             self->_controllerNumbers &= ~(1 << controller.playerIndex);
         }
         Log(LOG_I, @"Unassigning controller index: %ld", (long)controller.playerIndex);

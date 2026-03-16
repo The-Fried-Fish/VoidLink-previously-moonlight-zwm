@@ -8,6 +8,7 @@
 
 #import "KeyboardSupport.h"
 #include <Limelight.h>
+#include "VoidLink-Swift.h"
 
 @implementation KeyboardSupport
 
@@ -17,7 +18,6 @@
     }
     else {
         short keyCode;
-
         switch (press.type) {
             case UIPressTypeUpArrow:
                 keyCode = 0x26;
@@ -36,9 +36,14 @@
                 return NO;
         }
         
-        LiSendKeyboardEvent(0x8000 | keyCode,
-                            down ? KEY_ACTION_DOWN : KEY_ACTION_UP,
-                            0);
+        bool physicalGamepadConnected = ControllerUtil.activeGCControllers.count>0;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, physicalGamepadConnected ? 0.005*NSEC_PER_SEC : 0), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if(!physicalGamepadConnected
+               || !ControllerUtil.navigationActionTriggered)
+                LiSendKeyboardEvent(0x8000 | keyCode,
+                                    down ? KEY_ACTION_DOWN : KEY_ACTION_UP,
+                                    0);
+        });
         
         return YES;
     }
