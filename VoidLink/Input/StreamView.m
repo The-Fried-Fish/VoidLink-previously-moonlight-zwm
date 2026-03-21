@@ -69,6 +69,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #if defined(__IPHONE_16_1) || defined(__TVOS_16_1)
     UIHoverGestureRecognizer *stylusHoverRecognizer;
 #endif
+    CGFloat designatedSoftKeyboardHeight;
+    bool keyboardHeightDesignatedForLandscape;
     CGFloat HeightViewLiftedTo;
     UILabel* keyboardToggleTip;
     
@@ -115,6 +117,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleTip.numberOfLines = 1;
     keyboardToggleTip.layer.cornerRadius = 10;
     keyboardToggleTip.clipsToBounds = true;
+    
+    designatedSoftKeyboardHeight = settings.softKeyboardHeight * GenericUtils.screenHeight;
+    keyboardHeightDesignatedForLandscape = designatedSoftKeyboardHeight != 0;
     
     // if(settings.touchMode.intValue == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
     // else [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
@@ -254,13 +259,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         NSDictionary *userInfo = notification.userInfo;
         // Get the keyboard size from the notification
         CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-        CGFloat screenHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]);
-        CGFloat keyboardHeight = keyboardFrame.size.height;
+        CGFloat screenHeight = GenericUtils.screenHeight;
+        CGFloat totalKeyboardHeight = keyboardFrame.size.height;
         CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.legacyToolbarHeight : 0;
         
-        if(keyboardHeight < screenHeight * 0.33333333333 + toolbarHeight
-           || keyboardHeight > screenHeight*0.8 + toolbarHeight){
-            keyboardHeight = screenHeight*0.5 + toolbarHeight;
+        if(totalKeyboardHeight < screenHeight * 0.33333333333 + toolbarHeight
+           || totalKeyboardHeight > screenHeight*0.8 + toolbarHeight){
+            totalKeyboardHeight = screenHeight*0.5 + toolbarHeight;
             // [self toggleKeyboard];
             /*
             if(keyboardToggleRecognizer.lowestTouchPointHeight < screenHeight/2){
@@ -272,7 +277,17 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             }*/
         }
         
-        HeightViewLiftedTo = keyboardHeight - keyboardToggleRecognizer.lowestTouchPointHeight + CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.15; // lift the StreamView to the height of lowest touch point of multi-finger tap gesture, while reserving the view of 1/10 screen height for remote typing.
+        bool useDesignatedKeyboardHeight = false;
+        if (@available(iOS 13.0, *)) {
+            useDesignatedKeyboardHeight = GenericUtils.isLandscape && keyboardHeightDesignatedForLandscape;
+            totalKeyboardHeight = useDesignatedKeyboardHeight ? designatedSoftKeyboardHeight+toolbarHeight : totalKeyboardHeight;
+        }
+        else {
+            useDesignatedKeyboardHeight = keyboardHeightDesignatedForLandscape;
+            totalKeyboardHeight = useDesignatedKeyboardHeight ? designatedSoftKeyboardHeight+toolbarHeight : totalKeyboardHeight;
+        }
+        
+        HeightViewLiftedTo = totalKeyboardHeight - keyboardToggleRecognizer.lowestTouchPointHeight + GenericUtils.screenHeight * (useDesignatedKeyboardHeight ? 0.1 : 0.15); // lift the StreamView to the height of lowest touch point of multi-finger tap gesture, while reserving the view of 1/10 screen height for remote typing.
         if(HeightViewLiftedTo < 0) HeightViewLiftedTo = 0;  // set HeightViewLiftedTo to 0 if it is high enough and not going to be covered by keyboard.
         CGRect liftedStreamFrame = self.frame;
         liftedStreamFrame.origin.y -= HeightViewLiftedTo;

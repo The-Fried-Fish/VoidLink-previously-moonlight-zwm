@@ -98,6 +98,7 @@
         <attribute name="singleTapSensitivity" optional="YES" attributeType="Double" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="slideToSettingsDistance" optional="YES" attributeType="Float" defaultValueString="0.2" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="slideToSettingsScreenEdge" optional="YES" attributeType="Integer 32" defaultValueString="2" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="softKeyboardHeight" attributeType="Float" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="statsOverlayEnabled" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="statsOverlayLevel" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="swapABXYButtons" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>

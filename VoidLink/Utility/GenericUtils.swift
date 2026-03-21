@@ -105,4 +105,86 @@ import Foundation
             applyOffTintColor(sub)
         }
     }
+    
+    static var kScaleLayerKey: UInt8 = 0
+    @objc static func setVerticalScale(view: UIView, show: Bool) {
+        // 移除旧的
+        if let oldLayer = objc_getAssociatedObject(view, &kScaleLayerKey) as? CALayer {
+            oldLayer.removeFromSuperlayer()
+            objc_setAssociatedObject(view, &kScaleLayerKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+
+        guard show else { return }
+
+        let container = CALayer()
+        container.frame = view.bounds
+        container.contentsScale = UIScreen.main.scale
+
+        let step: CGFloat = 0.05
+        let totalSteps = Int(1.0 / step)
+
+        let path = UIBezierPath()
+
+        for i in 0...totalSteps {
+            let value = CGFloat(i) * step
+            let y = view.bounds.height * (1.0 - value)
+
+            let isMajor = i % 2 == 0
+            let lineLength: CGFloat = isMajor ? 10 : 5
+
+            // 刻度线
+            path.move(to: CGPoint(x: 0, y: y))
+            path.addLine(to: CGPoint(x: lineLength, y: y))
+
+            // 数值
+            if true {
+                let t = CATextLayer()
+                t.contentsScale = UIScreen.main.scale
+                t.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+                t.fontSize = 13
+                t.foregroundColor = UIColor.red.cgColor
+                t.backgroundColor = ThemeManager.menuBackgroundColor.cgColor
+                t.alignmentMode = .left
+                t.string = String(format: "%.2f", value)
+                t.frame = CGRect(x: lineLength + 2, y: y - 7, width: 30, height: 14)
+
+                container.addSublayer(t)
+            }
+        }
+
+        let shape = CAShapeLayer()
+        shape.path = path.cgPath
+        shape.strokeColor = UIColor.red.cgColor
+        shape.lineWidth = 1
+
+        container.addSublayer(shape)
+
+        view.layer.addSublayer(container)
+
+        objc_setAssociatedObject(view, &kScaleLayerKey, container, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+
+    @objc static func toCGFloat(_ str: String) -> CGFloat {
+        return CGFloat(Double(str) ?? 0)
+    }
+    
+    @available(iOS 13.0, *)
+    @objc static func isLandscape() -> Bool {
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive })
+        else {
+            return false
+        }
+        
+        return windowScene.interfaceOrientation.isLandscape
+    }
+    
+    @objc static var screenWidth: CGFloat {
+        return UIScreen.main.bounds.width
+    }
+    
+    @objc static var screenHeight: CGFloat {
+        return UIScreen.main.bounds.height
+    }
 }

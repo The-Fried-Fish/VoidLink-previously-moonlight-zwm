@@ -3091,6 +3091,36 @@
         }
       }
     },
+    "Mhe-jU-8hh.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Designate Soft Keyboard Height\"; ObjectID = \"Mhe-jU-8hh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Designate Soft Keyboard Height"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定软键盘高度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定軟鍵盤高度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定軟鍵盤高度"
+          }
+        }
+      }
+    },
     "MMc-Yp-e6i.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Async Native Touch\"; ObjectID = \"MMc-Yp-e6i\";",
       "extractionState" : "extracted_with_value",

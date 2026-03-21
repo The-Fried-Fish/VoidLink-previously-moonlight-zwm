@@ -119,6 +119,7 @@
     self.slideToSettingsDistance = settings.slideToSettingsDistance;
     self.liftStreamViewForKeyboard = settings.liftStreamViewForKeyboard;
     self.showKeyboardToolbar = settings.showKeyboardToolbar;
+    self.softKeyboardHeight = settings.softKeyboardHeight;
     self.touchMoveEventInterval = settings.touchMoveEventInterval;
     self.touchPointerVelocityFactor = settings.touchPointerVelocityFactor;
     self.mousePointerVelocityFactor = settings.mousePointerVelocityFactor;

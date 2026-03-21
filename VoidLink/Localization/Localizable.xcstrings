@@ -3167,6 +3167,29 @@
         }
       }
     },
+    "Enter the relative height of the soft keyboard according to the scale (make sure app is in landscape fullscreen mode):" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按刻度输入软键盘的相对高度(请确保 App 运行在横向全屏状态):"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按刻度輸入軟鍵盤的相對高度(請確保 App 運行於橫向全螢幕狀態):"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按刻度輸入軟鍵盤的相對高度(請確保 App 運行於橫向全螢幕狀態):"
+          }
+        }
+      }
+    },
     "Enter_PIN_Msg" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7957,6 +7980,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "軟體鍵盤手勢可根據最低位置的觸控點，定位遠端文字輸入的位置，並將串流畫面提升至適當高度。\n詳情請參閱線上說明文件。"
+          }
+        }
+      }
+    },
+    "softKeyboardHeightStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The soft keyboard height obtained automatically by the system may be unreliable (especially with third-party keyboards), which can prevent the streaming view from being properly raised. Specifying the keyboard height can resolve this issue."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过系统自动获取的软键盘高度可能不可靠(尤其是第三方输入法), 导致串流画面无法正确抬升，指定软键盘高度可解决此问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過系統自動取得的軟鍵盤高度可能不可靠（尤其是第三方輸入法），可能導致串流畫面無法正確抬升，指定軟鍵盤高度可解決此問題。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過系統自動取得的軟鍵盤高度可能不可靠（尤其是第三方輸入法），可能導致串流畫面無法正確抬升，指定軟鍵盤高度可解決此問題。"
           }
         }
       }
