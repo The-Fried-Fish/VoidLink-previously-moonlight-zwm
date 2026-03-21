@@ -476,16 +476,43 @@ extension UIView {
 }
 
 // MARK: - ViewController
-class PressureCurveViewController: UIViewController {
+class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate {
     
     private var navBar = UINavigationBar()
+    private var saveButton: UIBarButtonItem = UIBarButtonItem()
     
     private var container = UIView()
     private var curveView = PressureCurveView()
+    // private var initialTouchCurvePoints: [CGPoint] = []
+    private var strokePressureCurvePoints: [CGPoint] = []
+
+    private var phase1StrokeSampleIndexEnd: Int32 = 0
+    private var phase2StrokeSampleIndexEnd: Int32 = 0
         
     private var minPressure: CGFloat = 0
     private var maxPressure: CGFloat = 1
     private var isFirstLaunch: Bool = GenericUtils.isFirstLaunchPressureCurveTool()
+    
+    // private var curvePhaseButton: UIBarButtonItem = UIBarButtonItem()
+    private let hookFilterLabel = UILabel()
+    private let hookFilterSlider = UISlider()
+    private let strokeEqualizationDepthLabel = UILabel()
+    private let strokeEqualizationDepthSlider = UISlider()
+    private let strokeEqualizationStrengthLabel = UILabel()
+    private let strokeEqualizationStrengthSlider = UISlider()
+
+    enum PressureCurvePhase: UInt8, CaseIterable {
+        case initialTouch
+        case stroke
+        func next() -> PressureCurvePhase {
+            let all = Self.allCases
+            let index = all.firstIndex(of: self)!
+            let nextIndex = (index + 1) % all.count
+            return all[nextIndex]
+        }
+    }
+    
+    private(set) var curvePhase: PressureCurvePhase = .initialTouch
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -496,33 +523,38 @@ class PressureCurveViewController: UIViewController {
         let curveWidth: CGFloat = 530
         let curveHeight: CGFloat = 530
         curveView = PressureCurveView(frame: CGRect(x: 0, y: 0, width: curveWidth, height: curveHeight))
-        curveView.center = self.view.center
+        curveView.center = CGPoint(x: self.view.center.x, y: self.view.center.y)
         curveView.backgroundColor = .white
         curveView.layer.cornerRadius = 0
         curveView.layer.masksToBounds = true
         
-        container = UIView(frame: CGRect(x: 0, y: 0, width: curveWidth+10, height: curveHeight+50))
-        container.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY-20)
+        container = UIView(frame: CGRect(x: 0, y: 0, width: curveWidth+10, height: curveHeight+148))
+        container.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY+3)
         container.backgroundColor = .white
         container.layer.cornerRadius = 12
         container.layer.masksToBounds = true
-        container.layer.borderWidth = 2
-        container.layer.borderColor = ThemeManager.separatorColor.cgColor
+        container.layer.borderWidth = 0.5
+        container.layer.borderColor = UIColor.black.withAlphaComponent(0.15).cgColor
         container.addSubview(curveView)
+        
+        self.setupNavigationBar()
+        self.setupBottomSliders()
         self.loadPersistedCurve()
         self.curveView.showGraph = true
         
-        self.setupNavigationBar()
-        
+                
         self.view.addSubview(container)
         
         curveView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             curveView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            curveView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            curveView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor,constant: -25),
             curveView.widthAnchor.constraint(equalToConstant: curveWidth),
             curveView.heightAnchor.constraint(equalToConstant: curveHeight)
         ])
+        
+        self.displayCurve()
+        
         
         NotificationCenter.default.addObserver(
             self,
@@ -536,6 +568,10 @@ class PressureCurveViewController: UIViewController {
             name: AddOnProduct.PencilProPack.purchaseSucceededNotification(),
             object: nil
         )
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissSelf))
+        tap.delegate = self
+        view.addGestureRecognizer(tap)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -573,10 +609,122 @@ class PressureCurveViewController: UIViewController {
         
     private func loadPersistedCurve() {
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
-        let persistedCurvePoints = PressureCurve.importCurvePoints(oscProfileMan.getSelectedProfile().pressureCurvePoints)
-        curveView.curve.polylinePoints = persistedCurvePoints
+        let oscProfile = oscProfileMan.getSelectedProfile()
+        // initialTouchCurvePoints = PressureCurve.importCurvePoints(oscProfile.initialTouchPressureCurvePoints)
+        strokePressureCurvePoints = PressureCurve.importCurvePoints(oscProfile.pressureCurvePoints)
+        displayCurve()
+        
+        hookFilterSlider.value = Float(oscProfile.phase1StrokeSampleIndexEnd)
+        strokeEqualizationDepthSlider.value = Float(oscProfile.phase2StrokeSampleIndexEnd)
+        strokeEqualizationStrengthSlider.value = Float(oscProfile.strokeEqualizationStrength)
+        
+        strokeEqualizationDepthSliderMoved(strokeEqualizationDepthSlider)
+        hookFilterDepthSliderMoved(hookFilterSlider)
+        strokeEqualizationStrengthSliderMoved(strokeEqualizationStrengthSlider)
+    }
+    
+    private func displayCurve() {
+        switch curvePhase {
+        case .initialTouch:
+            break
+            // curveView.curve.polylinePoints = initialTouchCurvePoints
+        case .stroke:
+            curveView.curve.polylinePoints = strokePressureCurvePoints
+        }
         curveView.setNeedsDisplay()
     }
+    
+    private func setupBottomSliders() {
+        
+        hookFilterLabel.translatesAutoresizingMaskIntoConstraints = false
+        hookFilterSlider.translatesAutoresizingMaskIntoConstraints = false
+        strokeEqualizationDepthLabel.translatesAutoresizingMaskIntoConstraints = false
+        strokeEqualizationDepthSlider.translatesAutoresizingMaskIntoConstraints = false
+        strokeEqualizationStrengthLabel.translatesAutoresizingMaskIntoConstraints = false
+        strokeEqualizationStrengthSlider.translatesAutoresizingMaskIntoConstraints = false
+
+        let traits = UITraitCollection(userInterfaceStyle: .light)
+        
+        hookFilterLabel.font = UIFont.systemFont(ofSize: 14)
+        hookFilterLabel.textColor = .black
+        if GenericUtils.liquidGlassEnabled {
+            if #available(iOS 13.0, *) {hookFilterSlider.maximumTrackTintColor = .tertiarySystemFill.resolvedColor(with: traits)}
+        }
+        hookFilterSlider.minimumValue = 1
+        hookFilterSlider.maximumValue = 20
+        hookFilterSlider.addTarget(self, action: #selector(hookFilterDepthSliderMoved(_:)), for: .valueChanged)
+        
+        strokeEqualizationDepthLabel.font = UIFont.systemFont(ofSize: 14)
+        strokeEqualizationDepthLabel.textColor = .black
+        if GenericUtils.liquidGlassEnabled {
+            if #available(iOS 13.0, *) {strokeEqualizationDepthSlider.maximumTrackTintColor = .tertiarySystemFill.resolvedColor(with: traits)}
+        }
+        strokeEqualizationDepthSlider.minimumValue = 1
+        strokeEqualizationDepthSlider.maximumValue = 80
+        strokeEqualizationDepthSlider.addTarget(self, action: #selector(strokeEqualizationDepthSliderMoved(_:)), for: .valueChanged)
+        
+        strokeEqualizationStrengthLabel.font = UIFont.systemFont(ofSize: 14)
+        strokeEqualizationStrengthLabel.textColor = .black
+        if GenericUtils.liquidGlassEnabled {
+            if #available(iOS 13.0, *) {strokeEqualizationStrengthSlider.maximumTrackTintColor = .tertiarySystemFill.resolvedColor(with: traits)}
+        }
+        strokeEqualizationStrengthSlider.minimumValue = 0.1
+        strokeEqualizationStrengthSlider.maximumValue = 3.5
+        strokeEqualizationStrengthSlider.addTarget(self, action: #selector(strokeEqualizationStrengthSliderMoved(_:)), for: .valueChanged)
+                
+        container.addSubview(hookFilterLabel)
+        container.addSubview(hookFilterSlider)
+        container.addSubview(strokeEqualizationDepthLabel)
+        container.addSubview(strokeEqualizationDepthSlider)
+        container.addSubview(strokeEqualizationStrengthLabel)
+        container.addSubview(strokeEqualizationStrengthSlider)
+
+        NSLayoutConstraint.activate([
+
+            // Slider
+            hookFilterLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            hookFilterLabel.widthAnchor.constraint(equalToConstant: 260),
+            hookFilterSlider.leadingAnchor.constraint(equalTo: hookFilterLabel.trailingAnchor, constant: 12),
+            hookFilterSlider.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            hookFilterSlider.topAnchor.constraint(equalTo: curveView.bottomAnchor, constant: 0),
+            hookFilterLabel.centerYAnchor.constraint(equalTo: hookFilterSlider.centerYAnchor, constant:0),
+            
+            strokeEqualizationDepthLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            strokeEqualizationDepthLabel.widthAnchor.constraint(equalToConstant: 260),
+            strokeEqualizationDepthSlider.leadingAnchor.constraint(equalTo: strokeEqualizationDepthLabel.trailingAnchor, constant: 12),
+            strokeEqualizationDepthSlider.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            strokeEqualizationDepthSlider.topAnchor.constraint(equalTo: hookFilterSlider.bottomAnchor, constant: 0),
+            strokeEqualizationDepthLabel.centerYAnchor.constraint(equalTo: strokeEqualizationDepthSlider.centerYAnchor, constant:0),
+            
+            strokeEqualizationStrengthLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            strokeEqualizationStrengthLabel.widthAnchor.constraint(equalToConstant: 260),
+            strokeEqualizationStrengthSlider.leadingAnchor.constraint(equalTo: strokeEqualizationStrengthLabel.trailingAnchor, constant: 12),
+            strokeEqualizationStrengthSlider.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            strokeEqualizationStrengthSlider.topAnchor.constraint(equalTo: strokeEqualizationDepthSlider.bottomAnchor, constant: 0),
+            strokeEqualizationStrengthLabel.centerYAnchor.constraint(equalTo: strokeEqualizationStrengthSlider.centerYAnchor, constant:0),
+        ])
+    }
+    
+    @objc func hookFilterDepthSliderMoved(_ sender: UISlider) {
+        phase1StrokeSampleIndexEnd = Int32(sender.value.rounded())
+        hookFilterLabel.text = "\(SwiftLocalizationHelper.localizedString(forKey: "Stroke start hook filtering depth: "))\(String(format: "%d", Int32(sender.value)))";
+        if sender.value > strokeEqualizationDepthSlider.value {
+            strokeEqualizationDepthSlider.value = sender.value
+            strokeEqualizationDepthSliderMoved(strokeEqualizationDepthSlider)
+        }
+    }
+    
+    @objc func strokeEqualizationDepthSliderMoved(_ sender: UISlider) {
+        sender.value = max(sender.value, hookFilterSlider.value)
+        phase2StrokeSampleIndexEnd = Int32(sender.value.rounded())
+        strokeEqualizationDepthLabel.text = "\(SwiftLocalizationHelper.localizedString(forKey: "Stroke start equalization depth: "))\(String(format: "%d", Int32(sender.value)))";
+    }
+    
+    @objc func strokeEqualizationStrengthSliderMoved(_ sender: UISlider) {
+        // sender.value = sender.value
+        strokeEqualizationStrengthLabel.text = "\(SwiftLocalizationHelper.localizedString(forKey: "Stroke start force scaling: "))\(String(format: "%.2f", sender.value))";
+    }
+
     
     public func setupNavigationBar() {
         // 1. 创建 UINavigationBar
@@ -589,9 +737,9 @@ class PressureCurveViewController: UIViewController {
         
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground() // 透明背景
+            // appearance.configureWithTransparentBackground() // 透明背景
             appearance.shadowColor = nil // 去掉底部细线
-            appearance.backgroundColor = .clear // 可以额外设置完全透明
+            appearance.backgroundColor = .white // 可以额外设置完全透明
             
             navBar.standardAppearance = appearance
             navBar.scrollEdgeAppearance = appearance
@@ -602,30 +750,45 @@ class PressureCurveViewController: UIViewController {
             navBar.backgroundColor = .clear
         }
         
-        
         // 2. 添加约束 (顶部，左右)
         NSLayoutConstraint.activate([
             navBar.topAnchor.constraint(equalTo: container.safeAreaLayoutGuide.topAnchor),
             navBar.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             navBar.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            navBar.heightAnchor.constraint(equalToConstant: 42) // 导航栏标准高度
+            navBar.heightAnchor.constraint(equalToConstant: 50) // 导航栏标准高度
         ])
-
         
         if curveView.testStage == .curveStage {
             let resetButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Reset"), style: .plain, target: self, action: #selector(resetTapped))
             let rangeTestButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Pressure-range-test"), style: .plain, target: self, action: #selector(pressureRangeTest))
-            let saveButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Save"), style: .plain, target: self, action: #selector(saveTapped))
-            let quitButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Exit"), style: .plain, target: self, action: #selector(exitTapped))
+            // curvePhaseButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Initial-touch-curve"), style: .plain, target: self, action: #selector(curvePhaseButtonTapped))
+            curvePhase = .stroke
+            saveButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Save"), style: .plain, target: self, action: #selector(saveTapped))
+            // let quitButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Exit"), style: .plain, target: self, action: #selector(exitTapped))
             navItem.leftBarButtonItems = [resetButton, rangeTestButton]
-            navItem.rightBarButtonItems = [quitButton, saveButton]
+            navItem.rightBarButtonItems = [saveButton]
         }
+                
         
         if curveView.testStage == .drawingStage {
             navItem = UINavigationItem(title: SwiftLocalizationHelper.localizedString(forKey: "Pressure Range Test"))
         }
+        
+        if #available(iOS 26.0, *) {
+            if let buttons = navItem.leftBarButtonItems {
+                for button in buttons {
+                    button.hidesSharedBackground = true
+                    button.tintColor = .tintColor
+                }
+            }
+            if let buttons = navItem.rightBarButtonItems {
+                for button in buttons {
+                    button.hidesSharedBackground = true
+                    button.tintColor = .tintColor
+                }
+            }
+        }
 
-        // 4. 将 UINavigationItem 添加到导航栏
         navBar.items = [navItem]
     }
     
@@ -681,10 +844,43 @@ class PressureCurveViewController: UIViewController {
             })
     }
     
+    /*
+    @objc private func curvePhaseButtonTapped() {
+        switch curvePhase {
+        case .initialTouch:
+            // initialTouchCurvePoints = curveView.curve.polylinePoints
+            curvePhaseButton.title = SwiftLocalizationHelper.localizedString(forKey:"Initial-touch-curve")
+        case .stroke:
+            strokeCurvePoints = curveView.curve.polylinePoints
+            curvePhaseButton.title = SwiftLocalizationHelper.localizedString(forKey:"Stroke-curve")
+        }
+        curvePhase = curvePhase.next()
+        displayCurve()
+    } */
+    
     @objc private func persistCurve() {
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         let selectedProfile = oscProfileMan.getSelectedProfile()
+        
+        switch curvePhase {
+        case .initialTouch:
+            break
+            // initialTouchCurvePoints = curveView.curve.polylinePoints
+        case .stroke:
+            strokePressureCurvePoints = curveView.curve.polylinePoints
+        }
+        
+        curveView.curve.polylinePoints = strokePressureCurvePoints
         selectedProfile.pressureCurvePoints = PressureCurve.exportCurvePoints(curveView.curve)
+        // curveView.curve.polylinePoints = initialTouchCurvePoints
+        // selectedProfile.initialTouchPressureCurvePoints = PressureCurve.exportCurvePoints(curveView.curve)
+        
+        displayCurve()
+        
+        selectedProfile.phase1StrokeSampleIndexEnd = Int32(hookFilterSlider.value)
+        selectedProfile.phase2StrokeSampleIndexEnd = Int32(strokeEqualizationDepthSlider.value)
+        selectedProfile.strokeEqualizationStrength = CGFloat(strokeEqualizationStrengthSlider.value)
+
         oscProfileMan.replaceSelectedProfile(with: selectedProfile, overwriteDefault: true)
         
         DispatchQueue.main.async {
@@ -718,7 +914,9 @@ class PressureCurveViewController: UIViewController {
     }
 
     @objc private func saveTapped() {
+        saveButton.isEnabled = false
         IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+            self.saveButton.isEnabled = true
             if info.valid {
                 self.persistCurve()
             }
@@ -730,5 +928,16 @@ class PressureCurveViewController: UIViewController {
 
     @objc private func exitTapped() {
         self.dismiss(animated: true)
+    }
+    
+    public func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldReceive touch: UITouch
+    ) -> Bool {
+        return touch.view == view
+    }
+    
+    @objc private func dismissSelf(){
+        dismiss(animated: true, completion: nil)
     }
 }

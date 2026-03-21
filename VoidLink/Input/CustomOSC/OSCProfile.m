@@ -52,6 +52,10 @@
     [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
+    // [encoder encodeObject:self.initialTouchPressureCurvePoints forKey:@"initialTouchPressureCurvePoints"];
+    [encoder encodeInt:self.phase1StrokeSampleIndexEnd forKey:@"phase1StrokeSampleIndexEnd"];
+    [encoder encodeInt:self.phase2StrokeSampleIndexEnd forKey:@"phase2StrokeSampleIndexEnd"];
+    [encoder encodeDouble:self.strokeEqualizationStrength forKey:@"strokeEqualizationStrength"];
     [encoder encodeBool:self.pressureCurveEnabled forKey:@"pressureCurveEnabled"];
     [encoder encodeBool:self.doubleTapShorcutEnabled forKey:@"doubleTapShorcutEnabled"];
     [encoder encodeObject:self.brushShortcut forKey:@"brushShortcut"];
@@ -108,6 +112,7 @@
         self.reverseGyroHoldButton = [decoder containsValueForKey:@"reverseGyroHoldButton"] ? [decoder decodeBoolForKey:@"reverseGyroHoldButton"] : false;
         self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
+        
         self.pressureCurvePoints =
             [decoder containsValueForKey:@"pressureCurvePoints"]
             ? [decoder decodeObjectOfClasses:
@@ -117,6 +122,21 @@
                                     nil]
                                             forKey:@"pressureCurvePoints"]
             : @[@0.0, @0.0, @1.0, @1.0];
+        
+        /* self.initialTouchPressureCurvePoints =
+            [decoder containsValueForKey:@"initialTouchPressureCurvePoints"]
+            ? [decoder decodeObjectOfClasses:
+                    [NSSet setWithObjects:
+                    [NSArray class],
+                    [NSNumber class],
+                                    nil]
+                                            forKey:@"initialTouchPressureCurvePoints"]
+            : @[@0.0, @0.0, @1.0, @1.0]; */
+        
+        self.phase1StrokeSampleIndexEnd = [decoder containsValueForKey:@"phase1StrokeSampleIndexEnd"] ? [decoder decodeIntForKey:@"phase1StrokeSampleIndexEnd"] : 10;
+        self.phase2StrokeSampleIndexEnd = [decoder containsValueForKey:@"phase2StrokeSampleIndexEnd"] ? [decoder decodeIntForKey:@"phase2StrokeSampleIndexEnd"] : 24;
+        self.strokeEqualizationStrength = [decoder containsValueForKey:@"strokeEqualizationStrength"] ? [decoder decodeFloatForKey:@"strokeEqualizationStrength"] : 1.0;
+
         self.pressureCurveEnabled = [decoder containsValueForKey:@"pressureCurveEnabled"] ? [decoder decodeBoolForKey:@"pressureCurveEnabled"] : false;
         
         self.doubleTapShorcutEnabled = [decoder containsValueForKey:@"doubleTapShorcutEnabled"] ? [decoder decodeBoolForKey:@"doubleTapShorcutEnabled"] : false;
@@ -190,6 +210,10 @@
     copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
     copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
+    // copy.initialTouchPressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.initialTouchPressureCurvePoints copyItems:YES];
+    copy.phase1StrokeSampleIndexEnd = self.phase1StrokeSampleIndexEnd;
+    copy.phase2StrokeSampleIndexEnd = self.phase2StrokeSampleIndexEnd;
+    copy.strokeEqualizationStrength = self.strokeEqualizationStrength;
     copy.pressureCurveEnabled = self.pressureCurveEnabled;
     copy.doubleTapShorcutEnabled = self.doubleTapShorcutEnabled;
     copy.brushShortcut = [self.brushShortcut mutableCopy]; // NSString → NSMutableString

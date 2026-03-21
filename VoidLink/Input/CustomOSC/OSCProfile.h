@@ -59,6 +59,10 @@ typedef NS_ENUM(NSInteger, PencilHoverMode) {
 @property (nonatomic, assign) int controllerGyroSwitchHold;
 @property (nonatomic, assign) int controllerGyroSwitchToggle;
 @property NSArray<NSNumber *> *pressureCurvePoints;
+// @property NSArray<NSNumber *> *initialTouchPressureCurvePoints;
+@property (nonatomic, assign) int phase1StrokeSampleIndexEnd;
+@property (nonatomic, assign) int phase2StrokeSampleIndexEnd;
+@property (nonatomic, assign) CGFloat strokeEqualizationStrength;
 @property (nonatomic, assign) bool pressureCurveEnabled;
 @property (nonatomic, assign) bool doubleTapShorcutEnabled;
 @property NSString *brushShortcut;

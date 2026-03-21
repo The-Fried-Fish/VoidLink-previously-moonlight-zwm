@@ -27,7 +27,7 @@ import UIKit
     @objc static private(set) var hoverMode: PencilHoverMode = .HoverPencil
     private(set) var pencilProEnabled: Bool = false
     private var isFirstMove: Bool = false
-    private var moveEventIndex: Int64 = 0
+    private var strokeSampleIndex: Int32 = 0
     private var initialMoveEventIndexLimit: Int64
     private var touchBeganForce: Float = 0
     @objc static private(set) var isDrawing: Bool = false
@@ -36,7 +36,27 @@ import UIKit
     // static private let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
     static private var selectedProfile:OSCProfile?
 
-    private var pressureLUT = PressureCurveLUT(curve: PressureCurve())
+    private var strokeLUT = PressureCurveLUT(curve: PressureCurve())
+    // private var initialTouchLUT = PressureCurveLUT(curve: PressureCurve())
+    private var phase1StrokeSampleIndexEnd:Int32 = 0
+    private var phase2StrokeSampleIndexEnd:Int32 = 0
+    private var phase2EqualizationStrength:Float = 0
+    
+    enum StrokePhase: UInt8, CaseIterable {
+        case phase1
+        case phase2
+        case phase3
+    }
+    
+    private func getStrokePhase(sampleIndex:Int32) -> StrokePhase {
+        if sampleIndex > phase2StrokeSampleIndexEnd {
+            return .phase3
+        }
+        if sampleIndex > phase1StrokeSampleIndexEnd {
+            return .phase2
+        }
+        return .phase1
+    }
 
     @objc init(streamView: UIView, settings: TemporarySettings) {
         self.streamView = streamView
@@ -96,12 +116,23 @@ import UIKit
             }
         }
         
-        let persistedCurvePoints = PressureCurve.importCurvePoints(selectedProfile.pressureCurvePoints)
-        let curve = PressureCurve()
-        curve.polylinePoints = persistedCurvePoints
-        curve.buildCurveSegments()
+        let strokePressureCurvePoints = PressureCurve.importCurvePoints(selectedProfile.pressureCurvePoints)
+        let strokePressureCurve = PressureCurve()
+        strokePressureCurve.polylinePoints = strokePressureCurvePoints
+        strokePressureCurve.buildCurveSegments()
+        
+        // let initialTouchPressureCurvePoints = PressureCurve.importCurvePoints(selectedProfile.initialTouchPressureCurvePoints)
+        // let initialTouchPressureCurve = PressureCurve()
+        // initialTouchPressureCurve.polylinePoints = initialTouchPressureCurvePoints
+        // initialTouchPressureCurve.buildCurveSegments()
+        
+        phase1StrokeSampleIndexEnd = selectedProfile.phase1StrokeSampleIndexEnd
+        phase2StrokeSampleIndexEnd = selectedProfile.phase2StrokeSampleIndexEnd
+        phase2EqualizationStrength = Float(selectedProfile.strokeEqualizationStrength)
+
         DispatchQueue.main.asyncAfter(deadline: .now()) {
-            self.pressureLUT = PressureCurveLUT(curve: curve)
+            self.strokeLUT = PressureCurveLUT(curve: strokePressureCurve)
+            // self.initialTouchLUT = PressureCurveLUT(curve: initialTouchPressureCurve)
         }
     }
 
@@ -109,9 +140,11 @@ import UIKit
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let event = event else { return }
+        previousForce = 0
+        previousTargetForce = 0
         PencilHandler.isDrawing = true
         // isFirstMove = true
-        moveEventIndex = 0
+        strokeSampleIndex = 0
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
@@ -124,7 +157,6 @@ import UIKit
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
         }
-        moveEventIndex += 1
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -194,6 +226,9 @@ import UIKit
         return UInt8(90 - min(90, Int(altitudeDegs)))
     }
 
+    var previousForce: Float = 0
+    var previousTargetForce: Float = 0
+    var phase2IndexCount: Int32 = 0
     private func sendStylusEvent(touchBatch: [UITouch], with event: UIEvent? = nil) -> DispatchTime {
         guard let streamView = streamView, touchBatch.count>0 else { return .now() }
         
@@ -201,6 +236,8 @@ import UIKit
         var previousTimeStamp: TimeInterval = 0
         var delay:TimeInterval = 0
         var dispatchMoment: DispatchTime = .now()
+        
+        phase2IndexCount = phase2StrokeSampleIndexEnd - phase1StrokeSampleIndexEnd
 
         for touch in touchBatch {
             let point = touch.preciseLocation(in: streamView)
@@ -209,22 +246,50 @@ import UIKit
             let location = self.adjustCoordinatesForVideoArea(point: point)
             let videoSize = self.getVideoAreaSize()
             let normalizedLocation = CGPoint(x: location.x/videoSize.width, y: location.y/videoSize.height)
-            let force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
-            var targetForce = pressureCurveEnabled ? self.pressureLUT.value(at: force) : force
+            var force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
+            force  = (self.pencilTickEnabled && force == 0) ? previousForce : force
+            
+            self.strokeSampleIndex += 1
 
+            var targetForce:Float
+            var equalizationStep:Float = 0
+            var equalizedForce:Float = 0
+            if(phase2IndexCount>0){
+                equalizationStep = (phase2EqualizationStrength-1)/Float(phase2IndexCount-1)
+            }
+
+            
+            let strokePhase = getStrokePhase(sampleIndex: self.strokeSampleIndex)
+            switch strokePhase {
+            case .phase1:
+                targetForce = pencilTickEnabled ? 0 : self.strokeLUT.value(at: force)
+            case .phase2:
+                targetForce = self.strokeLUT.value(at: force)
+                targetForce = max(targetForce,previousTargetForce)
+                equalizedForce = targetForce*(phase2EqualizationStrength - equalizationStep*Float(strokeSampleIndex-phase1StrokeSampleIndexEnd-1))
+            case .phase3:
+                targetForce = self.strokeLUT.value(at: force)
+            }
+            targetForce = self.pressureCurveEnabled ? targetForce : force
+            
+            previousForce = force
+            previousTargetForce = targetForce
+            
             let eventType:UInt8
             
             switch touch.phase {
             case .began:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_DOWN)
-                touchBeganForce = targetForce
             case .moved:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
-                targetForce = moveEventIndex < initialMoveEventIndexLimit ? touchBeganForce : targetForce
             case .ended:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
+                previousForce = 0
+                previousTargetForce = 0
             case .cancelled:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
+                previousForce = 0
+                previousTargetForce = 0
             default:
                 eventType = UInt8(LI_TOUCH_EVENT_HOVER)
             }
@@ -241,16 +306,19 @@ import UIKit
                 tickMoment += (manualTick ? tickInterval : touch.timestamp - previousTimeStamp)
             }
             
-            let sendableForce = targetForce
+            let sendableForce = strokePhase == .phase2 ? equalizedForce : targetForce
+
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
-                
                 /*
                 if PencilHandler.autoHoverEnabled, eventType == UInt8(LI_TOUCH_EVENT_DOWN) {
                     LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
                 }
                 */
                 
-                LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), sendableForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                if strokePhase != .phase1 || !self.pencilTickEnabled {LiSendPenEvent(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), sendableForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))}
+                else {
+                    LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
+                }
                 
                 if eventType == UInt8(LI_TOUCH_EVENT_UP) {
                     PencilHandler.isDrawing = false
