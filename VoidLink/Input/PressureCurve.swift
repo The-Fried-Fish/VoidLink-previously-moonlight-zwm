@@ -233,6 +233,9 @@ final class PressureCurveView: UIView {
     let curve = PressureCurve()
     
     private var draggingIndex: Int? = nil
+    private var latestDraggingIndex: Int? = nil
+    private var newPointGenerated: Bool = false
+    private var draggingPointPreviousLocation: CGPoint? = nil
     private let hitRadius: CGFloat = 35
     
     enum PressureTestStage: UInt8 {
@@ -342,6 +345,22 @@ final class PressureCurveView: UIView {
         return nil
     }
     
+    func undoLastMove() {
+        if newPointGenerated {
+            guard let latestDraggingIndex = latestDraggingIndex else { return }
+            self.latestDraggingIndex = nil
+            curve.polylinePoints.remove(at: latestDraggingIndex )
+            setNeedsDisplay()
+        }
+        else {
+            guard let latestDraggingIndex = latestDraggingIndex else { return }
+            self.latestDraggingIndex = nil
+            guard let draggingPointPreviousLocation = draggingPointPreviousLocation else { return }
+            curve.polylinePoints[latestDraggingIndex] = draggingPointPreviousLocation
+            setNeedsDisplay()
+        }
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
@@ -355,6 +374,7 @@ final class PressureCurveView: UIView {
             guard
                 let touch = touches.first
             else { return }
+            newPointGenerated = true
             let location = touch.location(in: self)
             var point = unmap(location)
 
@@ -372,7 +392,14 @@ final class PressureCurveView: UIView {
                 curve.polylinePoints.insert(point, at: insertIdx)
                 draggingIndex = insertIdx
             }
+            latestDraggingIndex = draggingIndex
             setNeedsDisplay()
+        }
+        else {
+            guard let draggingIndex = draggingIndex else { return }
+            latestDraggingIndex = draggingIndex
+            draggingPointPreviousLocation = curve.polylinePoints[draggingIndex]
+            newPointGenerated = false
         }
     }
 
@@ -760,12 +787,13 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
         
         if curveView.testStage == .curveStage {
             let resetButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Reset"), style: .plain, target: self, action: #selector(resetTapped))
+            let undoButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Undo"), style: .plain, target: self, action: #selector(undoTapped))
             let rangeTestButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Pressure-range-test"), style: .plain, target: self, action: #selector(pressureRangeTest))
             // curvePhaseButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Initial-touch-curve"), style: .plain, target: self, action: #selector(curvePhaseButtonTapped))
             curvePhase = .stroke
             saveButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Save"), style: .plain, target: self, action: #selector(saveTapped))
             // let quitButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Exit"), style: .plain, target: self, action: #selector(exitTapped))
-            navItem.leftBarButtonItems = [resetButton, rangeTestButton]
+            navItem.leftBarButtonItems = [resetButton, undoButton, rangeTestButton,]
             navItem.rightBarButtonItems = [saveButton]
         }
                 
@@ -807,6 +835,12 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
         curveView.curve.polylinePoints = [CGPoint(x: 0, y: 0), CGPoint(x: 1, y: 1)]
         DispatchQueue.main.async {
             self.curveView.setNeedsDisplay()
+        }
+    }
+    
+    @objc private func undoTapped() {
+        DispatchQueue.main.async {
+            self.curveView.undoLastMove()
         }
     }
     
