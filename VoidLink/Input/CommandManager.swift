@@ -144,7 +144,8 @@ import UIKit
         "PENCILHOVER",
         "BRUSH",
         "ERASER",
-        "NOSINGLETOUCH"
+        "NOSINGLETOUCH",
+        "DISABLETOUCH",
     ]
     @objc public static let pencilProButtonCmds: [String] = [
         "PENCILHOVER",

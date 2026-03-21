@@ -1664,6 +1664,10 @@
     }
 }
 
+- (void)toggleTouchWithDisabled:(BOOL)disabled{
+    [_streamView toggleTouchDisabled:disabled];
+}
+
 - (void)presentPressureCurveVC{
     if(_oscProfile.pressureCurveEnabled){
         PressureCurveViewController* pressureCurveVC = [[PressureCurveViewController alloc] init];

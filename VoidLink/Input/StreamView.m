@@ -57,7 +57,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     int localMousePointerMode;
     
+    TouchMode touchMode;
     UIResponder* touchHandler;
+    UIResponder* sessionTouchHandler;
 
     NSTimer* interactionTimer;
     BOOL hasUserInteracted;
@@ -121,7 +123,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     designatedSoftKeyboardHeight = settings.softKeyboardHeight * GenericUtils.screenHeight;
     keyboardHeightDesignatedForLandscape = designatedSoftKeyboardHeight != 0;
     
-    // if(settings.touchMode.intValue == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
+    // if(touchMode == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
     // else [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
     
     // [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
@@ -135,8 +137,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     _pencilHandler = PencilHandler.shared;
 
     // iOS uses touch Mode depending on user preference
-        
-    switch (settings.touchMode.intValue) {
+    touchMode = settings.touchMode.intValue;
+    switch (touchMode) {
         case NativeTouch:
             keyboardToggleRecognizer.immediateTriggering = false;
             self->touchHandler = [[NativeTouchHandler alloc] initWithView:self andSettings:settings];
@@ -161,19 +163,20 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         default:
             break;
     }
+    sessionTouchHandler = touchHandler;
     
     // we'll render on-screen controls on the toplayer too:
     _onScreenControls = [[OnScreenControls alloc] initWithView:self->_streamFrameTopLayerView controllerSup:controllerSupport streamConfig:streamConfig];  // don't delete, this is mandatory
     // OnScreenControls.shared = _onScreenControls;
     /*
     // here we pass the tap recognizer to the onscreencontrols obj
-    if (settings.touchMode.intValue == RelativeTouch){
+    if (touchMode == RelativeTouch){
         RelativeTouchHandler* relativeTouchHandler = (RelativeTouchHandler*) touchHandler;
         onScreenControls.mouseRightClickTapRecognizer = relativeTouchHandler.mouseRightClickTapRecognizer;
     } */
     
     OnScreenControlsLevel level = (OnScreenControlsLevel)[settings.onscreenControls integerValue];
-    if (settings.touchMode.intValue != RelativeTouch && settings.touchMode.intValue != NativeTouch ) {
+    if (touchMode != RelativeTouch && touchMode != NativeTouch ) {
         Log(LOG_I, @"On-screen controls disabled in non-relative touch mode");
         [_onScreenControls setLevel:OnScreenControlsLevelOff];
         
@@ -181,7 +184,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [OnScreenControls.touchesCapturedByOnScreenControls removeAllObjects]; // reset the attribute to nil
         
         /*
-        if(settings.touchMode.intValue == NativeTouch){
+        if(touchMode == NativeTouch){
             NativeTouchHandler* nativeTouchHandler = (NativeTouchHandler* )touchHandler;
             nativeTouchHandler.touchesCapturedByOnScreenButtons = onScreenControls.touchesCapturedByOnScreenButtons;
             touchHandler = nativeTouchHandler;
@@ -486,7 +489,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
 - (bool) isOscEnabled{
-    return (settings.touchMode.intValue == RelativeTouch || settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == AbsoluteTouch || settings.touchMode.intValue == TouchDisabled) && settings.onscreenControls.intValue != OnScreenControlsLevelOff;
+    return (touchMode == RelativeTouch || touchMode == NativeTouch || touchMode == AbsoluteTouch || touchMode == TouchDisabled) && settings.onscreenControls.intValue != OnScreenControlsLevelOff;
 }
 
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
@@ -920,7 +923,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #if !TARGET_OS_TV
     // if (@available(iOS 13.4, *)) {
     // cancel restriction of native touch for iOS13.3 & lower
-    if (settings.touchMode.intValue == NativeTouchOnly) {
+    if (touchMode == NativeTouchOnly) {
         [touchHandler touchesBegan:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
@@ -951,7 +954,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     [self startInteractionTimer];
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
-    if(settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == RelativeTouch){
+    if(touchMode == NativeTouch || touchMode == RelativeTouch){
         [self->_onScreenControls handleTouchDownEvent:targetTouches];
         [self->touchHandler touchesBegan:targetTouches withEvent:event];
     }
@@ -1087,7 +1090,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 #if !TARGET_OS_TV
     
-    if (settings.touchMode.intValue == NativeTouchOnly) {
+    if (touchMode == NativeTouchOnly) {
         [touchHandler touchesMoved:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
@@ -1128,7 +1131,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     hasUserInteracted = YES;
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
-    if(self->settings.touchMode.intValue == NativeTouch || self->settings.touchMode.intValue == RelativeTouch){
+    if(self->touchMode == NativeTouch || self->touchMode == RelativeTouch){
         [self->touchHandler touchesMoved:targetTouches withEvent:event];
         [self->_onScreenControls handleTouchMovedEvent:targetTouches];
     }
@@ -1202,7 +1205,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 #if !TARGET_OS_TV
 
-    if (settings.touchMode.intValue == NativeTouchOnly) {
+    if (touchMode == NativeTouchOnly) {
         [touchHandler touchesEnded:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
@@ -1233,7 +1236,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     hasUserInteracted = YES;
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
-    if(settings.touchMode.intValue == NativeTouch || settings.touchMode.intValue == RelativeTouch){
+    if(touchMode == NativeTouch || touchMode == RelativeTouch){
         [self->touchHandler touchesEnded:targetTouches withEvent:event]; // when touches ended, must call the native touchhandler before onScreenControls, since the NSSet of touches captured by on screen button shall be updated later
         [self->_onScreenControls handleTouchUpEvent:targetTouches];
     }
@@ -1243,7 +1246,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     [touchHandler touchesCancelled:touches withEvent:event];
 #if !TARGET_OS_TV
-    if (settings.touchMode.intValue == NativeTouchOnly) return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
+    if (touchMode == NativeTouchOnly) return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     for (UITouch* touch in touches) {
         if (touch.type == UITouchTypePencil) {
             [self touchesEnded:touches withEvent:event];
@@ -1611,6 +1614,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         NativeTouchHandler* handler = (NativeTouchHandler* )touchHandler;
         [handler setAllowSingleTouchEnabled:enabled];
     }
+}
+
+- (void)toggleTouchDisabled:(bool)disabled{
+    touchHandler = disabled ? nil : sessionTouchHandler;
 }
 
 - (void)cleanUp{

@@ -54,6 +54,7 @@ import SVGKit
         func replaceBrush(shortcut:String)
         func replaceEraser(shortcut:String)
         func presentPressureCurveVC()
+        func toggleTouch(disabled:Bool)
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -72,6 +73,7 @@ import SVGKit
     @objc static public var editMode: Bool = false
     @objc static public var buttonVisualFeedbackEnabled: Bool = true
     @objc public var widgetLabel: String
+    private var nonEditableWidgetLabel: String = ""
     @objc public var cmdString: String
     @objc public var sequence: Int16 = -1
     private var buttonString: String = ""
@@ -165,6 +167,7 @@ import SVGKit
     
     @objc public var isStickWheel: Bool = false
     @objc public var isFolder: Bool = false
+    @objc public var hasNonEditableLabel: Bool = false
 
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
@@ -481,6 +484,7 @@ import SVGKit
                               || (self.widgetType == WidgetTypeEnum.button
                                   && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))*/
         self.hasTrackPoint = true
+        self.hasNonEditableLabel = self.cmdString == "DISABLETOUCH"
     }
     
     // ======================================================================================================
@@ -777,7 +781,15 @@ import SVGKit
     }
     
     private func setupAtrributedText(){
-        let text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
+        var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
+        
+        if self.hasNonEditableLabel {
+            if cmdString == "DISABLETOUCH" {
+                self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: touchDisabledFLag ? "=EnableTouch" : "=DisableTouch" )
+            }
+            text = self.nonEditableWidgetLabel
+        }
+                
         let attr = NSAttributedString(
             string: self.folded ? "[\(text)]" : text,
             attributes: [
@@ -2481,9 +2493,18 @@ import SVGKit
             ].contains(Bundle.main.bundleIdentifier) && GenericUtils.isIPad() {
                 self.functionalButtonDelegate?.presentPressureCurveVC()
             }
+        case "DISABLETOUCH":
+            self.handleTouchDisableButtonUp()
         default:
             break
         }
+    }
+    
+    private var touchDisabledFLag:Bool = false
+    private func handleTouchDisableButtonUp(){
+        touchDisabledFLag = !touchDisabledFLag
+        self.setupAtrributedText()
+        self.functionalButtonDelegate?.toggleTouch(disabled: touchDisabledFLag)
     }
 
     private func temporaryDisableFolderButtonAnimation(){

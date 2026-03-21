@@ -79,6 +79,7 @@
 - (void)enablePencilHover;
 - (void)disablePencilHover;
 - (void)setAllowSingleTouchEnabled:(BOOL)enabled;
+- (void)toggleTouchDisabled:(bool)disabled;
 
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse;
