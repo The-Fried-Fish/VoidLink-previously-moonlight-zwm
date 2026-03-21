@@ -284,10 +284,12 @@ import UIKit
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
             case .ended:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
+                targetForce = 0
                 previousForce = 0
                 previousTargetForce = 0
             case .cancelled:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
+                targetForce = 0
                 previousForce = 0
                 previousTargetForce = 0
             default:
