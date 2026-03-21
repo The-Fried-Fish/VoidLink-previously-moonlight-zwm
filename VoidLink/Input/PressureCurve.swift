@@ -555,8 +555,8 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
         curveView.layer.cornerRadius = 0
         curveView.layer.masksToBounds = true
         
-        container = UIView(frame: CGRect(x: 0, y: 0, width: curveWidth+10, height: curveHeight+148))
-        container.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY+3)
+        container = UIView(frame: CGRect(x: 0, y: 0, width: curveWidth+10, height: curveHeight+152))
+        container.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY+6.5)
         container.backgroundColor = .white
         container.layer.cornerRadius = 12
         container.layer.masksToBounds = true
