@@ -640,6 +640,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.folded = buttonState.folded;
                     widgetView.persistedFolded = buttonState.folded;
                     widgetView.revealMode = buttonState.revealMode;
+                    widgetView.bulkMoveEnabled = buttonState.bulkMoveEnabled;
                     
                     widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
                     widgetView.widthFactor = buttonState.widthFactor;

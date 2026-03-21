@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *alias;
 @property (nonatomic, assign) BOOL folded;
 @property (nonatomic, assign) uint8_t revealMode;
+@property (nonatomic, assign) BOOL bulkMoveEnabled;
 @property (nonatomic, assign) int16_t sequence;
 @property (nonatomic, assign) int16_t parentSequence;
 @property NSSet *sequenceSet;

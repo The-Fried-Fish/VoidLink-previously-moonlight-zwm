@@ -2299,6 +2299,66 @@
         }
       }
     },
+    "ful-j0-kgc.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ful-j0-kgc.segmentTitles[0] = \"disabled\"; ObjectID = \"ful-j0-kgc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "ful-j0-kgc.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; ful-j0-kgc.segmentTitles[1] = \"enabled\"; ObjectID = \"ful-j0-kgc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "enabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用"
+          }
+        }
+      }
+    },
     "GbY-52-itv.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Local Volume\"; ObjectID = \"GbY-52-itv\";",
       "extractionState" : "extracted_with_value",
@@ -4057,6 +4117,36 @@
         }
       }
     },
+    "P9b-Th-Ybc.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"      Bulk move     \"; ObjectID = \"P9b-Th-Ybc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "      Bulk move     "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "       批量移动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "       批次移動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "       批次移動"
+          }
+        }
+      }
+    },
     "PaG-9w-YxB.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Mute in Background\"; ObjectID = \"PaG-9w-YxB\";",
       "extractionState" : "extracted_with_value",
@@ -4731,6 +4821,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉"
+          }
+        }
+      }
+    },
+    "QtA-AD-aJw.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"      \"; ObjectID = \"QtA-AD-aJw\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "      "
           }
         }
       }

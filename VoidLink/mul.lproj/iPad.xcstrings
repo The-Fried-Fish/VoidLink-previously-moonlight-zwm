@@ -397,7 +397,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "非線性因子"
           }
         }
@@ -1597,6 +1597,66 @@
         }
       }
     },
+    "bNW-R2-UuH.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bNW-R2-UuH.segmentTitles[0] = \"disabled\"; ObjectID = \"bNW-R2-UuH\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "bNW-R2-UuH.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; bNW-R2-UuH.segmentTitles[1] = \"enabled\"; ObjectID = \"bNW-R2-UuH\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "enabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用"
+          }
+        }
+      }
+    },
     "BQH-nQ-IyM.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Reverse Hold Button\"; ObjectID = \"BQH-nQ-IyM\";",
       "extractionState" : "extracted_with_value",
@@ -1669,7 +1729,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "指定软键盘高度"
           }
         },
@@ -3524,6 +3584,36 @@
         }
       }
     },
+    "Jeb-fE-sCm.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"   Bulk move    \"; ObjectID = \"Jeb-fE-sCm\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "   Bulk move    "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "  批量移动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "  批次移動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "  批次移動"
+          }
+        }
+      }
+    },
     "JTl-un-QJJ.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Emulated Controller Type\"; ObjectID = \"JTl-un-QJJ\";",
       "extractionState" : "extracted_with_value",
@@ -3878,7 +3968,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "串流位元速率"
           }
         }
@@ -5874,6 +5964,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已收納小工具   "
+          }
+        }
+      }
+    },
+    "wrg-n4-F5w.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"       \"; ObjectID = \"wrg-n4-F5w\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "       "
           }
         }
       }

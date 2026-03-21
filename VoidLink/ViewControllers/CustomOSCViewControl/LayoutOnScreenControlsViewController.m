@@ -171,6 +171,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
                 widgetView.parentSequence = buttonState.parentSequence;
                 widgetView.folded = buttonState.folded;
                 widgetView.revealMode = buttonState.revealMode;
+                widgetView.bulkMoveEnabled = buttonState.bulkMoveEnabled;
                 
                 widgetView.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
                 widgetView.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
@@ -816,6 +817,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     OnScreenWidgetView* newWidget = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile]; //reconstruct widgetView
     newWidget.sequence = widget.sequence;
     newWidget.revealMode = widget.revealMode;
+    newWidget.bulkMoveEnabled = widget.bulkMoveEnabled;
     newWidget.guidelineDelegate = (id<OnScreenWidgetGuidelineUpdateDelegate>)self;
     newWidget.translatesAutoresizingMaskIntoConstraints = NO; // weird but this is mandatory, or you will find no key views added to the right place
     newWidget.widthFactor = widget.widthFactor;
@@ -1136,6 +1138,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.collectedWidgetsSelector setSelectedSegmentIndex:selectedWidgetView.folded ? 1 :0];
     [self.revealModeSelector setSelectedSegmentIndex:selectedWidgetView.revealMode];
     [OnScreenWidgetView setWithFolded:selectedWidgetView.folded for:selectedWidgetView];
+    
+    self.bulkMoveStack.hidden = !selectedWidgetView.isFolder;
+    [self.bulkMoveSelector setSelectedSegmentIndex:selectedWidgetView.bulkMoveEnabled];
 
     [self autoFitStack:self.widgetPanelStack];
     
@@ -1302,6 +1307,12 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (void)collectionHiddenChanged:(UISegmentedControl* )sender{
     if(self->selectedWidgetView != nil && self->widgetViewSelected){
         [OnScreenWidgetView setWithFolded:sender.selectedSegmentIndex==1 for:selectedWidgetView];
+    }
+}
+
+- (void)bulkMoveChanged:(UISegmentedControl* )sender{
+    if(self->selectedWidgetView != nil && self->widgetViewSelected){
+        selectedWidgetView.bulkMoveEnabled = sender.selectedSegmentIndex == 1;
     }
 }
 
@@ -1627,6 +1638,10 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self.revealModeSelector addTarget:self action:@selector(revealModeChanged:) forControlEvents:(UIControlEventValueChanged)];
     [self.revealModeSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
     self.collectedWidgetsStack.hidden = YES;
+    
+    [self.bulkMoveSelector addTarget:self action:@selector(bulkMoveChanged:) forControlEvents:(UIControlEventValueChanged)];
+    [self.bulkMoveSelector setTitleTextAttributes:whiteFontAttributes forState:UIControlStateNormal];
+    self.bulkMoveStack.hidden = YES;
 
     if([self isIPhone]){
         [self.vibrationStyleSelector addTarget:self action:@selector(vibrationStyleChanged:) forControlEvents:(UIControlEventValueChanged)];

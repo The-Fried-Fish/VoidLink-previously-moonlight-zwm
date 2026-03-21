@@ -450,6 +450,7 @@ static CGRect layoutViewBounds;
         buttonState.parentSequence = widgetView.parentSequence;
         buttonState.folded = widgetView.folded;
         buttonState.revealMode = widgetView.revealMode;
+        buttonState.bulkMoveEnabled = widgetView.bulkMoveEnabled;
         buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView];
         buttonState.heightFactor = [self normalizeSizeHeightFactorWith:widgetView];
         buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];

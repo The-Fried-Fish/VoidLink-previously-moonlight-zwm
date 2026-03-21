@@ -34,6 +34,7 @@
     [encoder encodeObject:self.name forKey:@"name"];
     [encoder encodeBool:self.folded forKey:@"folded"];
     [encoder encodeInt32:self.revealMode forKey:@"revealMode"];
+    [encoder encodeBool:self.bulkMoveEnabled forKey:@"bulkMoveEnabled"];
     [encoder encodeInt32:self.sequence forKey:@"sequence"];
     [encoder encodeInt32:self.parentSequence forKey:@"parentSequence"];
     [encoder encodeObject:self.sequenceSet forKey:@"sequenceSet"];
@@ -75,6 +76,7 @@
         self.name = [decoder decodeObjectForKey:@"name"];
         self.folded = [decoder containsValueForKey:@"folded"] ? [decoder decodeBoolForKey:@"folded"] : false;
         self.revealMode = [decoder containsValueForKey:@"revealMode"] ? [decoder decodeInt32ForKey:@"revealMode"] : coexist;
+        self.bulkMoveEnabled = [decoder containsValueForKey:@"bulkMoveEnabled"] ? [decoder decodeBoolForKey:@"bulkMoveEnabled"] : true;
         self.sequence = [decoder containsValueForKey:@"sequence"] ? [decoder decodeInt32ForKey:@"sequence"] : -1;
         self.parentSequence = [decoder containsValueForKey:@"parentSequence"] ? [decoder decodeInt32ForKey:@"parentSequence"] : -1;
         self.sequenceSet = [decoder containsValueForKey:@"sequenceSet"] ? [decoder decodeObjectForKey:@"sequenceSet"] : [NSSet set];

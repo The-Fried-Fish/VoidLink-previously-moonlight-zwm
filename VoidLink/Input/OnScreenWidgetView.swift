@@ -291,6 +291,7 @@ import SVGKit
     @objc public var folded: Bool = false
     @objc public var persistedFolded: Bool = false
     @objc public var revealMode: RevealMode = .coexist
+    @objc public var bulkMoveEnabled: Bool = false
     @objc public var sequenceSet: Set<Int16> = Set()
     @objc public var parentSequence: Int16 = -1
     private weak var capturer: OnScreenWidgetView?
@@ -1973,6 +1974,11 @@ import SVGKit
         relocatedDuringStreaming = true
         // center = currentLocation;
         //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
+        
+        if isFolder, bulkMoveEnabled {
+            self.moveSubWidgetsInBatch(by: CGVector(dx: offsetX, dy: offsetY))
+        }
+        
         if OnScreenWidgetView.editMode {
             guidelineDelegate?.updateGuidelinesForOnScreenWidget(self)
         }
@@ -2875,6 +2881,18 @@ import SVGKit
             sequence = max(sequence, widget.sequence)
         }
         return sequence+1
+    }
+    
+    @objc func moveSubWidgetsInBatch(by vector:CGVector) {
+        guard isFolder else {return}
+        for sequence in self.sequenceSet {
+            guard let widget = OnScreenWidgetView.mapping[sequence] else {return}
+            widget.storedCenter = CGPoint(x: widget.storedCenter.x+vector.dx, y: widget.storedCenter.y+vector.dy)
+            if !widget.isHidden {
+                widget.center = CGPoint(x: widget.center.x+vector.dx, y: widget.center.y+vector.dy)
+            }
+            widget.relocatedDuringStreaming = true
+        }
     }
     
     @objc static var enableFolderAnimation:Bool = true

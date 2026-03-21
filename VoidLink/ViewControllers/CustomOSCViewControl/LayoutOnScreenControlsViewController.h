@@ -133,6 +133,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UISegmentedControl *collectedWidgetsSelector;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *revealModeSelector;
 
+@property (weak, nonatomic) IBOutlet UIStackView *bulkMoveStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *bulkMoveSelector;
+
+
 @property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;
 
 
