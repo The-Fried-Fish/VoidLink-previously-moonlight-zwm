@@ -1657,6 +1657,36 @@
         }
       }
     },
+    "Bue-gF-hRI.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Designate Soft Keyboard Height\"; ObjectID = \"Bue-gF-hRI\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Designate Soft Keyboard Height"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指定软键盘高度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指定軟鍵盤高度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "指定軟鍵盤高度"
+          }
+        }
+      }
+    },
     "bVv-CW-kN8.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; bVv-CW-kN8.segmentTitles[0] = \"Regular\"; ObjectID = \"bVv-CW-kN8\";",
       "extractionState" : "extracted_with_value",
@@ -2297,7 +2327,8 @@
             "value" : "關閉"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "dpd-Bw-aHE.segmentTitles[1]" : {
       "comment" : "Class = \"UISegmentedControl\"; dpd-Bw-aHE.segmentTitles[1] = \"Yes\"; ObjectID = \"dpd-Bw-aHE\";",
@@ -2327,7 +2358,8 @@
             "value" : "啟用"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "dqh-nl-heL.title" : {
       "comment" : "Class = \"UINavigationItem\"; title = \"Title\"; ObjectID = \"dqh-nl-heL\";",
@@ -4768,7 +4800,8 @@
             "value" : "螢幕小工具佈局"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "q78-aY-mIe.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Disable Hovering\"; ObjectID = \"q78-aY-mIe\";",

@@ -74,6 +74,7 @@
 @property (nonatomic) BOOL statsOverlayEnabled;
 @property (nonatomic) BOOL liftStreamViewForKeyboard;
 @property (nonatomic) BOOL showKeyboardToolbar;
+@property (nonatomic) CGFloat softKeyboardHeight;
 @property (nonatomic) BOOL unlockDisplayOrientation;
 @property (nonatomic) BOOL enableGraphs;
 @property (nonatomic) BOOL enableFrameTimebase;

@@ -33,9 +33,11 @@
 
     NSInteger _bitrate;
     NSInteger _lastSelectedResolutionIndex;
+    CGFloat softKeyboardHeight;
     bool settingsViewJustLoaded;
     bool settingsViewJustExpanded;
     bool settingsViewAlreadyAppeared;
+    bool autoPopKeyboard;
     uint16_t oswLayoutFingers;
     CustomEdgeSlideGestureRecognizer *slideToCloseSettingsViewRecognizer;
     NSMutableDictionary *_settingStackDict;
@@ -568,6 +570,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     settingsViewJustExpanded = false;
     settingsViewAlreadyAppeared = true;
+    autoPopKeyboard = true;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -959,6 +962,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
     [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
+    [self addSetting:self.softKeyboardHeightStack ofId:@"softKeyboardHeightStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
     [self addSetting:self.rememberFoldStateStack ofId:@"rememberFoldStateStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
 
     [otherSection addToParentStack:_parentStack];
@@ -1527,6 +1531,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         showOnlineDocAction = true;
         onlineDocLink = [LocalizationHelper localizedStringForKey:@"PencilProPackURL"];
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"softKeyboardHeightStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"softKeyboardHeightStackTip"];
+        showOnlineDocAction = false;
+    }
     
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
     
@@ -2070,6 +2078,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 
         // showkeyboard toolbar setting
         [self.softKeyboardToolbarSwitch setOn:self->tempSettings.showKeyboardToolbar];// Load old setting
+        
+        self->softKeyboardHeight = self->tempSettings.softKeyboardHeight;
+        [self.softKeyboardHeightSwitch setOn:self->softKeyboardHeight!=0];// Load old setting
+        [self.softKeyboardHeightSwitch addTarget:self action:@selector(softKeyboardHeightSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+
 
         // reverse mouse wheel direction setting
         [self.reverseMouseWheelDirectionSelector setSelectedSegmentIndex:self->tempSettings.reverseMouseWheelDirection ? 1 : 0];// Load old setting
@@ -2982,6 +2995,55 @@ BOOL isCustomResolution(int resolutionSelected) {
     else [self pinchGestureSwitchFlipped:_pinchGestureSwitch];
 }
 
+- (void)softKeyboardHeightSwitchFlipped:(UISwitch* )sender{
+    if(sender.isOn && !settingsViewJustLoaded){
+        autoPopKeyboard = false;
+        [GenericUtils setVerticalScaleWithView:self.view show:true];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@""]
+                                                                                 message:[LocalizationHelper localizedStringForKey:@"Enter the relative height of the soft keyboard according to the scale (make sure app is in landscape fullscreen mode):"]
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            textField.placeholder = [LocalizationHelper localizedStringForKey:@"e.g. 0.45"];
+            textField.keyboardType = UIKeyboardTypeASCIICapable;
+            textField.autocorrectionType = UITextAutocorrectionTypeNo;
+            textField.spellCheckingType = UITextSpellCheckingTypeNo;
+            textField.delegate = self;
+            textField.text = self->softKeyboardHeight == 0 ? nil : [NSString stringWithFormat:@"%.2f", self->softKeyboardHeight];
+        }];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction *action) {
+            [GenericUtils setVerticalScaleWithView:self.view show:false];
+            [sender setOn:self->softKeyboardHeight!=0];
+            self->autoPopKeyboard = true;
+        }];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"]
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction *action) {
+            self->softKeyboardHeight = [GenericUtils toCGFloat:alertController.textFields[0].text];
+            [GenericUtils setVerticalScaleWithView:self.view show:false];
+            [sender setOn:self->softKeyboardHeight!=0];
+            self->autoPopKeyboard = true;
+        }];
+        [alertController addAction:cancelAction];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+// UITextFieldDelegate
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if (autoPopKeyboard) {
+        return YES;
+    } else {
+        autoPopKeyboard = YES;
+        return NO;
+    }
+}
+
 - (void)pinchGestureSwitchFlipped:(UISwitch* )sender{
     [self setHidden:!sender.isOn forStack:_pinchSensitivityStack];
     [self setHidden:!sender.isOn forStack:_ctrlDownForPinchStack];
@@ -3690,6 +3752,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSInteger controllerGyroSwitchMode = self.controllerGyroSwitchButtonSetter.selectedSegmentIndex;
     BOOL enableFrameTimebase = false;
     BOOL asyncFrameDequeue = self.asyncFrameDequeueSwitch.isOn;
+    CGFloat softKeyboardHeight = self.softKeyboardHeightSwitch.isOn ? self->softKeyboardHeight : 0;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettings:currentSettings
@@ -3766,6 +3829,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                  enableFrameTimebase:enableFrameTimebase
                    asyncFrameDequeue:asyncFrameDequeue
             sdrPerformanceWorkaround:sdrPerformanceWorkaround
+                  softKeyboardHeight:softKeyboardHeight
               backgroundSessionTimer:backgroundSessionTimer];
 }
 

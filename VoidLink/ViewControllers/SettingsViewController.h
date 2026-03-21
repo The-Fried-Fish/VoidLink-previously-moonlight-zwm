@@ -16,7 +16,7 @@
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "MenuSectionView.h"
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate>
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate, UITextFieldDelegate>
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;
@@ -216,6 +216,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *passthroughGesturesStack;
 @property (strong, nonatomic) IBOutlet UISwitch *passthroughGesturesSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *softKeyboardHeightStack;
+@property (weak, nonatomic) IBOutlet UISwitch *softKeyboardHeightSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *controllerToMouseStack;
 @property (strong, nonatomic) IBOutlet UISwitch *controllerToMouseSwitch;
 
@@ -254,7 +257,6 @@
 
 @property (weak, nonatomic) IBOutlet UIStackView *trackTouchPointStack;
 @property (weak, nonatomic) IBOutlet UISwitch *trackTouchPointSwitch;
-
 
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
