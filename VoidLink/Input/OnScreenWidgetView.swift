@@ -1975,7 +1975,7 @@ import SVGKit
         // center = currentLocation;
         //NSLog("x coord: %f, y coord: %f", self.frame.origin.x, self.frame.origin.y)
         
-        if isFolder, bulkMoveEnabled {
+        if isFolder, bulkMoveEnabled, firstTouchMoved {
             self.moveSubWidgetsInBatch(by: CGVector(dx: offsetX, dy: offsetY))
         }
         
