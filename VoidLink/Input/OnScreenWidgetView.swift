@@ -697,13 +697,13 @@ import SVGKit
     
     private func getDiameter(lengthFactor:CGFloat) -> CGFloat {
         self.getBaselineLenths()
-        let isNormalizedSizeFactor = lengthFactor > 6;
+        let isNormalizedSizeFactor = lengthFactor > 10;
         return isNormalizedSizeFactor ? denormalizeSize(sizeFactor:lengthFactor) : CGFloat(Int(baselineDiameter * lengthFactor / 2) * 2)
     }
     
     private func getRecSize(widthFactor:CGFloat, heightFactor:CGFloat) -> CGSize {
-        let isNormalizedSizeFactor = widthFactor > 6;
-        let isNormalizedHeightFactor = heightFactor > 6;
+        let isNormalizedSizeFactor = widthFactor > 10;
+        let isNormalizedHeightFactor = heightFactor > 10;
         
         self.getBaselineLenths()
 
@@ -2853,7 +2853,7 @@ import SVGKit
         }
     }
     
-    private func highlightBorder(highlighted:Bool) {
+    private func highlightBorder(highlighted:Bool, color:CGColor? = nil) {
         if self.isFolder {
             OnScreenWidgetView.setBorder(hilighted: highlighted, in: UIColor.systemYellow.cgColor, for: self)
             self.forEachWidget{ widget in
@@ -2864,7 +2864,7 @@ import SVGKit
             return
         }
         
-        OnScreenWidgetView.setBorder(hilighted: highlighted, in: voidlinkPurple, for: self)
+        OnScreenWidgetView.setBorder(hilighted: highlighted, in: color ?? voidlinkPurple, for: self)
     }
     
     private func isPencilProEnabled() -> Bool {
@@ -2906,8 +2906,9 @@ import SVGKit
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
                 DispatchQueue.main.async {
                     widget.isUserInteractionEnabled = false
-                    if widget.widgetType == .touchPad {
-                        widget.highlightBorder(highlighted: true)
+                    if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
+                        || abs(widget.backgroundAlpha) < 0.1){
+                        widget.highlightBorder(highlighted: true, color: UIColor.systemBlue.cgColor)
                     }
                     let duration = OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0
                     UIView.animate(withDuration: duration, animations: {
@@ -2916,7 +2917,8 @@ import SVGKit
                         widget.isUserInteractionEnabled = !hidden
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
-                        if widget.widgetType == .touchPad {
+                        if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
+                            || abs(widget.backgroundAlpha) < 0.1){
                             widget.highlightBorder(highlighted: false)
                         }
                     })
@@ -2931,8 +2933,9 @@ import SVGKit
                     widget.capturedTouches.removeAllObjects()
                     widget.center = folder.storedCenter
                     widget.isHidden = false
-                    if widget.widgetType == .touchPad {
-                        widget.highlightBorder(highlighted: true)
+                    if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
+                        || abs(widget.backgroundAlpha) < 0.1){
+                        widget.highlightBorder(highlighted: true, color: UIColor.systemBlue.cgColor)
                     }
                     UIView.animate(withDuration: OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0, animations: {
                         widget.center = widget.storedCenter
@@ -2941,7 +2944,8 @@ import SVGKit
                         widget.isUserInteractionEnabled = !folder.folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
-                        if widget.widgetType == .touchPad {
+                        if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
+                            || abs(widget.backgroundAlpha) < 0.1){
                             widget.highlightBorder(highlighted: false)
                         }
                     })
@@ -3151,6 +3155,7 @@ import SVGKit
         var verticallyAligned = false
         widget.forEachWidget{ otherWidget in
             guard otherWidget != widget else {return}
+            if widget.isFolder, widget.bulkMoveEnabled, widget.sequenceSet.contains(otherWidget.sequence) {return}
             verticallyAligned = verticallyAligned ? verticallyAligned : widget.center.x > otherWidget.center.x-1 && widget.center.x < otherWidget.center.x+1
             horizontallyAligned = horizontallyAligned ? horizontallyAligned : widget.center.y > otherWidget.center.y-1 && widget.center.y < otherWidget.center.y+1
         }

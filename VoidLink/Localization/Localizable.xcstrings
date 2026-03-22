@@ -5024,6 +5024,35 @@
         }
       }
     },
+    "mouseModeSwitchButtonTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press a button for switching to controller mouse mode (long press for 1 second during streaming)\n\nNote: if you want to designate home button, double tap to pass it through to VoidLink app on iOS 26+."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用于切换手柄鼠标模式的按键(串流时长按1秒切换)\n\n注意：如果需要指定 home 键，在 iOS 26+ 系统上需要双击将该按键透传至 VoidLink。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)\n\n注意：如果需要指定 Home 鍵，在 iOS 26+ 系統上需要雙擊將該按鍵透傳至 VoidLink。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)。\n\n注意：如果需要指定 Home 鍵，在 iOS 26+ 系統上需要雙擊將該按鍵透傳至 VoidLink。"
+          }
+        }
+      }
+    },
     "Move the stick you wish to use for mouse control. Another stick will be used for vertical & horizontal scroll." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6482,29 +6511,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按下切換陀螺儀模式的手把按鍵。\n您可以為陀螺儀切換和保持各設置一個按鍵。"
-          }
-        }
-      }
-    },
-    "Press a button for switching to controller mouse mode (long press for 1 second during streaming)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下用于切换手柄鼠标模式的按键(串流时长按1秒切换)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)"
           }
         }
       }

@@ -149,7 +149,9 @@
     }
     for(UIView* view in self.layoutToolVC.view.subviews){
         if ([view isKindOfClass:[OnScreenWidgetView class]] && view != widget) {
-            if ((horizontalGuideline.center.y < view.center.y + 1) && (horizontalGuideline.center.y > view.center.y - 1)) {
+            OnScreenWidgetView* otherWidget = (OnScreenWidgetView *) view;
+            if(widget.isFolder && widget.bulkMoveEnabled && [widget.sequenceSet containsObject:@(otherWidget.sequence)]) break;
+            if((horizontalGuideline.center.y < view.center.y + 1) && (horizontalGuideline.center.y > view.center.y - 1)) {
                 horizontalGuideline.backgroundColor = [UIColor yellowColor];
                 break;
             }

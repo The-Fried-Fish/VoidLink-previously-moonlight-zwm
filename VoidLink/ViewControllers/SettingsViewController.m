@@ -2592,7 +2592,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     Settings* currentSettings = [dataMan retrieveSettings];
     [AlertControllerUtil showAlertIn:self
                                 title:[LocalizationHelper localizedStringForKey:@"Map controller to mouse"]
-                              message:[LocalizationHelper localizedStringForKey:@"Press a button for switching to controller mouse mode (long press for 1 second during streaming)"]
+                              message:[LocalizationHelper localizedStringForKey:@"mouseModeSwitchButtonTip"]
                            withCancel:YES
                           buttonTitle:@""
                             countdown:0
