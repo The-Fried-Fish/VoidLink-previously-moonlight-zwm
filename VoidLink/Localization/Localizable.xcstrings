@@ -1387,52 +1387,6 @@
         }
       }
     },
-    "Alias (optional)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "别名 (允许留空)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "別名 (可選)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "別名 (可選)"
-          }
-        }
-      }
-    },
-    "Alias label (optional)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "别名标签 (可留空)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "別名標籤 (可選)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "別名標籤 (可選)"
-          }
-        }
-      }
-    },
     "All Settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2032,25 +1986,25 @@
         }
       }
     },
-    "Command" : {
+    "Command: " : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "命令"
+            "value" : "命令: "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指令"
+            "value" : "指令: "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指令"
+            "value" : "指令: "
           }
         }
       }
@@ -2898,6 +2852,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "漂移修正"
+          }
+        }
+      }
+    },
+    "e.g. ctrl, lswheel, wasdpad..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如ctrl, lswheel, wasdpad..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如ctrl, lswheel, wasdpad..."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如ctrl, lswheel, wasdpad..."
           }
         }
       }
@@ -4332,6 +4309,29 @@
         }
       }
     },
+    "Label: " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签: "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標籤: "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標籤: "
+          }
+        }
+      }
+    },
     "Later" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5324,6 +5324,29 @@
         }
       }
     },
+    "No widget selected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先点选一个控件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請先點選一個小工具"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請先點選一個小工具"
+          }
+        }
+      }
+    },
     "Nothing to Undo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5706,6 +5729,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sunshine 依據此選項的狀態決定是否載入一些預設參數，建議保持開啟。"
+          }
+        }
+      }
+    },
+    "optional" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可留空"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可選"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可選"
           }
         }
       }
@@ -6935,6 +6981,29 @@
         }
       }
     },
+    "r - round/circle, s - square/rect" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "r - 圆形, s - 方形"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "r - 圓形, s - 方形"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "r - 圓形, s - 方形"
+          }
+        }
+      }
+    },
     "Read Widget Instruction" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7771,25 +7840,25 @@
         }
       }
     },
-    "Shape (r - round, s - square)" : {
+    "Shape: " : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按键形状 (r - 圆形, s - 方形)"
+            "value" : "形状: "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "形狀 (r - 圓形, s - 方形)"
+            "value" : "形狀: "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "形狀 (r - 圓形, s - 方形)"
+            "value" : "形狀: "
           }
         }
       }

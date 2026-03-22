@@ -20,7 +20,7 @@
 #import "HostCollectionViewController.h"
 
 
-@interface MainFrameViewController : UICollectionViewController <DiscoveryCallback, PairCallback, AppCallback, AppAssetCallback, NSURLConnectionDelegate, SWRevealViewControllerDelegate, HostCardActionDelegate, AppViewUpdateLoopDelegate>
+@interface MainFrameViewController : UICollectionViewController <DiscoveryCallback, PairCallback, AppCallback, AppAssetCallback, NSURLConnectionDelegate, SWRevealViewControllerDelegate, HostCardActionDelegate, AppViewUpdateLoopDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *settingsButton;
 #if !TARGET_OS_TV

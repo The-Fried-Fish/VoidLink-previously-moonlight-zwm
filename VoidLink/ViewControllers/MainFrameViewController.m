@@ -723,6 +723,7 @@ static NSMutableSet* hostList;
 
 - (void) addHostTapped {
     Log(LOG_D, @"Tapped add host");
+    GenericUtils.autoPopSoftKeyboard = GenericUtils.isIPhone ? false : true;
     UIAlertController* alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Add Host Manually"]
                                                                              message:[LocalizationHelper localizedStringForKey:@"Enter IP address to add host manually"]
                                                                       preferredStyle:UIAlertControllerStyleAlert];
@@ -732,6 +733,7 @@ static NSMutableSet* hostList;
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
     }];
 
     [alertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
@@ -2402,6 +2404,15 @@ static NSMutableSet* hostList;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     return YES;
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if (GenericUtils.autoPopSoftKeyboard) {
+        return YES;
+    } else {
+        GenericUtils.autoPopSoftKeyboard = YES;
+        return NO;
+    }
 }
 
 #if !TARGET_OS_TV

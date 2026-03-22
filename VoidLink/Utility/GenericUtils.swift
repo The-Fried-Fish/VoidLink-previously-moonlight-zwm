@@ -106,6 +106,27 @@ import Foundation
         }
     }
     
+    @objc static var autoPopSoftKeyboard: Bool = true
+    @objc static var textFieldShouldResignAfterReturn: Bool = false
+    
+    @objc static func getAtrributedPlaceHolder(text:String)-> NSAttributedString {
+        if #available(iOS 13.0, *) {
+            return NSAttributedString(
+                string: text,
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 15),
+                    .foregroundColor: UIColor.placeholderText
+                ])
+        } else {
+            return NSAttributedString(
+                string: text,
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 15),
+                    .foregroundColor: UIColor.lightText
+                ])
+        }
+    }
+    
     static var kScaleLayerKey: UInt8 = 0
     @objc static func setVerticalScale(view: UIView, show: Bool) {
         // 移除旧的

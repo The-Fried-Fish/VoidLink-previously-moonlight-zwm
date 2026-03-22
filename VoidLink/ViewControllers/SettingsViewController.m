@@ -37,7 +37,6 @@
     bool settingsViewJustLoaded;
     bool settingsViewJustExpanded;
     bool settingsViewAlreadyAppeared;
-    bool autoPopKeyboard;
     uint16_t oswLayoutFingers;
     CustomEdgeSlideGestureRecognizer *slideToCloseSettingsViewRecognizer;
     NSMutableDictionary *_settingStackDict;
@@ -570,7 +569,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     settingsViewJustExpanded = false;
     settingsViewAlreadyAppeared = true;
-    autoPopKeyboard = true;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -2233,6 +2231,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)showCustomOswTip {
+    GenericUtils.autoPopSoftKeyboard = GenericUtils.isIPhone ? false : true;
     NSString* edgeSide = self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex == 1 ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Rebase in Streaming"]
                                                                              message:[LocalizationHelper localizedStringForKey:@"Open widget tool in streaming by:\nSliding from %@ screen edge to open cmd tool.\nOr tap %d fingers on stream view, number of fingers required:", edgeSide, self->oswLayoutFingers]
@@ -2241,6 +2240,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = [LocalizationHelper localizedStringForKey:@"%d", self->oswLayoutFingers];
         textField.keyboardType = UIKeyboardTypeNumberPad;
+        textField.delegate = self;
     }];
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
@@ -2997,7 +2997,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)softKeyboardHeightSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){
-        autoPopKeyboard = false;
+        GenericUtils.autoPopSoftKeyboard = false;
         [GenericUtils setVerticalScaleWithView:self.view show:true];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@""]
                                                                                  message:[LocalizationHelper localizedStringForKey:@"Enter the relative height of the soft keyboard according to the scale (make sure app is in landscape fullscreen mode):"]
@@ -3017,7 +3017,6 @@ BOOL isCustomResolution(int resolutionSelected) {
                                                              handler:^(UIAlertAction *action) {
             [GenericUtils setVerticalScaleWithView:self.view show:false];
             [sender setOn:self->softKeyboardHeight!=0];
-            self->autoPopKeyboard = true;
         }];
         
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"]
@@ -3026,7 +3025,6 @@ BOOL isCustomResolution(int resolutionSelected) {
             self->softKeyboardHeight = [GenericUtils toCGFloat:alertController.textFields[0].text];
             [GenericUtils setVerticalScaleWithView:self.view show:false];
             [sender setOn:self->softKeyboardHeight!=0];
-            self->autoPopKeyboard = true;
         }];
         [alertController addAction:cancelAction];
         [alertController addAction:okAction];
@@ -3036,10 +3034,10 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 // UITextFieldDelegate
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    if (autoPopKeyboard) {
+    if (GenericUtils.autoPopSoftKeyboard) {
         return YES;
     } else {
-        autoPopKeyboard = YES;
+        GenericUtils.autoPopSoftKeyboard = YES;
         return NO;
     }
 }
@@ -3193,6 +3191,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void) promptCustomResolutionDialog {
+    GenericUtils.autoPopSoftKeyboard = GenericUtils.isIPhone ? false : true;
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey: @"Enter Custom Resolution"] message:nil preferredStyle:UIAlertControllerStyleAlert];
 
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -3200,6 +3199,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         textField.clearButtonMode = UITextFieldViewModeAlways;
         textField.borderStyle = UITextBorderStyleRoundedRect;
         textField.keyboardType = UIKeyboardTypeNumberPad;
+        textField.delegate = self;
         
         if (resolutionTable[RESOLUTION_TABLE_CUSTOM_INDEX].width == 0) {
             textField.text = @"";
@@ -3214,6 +3214,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         textField.clearButtonMode = UITextFieldViewModeAlways;
         textField.borderStyle = UITextBorderStyleRoundedRect;
         textField.keyboardType = UIKeyboardTypeNumberPad;
+        textField.delegate = self;
         
         if (resolutionTable[RESOLUTION_TABLE_CUSTOM_INDEX].height == 0) {
             textField.text = @"";

@@ -659,6 +659,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 }
 
 - (IBAction) addTapped:(id)sender{
+    GenericUtils.autoPopSoftKeyboard = false;
     
     NSMutableDictionary* widgetInitParams = [NSMutableDictionary dictionary];
 
@@ -667,24 +668,51 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
                                                                       preferredStyle:UIAlertControllerStyleAlert];
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = [LocalizationHelper localizedStringForKey:@"Command"];
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Command: "];
+        label.font = [UIFont systemFontOfSize:15];
+        [label sizeToFit];
+        textField.leftView = label;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        textField.attributedPlaceholder = [GenericUtils getAtrributedPlaceHolderWithText:[LocalizationHelper localizedStringForKey:@"e.g. ctrl, lswheel, wasdpad..."]];
+        
+        textField.font = [UIFont systemFontOfSize:15];
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
     }];
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = [LocalizationHelper localizedStringForKey:@"Alias label (optional)"];
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Label: "];
+        label.font = [UIFont systemFontOfSize:15];
+        [label sizeToFit];
+        textField.leftView = label;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        textField.attributedPlaceholder = [GenericUtils getAtrributedPlaceHolderWithText:[LocalizationHelper localizedStringForKey:@"optional"]];
+        
+        textField.font = [UIFont systemFontOfSize:15];
         textField.keyboardType = UIKeyboardTypeDefault;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
     }];
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = [LocalizationHelper localizedStringForKey:@"Shape (r - round, s - square)"];
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Shape: "];
+        label.font = [UIFont systemFontOfSize:15];
+        [label sizeToFit];
+        textField.leftView = label;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        textField.attributedPlaceholder = [GenericUtils getAtrributedPlaceHolderWithText:[LocalizationHelper localizedStringForKey:@"r - round/circle, s - square/rect"]];
+        
+        textField.font = [UIFont systemFontOfSize:15];
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
     }];
 
 
@@ -719,6 +747,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 
 - (IBAction) editTapped:(id)sender{
+    GenericUtils.autoPopSoftKeyboard = false;
     
     NSMutableDictionary* widgetInitParams = [NSMutableDictionary dictionary];
 
@@ -726,29 +755,67 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
                                                                              message:[LocalizationHelper localizedStringForKey:@"Edit Selected Widget"]
                                                                       preferredStyle:UIAlertControllerStyleAlert];
     
-    if(self->selectedWidgetView == nil) return;
+    if(self->selectedWidgetView == nil) {
+        AlertControllerUtil.autoCompletion = true;
+        [AlertControllerUtil showAlertIn:self
+                                        title:@""
+                                      message:[LocalizationHelper localizedStringForKey:@"No widget selected"]
+                                   withCancel:NO
+                                  buttonTitle:@""
+                                    countdown:1
+                                       action:^{}
+                                   completion:^{}];
+        return;
+    };
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = [LocalizationHelper localizedStringForKey:@"Command"];
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Command: "];
+        label.font = [UIFont systemFontOfSize:15];
+        [label sizeToFit];
+        textField.leftView = label;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        textField.attributedPlaceholder = [GenericUtils getAtrributedPlaceHolderWithText:[LocalizationHelper localizedStringForKey:@"e.g. ctrl, lswheel, wasdpad..."]];
+        
+        textField.font = [UIFont systemFontOfSize:15];
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
         textField.text = [self->selectedWidgetView.cmdString lowercaseString];
     }];
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = [LocalizationHelper localizedStringForKey:@"Alias label (optional)"];
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Label: "];
+        label.font = [UIFont systemFontOfSize:15];
+        [label sizeToFit];
+        textField.leftView = label;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        textField.attributedPlaceholder = [GenericUtils getAtrributedPlaceHolderWithText:[LocalizationHelper localizedStringForKey:@"optional"]];
+        
+        textField.font = [UIFont systemFontOfSize:15];
         textField.keyboardType = UIKeyboardTypeDefault;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
         textField.text = self->selectedWidgetView.widgetLabel;
     }];
         
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = [LocalizationHelper localizedStringForKey:@"Shape (r - round, s - square)"];
+        UILabel *label = [[UILabel alloc] init];
+        label.text = [LocalizationHelper localizedStringForKey:@"Shape: "];
+        label.font = [UIFont systemFontOfSize:15];
+        [label sizeToFit];
+        textField.leftView = label;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        textField.attributedPlaceholder = [GenericUtils getAtrributedPlaceHolderWithText:[LocalizationHelper localizedStringForKey:@"r - round/circle, s - square/rect"]];
+        
+        textField.font = [UIFont systemFontOfSize:15];
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
+        textField.delegate = self;
         textField.text = self->selectedWidgetView.shape;
         if([self->selectedWidgetView.shape isEqualToString: @"largeSquare"]) textField.enabled = false;
     }];
@@ -897,6 +964,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 /* show pop up notification that lets users choose to save the current OSC layout configuration as a profile they can load when they want. User can also choose to cancel out of this pop up */
 - (IBAction) saveTapped:(id)sender {
+    
     /*
     OSCProfile* targetProfile = [profilesManager getAllProfiles][0];
     OSCProfile* currentProfile = [profilesManager getSelectedProfile];
@@ -1686,10 +1754,22 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     }
 }
 
+// UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder]; // 收起键盘
-    [selectedWidgetView setAutoTapIntervalByTextWithStr:textField.text];
+    if(textField == _autoTapField){
+        [textField resignFirstResponder]; // 收起键盘
+        [selectedWidgetView setAutoTapIntervalByTextWithStr:textField.text];
+    }
     return YES;
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if (GenericUtils.autoPopSoftKeyboard) {
+        return YES;
+    } else {
+        GenericUtils.autoPopSoftKeyboard = YES;
+        return NO;
+    }
 }
 
 - (void)applyShadowForiOS13:(UIStackView* )stack {
