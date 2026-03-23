@@ -76,13 +76,20 @@ import GameController
         // 单一 gamepad.valueChangedHandler
         gamepad.valueChangedHandler = { gamepad, element in
             navigationActionTriggeredPrivate = (gamepad.dpad.up.isPressed
-                                             || gamepad.dpad.down.isPressed
-                                             || gamepad.dpad.left.isPressed
-                                             || gamepad.dpad.right.isPressed
-                                             || gamepad.rightThumbstick.xAxis.value != 0
-                                             || gamepad.rightThumbstick.yAxis.value != 0
-                                             || gamepad.leftThumbstick.xAxis.value != 0
-                                             || gamepad.leftThumbstick.yAxis.value != 0)
+                                                || gamepad.dpad.down.isPressed
+                                                || gamepad.dpad.left.isPressed
+                                                || gamepad.dpad.right.isPressed
+                                                || gamepad.buttonA.isPressed
+                                                || gamepad.buttonB.isPressed
+                                                || gamepad.buttonX.isPressed
+                                                || gamepad.leftShoulder.isPressed
+                                                || gamepad.rightShoulder.isPressed
+                                                || gamepad.leftTrigger.value != 0
+                                                || gamepad.rightTrigger.value != 0
+                                                || gamepad.rightThumbstick.xAxis.value != 0
+                                                || gamepad.rightThumbstick.yAxis.value != 0
+                                                || gamepad.leftThumbstick.xAxis.value != 0
+                                                || gamepad.leftThumbstick.yAxis.value != 0)
             if navigationActionTriggeredPrivate { navigationActionTriggered = true}
             else {
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.02) {

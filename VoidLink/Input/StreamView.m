@@ -328,6 +328,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [self liftMetalVideoViewIfNeeded:0];
         
         isInputingText = NO;
+        
+        [keyInputField removeFromSuperview];
     }
 }
 
@@ -391,6 +393,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [keyboardToggleTip removeFromSuperview];
     } else {
         Log(LOG_D, @"Opening the keyboard");
+        [self addSubview:keyInputField];
         // Prepare the textbox used to capture keyboard events.
         keyInputField.delegate = self;
         keyInputField.text = @"0";
