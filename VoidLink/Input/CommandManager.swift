@@ -163,8 +163,11 @@ import UIKit
         "BRUSH": 0xFF,
         "ERASER": 0xFF,
         "CTRL": 0x11,        // VK_CONTROL
+        "RCTRL": 0xA3,        // VK_RCONTROL
         "SHIFT": 0x10,       // VK_SHIFT
+        "RSHIFT": 0xA1,       // VK_RSHIFT
         "ALT": 0x12,         // VK_MENU
+        "RALT": 0xA5,         // VK_MENU
         "F1": 0x70,          // VK_F1
         "F2": 0x71,          // VK_F2
         "F3": 0x72,          // VK_F3
@@ -300,111 +303,131 @@ import UIKit
         "LAUNCHAPP2": 0xB7, // VK_LAUNCH_APP2
         "WIN":  0x5B,
         "LEFT_WIN": 0x5B, // VK_LWIN
+        "LEFTWIN": 0x5B, // VK_LWIN
+        "LWIN": 0x5B, // VK_LWIN
         "RIGHT_WIN": 0x5C, // VK_RWIN
         "RIGHTWIN": 0x5C, // VK_RWIN
+        "RWIN": 0x5C, // VK_RWIN
         "APPS": 0x5D,        // VK_APPS
         
         // macOS Key Codes
-        "CMD": 0x37,     // ⌘ Command
-        "OPT": 0x3A,      // ⌥ Option
-        "CONTROL": 0x3B,     // ⌃ Control
-        "FUNCTION": 0x3F,    // fn
-        "SHIFTMAC": 0x38,   // ⇧ Shift
-        "DELETEMAC": 0x75,  // Forward Delete
-        "RETURNMAC": 0x24,  // Return
-        "ENTERMAC": 0x4C,   // Enter
-        "ESCAPEMAC": 0x35,  // Escape
-        "TABMAC": 0x30,     // Tab
-        "SPACEMAC": 0x31,   // Space
-        "UPARRMAC": 0x7E,  // Up Arrow
-        "DOWNARRMAC": 0x7D, // Down Arrow
-        "LEFTARRMAC": 0x7B, // Left Arrow
-        "RIGHTARRMAC": 0x7C, // Right Arrow
-        "F1MAC": 0x7A,      // F1
-        "F2MAC": 0x78,      // F2
-        "F3MAC": 0x63,      // F3
-        "F4MAC": 0x76,      // F4
-        "F5MAC": 0x60,      // F5
-        "F6MAC": 0x61,      // F6
-        "F7MAC": 0x62,      // F7
-        "F8MAC": 0x64,      // F8
-        "F9MAC": 0x65,      // F9
-        "F10MAC": 0x6D,     // F10
-        "F11MAC": 0x67,     // F11
-        "F12MAC": 0x6F,     // F12
-        "0MAC": 0x52,       // 0
-        "1MAC": 0x53,       // 1
-        "2MAC": 0x54,       // 2
-        "3MAC": 0x55,       // 3
-        "4MAC": 0x56,       // 4
-        "5MAC": 0x57,       // 5
-        "6MAC": 0x58,       // 6
-        "7MAC": 0x59,       // 7
-        "8MAC": 0x5A,       // 8
-        "9MAC": 0x5B,       // 9
-        "NUMPAD0MAC": 0x4F, // Numpad 0
-        "NUMPAD1MAC": 0x50, // Numpad 1
-        "NUMPAD2MAC": 0x51, // Numpad 2
-        "NUMPAD3MAC": 0x52, // Numpad 3
-        "NUMPAD4MAC": 0x53, // Numpad 4
-        "NUMPAD5MAC": 0x54, // Numpad 5
-        "NUMPAD6MAC": 0x55, // Numpad 6
-        "NUMPAD7MAC": 0x56, // Numpad 7
-        "NUMPAD8MAC": 0x57, // Numpad 8
-        "NUMPAD9MAC": 0x58, // Numpad 9
-        "NUMPADADDMAC": 0x45,  // Numpad Add
-        "NUMPADSUBTRACTMAC": 0x4A, // Numpad Subtract
-        "NUMPADMULTIPLYMAC": 0x43, // Numpad Multiply
-        "NUMPADDIVIDEMAC": 0x4B, // Numpad Divide
-        "NUMPADDECIMALMAC": 0x41, // Numpad Decimal
-        "SHIFT_MAC": 0x38,   // ⇧ Shift
-        "DELETE_MAC": 0x75,  // Forward Delete
-        "RETURN_MAC": 0x24,  // Return
-        "ENTER_MAC": 0x4C,   // Enter
-        "ESCAPE_MAC": 0x35,  // Escape
-        "TAB_MAC": 0x30,     // Tab
-        "SPACE_MAC": 0x31,   // Space
-        "UP_ARROW_MAC": 0x7E,  // Up Arrow
-        "DOWN_ARROW_MAC": 0x7D, // Down Arrow
-        "LEFT_ARROW_MAC": 0x7B, // Left Arrow
-        "RIGHT_ARROW_MAC": 0x7C, // Right Arrow
-        "F1_MAC": 0x7A,      // F1
-        "F2_MAC": 0x78,      // F2
-        "F3_MAC": 0x63,      // F3
-        "F4_MAC": 0x76,      // F4
-        "F5_MAC": 0x60,      // F5
-        "F6_MAC": 0x61,      // F6
-        "F7_MAC": 0x62,      // F7
-        "F8_MAC": 0x64,      // F8
-        "F9_MAC": 0x65,      // F9
-        "F10_MAC": 0x6D,     // F10
-        "F11_MAC": 0x67,     // F11
-        "F12_MAC": 0x6F,     // F12
-        "0_MAC": 0x52,       // 0
-        "1_MAC": 0x53,       // 1
-        "2_MAC": 0x54,       // 2
-        "3_MAC": 0x55,       // 3
-        "4_MAC": 0x56,       // 4
-        "5_MAC": 0x57,       // 5
-        "6_MAC": 0x58,       // 6
-        "7_MAC": 0x59,       // 7
-        "8_MAC": 0x5A,       // 8
-        "9_MAC": 0x5B,       // 9
-        "NUMPAD0_MAC": 0x4F, // Numpad 0
-        "NUMPAD1_MAC": 0x50, // Numpad 1
-        "NUMPAD2_MAC": 0x51, // Numpad 2
-        "NUMPAD3_MAC": 0x52, // Numpad 3
-        "NUMPAD4_MAC": 0x53, // Numpad 4
-        "NUMPAD5_MAC": 0x54, // Numpad 5
-        "NUMPAD6_MAC": 0x55, // Numpad 6
-        "NUMPAD7_MAC": 0x56, // Numpad 7
-        "NUMPAD8_MAC": 0x57, // Numpad 8
-        "NUMPAD9_MAC": 0x58, // Numpad 9
-        "NUMPAD_ADD_MAC": 0x45,  // Numpad Add
-        "NUMPAD_SUBTRACT_MAC": 0x4A, // Numpad Subtract
-        "NUMPAD_MULTIPLY_MAC": 0x43, // Numpad Multiply
-        "NUMPAD_DIVIDE_MAC": 0x4B, // Numpad Divide
-        "NUMPAD_DECIMAL_MAC": 0x41, // Numpad Decimal
+        "ESCAPEMAC": 0x35,
+        "TABMAC": 0x30,
+        "RETURNMAC": 0x24,
+        "BACKSPACEMAC": 0x33,
+        "SPACEMAC": 0x31,
+
+        "F1MAC": 0x7A,
+        "F2MAC": 0x78,
+        "F3MAC": 0x63,
+        "F4MAC": 0x76,
+        "F5MAC": 0x60,
+        "F6MAC": 0x61,
+        "F7MAC": 0x62,
+        "F8MAC": 0x64,
+        "F9MAC": 0x65,
+        "F10MAC": 0x6D,
+        "F11MAC": 0x67,
+        "F12MAC": 0x6F,
+        "F13MAC": 0x69,
+        "F14MAC": 0x6B,
+        "F15MAC": 0x71,
+
+        "GRAVEACCENTMAC": 0x32,
+        "1MAC": 0x12,
+        "2MAC": 0x13,
+        "3MAC": 0x14,
+        "4MAC": 0x15,
+        "5MAC": 0x17,
+        "6MAC": 0x16,
+        "7MAC": 0x1A,
+        "8MAC": 0x1C,
+        "9MAC": 0x19,
+        "0MAC": 0x1D,
+        "MINUSMAC": 0x1B,
+        "EQUALSMAC": 0x18,
+
+        "QMAC": 0x0C,
+        "WMAC": 0x0D,
+        "EMAC": 0x0E,
+        "RMAC": 0x0F,
+        "TMAC": 0x11,
+        "YMAC": 0x10,
+        "UMAC": 0x20,
+        "IMAC": 0x22,
+        "OMAC": 0x1F,
+        "PMAC": 0x23,
+        "OPENBRACKETMAC": 0x21,
+        "CLOSEBRACKETMAC": 0x1E,
+        "BACKSLASHMAC": 0x2A,
+
+        "CAPSLOCKMAC": 0x39,
+        "AMAC": 0x00,
+        "SMAC": 0x01,
+        "DMAC": 0x02,
+        "FMAC": 0x03,
+        "GMAC": 0x05,
+        "HMAC": 0x04,
+        "JMAC": 0x26,
+        "KMAC": 0x28,
+        "LMAC": 0x25,
+        "SEMICOLONMAC": 0x29,
+        "SINGLEQUOTEMAC": 0x27,
+
+        "SHIFTMAC": 0x38,
+        "ZMAC": 0x06,
+        "XMAC": 0x07,
+        "CMAC": 0x08,
+        "VMAC": 0x09,
+        "BMAC": 0x0B,
+        "NMAC": 0x2D,
+        "MMAC": 0x2E,
+        "COMMAMAC": 0x2B,
+        "PERIODMAC": 0x2F,
+        "FORWARDSLASHMAC": 0x2C,
+
+        "CONTROL": 0x3B,
+        "RIGHTCONTROL": 0x3E,
+        "OPT": 0x3A,
+        "RIGHTOPT": 0x3D,
+        "CMD": 0x37,
+        "RIGHTCMD": 0x36,
+        "FUNCTION": 0x3F,
+
+        "HOMEMAC": 0x73,
+        "ENDMAC": 0x77,
+        "PGUPMAC": 0x74,
+        "PGDNMAC": 0x79,
+
+        "LEFTARRMAC": 0x7B,
+        "RIGHTARRMAC": 0x7C,
+        "DOWNARRMAC": 0x7D,
+        "UPARRMAC": 0x7E,
+
+        "DELMAC": 0x75,
+
+        "CONTEXTMAC": 0x72,
+
+        "NUMPADCLEARMAC": 0x47,
+        "NUMPADDIVIDEMAC": 0x4B,
+        "NUMPADMULTIPLYMAC": 0x43,
+        "NUMPADSUBTRACTMAC": 0x4E,
+        "NUMPADADDMAC": 0x45,
+
+        "NUMPAD0MAC": 0x4F,
+        "NUMPAD1MAC": 0x50,
+        "NUMPAD2MAC": 0x51,
+        "NUMPAD3MAC": 0x52,
+        "NUMPAD4MAC": 0x53,
+        "NUMPAD5MAC": 0x54,
+        "NUMPAD6MAC": 0x55,
+        "NUMPAD7MAC": 0x56,
+        "NUMPAD8MAC": 0x57,
+        "NUMPAD9MAC": 0x58,
+
+        "NUMPADDECIMALMAC": 0x41,
+        "NUMPADEQUALMAC": 0x51,
+        "ENTERMAC": 0x4C,
     ]
     
     private var commands: [RemoteCommand] = []

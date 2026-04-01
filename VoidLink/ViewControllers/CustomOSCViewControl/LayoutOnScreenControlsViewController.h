@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  This view controller provides the user interface which allows the user to position on screen controller buttons anywhere they'd like on the screen. It also provides the user with the abilities to undo a change, save the on screen controller layout for later retrieval, and load previously saved controller layouts
  */
-@interface LayoutOnScreenControlsViewController : UIViewController <OnScreenWidgetGuidelineUpdateDelegate,UITextFieldDelegate>
+@interface LayoutOnScreenControlsViewController : UIViewController <OnScreenWidgetGuidelineUpdateDelegate,UITextFieldDelegate, WidgetPickerViewControllerDelegate>
 - (void)profileRefresh;
 - (void)reloadOnScreenWidgetViews;
 - (void)presentProfilesTableViewWithPickProfile:(bool)pickProfile;

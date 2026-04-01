@@ -19,7 +19,7 @@
 // #import "ThemeManager.h"
 #import "DataManager.h"
 
-@interface LayoutOnScreenControlsViewController ()
+@interface LayoutOnScreenControlsViewController () <WidgetPickerViewControllerDelegate>
 
 typedef NS_ENUM(NSUInteger, AlphaSliderMode) {
     widgetAlpha,
@@ -660,6 +660,18 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 
 - (IBAction) addTapped:(id)sender{
     GenericUtils.autoPopSoftKeyboard = false;
+
+    if (@available(iOS 13.0, *)) {
+        WidgetPickerViewController *pickerViewController = [[WidgetPickerViewController alloc] init];
+        pickerViewController.delegate = self;
+        pickerViewController.tabIdentifiers = @[@"gamepad", @"keyboard", @"functional"];
+        pickerViewController.initialTabIdentifier = @"gamepad";
+
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:pickerViewController];
+        navigationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:navigationController animated:YES completion:nil];
+        return;
+    }
     
     NSMutableDictionary* widgetInitParams = [NSMutableDictionary dictionary];
 
@@ -745,6 +757,24 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+- (void)widgetPickerViewController:(WidgetPickerViewController *)controller didCreateWidget:(NSDictionary *)payload {
+    NSMutableDictionary *widgetInitParams = [payload mutableCopy];
+    NSString *pickerAction = [widgetInitParams[@"pickerAction"] lowercaseString];
+    [widgetInitParams removeObjectForKey:@"pickerAction"];
+
+    if ([pickerAction isEqualToString:@"modify"] && self->selectedWidgetView != nil) {
+        [self updateWidget:self->selectedWidgetView byParams:widgetInitParams createNew:false];
+        return;
+    }
+
+    if ([pickerAction isEqualToString:@"create"] && controller.isEditMode && self->selectedWidgetView != nil) {
+        [self updateWidget:self->selectedWidgetView byParams:widgetInitParams createNew:true];
+        return;
+    }
+
+    [self createWidgetFromParams:widgetInitParams];
+}
+
 
 - (IBAction) editTapped:(id)sender{
     GenericUtils.autoPopSoftKeyboard = false;
@@ -767,6 +797,22 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
                                    completion:^{}];
         return;
     };
+
+    if (@available(iOS 13.0, *)) {
+        WidgetPickerViewController *pickerViewController = [[WidgetPickerViewController alloc] init];
+        pickerViewController.delegate = self;
+        pickerViewController.tabIdentifiers = @[@"gamepad", @"keyboard", @"functional"];
+        pickerViewController.initialTabIdentifier = @"gamepad";
+        pickerViewController.isEditMode = true;
+        pickerViewController.initialCmdString = self->selectedWidgetView.cmdString;
+        pickerViewController.initialButtonLabel = self->selectedWidgetView.widgetLabel;
+        pickerViewController.initialShape = self->selectedWidgetView.shape;
+
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:pickerViewController];
+        navigationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:navigationController animated:YES completion:nil];
+        return;
+    }
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         UILabel *label = [[UILabel alloc] init];
