@@ -1644,7 +1644,13 @@ struct WidgetPickerView: View {
     }
 
     private var shouldBypassCreateWidgetSheet: Bool {
-        poolItems.count == 1 || (targetWidgetKind == .pad && buttonCommandCount == 1)
+        guard !poolItems.isEmpty else { return false }
+
+        let isSinglePadSelection = poolItems.count == 1 && isPad(poolItems[0])
+        let isSingleButtonThenSinglePadSelection =
+            poolItems.count == 2 && !isPad(poolItems[0]) && isPad(poolItems[1])
+
+        return isSinglePadSelection || isSingleButtonThenSinglePadSelection
     }
 
     private func prepareCreateWidgetDefaults(for submissionAction: WidgetPickerSubmissionAction) {
