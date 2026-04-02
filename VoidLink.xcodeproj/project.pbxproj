@@ -38,6 +38,7 @@
 		2AAA4E822F7666C5001E20DC /* ControllerUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A765BC2ECD51FB004784AA /* ControllerUtil.swift */; };
 		2AAA4E842F7666EE001E20DC /* SwiftLocalizationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E1CDF92C4FE83400547904 /* SwiftLocalizationHelper.swift */; };
 		2AC1E3832F507D80004F76C0 /* GenericUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC1E3822F507D80004F76C0 /* GenericUtils.swift */; };
+		3A4A3A112F0C000100000001 /* OSCProfilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A3A102F0C000100000001 /* OSCProfilesTableViewController.swift */; };
 		840751B32BF49C050096B657 /* CustomTapGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 840751B22BF49C050096B657 /* CustomTapGestureRecognizer.m */; };
 		84203F232C5F24C00032EEED /* OnScreenWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84203F222C5F24C00032EEED /* OnScreenWidgetView.swift */; };
 		84351B0E2C29ACCB00A77989 /* LayoutOnScreenControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B072C29ACCA00A77989 /* LayoutOnScreenControls.m */; };
@@ -45,9 +46,7 @@
 		84351B102C29ACCB00A77989 /* OSCProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B0A2C29ACCA00A77989 /* OSCProfile.m */; };
 		84351B112C29ACCB00A77989 /* OSCProfilesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B0B2C29ACCB00A77989 /* OSCProfilesManager.m */; };
 		84351B2B2C29AD6100A77989 /* LayoutOnScreenControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B252C29AD6000A77989 /* LayoutOnScreenControlsViewController.m */; };
-		84351B2C2C29AD6100A77989 /* OSCProfilesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B272C29AD6000A77989 /* OSCProfilesTableViewController.m */; };
 		84351B2D2C29AD6100A77989 /* ToolBarContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B292C29AD6000A77989 /* ToolBarContainerView.m */; };
-		84351B5C2C29ADBE00A77989 /* ProfileTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B592C29ADBE00A77989 /* ProfileTableViewCell.m */; };
 		84351B5D2C29ADBE00A77989 /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84351B5B2C29ADBE00A77989 /* ProfileTableViewCell.xib */; };
 		843667F02D9D7173004A7D7F /* widgetTemplates.bin in Resources */ = {isa = PBXBuildFile; fileRef = 843667EF2D9D7173004A7D7F /* widgetTemplates.bin */; };
 		843CC7F02C1E757D00BBC475 /* NativeTouchPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 843CC7EF2C1E757D00BBC475 /* NativeTouchPointer.m */; };
@@ -204,6 +203,7 @@
 		2A039E562F72892B00546768 /* VoidLinkSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoidLinkSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A7113FC2F5A6C65001D852D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		2AC1E3822F507D80004F76C0 /* GenericUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericUtils.swift; sourceTree = "<group>"; };
+		3A4A3A102F0C000100000001 /* OSCProfilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSCProfilesTableViewController.swift; sourceTree = "<group>"; };
 		693B3A9A218638CD00982F7B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		840751B12BF49B5A0096B657 /* CustomTapGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomTapGestureRecognizer.h; sourceTree = "<group>"; };
 		840751B22BF49C050096B657 /* CustomTapGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomTapGestureRecognizer.m; sourceTree = "<group>"; };
@@ -217,13 +217,9 @@
 		84351B0C2C29ACCB00A77989 /* LayoutOnScreenControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutOnScreenControls.h; sourceTree = "<group>"; };
 		84351B0D2C29ACCB00A77989 /* OSCProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCProfile.h; sourceTree = "<group>"; };
 		84351B252C29AD6000A77989 /* LayoutOnScreenControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutOnScreenControlsViewController.m; sourceTree = "<group>"; };
-		84351B262C29AD6000A77989 /* OSCProfilesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCProfilesTableViewController.h; sourceTree = "<group>"; };
-		84351B272C29AD6000A77989 /* OSCProfilesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSCProfilesTableViewController.m; sourceTree = "<group>"; };
 		84351B282C29AD6000A77989 /* LayoutOnScreenControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutOnScreenControlsViewController.h; sourceTree = "<group>"; };
 		84351B292C29AD6000A77989 /* ToolBarContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToolBarContainerView.m; sourceTree = "<group>"; };
 		84351B2A2C29AD6000A77989 /* ToolBarContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolBarContainerView.h; sourceTree = "<group>"; };
-		84351B592C29ADBE00A77989 /* ProfileTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileTableViewCell.m; sourceTree = "<group>"; };
-		84351B5A2C29ADBE00A77989 /* ProfileTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileTableViewCell.h; sourceTree = "<group>"; };
 		84351B5B2C29ADBE00A77989 /* ProfileTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileTableViewCell.xib; sourceTree = "<group>"; };
 		843667EF2D9D7173004A7D7F /* widgetTemplates.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = widgetTemplates.bin; path = PresetConfigs/widgetTemplates.bin; sourceTree = "<group>"; };
 		843CC7EE2C1E757D00BBC475 /* NativeTouchPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeTouchPointer.h; sourceTree = "<group>"; };
@@ -499,27 +495,24 @@
 		84351B242C29AD2E00A77989 /* CustomOSCViewControl */ = {
 			isa = PBXGroup;
 			children = (
-				84351B2E2C29AD6600A77989 /* Cells */,
+				84351B2E2C29AD6600A77989 /* Table */,
 				84351B282C29AD6000A77989 /* LayoutOnScreenControlsViewController.h */,
 				84351B252C29AD6000A77989 /* LayoutOnScreenControlsViewController.m */,
 				187F4B232E04633100EECC59 /* WidgetPanelStackView.h */,
 				187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */,
-				84351B262C29AD6000A77989 /* OSCProfilesTableViewController.h */,
-				84351B272C29AD6000A77989 /* OSCProfilesTableViewController.m */,
 				84351B2A2C29AD6000A77989 /* ToolBarContainerView.h */,
 				84351B292C29AD6000A77989 /* ToolBarContainerView.m */,
 			);
 			path = CustomOSCViewControl;
 			sourceTree = "<group>";
 		};
-		84351B2E2C29AD6600A77989 /* Cells */ = {
+		84351B2E2C29AD6600A77989 /* Table */ = {
 			isa = PBXGroup;
 			children = (
-				84351B5A2C29ADBE00A77989 /* ProfileTableViewCell.h */,
-				84351B592C29ADBE00A77989 /* ProfileTableViewCell.m */,
 				84351B5B2C29ADBE00A77989 /* ProfileTableViewCell.xib */,
+				3A4A3A102F0C000100000001 /* OSCProfilesTableViewController.swift */,
 			);
-			path = Cells;
+			path = Table;
 			sourceTree = "<group>";
 		};
 		843667ED2D9D70A3004A7D7F /* PresetConfigs */ = {
@@ -1197,7 +1190,7 @@
 				97E20DD02E21647A000D5DCA /* MetalViewController.m in Sources */,
 				97E20DD12E21647A000D5DCA /* MetalView.m in Sources */,
 				97E20DD22E21647A000D5DCA /* MetalVideoRenderer.m in Sources */,
-				84351B2C2C29AD6100A77989 /* OSCProfilesTableViewController.m in Sources */,
+				3A4A3A112F0C000100000001 /* OSCProfilesTableViewController.swift in Sources */,
 				98D585701C0ED0E800F6CC00 /* TemporarySettings.m in Sources */,
 				1829CE3F2E2154DF0074A99A /* SceneDelegate.m in Sources */,
 				18729EDE2E8BD68800101194 /* UUIDHelper.swift in Sources */,
@@ -1222,7 +1215,6 @@
 				FB4A23B81A9D3637004D2EF2 /* LoadingFrameViewController.m in Sources */,
 				FB9AFD3A1A7E05CE00872C98 /* ServerInfoResponse.m in Sources */,
 				84351B2B2C29AD6100A77989 /* LayoutOnScreenControlsViewController.m in Sources */,
-				84351B5C2C29ADBE00A77989 /* ProfileTableViewCell.m in Sources */,
 				18341A042DEB662C0094E5F2 /* FixedTintImageView.m in Sources */,
 				18416EA42EBB3DCE00AE0124 /* UITouchUtil.swift in Sources */,
 				FB89463119F646E200339C8A /* StreamManager.m in Sources */,

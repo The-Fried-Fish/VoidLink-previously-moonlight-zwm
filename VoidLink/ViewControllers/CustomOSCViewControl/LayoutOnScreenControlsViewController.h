@@ -13,7 +13,6 @@
 #import "LayoutOnScreenControls.h"
 #import "ToolBarContainerView.h"
 #import "OSCProfilesManager.h"
-#import "OSCProfilesTableViewController.h"
 #import "VoidLink-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN

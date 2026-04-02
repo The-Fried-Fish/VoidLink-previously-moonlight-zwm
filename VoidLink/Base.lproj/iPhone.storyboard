@@ -978,7 +978,7 @@
         <!--Profiles Table View Controller-->
         <scene sceneID="C7c-yg-gQK">
             <objects>
-                <viewController storyboardIdentifier="OSCProfilesTableViewController" id="0K8-kQ-xlN" customClass="OSCProfilesTableViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="OSCProfilesTableViewController" id="0K8-kQ-xlN" customClass="OSCProfilesTableViewController" customModule="VoidLink" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Nat-X1-41w"/>
                         <viewControllerLayoutGuide type="bottom" id="9SV-fx-82v"/>

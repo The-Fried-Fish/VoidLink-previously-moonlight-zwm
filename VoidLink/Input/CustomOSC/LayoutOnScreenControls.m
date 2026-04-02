@@ -10,7 +10,6 @@
 //
 
 #import "LayoutOnScreenControls.h"
-#import "OSCProfilesTableViewController.h"
 #import "OnScreenButtonState.h"
 #import "OSCProfilesManager.h"
 

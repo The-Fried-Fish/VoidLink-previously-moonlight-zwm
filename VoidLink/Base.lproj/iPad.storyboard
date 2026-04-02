@@ -3209,7 +3209,7 @@
         <!--Profiles Table View Controller-->
         <scene sceneID="W0E-wz-n2b">
             <objects>
-                <viewController storyboardIdentifier="OSCProfilesTableViewController" id="Atv-Nj-0qv" customClass="OSCProfilesTableViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="OSCProfilesTableViewController" id="Atv-Nj-0qv" customClass="OSCProfilesTableViewController" customModule="VoidLink" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="osA-Uy-SE1"/>
                         <viewControllerLayoutGuide type="bottom" id="8ja-wQ-jbJ"/>

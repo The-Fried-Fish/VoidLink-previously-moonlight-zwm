@@ -10,7 +10,6 @@
 //
 
 #import "LayoutOnScreenControlsViewController.h"
-#import "OSCProfilesTableViewController.h"
 #import "OnScreenButtonState.h"
 #import "OnScreenControls.h"
 #import "OSCProfilesManager.h"
@@ -1579,7 +1578,6 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     [selectedWidgetView showStickIndicator];
 }
 
-
 - (void)handleMissingToolBarIcon:(UIView *)view {
     for (UIView *subview in view.subviews) {
         if ([subview isKindOfClass:[UIButton class]]) {
@@ -1900,7 +1898,9 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
         strongSelf->_oscProfilesTableViewController.currentOSCButtonLayers = weakSelf.layoutOSC.OSCButtonLayerPool; //pass updated OSCLayout to OSCProfileTableView again
     };
     
-    [self.oscProfilesTableViewController profileViewRefresh]; // execute this will make sure OSCLayout is updated from persisted profile, not any cache.
+    [self.oscProfilesTableViewController.tableView reloadData];
+    [self reloadOnScreenWidgetViews];
+
     NSLog(@"profileRefresh %f", CACurrentMediaTime());
     // [self reloadOnScreenWidgetViews];
 
