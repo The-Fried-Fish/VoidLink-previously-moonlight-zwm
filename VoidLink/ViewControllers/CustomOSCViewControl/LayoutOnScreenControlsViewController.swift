@@ -236,8 +236,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         vibrationGenerator = UIImpactFeedbackGenerator(style: .medium)
         widgetSizeTransition = .keepWidgetSize
         
-        bulkEditStacks = [bulkAlphaStack, bulkBorderAlphaStack, bulkLabelAlphaStack, bulkBorderWidthStack, bulkHighlightAlphaStack, bulkHighlightSizeStack]
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             guard let self else { return }
             UIView.animate(
@@ -274,6 +272,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        bulkEditStacks = [bulkAlphaStack, bulkBorderAlphaStack, bulkLabelAlphaStack, bulkBorderWidthStack, bulkHighlightAlphaStack, bulkHighlightSizeStack]
         OnScreenWidgetView.editMode = true
         selectedWidgetView = nil
         widgetPanelStoredCenter = widgetPanelStack.center
