@@ -273,6 +273,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         bulkEditStacks = [bulkAlphaStack, bulkBorderAlphaStack, bulkLabelAlphaStack, bulkBorderWidthStack, bulkHighlightAlphaStack, bulkHighlightSizeStack]
+        bulkEditEnabled = false
         OnScreenWidgetView.editMode = true
         selectedWidgetView = nil
         widgetPanelStoredCenter = widgetPanelStack.center
