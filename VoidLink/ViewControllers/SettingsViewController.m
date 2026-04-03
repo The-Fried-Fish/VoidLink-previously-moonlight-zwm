@@ -2239,7 +2239,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = [LocalizationHelper localizedStringForKey:@"%d", self->oswLayoutFingers];
-        textField.keyboardType = UIKeyboardTypeNumberPad;
+        textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.delegate = self;
     }];
     

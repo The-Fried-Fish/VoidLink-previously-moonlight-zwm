@@ -131,7 +131,9 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
         )
         inputAlert.addTextField { textField in
             textField.placeholder = SwiftLocalizationHelper.localizedString(forKey: "name")
-            textField.textColor = .lightGray
+            if #available(iOS 13.0, *) {
+                // textField.textColor = .label
+            }
             textField.clearButtonMode = .whileEditing
             textField.borderStyle = .none
         }

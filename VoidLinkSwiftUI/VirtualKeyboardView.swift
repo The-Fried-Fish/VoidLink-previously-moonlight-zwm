@@ -1309,9 +1309,11 @@ struct KeyView: View {
         if let name = key.sfSymbolName, !name.isEmpty {
             Image(systemName: name)
                 .font(.system(size: fontSize))
+                .foregroundColor(.black)
         } else {
             Text(key.label)
                 .font(.system(size: fontSize, weight: .regular, design: .rounded))
+                .foregroundColor(.black)
         }
     }
     
