@@ -162,25 +162,25 @@
         }
       }
     },
-    "  Profile: %@    Alias: %@    Command: %@" : {
+    "  Profile: %@    Alias: %@    Cmd: %@    Parent:%@" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  当前布局: %@    别名: %@    命令: %@"
+            "value" : "  当前布局: %@    别名: %@    命令: %@    收纳于: %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  版面配置: %@    别名: %@    命令: %@"
+            "value" : "  版面配置: %@    别名: %@    命令: %@    收納於: %@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  版面配置: %@    别名: %@    命令: %@"
+            "value" : "  版面配置: %@    别名: %@    命令: %@    收納於: %@"
           }
         }
       }
@@ -1829,6 +1829,52 @@
         }
       }
     },
+    "Batch edit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批量修改"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批次修改"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批次修改"
+          }
+        }
+      }
+    },
+    "Batch updated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单控件修改"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單控件修改"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單控件修改"
+          }
+        }
+      }
+    },
     "betterPerformanceLink" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1929,6 +1975,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "僅在您的網路有能力時才增加位元率，尤其是在超過 50 Mbps 時要特別小心。"
+          }
+        }
+      }
+    },
+    "Border alpha" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "边界透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邊界透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邊界透明度"
           }
         }
       }
@@ -2228,6 +2297,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圓形"
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清空"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清空"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清空"
           }
         }
       }
@@ -5210,6 +5302,29 @@
         }
       }
     },
+    "Highlight alpha" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮透明度"
+          }
+        }
+      }
+    },
     "Highlight alpha: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5229,6 +5344,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高亮透明度: %.2f"
+          }
+        }
+      }
+    },
+    "Highlight size" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮尺寸"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮尺寸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮尺寸"
           }
         }
       }
@@ -5360,6 +5498,29 @@
         }
       }
     },
+    "Import" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入"
+          }
+        }
+      }
+    },
     "Important Tips" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5471,6 +5632,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "鍵盤 / 滑鼠"
+          }
+        }
+      }
+    },
+    "Label alpha" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標籤透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標籤透明度"
           }
         }
       }
@@ -6877,6 +7061,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有可復原的內容"
+          }
+        }
+      }
+    },
+    "null" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無"
           }
         }
       }

@@ -1,6 +1,48 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "1sF-08-aCr.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Highlight alpha\"; ObjectID = \"1sF-08-aCr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Highlight alpha"
+          }
+        }
+      }
+    },
+    "1th-bc-im2.configuration.title" : {
+      "comment" : "Class = \"UIButton\"; configuration.title = \"77777\"; ObjectID = \"1th-bc-im2\";",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "77777"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "uyfhgcghfhjg"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sdafasd"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "asdfasdfasdf"
+          }
+        }
+      }
+    },
     "2Bp-XZ-cCw.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Async Native Touch\"; ObjectID = \"2Bp-XZ-cCw\";",
       "extractionState" : "extracted_with_value",
@@ -117,6 +159,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "佇列緩衝"
+          }
+        }
+      }
+    },
+    "2TR-Kd-ro4.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"2TR-Kd-ro4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
           }
         }
       }
@@ -1075,6 +1129,18 @@
         }
       }
     },
+    "aGh-QR-gBW.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"aGh-QR-gBW\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
+          }
+        }
+      }
+    },
     "Aiv-r8-9k2.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frame Rate\"; ObjectID = \"Aiv-r8-9k2\";",
       "extractionState" : "extracted_with_value",
@@ -1593,6 +1659,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉"
+          }
+        }
+      }
+    },
+    "BlQ-y7-iDS.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"BlQ-y7-iDS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " "
           }
         }
       }
@@ -2227,6 +2305,24 @@
         }
       }
     },
+    "cyH-Fh-vW6.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"cyH-Fh-vW6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入"
+          }
+        }
+      }
+    },
     "czn-mj-8d1.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Restore\"; ObjectID = \"czn-mj-8d1\";",
       "extractionState" : "extracted_with_value",
@@ -2572,6 +2668,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "聲道設定"
+          }
+        }
+      }
+    },
+    "eTT-y7-oTM.configuration.title" : {
+      "comment" : "Class = \"UIButton\"; configuration.title = \"9999999\"; ObjectID = \"eTT-y7-oTM\";",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "9999999"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0000000"
           }
         }
       }
@@ -3128,6 +3242,18 @@
         }
       }
     },
+    "hKK-ro-C5E.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Highlight size\"; ObjectID = \"hKK-ro-C5E\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Highlight size"
+          }
+        }
+      }
+    },
     "hPX-cJ-dgH.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Mute in Background\"; ObjectID = \"hPX-cJ-dgH\";",
       "extractionState" : "extracted_with_value",
@@ -3584,32 +3710,44 @@
         }
       }
     },
-    "Jeb-fE-sCm.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"   Bulk move    \"; ObjectID = \"Jeb-fE-sCm\";",
+    "jcq-LI-15e.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"jcq-LI-15e\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "   Bulk move    "
+            "value" : " "
+          }
+        }
+      }
+    },
+    "Jeb-fE-sCm.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"         Batch move    \"; ObjectID = \"Jeb-fE-sCm\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "         Batch move    "
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "  批量移动"
+            "value" : "        批量移动"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "  批次移動"
+            "value" : "        批次移動"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "  批次移動"
+            "value" : "        批次移動"
           }
         }
       }
@@ -3910,6 +4048,30 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "允許"
+          }
+        }
+      }
+    },
+    "kSX-ci-kx5.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Label alpha\"; ObjectID = \"kSX-ci-kx5\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Label alpha"
+          }
+        }
+      }
+    },
+    "Lar-2o-R7c.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"Lar-2o-R7c\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " "
           }
         }
       }
@@ -4534,6 +4696,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "SensitivityY"
+          }
+        }
+      }
+    },
+    "Ocb-R1-UYc.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"Ocb-R1-UYc\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " "
           }
         }
       }
@@ -5244,6 +5418,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "效能資料圖層"
+          }
+        }
+      }
+    },
+    "sAF-Vy-ZzK.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Border alpha\"; ObjectID = \"sAF-Vy-ZzK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Border alpha"
           }
         }
       }
@@ -5968,14 +6154,14 @@
         }
       }
     },
-    "wrg-n4-F5w.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"       \"; ObjectID = \"wrg-n4-F5w\";",
+    "wTH-1Z-Fgh.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Border width\"; ObjectID = \"wTH-1Z-Fgh\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "       "
+            "value" : "Border width"
           }
         }
       }
@@ -6180,6 +6366,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "偏航/俯仰→右搖桿"
+          }
+        }
+      }
+    },
+    "yF0-Tu-L8X.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Alpha\"; ObjectID = \"yF0-Tu-L8X\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Alpha"
           }
         }
       }

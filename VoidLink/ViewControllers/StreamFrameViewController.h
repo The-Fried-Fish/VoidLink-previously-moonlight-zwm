@@ -15,12 +15,13 @@
 #import "MetalViewController.h"
 #import "StreamConfiguration.h"
 #import "StreamView.h"
-#import "LayoutOnScreenControlsViewController.h"
 #import "MainFrameViewController.h"
 #import "StreamManager.h"
 
 #import <AVKit/AVKit.h>
 #import <UIKit/UIKit.h>
+
+@class LayoutOnScreenControlsViewController;
 
 #if TARGET_OS_TV
 @import GameController;

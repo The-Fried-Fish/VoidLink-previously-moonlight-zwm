@@ -1,145 +1,18 @@
-//
-//  LayoutOnScreenControlsViewController.h
-//  Moonlight
-//
-//  Created by Long Le on 9/27/22.
-//  Copyright © 2022 Moonlight Game Streaming Project. All rights reserved.
-//
-//  Modified by True砖家 since 2024.6.24
-//  Copyright © 2024 True砖家 @ Bilibili. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
-#import "LayoutOnScreenControls.h"
 #import "ToolBarContainerView.h"
-#import "OSCProfilesManager.h"
-#import "VoidLink-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- This view controller provides the user interface which allows the user to position on screen controller buttons anywhere they'd like on the screen. It also provides the user with the abilities to undo a change, save the on screen controller layout for later retrieval, and load previously saved controller layouts
- */
-@interface LayoutOnScreenControlsViewController : UIViewController <OnScreenWidgetGuidelineUpdateDelegate,UITextFieldDelegate, WidgetPickerViewControllerDelegate>
+@interface LayoutOnScreenControlsViewController : UIViewController <UITextFieldDelegate>
+
+@property (nonatomic, assign) BOOL quickSwitchEnabled;
+@property (weak, nonatomic) IBOutlet ToolBarContainerView *toolbarRootView;
+@property (weak, nonatomic) IBOutlet UIStackView *toolbarStackView;
+
 - (void)profileRefresh;
 - (void)reloadOnScreenWidgetViews;
-- (void)presentProfilesTableViewWithPickProfile:(bool)pickProfile;
-
-@property LayoutOnScreenControls *layoutOSC;    // object that contains a view which contains the on screen controller buttons that allows the user to drag and positions each button on the screen using touch
-@property (nonatomic) NSMutableSet* onScreenWidgetViews;
-
-@property int OSCSegmentSelected;
-@property (nonatomic, assign) bool quickSwitchEnabled;
-
-@property (weak, nonatomic) IBOutlet UIButton *trashCanButton;
-@property (weak, nonatomic) IBOutlet UIButton *undoButton;
-
-@property (weak, nonatomic) IBOutlet ToolBarContainerView *toolbarRootView;
-@property (weak, nonatomic) IBOutlet UIView *chevronView;
-@property (weak, nonatomic) IBOutlet UIImageView *chevronImageView;
-@property (weak, nonatomic) IBOutlet UIStackView *toolbarStackView;
-@property (strong, nonatomic) OSCProfilesTableViewController *oscProfilesTableViewController;
-
-@property (nonatomic, assign) NSString *currentProfileName;
-@property (strong, nonatomic) IBOutlet UILabel *currentProfileLabel;
-
-@property (weak, nonatomic) IBOutlet UILabel *widgetSizeLabel;
-@property (weak, nonatomic) IBOutlet UISlider *widgetSizeSlider;
-@property (weak, nonatomic) IBOutlet UIStackView *widgetSizeStack;
-
-@property (weak, nonatomic) IBOutlet UILabel *widgetHeightLabel;
-@property (weak, nonatomic) IBOutlet UISlider *widgetHeightSlider;
-
-@property (weak, nonatomic) IBOutlet UIStackView *widgetHeightStack;
-
-@property (weak, nonatomic) IBOutlet UILabel *widgetBorderWidthLabel;
-@property (weak, nonatomic) IBOutlet UISlider *widgetBorderWidthSlider;
-@property (weak, nonatomic) IBOutlet UILabel *widgetAlphaLabel;
-@property (weak, nonatomic) IBOutlet UISlider *widgetAlphaSlider;
-@property (weak, nonatomic) IBOutlet UIStackView *borderWidthAlphaStack;
-@property (weak, nonatomic) IBOutlet UIButton *saveButton;
-@property (weak, nonatomic) IBOutlet UIButton *exitButton;
-@property (weak, nonatomic) IBOutlet UIButton *loadButton;
-@property (weak, nonatomic) IBOutlet UIButton *addButton;
-@property (weak, nonatomic) IBOutlet UIButton *editButton;
-
-
-
-
-@property (weak, nonatomic) IBOutlet UILabel *stickIndicatorOffsetLabel;
-@property (weak, nonatomic) IBOutlet UISlider *stickIndicatorOffsetSlider;
-@property (weak, nonatomic) IBOutlet UIStackView *stickIndicatorOffsetStack;
-
-@property (weak, nonatomic) IBOutlet UILabel *sensitivityXLabel;
-@property (weak, nonatomic) IBOutlet UISlider *sensitivityXSlider;
-@property (weak, nonatomic) IBOutlet UIStackView *sensitivityXStack;
-@property (strong, nonatomic) IBOutlet UILabel *sensitivityYLabel;
-@property (strong, nonatomic) IBOutlet UISlider *sensitivityYSlider;
-@property (strong, nonatomic) IBOutlet UIStackView *sensitivityYStack;
-
-@property (strong, nonatomic) IBOutlet UILabel *yawFactorLabel;
-@property (strong, nonatomic) IBOutlet UISlider *yawFactorSlider;
-@property (strong, nonatomic) IBOutlet UIStackView *yawFactorStack;
-@property (strong, nonatomic) IBOutlet UILabel *pitchFactorLabel;
-@property (strong, nonatomic) IBOutlet UISlider *pitchFactorSlider;
-@property (strong, nonatomic) IBOutlet UIStackView *pitchFactorStack;
-@property (strong, nonatomic) IBOutlet UILabel *rollFactorLabel;
-@property (strong, nonatomic) IBOutlet UISlider *rollFactorSlider;
-@property (strong, nonatomic) IBOutlet UIStackView *rollFactorStack;
-
-
-@property (strong, nonatomic) IBOutlet UIStackView *decelerationRateStack;
-@property (strong, nonatomic) IBOutlet UILabel *decelerationRateLabel;
-@property (strong, nonatomic) IBOutlet UISlider *decelerationRateSlider;
-
-
-
-
-@property (strong, nonatomic) IBOutlet UISegmentedControl *vibrationStyleSelector;
-@property (strong, nonatomic) IBOutlet UIStackView *vibrationStyleStack;
-
-@property (strong, nonatomic) IBOutlet UILabel *tipContentLabel;
-@property (strong, nonatomic) IBOutlet UILabel *tipTitleLabel;
-
-@property (strong, nonatomic) IBOutlet UIStackView *mouseDownButtonStack;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *mouseButtonDownSelector;
-
-@property (strong, nonatomic) IBOutlet UIStackView *buttonModeStack;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *buttonModeSelector;
-
-@property (strong, nonatomic) IBOutlet UIStackView *autoTapStack;
-@property (strong, nonatomic) IBOutlet UILabel *autoTapLabel;
-// @property (strong, nonatomic) IBOutlet UISlider *autoTapSlider;
-@property (strong, nonatomic) IBOutlet UITextField *autoTapField;
-
-@property (strong, nonatomic) IBOutlet UIStackView *slideThresholdStack;
-@property (strong, nonatomic) IBOutlet UILabel *slideThresholdLabel;
-@property (strong, nonatomic) IBOutlet UISlider *slideThresholdSlider;
-
-@property (strong, nonatomic) IBOutlet UIStackView *minStickOffsetStack;
-@property (strong, nonatomic) IBOutlet UILabel *minStickOffsetLabel;
-@property (strong, nonatomic) IBOutlet UISlider *minStickOffsetSlider;
-
-@property (strong, nonatomic) IBOutlet UIStackView *componentSizeStack;
-@property (strong, nonatomic) IBOutlet UILabel *componentSizeLabel;
-@property (strong, nonatomic) IBOutlet UISlider *componentSizeSlider;
-
-@property (strong, nonatomic) IBOutlet UIStackView *walkModeThresholdStack;
-@property (strong, nonatomic) IBOutlet UILabel *walkModeThresholdLabel;
-@property (strong, nonatomic) IBOutlet UISlider *walkModeThresholdSlider;
-
-@property (weak, nonatomic) IBOutlet UIStackView *collectedWidgetsStack;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *collectedWidgetsSelector;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *revealModeSelector;
-
-@property (weak, nonatomic) IBOutlet UIStackView *bulkMoveStack;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *bulkMoveSelector;
-
-
-@property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;
-
+- (void)presentProfilesTableViewWithLoadingMode:(NSInteger)loadingMode;
 
 @end
-
 
 NS_ASSUME_NONNULL_END

@@ -12,7 +12,6 @@
 #import "OSCProfilesManager.h"
 #import "OnScreenButtonState.h"
 #import "VoidLink-Swift.h"
-#import "LayoutOnScreenControlsViewController.h"
 #import "OnScreenControls.h"
 
 @implementation OSCProfilesManager
@@ -441,7 +440,7 @@ static CGRect layoutViewBounds;
     
     // save on-screen widget views (keyboard & mouse command) as buttonstate:
     _widgetSizeTransition = keepWidgetSize;
-    for(OnScreenWidgetView* widgetView in OnScreenWidgetViews){
+    for(OnScreenWidgetView* widgetView in OnScreenWidgetView.mapping.allValues){
         CGPoint normalizedPosition = [self normalizeWidgetPosition:widgetView.storedCenter];
         OnScreenButtonState *buttonState = [[OnScreenButtonState alloc] initWithButtonName:widgetView.cmdString buttonType:CustomOnScreenWidget andPosition:normalizedPosition];
         buttonState.alias = widgetView.widgetLabel;

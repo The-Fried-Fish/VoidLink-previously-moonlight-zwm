@@ -785,8 +785,9 @@
     _layoutOnScreenControlsVC.quickSwitchEnabled = true;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
+    OSCProfilesTableViewLoadingMode loadingMode = pickProfile ? OSCProfilesTableViewLoadingModePickProfile : OSCProfilesTableViewLoadingModeSelectProfile;
     [self presentViewController:_layoutOnScreenControlsVC animated:NO completion:^{
-        [self->_layoutOnScreenControlsVC presentProfilesTableViewWithPickProfile:pickProfile];
+        [self->_layoutOnScreenControlsVC presentProfilesTableViewWithLoadingMode:loadingMode];
     }];
 }
 

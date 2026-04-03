@@ -447,11 +447,18 @@ import SVGKit
         self.hasStickIndicator = CommandManager.nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.stickWheels.contains(self.touchPadString)
-        self.hasSlideThreshold = CommandManager.mousePad.contains(self.touchPadString)
+        self.hasSlideThreshold = CommandManager.mousePads.contains(self.touchPadString)
         
         if CommandManager.bidirectionalVerticalTouchPads.contains(self.touchPadString){
             self.sensitivityYMin = -4.0
             self.sensitivityYMax = 4.0
+        }
+        
+        if CommandManager.mousePads.contains(self.touchPadString){
+            self.sensitivityXMin = 0
+            self.sensitivityXMax = 16.0
+            self.sensitivityYMin = 0
+            self.sensitivityYMax = 16.0
         }
 
         self.hasYawFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == MapGyroTo.mapGyroToMouse || oscProfile.yawPitchToRightStick)
@@ -570,9 +577,14 @@ import SVGKit
     
     @objc public func adjustBorder(width: CGFloat){
         self.borderWidth = width
-        // self.layer.borderWidth = borderWidth
+        self.layer.borderWidth = borderWidth
         // if CommandManager.touchPadCmds.contains(self.keyString) && width == 0 {self.layer.borderWidth = 1}
-        setupView()
+        if self.shape == "round" {
+            //setup round buttons
+            self.layer.cornerRadius = self.frame.width/2
+            // self.layer.borderWidth = self.borderWidth
+            label.minimumScaleFactor = 0.15  // Adjust the scale factor for oscButtons
+        }
     }
     
     @objc public func resizeWidgetView(){
@@ -641,7 +653,7 @@ import SVGKit
         self.rightIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
     }
 
-    private func tweakAlpha(tweakBorderAlpha:Bool){
+    private func tweakAlpha(tweakBorderAlpha:Bool, tweakLabelAlpha:Bool = true){
         // setup default border from self.backgroundAlpha
         let realBackgroundAlpha = abs(self.backgroundAlpha) - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
         self.backgroundColor = UIColor(white:self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
@@ -651,6 +663,8 @@ import SVGKit
             defaultBorderColor = UIColor(white: self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
             self.layer.borderColor = defaultBorderColor
         }
+        
+        if tweakLabelAlpha {self.tweakLabelAlpha(alpha: backgroundAlpha > 0 ? 0.4 : -0.4)}
         
         if widgetType == WidgetTypeEnum.touchPad {
             self.backgroundColor = UIColor.clear // make touchPad transparent
@@ -714,8 +728,8 @@ import SVGKit
     }
     
     private func getLargeRecSize(widthFactor:CGFloat, heightFactor:CGFloat) -> CGSize {
-        let isNormalizedSizeFactor = self.widthFactor > 6;
-        let isNormalizedHeightFactor = self.heightFactor > 6;
+        let isNormalizedSizeFactor = self.widthFactor > 10;
+        let isNormalizedHeightFactor = self.heightFactor > 10;
     
         self.getBaselineLenths()
         
@@ -836,7 +850,7 @@ import SVGKit
         self.setSquareWidgetCornerRadius()
         self.layer.borderWidth = self.borderWidth
         
-        self.tweakAlpha(tweakBorderAlpha: false)
+        self.tweakAlpha(tweakBorderAlpha: false, tweakLabelAlpha: false)
         
         if self.shape == "default" || self.shape.isEmpty {
             if CommandManager.oscButtonMappings.keys.contains(self.buttonString) && !CommandManager.oscRectangleButtonCmds.contains(self.buttonString){ //make oscButtons round
@@ -2975,7 +2989,11 @@ import SVGKit
                 guard let rootFolder = rootFolder else {return}
                 offshootRootFolders.insert(rootFolder)
             }
+            
             offshootRootFolders.remove(currentRootFolder)
+            for folder in offshootRootFolders {
+                print("offshootRootFolder \(CACurrentMediaTime()) \(folder.label.text ?? "")")
+            }
             
             guard !folder.sequenceSet.isEmpty else {return}
             for folder in offshootRootFolders {
@@ -3037,6 +3055,7 @@ import SVGKit
             parentFolder?.sequenceSet.remove(widget.sequence)
         }
         widget.parentSequence = -1
+        widget.sequenceSet.removeAll()
     }
     
     @objc static func restoreFoldedStates(){
@@ -3066,6 +3085,10 @@ import SVGKit
         isRestoring = false
     }
     
+    @objc static func getMaxSequence() -> Int16{
+        return OnScreenWidgetView.mapping.keys.max() ?? -1
+    }
+
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         if superview == nil {

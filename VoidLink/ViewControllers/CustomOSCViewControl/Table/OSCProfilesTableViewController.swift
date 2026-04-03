@@ -22,6 +22,12 @@ enum FileOperation: Int {
     case exportOperation = 1
 }
 
+@objc enum OSCProfilesTableViewLoadingMode: Int {
+    case selectProfile
+    case pickProfile
+    case pickProfileData
+}
+
 @objcMembers
 @objc(OSCProfilesTableViewController)
 final class OSCProfilesTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIDocumentPickerDelegate, UIGestureRecognizerDelegate {
@@ -31,9 +37,10 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
 
     var currentFileOperation: FileOperation = .importOperation
     var needToUpdateOscLayoutTVC: (() -> Void)?
+    var loadingMode: OSCProfilesTableViewLoadingMode = .selectProfile
+    @nonobjc var pickedProfileDataHandler: ((OSCProfile) -> Void)?
     weak var currentOSCButtonLayers: NSMutableSet?
     var layoutViewBounds: CGRect = .zero
-    var pickProfileEnabled: Bool = false
 
     private var profilesManager: OSCProfilesManager!
 
@@ -322,7 +329,8 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
         cell.backgroundColor = UIColor.clear
         cell.contentView.backgroundColor = UIColor.clear
 
-        if indexPath.row == profilesManager.getIndexOfSelectedProfile() {
+        if loadingMode != .pickProfileData,
+           indexPath.row == profilesManager.getIndexOfSelectedProfile() {
             cell.accessoryType = UITableViewCell.AccessoryType.checkmark
             let checkmarkLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
             checkmarkLabel.text = "✓"
@@ -383,6 +391,13 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if loadingMode == .pickProfileData,
+           let pickedProfile = profilesManager.getAllProfiles().object(at: indexPath.row) as? OSCProfile {
+            pickedProfileDataHandler?(pickedProfile)
+            dismiss(animated: false)
+            return
+        }
+
         let selectedIndexPath = IndexPath(row: indexPath.row, section: 0)
         let lastSelectedIndexPath = IndexPath(row: profilesManager.getIndexOfSelectedProfile(), section: 0)
 
@@ -401,7 +416,9 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        if pickProfileEnabled, let touchView = touch.view, touchView.isDescendant(of: tableView) {
+        if loadingMode != .selectProfile,
+           let touchView = touch.view,
+           touchView.isDescendant(of: tableView) {
             return true
         }
         return touch.view == view

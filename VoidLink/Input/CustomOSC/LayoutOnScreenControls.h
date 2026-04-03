@@ -11,7 +11,8 @@
 
 #import <UIKit/UIKit.h>
 #import "OnScreenControls.h"
-#import "VoidLink-Swift.h"
+
+@class OnScreenWidgetView;
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -22,13 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property UIView* _view;
 @property NSMutableArray *layoutChanges;
-@property CALayer *layerBeingDragged;
+@property (nullable) CALayer *layerBeingDragged;
 @property (nonatomic, weak) UIViewController *layoutToolVC;
 
-- (id) initWithView:(UIView*)view controllerSup:(ControllerSupport*)controllerSupport
-       streamConfig:(StreamConfiguration*)streamConfig oscLevel:(int)oscLevel;
+- (id) initWithView:(UIView*)view controllerSup:(nullable ControllerSupport*)controllerSupport
+       streamConfig:(nullable StreamConfiguration*)streamConfig oscLevel:(int)oscLevel;
 
-- (CALayer*) controllerLayerFromName:(NSString*)name;
+- (nullable CALayer*) controllerLayerFromName:(NSString*)name;
 - (BOOL) isLayer:(CALayer*)layer hoveringOverButton:(UIButton*)button;
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;

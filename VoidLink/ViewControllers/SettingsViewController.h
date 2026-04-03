@@ -11,10 +11,13 @@
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
-#import "CustomOSCViewControl/LayoutOnScreenControlsViewController.h"
 #import "MainFrameViewController.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "MenuSectionView.h"
+
+@class LayoutOnScreenControlsViewController;
+@class MicHandler;
+@protocol MicHandlerDelegate;
 
 @interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate, UITextFieldDelegate>
 

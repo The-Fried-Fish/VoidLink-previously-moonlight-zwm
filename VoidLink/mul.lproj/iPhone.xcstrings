@@ -271,6 +271,18 @@
         }
       }
     },
+    "4Kd-Cc-aYN.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Highlight alpha\"; ObjectID = \"4Kd-Cc-aYN\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Highlight alpha"
+          }
+        }
+      }
+    },
     "4Ul-P6-eUk.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"4Ul-P6-eUk\";",
       "extractionState" : "extracted_with_value",
@@ -799,6 +811,18 @@
         }
       }
     },
+    "9Dr-3c-z61.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Label alpha\"; ObjectID = \"9Dr-3c-z61\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Label alpha"
+          }
+        }
+      }
+    },
     "9dX-RB-Fpa.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Optimize Game Settings\"; ObjectID = \"9dX-RB-Fpa\";",
       "extractionState" : "extracted_with_value",
@@ -1287,6 +1311,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "串流中開啟工具箱"
+          }
+        }
+      }
+    },
+    "b63-Pp-oPM.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"b63-Pp-oPM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
           }
         }
       }
@@ -2185,6 +2221,18 @@
         }
       }
     },
+    "eRy-My-vvU.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Border alpha\"; ObjectID = \"eRy-My-vvU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Border alpha"
+          }
+        }
+      }
+    },
     "F0O-Ht-fW5.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Controller → Mouse\"; ObjectID = \"F0O-Ht-fW5\";",
       "extractionState" : "extracted_with_value",
@@ -2629,6 +2677,18 @@
         }
       }
     },
+    "hme-2d-8d6.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Highlight size\"; ObjectID = \"hme-2d-8d6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Highlight size"
+          }
+        }
+      }
+    },
     "hn6-X9-TaI.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Mouse Pointer Velocity\"; ObjectID = \"hn6-X9-TaI\";",
       "extractionState" : "extracted_with_value",
@@ -2923,6 +2983,18 @@
         }
       }
     },
+    "KbX-bp-pYg.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"KbX-bp-pYg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " "
+          }
+        }
+      }
+    },
     "kcX-kR-3gl.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Component size\"; ObjectID = \"kcX-kR-3gl\";",
       "extractionState" : "extracted_with_value",
@@ -2961,6 +3033,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已收納小工具   "
+          }
+        }
+      }
+    },
+    "kMi-oG-eDT.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"kMi-oG-eDT\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " "
           }
         }
       }
@@ -3147,6 +3231,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "本地滑鼠指標"
+          }
+        }
+      }
+    },
+    "MgK-KI-3y7.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Alpha\"; ObjectID = \"MgK-KI-3y7\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Alpha"
           }
         }
       }
@@ -4118,13 +4214,13 @@
       }
     },
     "P9b-Th-Ybc.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"      Bulk move     \"; ObjectID = \"P9b-Th-Ybc\";",
+      "comment" : "Class = \"UILabel\"; text = \"      Batch move     \"; ObjectID = \"P9b-Th-Ybc\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "      Bulk move     "
+            "value" : "      Batch move     "
           }
         },
         "zh-Hans" : {
@@ -4825,18 +4921,6 @@
         }
       }
     },
-    "QtA-AD-aJw.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"      \"; ObjectID = \"QtA-AD-aJw\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "      "
-          }
-        }
-      }
-    },
     "r8X-jt-JfH.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frames to Buffer\"; ObjectID = \"r8X-jt-JfH\";",
       "extractionState" : "extracted_with_value",
@@ -4875,6 +4959,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "SensitivityY"
+          }
+        }
+      }
+    },
+    "RqY-mm-5dD.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"RqY-mm-5dD\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
           }
         }
       }
@@ -5175,6 +5271,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無點擊"
+          }
+        }
+      }
+    },
+    "TFq-Un-O3H.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Border width\"; ObjectID = \"TFq-Un-O3H\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Border width"
           }
         }
       }
@@ -5697,6 +5805,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "從右側邊緣滑動"
+          }
+        }
+      }
+    },
+    "wrY-O9-BeU.normalTitle" : {
+      "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"wrY-O9-BeU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
+          }
+        }
+      }
+    },
+    "Wxw-Q8-aqN.text" : {
+      "comment" : "Class = \"UILabel\"; text = \" \"; ObjectID = \"Wxw-Q8-aqN\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " "
           }
         }
       }
