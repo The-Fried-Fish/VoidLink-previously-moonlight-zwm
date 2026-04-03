@@ -267,8 +267,14 @@ import SVGKit
     // border & visual effect
     private var minimumBorderAlpha: CGFloat = 0.19
     private var defaultBorderColor: CGColor = UIColor(white: 0.2, alpha: 0.3).cgColor
-    private let voidlinkPurple: CGColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 0.86).cgColor
-    
+    // private let voidlinkPurple: CGColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 0.86).cgColor
+    private let standardHighlightColor: UIColor = UIColor(
+        red: 0.46,
+        green: 0.74,
+        blue: 0.98,
+        alpha: 0.92
+    )
+
     //slide buttons
     private var capturedTouches: NSMutableSet
     let setLock = NSLock()
@@ -294,7 +300,7 @@ import SVGKit
     @objc public var bulkMoveEnabled: Bool = false
     @objc public var sequenceSet: Set<Int16> = Set()
     @objc public var parentSequence: Int16 = -1
-    private weak var capturer: OnScreenWidgetView?
+    static weak var capturer: OnScreenWidgetView?
     
     @objc init(cmdString: String, buttonLabel: String, shape:String, profile:OSCProfile) {
 
@@ -644,7 +650,7 @@ import SVGKit
     
     @objc public func tweakHighlightAlpha(alpha:CGFloat){
         highlightAlpha = alpha
-        self.buttonDownVisualEffectLayer.borderColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: highlightAlpha).cgColor
+        self.buttonDownVisualEffectLayer.borderColor = standardHighlightColor.withAlphaComponent(highlightAlpha).cgColor
         self.l3r3Indicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.lrudIndicatorBall.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.upIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
@@ -938,7 +944,7 @@ import SVGKit
         let path = UIBezierPath(roundedRect: l3r3Indicator.bounds, cornerRadius: l3r3Indicator.cornerRadius)
         
         l3r3Indicator.path = path.cgPath
-        l3r3Indicator.borderColor = voidlinkPurple
+        l3r3Indicator.borderColor = standardHighlightColor.cgColor
         self.l3r3Indicator.position = CGPointMake(self.bounds.width/2, self.bounds.height/2)
         if !OnScreenWidgetView.isTweakingHighlight {l3r3Indicator.isHidden = true}
         
@@ -1290,7 +1296,7 @@ import SVGKit
         directionLayer.fillColor = UIColor.clear.cgColor
         let path = UIBezierPath(roundedRect: directionLayer.bounds, cornerRadius: directionLayer.cornerRadius)
         directionLayer.path = path.cgPath
-        directionLayer.borderColor = voidlinkPurple
+        directionLayer.borderColor = standardHighlightColor.cgColor
         directionLayer.position = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2)
         if directionLayer.superlayer == nil {
             self.layer.insertSublayer(directionLayer, below: lrudIndicatorBall)
@@ -1637,7 +1643,7 @@ import SVGKit
         
         // Set the frame to be larger than the view to expand outward
         buttonDownVisualEffectLayer.borderWidth = CGFloat(Int(self.buttonDownVisualEffectStandardWidth * self.highlightSizeFactor / 2) * 2) // set this 0 to hide the visual effect first
-        buttonDownVisualEffectLayer.borderColor = voidlinkPurple
+        buttonDownVisualEffectLayer.borderColor = standardHighlightColor.cgColor
         buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -buttonDownVisualEffectLayer.borderWidth, dy: -buttonDownVisualEffectLayer.borderWidth) // Adjust the inset as needed
         buttonDownVisualEffectLayer.cornerRadius = self.layer.cornerRadius + buttonDownVisualEffectLayer.borderWidth
         buttonDownVisualEffectLayer.backgroundColor = UIColor.clear.cgColor;
@@ -1947,20 +1953,22 @@ import SVGKit
         let currentLocation: CGPoint
         if OnScreenWidgetView.editMode {
             // self.layer.borderColor = voidlinkPurple
-            capturer = nil
+            OnScreenWidgetView.capturer = nil
             currentLocation = touch.location(in: superview)
-                forEachWidget { (widget) in
-                    guard widget != self else {return}
-                    if widget.isFolder {
-                        if isLocation(currentLocation, in: widget), !self.sequenceSet.contains(widget.sequence) {
-                            // self.layer.borderColor = UIColor.systemYellow.cgColor
-                            widget.highlightBorder(highlighted: true)
-                            capturer = widget
-                            return
-                        }
-                        else {widget.highlightBorder(highlighted: false)}
-                    }
+            forEachWidget { (widget) in
+                if widget == self {
+                    widget.highlightBorder(highlighted: true, color: standardHighlightColor.cgColor)
                 }
+                else if widget.isFolder {
+                    if isLocation(currentLocation, in: widget), !self.sequenceSet.contains(widget.sequence), !widget.isHidden {
+                        // self.layer.borderColor = UIColor.systemYellow.cgColor
+                        widget.highlightBorder(highlighted: true)
+                        OnScreenWidgetView.capturer = widget
+                        return
+                    }
+                    else {widget.highlightBorder(highlighted: false)}
+                }
+            }
         }
         else {
             currentLocation = touch.location(in: superview)
@@ -2742,14 +2750,14 @@ import SVGKit
                 layoutChanges.append(center)
             }
             
-            if capturer != nil {
+            if OnScreenWidgetView.capturer != nil {
                 if firstTouchMoved {undoRelocation()}
-                if let capturer = capturer {
+                if let capturer = OnScreenWidgetView.capturer {
                     capturer.highlightBorder(highlighted: false)
                     OnScreenWidgetView.putWidget(self, into: capturer)
                 }
             }
-            capturer = nil
+            OnScreenWidgetView.capturer = nil
 
             guard let superview = superview else { return }
             
@@ -2856,8 +2864,9 @@ import SVGKit
         }
     }
     
-    static private func setBorder(hilighted:Bool, in color:CGColor, for widget:OnScreenWidgetView){
-        if hilighted {
+    static private func setBorder(highlighted:Bool, in color:CGColor, for widget:OnScreenWidgetView){
+        let highlighted = highlighted || widget == OnScreenWidgetView.capturer
+        if highlighted {
             widget.layer.borderWidth = 3
             widget.layer.borderColor = color
         }
@@ -2869,16 +2878,16 @@ import SVGKit
     
     private func highlightBorder(highlighted:Bool, color:CGColor? = nil) {
         if self.isFolder {
-            OnScreenWidgetView.setBorder(hilighted: highlighted, in: UIColor.systemYellow.cgColor, for: self)
+            OnScreenWidgetView.setBorder(highlighted: highlighted, in: UIColor.systemYellow.cgColor, for: self)
             self.forEachWidget{ widget in
                 if self.sequenceSet.contains(widget.sequence) {
-                    OnScreenWidgetView.setBorder(hilighted: highlighted, in: UIColor.systemYellow.cgColor, for: widget)
+                    OnScreenWidgetView.setBorder(highlighted: highlighted, in: UIColor.systemYellow.cgColor, for: widget)
                 }
             }
             return
         }
         
-        OnScreenWidgetView.setBorder(hilighted: highlighted, in: color ?? voidlinkPurple, for: self)
+        OnScreenWidgetView.setBorder(highlighted: highlighted, in: color ?? standardHighlightColor.cgColor, for: self)
     }
     
     private func isPencilProEnabled() -> Bool {
@@ -3035,7 +3044,7 @@ import SVGKit
     }
 
     private static func putWidget(_ widget:OnScreenWidgetView, into folder:OnScreenWidgetView){
-        guard !OnScreenWidgetView.getParentFolders(of: folder).contains(widget) else { return }
+        guard !OnScreenWidgetView.getParentFolders(of: folder).contains(widget), !folder.isHidden else { return }
         let parentFolder = OnScreenWidgetView.mapping[widget.parentSequence]
         if parentFolder != nil {
             parentFolder?.sequenceSet.remove(widget.sequence)
