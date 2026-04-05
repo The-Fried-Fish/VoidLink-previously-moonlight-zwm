@@ -41,6 +41,30 @@ import Foundation
         }
         return false
     }
+
+    @objc static func isFirstLaunchGamepadOverlayFeature() -> Bool {
+        let key = "hasTouchedGamepadOverlayFeature20260405-1"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+
+    @objc static func gamepadOverlayFeatureTipTitle() -> String {
+        SwiftLocalizationHelper.localizedString(forKey: "Gamepad Overlay")
+    }
+
+    @objc static func gamepadOverlayFeatureTipMessage() -> String {
+        SwiftLocalizationHelper.localizedString(forKey: "gamepadOverlayFeatureTip")
+    }
+
+    @objc static func gamepadOverlayFeatureTipButtonTitle() -> String {
+        SwiftLocalizationHelper.localizedString(forKey: "Got it!")
+    }
     
     @objc static func isIPhone() -> Bool {
         return UIDevice.current.userInterfaceIdiom == .phone

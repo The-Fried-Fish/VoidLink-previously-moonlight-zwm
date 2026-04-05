@@ -41,11 +41,13 @@
 
 @property (nonatomic, strong) MetalViewController *metalViewController;
 @property (nonatomic, strong) ImGuiRenderer *imguiView;
+@property (nonatomic, strong) UIView* virtualGamepadOverlay;
 
 
 - (void)updatePreferredDisplayMode:(BOOL)streamActive;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 - (bool)shallDisableGyroHotSwitch;
 - (void)loadGameProfileConfigs:(OSCProfile* )profile;
+- (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0));
 
 @end

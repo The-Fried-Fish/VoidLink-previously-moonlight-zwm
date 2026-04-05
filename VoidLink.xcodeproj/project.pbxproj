@@ -34,6 +34,7 @@
 		18D43D7F2F050240008C326F /* PressureCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D43D7E2F050240008C326F /* PressureCurve.swift */; };
 		18E4BCEA2E891895000A8657 /* MotionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E4BCE92E891895000A8657 /* MotionHandler.swift */; };
 		18FCADAF2ECAC23200787A96 /* PencilHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FCADAE2ECAC23200787A96 /* PencilHandler.swift */; };
+		2A4B8D922F8149E200497966 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E1CDEB2C4F67D300547904 /* CommandManager.swift */; };
 		2A7113FD2F5A6C65001D852D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7113FC2F5A6C65001D852D /* ThemeManager.swift */; };
 		2AAA4E822F7666C5001E20DC /* ControllerUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A765BC2ECD51FB004784AA /* ControllerUtil.swift */; };
 		2AAA4E842F7666EE001E20DC /* SwiftLocalizationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E1CDF92C4FE83400547904 /* SwiftLocalizationHelper.swift */; };
@@ -98,6 +99,7 @@
 		98CFB82F1CAD481B0048EF74 /* libmoonlight-common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AB2E841CAD46840089BB98 /* libmoonlight-common.a */; };
 		98D5856D1C0EA79600F6CC00 /* TemporaryHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */; };
 		98D585701C0ED0E800F6CC00 /* TemporarySettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */; };
+		A1B2C3D42F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D32F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift */; };
 		DC1F5A07206436B20037755F /* ConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1F5A06206436B20037755F /* ConnectionHelper.m */; };
 		F74BEF9C2C1A705600224667 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F74BEF9B2C1A705600224667 /* OpenSSL */; };
 		FB1A674D2131E65900507771 /* KeyboardSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1A674C2131E65900507771 /* KeyboardSupport.m */; };
@@ -200,7 +202,7 @@
 		18D43D7E2F050240008C326F /* PressureCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureCurve.swift; sourceTree = "<group>"; };
 		18E4BCE92E891895000A8657 /* MotionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionHandler.swift; sourceTree = "<group>"; };
 		18FCADAE2ECAC23200787A96 /* PencilHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilHandler.swift; sourceTree = "<group>"; };
-		2A039E562F72892B00546768 /* VoidLinkSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoidLinkSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A039E562F72892B00546768 /* VoidLinkPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoidLinkPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A7113FC2F5A6C65001D852D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		2AC1E3822F507D80004F76C0 /* GenericUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericUtils.swift; sourceTree = "<group>"; };
 		3A4A3A102F0C000100000001 /* OSCProfilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSCProfilesTableViewController.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 		98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TemporaryHost.m; path = Database/TemporaryHost.m; sourceTree = "<group>"; };
 		98D5856E1C0ED0E800F6CC00 /* TemporarySettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TemporarySettings.h; path = Database/TemporarySettings.h; sourceTree = "<group>"; };
 		98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TemporarySettings.m; path = Database/TemporarySettings.m; sourceTree = "<group>"; };
+		A1B2C3D32F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractGamepadOverlayWidgetView.swift; sourceTree = "<group>"; };
 		DC1F5A05206436B10037755F /* ConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionHelper.h; sourceTree = "<group>"; };
 		DC1F5A06206436B20037755F /* ConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionHelper.m; sourceTree = "<group>"; };
 		FB1A674B2131E65900507771 /* KeyboardSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardSupport.h; sourceTree = "<group>"; };
@@ -418,7 +421,7 @@
 			membershipExceptions = (
 				WidgetPickerViewController.swift,
 			);
-			target = 2A039E552F72892B00546768 /* VoidLinkSwiftUI */;
+			target = 2A039E552F72892B00546768 /* VoidLinkPreview */;
 		};
 		2AAA4E862F76BDC6001E20DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -622,7 +625,7 @@
 			isa = PBXGroup;
 			children = (
 				FB290CEE19B2C406004C83CF /* VoidLink.app */,
-				2A039E562F72892B00546768 /* VoidLinkSwiftUI.app */,
+				2A039E562F72892B00546768 /* VoidLinkPreview.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -770,6 +773,7 @@
 				18E4BCE92E891895000A8657 /* MotionHandler.swift */,
 				84E1CDEB2C4F67D300547904 /* CommandManager.swift */,
 				84203F222C5F24C00032EEED /* OnScreenWidgetView.swift */,
+				A1B2C3D32F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift */,
 				1817B61D2E6FD04D000D938D /* SafeTimer.swift */,
 			);
 			path = Input;
@@ -962,9 +966,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2A039E552F72892B00546768 /* VoidLinkSwiftUI */ = {
+		2A039E552F72892B00546768 /* VoidLinkPreview */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2A039E5E2F72892C00546768 /* Build configuration list for PBXNativeTarget "VoidLinkSwiftUI" */;
+			buildConfigurationList = 2A039E5E2F72892C00546768 /* Build configuration list for PBXNativeTarget "VoidLinkPreview" */;
 			buildPhases = (
 				2A039E522F72892B00546768 /* Sources */,
 				2A039E532F72892B00546768 /* Frameworks */,
@@ -977,11 +981,11 @@
 			fileSystemSynchronizedGroups = (
 				2A039E572F72892B00546768 /* VoidLinkSwiftUI */,
 			);
-			name = VoidLinkSwiftUI;
+			name = VoidLinkPreview;
 			packageProductDependencies = (
 			);
 			productName = VoidLinkSwiftUI;
-			productReference = 2A039E562F72892B00546768 /* VoidLinkSwiftUI.app */;
+			productReference = 2A039E562F72892B00546768 /* VoidLinkPreview.app */;
 			productType = "com.apple.product-type.application";
 		};
 		FB290CED19B2C406004C83CF /* VoidLink */ = {
@@ -1051,7 +1055,7 @@
 			projectRoot = "";
 			targets = (
 				FB290CED19B2C406004C83CF /* VoidLink */,
-				2A039E552F72892B00546768 /* VoidLinkSwiftUI */,
+				2A039E552F72892B00546768 /* VoidLinkPreview */,
 			);
 		};
 /* End PBXProject section */
@@ -1155,6 +1159,7 @@
 				1850C82A2E667E4000845308 /* MicHandler.swift in Sources */,
 				FBD3495319FF36FB002D2A60 /* SWRevealViewController.m in Sources */,
 				84203F232C5F24C00032EEED /* OnScreenWidgetView.swift in Sources */,
+				A1B2C3D42F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift in Sources */,
 				2AC1E3832F507D80004F76C0 /* GenericUtils.swift in Sources */,
 				97E21BB52E2186A3000D5DCA /* imgui_impl_metal.mm in Sources */,
 				9777AAF32E2CF7A400D7FBAF /* Shaders-Linear.metal in Sources */,
@@ -1612,7 +1617,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2A039E5E2F72892C00546768 /* Build configuration list for PBXNativeTarget "VoidLinkSwiftUI" */ = {
+		2A039E5E2F72892C00546768 /* Build configuration list for PBXNativeTarget "VoidLinkPreview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2A039E5F2F72892C00546768 /* Debug */,

@@ -415,6 +415,16 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
+            label: SwiftLocalizationHelper.localizedString(forKey: "🎮 overlay switch"),
+            cmd: "GAMEPADOVERLAY",
+            tip: SwiftLocalizationHelper.localizedString(forKey: "Switch on/off a floating gamepad overlay with live input feedback"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: nil
+        ),
+        FunctionalButtonOption(
             label: SwiftLocalizationHelper.localizedString(forKey: "Pressure curve"),
             cmd: "PRESSURECURVE",
             tip: SwiftLocalizationHelper.localizedString(forKey: "Opens pencil pressure curve tool"),
@@ -654,6 +664,7 @@ struct WidgetPickerView: View {
                     case .gamepad:
                         AbstractGamepadView(
                             gamepadType: selectedGamepadType,
+                            metricsProfile: .picker,
                             canSelectCommand: { canSelectCommand($0, source: .gamepad) },
                             isCommandSelected: { selectedCmds.contains($0) },
                             onCommandSelected: { appendCommand($0, source: .gamepad) },
@@ -1841,13 +1852,10 @@ struct WidgetPickerView: View {
         if gamepadCommands.contains(cmd) {
             return .gamepad
         }
-        if keyboardCommands.contains(cmd) {
-            return .keyboard
-        }
         if functionalCommands.contains(cmd) {
             return .functional
         }
-        return nil
+        return .keyboard
     }
 
     private func canonicalCommand(for cmd: String) -> String {
@@ -1875,12 +1883,6 @@ struct WidgetPickerView: View {
             "RT", "RTPAD",
             "DS4TOUCH", "DS4TCHBTN"
         ]
-    }
-
-    private var keyboardCommands: Set<String> {
-        Set(CommandManager.keyboardButtonMappings.keys)
-            .union(Set(CommandManager.mouseButtonMappings.keys))
-            .union(keyboardPadCommands)
     }
 
     private var functionalCommands: Set<String> {

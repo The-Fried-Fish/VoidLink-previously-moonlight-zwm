@@ -507,7 +507,7 @@
         NSLog(@"pausing...");
         nil;
     });
-
+    
     // check to see if external screen is connected/disconnected
 
     [[NSNotificationCenter defaultCenter] addObserver: self
@@ -1765,6 +1765,35 @@
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), block);
 }
+
+- (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0)){
+    if(overlayEnabled) [self loadAbstractGamepadOverlayIfNeeded];
+    else {
+        [_virtualGamepadOverlay removeFromSuperview];
+        _virtualGamepadOverlay = nil;
+    }
+}
+
+- (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0)){
+    if (_virtualGamepadOverlay != nil || self.view.window == nil) {
+        return;
+    }
+
+    BOOL usesXboxFaceButtons = _settings.emulatedControllerType.intValue == LI_CTYPE_XBOX;
+    
+    CGFloat maxWidth = MIN(CGRectGetWidth(self.view.bounds) * 0.72, 620);
+    CGFloat width = MAX(420, maxWidth);
+    CGFloat height = width / 1.82;
+    CGRect overlayFrame = CGRectMake(0, 0, width, height);
+
+    AbstractGamepadOverlayView *overlayView = [[AbstractGamepadOverlayView alloc] initWithFrame:overlayFrame usesPlayStationFaceButtons:!usesXboxFaceButtons];
+    overlayView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+    overlayView.userInteractionEnabled = YES;
+    [self.view addSubview:overlayView];
+
+    _virtualGamepadOverlay = overlayView;
+}
+
 
 - (void)dealloc {
     NSLog(@"dealloc StreamFrameViewController %f", CACurrentMediaTime());

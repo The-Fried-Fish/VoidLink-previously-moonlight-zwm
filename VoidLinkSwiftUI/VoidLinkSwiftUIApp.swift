@@ -5,7 +5,7 @@ import SwiftUI
 struct VoidLinkSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            WidgetPickerView()
+            AbstractGamepadView()
         }
     }
 }

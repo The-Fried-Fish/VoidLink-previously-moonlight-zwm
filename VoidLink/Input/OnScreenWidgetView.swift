@@ -10,6 +10,11 @@ import UIKit
 import SVGKit
 
 @objc class OnScreenWidgetView: UIView {
+    @objc(widgetWithCmdString:buttonLabel:shape:profile:)
+    class func widget(cmdString: String, buttonLabel: String, shape: String, profile: OSCProfile) -> OnScreenWidgetView {
+        return OnScreenWidgetView(cmdString: cmdString, buttonLabel: buttonLabel, shape: shape, profile: profile)
+    }
+
     @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
     @objc public static var isRestoring: Bool = false
     @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
@@ -55,6 +60,7 @@ import SVGKit
         func replaceEraser(shortcut:String)
         func presentPressureCurveVC()
         func toggleTouch(disabled:Bool)
+        func toggleGamepadOverlay(overlayEnabled:Bool)
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -77,7 +83,7 @@ import SVGKit
     @objc public var cmdString: String
     @objc public var sequence: Int16 = -1
     private var buttonString: String = ""
-    @objc private(set) var functionalButtonString: String = ""
+    @objc var functionalButtonString: String = ""
     public var motionControlButtonString: String = ""
     @objc public var touchPadString: String = ""
     // super combo key string set
@@ -348,7 +354,7 @@ import SVGKit
         else {
             self.widgetType = WidgetTypeEnum.button // legacy combo button connected by "+"
         }
-    
+
         print("widgetType: \(self.widgetType)")
         print("touchPadString: \(self.touchPadString)")
         for comboButtonString in comboButtonStrings {
@@ -498,7 +504,8 @@ import SVGKit
                               || (self.widgetType == WidgetTypeEnum.button
                                   && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))*/
         self.hasTrackPoint = true
-        self.hasNonEditableLabel = self.cmdString == "DISABLETOUCH"
+        self.hasNonEditableLabel = (self.cmdString == "DISABLETOUCH"
+                                    || self.cmdString == "GAMEPADOVERLAY")
     }
     
     // ======================================================================================================
@@ -801,13 +808,20 @@ import SVGKit
         return false
     }
     
-    private func setupAtrributedText(){
+    @objc func setupAtrributedText(){
         var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
         
         if self.hasNonEditableLabel {
-            if cmdString == "DISABLETOUCH" {
+            
+            switch cmdString {
+            case "DISABLETOUCH":
                 self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: touchDisabledFLag ? "=EnableTouch" : "=DisableTouch" )
+            case "GAMEPADOVERLAY":
+                self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: gamepadOverlayFLag ? "=GamepadOverlayOn" : "=GamepadOverlayOff" )
+            default:
+                nonEditableWidgetLabel = ""
             }
+
             text = self.nonEditableWidgetLabel
         }
                 
@@ -850,6 +864,7 @@ import SVGKit
         self.setupAtrributedText()
                 
         label.translatesAutoresizingMaskIntoConstraints = false // enable auto alignment for the label
+        label.isHidden = shouldHideStandardLabel()
         
         self.translatesAutoresizingMaskIntoConstraints = true // this is mandatory to prevent unexpected key view location change
         
@@ -901,6 +916,7 @@ import SVGKit
         // self.layer.shadowOpacity = 0.5
         
         addSubview(label)
+        _ = installCustomContentIfNeeded()
         
         if(OnScreenWidgetView.editMode) {self.changeAndActivateContraints()}
         
@@ -923,6 +939,19 @@ import SVGKit
         if self.isFolder {
             QUICK_TAP_TIME_INTERVAL = 0.15
         }
+    }
+
+    @objc func shouldHideStandardLabel() -> Bool {
+        false
+    }
+
+    @discardableResult
+    @objc func installCustomContentIfNeeded() -> Bool {
+        false
+    }
+
+    @objc func handleQuickDoubleTapAction() -> Bool {
+        false
     }
     
     @objc public func setupL3R3Indicator() {
@@ -1820,6 +1849,10 @@ import SVGKit
             touchTapTimeInterval = currentTime - touchTapTimeStamp
             touchTapTimeStamp = currentTime
             quickDoubleTapDetected = touchTapTimeInterval < QUICK_TAP_TIME_INTERVAL
+            if quickDoubleTapDetected, handleQuickDoubleTapAction() {
+                quickDoubleTapDetected = false
+                return
+            }
             if quickDoubleTapDetected, self.isFolder, self.buttonMode == .slideAndHold {
                 self.temporarilyMovable = true
             }
@@ -2523,6 +2556,8 @@ import SVGKit
             }
         case "DISABLETOUCH":
             self.handleTouchDisableButtonUp()
+        case "GAMEPADOVERLAY":
+            self.gamepadOverlayButtonUp()
         default:
             break
         }
@@ -2533,6 +2568,14 @@ import SVGKit
         touchDisabledFLag = !touchDisabledFLag
         self.setupAtrributedText()
         self.functionalButtonDelegate?.toggleTouch(disabled: touchDisabledFLag)
+    }
+    
+    @objc var gamepadOverlayFLag:Bool = false
+    private func gamepadOverlayButtonUp(){
+        self.relocatedDuringStreaming = true
+        gamepadOverlayFLag = !gamepadOverlayFLag
+        self.setupAtrributedText()
+        self.functionalButtonDelegate?.toggleGamepadOverlay(overlayEnabled: gamepadOverlayFLag)
     }
 
     private func temporaryDisableFolderButtonAnimation(){
@@ -3204,4 +3247,3 @@ import SVGKit
         print("onScreenWidgetView deinit \(CACurrentMediaTime())")
     }
 }
-

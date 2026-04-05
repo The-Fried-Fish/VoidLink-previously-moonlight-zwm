@@ -348,7 +348,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         for case let encoded as Data in oscProfile.buttonStatesEncoded {
             guard let buttonState = self.profilesManager?.unarchiveButtonStateEncoded(encoded) else { continue }
             if buttonState.widgetType == 1 {
-                let widgetView = OnScreenWidgetView(cmdString: buttonState.name, buttonLabel: buttonState.alias, shape: buttonState.widgetShape, profile: oscProfile)
+                let widgetView = OnScreenWidgetView.widget(cmdString: buttonState.name, buttonLabel: buttonState.alias, shape: buttonState.widgetShape, profile: oscProfile)
                 widgetView.sequence = (buttonState.sequence == -1 || folder != nil) ? {
                     sequence += 1
                     return sequence
@@ -1014,12 +1014,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     private func updateWidget(_ widget: OnScreenWidgetView, params: NSMutableDictionary, createNew: Bool) {
         guard isWidgetParamsValid(params) else { return }
         let profile = OSCProfilesManager.sharedManager(.zero).getSelectedProfile()
-        guard let newWidget = OnScreenWidgetView(
+        let newWidget = OnScreenWidgetView.widget(
             cmdString: params["cmdString"] as? String ?? "",
             buttonLabel: params["buttonLabel"] as? String ?? "",
             shape: params["shape"] as? String ?? "",
             profile: profile
-        ) as OnScreenWidgetView? else { return }
+        )
 
         newWidget.sequence = widget.sequence
         newWidget.revealMode = widget.revealMode
@@ -1079,7 +1079,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     private func createWidgetFromParams(_ params: NSMutableDictionary) {
         guard isWidgetParamsValid(params) else { return }
         let profile = OSCProfilesManager.sharedManager(.zero).getSelectedProfile()
-        let widgetView = OnScreenWidgetView(
+        let widgetView = OnScreenWidgetView.widget(
             cmdString: params["cmdString"] as? String ?? "",
             buttonLabel: params["buttonLabel"] as? String ?? "",
             shape: params["shape"] as? String ?? "",

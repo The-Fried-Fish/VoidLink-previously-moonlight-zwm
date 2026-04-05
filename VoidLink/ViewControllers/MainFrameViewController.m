@@ -80,6 +80,7 @@
     
     id _controllerConnectObserver;
     id _controllerDisconnectObserver;
+    UIView* _debugGamepadOverlay;
 
 
 #if TARGET_OS_TV
@@ -2495,4 +2496,3 @@ static NSMutableSet* hostList;
 }
 
 @end
-

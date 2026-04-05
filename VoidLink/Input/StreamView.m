@@ -31,6 +31,7 @@
 
 static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
+
 /*
  Stream Video has been moved out of this class to _renderView in StreamFrameViewController.
  */
@@ -597,6 +598,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
+    newProfile.gamepadOverlayEnabled = ((StreamFrameViewController*)_streamFrameVC).virtualGamepadOverlay != nil;
     
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
 }
@@ -611,6 +613,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         // get streamFrameVC
         if(!self->_streamFrameVC) self->_streamFrameVC = [self parentViewController];
+        
+        if (@available(iOS 13.0, *)) {
+            if(oscProfile.gamepadOverlayEnabled) [(StreamFrameViewController* )self->_streamFrameVC loadAbstractGamepadOverlayIfNeeded];
+        }
         
         // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
         
@@ -629,7 +635,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 NSData* buttonStateEncoded = oscProfile.buttonStatesEncoded[i];
                 OnScreenButtonState* buttonState = [self->oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
                 if(buttonState.widgetType == CustomOnScreenWidget){
-                    OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
+                    OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
                     
                     widgetView.functionalButtonDelegate = (id<OnScreenFunctionalButtonDelegate>)self->_streamFrameVC;
                     widgetView.motionHandler = motionHandler;
@@ -681,6 +687,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
                     [widgetView setupAutoTapTimer];
                     [widgetView setupInertialScrollerWithFps:self->settings.framerate.intValue];
+                    
+                    widgetView.gamepadOverlayFLag = oscProfile.gamepadOverlayEnabled;
+                    [widgetView setupAtrributedText];
                     
                     if(sequenceGenerated){
                         // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());

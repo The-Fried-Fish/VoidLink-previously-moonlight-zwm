@@ -155,8 +155,25 @@ enum GamepadWidget: Hashable {
 
 
 @available(iOS 13.0, *)
+enum GamepadMetricsProfile {
+    case standard
+    case picker
+    case overlay
+}
+
+@available(iOS 13.0, *)
 struct AbstractGamepadView: View {
     let gamepadType: GamepadType
+    let metricsProfile: GamepadMetricsProfile
+    let clusterGapAdjustmentRatio: CGFloat
+    let upperPrimaryClusterVerticalAdjustmentRatio: CGFloat
+    let centerCompressionRatio: CGFloat
+    let panelHorizontalInsetRatio: CGFloat
+    let triggerStubSpacingAdjustmentRatio: CGFloat
+    let rightShoulderHorizontalOffsetRatio: CGFloat
+    let thumbPurpleStrength: CGFloat
+    let triggerPurpleStrength: CGFloat
+    var liveSnapshot: GamepadOverlaySnapshot? = nil
     var canSelectCommand: ((String) -> Bool)? = nil
     var isCommandSelected: ((String) -> Bool)? = nil
     var onCommandSelected: ((String) -> Void)? = nil
@@ -168,6 +185,16 @@ struct AbstractGamepadView: View {
 
     init(
         gamepadType: GamepadType = .xbox,
+        metricsProfile: GamepadMetricsProfile = .standard,
+        clusterGapAdjustmentRatio: CGFloat = 0,
+        upperPrimaryClusterVerticalAdjustmentRatio: CGFloat = 0,
+        centerCompressionRatio: CGFloat = 0,
+        panelHorizontalInsetRatio: CGFloat = 0,
+        triggerStubSpacingAdjustmentRatio: CGFloat = 0,
+        rightShoulderHorizontalOffsetRatio: CGFloat = 0,
+        thumbPurpleStrength: CGFloat = 1,
+        triggerPurpleStrength: CGFloat = 1,
+        liveSnapshot: GamepadOverlaySnapshot? = nil,
         canSelectCommand: ((String) -> Bool)? = nil,
         isCommandSelected: ((String) -> Bool)? = nil,
         onCommandSelected: ((String) -> Void)? = nil,
@@ -178,6 +205,16 @@ struct AbstractGamepadView: View {
         externalDeselectionToken: Int = 0
     ) {
         self.gamepadType = gamepadType
+        self.metricsProfile = metricsProfile
+        self.clusterGapAdjustmentRatio = clusterGapAdjustmentRatio
+        self.upperPrimaryClusterVerticalAdjustmentRatio = upperPrimaryClusterVerticalAdjustmentRatio
+        self.centerCompressionRatio = centerCompressionRatio
+        self.panelHorizontalInsetRatio = panelHorizontalInsetRatio
+        self.triggerStubSpacingAdjustmentRatio = triggerStubSpacingAdjustmentRatio
+        self.rightShoulderHorizontalOffsetRatio = rightShoulderHorizontalOffsetRatio
+        self.thumbPurpleStrength = thumbPurpleStrength
+        self.triggerPurpleStrength = triggerPurpleStrength
+        self.liveSnapshot = liveSnapshot
         self.canSelectCommand = canSelectCommand
         self.isCommandSelected = isCommandSelected
         self.onCommandSelected = onCommandSelected
@@ -207,66 +244,153 @@ struct AbstractGamepadView: View {
 
     static var tappedWidgets: [GamepadWidget] = []
     static var selectedCmd: String = ""
-    private struct Layout {
-        
-        // MARK: - Body
-        
-        static let aspectRatio: CGFloat = 1.82
-        static let bodyCornerRadiusRatio: CGFloat = 0.3
-        static let bodyShadowYOffsetRatio: CGFloat = 0.035
-        static let innerStrokeInsetRatio: CGFloat = 0.018
-        static let radialHighlightEndRadiusRatio: CGFloat = 0.48
-        static let innerContentScale: CGFloat = 1.13
-        static let ds4TouchpadWidthRatio: CGFloat = 0.2
-        static let ds4TouchpadHeightRatio: CGFloat = 0.135
-        static let ds4TouchpadCornerRatio: CGFloat = 0.30
-        
-        // MARK: - Top decoration
-        
-        static let topTriggerStubHorizontalPaddingRatio: CGFloat = 0.11
-        static let topTriggerStubCenterYRatio: CGFloat = -0.236
-        static let topTriggerStubCenterXRatio: CGFloat = 0.008
-        
-        static let topTriggerStubWidthRatio: CGFloat = 0.1062
-        static let topTriggerStubHeightRatio: CGFloat = 0.0670
-        static let topTriggerStubSpacingRatio: CGFloat = 0.4336
-        
-        static let shoulderBarWidthRatio: CGFloat = 0.24
-        static let shoulderBarHeightRatio: CGFloat = 0.04
-        static let shoulderBarInsetFromSideRatio: CGFloat = 0.06
-        static let shoulderBarCenterYRatio: CGFloat = -0.49
 
-        // MARK: - Component sizes
-        
-        static let leftStickSizeRatio: CGFloat = 0.17
-        static let rightStickSizeRatio: CGFloat = 0.17
-        static let dpadSizeRatio: CGFloat = 0.17
-        static let abxySizeRatio: CGFloat = 0.19
-        
-        /// 顶部 +/- 和右下角 Home 共用直径
-        static let smallTopButtonDiameterRatio: CGFloat = 0.053
-        
-        // MARK: - Constraint groups
-        
-        /// DPad / 右摇杆 共用水平轴
-        static let lowerControlCenterYRatio: CGFloat = 0.16
-        
-        /// DPad / 右摇杆 关于中线左右对称
-        static let lowerControlHalfSpacingRatio: CGFloat = 0.16
-        
-        /// 顶部 +/- 共用水平轴
-        static let topButtonCenterYRatio: CGFloat = -0.24
-        
-        // MARK: - Left stick / ABXY / Home
-        
-        static let leftStickCenterXRatio: CGFloat = -0.28
-        static let leftStickCenterYRatio: CGFloat = -0.07
-        
-        /// Home 的垂直轴，ABXY 与它垂直对齐
-        static let homeCenterXRatio: CGFloat = 0.3
-        
-        /// Home 的垂直偏移，允许手调
-        static let homeCenterYRatio: CGFloat = 0.267
+    private let stickLiveDeadzone: CGFloat = 0.08
+    private struct Layout {
+        let aspectRatio: CGFloat
+        let bodyCornerRadiusRatio: CGFloat
+        let bodyShadowYOffsetRatio: CGFloat
+        let innerStrokeInsetRatio: CGFloat
+        let radialHighlightEndRadiusRatio: CGFloat
+        let innerContentScale: CGFloat
+        let ds4TouchpadWidthRatio: CGFloat
+        let ds4TouchpadHeightRatio: CGFloat
+        let ds4TouchpadCornerRatio: CGFloat
+        let topTriggerStubHorizontalPaddingRatio: CGFloat
+        let topTriggerStubCenterYRatio: CGFloat
+        let topTriggerStubCenterXRatio: CGFloat
+        let topTriggerStubWidthRatio: CGFloat
+        let topTriggerStubHeightRatio: CGFloat
+        let topTriggerStubSpacingRatio: CGFloat
+        let shoulderBarWidthRatio: CGFloat
+        let shoulderBarHeightRatio: CGFloat
+        let shoulderBarInsetFromSideRatio: CGFloat
+        let shoulderBarCenterYRatio: CGFloat
+        let leftStickSizeRatio: CGFloat
+        let rightStickSizeRatio: CGFloat
+        let dpadSizeRatio: CGFloat
+        let abxySizeRatio: CGFloat
+        let smallTopButtonDiameterRatio: CGFloat
+        let lowerControlCenterYRatio: CGFloat
+        let lowerControlHalfSpacingRatio: CGFloat
+        let topButtonCenterYRatio: CGFloat
+        let leftStickCenterXRatio: CGFloat
+        let leftStickCenterYRatio: CGFloat
+        let homeCenterXRatio: CGFloat
+        let homeCenterYRatio: CGFloat
+
+        static let standard = Layout(
+            aspectRatio: 1.82,
+            bodyCornerRadiusRatio: 0.3,
+            bodyShadowYOffsetRatio: 0.035,
+            innerStrokeInsetRatio: 0.018,
+            radialHighlightEndRadiusRatio: 0.48,
+            innerContentScale: 1.13,
+            ds4TouchpadWidthRatio: 0.2,
+            ds4TouchpadHeightRatio: 0.135,
+            ds4TouchpadCornerRatio: 0.30,
+            topTriggerStubHorizontalPaddingRatio: 0.11,
+            topTriggerStubCenterYRatio: -0.236,
+            topTriggerStubCenterXRatio: 0.008,
+            topTriggerStubWidthRatio: 0.1062,
+            topTriggerStubHeightRatio: 0.0670,
+            topTriggerStubSpacingRatio: 0.4336,
+            shoulderBarWidthRatio: 0.24,
+            shoulderBarHeightRatio: 0.04,
+            shoulderBarInsetFromSideRatio: 0.15,
+            shoulderBarCenterYRatio: -0.49,
+            leftStickSizeRatio: 0.17,
+            rightStickSizeRatio: 0.17,
+            dpadSizeRatio: 0.17,
+            abxySizeRatio: 0.19,
+            smallTopButtonDiameterRatio: 0.053,
+            lowerControlCenterYRatio: 0.16,
+            lowerControlHalfSpacingRatio: 0.16,
+            topButtonCenterYRatio: -0.24,
+            leftStickCenterXRatio: -0.28,
+            leftStickCenterYRatio: -0.07,
+            homeCenterXRatio: 0.3,
+            homeCenterYRatio: 0.267
+        )
+
+        static let overlay = Layout(
+            aspectRatio: 1.82,
+            bodyCornerRadiusRatio: 0.3,
+            bodyShadowYOffsetRatio: 0.035,
+            innerStrokeInsetRatio: 0.018,
+            radialHighlightEndRadiusRatio: 0.48,
+            innerContentScale: 1.11,
+            ds4TouchpadWidthRatio: 0.2,
+            ds4TouchpadHeightRatio: 0.135,
+            ds4TouchpadCornerRatio: 0.30,
+            topTriggerStubHorizontalPaddingRatio: 0.11,
+            topTriggerStubCenterYRatio: -0.236,
+            topTriggerStubCenterXRatio: 0.008,
+            topTriggerStubWidthRatio: 0.1062,
+            topTriggerStubHeightRatio: 0.0670,
+            topTriggerStubSpacingRatio: 0.4336,
+            shoulderBarWidthRatio: 0.24,
+            shoulderBarHeightRatio: 0.04,
+            shoulderBarInsetFromSideRatio: 0.06,
+            shoulderBarCenterYRatio: -0.49,
+            leftStickSizeRatio: 0.205,
+            rightStickSizeRatio: 0.205,
+            dpadSizeRatio: 0.205,
+            abxySizeRatio: 0.225,
+            smallTopButtonDiameterRatio: 0.064,
+            lowerControlCenterYRatio: 0.17,
+            lowerControlHalfSpacingRatio: 0.235,
+            topButtonCenterYRatio: -0.235,
+            leftStickCenterXRatio: -0.355,
+            leftStickCenterYRatio: -0.02,
+            homeCenterXRatio: 0.36,
+            homeCenterYRatio: 0.265
+        )
+
+        static let picker = Layout(
+            aspectRatio: 1.82,
+            bodyCornerRadiusRatio: 0.3,
+            bodyShadowYOffsetRatio: 0.035,
+            innerStrokeInsetRatio: 0.018,
+            radialHighlightEndRadiusRatio: 0.48,
+            innerContentScale: 1.13,
+            ds4TouchpadWidthRatio: 0.2,
+            ds4TouchpadHeightRatio: 0.135,
+            ds4TouchpadCornerRatio: 0.30,
+            topTriggerStubHorizontalPaddingRatio: 0.11,
+            topTriggerStubCenterYRatio: -0.236,
+            topTriggerStubCenterXRatio: 0.008,
+            topTriggerStubWidthRatio: 0.1062,
+            topTriggerStubHeightRatio: 0.0670,
+            topTriggerStubSpacingRatio: 0.402,
+            shoulderBarWidthRatio: 0.24,
+            shoulderBarHeightRatio: 0.04,
+            shoulderBarInsetFromSideRatio: 0.074,
+            shoulderBarCenterYRatio: -0.49,
+            leftStickSizeRatio: 0.17,
+            rightStickSizeRatio: 0.17,
+            dpadSizeRatio: 0.17,
+            abxySizeRatio: 0.19,
+            smallTopButtonDiameterRatio: 0.053,
+            lowerControlCenterYRatio: 0.16,
+            lowerControlHalfSpacingRatio: 0.16,
+            topButtonCenterYRatio: -0.24,
+            leftStickCenterXRatio: -0.28,
+            leftStickCenterYRatio: -0.07,
+            homeCenterXRatio: 0.3,
+            homeCenterYRatio: 0.267
+        )
+    }
+
+    private var layout: Layout {
+        switch metricsProfile {
+        case .standard:
+            return .standard
+        case .picker:
+            return .picker
+        case .overlay:
+            return .overlay
+        }
     }
     
     private func toggle(_ target: GamepadToggleTarget) {
@@ -518,17 +642,18 @@ struct AbstractGamepadView: View {
     private func triggerRects(
         containerW: CGFloat,
         containerH: CGFloat,
+        panelW: CGFloat,
         w: CGFloat,
         h: CGFloat
     ) -> (left: CGRect, right: CGRect) {
         
-        let triggerWidth = w * Layout.topTriggerStubWidthRatio
-        let triggerHeight = h * Layout.topTriggerStubHeightRatio
-        let triggerSpacing = w * Layout.topTriggerStubSpacingRatio
+        let triggerWidth = w * layout.topTriggerStubWidthRatio
+        let triggerHeight = h * layout.topTriggerStubHeightRatio
+        let triggerSpacing = max(0, w * (layout.topTriggerStubSpacingRatio - triggerStubSpacingAdjustmentRatio))
         
-        let padX = w * Layout.topTriggerStubHorizontalPaddingRatio
-        let offsetX = h * Layout.topTriggerStubCenterXRatio
-        let offsetY = h * Layout.topTriggerStubCenterYRatio
+        let padX = w * layout.topTriggerStubHorizontalPaddingRatio
+        let offsetX = h * layout.topTriggerStubCenterXRatio
+        let offsetY = h * layout.topTriggerStubCenterYRatio
         
         let finalOffsetX = offsetX * 2 - containerW * 0.012
         let finalOffsetY = offsetY * 2
@@ -536,7 +661,8 @@ struct AbstractGamepadView: View {
         let stackContentWidth = triggerWidth * 2 + triggerSpacing
         let stackFrameWidth = stackContentWidth + padX * 2
         
-        let leftCenterXInStack = (containerW - stackFrameWidth) * 0.5 + padX + triggerWidth * 0.5
+        let panelOriginX = (containerW - panelW) * 0.5
+        let leftCenterXInStack = panelOriginX + (panelW - stackFrameWidth) * 0.5 + padX + triggerWidth * 0.5
         let rightCenterXInStack = leftCenterXInStack + triggerWidth + triggerSpacing
         
         let triggerCenterY = containerH * 0.5 + finalOffsetY
@@ -580,68 +706,156 @@ struct AbstractGamepadView: View {
             toggle(side)
         }
     }
+
+    private var liveButtons: Set<GamepadToggleTarget> {
+        guard let liveSnapshot else { return [] }
+        var result = Set<GamepadToggleTarget>()
+        if liveSnapshot.pressedButtons.contains(.a) { result.insert(.a) }
+        if liveSnapshot.pressedButtons.contains(.b) { result.insert(.b) }
+        if liveSnapshot.pressedButtons.contains(.x) { result.insert(.x) }
+        if liveSnapshot.pressedButtons.contains(.y) { result.insert(.y) }
+        if liveSnapshot.pressedButtons.contains(.menu) { result.insert(.start) }
+        if liveSnapshot.pressedButtons.contains(.back) { result.insert(.select) }
+        if liveSnapshot.pressedButtons.contains(.special) { result.insert(.home) }
+        if liveSnapshot.pressedButtons.contains(.leftShoulder) { result.insert(.leftShoulder) }
+        if liveSnapshot.pressedButtons.contains(.rightShoulder) { result.insert(.rightShoulder) }
+        if liveSnapshot.pressedButtons.contains(.leftStickButton) { result.insert(.leftStick) }
+        if liveSnapshot.pressedButtons.contains(.rightStickButton) { result.insert(.rightStick) }
+        return result
+    }
+
+    private var effectiveActiveButtons: Set<GamepadToggleTarget> {
+        activeButtons.union(liveButtons)
+    }
+
+    private var liveDPadHighlight: DPadHighlight {
+        guard let liveSnapshot else { return .none }
+        return DPadHighlight(rawValue: liveSnapshot.dpadHighlight)
+    }
+
+    private var shouldHideInactiveTriggerStubs: Bool {
+        metricsProfile == .overlay
+    }
+
+    private var usesOverlayButtonHighlight: Bool {
+        metricsProfile == .overlay
+    }
+
+    private var effectiveDPadHighlight: DPadHighlight {
+        dpadHighlight.union(liveDPadHighlight)
+    }
+
+    private var leftStickLiveActive: Bool {
+        guard let liveSnapshot else { return false }
+        return hypot(liveSnapshot.leftStick.x, liveSnapshot.leftStick.y) > stickLiveDeadzone
+    }
+
+    private var rightStickLiveActive: Bool {
+        guard let liveSnapshot else { return false }
+        return hypot(liveSnapshot.rightStick.x, liveSnapshot.rightStick.y) > stickLiveDeadzone
+    }
+
+    private var effectiveLeftStickHighlight: StickHighlightMode {
+        if leftStickLiveActive {
+            if liveButtons.contains(.leftStick) || leftStickHighlight == .outerOnly || leftStickHighlight == .both {
+                return .both
+            }
+            return .thumbOnly
+        }
+        if liveButtons.contains(.leftStick) {
+            return .both
+        }
+        return leftStickHighlight
+    }
+
+    private var effectiveRightStickHighlight: StickHighlightMode {
+        if rightStickLiveActive {
+            if liveButtons.contains(.rightStick) || rightStickHighlight == .outerOnly || rightStickHighlight == .both {
+                return .both
+            }
+            return .thumbOnly
+        }
+        if liveButtons.contains(.rightStick) {
+            return .both
+        }
+        return rightStickHighlight
+    }
+
+    private func thumbOffset(from point: CGPoint, size: CGFloat) -> CGSize {
+        CGSize(width: size * 0.12 * point.x, height: size * -0.12 * point.y)
+    }
     
     var body: some View {
         GeometryReader { geo in
             let containerW = geo.size.width
             let containerH = geo.size.height
-            let contentScale = Layout.innerContentScale
+            let contentScale = layout.innerContentScale
+            let clampedPanelHorizontalInsetRatio = max(0, min(0.18, panelHorizontalInsetRatio))
+            let panelHorizontalInset = containerW * clampedPanelHorizontalInsetRatio
+            let panelWidth = containerW - panelHorizontalInset * 2
             
             let w = containerW * contentScale
             let h = containerH * contentScale
+            let panelW = panelWidth * contentScale
             
-            let cornerRadius = h * Layout.bodyCornerRadiusRatio
+            let cornerRadius = h * layout.bodyCornerRadiusRatio
             
             // 尺寸
-            let leftStickSize = w * Layout.leftStickSizeRatio
-            let rightStickSize = w * Layout.rightStickSizeRatio
-            let dpadSize = w * Layout.dpadSizeRatio
-            let abxySize = w * Layout.abxySizeRatio
-            let smallTopButtonDiameter = w * Layout.smallTopButtonDiameterRatio
+            let leftStickSize = w * layout.leftStickSizeRatio
+            let rightStickSize = w * layout.rightStickSizeRatio
+            let dpadSize = w * layout.dpadSizeRatio
+            let abxySize = w * layout.abxySizeRatio
+            let smallTopButtonDiameter = w * layout.smallTopButtonDiameterRatio
             
             // 位置约束
-            let sharedLowerControlCenterY = h * Layout.lowerControlCenterYRatio
-            let lowerControlHalfSpacing = w * Layout.lowerControlHalfSpacingRatio
+            let sharedLowerControlCenterY = h * layout.lowerControlCenterYRatio
+            let clampedCenterCompression = max(-0.25, min(0.25, centerCompressionRatio))
+            let lowerControlHalfSpacing = w * max(0.02, layout.lowerControlHalfSpacingRatio - clampedCenterCompression)
+            let clusterGapAdjustment = w * clusterGapAdjustmentRatio
+            let upperPrimaryClusterVerticalAdjustment = h * upperPrimaryClusterVerticalAdjustmentRatio
+            let leftClusterOffsetX = clusterGapAdjustment
+            let rightClusterOffsetX = -clusterGapAdjustment
             
-            let dpadCenterX = -lowerControlHalfSpacing
-            let rightStickCenterX = lowerControlHalfSpacing
+            let dpadCenterX = -lowerControlHalfSpacing + leftClusterOffsetX
+            let rightStickCenterX = lowerControlHalfSpacing + rightClusterOffsetX
             
-            let sharedTopButtonCenterY = h * Layout.topButtonCenterYRatio
+            let sharedTopButtonCenterY = h * layout.topButtonCenterYRatio
             let minusButtonCenterX = dpadCenterX
             let plusButtonCenterX = rightStickCenterX
             let ds4TouchpadCenterX = (dpadCenterX + rightStickCenterX) * 0.5
-            let ds4TouchpadWidth = w * Layout.ds4TouchpadWidthRatio
-            let ds4TouchpadHeight = h * Layout.ds4TouchpadHeightRatio
+            let ds4TouchpadWidth = w * layout.ds4TouchpadWidthRatio
+            let ds4TouchpadHeight = h * layout.ds4TouchpadHeightRatio
             let ds4TouchpadCenterY = (-containerH * 0.5) + (ds4TouchpadHeight * 0.5)
             
-            let leftStickCenterX = w * Layout.leftStickCenterXRatio
-            let leftStickCenterY = h * Layout.leftStickCenterYRatio
+            let leftStickCenterX = w * (layout.leftStickCenterXRatio + clampedCenterCompression) + leftClusterOffsetX
+            let leftStickCenterY = h * layout.leftStickCenterYRatio + upperPrimaryClusterVerticalAdjustment
             
-            let homeCenterX = w * Layout.homeCenterXRatio
-            let homeCenterY = h * Layout.homeCenterYRatio
+            let homeCenterX = w * (layout.homeCenterXRatio - clampedCenterCompression) + rightClusterOffsetX
+            let homeCenterY = h * layout.homeCenterYRatio
             
             // ABXY：与 Home 垂直对齐；与左摇杆同一水平轴
             let abxyCenterX = homeCenterX
             let abxyCenterY = leftStickCenterY
             
-            let shoulderBarWidth = w * Layout.shoulderBarWidthRatio
-            let shoulderBarHeight = h * Layout.shoulderBarHeightRatio
-            let shoulderBarCenterY = h * Layout.shoulderBarCenterYRatio
+            let shoulderBarWidth = w * layout.shoulderBarWidthRatio
+            let shoulderBarHeight = h * layout.shoulderBarHeightRatio
+            let shoulderBarCenterY = h * layout.shoulderBarCenterYRatio
             
-            let shoulderHalfX = (w * 0.5) - (w * Layout.shoulderBarInsetFromSideRatio) - (shoulderBarWidth * 0.5)
+            let shoulderHalfX = (panelW * 0.5) - (w * layout.shoulderBarInsetFromSideRatio) - (shoulderBarWidth * 0.5)
             let leftShoulderX = -shoulderHalfX
-            let rightShoulderX = shoulderHalfX
+            let rightShoulderX = shoulderHalfX + (w * rightShoulderHorizontalOffsetRatio)
             
             let triggerRects = triggerRects(
                 containerW: containerW,
                 containerH: containerH,
+                panelW: panelWidth,
                 w: w,
                 h: h
             )
             
-            let triggerStubWidth = w * Layout.topTriggerStubWidthRatio
-            let triggerStubHeight = h * Layout.topTriggerStubHeightRatio
-            let triggerStubSpacing = w * Layout.topTriggerStubSpacingRatio
+            let triggerStubWidth = w * layout.topTriggerStubWidthRatio
+            let triggerStubHeight = h * layout.topTriggerStubHeightRatio
+            let triggerStubSpacing = max(0, w * (layout.topTriggerStubSpacingRatio - triggerStubSpacingAdjustmentRatio))
             
             let shoulderHitWidth = shoulderBarWidth * 1.25
             let shoulderHitHeight = max(28, shoulderBarHeight * 5.5)
@@ -650,7 +864,8 @@ struct AbstractGamepadView: View {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(Color.black.opacity(0.12))
                     .blur(radius: 18)
-                    .offset(y: h * Layout.bodyShadowYOffsetRatio)
+                    .padding(.horizontal, panelHorizontalInset)
+                    .offset(y: h * layout.bodyShadowYOffsetRatio)
                 
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(
@@ -663,14 +878,17 @@ struct AbstractGamepadView: View {
                             endPoint: .bottomTrailing
                         )
                     )
+                    .padding(.horizontal, panelHorizontalInset)
                     .overlay(
                         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                             .stroke(Color.white.opacity(0.22), lineWidth: 1.2)
+                            .padding(.horizontal, panelHorizontalInset)
                     )
                 
                 RoundedRectangle(cornerRadius: cornerRadius * 0.88, style: .continuous)
                     .stroke(Color.white.opacity(0.10), lineWidth: 2)
-                    .padding(w * Layout.innerStrokeInsetRatio)
+                    .padding(.horizontal, panelHorizontalInset)
+                    .padding(w * layout.innerStrokeInsetRatio)
                 
                 ZStack {
                     RadialGradient(
@@ -680,7 +898,7 @@ struct AbstractGamepadView: View {
                         ]),
                         center: .top,
                         startRadius: 10,
-                        endRadius: w * Layout.radialHighlightEndRadiusRatio
+                        endRadius: w * layout.radialHighlightEndRadiusRatio
                     )
                     .clipShape(
                         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -691,28 +909,36 @@ struct AbstractGamepadView: View {
                         TopTriggerStub(
                             width: triggerStubWidth,
                             height: triggerStubHeight,
-                            highlightMode: leftTriggerHighlight
+                            highlightMode: leftTriggerHighlight,
+                            liveIntensity: liveSnapshot?.leftTrigger ?? 0,
+                            hidesWhenInactive: shouldHideInactiveTriggerStubs,
+                            purpleStrength: triggerPurpleStrength
                         )
                         
                         TopTriggerStub(
                             width: triggerStubWidth,
                             height: triggerStubHeight,
-                            highlightMode: rightTriggerHighlight
+                            highlightMode: rightTriggerHighlight,
+                            liveIntensity: liveSnapshot?.rightTrigger ?? 0,
+                            hidesWhenInactive: shouldHideInactiveTriggerStubs,
+                            purpleStrength: triggerPurpleStrength
                         )
                     }
-                    .padding(.horizontal, w * Layout.topTriggerStubHorizontalPaddingRatio)
-                    .offset(y: h * Layout.topTriggerStubCenterYRatio)
-                    .offset(x: h * Layout.topTriggerStubCenterXRatio)
-                    .padding(.horizontal, w * Layout.topTriggerStubHorizontalPaddingRatio)
-                    .offset(y: h * Layout.topTriggerStubCenterYRatio)
-                    .offset(x: h * Layout.topTriggerStubCenterXRatio)
+                    .frame(width: panelWidth)
+                    .padding(.horizontal, w * layout.topTriggerStubHorizontalPaddingRatio)
+                    .offset(y: h * layout.topTriggerStubCenterYRatio)
+                    .offset(x: h * layout.topTriggerStubCenterXRatio)
+                    .padding(.horizontal, w * layout.topTriggerStubHorizontalPaddingRatio)
+                    .offset(y: h * layout.topTriggerStubCenterYRatio)
+                    .offset(x: h * layout.topTriggerStubCenterXRatio)
                     .zIndex(0)
                     
                     // 肩键：如果触点落在对应 trigger frame，就优先切换 trigger
                     ShoulderButtonBarButton(
-                        isHighlighted: activeButtons.contains(.leftShoulder),
+                        isHighlighted: effectiveActiveButtons.contains(.leftShoulder),
                         width: shoulderBarWidth,
-                        height: shoulderBarHeight
+                        height: shoulderBarHeight,
+                        usesOverlayHighlight: usesOverlayButtonHighlight
                     ) { localPoint in
                         handleShoulderTap(
                             localPoint: localPoint,
@@ -728,9 +954,10 @@ struct AbstractGamepadView: View {
                     .offset(x: leftShoulderX * 1.005, y: shoulderBarCenterY * 0.902)
                     
                     ShoulderButtonBarButton(
-                        isHighlighted: activeButtons.contains(.rightShoulder),
+                        isHighlighted: effectiveActiveButtons.contains(.rightShoulder),
                         width: shoulderBarWidth,
                         height: shoulderBarHeight,
+                        usesOverlayHighlight: usesOverlayButtonHighlight,
                         flipped: true
                     ) { localPoint in
                         handleShoulderTap(
@@ -749,7 +976,8 @@ struct AbstractGamepadView: View {
                     SmallRoundIconButton(
                         symbol: "−",
                         diameter: smallTopButtonDiameter,
-                        isHighlighted: activeButtons.contains(.select)
+                        isHighlighted: effectiveActiveButtons.contains(.select),
+                        usesOverlayHighlight: usesOverlayButtonHighlight
                     )
                     .offset(x: minusButtonCenterX, y: sharedTopButtonCenterY)
                     .onTapGesture {
@@ -759,18 +987,20 @@ struct AbstractGamepadView: View {
                     SmallRoundIconButton(
                         symbol: "+",
                         diameter: smallTopButtonDiameter,
-                        isHighlighted: activeButtons.contains(.start)
+                        isHighlighted: effectiveActiveButtons.contains(.start),
+                        usesOverlayHighlight: usesOverlayButtonHighlight
                     )
                     .offset(x: plusButtonCenterX, y: sharedTopButtonCenterY)
                     .onTapGesture {
                         toggle(.start)
                     }
 
-                    if gamepadType == .ps {
+                    if gamepadType == .ps && metricsProfile != .overlay {
                         DS4TouchpadView(
                             width: ds4TouchpadWidth,
                             height: ds4TouchpadHeight,
-                            highlightMode: ds4TouchHighlight
+                            highlightMode: ds4TouchHighlight,
+                            usesOverlayButtonHighlight: usesOverlayButtonHighlight
                         )
                         .offset(x: ds4TouchpadCenterX, y: ds4TouchpadCenterY)
                         .onTapGesture {
@@ -778,7 +1008,12 @@ struct AbstractGamepadView: View {
                         }
                     }
                     
-                    StickView(highlightMode: leftStickHighlight)
+                    StickView(
+                        highlightMode: effectiveLeftStickHighlight,
+                        thumbOffset: thumbOffset(from: liveSnapshot?.leftStick ?? .zero, size: leftStickSize),
+                        usesOverlayButtonHighlight: usesOverlayButtonHighlight,
+                        thumbPurpleStrength: thumbPurpleStrength
+                    )
                         .frame(width: leftStickSize, height: leftStickSize)
                         .offset(x: leftStickCenterX, y: leftStickCenterY)
                         .onTapGesture {
@@ -786,8 +1021,9 @@ struct AbstractGamepadView: View {
                         }
                     
                     DPadXboxStyleView(
-                        highlight: dpadHighlight,
-                        wholePressed: dpadWholePressed
+                        highlight: effectiveDPadHighlight,
+                        wholePressed: dpadWholePressed,
+                        usesOverlayButtonHighlight: usesOverlayButtonHighlight
                     ) { tappedRegion in
                         toggleDPadSelection(for: tappedRegion)
                     }
@@ -796,7 +1032,8 @@ struct AbstractGamepadView: View {
                     
                     ABXYClusterView(
                         gamepadType: gamepadType,
-                        highlightedButtons: activeButtons,
+                        highlightedButtons: effectiveActiveButtons,
+                        usesOverlayButtonHighlight: usesOverlayButtonHighlight,
                         onTap: { target in
                             toggle(target)
                         }
@@ -804,7 +1041,12 @@ struct AbstractGamepadView: View {
                     .frame(width: abxySize, height: abxySize)
                     .offset(x: abxyCenterX, y: abxyCenterY)
                     
-                    StickView(highlightMode: rightStickHighlight)
+                    StickView(
+                        highlightMode: effectiveRightStickHighlight,
+                        thumbOffset: thumbOffset(from: liveSnapshot?.rightStick ?? .zero, size: rightStickSize),
+                        usesOverlayButtonHighlight: usesOverlayButtonHighlight,
+                        thumbPurpleStrength: thumbPurpleStrength
+                    )
                         .frame(width: rightStickSize, height: rightStickSize)
                         .offset(x: rightStickCenterX, y: sharedLowerControlCenterY)
                         .onTapGesture {
@@ -813,7 +1055,8 @@ struct AbstractGamepadView: View {
                     
                     HomeButtonView(
                         diameter: smallTopButtonDiameter,
-                        isHighlighted: activeButtons.contains(.home)
+                        isHighlighted: effectiveActiveButtons.contains(.home),
+                        usesOverlayHighlight: usesOverlayButtonHighlight
                     )
                     .offset(x: homeCenterX, y: homeCenterY)
                     .onTapGesture {
@@ -825,7 +1068,7 @@ struct AbstractGamepadView: View {
             }
             .frame(width: containerW, height: containerH)
         }
-        .aspectRatio(Layout.aspectRatio, contentMode: .fit)
+        .aspectRatio(layout.aspectRatio, contentMode: .fit)
         .overlay(
             Group {
                 if showWidgetPicker {
@@ -1010,6 +1253,7 @@ struct AbstractGamepadView: View {
             AbstractGamepadView.selectedCmd = ""
         }
     }
+
 }
 
 @available(iOS 13.0, *)
@@ -1163,22 +1407,86 @@ struct TopTriggerStub: View {
     var width: CGFloat
     var height: CGFloat
     var highlightMode: TriggerHighlightMode = .none
+    var liveIntensity: CGFloat = 0
+    var hidesWhenInactive: Bool = false
+    var purpleStrength: CGFloat = 1
     
     private var isHighlighted: Bool {
-        highlightMode != .none
+        highlightMode != .none || liveIntensity > 0.001
+    }
+
+    private var clampedLiveIntensity: Double {
+        Double(max(0, min(1, liveIntensity)))
+    }
+
+    private var normalizedPurpleStrength: Double {
+        Double(max(0, min(2, purpleStrength)))
+    }
+
+    private func mix(_ lhs: Double, _ rhs: Double, _ t: Double) -> Double {
+        lhs + (rhs - lhs) * t
+    }
+
+    private func triggerPurpleColor(light: (r: Double, g: Double, b: Double, a: Double),
+                                    base: (r: Double, g: Double, b: Double, a: Double),
+                                    deep: (r: Double, g: Double, b: Double, a: Double)) -> Color {
+        if normalizedPurpleStrength <= 1 {
+            let t = normalizedPurpleStrength
+            return Color(
+                red: mix(light.r, base.r, t),
+                green: mix(light.g, base.g, t),
+                blue: mix(light.b, base.b, t),
+                opacity: mix(light.a, base.a, t)
+            )
+        } else {
+            let t = normalizedPurpleStrength - 1
+            return Color(
+                red: mix(base.r, deep.r, t),
+                green: mix(base.g, deep.g, t),
+                blue: mix(base.b, deep.b, t),
+                opacity: mix(base.a, deep.a, t)
+            )
+        }
+    }
+
+    private var gradientColors: [Color] {
+        if highlightMode == .pad {
+            return [GamepadPadHighlightStyle.fillTop, GamepadPadHighlightStyle.fillBottom]
+        }
+        if highlightMode == .button {
+            return [GamepadButtonHighlightStyle.fillTop, GamepadButtonHighlightStyle.fillBottom]
+        }
+        return [Color.white.opacity(0.97), Color(red: 0.86, green: 0.86, blue: 0.88)]
+    }
+
+    private var liveOverlayOpacity: Double {
+        guard clampedLiveIntensity > 0 else { return 0 }
+        return 0.16 + clampedLiveIntensity * 0.84
+    }
+
+    private var strokeColor: Color {
+        if clampedLiveIntensity > 0 || highlightMode == .pad {
+            return triggerPurpleColor(
+                light: (0.56, 0.60, 0.92, 0.58),
+                base: (0.38, 0.42, 0.82, 0.78),
+                deep: (0.27, 0.30, 0.68, 0.96)
+            )
+        }
+        if highlightMode == .button {
+            return GamepadButtonHighlightStyle.stroke
+        }
+        return Color.black.opacity(0.08)
+    }
+
+    private var inactiveOpacity: Double {
+        hidesWhenInactive && !isHighlighted ? 0 : 1
     }
     
     var body: some View {
         RoundedRectangle(cornerRadius: height * 0.32, style: .continuous)
             .fill(
                 LinearGradient(
-                    gradient: Gradient(colors: isHighlighted ? [
-                        highlightMode == .pad ? GamepadPadHighlightStyle.fillTop : GamepadButtonHighlightStyle.fillTop,
-                        highlightMode == .pad ? GamepadPadHighlightStyle.fillBottom : GamepadButtonHighlightStyle.fillBottom
-                    ] : [
-                        Color.white.opacity(0.97),
-                        Color(red: 0.86, green: 0.86, blue: 0.88)
-                    ]),
+                    gradient: Gradient(colors: gradientColors),
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -1186,10 +1494,29 @@ struct TopTriggerStub: View {
             .frame(width: width, height: height)
             .overlay(
                 RoundedRectangle(cornerRadius: height * 0.32, style: .continuous)
-                    .stroke(
-                        highlightMode == .pad ? GamepadPadHighlightStyle.stroke : (isHighlighted ? GamepadButtonHighlightStyle.stroke : Color.black.opacity(0.08)),
-                        lineWidth: isHighlighted ? 1.4 : 1
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                triggerPurpleColor(
+                                    light: (0.88, 0.89, 1.00, 0.48),
+                                    base: (0.82, 0.84, 1.00, 0.92),
+                                    deep: (0.66, 0.70, 0.98, 0.98)
+                                ),
+                                triggerPurpleColor(
+                                    light: (0.73, 0.76, 0.98, 0.42),
+                                    base: (0.56, 0.60, 0.94, 0.84),
+                                    deep: (0.38, 0.42, 0.82, 0.96)
+                                )
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
+                    .opacity(liveOverlayOpacity)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: height * 0.32, style: .continuous)
+                    .stroke(strokeColor, lineWidth: isHighlighted ? 1.4 : 1)
             )
             .overlay(
                 LinearGradient(
@@ -1205,6 +1532,7 @@ struct TopTriggerStub: View {
                 )
             )
             .shadow(color: Color.black.opacity(0.10), radius: 2, x: 0, y: 1)
+            .opacity(inactiveOpacity)
     }
 }
 // MARK: - 顶部 +/- 小按钮
@@ -1214,15 +1542,23 @@ struct SmallRoundIconButton: View {
     var symbol: String
     var diameter: CGFloat = 35
     var isHighlighted: Bool = false
+    var usesOverlayHighlight: Bool = false
+
+    private var highlightedColors: [Color] {
+        usesOverlayHighlight
+        ? [GamepadOverlayButtonHighlightStyle.fillTop, GamepadOverlayButtonHighlightStyle.fillBottom]
+        : [Color(red: 1.00, green: 0.92, blue: 0.50), Color(red: 0.95, green: 0.73, blue: 0.22)]
+    }
+
+    private var highlightedStroke: Color {
+        usesOverlayHighlight ? GamepadOverlayButtonHighlightStyle.stroke : Color.orange.opacity(0.7)
+    }
     
     var body: some View {
         Circle()
             .fill(
                 LinearGradient(
-                    gradient: Gradient(colors: isHighlighted ? [
-                        Color(red: 1.00, green: 0.92, blue: 0.50),
-                        Color(red: 0.95, green: 0.73, blue: 0.22)
-                    ] : [
+                    gradient: Gradient(colors: isHighlighted ? highlightedColors : [
                         Color(red: 0.23, green: 0.82, blue: 0.86),
                         Color(red: 0.16, green: 0.68, blue: 0.74)
                     ]),
@@ -1233,7 +1569,7 @@ struct SmallRoundIconButton: View {
             .overlay(
                 Circle()
                     .stroke(
-                        isHighlighted ? Color.orange.opacity(0.7) : Color.black.opacity(0.16),
+                        isHighlighted ? highlightedStroke : Color.black.opacity(0.16),
                         lineWidth: isHighlighted ? 1.5 : 1
                     )
             )
@@ -1269,21 +1605,22 @@ struct DS4TouchpadView: View {
     var width: CGFloat
     var height: CGFloat
     var highlightMode: DS4TouchHighlightMode = .none
+    var usesOverlayButtonHighlight: Bool = false
     
     private var isHighlighted: Bool {
         highlightMode != .none
     }
     
     private var fillTop: Color {
-        highlightMode == .pad ? GamepadPadHighlightStyle.fillTop : GamepadButtonHighlightStyle.fillTop
+        highlightMode == .pad ? GamepadPadHighlightStyle.fillTop : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.fillTop : GamepadButtonHighlightStyle.fillTop)
     }
     
     private var fillBottom: Color {
-        highlightMode == .pad ? GamepadPadHighlightStyle.fillBottom : GamepadButtonHighlightStyle.fillBottom
+        highlightMode == .pad ? GamepadPadHighlightStyle.fillBottom : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.fillBottom : GamepadButtonHighlightStyle.fillBottom)
     }
     
     private var strokeColor: Color {
-        highlightMode == .pad ? GamepadPadHighlightStyle.stroke : GamepadButtonHighlightStyle.stroke
+        highlightMode == .pad ? GamepadPadHighlightStyle.stroke : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.stroke : GamepadButtonHighlightStyle.stroke)
     }
 
     private var dotColor: Color {
@@ -1457,6 +1794,30 @@ private enum GamepadButtonHighlightStyle {
     static let stroke = Color.orange.opacity(0.75)
 }
 
+@available(iOS 13.0, *)
+private enum GamepadOverlayButtonHighlightStyle {
+    static let fillTop = Color(red: 1.00, green: 0.94, blue: 0.68)
+    static let fillBottom = Color(red: 0.95, green: 0.76, blue: 0.26)
+    static let stroke = Color(red: 0.86, green: 0.52, blue: 0.08).opacity(0.88)
+}
+
+@available(iOS 13.0, *)
+private enum GamepadOverlayShoulderHighlightStyle {
+    static let fillTop = Color(red: 1.00, green: 0.85, blue: 0.53)
+    static let fillBottom = Color(red: 0.94, green: 0.625, blue: 0.176)
+}
+
+@available(iOS 13.0, *)
+private enum GamepadStickThumbStyle {
+    static let neutralFillTop = Color(red: 0.95, green: 0.95, blue: 0.96)
+    static let neutralFillBottom = Color(red: 0.86, green: 0.86, blue: 0.88)
+    static let activeFillTop = GamepadPadHighlightStyle.fillTop.opacity(0.92)
+    static let activeFillBottom = GamepadPadHighlightStyle.fillBottom.opacity(0.88)
+    static let ring = Color.black.opacity(0.125)
+    static let activeRing = GamepadPadHighlightStyle.stroke
+    static let ringWidth: CGFloat = 1.35
+}
+
 
 @available(iOS 13.0, *)
 struct StickView: View {
@@ -1470,13 +1831,71 @@ struct StickView: View {
     }
     
     var highlightMode: StickHighlightMode = .none
-    
+    var thumbOffset: CGSize = .zero
+    var usePadHighlightForOuter: Bool = false
+    var usesOverlayButtonHighlight: Bool = false
+    var thumbPurpleStrength: CGFloat = 1
+
     private var outerHighlighted: Bool {
         highlightMode == .outerOnly || highlightMode == .both
     }
 
     private var thumbHighlighted: Bool {
         highlightMode == .thumbOnly || highlightMode == .both
+    }
+
+    private var normalizedThumbPurpleStrength: Double {
+        Double(max(0, min(2, thumbPurpleStrength)))
+    }
+
+    private func mix(_ lhs: Double, _ rhs: Double, _ t: Double) -> Double {
+        lhs + (rhs - lhs) * t
+    }
+
+    private func thumbPurpleColor(light: (r: Double, g: Double, b: Double, a: Double),
+                                  base: (r: Double, g: Double, b: Double, a: Double),
+                                  deep: (r: Double, g: Double, b: Double, a: Double)) -> Color {
+        if normalizedThumbPurpleStrength <= 1 {
+            let t = normalizedThumbPurpleStrength
+            return Color(
+                red: mix(light.r, base.r, t),
+                green: mix(light.g, base.g, t),
+                blue: mix(light.b, base.b, t),
+                opacity: mix(light.a, base.a, t)
+            )
+        } else {
+            let t = normalizedThumbPurpleStrength - 1
+            return Color(
+                red: mix(base.r, deep.r, t),
+                green: mix(base.g, deep.g, t),
+                blue: mix(base.b, deep.b, t),
+                opacity: mix(base.a, deep.a, t)
+            )
+        }
+    }
+
+    private var thumbActiveFillTop: Color {
+        thumbPurpleColor(
+            light: (0.90, 0.91, 1.00, 0.55),
+            base: (0.82, 0.84, 1.00, 0.92),
+            deep: (0.66, 0.70, 0.98, 1.00)
+        )
+    }
+
+    private var thumbActiveFillBottom: Color {
+        thumbPurpleColor(
+            light: (0.74, 0.78, 0.99, 0.48),
+            base: (0.56, 0.60, 0.94, 0.84),
+            deep: (0.37, 0.41, 0.80, 0.98)
+        )
+    }
+
+    private var thumbActiveStroke: Color {
+        thumbPurpleColor(
+            light: (0.58, 0.62, 0.92, 0.58),
+            base: (0.38, 0.42, 0.82, 0.90),
+            deep: (0.26, 0.30, 0.67, 1.00)
+        )
     }
     
     var body: some View {
@@ -1485,19 +1904,11 @@ struct StickView: View {
             
             ZStack {
                 Circle()
-                    .fill(Color.black.opacity(0.18))
-                    .frame(width: s * Ratio.base, height: s * Ratio.base)
-                    .offset(
-                        x: s * Ratio.shadowOffsetX,
-                        y: s * Ratio.shadowOffsetY
-                    )
-                
-                Circle()
                     .fill(
                         LinearGradient(
                             gradient: Gradient(colors: outerHighlighted ? [
-                                GamepadButtonHighlightStyle.fillTop,
-                                GamepadButtonHighlightStyle.fillBottom
+                                usePadHighlightForOuter ? GamepadPadHighlightStyle.fillTop : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.fillTop : GamepadButtonHighlightStyle.fillTop),
+                                usePadHighlightForOuter ? GamepadPadHighlightStyle.fillBottom : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.fillBottom : GamepadButtonHighlightStyle.fillBottom)
                             ] : [
                                 Color.white.opacity(0.98),
                                 Color(red: 0.88, green: 0.88, blue: 0.90)
@@ -1510,33 +1921,35 @@ struct StickView: View {
                     .overlay(
                         Circle()
                             .stroke(
-                                outerHighlighted ? GamepadButtonHighlightStyle.stroke : Color.black.opacity(0.10),
+                                outerHighlighted ? (usePadHighlightForOuter ? GamepadPadHighlightStyle.stroke : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.stroke : GamepadButtonHighlightStyle.stroke)) : Color.black.opacity(0.10),
                                 lineWidth: outerHighlighted ? 1.5 : 1
                             )
                     )
                 
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: thumbHighlighted ? [
-                                GamepadPadHighlightStyle.fillTop,
-                                GamepadPadHighlightStyle.fillBottom
-                            ] : [
-                                Color(red: 0.95, green: 0.95, blue: 0.96),
-                                Color(red: 0.86, green: 0.86, blue: 0.88)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: s * Ratio.thumb, height: s * Ratio.thumb)
-                    .overlay(
-                        Circle()
-                            .stroke(
-                                thumbHighlighted ? GamepadPadHighlightStyle.stroke : Color.black.opacity(0.06),
-                                lineWidth: 1
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: thumbHighlighted ? [
+                                    thumbActiveFillTop,
+                                    thumbActiveFillBottom
+                                ] : [
+                                    GamepadStickThumbStyle.neutralFillTop,
+                                    GamepadStickThumbStyle.neutralFillBottom
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             )
-                    )
+                        )
+
+                    Circle()
+                        .stroke(
+                            thumbHighlighted ? thumbActiveStroke : GamepadStickThumbStyle.ring,
+                            lineWidth: GamepadStickThumbStyle.ringWidth
+                        )
+                }
+                .frame(width: s * Ratio.thumb, height: s * Ratio.thumb)
+                .offset(thumbOffset)
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
@@ -1547,6 +1960,7 @@ struct StickView: View {
 struct DPadXboxStyleView: View {
     var highlight: DPadHighlight = .none
     var wholePressed: Bool = false
+    var usesOverlayButtonHighlight: Bool = false
     var onTapRegion: ((DPadHighlight) -> Void)? = nil
     
     var body: some View {
@@ -1569,21 +1983,17 @@ struct DPadXboxStyleView: View {
                 DPadCrossBaseView(
                     arm: arm,
                     highlight: highlight,
-                    wholePressed: wholePressed
+                    wholePressed: wholePressed,
+                    usesOverlayButtonHighlight: usesOverlayButtonHighlight
                 )
                 
                 Group {
-                    Text("▴").offset(y: -thickness * 0.95)
-                    Text("▾").offset(y: thickness * 0.95)
-                    Text("◂").offset(x: -thickness * 0.95)
-                    Text("▸").offset(x: thickness * 0.95)
+                    dpadArrow("▴", direction: .up).offset(y: -thickness * 0.95)
+                    dpadArrow("▾", direction: .down).offset(y: thickness * 0.95)
+                    dpadArrow("◂", direction: .left).offset(x: -thickness * 0.95)
+                    dpadArrow("▸", direction: .right).offset(x: thickness * 0.95)
                 }
                 .font(.system(size: s * 0.14, weight: .bold))
-                .foregroundColor(
-                    highlight == .none
-                    ? Color.black.opacity(0.12)
-                    : Color.black.opacity(0.22)
-                )
             }
             .contentShape(Rectangle())
             .gesture(
@@ -1617,6 +2027,12 @@ struct DPadXboxStyleView: View {
             return dy < 0 ? .up : .down
         }
     }
+
+    private func dpadArrow(_ symbol: String, direction: DPadHighlight) -> some View {
+        let isOn = wholePressed || highlight.contains(direction)
+        return Text(symbol)
+            .foregroundColor(isOn ? Color.black.opacity(0.22) : Color.black.opacity(0.12))
+    }
 }
 
 @available(iOS 13.0.0, *)
@@ -1624,6 +2040,7 @@ struct DPadCrossBaseView: View {
     let arm: CGFloat
     let highlight: DPadHighlight
     let wholePressed: Bool
+    let usesOverlayButtonHighlight: Bool
     
     var body: some View {
         ZStack {
@@ -1645,8 +2062,8 @@ struct DPadCrossBaseView: View {
             .fill(
                 LinearGradient(
                     gradient: Gradient(colors: isOn ? [
-                        usePadHighlight ? GamepadPadHighlightStyle.fillTop : GamepadButtonHighlightStyle.fillTop,
-                        usePadHighlight ? GamepadPadHighlightStyle.fillBottom : GamepadButtonHighlightStyle.fillBottom
+                        usePadHighlight ? GamepadPadHighlightStyle.fillTop : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.fillTop : GamepadButtonHighlightStyle.fillTop),
+                        usePadHighlight ? GamepadPadHighlightStyle.fillBottom : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.fillBottom : GamepadButtonHighlightStyle.fillBottom)
                     ] : [
                         Color.white.opacity(0.98),
                         Color(red: 0.88, green: 0.88, blue: 0.90)
@@ -1658,7 +2075,7 @@ struct DPadCrossBaseView: View {
             .overlay(
                 DPadSegmentShape(direction: dir)
                     .stroke(
-                        isOn ? (usePadHighlight ? GamepadPadHighlightStyle.stroke : GamepadButtonHighlightStyle.stroke) : Color.clear,
+                        isOn ? (usePadHighlight ? GamepadPadHighlightStyle.stroke : (usesOverlayButtonHighlight ? GamepadOverlayButtonHighlightStyle.stroke : GamepadButtonHighlightStyle.stroke)) : Color.clear,
                         lineWidth: 1
                     )
             )
@@ -1763,6 +2180,7 @@ struct DPadSegmentShape: Shape {
 struct ABXYClusterView: View {
     let gamepadType: GamepadType
     let highlightedButtons: Set<GamepadToggleTarget>
+    let usesOverlayButtonHighlight: Bool
     let onTap: (GamepadToggleTarget) -> Void
     
     var body: some View {
@@ -1772,22 +2190,22 @@ struct ABXYClusterView: View {
             let size = s * 0.31
             
             ZStack {
-                LetterButton(title: leftButtonTitle, size: size, isHighlighted: highlightedButtons.contains(.x))
+                LetterButton(title: leftButtonTitle, systemSymbolName: leftButtonSymbolName, size: size, isHighlighted: highlightedButtons.contains(.x), usesOverlayHighlight: usesOverlayButtonHighlight)
                     .frame(width: size, height: size)
                     .offset(x: -offset, y: 0)
                     .onTapGesture { onTap(.x) }
                 
-                LetterButton(title: topButtonTitle, size: size, isHighlighted: highlightedButtons.contains(.y))
+                LetterButton(title: topButtonTitle, systemSymbolName: topButtonSymbolName, size: size, isHighlighted: highlightedButtons.contains(.y), usesOverlayHighlight: usesOverlayButtonHighlight)
                     .frame(width: size, height: size)
                     .offset(x: 0, y: -offset)
                     .onTapGesture { onTap(.y) }
                 
-                LetterButton(title: rightButtonTitle, size: size, isHighlighted: highlightedButtons.contains(.b))
+                LetterButton(title: rightButtonTitle, systemSymbolName: rightButtonSymbolName, size: size, isHighlighted: highlightedButtons.contains(.b), usesOverlayHighlight: usesOverlayButtonHighlight)
                     .frame(width: size, height: size)
                     .offset(x: offset, y: 0)
                     .onTapGesture { onTap(.b) }
                 
-                LetterButton(title: bottomButtonTitle, size: size, isHighlighted: highlightedButtons.contains(.a))
+                LetterButton(title: bottomButtonTitle, systemSymbolName: bottomButtonSymbolName, size: size, isHighlighted: highlightedButtons.contains(.a), usesOverlayHighlight: usesOverlayButtonHighlight)
                     .frame(width: size, height: size)
                     .offset(x: 0, y: offset)
                     .onTapGesture { onTap(.a) }
@@ -1797,27 +2215,55 @@ struct ABXYClusterView: View {
     }
 
     private var leftButtonTitle: String {
-        gamepadType == .ps ? "□" : "X"
+        gamepadType == .ps ? "" : "X"
     }
 
     private var topButtonTitle: String {
-        gamepadType == .ps ? "△" : "Y"
+        gamepadType == .ps ? "" : "Y"
     }
 
     private var rightButtonTitle: String {
-        gamepadType == .ps ? "○" : "B"
+        gamepadType == .ps ? "" : "B"
     }
 
     private var bottomButtonTitle: String {
-        gamepadType == .ps ? "×" : "A"
+        gamepadType == .ps ? "" : "A"
+    }
+
+    private var leftButtonSymbolName: String? {
+        gamepadType == .ps ? "square" : nil
+    }
+
+    private var topButtonSymbolName: String? {
+        gamepadType == .ps ? "triangle" : nil
+    }
+
+    private var rightButtonSymbolName: String? {
+        gamepadType == .ps ? "circle" : nil
+    }
+
+    private var bottomButtonSymbolName: String? {
+        gamepadType == .ps ? "xmark" : nil
     }
 }
 
 @available(iOS 13.0, *)
 struct LetterButton: View {
     var title: String
+    var systemSymbolName: String? = nil
     var size: CGFloat
     var isHighlighted: Bool = false
+    var usesOverlayHighlight: Bool = false
+
+    private var highlightedColors: [Color] {
+        usesOverlayHighlight
+        ? [GamepadOverlayButtonHighlightStyle.fillTop, GamepadOverlayButtonHighlightStyle.fillBottom]
+        : [Color(red: 1.00, green: 0.96, blue: 0.74), Color(red: 0.95, green: 0.78, blue: 0.32)]
+    }
+
+    private var highlightedStroke: Color {
+        usesOverlayHighlight ? GamepadOverlayButtonHighlightStyle.stroke : Color.orange.opacity(0.75)
+    }
     
     var body: some View {
         ZStack {
@@ -1829,10 +2275,7 @@ struct LetterButton: View {
             Circle()
                 .fill(
                     LinearGradient(
-                        gradient: Gradient(colors: isHighlighted ? [
-                            Color(red: 1.00, green: 0.96, blue: 0.74),
-                            Color(red: 0.95, green: 0.78, blue: 0.32)
-                        ] : [
+                        gradient: Gradient(colors: isHighlighted ? highlightedColors : [
                             Color.white.opacity(0.98),
                             Color(red: 0.88, green: 0.88, blue: 0.90)
                         ]),
@@ -1843,14 +2286,20 @@ struct LetterButton: View {
                 .overlay(
                     Circle()
                         .stroke(
-                            isHighlighted ? Color.orange.opacity(0.75) : Color.black.opacity(0.12),
+                            isHighlighted ? highlightedStroke : Color.black.opacity(0.12),
                             lineWidth: isHighlighted ? 1.5 : 1
                         )
                 )
             
-            Text(title)
-                .font(.system(size: size * 0.53, weight: .medium, design: .rounded))
-                .foregroundColor(isHighlighted ? Color.black.opacity(0.58) : Color.black.opacity(0.28))
+            if let systemSymbolName {
+                Image(systemName: systemSymbolName)
+                    .font(.system(size: size * 0.42, weight: .semibold, design: .rounded))
+                    .foregroundColor(isHighlighted ? Color.black.opacity(0.58) : Color.black.opacity(0.28))
+            } else {
+                Text(title)
+                    .font(.system(size: size * 0.53, weight: .medium, design: .rounded))
+                    .foregroundColor(isHighlighted ? Color.black.opacity(0.58) : Color.black.opacity(0.28))
+            }
         }
     }
 }
@@ -1861,9 +2310,20 @@ struct LetterButton: View {
 struct HomeButtonView: View {
     var diameter: CGFloat
     var isHighlighted: Bool = false
+    var usesOverlayHighlight: Bool = false
     
     private var innerInset: CGFloat { diameter * 0.06 }
     private var shadowOffsetY: CGFloat { diameter * 0.05 }
+
+    private var highlightedColors: [Color] {
+        usesOverlayHighlight
+        ? [GamepadOverlayButtonHighlightStyle.fillTop, GamepadOverlayButtonHighlightStyle.fillBottom]
+        : [Color(red: 1.00, green: 0.92, blue: 0.52), Color(red: 0.96, green: 0.74, blue: 0.24)]
+    }
+
+    private var highlightedStroke: Color {
+        usesOverlayHighlight ? GamepadOverlayButtonHighlightStyle.stroke : Color.orange.opacity(0.75)
+    }
     
     var body: some View {
         ZStack {
@@ -1875,10 +2335,7 @@ struct HomeButtonView: View {
             Circle()
                 .fill(
                     LinearGradient(
-                        gradient: Gradient(colors: isHighlighted ? [
-                            Color(red: 1.00, green: 0.92, blue: 0.52),
-                            Color(red: 0.96, green: 0.74, blue: 0.24)
-                        ] : [
+                        gradient: Gradient(colors: isHighlighted ? highlightedColors : [
                             Color(red: 0.25, green: 0.86, blue: 0.90),
                             Color(red: 0.18, green: 0.72, blue: 0.78)
                         ]),
@@ -1889,7 +2346,7 @@ struct HomeButtonView: View {
                 .overlay(
                     Circle()
                         .stroke(
-                            isHighlighted ? Color.orange.opacity(0.75) : Color.black.opacity(0.16),
+                            isHighlighted ? highlightedStroke : Color.black.opacity(0.16),
                             lineWidth: isHighlighted ? 1.5 : 1
                         )
                 )
@@ -1913,12 +2370,13 @@ struct ShoulderButtonBarButton: View {
     var isHighlighted: Bool
     var width: CGFloat
     var height: CGFloat
+    var usesOverlayHighlight: Bool = false
     var flipped: Bool = false
     var action: (CGPoint) -> Void
     
     var body: some View {
         ZStack {
-            ShoulderButtonBar(isHighlighted: isHighlighted)
+            ShoulderButtonBar(isHighlighted: isHighlighted, usesOverlayHighlight: usesOverlayHighlight)
                 .scaleEffect(x: flipped ? -1 : 1, y: 1)
                 .frame(width: width, height: height)
             
@@ -1939,6 +2397,7 @@ struct ShoulderButtonBarButton: View {
 @available(iOS 13.0, *)
 struct ShoulderButtonBar: View {
     var isHighlighted: Bool = false
+    var usesOverlayHighlight: Bool = false
     
     var body: some View {
         GeometryReader { geo in
@@ -1970,8 +2429,8 @@ struct ShoulderButtonBar: View {
                     .stroke(
                         LinearGradient(
                             gradient: Gradient(colors: isHighlighted ? [
-                                Color(red: 1.00, green: 0.95, blue: 0.65),
-                                Color(red: 0.95, green: 0.77, blue: 0.28)
+                                usesOverlayHighlight ? GamepadOverlayShoulderHighlightStyle.fillTop : Color(red: 1.00, green: 0.95, blue: 0.65),
+                                usesOverlayHighlight ? GamepadOverlayShoulderHighlightStyle.fillBottom : Color(red: 0.95, green: 0.77, blue: 0.28)
                             ] : [
                                 .white.opacity(0.22),
                                 Color(red: 0.86, green: 0.86, blue: 0.88)

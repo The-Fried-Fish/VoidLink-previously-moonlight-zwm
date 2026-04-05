@@ -133,6 +133,7 @@ import UIKit
         "SETTINGS",
         "TOOLBOX",
         "WIDGETTOOL",
+        "ABSGAMEPAD",
         "WIDGETPROFILES",
         "PROFILES",
         "PICKPROFILE",
@@ -146,6 +147,7 @@ import UIKit
         "ERASER",
         "NOSINGLETOUCH",
         "DISABLETOUCH",
+        "GAMEPADOVERLAY",
     ]
     @objc public static let pencilProButtonCmds: [String] = [
         "PENCILHOVER",

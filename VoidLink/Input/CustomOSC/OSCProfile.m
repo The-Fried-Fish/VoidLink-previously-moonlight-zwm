@@ -51,6 +51,8 @@
     [encoder encodeBool:self.reverseGyroHoldButton forKey:@"reverseGyroHoldButton"];
     [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
+    [encoder encodeBool:self.gamepadOverlayEnabled forKey:@"gamepadOverlayEnabled"];
+    
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
     // [encoder encodeObject:self.initialTouchPressureCurvePoints forKey:@"initialTouchPressureCurvePoints"];
     [encoder encodeInt:self.phase1StrokeSampleIndexEnd forKey:@"phase1StrokeSampleIndexEnd"];
@@ -112,7 +114,8 @@
         self.reverseGyroHoldButton = [decoder containsValueForKey:@"reverseGyroHoldButton"] ? [decoder decodeBoolForKey:@"reverseGyroHoldButton"] : false;
         self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
-        
+        self.gamepadOverlayEnabled = [decoder containsValueForKey:@"gamepadOverlayEnabled"] ? [decoder decodeBoolForKey:@"gamepadOverlayEnabled"] : true;
+
         self.pressureCurvePoints =
             [decoder containsValueForKey:@"pressureCurvePoints"]
             ? [decoder decodeObjectOfClasses:
@@ -209,6 +212,7 @@
     copy.reverseGyroHoldButton = self.reverseGyroHoldButton;
     copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
+    copy.gamepadOverlayEnabled = self.gamepadOverlayEnabled;
     copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
     // copy.initialTouchPressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.initialTouchPressureCurvePoints copyItems:YES];
     copy.phase1StrokeSampleIndexEnd = self.phase1StrokeSampleIndexEnd;

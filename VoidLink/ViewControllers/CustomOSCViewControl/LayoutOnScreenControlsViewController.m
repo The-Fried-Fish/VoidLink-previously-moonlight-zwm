@@ -162,7 +162,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
             OnScreenButtonState* buttonState = [self->profilesManager unarchiveButtonStateEncoded:buttonStateEncoded];
             NSLog(@"reloadOnScreenWidgets name %@", buttonState.name);
             if(buttonState.widgetType == CustomOnScreenWidget){
-                OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
+                OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
                 
                 widgetView.sequence = buttonState.sequence == -1 ? ++sequence : buttonState.sequence;
                 [OnScreenWidgetView setWithWidget:widgetView for:widgetView.sequence];
@@ -926,7 +926,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
 - (void) updateWidget:(OnScreenWidgetView* )widget byParams:(NSMutableDictionary* )widgetInitParams createNew:(bool)createNew{
     if(![self isWidgetParamsValid:widgetInitParams]) return;
     OSCProfile* profile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
-    OnScreenWidgetView* newWidget = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile]; //reconstruct widgetView
+    OnScreenWidgetView* newWidget = [OnScreenWidgetView widgetWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile]; //reconstruct widgetView
     newWidget.sequence = widget.sequence;
     newWidget.revealMode = widget.revealMode;
     newWidget.bulkMoveEnabled = widget.bulkMoveEnabled;
@@ -991,7 +991,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     if(![self isWidgetParamsValid:widgetInitParams]) return;
     //saving & present the keyboard button:
     OSCProfile* profile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
-    OnScreenWidgetView* widgetView = [[OnScreenWidgetView alloc] initWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile];
+    OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:widgetInitParams[@"cmdString"] buttonLabel:widgetInitParams[@"buttonLabel"] shape:widgetInitParams[@"shape"] profile:profile];
     [self.view insertSubview:widgetView belowSubview:self.widgetPanelStack];
     widgetView.hidden = true;
     widgetView.sequence = [widgetView getAvailableSequence];
