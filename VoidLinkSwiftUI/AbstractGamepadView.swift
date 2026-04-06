@@ -1586,7 +1586,7 @@ struct SmallRoundIconButton: View {
                     .offset(y: diameter * -0.042)
             )
             .frame(width: diameter, height: diameter)
-            .shadow(color: Color.black.opacity(0.12), radius: 3, x: 0, y: 2)
+            .shadow(color: Color.black.opacity(0), radius: 3, x: 0, y: 2)
     }
 }
 

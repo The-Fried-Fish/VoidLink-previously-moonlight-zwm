@@ -137,21 +137,17 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBOutlet weak var bulkAlphaLabel: UILabel!
     @IBOutlet weak var bulkAlphaSlider: UISlider!
     
-    
     @IBOutlet weak var bulkBorderWidthStack: UIStackView!
     @IBOutlet weak var bulkBorderWidthSlider: UISlider!
     @IBOutlet weak var bulkBorderWidthLabel: UILabel!
-    
     
     @IBOutlet weak var bulkLabelAlphaStack: UIStackView!
     @IBOutlet weak var bulkLabelAlphaLabel: UILabel!
     @IBOutlet weak var bulkLabelAlphaSlider: UISlider!
     
-    
     @IBOutlet weak var bulkBorderAlphaStack: UIStackView!
     @IBOutlet weak var bulkBorderAlphaLabel: UILabel!
     @IBOutlet weak var bulkBorderAlphaSlider: UISlider!
-    
     
     @IBOutlet weak var bulkHighlightAlphaStack: UIStackView!
     @IBOutlet weak var bulkHighlightAlphaLabel: UILabel!
@@ -160,6 +156,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBOutlet weak var bulkHighlightSizeStack: UIStackView!
     @IBOutlet weak var bulkHighlightSizeLabel: UILabel!
     @IBOutlet weak var bulkHighlightSizeSlider: UISlider!
+    
+    @IBOutlet weak var autoDockTimerStack: UIStackView!
+    @IBOutlet weak var autoDockTimerLabel: UILabel!
+    @IBOutlet weak var autoDockTimerSlider: UISlider!
+    
+    @IBOutlet weak var dockedAlphaStack: UIStackView!
+    @IBOutlet weak var dockedAlphaLabel: UILabel!
+    @IBOutlet weak var dockedAlphaSlider: UISlider!
     
     @IBOutlet weak var widgetPanelStack: UIStackView!
 
@@ -357,6 +361,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 OnScreenWidgetView.set(widget: widgetView, for: widgetView.sequence)
                 widgetView.sequenceSet = buttonState.sequenceSet as? Set<Int16> ?? Set()
                 widgetView.parentSequence = buttonState.parentSequence
+                widgetView.autoDockIdleDuration = TimeInterval(buttonState.autoDockTimer)
+                widgetView.autoDockSettledAlpha = CGFloat(buttonState.dockedAlpha)
                 widgetView.folded = buttonState.folded
                 widgetView.revealMode = RevealMode(rawValue: Int(buttonState.revealMode)) ?? .coexist
                 widgetView.bulkMoveEnabled = buttonState.bulkMoveEnabled
@@ -827,6 +833,15 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
         mouseDownButtonStack.isHidden = !widgetView.isMousePadWithButtonActions
         mouseButtonDownSelector.selectedSegmentIndex = Int(widgetView.mouseButtonAction.rawValue)
+        
+        
+        autoDockTimerStack.isHidden = !(widgetView.isFolder && widgetView.parentSequence == -1);
+        autoDockTimerSlider.value = Float(widgetView.autoDockIdleDuration)
+        autoDockTimerSliderMoved(autoDockTimerSlider)
+        
+        dockedAlphaStack.isHidden = !(widgetView.isFolder && widgetView.parentSequence == -1);
+        dockedAlphaSlider.value = Float(widgetView.autoDockSettledAlpha)
+        dockedAlphaSliderMoved(dockedAlphaSlider)
 
         buttonModeStack.isHidden = widgetView.widgetType != .button
         buttonModeSelector.setEnabled(!widgetView.isFunctionalButton, forSegmentAt: Int(ButtonMode.slideToToggle.rawValue))
@@ -834,7 +849,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         buttonModeSelector.setEnabled(!widgetView.isFolder, forSegmentAt: Int(ButtonMode.regular.rawValue))
         buttonModeSelector.setEnabled(!widgetView.isFunctionalButton || widgetView.isTapToToggleException, forSegmentAt: Int(ButtonMode.tapToToggle.rawValue))
         buttonModeSelector.selectedSegmentIndex = Int(widgetView.buttonMode.rawValue)
-
+        
         collectedWidgetsStack.isHidden = !widgetView.isFolder
         collectedWidgetsSelector.selectedSegmentIndex = widgetView.folded ? 1 : 0
         revealModeSelector.selectedSegmentIndex = Int(widgetView.revealMode.rawValue)
@@ -1022,6 +1037,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         )
 
         newWidget.sequence = widget.sequence
+        newWidget.autoDockIdleDuration = widget.autoDockIdleDuration
+        newWidget.autoDockSettledAlpha = widget.autoDockSettledAlpha
         newWidget.revealMode = widget.revealMode
         newWidget.bulkMoveEnabled = widget.bulkMoveEnabled
         newWidget.guidelineDelegate = self
@@ -1161,7 +1178,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
             if !success {
-                self.oscProfilesTableViewController?.profileViewRefresh()
+                // self.oscProfilesTableViewController?.profileViewRefresh()
             }
         })
         present(alert, animated: true)
@@ -1380,6 +1397,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         stickIndicatorOffsetSlider.addTarget(self, action: #selector(stickIndicatorOffsetSliderMoved(_:)), for: .valueChanged)
         stickIndicatorOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Indicator offset")
         stickIndicatorOffsetStack.isHidden = true
+        
+        autoDockTimerSlider.addTarget(self, action: #selector(autoDockTimerSliderMoved(_:)), for: .valueChanged)
+        autoDockTimerLabel.text = LocalizationHelper.localizedString(forKey: "Auto dock")
+        autoDockTimerStack.isHidden = true;
+        
+        dockedAlphaSlider.addTarget(self, action: #selector(dockedAlphaSliderMoved(_:)), for: .valueChanged)
+        dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked alpha")
+        dockedAlphaStack.isHidden = true;
 
         let whiteAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.white]
         mouseButtonDownSelector.addTarget(self, action: #selector(mouseDownButtonChanged(_:)), for: .valueChanged)
@@ -1691,6 +1716,20 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     
     @objc private func bulkHighlightSizeSliderMoveStopped(_ sender: UISlider) {
         bulkHighlightAlphaSliderMoveStopped(sender)
+        return
+    }
+    
+    @objc private func autoDockTimerSliderMoved(_ sender: UISlider) {
+        guard let selectedWidget = selectedWidgetView else {return}
+        selectedWidget.autoDockIdleDuration = TimeInterval(Int(sender.value))
+        autoDockTimerLabel.text = sender.value == 0 ? LocalizationHelper.localizedString(forKey: "Auto dock disabled", Int(sender.value)) : LocalizationHelper.localizedString(forKey: "Auto dock: %d s", Int(sender.value))
+        return
+    }
+
+    @objc private func dockedAlphaSliderMoved(_ sender: UISlider) {
+        guard let selectedWidget = selectedWidgetView else {return}
+        selectedWidget.autoDockSettledAlpha = CGFloat(sender.value)
+        dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked alpha: %d%%", Int(sender.value*100))
         return
     }
     

@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) int16_t sequence;
 @property (nonatomic, assign) int16_t parentSequence;
 @property NSSet *sequenceSet;
+@property (nonatomic, assign) int16_t autoDockTimer;
+@property (nonatomic, assign) CGFloat dockedAlpha;
+
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, assign) uint8_t buttonMode;

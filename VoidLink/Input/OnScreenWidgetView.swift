@@ -8,6 +8,7 @@
 
 import UIKit
 import SVGKit
+import ObjectiveC.runtime
 
 @objc class OnScreenWidgetView: UIView {
     @objc(widgetWithCmdString:buttonLabel:shape:profile:)
@@ -768,6 +769,7 @@ import SVGKit
         }
         if self.shape == "square" {
             let widgetSize = getRecSize(widthFactor: self.widthFactor, heightFactor: self.heightFactor)
+            autoDockOriginalBoundsSize = widgetSize
             NSLayoutConstraint.activate([
                 self.widthAnchor.constraint(equalToConstant: widgetSize.width),
                 self.heightAnchor.constraint(equalToConstant: widgetSize.height),])
@@ -2457,6 +2459,7 @@ import SVGKit
     }
     
     private func handleFunctionalButtonDown(){
+        if autoDockIsDocked {return}
         switch self.functionalButtonString {
         case "FOLDER":
             if self.buttonMode != .slideAndHold {break}
@@ -2486,6 +2489,7 @@ import SVGKit
     
     private func handleFunctionalButtonUp(event: UIEvent? = nil){
         // print("handleFunctionalButtonUp \(self.widgetLabel), event Empty: \(String(describing: event)), \(CACurrentMediaTime())")
+        if autoDockIsDocked {return}
         if buttonMode == .movable {
             if moveableButtonLongPressed() && !UITouchUtil.touches(in: self, from: event).isEmpty {return}
             switch self.functionalButtonString {
@@ -2941,6 +2945,308 @@ import SVGKit
         return true
     }
     
+    // MARK: - Auto Dock
+    private static let autoDockExposedEdgeLength: CGFloat = 80
+    private static let autoDockExposedThickness: CGFloat = 17
+    private static let autoDockVerticalInset: CGFloat = 12
+    @objc var autoDockIdleDuration: TimeInterval = 5
+    private static let autoDockInitialAlpha: CGFloat = 0.8
+    @objc var autoDockSettledAlpha: CGFloat = 0.2
+    private static let autoDockSettledAlphaDelay: TimeInterval = 2
+    private static let autoDockReturnDamping: CGFloat = 0.9
+    private static let autoDockGoDamping: CGFloat = 0.82
+    private typealias TouchesIMP = @convention(c) (AnyObject, Selector, Set<UITouch>, UIEvent?) -> Void
+    private static var autoDockOriginalTouchesBeganIMP: TouchesIMP?
+    private static var autoDockOriginalTouchesMovedIMP: TouchesIMP?
+    private static var autoDockOriginalTouchesEndedIMP: TouchesIMP?
+    private static var autoDockOriginalTouchesCancelledIMP: TouchesIMP?
+    private static let autoDockSwizzlingInstalled: Void = {
+        let cls: AnyClass = OnScreenWidgetView.self
+        func swizzle(_ originalSelector: Selector, _ swizzledSelector: Selector) -> TouchesIMP? {
+            guard let originalMethod = class_getInstanceMethod(cls, originalSelector),
+                  let swizzledMethod = class_getInstanceMethod(cls, swizzledSelector) else { return nil }
+            let originalIMP = unsafeBitCast(method_getImplementation(originalMethod), to: TouchesIMP.self)
+            method_exchangeImplementations(originalMethod, swizzledMethod)
+            return originalIMP
+        }
+        autoDockOriginalTouchesBeganIMP = swizzle(#selector(OnScreenWidgetView.touchesBegan(_:with:)), #selector(OnScreenWidgetView.vl_autoDock_touchesBegan(_:with:)))
+        autoDockOriginalTouchesMovedIMP = swizzle(#selector(OnScreenWidgetView.touchesMoved(_:with:)), #selector(OnScreenWidgetView.vl_autoDock_touchesMoved(_:with:)))
+        autoDockOriginalTouchesEndedIMP = swizzle(#selector(OnScreenWidgetView.touchesEnded(_:with:)), #selector(OnScreenWidgetView.vl_autoDock_touchesEnded(_:with:)))
+        autoDockOriginalTouchesCancelledIMP = swizzle(#selector(OnScreenWidgetView.touchesCancelled(_:with:)), #selector(OnScreenWidgetView.vl_autoDock_touchesCancelled(_:with:)))
+    }()
+    
+    private var autoDockTimer: Timer?
+    private var autoDockStoredCenter: CGPoint?
+    private var autoDockDockedCenter: CGPoint?
+    private var autoDockDockedToBottomEdge: Bool = false
+    private var autoDockIsDocked: Bool = false
+    private var autoDockEnabled: Bool = false
+    private var autoDockSettledAlphaTimer: Timer?
+    private var autoDockOriginalBoundsSize: CGSize = .zero
+    
+    private static func installAutoDockIfNeeded() {
+        _ = autoDockSwizzlingInstalled
+    }
+    
+    @objc private func vl_autoDock_touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard autoDockEnabled else {
+            OnScreenWidgetView.autoDockOriginalTouchesBeganIMP?(self, #selector(OnScreenWidgetView.touchesBegan(_:with:)), touches, event)
+            return
+        }
+        if autoDockIsDocked {
+            autoDockRestoreWidget(animated: true)
+            return
+        }
+        autoDockStopCountdown()
+        OnScreenWidgetView.autoDockOriginalTouchesBeganIMP?(self, #selector(OnScreenWidgetView.touchesBegan(_:with:)), touches, event)
+    }
+    
+    @objc private func vl_autoDock_touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard autoDockEnabled else {
+            OnScreenWidgetView.autoDockOriginalTouchesMovedIMP?(self, #selector(OnScreenWidgetView.touchesMoved(_:with:)), touches, event)
+            return
+        }
+        if autoDockIsDocked {
+            return
+        }
+        autoDockStopCountdown()
+        OnScreenWidgetView.autoDockOriginalTouchesMovedIMP?(self, #selector(OnScreenWidgetView.touchesMoved(_:with:)), touches, event)
+    }
+    
+    @objc private func vl_autoDock_touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        OnScreenWidgetView.autoDockOriginalTouchesEndedIMP?(self, #selector(OnScreenWidgetView.touchesEnded(_:with:)), touches, event)
+        guard autoDockEnabled else { return }
+        autoDockRestartCountdownIfNeeded()
+    }
+    
+    @objc private func vl_autoDock_touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        OnScreenWidgetView.autoDockOriginalTouchesCancelledIMP?(self, #selector(OnScreenWidgetView.touchesCancelled(_:with:)), touches, event)
+        guard autoDockEnabled else { return }
+        autoDockRestartCountdownIfNeeded()
+    }
+    
+    @objc public func setAutoDockEnabled(_ enabled: Bool) {
+        autoDockEnabled = enabled
+        if enabled {
+            OnScreenWidgetView.installAutoDockIfNeeded()
+            autoDockRestartCountdownIfNeeded()
+        }
+        else {
+            autoDockStopCountdown()
+            autoDockStopSettledAlphaTimer()
+            if autoDockIsDocked {
+                autoDockRestoreWidget(animated: false)
+            }
+            autoDockRestoreOriginalSize()
+            label.alpha = 1
+            autoDockRestoreOriginalAlpha()
+        }
+    }
+    
+    @objc public func restartAutoDockCountdown() {
+        guard autoDockEnabled else { return }
+        autoDockRestartCountdownIfNeeded()
+    }
+    
+    @objc public func cancelAutoDockCountdown() {
+        autoDockStopCountdown()
+    }
+    
+    @objc public func triggerAutoDockNow() {
+        guard autoDockEnabled else { return }
+        autoDockStopCountdown()
+        autoDockWidgetToNearestEdge()
+    }
+    
+    @objc public func restoreFromAutoDock(animated: Bool) {
+        guard autoDockEnabled else { return }
+        autoDockRestoreWidget(animated: animated)
+    }
+    
+    private func autoDockStopCountdown() {
+        autoDockTimer?.invalidate()
+        autoDockTimer = nil
+    }
+    
+    private func autoDockStopSettledAlphaTimer() {
+        autoDockSettledAlphaTimer?.invalidate()
+        autoDockSettledAlphaTimer = nil
+    }
+    
+    private func autoDockRestoreOriginalAlpha() {
+        alpha = widgetType == WidgetTypeEnum.touchPad ? 1 : 1
+    }
+    
+    private func autoDockApplyTemporarySize() {
+        // autoDockOriginalBoundsSize = bounds.size
+        var adjustedFrame = frame
+        if autoDockDockedToBottomEdge {
+            adjustedFrame.size.width = OnScreenWidgetView.autoDockExposedEdgeLength
+        }
+        else {
+            adjustedFrame.size.height = OnScreenWidgetView.autoDockExposedEdgeLength
+        }
+        frame = adjustedFrame.integral
+        if shape == "round" {
+            layer.cornerRadius = min(bounds.width, bounds.height) / 2
+        }
+        else {
+            setSquareWidgetCornerRadius()
+        }
+    }
+    
+    private func autoDockRestoreOriginalSize() {
+        guard autoDockOriginalBoundsSize != .zero else { return }
+        var adjustedFrame = frame
+        adjustedFrame.size = autoDockOriginalBoundsSize
+        frame = adjustedFrame.integral
+        if let hostView = superview {
+            if autoDockDockedToBottomEdge {
+                frame.origin.y = hostView.bounds.height - frame.height
+            }
+            else {
+                frame.origin.x = hostView.bounds.width - frame.width
+            }
+        }
+        if shape == "round" {
+            layer.cornerRadius = min(bounds.width, bounds.height) / 2
+        }
+        else {
+            setSquareWidgetCornerRadius()
+        }
+    }
+    
+    private func autoDockRestartCountdownIfNeeded() {
+        autoDockStopCountdown()
+        autoDockStopSettledAlphaTimer()
+        guard !OnScreenWidgetView.editMode,
+              autoDockEnabled,
+              superview != nil,
+              window != nil,
+              !isHidden,
+              // alpha > 0.01,
+              !autoDockIsDocked else {
+            return
+        }
+        print("autoDockIdleDuration \(autoDockIdleDuration) \(CACurrentMediaTime())")
+        autoDockTimer = Timer.scheduledTimer(withTimeInterval: autoDockIdleDuration, repeats: false) { [weak self] _ in
+            self?.autoDockWidgetToNearestEdge()
+        }
+    }
+    
+    private func autoDockWidgetToNearestEdge() {
+        if !folded {
+            restartAutoDockCountdown()
+            return
+        }
+        self.isUserInteractionEnabled = false
+        guard let hostView = superview,
+              !OnScreenWidgetView.editMode,
+              autoDockEnabled,
+              !autoDockIsDocked,
+              !isHidden else {
+            return
+        }
+        hostView.layoutIfNeeded()
+        layoutIfNeeded()
+        
+        autoDockStoredCenter = center
+        let rightDistance = hostView.bounds.width - frame.maxX
+        let bottomDistance = hostView.bounds.height - frame.maxY
+        autoDockDockedToBottomEdge = bottomDistance < rightDistance
+        
+        let targetFrame = autoDockTargetFrame(in: hostView.bounds)
+        autoDockDockedCenter = CGPoint(x: targetFrame.midX, y: targetFrame.midY)
+        
+        self.autoDockIsDocked = true
+        UIView.animate(
+            withDuration: 0.62,
+            delay: 0,
+            usingSpringWithDamping: OnScreenWidgetView.autoDockGoDamping,
+            initialSpringVelocity: 0.35,
+            options: [.allowUserInteraction, .curveEaseOut]
+        ) {
+            self.frame = targetFrame
+            self.transform = CGAffineTransform(scaleX: 0.985, y: 0.985)
+        } completion: { _ in
+            UIView.animate(withDuration: 0.14, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
+                self.autoDockApplyTemporarySize()
+                self.transform = .identity
+                self.label.alpha = 0
+                self.alpha = OnScreenWidgetView.autoDockInitialAlpha
+            } completion: { _ in
+                self.isUserInteractionEnabled = true
+                self.autoDockStopSettledAlphaTimer()
+                self.autoDockSettledAlphaTimer = Timer.scheduledTimer(withTimeInterval: OnScreenWidgetView.autoDockSettledAlphaDelay, repeats: false) { [weak self] _ in
+                    guard let self, self.autoDockIsDocked else { return }
+                    UIView.animate(withDuration: 0.2, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
+                        self.isUserInteractionEnabled = true
+                        self.alpha = self.autoDockSettledAlpha
+                    }
+                }
+            }
+        }
+    }
+    
+    private func autoDockRestoreWidget(animated: Bool) {
+        guard autoDockIsDocked, let restoreCenter = autoDockStoredCenter else { return }
+        autoDockStopCountdown()
+        autoDockStopSettledAlphaTimer()
+        autoDockRestoreOriginalSize()
+        label.alpha = 1
+        autoDockRestoreOriginalAlpha()
+        
+        let animations = {
+            self.center = restoreCenter
+            self.transform = .identity
+        }
+        
+        let completion: (Bool) -> Void = { _ in
+            self.autoDockDockedCenter = nil
+            self.autoDockRestartCountdownIfNeeded()
+        }
+        
+        if animated {
+            UIView.animate(
+                withDuration: 0.38,
+                delay: 0,
+                usingSpringWithDamping: OnScreenWidgetView.autoDockReturnDamping,
+                initialSpringVelocity: 0.22,
+                options: [.allowUserInteraction, .curveEaseOut],
+                animations: animations,
+                completion: {_ in
+                    self.autoDockIsDocked = false
+                    self.restartAutoDockCountdown()
+                }
+            )
+        }
+        else {
+            animations()
+            completion(true)
+        }
+    }
+    
+    private func autoDockTargetFrame(in bounds: CGRect) -> CGRect {
+        var targetFrame = frame
+        if autoDockDockedToBottomEdge {
+            targetFrame.origin.x = min(
+                max(targetFrame.origin.x, OnScreenWidgetView.autoDockVerticalInset),
+                bounds.width - targetFrame.width - OnScreenWidgetView.autoDockVerticalInset
+            )
+            targetFrame.origin.y = bounds.height - OnScreenWidgetView.autoDockExposedThickness
+        }
+        else {
+            targetFrame.origin.y = min(
+                max(targetFrame.origin.y, OnScreenWidgetView.autoDockVerticalInset),
+                bounds.height - targetFrame.height - OnScreenWidgetView.autoDockVerticalInset
+            )
+            targetFrame.origin.x = bounds.width - OnScreenWidgetView.autoDockExposedThickness
+        }
+        return targetFrame.integral
+    }
+    /// ================================================================================================================
+
+    
     @objc func getAvailableSequence() -> Int16 {
         var sequence:Int16 = 0
         self.forEachWidget(){ widget in
@@ -3143,7 +3449,14 @@ import SVGKit
 
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
+        OnScreenWidgetView.installAutoDockIfNeeded()
         if superview == nil {
+            autoDockStopCountdown()
+            autoDockStopSettledAlphaTimer()
+            autoDockRestoreOriginalSize()
+            autoDockIsDocked = false
+            label.alpha = 1
+            autoDockRestoreOriginalAlpha()
             if self.motionControlButtonString == "GYRO" {
                 self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput: true)
                 self.motionHandler?.gyroStarter = nil
@@ -3177,6 +3490,7 @@ import SVGKit
         else{
             self.superViewWidth = (superview?.bounds.size.width)!
             self.superViewHeight = (superview?.bounds.size.height)!
+            autoDockRestartCountdownIfNeeded()
         }
     }
     
@@ -3244,6 +3558,6 @@ import SVGKit
     }
     
     deinit {
-        print("onScreenWidgetView deinit \(CACurrentMediaTime())")
+        print("onScreenWidgetView deinit \(self.widgetLabel) \(CACurrentMediaTime())")
     }
 }

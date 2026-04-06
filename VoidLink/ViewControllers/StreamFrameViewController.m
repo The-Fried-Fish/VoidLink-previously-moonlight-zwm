@@ -1781,13 +1781,16 @@
 
     BOOL usesXboxFaceButtons = _settings.emulatedControllerType.intValue == LI_CTYPE_XBOX;
     
-    CGFloat maxWidth = MIN(CGRectGetWidth(self.view.bounds) * 0.72, 620);
-    CGFloat width = MAX(420, maxWidth);
-    CGFloat height = width / 1.82;
-    CGRect overlayFrame = CGRectMake(0, 0, width, height);
+    // CGFloat maxWidth = MIN(CGRectGetWidth(self.view.bounds) * 0.72, 620);
+    // CGFloat standardWidth = MAX(420, maxWidth);
+    
+    CGFloat standardWidth = GenericUtils.isIPhone ? 165 : 200;
+    
+    CGFloat standardhHeight = standardWidth / 1.82;
+    CGRect overlayFrame = CGRectMake(0, 0, standardWidth, standardhHeight);
 
     AbstractGamepadOverlayView *overlayView = [[AbstractGamepadOverlayView alloc] initWithFrame:overlayFrame usesPlayStationFaceButtons:!usesXboxFaceButtons];
-    overlayView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+    overlayView.center = CGPointMake(self.view.bounds.size.width-standardWidth/2-20, self.view.bounds.size.height-standardhHeight/2-20);
     overlayView.userInteractionEnabled = YES;
     [self.view addSubview:overlayView];
 

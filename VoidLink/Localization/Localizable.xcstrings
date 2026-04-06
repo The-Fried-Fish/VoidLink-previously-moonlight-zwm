@@ -1779,6 +1779,52 @@
         }
       }
     },
+    "Auto dock disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动吸附: 已关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動吸附: 已關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動吸附: 已關閉"
+          }
+        }
+      }
+    },
+    "Auto dock: %d s" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动吸附: %d 秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動吸附: %d 秒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動吸附: %d 秒"
+          }
+        }
+      }
+    },
     "Auto tap disabled" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3433,6 +3479,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "位移型右搖桿觸控板"
+          }
+        }
+      }
+    },
+    "Docked alpha: %d%%" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Docked alpha: %d%"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吸附后透明度: %d%%"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吸附後透明度: %d%%"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吸附後透明度: %d%%"
           }
         }
       }

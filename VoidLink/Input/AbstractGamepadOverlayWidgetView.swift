@@ -134,28 +134,34 @@ final class AbstractGamepadOverlayView: UIView {
     private weak var hostedView: UIView?
     private let visualMaskLayer = CAShapeLayer()
     private let usesPlayStationFaceButtons: Bool
-    private var pinchBaseTransform: CGAffineTransform = .identity
+    private let baseRenderWidth: CGFloat = 420
+    private let baseAspectRatio: CGFloat = 1.82
+    private let initialDisplayWidth: CGFloat
+    private var pinchBaseWidth: CGFloat = 0
     private var panStartCenter: CGPoint = .zero
     private var activeGestureCount = 0
     private var didRestorePersistedState = false
-    private let minScale: CGFloat = 0.1
-    private let maxScale: CGFloat = 2.4
-    private let doubleTapWidths: [CGFloat] = [130, 200]
+    private let minWidth: CGFloat = 70
+    private let maxWidth: CGFloat = 520
+    private let doubleTapWidths: [CGFloat] = [GenericUtils.isIPhone() ? 90 : 130, GenericUtils.isIPhone() ? 165 : 200]
 
     @objc init(frame: CGRect, usesPlayStationFaceButtons: Bool) {
         self.usesPlayStationFaceButtons = usesPlayStationFaceButtons
-        super.init(frame: frame)
+        self.initialDisplayWidth = frame.width > 0 ? frame.width : baseRenderWidth
+        super.init(frame: CGRect(origin: frame.origin, size: CGSize(width: baseRenderWidth, height: baseRenderWidth / baseAspectRatio)))
         setupHostedViewIfNeeded()
     }
 
     override init(frame: CGRect) {
         self.usesPlayStationFaceButtons = false
-        super.init(frame: frame)
+        self.initialDisplayWidth = frame.width > 0 ? frame.width : baseRenderWidth
+        super.init(frame: CGRect(origin: frame.origin, size: CGSize(width: baseRenderWidth, height: baseRenderWidth / baseAspectRatio)))
         setupHostedViewIfNeeded()
     }
 
     required init?(coder: NSCoder) {
         self.usesPlayStationFaceButtons = false
+        self.initialDisplayWidth = baseRenderWidth
         super.init(coder: coder)
         setupHostedViewIfNeeded()
     }
@@ -176,6 +182,7 @@ final class AbstractGamepadOverlayView: UIView {
         clipsToBounds = false
         isMultipleTouchEnabled = true
         layer.mask = visualMaskLayer
+        applyScale(forTargetWidth: initialDisplayWidth)
 
         addSubview(hostingController.view)
         installGesturesIfNeeded()
@@ -239,11 +246,10 @@ final class AbstractGamepadOverlayView: UIView {
         case .began:
             presentFirstTouchTipIfNeeded()
             beginGestureSession()
-            pinchBaseTransform = transform
+            pinchBaseWidth = frame.width
         case .changed, .ended:
-            let baseScale = currentScale(from: pinchBaseTransform)
-            let nextScale = max(minScale, min(maxScale, baseScale * recognizer.scale))
-            transform = CGAffineTransform(scaleX: nextScale, y: nextScale)
+            let nextWidth = max(minWidth, min(maxWidth, pinchBaseWidth * recognizer.scale))
+            applyScale(forTargetWidth: nextWidth)
             if recognizer.state == .ended {
                 endGestureSession()
             }
@@ -259,10 +265,6 @@ final class AbstractGamepadOverlayView: UIView {
         presentFirstTouchTipIfNeeded()
         applyScale(forTargetWidth: nextDoubleTapWidth())
         persistState()
-    }
-
-    private func currentScale(from transform: CGAffineTransform) -> CGFloat {
-        sqrt((transform.a * transform.a) + (transform.c * transform.c))
     }
 
     private func updateVisualMask() {
@@ -325,8 +327,7 @@ final class AbstractGamepadOverlayView: UIView {
         defer { didRestorePersistedState = true }
 
         guard let state = AbstractGamepadOverlayPersistence.loadOverlayState() else { return }
-        let restoredScale = max(minScale, min(maxScale, state.size.width / bounds.width))
-        transform = CGAffineTransform(scaleX: restoredScale, y: restoredScale)
+        applyScale(forTargetWidth: state.size.width)
         center = AbstractGamepadOverlayPersistence.center(in: superview, from: state.centerRatio)
     }
 
@@ -387,8 +388,8 @@ final class AbstractGamepadOverlayView: UIView {
     }
 
     private func applyScale(forTargetWidth targetWidth: CGFloat) {
-        guard bounds.width > 0 else { return }
-        let targetScale = max(minScale, min(maxScale, targetWidth / bounds.width))
+        let clampedWidth = max(minWidth, min(maxWidth, targetWidth))
+        let targetScale = clampedWidth / baseRenderWidth
         transform = CGAffineTransform(scaleX: targetScale, y: targetScale)
     }
 }

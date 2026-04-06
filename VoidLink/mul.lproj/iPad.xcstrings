@@ -3992,6 +3992,18 @@
         }
       }
     },
+    "KKW-Q7-0tg.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Auto dock timer\"; ObjectID = \"KKW-Q7-0tg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto dock timer"
+          }
+        }
+      }
+    },
     "KNe-bN-CDb.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; KNe-bN-CDb.segmentTitles[0] = \"Disabled\"; ObjectID = \"KNe-bN-CDb\";",
       "extractionState" : "extracted_with_value",
@@ -5154,6 +5166,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "軟鍵盤工具列"
+          }
+        }
+      }
+    },
+    "qFn-D7-7aD.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Docked alpha\"; ObjectID = \"qFn-D7-7aD\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Docked alpha"
           }
         }
       }

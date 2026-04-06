@@ -447,6 +447,8 @@ static CGRect layoutViewBounds;
         buttonState.sequence = widgetView.sequence;
         buttonState.sequenceSet = widgetView.sequenceSet;
         buttonState.parentSequence = widgetView.parentSequence;
+        buttonState.autoDockTimer = widgetView.autoDockIdleDuration;
+        buttonState.dockedAlpha = widgetView.autoDockSettledAlpha;
         buttonState.folded = widgetView.folded;
         buttonState.revealMode = widgetView.revealMode;
         buttonState.bulkMoveEnabled = widgetView.bulkMoveEnabled;

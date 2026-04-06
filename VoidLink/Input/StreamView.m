@@ -646,6 +646,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     [OnScreenWidgetView setWithWidget:widgetView for:widgetView.sequence];
                     widgetView.sequenceSet = buttonState.sequenceSet;
                     widgetView.parentSequence = buttonState.parentSequence;
+                    widgetView.autoDockIdleDuration = buttonState.autoDockTimer;
+                    widgetView.autoDockSettledAlpha = buttonState.dockedAlpha;
                     widgetView.folded = buttonState.folded;
                     widgetView.persistedFolded = buttonState.folded;
                     widgetView.revealMode = buttonState.revealMode;
@@ -690,6 +692,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     
                     widgetView.gamepadOverlayFLag = oscProfile.gamepadOverlayEnabled;
                     [widgetView setupAtrributedText];
+                    
+                    [widgetView setAutoDockEnabled:widgetView.isFolder && widgetView.parentSequence < 0 && widgetView.autoDockIdleDuration>0];
                     
                     if(sequenceGenerated){
                         // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());

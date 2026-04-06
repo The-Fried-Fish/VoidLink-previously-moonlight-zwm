@@ -2293,6 +2293,18 @@
         }
       }
     },
+    "F8T-uC-SAR.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Auto dock timer\"; ObjectID = \"F8T-uC-SAR\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto dock timer"
+          }
+        }
+      }
+    },
     "f46-Pt-0Pv.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Profile:\"; ObjectID = \"f46-Pt-0Pv\";",
       "extractionState" : "extracted_with_value",
@@ -3057,6 +3069,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Size"
+          }
+        }
+      }
+    },
+    "kxI-bn-pRU.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Docked alpha\"; ObjectID = \"kxI-bn-pRU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Docked alpha"
           }
         }
       }
