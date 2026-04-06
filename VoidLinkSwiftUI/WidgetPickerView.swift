@@ -1430,6 +1430,8 @@ struct WidgetPickerView: View {
                                     SwiftLocalizationHelper.localizedString(forKey: "Enter label(optional)"),
                                     text: $widgetButtonLabel
                                 )
+                                .foregroundColor(Color.black.opacity(0.82))
+                                .environment(\.colorScheme, .light)
                                 .padding(.horizontal, 12)
                                 .frame(height: fieldHeight)
                                 .background(
@@ -1451,6 +1453,7 @@ struct WidgetPickerView: View {
                                     }
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
+                                .environment(\.colorScheme, .light)
                                 .disabled(isComboModeLocked)
                                 .opacity(isComboModeLocked ? 0.45 : 1.0)
                             }
@@ -1477,6 +1480,7 @@ struct WidgetPickerView: View {
                                 }
                             }
                             .pickerStyle(SegmentedPickerStyle())
+                            .environment(\.colorScheme, .light)
                         }
                     }
                 }
@@ -1584,6 +1588,10 @@ struct WidgetPickerView: View {
         poolItems.contains(where: isPad)
     }
 
+    private var hasGamepadButtonCommand: Bool {
+        poolItems.contains { $0.visualKind == .gamepadButton }
+    }
+
     private var isShortcutMode: Bool {
         effectiveWidgetComboMode == .shortcut
     }
@@ -1597,7 +1605,7 @@ struct WidgetPickerView: View {
 
     private var forcedComboMode: WidgetCreateComboMode? {
         guard showsComboModeControl else { return nil }
-        if targetWidgetKind == .button && hasPadCommand {
+        if targetWidgetKind == .button && (hasPadCommand || hasGamepadButtonCommand) {
             return .skill
         }
         return selectedFunctionalButtonOption?.forcedComboMode
@@ -1656,6 +1664,15 @@ struct WidgetPickerView: View {
 
     private var shouldBypassCreateWidgetSheet: Bool {
         guard !poolItems.isEmpty else { return false }
+
+        let hasVisibleConfigurationSection =
+            showsButtonLabelField ||
+            showsComboModeControl ||
+            showsIntervalSlider ||
+            showsShapeControl
+        if !hasVisibleConfigurationSection {
+            return true
+        }
 
         let isSinglePadSelection = poolItems.count == 1 && isPad(poolItems[0])
         let isSingleButtonThenSinglePadSelection =
