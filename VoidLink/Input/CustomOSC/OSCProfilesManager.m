@@ -205,7 +205,7 @@ static CGRect layoutViewBounds;
             NSSet *classes = [NSSet setWithObjects: [NSMutableData class], [NSMutableArray class], nil];
             profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:&error];
             [self importEncodedProfiles:profilesEncoded];
-            [self setProfileToSelected:0];
+            [self setProfileToSelected: GenericUtils.isIPhone ? 1 : 2];
         }
     }
 }
@@ -279,7 +279,8 @@ static CGRect layoutViewBounds;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     // NSString* persistedKey = @"widgetProfileUpdated-20251015";
-    NSString* persistedKey = @"widgetProfileUpdated-20260322";
+    // NSString* persistedKey = @"widgetProfileUpdated-20260322";
+    NSString* persistedKey = @"widgetProfileUpdated-20260408";
     BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
     
     if(profiles.count == 0 || needImportDefaultTemplates){
