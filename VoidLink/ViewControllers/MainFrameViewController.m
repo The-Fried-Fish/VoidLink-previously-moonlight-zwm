@@ -1645,6 +1645,7 @@ static NSMutableSet* hostList;
     // if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
     settings.onscreenControls = @(OnScreenControlsLevelCustom);
     settings.pencilTickIntervalUs = @(1750);
+    settings.oscLayoutToolFingers = @(666);
     
     [dataMan saveData];
 }

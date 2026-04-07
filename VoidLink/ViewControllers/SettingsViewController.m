@@ -822,7 +822,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
     [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
     [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
+    [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
     [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
     [self addSetting:self.trackTouchPointStack ofId:@"trackTouchPointStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
     [touchControlSection addToParentStack:_parentStack];
@@ -2231,6 +2231,12 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)showCustomOswTip {
+    
+    if (!self->_mainFrameViewController.settingsExpandedInStreamView) {
+        [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
+    }
+
+    /*
     GenericUtils.autoPopSoftKeyboard = !GenericUtils.isIPhone;
     NSString* edgeSide = self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex == 1 ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Rebase in Streaming"]
@@ -2250,27 +2256,29 @@ BOOL isCustomResolution(int resolutionSelected) {
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"]
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction *action) {
-         UITextField *textField = alertController.textFields.firstObject;
-         NSString *inputText = textField.text;
-         NSInteger fingers = [inputText integerValue];
-         if (inputText.length > 0 && fingers >= 4) {
-             self->oswLayoutFingers = (uint16_t) fingers;
-             NSLog(@"OK button tapped with %d fingers", (uint16_t)fingers);
-         } else {
-             NSLog(@"OK button tapped with no change");
-         }
-         
-         // Continue execution after the alert is dismissed
-         if (!self->_mainFrameViewController.settingsExpandedInStreamView) {
-             [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
-         }
-                                                            
-        [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
-        [self handleOswGestureChange];}];
+        UITextField *textField = alertController.textFields.firstObject;
+        NSString *inputText = textField.text;
+        NSInteger fingers = [inputText integerValue];
+        if (inputText.length > 0 && fingers >= 4) {
+            self->oswLayoutFingers = (uint16_t) fingers;
+            NSLog(@"OK button tapped with %d fingers", (uint16_t)fingers);
+        } else {
+            NSLog(@"OK button tapped with no change");
+        }
+        
+        // Continue execution after the alert is dismissed
+        if (!self->_mainFrameViewController.settingsExpandedInStreamView) {
+            [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
+        }
+        
+        // [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
+        [self handleOswGestureChange];
+    }];
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
     [self presentViewController:alertController animated:YES completion:nil];
+     */
 }
 
 - (void)hdrSwitchFlipped:(UISwitch* )sender{
