@@ -3140,6 +3140,10 @@ import ObjectiveC.runtime
             restartAutoDockCountdown()
             return
         }
+        if hasUnfoldedSubfolders() {
+            return
+        }
+        
         self.isUserInteractionEnabled = false
         guard let hostView = superview,
               !OnScreenWidgetView.editMode,
@@ -3391,6 +3395,15 @@ import ObjectiveC.runtime
             current = parent
         }
         return parents
+    }
+    
+    private func hasUnfoldedSubfolders() -> Bool {
+        for sequence in self.sequenceSet {
+            guard let widget = OnScreenWidgetView.mapping[sequence] else {continue}
+            if !widget.isFolder {continue}
+            if !widget.folded {return true}
+        }
+        return false
     }
 
     private static func putWidget(_ widget:OnScreenWidgetView, into folder:OnScreenWidgetView){

@@ -4630,25 +4630,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. From %@ edge, slide %d%% screen width to open settings menu\n\n2. From %@ edge, slide %d%% screen width to open toolbox menu\n\n3. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
+            "value" : "\n1. By default, The widget menu button will be automatically docked to edge after staying idle for 10 seconds.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\n1. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n2. 打开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 从40%%上半边缘滑动避免触控事件影响PC端"
+            "state" : "translated",
+            "value" : "\n1. 默认状态下，控件菜单按键在闲置10秒后将自动吸附屏幕边缘\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 从40%%上半边缘滑动避免触控事件影响PC端"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟工具箱選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
+            "state" : "translated",
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置 10 秒後將自動吸附螢幕邊緣\n\n2. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\n1. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n2. 開啟工具箱選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
+            "state" : "translated",
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置 10 秒後將自動吸附螢幕邊緣\n\n2. 展開設定選單：從%@邊緣滑動%d%%的螢幕寬度\n\n3. 從螢幕邊緣上方40%%處滑動以避免將觸控事件傳送到電腦端"
           }
         }
       }

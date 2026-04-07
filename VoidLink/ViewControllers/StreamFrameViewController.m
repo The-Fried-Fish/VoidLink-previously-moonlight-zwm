@@ -570,7 +570,7 @@
     NSString* cmdToolEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"right"] : [LocalizationHelper localizedStringForKey:@"left"];
     uint8_t slideDist = (uint8_t)(_settings.slideToSettingsDistance.floatValue * 100);
     // 创建弹窗
-    NSString* tipText = [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist];
+    NSString* tipText = [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist];
     
     [AlertControllerUtil showAlertIn:self
                                     title:[LocalizationHelper localizedStringForKey:@"First Launch Tips"]
