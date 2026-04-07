@@ -1737,7 +1737,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @objc private func autoDockTimerSliderMoved(_ sender: UISlider) {
         guard let selectedWidget = selectedWidgetView else {return}
         selectedWidget.autoDockIdleDuration = TimeInterval(Int(sender.value))
-        autoDockTimerLabel.text = sender.value == 0 ? LocalizationHelper.localizedString(forKey: "Auto dock disabled", Int(sender.value)) : LocalizationHelper.localizedString(forKey: "Auto dock: %d s", Int(sender.value))
+        autoDockTimerLabel.text = Int(sender.value) == 0 ? LocalizationHelper.localizedString(forKey: "Auto dock disabled", Int(sender.value)) : LocalizationHelper.localizedString(forKey: "Auto dock: %d s", Int(sender.value))
         return
     }
 

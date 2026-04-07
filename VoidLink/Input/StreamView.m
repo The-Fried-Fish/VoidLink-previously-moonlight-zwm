@@ -694,7 +694,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.gamepadOverlayFLag = oscProfile.gamepadOverlayEnabled;
                     [widgetView setupAtrributedText];
                     
-                    [widgetView setAutoDockEnabled:widgetView.isFolder && widgetView.parentSequence < 0 && widgetView.autoDockIdleDuration>0];
+                    if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) [widgetView setAutoDockEnabled:true];
                     
                     if(sequenceGenerated){
                         // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());

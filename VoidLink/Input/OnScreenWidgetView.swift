@@ -3135,6 +3135,8 @@ import ObjectiveC.runtime
     }
     
     private func autoDockWidgetToNearestEdge() {
+        guard autoDockEnabled else {return}
+        
         if !folded {
             restartAutoDockCountdown()
             return
