@@ -3129,7 +3129,6 @@ import ObjectiveC.runtime
               !autoDockIsDocked else {
             return
         }
-        print("autoDockIdleDuration \(autoDockIdleDuration) \(CACurrentMediaTime())")
         autoDockTimer = Timer.scheduledTimer(withTimeInterval: autoDockIdleDuration, repeats: false) { [weak self] _ in
             self?.autoDockWidgetToNearestEdge()
         }

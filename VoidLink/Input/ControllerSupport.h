@@ -16,6 +16,7 @@
 - (void)gamepadPresenceChanged;
 - (void)mousePresenceChanged;
 - (void)streamExitRequested;
+- (void)controllerArrivalWithPlayerIndex:(int8_t)index;
 
 @end
 

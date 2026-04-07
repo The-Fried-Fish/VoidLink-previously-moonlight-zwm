@@ -781,6 +781,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     if (controller) {
         // This is a physical controller with a corresponding GCController object
         
+        [_delegate controllerArrivalWithPlayerIndex:voidController.playerIndex];
+        
         // Start is always present
         supportedButtonFlags |= PLAY_FLAG;
         

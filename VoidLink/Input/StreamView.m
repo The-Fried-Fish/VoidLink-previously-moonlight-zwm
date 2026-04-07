@@ -614,9 +614,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         // get streamFrameVC
         if(!self->_streamFrameVC) self->_streamFrameVC = [self parentViewController];
         
+        /*
         if (@available(iOS 13.0, *)) {
             if(oscProfile.gamepadOverlayEnabled) [(StreamFrameViewController* )self->_streamFrameVC loadAbstractGamepadOverlayIfNeeded];
-        }
+        } */
         
         // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
         

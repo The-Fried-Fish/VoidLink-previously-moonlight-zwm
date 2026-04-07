@@ -362,7 +362,7 @@
     if (reloadSettings) {
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     }
-    _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
+    if(!_viewJustLoaded) _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
     
     overlayLevel = _settings.statsOverlayLevel.intValue;
     [self setupOverlayView];
@@ -621,6 +621,8 @@
     [_spinner sizeToFit];
     [_spinner startAnimating];
     _spinner.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2 - _stageLabel.frame.size.height - _spinner.frame.size.height);
+    
+    _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
     
     _controllerSupport = [[ControllerSupport alloc] initWithConfig:self.streamConfig delegate:self];
     _inactivityTimer = nil;
@@ -1764,6 +1766,14 @@
     _delayedRemoveExtScreen = block;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), block);
+}
+
+- (void)controllerArrivalWithPlayerIndex:(int8_t)index{
+    if(index == 0 && _oscProfile.gamepadOverlayEnabled){
+        if (@available(iOS 13.0, *)) {
+            [self loadAbstractGamepadOverlayIfNeeded];
+        }
+    }
 }
 
 - (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0)){
