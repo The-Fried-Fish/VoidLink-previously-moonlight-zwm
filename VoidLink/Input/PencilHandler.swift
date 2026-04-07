@@ -416,12 +416,34 @@ import UIKit
             doubleTapShorcuts[i] = shortcut
         }
     }
+    
+    @available(iOS 13.0, *)
+    func widgetPickerViewController(_ controller: WidgetPickerViewController, didCreateWidget payload: NSDictionary) {
+        let params = payload.mutableCopy() as? NSMutableDictionary ?? NSMutableDictionary()
+        let pickerAction = ((params["pickerAction"] as? String) ?? "").lowercased()
+        params.removeObject(forKey: "pickerAction")
+        
+        if pickerAction == "create" {
+            
+        }
+    }
 
     @objc static public func enterDoubleTapShortcuts(in viewController: UIViewController){
-        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
-        selectedProfile = oscProfileMan.getSelectedProfile()
-        guard let selectedProfile = selectedProfile else {return}
-        
+        if #available(iOS 13.0, *) {
+            let pickerViewController = WidgetPickerViewController()
+            pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
+            pickerViewController.keyboardPickerMode = .shortcutPicker
+            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.initialTabIdentifier = "keyboard"
+            pickerViewController.shortcutIdentifier = "eraser"
+            pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "Select eraser shortcut keys")
+            let nav = UINavigationController(rootViewController: pickerViewController)
+            nav.modalPresentationStyle = .overFullScreen
+            viewController.present(nav, animated: true)
+            return
+        }
+
+        /*
         let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Eraser Shortcut"),
                                       message: SwiftLocalizationHelper.localizedString(forKey: "Enter eraser keyboard shortcut:"),
                                       preferredStyle: .alert)
@@ -455,10 +477,24 @@ import UIKit
         viewController.present(alert, animated: true, completion: {
         })
 
+        */
     }
     
+    @available(iOS 13.0, *)
     @objc static public func enterBrushShortcut(in viewController: UIViewController){
-                
+        let pickerViewController = WidgetPickerViewController()
+        pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
+        pickerViewController.keyboardPickerMode = .shortcutPicker
+        pickerViewController.tabIdentifiers = ["keyboard"]
+        pickerViewController.initialTabIdentifier = "keyboard"
+        pickerViewController.shortcutIdentifier = "brush"
+        pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "Select brush shortcut keys")
+        let nav = UINavigationController(rootViewController: pickerViewController)
+        nav.modalPresentationStyle = .overFullScreen
+        viewController.present(nav, animated: true)
+        return
+        
+        /*
         let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Brush Shortcut"),
                                       message: SwiftLocalizationHelper.localizedString(forKey: "Enter brush keyboard shortcut:"),
                                       preferredStyle: .alert)
@@ -500,13 +536,28 @@ import UIKit
         viewController.present(alert, animated: true, completion: {
             
         })
-
+         */
     }
     
     @objc static private(set) var squeezeStartShortcut:String = ""
     @objc static private(set) var squeezeEndShortcut:String = ""
     
+    @available(iOS 13.0, *)
     @objc static public func enterSqueezeShortcuts(in viewController: UIViewController){
+        
+        let pickerViewController = WidgetPickerViewController()
+        pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
+        pickerViewController.keyboardPickerMode = .shortcutPicker
+        pickerViewController.tabIdentifiers = ["keyboard"]
+        pickerViewController.initialTabIdentifier = "keyboard"
+        pickerViewController.shortcutIdentifier = "squeezePress"
+        pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
+        let nav = UINavigationController(rootViewController: pickerViewController)
+        nav.modalPresentationStyle = .overFullScreen
+        viewController.present(nav, animated: true)
+        return
+        
+        /*
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         selectedProfile = oscProfileMan.getSelectedProfile()
         guard let selectedProfile = selectedProfile else {return}
@@ -543,10 +594,24 @@ import UIKit
 
         viewController.present(alert, animated: true, completion: {
         })
+        */
     }
 
+    @available(iOS 13.0, *)
     @objc static public func enterSqueezeEndShortcut(in viewController: UIViewController){
-                
+        let pickerViewController = WidgetPickerViewController()
+        pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
+        pickerViewController.keyboardPickerMode = .shortcutPicker
+        pickerViewController.tabIdentifiers = ["keyboard"]
+        pickerViewController.initialTabIdentifier = "keyboard"
+        pickerViewController.shortcutIdentifier = "squeezeRelease"
+        pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")
+        let nav = UINavigationController(rootViewController: pickerViewController)
+        nav.modalPresentationStyle = .overFullScreen
+        viewController.present(nav, animated: true)
+        return
+        
+        /*
         let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
                                       message: SwiftLocalizationHelper.localizedString(forKey: "enterSqueezeReleaseShort"),
                                       preferredStyle: .alert)
@@ -588,6 +653,7 @@ import UIKit
         viewController.present(alert, animated: true, completion: {
             
         })
+         */
     }
     
     private func attachHoverLeave(normalizedLocation:CGPoint){

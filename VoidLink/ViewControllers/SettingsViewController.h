@@ -17,9 +17,10 @@
 
 @class LayoutOnScreenControlsViewController;
 @class MicHandler;
-@protocol MicHandlerDelegate;
+@class WidgetPickerViewController;
+@protocol WidgetPickerViewControllerDelegate;
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate, UITextFieldDelegate>
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, UITextFieldDelegate, WidgetPickerViewControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;

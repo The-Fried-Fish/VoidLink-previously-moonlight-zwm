@@ -2988,6 +2988,29 @@
         }
       }
     },
+    "Create shortcut" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成快捷键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成快速鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成快速鍵"
+          }
+        }
+      }
+    },
     "Create widget" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4188,35 +4211,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "\n在主機上輸入以下 PIN 碼：%@\n\n如果您的主機電腦正在執行 Sunshine，請導覽至 Sunshine Web UI 以輸入 PIN"
-          }
-        }
-      }
-    },
-    "enterSqueezePressShort" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter shortcut on squeeze Press:"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "输入捏笔时发送的快捷键："
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "輸入捏筆時傳送的快速鍵："
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "輸入捏筆時傳送的快速鍵："
           }
         }
       }
@@ -9997,6 +9991,29 @@
         }
       }
     },
+    "Select brush shortcut keys" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择笔刷快捷键组合"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇筆刷快速鍵組合"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇筆刷快速鍵組合"
+          }
+        }
+      }
+    },
     "Select Control" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10016,6 +10033,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇控制項"
+          }
+        }
+      }
+    },
+    "Select eraser shortcut keys" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择橡皮擦快捷键组合"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇橡皮擦快速鍵組合"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇橡皮擦快速鍵組合"
           }
         }
       }
@@ -10696,6 +10736,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "捏筆快速鍵"
+          }
+        }
+      }
+    },
+    "squeezePressShortcutPickerTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select shortcut keys on squeeze press"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择捏笔按压时发送的快捷键组合"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇捏筆按壓時發送的快捷鍵組合"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇捏筆按壓時發送的快捷鍵組合"
+          }
+        }
+      }
+    },
+    "squeezeReleaseShortcutPickerTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select shortcut keys on squeeze release. To keep the previously selected keys pressed while squeezing, select “Null” on top right"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择捏笔松开时的快捷键组合, 若要在捏笔时保持之前选择的组合键按下, 选右上方”Null”"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇捏筆鬆開時的快速鍵組合，若要在捏筆時保持之前選擇的組合鍵按下，選右上方「Null」"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇捏筆鬆開時的快速鍵組合，若要在捏筆時保持之前選擇的組合鍵按下，選右上方「Null」"
           }
         }
       }

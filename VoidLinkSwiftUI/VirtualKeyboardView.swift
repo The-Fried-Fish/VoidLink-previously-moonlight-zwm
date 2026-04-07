@@ -59,9 +59,10 @@ enum KeyHighlightStyle {
 }
 
 @available(iOS 13.0, *)
-enum VirtualKeyboardMode {
+public enum VirtualKeyboardMode {
     case picker
     case typing
+    case shortcutPicker
 }
 
 @available(iOS 13.0, *)
@@ -179,12 +180,12 @@ struct VirtualKeyboardView: View {
         self.selectionSyncToken = selectionSyncToken
         self.externalDeselectionCommand = externalDeselectionCommand
         self.externalDeselectionToken = externalDeselectionToken
-        _showsMouseWidgets = SwiftUI.State(initialValue: mode == .picker)
+        _showsMouseWidgets = SwiftUI.State(initialValue: mode != .typing)
     }
     
     var body: some View {
         Group {
-            if mode == .picker {
+            if usesPickerLayout {
                 GeometryReader { proxy in
                     let isPhone = UIDevice.current.userInterfaceIdiom == .phone
                     let horizontalInset: CGFloat = isPhone ? 6 : 12
@@ -298,7 +299,7 @@ struct VirtualKeyboardView: View {
                             height: keyHeight,
                             keyboardType: keyboardType,
                             mode: mode,
-                            usesDirectionPadBaseStyle: mode == .picker,
+                            usesDirectionPadBaseStyle: usesDirectionPadBaseStyle,
                             isActive:
                                 (key.role == .fn && fnMode)
                                 || (key.role == .keyboardSwitch && keyboardType == .mac),
@@ -325,7 +326,7 @@ struct VirtualKeyboardView: View {
             height: height ?? keyHeight,
             keyboardType: keyboardType,
             mode: mode,
-            usesDirectionPadBaseStyle: mode == .picker,
+            usesDirectionPadBaseStyle: usesDirectionPadBaseStyle,
             isActive: isActive,
             highlightStyle: highlightStyle(for: key),
             action: {
@@ -345,9 +346,9 @@ struct VirtualKeyboardView: View {
         case .keyboardSwitch:
             keyboardType = keyboardType == .win ? .mac : .win
         case .normal:
-            if mode == .picker, let family = selectionFamily(for: key) {
+            if usesPickerSelectionBehavior, let family = selectionFamily(for: key) {
                 handleDirectionKeyTap(key, family: family)
-            } else if mode == .picker || isTypingToggleKey(key) {
+            } else if usesPickerSelectionBehavior || isTypingToggleKey(key) {
                 toggleRegularKeyHighlight(key)
             }
         }
@@ -399,7 +400,9 @@ struct VirtualKeyboardView: View {
             if VirtualKeyboardView.selectedCmd == padCommand(for: family) {
                 VirtualKeyboardView.selectedCmd = ""
             }
-            return
+            if mode != .shortcutPicker {
+                return
+            }
         }
 
         if directionSingleKeyLabels.contains(key.label) {
@@ -410,6 +413,29 @@ struct VirtualKeyboardView: View {
             if VirtualKeyboardView.selectedCmd == key.cmdString(for: keyboardType) {
                 VirtualKeyboardView.selectedCmd = ""
             }
+            return
+        }
+
+        if mode == .shortcutPicker {
+            let command = key.cmdString(for: keyboardType) ?? key.label
+            if canSelectCommand?(command) == false {
+                return
+            }
+            let option = KeyboardWidgetOption(
+                command: command,
+                description: singleKeyDescription(for: key, family: family),
+                highlightedLabels: [key.label],
+                family: family,
+                selectionState: .single(key.label)
+            )
+            applySelection(option)
+            VirtualKeyboardView.tappedKeyLabels = [key.label]
+            VirtualKeyboardView.selectedCmd = command
+            VirtualKeyboardView.lastSelectionDisplayText = poolDisplayText(for: option)
+            VirtualKeyboardView.lastSelectionUsesMacLayout = keyboardType == .mac
+            VirtualKeyboardView.lastSelectionFromMouseWidgets = false
+            VirtualKeyboardView.lastSelectionUsesFnCommandDisplay = false
+            onCommandSelected?(command)
             return
         }
 
@@ -590,12 +616,12 @@ struct VirtualKeyboardView: View {
     }
     
     private func highlightStyle(for key: Key) -> KeyHighlightStyle {
-        if mode == .picker, let family = selectionFamily(for: key), padSelections.contains(family) {
+        if usesPadSelectionHighlight, let family = selectionFamily(for: key), padSelections.contains(family) {
             return .pad
         }
         
         if highlightedKeyIDs.contains(regularHighlightID(for: key))
-            || (mode == .picker && directionSingleKeyLabels.contains(key.label)) {
+            || (usesPickerSelectionBehavior && directionSingleKeyLabels.contains(key.label)) {
             return isPadLikeControl(key) ? .pad : .single
         }
         
@@ -770,7 +796,7 @@ struct VirtualKeyboardView: View {
     // MARK: - 小键盘 / 鼠标控件区
     var numpadBlock: some View {
         VStack(spacing: spacing) {
-            if mode == .picker {
+            if usesPickerLayout {
                 HStack(spacing: spacing) {
                     KeyView(
                         key: Key(
@@ -813,7 +839,7 @@ struct VirtualKeyboardView: View {
                 }
             }
 
-            if mode == .picker {
+            if usesPickerLayout {
                 if showsMouseWidgets {
                     mouseWidgetsBlock
                 } else {
@@ -980,65 +1006,93 @@ struct VirtualKeyboardView: View {
                 )
             }
 
-            HStack(spacing: spacing) {
-                keyboardKeyView(
-                    Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nUp"),
-                        width: unit,
-                        winCmdString: "WHEELDOWN",
-                        macCmdString: "WHEELDOWN",
-                        winKeyCode: 0xFF,
-                        macKeyCode: 0xFF
+            if mode == .shortcutPicker {
+                HStack(spacing: spacing) {
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nUp"),
+                            width: unit,
+                            winCmdString: "WHEELDOWN",
+                            macCmdString: "WHEELDOWN",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        )
                     )
-                )
 
-                keyboardKeyView(
-                    Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"),
-                        width: unit,
-                        winCmdString: "WHEELUP",
-                        macCmdString: "WHEELUP",
-                        winKeyCode: 0xFF,
-                        macKeyCode: 0xFF
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"),
+                            width: unit,
+                            winCmdString: "WHEELUP",
+                            macCmdString: "WHEELUP",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        )
                     )
-                )
+                }
+            } else {
+                HStack(spacing: spacing) {
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nUp"),
+                            width: unit,
+                            winCmdString: "WHEELDOWN",
+                            macCmdString: "WHEELDOWN",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        )
+                    )
 
-                keyboardKeyView(
-                    Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "WheelPad"),
-                        width: unit * 2 + spacing,
-                        winCmdString: "WHEEL",
-                        macCmdString: "WHEEL",
-                        winKeyCode: 0xFF,
-                        macKeyCode: 0xFF
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"),
+                            width: unit,
+                            winCmdString: "WHEELUP",
+                            macCmdString: "WHEELUP",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        )
                     )
-                )
+
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "WheelPad"),
+                            width: unit * 2 + spacing,
+                            winCmdString: "WHEEL",
+                            macCmdString: "WHEEL",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        )
+                    )
+                }
             }
 
-            HStack(spacing: spacing) {
-                keyboardKeyView(
-                    Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "MousePad"),
-                        width: unit * 2 + spacing,
-                        winCmdString: "MOUSEPAD",
-                        macCmdString: "MOUSEPAD",
-                        winKeyCode: 0xFF,
-                        macKeyCode: 0xFF
-                    ),
-                    height: keyHeight * 2 + spacing
-                )
+            if mode != .shortcutPicker {
+                HStack(spacing: spacing) {
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "MousePad"),
+                            width: unit * 2 + spacing,
+                            winCmdString: "MOUSEPAD",
+                            macCmdString: "MOUSEPAD",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        ),
+                        height: keyHeight * 2 + spacing
+                    )
 
-                keyboardKeyView(
-                    Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"),
-                        width: unit * 2 + spacing,
-                        winCmdString: "TRACKBALL",
-                        macCmdString: "TRACKBALL",
-                        winKeyCode: 0xFF,
-                        macKeyCode: 0xFF
-                    ),
-                    height: keyHeight * 2 + spacing
-                )
+                    keyboardKeyView(
+                        Key(
+                            label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"),
+                            width: unit * 2 + spacing,
+                            winCmdString: "TRACKBALL",
+                            macCmdString: "TRACKBALL",
+                            winKeyCode: 0xFF,
+                            macKeyCode: 0xFF
+                        ),
+                        height: keyHeight * 2 + spacing
+                    )
+                }
             }
         }
     }
@@ -1210,7 +1264,7 @@ struct VirtualKeyboardView: View {
     }
 
     private var mouseWidgetKeys: [Key] {
-        [
+        var keys = [
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "Left Button"), width: unit * 2 + spacing, winCmdString: "MLEFT", macCmdString: "MLEFT", winKeyCode: 0xFF, macKeyCode: 0xFF),
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "Right Button"), width: unit * 2 + spacing, winCmdString: "MRIGHT", macCmdString: "MRIGHT", winKeyCode: 0xFF, macKeyCode: 0xFF),
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "Middle Button"), width: unit * 2 + spacing, winCmdString: "MMIDDLE", macCmdString: "MMIDDLE", winKeyCode: 0xFF, macKeyCode: 0xFF),
@@ -1222,6 +1276,29 @@ struct VirtualKeyboardView: View {
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "MousePad"), width: unit * 2 + spacing, winCmdString: "MOUSEPAD", macCmdString: "MOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"), width: unit * 2 + spacing, winCmdString: "TRACKBALL", macCmdString: "TRACKBALL", winKeyCode: 0xFF, macKeyCode: 0xFF)
         ]
+        if mode == .shortcutPicker {
+            keys.removeAll { key in
+                let command = key.cmdString(for: keyboardType) ?? ""
+                return command == "WHEEL" || command == "MOUSEPAD" || command == "TRACKBALL"
+            }
+        }
+        return keys
+    }
+
+    private var usesPickerLayout: Bool {
+        mode != .typing
+    }
+
+    private var usesPickerSelectionBehavior: Bool {
+        mode == .picker || mode == .shortcutPicker
+    }
+
+    private var usesPadSelectionHighlight: Bool {
+        mode == .picker
+    }
+
+    private var usesDirectionPadBaseStyle: Bool {
+        mode == .picker
     }
 }
 
@@ -1528,6 +1605,10 @@ struct VirtualKeyboardView_Previews: PreviewProvider {
             VirtualKeyboardView(mode: .picker)
                 .frame(height: 320)
                 .previewDisplayName("Picker")
+
+            VirtualKeyboardView(mode: .shortcutPicker)
+                .frame(height: 320)
+                .previewDisplayName("Shortcut Picker")
         }
     }
 }

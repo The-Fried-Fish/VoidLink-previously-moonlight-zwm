@@ -836,6 +836,7 @@ import ObjectiveC.runtime
             ]
         )
         label.attributedText = attr
+        label.textAlignment = .center
     }
     
     private func setupView() {

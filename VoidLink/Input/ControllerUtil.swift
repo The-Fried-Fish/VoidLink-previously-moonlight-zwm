@@ -95,7 +95,7 @@ import Foundation
                                                 || gamepad.leftThumbstick.yAxis.value != 0)
             if navigationActionTriggeredPrivate { navigationActionTriggered = true}
             else {
-                DispatchQueue.global().asyncAfter(deadline: .now() + 0.02) {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
                     if !navigationActionTriggeredPrivate {
                         navigationActionTriggered = false
                     }

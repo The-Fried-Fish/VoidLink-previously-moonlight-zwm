@@ -3614,6 +3614,33 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
+- (void)widgetPickerViewController:(WidgetPickerViewController *)controller didCreateWidget:(NSDictionary *)payload API_AVAILABLE(ios(13.0)){
+    OSCProfilesManager * profileMan = [OSCProfilesManager sharedManager:CGRectZero];
+    OSCProfile* profile = [profileMan getSelectedProfile];
+    NSString* shortcutIdentifier = [payload objectForKey:@"shortcutIdentifier"];
+
+    if([shortcutIdentifier isEqualToString:@"eraser"]) {
+        profile.eraserShortcut = [payload objectForKey:@"cmdString"];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [PencilHandler enterBrushShortcutIn:self];
+        });
+    }
+    if([shortcutIdentifier isEqualToString:@"brush"]) {
+        profile.brushShortcut = [payload objectForKey:@"cmdString"];
+    }
+    if([shortcutIdentifier isEqualToString:@"squeezePress"]) {
+        profile.squeezeStartShortcut = [payload objectForKey:@"cmdString"];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [PencilHandler enterSqueezeEndShortcutIn:self];
+        });
+    }
+    if([shortcutIdentifier isEqualToString:@"squeezeRelease"]) {
+        profile.squeezeEndShortcut = [payload objectForKey:@"cmdString"];
+    }
+    
+    [profileMan replaceSelectedProfileWith:profile overwriteDefault:true];
+}
+
 /*
 - (void)autoHoverSwitchFlipped:(UISwitch* )sender{
     if(sender.isOn && !settingsViewJustLoaded){

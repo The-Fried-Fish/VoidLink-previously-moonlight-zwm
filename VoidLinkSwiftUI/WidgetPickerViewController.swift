@@ -17,6 +17,9 @@ public final class WidgetPickerViewController: UIViewController {
     public var initialShape: String?
     public var tabIdentifiers: [String] = []
     public var initialTabIdentifier: String?
+    public var keyboardPickerMode: VirtualKeyboardMode = .picker
+    public var shortcutPickerTipText: String?
+    @objc public var shortcutIdentifier: String?
 
     private var hostingViewController: UIHostingController<WidgetPickerView>?
 
@@ -32,6 +35,9 @@ public final class WidgetPickerViewController: UIViewController {
             initialShape: initialShape,
             availableTabs: resolvedTabs(),
             preferredInitialTab: resolvedInitialTab(),
+            keyboardPickerMode: keyboardPickerMode,
+            shortcutPickerTipText: shortcutPickerTipText,
+            shortcutIdentififier: shortcutIdentifier,
             onWidgetCreated: { [weak self] payload in
                 guard let self else { return }
                 self.delegate?.widgetPickerViewController(self, didCreateWidget: payload as NSDictionary)

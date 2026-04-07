@@ -283,6 +283,9 @@ struct WidgetPickerView: View {
     private let initialShape: String?
     private let availableTabs: [WidgetPickerTab]
     private let preferredInitialTab: WidgetPickerTab?
+    private let keyboardPickerMode: VirtualKeyboardMode
+    private let shortcutPickerTipText: String?
+    private let shortcutIdentifier: String?
     var onWidgetCreated: (([String: String]) -> Void)? = nil
     var onCloseRequested: (() -> Void)? = nil
 
@@ -291,7 +294,7 @@ struct WidgetPickerView: View {
     @SwiftUI.State private var selectedCmds: [String] = []
     @SwiftUI.State private var poolItems: [WidgetPoolItem] = []
     @SwiftUI.State private var resetToken: Int = 0
-    @SwiftUI.State private var tipMessage: String = SwiftLocalizationHelper.localizedString(forKey: "Tap any control to add it")
+    @SwiftUI.State private var tipMessage: String
     @SwiftUI.State private var tipMessageType: PoolTipMessageType = .normal
     @SwiftUI.State private var keyboardDeselectionCommand: String = ""
     @SwiftUI.State private var keyboardDeselectionToken: Int = 0
@@ -316,6 +319,9 @@ struct WidgetPickerView: View {
         initialShape: String? = nil,
         availableTabs: [WidgetPickerTab] = WidgetPickerTab.allCases,
         preferredInitialTab: WidgetPickerTab? = nil,
+        keyboardPickerMode: VirtualKeyboardMode = .picker,
+        shortcutPickerTipText: String? = nil,
+        shortcutIdentififier: String? = nil,
         onWidgetCreated: (([String: String]) -> Void)? = nil,
         onCloseRequested: (() -> Void)? = nil
     ) {
@@ -327,9 +333,17 @@ struct WidgetPickerView: View {
         self.initialShape = initialShape
         self.availableTabs = normalizedTabs
         self.preferredInitialTab = resolvedInitialTab
+        self.keyboardPickerMode = keyboardPickerMode
+        self.shortcutPickerTipText = shortcutPickerTipText
+        self.shortcutIdentifier = shortcutIdentififier
         self.onWidgetCreated = onWidgetCreated
         self.onCloseRequested = onCloseRequested
         _selectedTab = SwiftUI.State(initialValue: resolvedInitialTab ?? (normalizedTabs.contains(.keyboard) ? .keyboard : normalizedTabs[0]))
+        _tipMessage = SwiftUI.State(
+            initialValue: (keyboardPickerMode == .shortcutPicker && !(shortcutPickerTipText ?? "").isEmpty)
+                ? (shortcutPickerTipText ?? "")
+                : SwiftLocalizationHelper.localizedString(forKey: "Tap any control to add it")
+        )
     }
 
     private let functionalButtonOptions: [FunctionalButtonOption] = [
@@ -487,7 +501,10 @@ struct WidgetPickerView: View {
     ]
 
     private var defaultTipMessage: String {
-        SwiftLocalizationHelper.localizedString(forKey: "Tap any control to add it")
+        if isShortcutPickerMode, let shortcutPickerTipText, !shortcutPickerTipText.isEmpty {
+            return shortcutPickerTipText
+        }
+        return SwiftLocalizationHelper.localizedString(forKey: "Tap any control to add it")
     }
 
     private var tipMessageColor: Color {
@@ -500,6 +517,11 @@ struct WidgetPickerView: View {
     }
 
     private func setTipMessage(_ message: String, type: PoolTipMessageType = .normal) {
+        if isShortcutPickerMode, let shortcutPickerTipText, !shortcutPickerTipText.isEmpty {
+            tipMessage = shortcutPickerTipText
+            tipMessageType = .normal
+            return
+        }
         tipMessage = message
         tipMessageType = type
     }
@@ -678,7 +700,7 @@ struct WidgetPickerView: View {
                         .padding(.vertical, pickerInsetGamepadVertical)
                     case .keyboard:
                     VirtualKeyboardView(
-                        mode: .picker,
+                        mode: keyboardPickerMode,
                         canSelectCommand: { canSelectCommand($0, source: .keyboard) },
                         isCommandSelected: { selectedCmds.contains($0) },
                         onCommandSelected: { appendCommand($0, source: .keyboard) },
@@ -852,44 +874,48 @@ struct WidgetPickerView: View {
                 .frame(maxWidth: poolGridWidth ?? .infinity, alignment: .center)
                 .frame(maxWidth: .infinity, alignment: .center)
 
+            if keyboardPickerMode != .shortcutPicker {
                 PoolActionChip(
-                    title: SwiftLocalizationHelper.localizedString(forKey: "Gyro switch button"),
-                    isPrimary: false,
-                    height: poolChipHeight,
-                    fontSize: poolChipFontSize,
-                    cornerRadius: metrics.chipCornerRadius
-                ) {
-                    handleGyroButtonTap()
-                }
-                .overlay(
-                    Group {
-                        if selectedGyroCommand != nil {
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(Color.orange.opacity(0.75), lineWidth: 1.4)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                        .fill(
-                                            LinearGradient(
-                                                gradient: Gradient(colors: [
-                                                    Color(red: 1.00, green: 0.96, blue: 0.74).opacity(0.34),
-                                                    Color(red: 0.95, green: 0.78, blue: 0.32).opacity(0.22)
-                                                ]),
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                        )
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                                .allowsHitTesting(false)
-                        }
+                        title: SwiftLocalizationHelper.localizedString(forKey: "Gyro switch button"),
+                        isPrimary: false,
+                        height: poolChipHeight,
+                        fontSize: poolChipFontSize,
+                        cornerRadius: metrics.chipCornerRadius
+                    ) {
+                        handleGyroButtonTap()
                     }
-                )
+                    .overlay(
+                        Group {
+                            if selectedGyroCommand != nil {
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(Color.orange.opacity(0.75), lineWidth: 1.4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                            .fill(
+                                                LinearGradient(
+                                                    gradient: Gradient(colors: [
+                                                        Color(red: 1.00, green: 0.96, blue: 0.74).opacity(0.34),
+                                                        Color(red: 0.95, green: 0.78, blue: 0.32).opacity(0.22)
+                                                    ]),
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                )
+                                            )
+                                    )
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                    )
+            }
 
             HStack(spacing: metrics.isPhone ? 8 : 12) {
                 PoolActionChip(
-                    title: isEditMode
-                        ? WidgetPickerSubmissionAction.create.poolActionTitle
-                        : SwiftLocalizationHelper.localizedString(forKey: "Create widget"),
+                    title: isShortcutPickerMode
+                        ? SwiftLocalizationHelper.localizedString(forKey: "Create shortcut")
+                        : (isEditMode
+                            ? WidgetPickerSubmissionAction.create.poolActionTitle
+                            : SwiftLocalizationHelper.localizedString(forKey: "Create widget")),
                     isPrimary: true,
                     height: poolChipHeight,
                     fontSize: poolChipFontSize,
@@ -1662,7 +1688,15 @@ struct WidgetPickerView: View {
         return "{\n  \"cmdString\": \"\(payload["cmdString"] ?? "")\",\n  \"buttonLabel\": \"\(payload["buttonLabel"] ?? "")\",\n  \"shape\": \"\(payload["shape"] ?? "")\"\n}"
     }
 
+    private var isShortcutPickerMode: Bool {
+        keyboardPickerMode == .shortcutPicker
+    }
+
     private var shouldBypassCreateWidgetSheet: Bool {
+        if isShortcutPickerMode {
+            return true
+        }
+
         guard !poolItems.isEmpty else { return false }
 
         let hasVisibleConfigurationSection =
@@ -1724,7 +1758,7 @@ struct WidgetPickerView: View {
     }
 
     private func presentCreateWidgetSheet(for submissionAction: WidgetPickerSubmissionAction) {
-        guard !poolItems.isEmpty else {
+        guard isShortcutPickerMode || !poolItems.isEmpty else {
             setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Select at least one command before creating a widget"), type: .error)
             return
         }
@@ -1740,7 +1774,7 @@ struct WidgetPickerView: View {
     }
 
     private func submitWidgetPayload() {
-        let payload = makeWidgetPayload()
+        var payload = makeWidgetPayload()
         lastCreatedWidgetPayload = payload
         setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Widget config generated"))
         onWidgetCreated?(payload)
@@ -1753,11 +1787,16 @@ struct WidgetPickerView: View {
             "cmdString": buildCmdString(),
             "buttonLabel": targetWidgetKind == .button ? widgetButtonLabel : "",
             "shape": targetWidgetKind == .button ? widgetShape.rawValue : "",
-            "pickerAction": pendingSubmissionAction.payloadValue
+            "pickerAction": pendingSubmissionAction.payloadValue,
+            "shortcutIdentifier": shortcutIdentifier ?? ""
         ]
     }
 
     private func buildCmdString() -> String {
+        if isShortcutPickerMode {
+            return selectedCmds.joined(separator: "+")
+        }
+
         let joiner = effectiveWidgetComboMode == .shortcut && showsComboModeControl ? "+" : "-"
         var cmdString = selectedCmds.joined(separator: joiner)
 
