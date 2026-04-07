@@ -577,7 +577,7 @@
                                   message:tipText
                                withCancel:NO
                               buttonTitle:[LocalizationHelper localizedStringForKey:@"Got it!"]
-                                countdown:16
+                                countdown:11
                                    action:^{}
                                completion:^{}];
     

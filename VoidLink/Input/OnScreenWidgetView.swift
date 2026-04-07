@@ -3139,9 +3139,7 @@ import ObjectiveC.runtime
             restartAutoDockCountdown()
             return
         }
-        if hasUnfoldedSubfolders() {
-            return
-        }
+        // if hasUnfoldedSubfolders() {return}
         
         self.isUserInteractionEnabled = false
         guard let hostView = superview,

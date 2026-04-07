@@ -712,7 +712,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         if widgetView !== selectedWidgetView {
             selectedWidgetView?.setAutoTapIntervalByText(str: autoTapField.text ?? "")
         }
-        selectedWidgetView = widgetView
+        
         widgetView.hideAllHighlightLayersOfAllWidgets(selfIncluded: true)
 
         autoFitLabel(currentProfileLabel)
@@ -870,7 +870,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             bulkMoveSelector.selectedSegmentIndex = 0
         }
 
-        setBulkEditStackHidden(!bulkEditEnabled)
+        setBulkEditStackHidden(!(bulkEditEnabled && widgetView.isFolder && !widgetView.folded))
                 
         if isIPhone() {
             vibrationStyleStack.isHidden = !widgetView.hasHapticFeedback
@@ -881,7 +881,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     @objc private func widgetViewTapped(_ notification: Notification) {
         guard let widgetView = notification.object as? OnScreenWidgetView else { return }
+        selectedWidgetView = widgetView
         layoutOSC.updateGuidelinesFor(onScreenWidget: widgetView)
+        if bulkEditEnabled {
+            bulkEditButtonTapped(bulkEditButton) // this will call refreshPanelForSelectedWidget too
+            return
+        }
         refreshPanelForSelectedWidget(widgetView)
     }
 
