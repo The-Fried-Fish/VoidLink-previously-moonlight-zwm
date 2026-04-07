@@ -13,7 +13,7 @@ import Foundation
         
     @objc static func needUpdateDefaultSettings() -> Bool {
         // let key = "needUpdateDefaultSettings20260226-1"
-        let key = "needUpdateDefaultSettings20260406"
+        let key = "needUpdateDefaultSettings20260408-3"
         guard !UserDefaults.standard.bool(forKey: key) else {
             return false
         }
