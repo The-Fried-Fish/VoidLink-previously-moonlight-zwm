@@ -1173,6 +1173,16 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @IBAction func saveTapped(_ sender: Any?) {
+        
+        /*
+        let targetProfile = profilesManager.getAllProfiles()[0]
+        let currentProfile = profilesManager.getSelectedProfile()
+        // currentProfile.name = "RPG游戏示例 / RPG example (ZZZ in Genshin style)"
+        currentProfile.name = "Default"
+        //currentProfile.name = "Default";
+        // profilesManager.replace(targetProfile as! OSCProfile, with: currentProfile)
+         */
+         
         clearSickInput()
         OSCProfilesManager.setLayoutViewBounds(view.bounds)
         let success = profilesManager.updateSelectedProfile(layoutOSC.oscButtonLayerPool)

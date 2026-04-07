@@ -1704,15 +1704,7 @@ struct WidgetPickerView: View {
             showsComboModeControl ||
             showsIntervalSlider ||
             showsShapeControl
-        if !hasVisibleConfigurationSection {
-            return true
-        }
-
-        let isSinglePadSelection = poolItems.count == 1 && isPad(poolItems[0])
-        let isSingleButtonThenSinglePadSelection =
-            poolItems.count == 2 && !isPad(poolItems[0]) && isPad(poolItems[1])
-
-        return isSinglePadSelection || isSingleButtonThenSinglePadSelection
+        return !hasVisibleConfigurationSection
     }
 
     private func prepareCreateWidgetDefaults(for submissionAction: WidgetPickerSubmissionAction) {
