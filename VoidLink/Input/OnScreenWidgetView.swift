@@ -396,7 +396,7 @@ import ObjectiveC.runtime
         self.activePointerIds = []
         self.oscProfile = profile
         self.inertialScroller = InertialScroller()
-        dWheelWalkModeThreshold = stickMaxOffset*0.5
+        dWheelWalkModeThreshold = stickMaxOffset*0.2
         // self.motionHandler = MotionHandler.shared(profile: profile)
         super.init(frame: .zero)
         

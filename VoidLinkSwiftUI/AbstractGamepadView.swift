@@ -84,7 +84,7 @@ enum GamepadWidget: Hashable {
     case a, b, x, y
     case select, start, home
     case dPad, up, down, left, right
-    case ls, lsPad, lswheel, rs, rsPad, rsvPad
+    case ls, lsPad, lswheel, rs, rsPad, rsvPad, rsWheel
     case leftShoulder, rightShoulder
     case leftTrigger, ltPad, rightTrigger, rtPad
     case ds4Touchpad
@@ -110,6 +110,7 @@ enum GamepadWidget: Hashable {
         case .rs: return "RS"
         case .rsPad: return "RSPAD"
         case .rsvPad: return "RSVPAD"
+        case .rsWheel: return "RSWHEEL"
         case .leftShoulder: return "LB"
         case .rightShoulder: return "RB"
         case .leftTrigger: return "LT"
@@ -141,6 +142,7 @@ enum GamepadWidget: Hashable {
         case .rs: return SwiftLocalizationHelper.localizedString(forKey: "RS/R3 button")
         case .rsPad: return SwiftLocalizationHelper.localizedString(forKey: "Displacement-based right stick pad")
         case .rsvPad: return SwiftLocalizationHelper.localizedString(forKey: "Velocity-based right stick pad")
+        case .rsWheel: return SwiftLocalizationHelper.localizedString(forKey: "Right stick wheel")
         case .leftShoulder: return SwiftLocalizationHelper.localizedString(forKey: "LB/L1")
         case .rightShoulder: return SwiftLocalizationHelper.localizedString(forKey: "RB/R1")
         case .leftTrigger: return SwiftLocalizationHelper.localizedString(forKey: "LT/L2 button")
@@ -466,12 +468,12 @@ struct AbstractGamepadView: View {
                 thumbWidgets: [.lsPad, .lswheel]
             )
             
-        case .rs, .rsPad, .rsvPad:
+        case .rs, .rsPad, .rsvPad, .rsWheel:
             rightStickHighlight = nextStickHighlightMode(
                 current: rightStickHighlight,
                 selected: widget,
                 outerWidget: .rs,
-                thumbWidgets: [.rsPad, .rsvPad]
+                thumbWidgets: [.rsPad, .rsvPad, .rsWheel]
             )
             if widget == .rs,
                isCommandSelected?(GamepadWidget.rsPad.cmd) == true || isCommandSelected?(GamepadWidget.rsvPad.cmd) == true {
@@ -1050,7 +1052,7 @@ struct AbstractGamepadView: View {
                         .frame(width: rightStickSize, height: rightStickSize)
                         .offset(x: rightStickCenterX, y: sharedLowerControlCenterY)
                         .onTapGesture {
-                            handleTappedWidgets([.rs, .rsPad, .rsvPad], sourceIsDPad: false)
+                            handleTappedWidgets([.rs, .rsPad, .rsvPad, .rsWheel], sourceIsDPad: false)
                         }
                     
                     HomeButtonView(
@@ -1160,7 +1162,8 @@ struct AbstractGamepadView: View {
         if isCommandSelected(GamepadWidget.rs.cmd) {
             rightStickHighlight = .outerOnly
         }
-        if isCommandSelected(GamepadWidget.rsPad.cmd) || isCommandSelected(GamepadWidget.rsvPad.cmd) {
+        if isCommandSelected(GamepadWidget.rsPad.cmd) || isCommandSelected(GamepadWidget.rsvPad.cmd) ||
+            isCommandSelected(GamepadWidget.rsWheel.cmd) {
             rightStickHighlight = rightStickHighlight == .outerOnly ? .both : .thumbOnly
         }
 
@@ -1223,7 +1226,7 @@ struct AbstractGamepadView: View {
             } else if rightStickHighlight == .outerOnly {
                 rightStickHighlight = .none
             }
-        case GamepadWidget.rsPad.cmd, GamepadWidget.rsvPad.cmd:
+        case GamepadWidget.rsPad.cmd, GamepadWidget.rsvPad.cmd, GamepadWidget.rsWheel.cmd:
             if rightStickHighlight == .both {
                 rightStickHighlight = .outerOnly
             } else if rightStickHighlight == .thumbOnly {

@@ -6398,19 +6398,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LS 滚轮必须单独放置"
+            "value" : "LS 方向轮必须单独放置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LS 滾輪必須單獨放置"
+            "value" : "LS 方向輪必須單獨放置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LS 滾輪必須單獨放置"
+            "value" : "LS 方向輪必須單獨放置"
           }
         }
       }
@@ -9697,6 +9697,29 @@
         }
       }
     },
+    "Right stick wheel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆方向轮"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿方向輪"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿方向輪"
+          }
+        }
+      }
+    },
     "Right trigger pad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9743,6 +9766,29 @@
         }
       }
     },
+    "RS wheel must be placed alone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RS 方向轮必须单独放置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RS 方向輪必須單獨放置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RS 方向輪必須單獨放置"
+          }
+        }
+      }
+    },
     "RS/R3 button" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9762,6 +9808,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RS/R3 按鍵"
+          }
+        }
+      }
+    },
+    "RsWheel cannot be combined with other widgets" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RsWheel 不能与其他控件组合"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RsWheel 不能與其他控制項組合"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RsWheel 不能與其他控制項組合"
           }
         }
       }

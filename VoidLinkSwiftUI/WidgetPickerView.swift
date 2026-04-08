@@ -1073,6 +1073,7 @@ struct WidgetPickerView: View {
             "LSPAD",
             "RSPAD",
             "RSVPAD",
+            "RSWHEEL",
             "LTPAD",
             "RTPAD",
             "DS4TOUCH"
@@ -1146,6 +1147,7 @@ struct WidgetPickerView: View {
         guard isPad(item) else { return false }
         if directionPadPriorityCommands.contains(item.cmd) { return false }
         if item.cmd == "LSWHEEL" { return false }
+        if item.cmd == "RSWHEEL" { return false }
         return true
     }
 
@@ -1315,6 +1317,16 @@ struct WidgetPickerView: View {
 
         if !poolItems.isEmpty, poolItems.contains(where: { $0.cmd == "LSWHEEL" }) {
             setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "LsWheel cannot be combined with other widgets"), type: .error)
+            return false
+        }
+        
+        if cmd == "RSWHEEL", !poolItems.isEmpty {
+            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "RS wheel must be placed alone"), type: .error)
+            return false
+        }
+
+        if !poolItems.isEmpty, poolItems.contains(where: { $0.cmd == "RSWHEEL" }) {
+            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "RsWheel cannot be combined with other widgets"), type: .error)
             return false
         }
 
@@ -1925,7 +1937,7 @@ struct WidgetPickerView: View {
             "DPAD",
             "OSCUP", "OSCDOWN", "OSCLEFT", "OSCRIGHT",
             "LS", "LSWHEEL", "LSPAD",
-            "RS", "RSPAD", "RSVPAD",
+            "RS", "RSPAD", "RSVPAD", "RSWHEEL",
             "LB", "RB",
             "LT", "LTPAD",
             "RT", "RTPAD",
