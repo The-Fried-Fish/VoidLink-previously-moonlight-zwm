@@ -34,7 +34,6 @@
 		18D43D7F2F050240008C326F /* PressureCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D43D7E2F050240008C326F /* PressureCurve.swift */; };
 		18E4BCEA2E891895000A8657 /* MotionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E4BCE92E891895000A8657 /* MotionHandler.swift */; };
 		18FCADAF2ECAC23200787A96 /* PencilHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FCADAE2ECAC23200787A96 /* PencilHandler.swift */; };
-		2A4B8D922F8149E200497966 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E1CDEB2C4F67D300547904 /* CommandManager.swift */; };
 		2A7113FD2F5A6C65001D852D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7113FC2F5A6C65001D852D /* ThemeManager.swift */; };
 		2AAA4E822F7666C5001E20DC /* ControllerUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A765BC2ECD51FB004784AA /* ControllerUtil.swift */; };
 		2AAA4E842F7666EE001E20DC /* SwiftLocalizationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E1CDF92C4FE83400547904 /* SwiftLocalizationHelper.swift */; };
@@ -437,7 +436,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		18A0EE282EFBCBFB00BA853A /* SVGs */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SVGs; sourceTree = "<group>"; };
-		2A039E572F72892B00546768 /* VoidLinkSwiftUI */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2AAA4E862F76BDC6001E20DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2A93D5662F7D016C00C2207F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = VoidLinkSwiftUI; sourceTree = "<group>"; };
+		2A039E572F72892B00546768 /* VoidLinkPreview */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2AAA4E862F76BDC6001E20DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2A93D5662F7D016C00C2207F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = VoidLinkPreview; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -615,7 +614,7 @@
 				98AB2E7F1CAD46830089BB98 /* moonlight-common.xcodeproj */,
 				FB290CF919B2C406004C83CF /* VoidLink */,
 				FB1A67542132419700507771 /* Moonlight TV */,
-				2A039E572F72892B00546768 /* VoidLinkSwiftUI */,
+				2A039E572F72892B00546768 /* VoidLinkPreview */,
 				FB290CF019B2C406004C83CF /* Frameworks */,
 				FB290CEF19B2C406004C83CF /* Products */,
 			);
@@ -979,7 +978,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				2A039E572F72892B00546768 /* VoidLinkSwiftUI */,
+				2A039E572F72892B00546768 /* VoidLinkPreview */,
 			);
 			name = VoidLinkPreview;
 			packageProductDependencies = (
@@ -1310,7 +1309,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.trzj.VoidLinkSwiftUI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.trzj.VoidLinkPreview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -1359,7 +1358,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.trzj.VoidLinkSwiftUI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.trzj.VoidLinkPreview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
