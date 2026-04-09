@@ -43,7 +43,7 @@ import Foundation
     }
 
     @objc static func isFirstLaunchGamepadOverlayFeature() -> Bool {
-        let key = "hasTouchedGamepadOverlayFeature20260405-1"
+        let key = "hasTouchedGamepadOverlayFeature20260405-2"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
 

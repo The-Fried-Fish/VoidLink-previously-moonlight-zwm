@@ -203,6 +203,9 @@ final class AbstractGamepadOverlayView: UIView {
 
     private func installGesturesIfNeeded() {
         guard gestureRecognizers?.isEmpty != false else { return }
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
+        singleTap.numberOfTapsRequired = 1
+        singleTap.cancelsTouchesInView = true
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         pan.minimumNumberOfTouches = 1
         pan.maximumNumberOfTouches = 1
@@ -212,13 +215,21 @@ final class AbstractGamepadOverlayView: UIView {
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
         doubleTap.numberOfTapsRequired = 2
         doubleTap.cancelsTouchesInView = true
+        singleTap.delegate = self
         pan.delegate = self
         pinch.delegate = self
         doubleTap.delegate = self
         pan.require(toFail: doubleTap)
+        singleTap.require(toFail: pan)
         addGestureRecognizer(pan)
+        addGestureRecognizer(singleTap)
         addGestureRecognizer(pinch)
         addGestureRecognizer(doubleTap)
+    }
+
+    @objc private func handleSingleTap(_ recognizer: UITapGestureRecognizer) {
+        guard recognizer.state == .ended else { return }
+        presentFirstTouchTipIfNeeded()
     }
 
     @objc private func handlePan(_ recognizer: UIPanGestureRecognizer) {
