@@ -10,12 +10,28 @@ import SwiftUI
 import UIKit
 
 @available(iOS 13.0, *)
+final class WidgetPickerPresentationState: ObservableObject {
+    @Published var hasHostAppeared = false
+}
+
+@available(iOS 13.0, *)
 enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
     case gamepad = "Gamepad"
     case keyboard = "Keyboard & Mouse"
     case functional = "Functional"
 
     var id: String { rawValue }
+
+    var persistenceIdentifier: String {
+        switch self {
+        case .gamepad:
+            return "gamepad"
+        case .keyboard:
+            return "keyboard"
+        case .functional:
+            return "functional"
+        }
+    }
 
     var title: String {
         switch self {
@@ -271,6 +287,8 @@ private struct WidgetPickerMetrics {
 
 @available(iOS 13.0, *)
 struct WidgetPickerView: View {
+    private static let lastSelectedTabDefaultsKey = "WidgetPickerView.lastSelectedTabIdentifier"
+
     private enum PoolTipMessageType {
         case normal
         case error
@@ -286,6 +304,7 @@ struct WidgetPickerView: View {
     private let keyboardPickerMode: VirtualKeyboardMode
     private let shortcutPickerTipText: String?
     private let shortcutIdentifier: String?
+    @ObservedObject private var presentationState: WidgetPickerPresentationState
     var onWidgetCreated: (([String: String]) -> Void)? = nil
     var onCloseRequested: (() -> Void)? = nil
 
@@ -312,6 +331,15 @@ struct WidgetPickerView: View {
     @SwiftUI.State private var didApplyInitialConfiguration: Bool = false
     @SwiftUI.State private var selectionSyncToken: Int = 0
 
+    private static func restoredTab(from availableTabs: [WidgetPickerTab]) -> WidgetPickerTab {
+        if let persistedIdentifier = UserDefaults.standard.string(forKey: lastSelectedTabDefaultsKey),
+           let persistedTab = WidgetPickerTab(identifier: persistedIdentifier),
+           availableTabs.contains(persistedTab) {
+            return persistedTab
+        }
+        return availableTabs[0]
+    }
+
     init(
         isEditMode: Bool = false,
         initialCmdString: String? = nil,
@@ -322,6 +350,7 @@ struct WidgetPickerView: View {
         keyboardPickerMode: VirtualKeyboardMode = .picker,
         shortcutPickerTipText: String? = nil,
         shortcutIdentififier: String? = nil,
+        presentationState: WidgetPickerPresentationState = WidgetPickerPresentationState(),
         onWidgetCreated: (([String: String]) -> Void)? = nil,
         onCloseRequested: (() -> Void)? = nil
     ) {
@@ -336,9 +365,14 @@ struct WidgetPickerView: View {
         self.keyboardPickerMode = keyboardPickerMode
         self.shortcutPickerTipText = shortcutPickerTipText
         self.shortcutIdentifier = shortcutIdentififier
+        self.presentationState = presentationState
         self.onWidgetCreated = onWidgetCreated
         self.onCloseRequested = onCloseRequested
-        _selectedTab = SwiftUI.State(initialValue: resolvedInitialTab ?? (normalizedTabs.contains(.keyboard) ? .keyboard : normalizedTabs[0]))
+        _selectedTab = SwiftUI.State(
+            initialValue: isEditMode
+                ? (resolvedInitialTab ?? (normalizedTabs.contains(.keyboard) ? .keyboard : normalizedTabs[0]))
+                : Self.restoredTab(from: normalizedTabs)
+        )
         _tipMessage = SwiftUI.State(
             initialValue: (keyboardPickerMode == .shortcutPicker && !(shortcutPickerTipText ?? "").isEmpty)
                 ? (shortcutPickerTipText ?? "")
@@ -742,12 +776,18 @@ struct WidgetPickerView: View {
                         )
                         .padding(pickerInsetKeyboard)
                     case .functional:
-                        FunctionalButtonCollectionView(
-                            items: functionalButtonOptions,
-                            isSelected: { selectedCmds.contains($0) },
-                            onSelect: { handleFunctionalButtonSelection($0) },
-                            onDeselect: { handleFunctionalButtonDeselection($0) }
-                        )
+                        Group {
+                            if presentationState.hasHostAppeared {
+                                FunctionalButtonCollectionView(
+                                    items: functionalButtonOptions,
+                                    isSelected: { selectedCmds.contains($0) },
+                                    onSelect: { handleFunctionalButtonSelection($0) },
+                                    onDeselect: { handleFunctionalButtonDeselection($0) }
+                                )
+                            } else {
+                                Color.clear
+                            }
+                        }
                             .padding(pickerInsetFunctional)
                     }
                 }
@@ -792,7 +832,7 @@ struct WidgetPickerView: View {
                 }
 
                 Button(action: {
-                    onCloseRequested?()
+                    handleCloseRequested()
                 }) {
                     Image(systemName: "xmark")
                         .font(.system(size: max(modeButtonFontSize, 10), weight: .bold))
@@ -1812,10 +1852,11 @@ struct WidgetPickerView: View {
 
     private func submitWidgetPayload() {
         var payload = makeWidgetPayload()
+        persistCurrentTabSelection()
         lastCreatedWidgetPayload = payload
         setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Widget config generated"))
         onWidgetCreated?(payload)
-        print("widgetPicker payload =", payload as NSDictionary)
+        // print("widgetPicker payload =", payload as NSDictionary)
         setCreateWidgetSheetVisible(false)
     }
 
@@ -1853,6 +1894,15 @@ struct WidgetPickerView: View {
         withTransaction(transaction) {
             showCreateWidgetSheet = isVisible
         }
+    }
+
+    private func persistCurrentTabSelection() {
+        UserDefaults.standard.set(selectedTab.persistenceIdentifier, forKey: Self.lastSelectedTabDefaultsKey)
+    }
+
+    private func handleCloseRequested() {
+        persistCurrentTabSelection()
+        onCloseRequested?()
     }
 
     private func applyInitialConfigurationIfNeeded() {

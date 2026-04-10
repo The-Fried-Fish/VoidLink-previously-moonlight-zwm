@@ -29,6 +29,7 @@ public final class WidgetPickerViewController: UIViewController {
     public var shortcutPickerTipText: String?
     @objc public var shortcutIdentifier: String?
 
+    private let presentationState = WidgetPickerPresentationState()
     private var hostingViewController: UIHostingController<WidgetPickerView>?
 
     public override func viewDidLoad() {
@@ -46,6 +47,7 @@ public final class WidgetPickerViewController: UIViewController {
             keyboardPickerMode: keyboardPickerMode,
             shortcutPickerTipText: shortcutPickerTipText,
             shortcutIdentififier: shortcutIdentifier,
+            presentationState: presentationState,
             onWidgetCreated: { [weak self] payload in
                 guard let self else { return }
                 self.delegate?.widgetPickerViewController(self, didCreateWidget: payload as NSDictionary)
@@ -76,6 +78,11 @@ public final class WidgetPickerViewController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presentationState.hasHostAppeared = true
     }
 
     private func resolvedTabs() -> [WidgetPickerTab] {

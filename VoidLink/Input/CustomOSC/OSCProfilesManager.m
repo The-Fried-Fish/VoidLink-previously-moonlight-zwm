@@ -274,7 +274,7 @@ static CGRect layoutViewBounds;
 }
 
 - (OSCProfile *) getSelectedProfile {
-    NSLog(@"getAllProfiles test %f", CACurrentMediaTime());
+    // NSLog(@"getAllProfiles test %f", CACurrentMediaTime());
     NSMutableArray *profiles = [self getAllProfiles];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
