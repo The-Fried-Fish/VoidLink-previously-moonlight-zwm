@@ -49,6 +49,9 @@ import ObjectiveC.runtime
     @objc public weak var functionalButtonDelegate: OnScreenFunctionalButtonDelegate?
     @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
         func expandSettingsView()
+        func disconnectRemoteSession()
+        func disconnectAndQuitApp()
+        func enterPip()
         func bringUpToolboxMenu()
         func openWidgetLayoutTool()
         func openWidgetProfileTable(pickProfile: Bool)
@@ -2516,8 +2519,14 @@ import ObjectiveC.runtime
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 self.functionalButtonDelegate?.expandSettingsView()
             }
+        case "DISCONNECT":
+            self.functionalButtonDelegate?.disconnectRemoteSession()
+        case "QUITAPP":
+            self.functionalButtonDelegate?.disconnectAndQuitApp()
         case "TOOLBOX":
             self.functionalButtonDelegate?.bringUpToolboxMenu()
+        case "PIP":
+            self.functionalButtonDelegate?.enterPip()
         case "WIDGETTOOL":
             temporaryDisableFolderButtonAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {

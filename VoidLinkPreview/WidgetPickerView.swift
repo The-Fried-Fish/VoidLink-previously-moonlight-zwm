@@ -358,6 +358,36 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
+            label: SwiftLocalizationHelper.localizedString(forKey: "Disconnect"),
+            cmd: "DISCONNECT",
+            tip: SwiftLocalizationHelper.localizedString(forKey: "Disconnect current connection"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: nil
+        ),
+        FunctionalButtonOption(
+            label: SwiftLocalizationHelper.localizedString(forKey: "Quit app"),
+            cmd: "QUITAPP",
+            tip: SwiftLocalizationHelper.localizedString(forKey: "Disconnect and quit current app"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: nil
+        ),
+        FunctionalButtonOption(
+            label: SwiftLocalizationHelper.localizedString(forKey: "Enter PiP"),
+            cmd: "PIP",
+            tip: SwiftLocalizationHelper.localizedString(forKey: "Enter picture-in-picture mode"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: nil
+        ),
+        FunctionalButtonOption(
             label: SwiftLocalizationHelper.localizedString(forKey: "Folder"),
             cmd: "FOLDER",
             tip: SwiftLocalizationHelper.localizedString(forKey: "Collect, fold & unfold other widgets or subfolders"),
@@ -378,7 +408,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Edit Layout"),
+            label: SwiftLocalizationHelper.localizedString(forKey: "Edit layout"),
             cmd: "WIDGETTOOL",
             tip: SwiftLocalizationHelper.localizedString(forKey: "Open on-screen widget layout tool"),
             allowsKeyboardCombination: false,
@@ -1745,6 +1775,9 @@ struct WidgetPickerView: View {
            let initialButtonLabel,
            targetWidgetKind == .button {
             widgetButtonLabel = initialButtonLabel
+        } else if targetWidgetKind == .button,
+                  let selectedFunctionalButtonOption {
+            widgetButtonLabel = selectedFunctionalButtonOption.cmd == "FOLDER" ?  SwiftLocalizationHelper.localizedString(forKey: "=Folder") : selectedFunctionalButtonOption.label
         } else {
             widgetButtonLabel = ""
         }

@@ -675,6 +675,29 @@
         }
       }
     },
+    "=Folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控件夹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項夾"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項夾"
+          }
+        }
+      }
+    },
     "=GamepadOverlayOff" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3483,6 +3506,52 @@
         }
       }
     },
+    "Disconnect and quit current app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "断开并退出当前应用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷開並退出目前應用程式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷開並退出目前應用程式"
+          }
+        }
+      }
+    },
+    "Disconnect current connection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "断开当前连接"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷開目前連線"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷開目前連線"
+          }
+        }
+      }
+    },
     "Displacement-based right stick pad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3846,7 +3915,7 @@
         }
       }
     },
-    "Edit Layout" : {
+    "Edit layout" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -4113,6 +4182,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "輸入標籤（可選）"
+          }
+        }
+      }
+    },
+    "Enter picture-in-picture mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进入画中画模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進入子母畫面模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進入子母畫面模式"
+          }
+        }
+      }
+    },
+    "Enter PiP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画中画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "子母畫面"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "子母畫面"
           }
         }
       }
@@ -8950,6 +9065,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "即刻購買"
+          }
+        }
+      }
+    },
+    "Quit app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出应用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出應用程式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出應用程式"
           }
         }
       }
