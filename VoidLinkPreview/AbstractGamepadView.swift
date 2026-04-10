@@ -98,7 +98,7 @@ enum GamepadWidget: Hashable {
         case .y: return "OSCY"
         case .select: return "OSCSELECT"
         case .start: return "OSCSTART"
-        case .home: return "HOME"
+        case .home: return "OSCHOME"
         case .dPad: return "DPAD"
         case .up: return "OSCUP"
         case .down: return "OSCDOWN"
