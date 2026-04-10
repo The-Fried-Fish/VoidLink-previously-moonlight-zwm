@@ -1,3 +1,11 @@
+//
+//  WidgetPickerViewController.swift
+//  VoidLink
+//
+//  Created by True砖家 on 2026/4/2.
+//  Copyright © 2026 True砖家 @ Bilibili. All rights reserved.
+//
+
 import SwiftUI
 import UIKit
 

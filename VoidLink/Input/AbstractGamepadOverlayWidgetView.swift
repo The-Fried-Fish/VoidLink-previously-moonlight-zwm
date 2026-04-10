@@ -1,3 +1,11 @@
+//
+//  AbstractGamepadOverlayWidgetView.swift
+//  VoidLink
+//
+//  Created by True砖家 on 2024/4/6.
+//  Copyright © 2026 True砖家 on Bilibili. All rights reserved.
+//
+
 import UIKit
 import SwiftUI
 
