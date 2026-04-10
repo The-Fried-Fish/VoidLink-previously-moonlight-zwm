@@ -132,6 +132,9 @@ import UIKit
     @objc public static let functionalButtonCmds: [String] = [
         "SETTINGS",
         "TOOLBOX",
+        "DISCONNECT",
+        "QUITAPP",
+        "PIP",
         "WIDGETTOOL",
         "ABSGAMEPAD",
         "WIDGETPROFILES",

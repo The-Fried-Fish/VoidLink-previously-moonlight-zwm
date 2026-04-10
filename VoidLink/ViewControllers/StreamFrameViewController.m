@@ -298,7 +298,7 @@
     _slideToToolboxRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
     _slideToToolboxRecognizer.delaysTouchesBegan = NO;
     _slideToToolboxRecognizer.delaysTouchesEnded = NO;
-    // [self.view addGestureRecognizer:_slideToToolboxRecognizer];
+    [self.view addGestureRecognizer:_slideToToolboxRecognizer];
     
     if([self isOscLayoutToolEnabled]){
         _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleWidgetLayoutGesture)];

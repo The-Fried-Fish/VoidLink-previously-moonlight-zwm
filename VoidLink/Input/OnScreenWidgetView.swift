@@ -18,6 +18,7 @@ import ObjectiveC.runtime
 
     @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
     @objc public static var isRestoring: Bool = false
+    @objc public static var hasRestoredFromAutoDock: Bool = false
     @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
         mapping[key] = widget
     }
@@ -3017,6 +3018,11 @@ import ObjectiveC.runtime
     @objc private func vl_autoDock_touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         OnScreenWidgetView.autoDockOriginalTouchesEndedIMP?(self, #selector(OnScreenWidgetView.touchesEnded(_:with:)), touches, event)
         guard autoDockEnabled else { return }
+        if OnScreenWidgetView.hasRestoredFromAutoDock {
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.02){
+                OnScreenWidgetView.hasRestoredFromAutoDock = false
+            }
+        }
         autoDockRestartCountdownIfNeeded()
     }
     
@@ -3194,6 +3200,7 @@ import ObjectiveC.runtime
     
     private func autoDockRestoreWidget(animated: Bool) {
         guard autoDockIsDocked, let restoreCenter = autoDockStoredCenter else { return }
+        OnScreenWidgetView.hasRestoredFromAutoDock = true
         autoDockStopCountdown()
         autoDockStopSettledAlphaTimer()
         autoDockRestoreOriginalSize()
