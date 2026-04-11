@@ -954,6 +954,7 @@
 }
 
 - (void) returnToMainFrame {
+    [_streamView saveStreamViewWidgetChanges];
     [_streamView clearOnScreenWidgets];
     if(micHandler) [micHandler clean];
     PencilHandler.shared = nil;

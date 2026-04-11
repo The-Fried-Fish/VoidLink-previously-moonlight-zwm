@@ -78,6 +78,7 @@ import Foundation
         
         // 单一 gamepad.valueChangedHandler
         gamepad.valueChangedHandler = { gamepad, element in
+            /*
             navigationActionTriggeredPrivate = (gamepad.dpad.up.isPressed
                                                 || gamepad.dpad.down.isPressed
                                                 || gamepad.dpad.left.isPressed
@@ -101,6 +102,7 @@ import Foundation
                     }
                 }
             }
+            */
             handler(buttonDict, gamepad, element)
             if #available(iOS 13.0, *) {
                 if controller.playerIndex == .index1 {

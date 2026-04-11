@@ -2957,7 +2957,7 @@ import ObjectiveC.runtime
     }
     
     // MARK: - Auto Dock
-    private static let autoDockExposedEdgeLength: CGFloat = 80
+    private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 105
     private static let autoDockExposedThickness: CGFloat = 17
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 5
@@ -2990,6 +2990,7 @@ import ObjectiveC.runtime
     private var autoDockStoredCenter: CGPoint?
     private var autoDockDockedCenter: CGPoint?
     private var autoDockDockedToBottomEdge: Bool = false
+    private var autoDockDistance: CGFloat = 3
     private var autoDockIsDocked: Bool = false
     private var autoDockEnabled: Bool = false
     private var autoDockSettledAlphaTimer: Timer?
@@ -3172,6 +3173,8 @@ import ObjectiveC.runtime
         autoDockStoredCenter = center
         let rightDistance = hostView.bounds.width - frame.maxX
         let bottomDistance = hostView.bounds.height - frame.maxY
+        autoDockDistance = min(rightDistance, bottomDistance)
+        print("autoDockDistance \(autoDockDistance) ...")
         autoDockDockedToBottomEdge = bottomDistance < rightDistance
         
         let targetFrame = autoDockTargetFrame(in: hostView.bounds)
@@ -3188,7 +3191,7 @@ import ObjectiveC.runtime
             self.frame = targetFrame
             self.transform = CGAffineTransform(scaleX: 0.985, y: 0.985)
         } completion: { _ in
-            UIView.animate(withDuration: 0.14, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
+            UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
                 self.autoDockApplyTemporarySize()
                 self.transform = .identity
                 self.label.alpha = 0
@@ -3198,7 +3201,7 @@ import ObjectiveC.runtime
                 self.autoDockStopSettledAlphaTimer()
                 self.autoDockSettledAlphaTimer = Timer.scheduledTimer(withTimeInterval: OnScreenWidgetView.autoDockSettledAlphaDelay, repeats: false) { [weak self] _ in
                     guard let self, self.autoDockIsDocked else { return }
-                    UIView.animate(withDuration: 0.2, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
+                    UIView.animate(withDuration: 0.17, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
                         self.isUserInteractionEnabled = true
                         self.alpha = self.autoDockSettledAlpha
                     }
@@ -3228,7 +3231,7 @@ import ObjectiveC.runtime
         
         if animated {
             UIView.animate(
-                withDuration: 0.38,
+                withDuration: autoDockDistance/(175/0.38),
                 delay: 0,
                 usingSpringWithDamping: OnScreenWidgetView.autoDockReturnDamping,
                 initialSpringVelocity: 0.22,
