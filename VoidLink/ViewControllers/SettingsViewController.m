@@ -2408,17 +2408,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)onScreenWidgetChanged{
-    
-    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
-    if (isIPhone) {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-    }
-    else {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-        self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    }
+    self.layoutOnScreenControlsVC = [self instantiateOscLayoutViewController];
     
     bool customOscEnabled = [self isCustomOswEnabled];
     // NSLog(@"customOscEnabled %d", customOscEnabled);
@@ -2743,19 +2733,34 @@ BOOL isCustomResolution(int resolutionSelected) {
     // init CustomOSC stuff
     /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
     // self.layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
-    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
-    if (isIPhone) {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+    self.layoutOnScreenControlsVC = [self instantiateOscLayoutViewController];
+    if (self.layoutOnScreenControlsVC == nil) {
+        return;
     }
-    else {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
-        self.layoutOnScreenControlsVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
-        self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
-    }
-    
+
     self.layoutOnScreenControlsVC.view.backgroundColor = [UIColor colorWithWhite:0.55 alpha:1.0];
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
+}
+
+- (LayoutOnScreenControlsViewController *)instantiateOscLayoutViewController {
+    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+    NSString *storyboardName = isIPhone ? @"iPhone" : @"iPad";
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardName bundle:nil];
+    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+
+    NSLog(@"[OSC] storyboard=%@ instantiated class=%@", storyboardName, NSStringFromClass([viewController class]));
+    
+    if (![viewController isKindOfClass:[LayoutOnScreenControlsViewController class]]) {
+        NSAssert(NO, @"Expected LayoutOnScreenControlsViewController, got %@", NSStringFromClass([viewController class]));
+        return nil;
+    }
+
+    LayoutOnScreenControlsViewController *layoutViewController = (LayoutOnScreenControlsViewController *)viewController;
+    if (!isIPhone) {
+        layoutViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    }
+
+    return layoutViewController;
 }
 
 - (void) pointerVelocityModeDividerSliderMoved:(UISlider* )sender {

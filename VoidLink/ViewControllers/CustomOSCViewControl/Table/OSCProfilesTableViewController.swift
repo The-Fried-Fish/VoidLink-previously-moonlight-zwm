@@ -11,7 +11,6 @@
 
 import UIKit
 
-@objc(ProfileTableViewCell)
 final class ProfileTableViewCell: UITableViewCell {
     @IBOutlet weak var name: UILabel!
 }
@@ -29,7 +28,6 @@ enum FileOperation: Int {
 }
 
 @objcMembers
-@objc(OSCProfilesTableViewController)
 final class OSCProfilesTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIDocumentPickerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var profileTableViewNavigationBar: UINavigationBar!

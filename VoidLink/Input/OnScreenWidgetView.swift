@@ -2716,7 +2716,9 @@ import ObjectiveC.runtime
         self.relocatedDuringStreaming = true
         gamepadOverlayFLag = !gamepadOverlayFLag
         self.setupAtrributedText()
-        self.functionalButtonDelegate?.toggleGamepadOverlay(overlayEnabled: gamepadOverlayFLag)
+        if #available(iOS 13.0, *) {
+            self.functionalButtonDelegate?.toggleGamepadOverlay(overlayEnabled: gamepadOverlayFLag)
+        }
     }
 
     private func temporaryDisableFolderButtonAnimation(){

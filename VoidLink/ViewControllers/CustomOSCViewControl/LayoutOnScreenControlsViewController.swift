@@ -19,7 +19,6 @@ private extension LocalizationHelper {
 }
 
 @objcMembers
-@objc(LayoutOnScreenControlsViewController)
 final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidgetView.OnScreenWidgetGuidelineUpdateDelegate, UITextFieldDelegate {
     private enum AlphaSliderMode: Int {
         case widgetAlpha
@@ -1176,6 +1175,150 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetView.setVibration(style: Int(UIImpactFeedbackGenerator.FeedbackStyle.light.rawValue))
     }
 
+    private func configureWidgetAlertTextField(
+        _ textField: UITextField,
+        labelText: String,
+        placeholder: String,
+        keyboardType: UIKeyboardType,
+        text: String? = nil,
+        isEnabled: Bool = true
+    ) {
+        let label = UILabel()
+        label.text = LocalizationHelper.localizedString(forKey: labelText)
+        label.font = .systemFont(ofSize: 15)
+        label.sizeToFit()
+        textField.leftView = label
+        textField.leftViewMode = .always
+        textField.attributedPlaceholder = GenericUtils.getAtrributedPlaceHolder(text: LocalizationHelper.localizedString(forKey: placeholder))
+        textField.font = .systemFont(ofSize: 15)
+        textField.keyboardType = keyboardType
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        textField.delegate = self
+        textField.text = text
+        textField.isEnabled = isEnabled
+    }
+
+    private func presentLegacyAddWidgetAlert() {
+        let params = NSMutableDictionary()
+        let alertController = UIAlertController(
+            title: LocalizationHelper.localizedString(forKey: ""),
+            message: LocalizationHelper.localizedString(forKey: "New On-Screen Widget"),
+            preferredStyle: .alert
+        )
+
+        alertController.addTextField { [weak self] textField in
+            self?.configureWidgetAlertTextField(
+                textField,
+                labelText: "Command: ",
+                placeholder: "e.g. ctrl, lswheel, wasdpad...",
+                keyboardType: .asciiCapable
+            )
+        }
+
+        alertController.addTextField { [weak self] textField in
+            self?.configureWidgetAlertTextField(
+                textField,
+                labelText: "Label: ",
+                placeholder: "optional",
+                keyboardType: .default
+            )
+        }
+
+        alertController.addTextField { [weak self] textField in
+            self?.configureWidgetAlertTextField(
+                textField,
+                labelText: "Shape: ",
+                placeholder: "r - round/circle, s - square/rect",
+                keyboardType: .asciiCapable
+            )
+        }
+
+        let readInstruction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Read Widget Instruction"), style: .default) { _ in
+            if let url = URL(string: LocalizationHelper.localizedString(forKey: "onScreenWidgetStackDoc")),
+               UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+
+        let cancelAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Cancel"), style: .cancel)
+        let okAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default) { [weak self, weak alertController] _ in
+            guard let self, let fields = alertController?.textFields, fields.count >= 3 else { return }
+            params["cmdString"] = fields[0].text ?? ""
+            params["buttonLabel"] = fields[1].text ?? ""
+            params["shape"] = fields[2].text ?? ""
+            self.createWidgetFromParams(params)
+        }
+
+        alertController.addAction(readInstruction)
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        present(alertController, animated: true)
+    }
+
+    private func presentLegacyEditWidgetAlert(for widget: OnScreenWidgetView) {
+        let params = NSMutableDictionary()
+        let alertController = UIAlertController(
+            title: LocalizationHelper.localizedString(forKey: ""),
+            message: LocalizationHelper.localizedString(forKey: "Edit Selected Widget"),
+            preferredStyle: .alert
+        )
+
+        alertController.addTextField { [weak self] textField in
+            self?.configureWidgetAlertTextField(
+                textField,
+                labelText: "Command: ",
+                placeholder: "e.g. ctrl, lswheel, wasdpad...",
+                keyboardType: .asciiCapable,
+                text: widget.cmdString.lowercased()
+            )
+        }
+
+        alertController.addTextField { [weak self] textField in
+            self?.configureWidgetAlertTextField(
+                textField,
+                labelText: "Label: ",
+                placeholder: "optional",
+                keyboardType: .default,
+                text: widget.widgetLabel
+            )
+        }
+
+        alertController.addTextField { [weak self] textField in
+            self?.configureWidgetAlertTextField(
+                textField,
+                labelText: "Shape: ",
+                placeholder: "r - round/circle, s - square/rect",
+                keyboardType: .asciiCapable,
+                text: widget.shape,
+                isEnabled: widget.shape != "largeSquare"
+            )
+        }
+
+        let createNewAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Create New"), style: .default) { [weak self, weak alertController] _ in
+            guard let self, let fields = alertController?.textFields, fields.count >= 3 else { return }
+            params["cmdString"] = fields[0].text ?? ""
+            params["buttonLabel"] = fields[1].text ?? ""
+            params["shape"] = fields[2].text ?? ""
+            self.updateWidget(widget, params: params, createNew: true)
+        }
+
+        let modifyAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Modify"), style: .default) { [weak self, weak alertController] _ in
+            guard let self, let fields = alertController?.textFields, fields.count >= 3 else { return }
+            params["cmdString"] = fields[0].text ?? ""
+            params["buttonLabel"] = fields[1].text ?? ""
+            params["shape"] = fields[2].text ?? ""
+            self.updateWidget(widget, params: params, createNew: false)
+        }
+
+        let cancelAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Cancel"), style: .default)
+
+        alertController.addAction(createNewAction)
+        alertController.addAction(modifyAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
+    }
+
     @IBAction func addTapped(_ sender: Any?) {
         GenericUtils.autoPopSoftKeyboard = false
         if #available(iOS 13.0, *) {
@@ -1188,6 +1331,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             present(nav, animated: true)
             return
         }
+
+        presentLegacyAddWidgetAlert()
     }
 
     @available(iOS 13.0, *)
@@ -1225,7 +1370,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             let nav = UINavigationController(rootViewController: pickerViewController)
             nav.modalPresentationStyle = .overFullScreen
             present(nav, animated: true)
+            return
         }
+
+        presentLegacyEditWidgetAlert(for: selectedWidgetView)
     }
 
     @IBAction func saveTapped(_ sender: Any?) {
@@ -1368,6 +1516,29 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 if #available(iOS 13.0, *) {
                 } else {
                     button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+                    button.setImage(nil, for: .normal)
+
+                    if button === exitButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Exit"), for: .normal)
+                    }
+                    if button === trashCanButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Del"), for: .normal)
+                    }
+                    if button === undoButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Undo"), for: .normal)
+                    }
+                    if button === saveButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Save"), for: .normal)
+                    }
+                    if button === loadButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Load"), for: .normal)
+                    }
+                    if button === addButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Add"), for: .normal)
+                    }
+                    if button === editButton {
+                        button.setTitle(LocalizationHelper.localizedString(forKey: "Edit"), for: .normal)
+                    }
                 }
             }
             handleMissingToolBarIcon(subview)
