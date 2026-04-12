@@ -556,7 +556,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         bulkEditEnabled = !bulkEditEnabled
         
         setBulkEditStackHidden(!bulkEditEnabled)
-        refreshPanelForSelectedWidget(selectedWidgetView)
+        if selectedWidgetView.parentSequence != -1 || !bulkEditEnabled { refreshPanelForSelectedWidget(selectedWidgetView)
+        }
     }
 
     @objc private func handleEnterBackground() {
