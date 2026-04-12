@@ -72,6 +72,7 @@
 - (void)readyToBringUpSoftKeyboardByToolbox;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
+- (void)handleAbnormalKeyboards:(NSNotification *)notification;
 - (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight;
 
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton;

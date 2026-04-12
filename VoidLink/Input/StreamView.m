@@ -41,6 +41,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
     KeyboardInputField* keyInputField;
     BOOL isInputingText;
+    bool dockedKeyboardActionDetected;
+    
     bool isPencilHovering;
     NSMutableSet* keysDown;
     float streamAspectRatio;
@@ -257,6 +259,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (void)keyboardWillShow:(NSNotification *)notification{
     // NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
+    dockedKeyboardActionDetected = true;
     if(settings.liftStreamViewForKeyboard && !isInputingText){
         isInputingText = true;
         
@@ -306,6 +309,29 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     NSLog(@"keyboard will show %f", CACurrentMediaTime());
 }
 
+- (void)handleAbnormalKeyboards:(NSNotification *)notification{
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
+        if(!self->dockedKeyboardActionDetected){
+            [self->keyboardToggleTip removeFromSuperview];
+            self->dockedKeyboardActionDetected = false;
+            self->isInputingText = !self->isInputingText;
+            [self->keyInputField removeFromSuperview];
+            
+            AlertControllerUtil.autoCompletion = true;
+            [AlertControllerUtil showAlertIn:self->_streamFrameVC
+                                            title:@""
+                                          message:[LocalizationHelper localizedStringForKey:@"Floating keyboard not supported"]
+                                       withCancel:NO
+                                      buttonTitle:@""
+                                        countdown:1
+                                           action:^{}
+                                       completion:^{}];
+
+        }
+    });
+}
+
 - (UIViewController *)parentViewController {
     UIResponder *responder = self;
     while (responder) {
@@ -319,6 +345,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 // this method also deals with recovering streamview when local keyboard is turned off
 - (void)keyboardWillHide{
+    dockedKeyboardActionDetected = true;
     // NSLog(@"keyboard will hide markmark %f", CACurrentMediaTime());
 
     keyboardToggleRecognizer.numberOfTouchesRequired = settings.keyboardToggleFingers.intValue; // reset this number

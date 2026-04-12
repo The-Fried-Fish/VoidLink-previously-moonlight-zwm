@@ -704,19 +704,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "断开"
+            "value" : "断开连接"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "斷開"
+            "value" : "斷開連接"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "斷開"
+            "value" : "斷開連接"
           }
         }
       }
@@ -4949,6 +4949,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "笔壓曲線已隨「螢幕小工具」配置儲存。請至設定選單「觸控分區」中的「螢幕小工具」自訂選項，或由螢幕右側邊緣滑動手勢呼叫的工具箱選單查看。\n切換「螢幕小工具」配置時，筆壓曲線也會隨之變化。"
+          }
+        }
+      }
+    },
+    "Floating keyboard not supported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持悬浮键盘"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支援懸浮鍵盤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支援懸浮鍵盤"
           }
         }
       }

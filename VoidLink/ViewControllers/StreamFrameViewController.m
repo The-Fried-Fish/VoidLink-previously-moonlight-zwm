@@ -541,6 +541,11 @@
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAbnormalKeyboards:)
+                                                 name:UIKeyboardWillChangeFrameNotification
+                                               object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillHide)
@@ -761,6 +766,10 @@
 
 - (void)keyboardWillHide{
     [_streamView keyboardWillHide];
+}
+
+- (void)handleAbnormalKeyboards:(NSNotification *)notification{
+    [_streamView handleAbnormalKeyboards:notification];
 }
 
 - (void)handleWidgetLayoutGesture{
