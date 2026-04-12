@@ -2231,23 +2231,19 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)showCustomOswTip {
-    
-    if (!self->_mainFrameViewController.settingsExpandedInStreamView) {
-        [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
-    }
-
-    /*
     GenericUtils.autoPopSoftKeyboard = !GenericUtils.isIPhone;
     NSString* edgeSide = self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex == 1 ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Rebase in Streaming"]
-                                                                             message:[LocalizationHelper localizedStringForKey:@"Open widget tool in streaming by:\nSliding from %@ screen edge to open cmd tool.\nOr tap %d fingers on stream view, number of fingers required:", edgeSide, self->oswLayoutFingers]
+    NSString* slideDist = [NSString stringWithFormat:@"%d%%", (int)(self.slideToMenuDistanceSlider.value*100)];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Edit layout during streaming"]
+                                                                             message:[LocalizationHelper localizedStringForKey:@"customOscTip", edgeSide, slideDist]
                                                                       preferredStyle:UIAlertControllerStyleAlert];
-    
+    /*
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = [LocalizationHelper localizedStringForKey:@"%d", self->oswLayoutFingers];
-        textField.keyboardType = UIKeyboardTypeASCIICapable;
+        textField.keyboardType = UIKeyboardTypeNumberPad;
         textField.delegate = self;
     }];
+    */
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
                                                            style:UIAlertActionStyleDefault
@@ -2256,6 +2252,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"OK"]
                                                        style:UIAlertActionStyleDefault
                                                      handler:^(UIAlertAction *action) {
+        /*
         UITextField *textField = alertController.textFields.firstObject;
         NSString *inputText = textField.text;
         NSInteger fingers = [inputText integerValue];
@@ -2264,21 +2261,20 @@ BOOL isCustomResolution(int resolutionSelected) {
             NSLog(@"OK button tapped with %d fingers", (uint16_t)fingers);
         } else {
             NSLog(@"OK button tapped with no change");
-        }
+        } */
         
         // Continue execution after the alert is dismissed
         if (!self->_mainFrameViewController.settingsExpandedInStreamView) {
             [self invokeOscLayout]; // Don't open osc layout tool immediately during streaming
         }
-        
-        // [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
-        [self handleOswGestureChange];
+        /*
+        [self findDynamicLabelFromStack:self.onScreenWidgetStack].text = [self isCustomOswEnabled] ? [LocalizationHelper localizedStringForKey:@"%d finger tap", self->oswLayoutFingers] : @"";
+        [self handleOswGestureChange]; */
     }];
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
     [self presentViewController:alertController animated:YES completion:nil];
-     */
 }
 
 - (void)hdrSwitchFlipped:(UISwitch* )sender{

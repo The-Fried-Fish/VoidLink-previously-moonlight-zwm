@@ -3083,7 +3083,7 @@ import ObjectiveC.runtime
     }
     
     // MARK: - Auto Dock
-    private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 105
+    private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90
     private static let autoDockExposedThickness: CGFloat = 17
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 5

@@ -3259,6 +3259,35 @@
         }
       }
     },
+    "customOscTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n1. From %@ edge, slide %@ screen width to open toolbox menu.\n\n2. Enter “on-screen widget tool”."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n1. 从屏幕 %@ 边缘向内滑动 %@ 屏幕宽度, 打开工具栏菜单.\n\n2. 选择“打开屏显控件工具”."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n1. 從螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，開啟工具欄選單.\n\n2. 選擇「調整螢幕小工具版面配置」。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\n1. 從螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，開啟工具欄選單.\n\n2. 選擇「調整螢幕小工具版面配置」。"
+          }
+        }
+      }
+    },
     "DecelerationRateX: %.3f  " : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4038,6 +4067,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "編輯版面"
+          }
+        }
+      }
+    },
+    "Edit layout during streaming" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流时修改布局"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在串流視圖中修改佈局"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在串流視圖中修改佈局"
           }
         }
       }
@@ -6766,7 +6818,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "- 关闭“手柄”菜单分区的DS4陀螺仪映射后， 方可将陀螺仪直接映射为手柄或鼠标。\n\n- “体感控制”菜单分区的所有设置均保存在屏显控件配置中，可在右边缘滑出的工具箱菜单中切换。\n\n- 体感控制陀螺仪可由手柄按键或屏显按键开关。"
           }
         },
@@ -7869,29 +7921,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "開啟螢幕控制項版面工具"
-          }
-        }
-      }
-    },
-    "Open widget tool in streaming by:\nSliding from %@ screen edge to open cmd tool.\nOr tap %d fingers on stream view, number of fingers required:" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在串流视图中修改布局:\n从屏幕%@边缘向内滑动.\n或轻按%d根手指, 手势需要的手指数量:"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在串流中開啟小工具的方式：\n從螢幕%@邊緣滑動以開啟指令工具。\n或在串流畫面上用%d指輕點，所需的手指數量："
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在串流中開啟小工具的方式：\n從螢幕%@邊緣滑動以開啟指令工具。\n或在串流畫面上用%d指輕點，所需的手指數量："
           }
         }
       }
@@ -9422,29 +9451,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "閱讀小工具說明"
-          }
-        }
-      }
-    },
-    "Rebase in Streaming" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "串流中修改布局"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在串流中修改"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在串流中修改"
           }
         }
       }
