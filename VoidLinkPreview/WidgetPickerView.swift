@@ -612,9 +612,36 @@ struct WidgetPickerView: View {
         return isPad(firstItem) && !isPad(lastItem) && poolItems.contains(where: isPad) && poolItems.contains(where: { !isPad($0) })
     }
 
+    private var selectedMovementPadCommand: String? {
+        poolItems.first(where: { $0.cmd == "WASDPAD" || $0.cmd == "ARROWPAD" })?.cmd
+    }
+
+    private var movementPadSingleButtonCount: Int {
+        guard selectedMovementPadCommand != nil else { return 0 }
+        return poolItems.filter { !isPad($0) }.count
+    }
+
+    private var movementPadNeedsWalkKeyTip: Bool {
+        selectedMovementPadCommand != nil && movementPadSingleButtonCount == 0
+    }
+
+    private var movementPadNeedsSprintKeyTip: Bool {
+        selectedMovementPadCommand != nil && movementPadSingleButtonCount == 1
+    }
+
+    private var movementPadHasReachedSingleKeyLimit: Bool {
+        selectedMovementPadCommand != nil && movementPadSingleButtonCount >= 2
+    }
+
     private func updateTipMessageForCurrentPoolState() {
         if poolItems.isEmpty {
             resetTipMessage()
+        } else if movementPadNeedsWalkKeyTip {
+            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Please select a sprint key"))
+        } else if movementPadNeedsSprintKeyTip {
+            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Sprint key set. Select a walk key (optional, you can skip and create)"))
+        } else if movementPadHasReachedSingleKeyLimit {
+            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Sprint and walk keys are set"))
         } else if hasButtonThenPadCombination {
             setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "A button with touchpad functionality will be created"))
         } else if hasPadThenButtonCombination {
@@ -1332,6 +1359,14 @@ struct WidgetPickerView: View {
             return false
         }
 
+        if movementPadHasReachedSingleKeyLimit {
+            setTipMessage(
+                SwiftLocalizationHelper.localizedString(forKey: "Walk and sprint keys are already set. No more keys can be added"),
+                type: .error
+            )
+            return false
+        }
+
         let candidate = WidgetPoolItem(
             cmd: cmd,
             source: source,
@@ -1774,8 +1809,16 @@ struct WidgetPickerView: View {
         keyboardPickerMode == .shortcutPicker
     }
 
+    private var containsMovementDirectionPad: Bool {
+        poolItems.contains { $0.cmd == "WASDPAD" || $0.cmd == "ARROWPAD" }
+    }
+
     private var shouldBypassCreateWidgetSheet: Bool {
         if isShortcutPickerMode {
+            return true
+        }
+
+        if containsMovementDirectionPad {
             return true
         }
 

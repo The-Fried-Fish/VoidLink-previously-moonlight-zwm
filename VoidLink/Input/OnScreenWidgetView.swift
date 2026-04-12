@@ -174,6 +174,7 @@ import ObjectiveC.runtime
     @objc public var isTapToToggleException: Bool = false
     @objc public var hasHapticFeedback: Bool = false
     @objc public var isDirectionPad: Bool = false
+    @objc public var hasWalkSprintKeys: Bool = false
     @objc public var hasL3R3Indicator: Bool = false
     
     @objc public var isStickWheel: Bool = false
@@ -232,10 +233,24 @@ import ObjectiveC.runtime
     @objc public var stickIndicatorOffset: CGFloat = 120
     
     // for all LRUD pads
+    
+    @objc public enum WalkSprintKeyActionType: UInt8 {
+        case hold
+        case toggle
+    }
+    
+    @objc public var keyboardDpadThresholdRef: CGFloat = 300
+    @objc public var walkKeyThreshold: CGFloat = 0.08
+    @objc public var walkKeyActionType: WalkSprintKeyActionType = .hold
+    @objc public var sprintKeyThreshold: CGFloat = 0.6
+    @objc public var sprintKeyActionType: WalkSprintKeyActionType = .hold
+
     @objc public var upIndicator = CAShapeLayer()
     @objc public var downIndicator = CAShapeLayer()
     @objc public var leftIndicator = CAShapeLayer()
     @objc public var rightIndicator = CAShapeLayer()
+    @objc public var walkKeyThresholdPreviewLayer = CAShapeLayer()
+    @objc public var sprintKeyThresholdPreviewLayer = CAShapeLayer()
     
     // for DPAD LRUD pad
     @objc public var lrudIndicatorBall = CAShapeLayer()
@@ -497,6 +512,8 @@ import ObjectiveC.runtime
                                     )
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
+        self.hasWalkSprintKeys = self.isDirectionPad && (self.touchPadString == "WASDPAD"
+                                                         || self.touchPadString == "ARROWPAD")
         self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
         self.isFolder = self.cmdString == "FOLDER"
         
@@ -635,6 +652,7 @@ import ObjectiveC.runtime
         
         // Re-setup widgetView style
         setupView()
+        updateMovementThresholdPreview()
         
         CATransaction.commit()
     }
@@ -669,6 +687,8 @@ import ObjectiveC.runtime
         self.downIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.leftIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.rightIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.walkKeyThresholdPreviewLayer.strokeColor = self.buttonDownVisualEffectLayer.borderColor
+        self.sprintKeyThresholdPreviewLayer.strokeColor = self.buttonDownVisualEffectLayer.borderColor
     }
 
     private func tweakAlpha(tweakBorderAlpha:Bool, tweakLabelAlpha:Bool = true){
@@ -1352,9 +1372,63 @@ import ObjectiveC.runtime
         }
     }
 
+    private var previousWalkMode:Bool = false
+    private var previousSprintMode:Bool = false
     private func handleLrudTouchMove(){
         CATransaction.begin()
         CATransaction.setDisableActions(true)
+        
+        
+        
+        if self.hasWalkSprintKeys {
+            let dist = hypot(self.offSetX, self.offSetY)
+            let isInWalkMode = dist < self.walkKeyThreshold * keyboardDpadThresholdRef * 0.5
+            let isInSprintMode = dist > self.sprintKeyThreshold * keyboardDpadThresholdRef * 0.5
+            
+            if (isInSprintMode != previousSprintMode || directionPadTouchBegan)
+                , self.comboButtonStrings.count>0 {
+                switch sprintKeyActionType {
+                case .hold:
+                    if isInSprintMode {sendComboButtonsDownEvent(comboStrings: [comboButtonStrings[0]])}
+                    else {sendComboButtonsUpEvent(comboStrings: [comboButtonStrings[0]])}
+                case .toggle :
+                    if directionPadTouchBegan {break}
+                    sendComboButtonsDownEvent(comboStrings: [comboButtonStrings[0]])
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 0.025) {
+                        self.sendComboButtonsUpEvent(comboStrings: [self.comboButtonStrings[0]])
+                    }
+                }
+                
+                if !directionPadTouchBegan, isInSprintMode, vibrationOn {
+                    vibrationGenerator.prepare()
+                    vibrationGenerator.impactOccurred()
+                }
+            }
+            
+            if (isInWalkMode != previousWalkMode || directionPadTouchBegan)
+                , self.comboButtonStrings.count>1 {
+                switch walkKeyActionType {
+                case .hold:
+                    if isInWalkMode {sendComboButtonsDownEvent(comboStrings: [comboButtonStrings[1]])}
+                    else {sendComboButtonsUpEvent(comboStrings: [comboButtonStrings[1]])}
+                case .toggle :
+                    if directionPadTouchBegan {break}
+                    sendComboButtonsDownEvent(comboStrings: [comboButtonStrings[1]])
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 0.025) {
+                        self.sendComboButtonsUpEvent(comboStrings: [self.comboButtonStrings[1]])
+                    }
+                }
+                
+                if !directionPadTouchBegan, isInWalkMode, vibrationOn {
+                    vibrationGenerator.prepare()
+                    vibrationGenerator.impactOccurred()
+                }
+            }
+            
+            previousWalkMode = isInWalkMode
+            previousSprintMode = isInSprintMode
+        }
+        
         
         let radians  = atan2(-offSetY,offSetX)
         let degrees = radians * 180 / .pi
@@ -1649,8 +1723,54 @@ import ObjectiveC.runtime
             self.layer.addSublayer(self.stickWheelAxis)
             self.stickWheelAxis.isHidden = false
         }
+
+        setupMovementThresholdPreviewLayersIfNeeded()
+        updateMovementThresholdPreview()
         
         CATransaction.commit()
+    }
+
+    private func setupMovementThresholdPreviewLayersIfNeeded() {
+        for previewLayer in [sprintKeyThresholdPreviewLayer, walkKeyThresholdPreviewLayer] {
+            previewLayer.fillColor = UIColor.clear.cgColor
+            previewLayer.strokeColor = standardHighlightColor.cgColor
+            previewLayer.lineWidth = 3
+            previewLayer.lineDashPattern = [8, 6]
+            previewLayer.isHidden = true
+            if previewLayer.superlayer == nil {
+                layer.insertSublayer(previewLayer, below: lrudIndicatorBall)
+            }
+        }
+    }
+
+    private func updateMovementThresholdPreview(layer: CAShapeLayer, threshold: CGFloat) {
+        let clampedThreshold = max(0, min(1, threshold))
+        let diameter: CGFloat = keyboardDpadThresholdRef * clampedThreshold
+        let radius = max(diameter / 2, 1)
+        layer.position = CGPoint(x: bounds.midX, y: bounds.midY)
+        layer.path = UIBezierPath(
+            arcCenter: .zero,
+            radius: radius,
+            startAngle: 0,
+            endAngle: .pi * 2,
+            clockwise: true
+        ).cgPath
+    }
+
+    @objc public func updateMovementThresholdPreview() {
+        guard isDirectionPad, touchPadString == "WASDPAD" || touchPadString == "ARROWPAD" else {
+            walkKeyThresholdPreviewLayer.isHidden = true
+            sprintKeyThresholdPreviewLayer.isHidden = true
+            return
+        }
+
+        setupMovementThresholdPreviewLayersIfNeeded()
+        updateMovementThresholdPreview(layer: sprintKeyThresholdPreviewLayer, threshold: sprintKeyThreshold)
+        if self.comboButtonStrings.count>1 {updateMovementThresholdPreview(layer: walkKeyThresholdPreviewLayer, threshold: walkKeyThreshold)}
+
+        let shouldShow = OnScreenWidgetView.editMode
+        sprintKeyThresholdPreviewLayer.isHidden = !shouldShow
+        walkKeyThresholdPreviewLayer.isHidden = !(shouldShow && self.comboButtonStrings.count>1)
     }
         
     @objc public func hideAllHighlightLayersOfAllWidgets(selfIncluded:Bool) {
@@ -1663,6 +1783,8 @@ import ObjectiveC.runtime
             widget.downIndicator.isHidden = true
             widget.leftIndicator.isHidden = true
             widget.rightIndicator.isHidden = true
+            widget.walkKeyThresholdPreviewLayer.isHidden = true
+            widget.sprintKeyThresholdPreviewLayer.isHidden = true
         }
     }
     
@@ -1921,7 +2043,7 @@ import ObjectiveC.runtime
                         self.getVector(touch: touch)
                         self.handleLrudTouchMove()
                     }
-                    if quickDoubleTapDetected {
+                    if quickDoubleTapDetected && self.touchPadString == "DPAD" {
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                         DispatchQueue.global(qos: .userInteractive).async {
                             usleep(100000)
@@ -3445,7 +3567,13 @@ import ObjectiveC.runtime
             parentFolder?.sequenceSet.remove(widget.sequence)
         }
         widget.parentSequence = -1
-        widget.sequenceSet.removeAll()
+        if widget.isFolder {
+            for sequence in widget.sequenceSet {
+                guard let subWidget = OnScreenWidgetView.mapping[sequence] else {continue}
+                subWidget.parentSequence = -1
+            }
+            widget.sequenceSet.removeAll()
+        }
     }
     
     @objc static func restoreFoldedStates(){

@@ -47,6 +47,29 @@
         }
       }
     },
+    "  Cmd: %@    Sprint: %@    Walk: %@    Parent: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  命令: %@    疾走: %@    静步: %@    收纳于: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  命令: %@    疾走: %@    靜步: %@    收納於: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "  命令: %@    疾走: %@    靜步: %@    收納於: %@"
+          }
+        }
+      }
+    },
     "  disconnect  " : {
       "extractionState" : "manual",
       "localizations" : {
@@ -162,7 +185,7 @@
         }
       }
     },
-    "  Profile: %@    Alias: %@    Cmd: %@    Parent:%@" : {
+    "  Profile: %@    Alias: %@    Cmd: %@    Parent: %@" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -296,6 +319,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " 按鍵重复 !"
+          }
+        }
+      }
+    },
+    " Slide threshold: %0.2f  " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 触发距离: %0.2f  "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 觸發距離: %0.2f  "
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 觸發距離: %0.2f  "
           }
         }
       }
@@ -8533,6 +8579,29 @@
         }
       }
     },
+    "Please select a sprint key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择疾走键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請選擇疾走鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請選擇疾走鍵"
+          }
+        }
+      }
+    },
     "Pofiles imported" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10897,6 +10966,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "透過系統自動取得的軟鍵盤高度可能不可靠（尤其是第三方輸入法），可能導致串流畫面無法正確抬升，指定軟鍵盤高度可解決此問題。"
+          }
+        }
+      }
+    },
+    "Sprint and walk keys are set" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已设定疾走键和静步键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已設定疾走鍵和靜步鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已設定疾走鍵和靜步鍵"
+          }
+        }
+      }
+    },
+    "Sprint key set. Select a walk key (optional, you can skip and create)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已设定疾走键，请选择静步键（可跳过并创建）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已設定疾走鍵，請選擇靜步鍵（可跳過並建立）"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已設定疾走鍵，請選擇靜步鍵（可跳過並建立）"
           }
         }
       }

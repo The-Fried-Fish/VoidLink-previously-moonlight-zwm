@@ -165,6 +165,16 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBOutlet weak var dockedAlphaLabel: UILabel!
     @IBOutlet weak var dockedAlphaSlider: UISlider!
     
+    @IBOutlet weak var sprintKeyStack: UIStackView!
+    @IBOutlet weak var sprintKeySelector: UISegmentedControl!
+    @IBOutlet weak var sprintKeyThresholdLabel: UILabel!
+    @IBOutlet weak var sprintKeyThresholdSlider: UISlider!
+    
+    @IBOutlet weak var walkKeyStack: UIStackView!
+    @IBOutlet weak var walkKeySelector: UISegmentedControl!
+    @IBOutlet weak var walkKeyThresholdLabel: UILabel!
+    @IBOutlet weak var walkKeyThresholdSlider: UISlider!
+    
     @IBOutlet weak var widgetPanelStack: UIStackView!
 
     @IBOutlet private weak var toolbarTopConstraintiPhone: NSLayoutConstraint!
@@ -293,6 +303,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     override func viewWillDisappear(_ animated: Bool) {
         OnScreenWidgetView.editMode = false
         OnScreenWidgetView.isTweakingHighlight = false
+        for case let widget as OnScreenWidgetView in onScreenWidgetViews {
+            widget.updateMovementThresholdPreview()
+        }
         super.viewWillDisappear(animated)
         NotificationCenter.default.post(name: Notification.Name("OscLayoutCloseNotification"), object: self)
     }
@@ -388,6 +401,11 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widgetView.dWheelWalkModeThreshold = buttonState.walkModeThreshold
                 widgetView.minStickOffset = buttonState.minStickOffset
                 widgetView.buttonMode = ButtonMode(rawValue: Int(buttonState.buttonMode)) ?? .slideToToggle
+                widgetView.sprintKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: buttonState.sprintKeyActionType) ?? .hold
+                widgetView.sprintKeyThreshold = buttonState.sprintKeyThreshold
+                widgetView.walkKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: buttonState.walkKeyActionType) ?? .hold
+                widgetView.walkKeyThreshold = buttonState.walkKeyThreshold
+
                 self.view.insertSubview(widgetView, belowSubview: self.widgetPanelStack)
                 buttonState.position = self.denormalizeWidgetPosition(buttonState.position)
                 widgetView.setLocation(position: buttonState.position)
@@ -717,7 +735,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
         autoFitLabel(currentProfileLabel)
         currentProfileLabel.textAlignment = .left
-        currentProfileLabel.text = LocalizationHelper.localizedString(forKey: "  Profile: %@    Alias: %@    Cmd: %@    Parent:%@", profilesManager.getSelectedProfile().name, widgetView.widgetLabel, widgetView.cmdString,           LocalizationHelper.localizedString(forKey:OnScreenWidgetView.mapping[widgetView.parentSequence]?.widgetLabel ?? "null"))
+        currentProfileLabel.text = LocalizationHelper.localizedString(forKey: "  Profile: %@    Alias: %@    Cmd: %@    Parent: %@", profilesManager.getSelectedProfile().name, widgetView.widgetLabel, widgetView.cmdString,           LocalizationHelper.localizedString(forKey:OnScreenWidgetView.mapping[widgetView.parentSequence]?.widgetLabel ?? "null"))
+        if selectedWidgetView?.hasWalkSprintKeys == true {
+            let cmdCounts = widgetView.comboButtonStrings.count
+            currentProfileLabel.text = LocalizationHelper.localizedString(forKey: "  Cmd: %@    Sprint: %@    Walk: %@    Parent: %@",
+                widgetView.cmdString, cmdCounts>0 ? widgetView.comboButtonStrings[0] : LocalizationHelper.localizedString(forKey: "null"),
+                cmdCounts>1 ? widgetView.comboButtonStrings[1] : LocalizationHelper.localizedString(forKey: "null"),  LocalizationHelper.localizedString(forKey:OnScreenWidgetView.mapping[widgetView.parentSequence]?.widgetLabel ?? "null"))
+        }
+        
         undoButton.alpha = widgetView.layoutChanges.count > 1 ? 1.0 : 0.3
 
         widgetView.accessWidgetAttributes()
@@ -755,12 +780,37 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             autoFitLabel(walkModeThresholdLabel)
         }
 
+        
+        sprintKeyStack.isHidden = !(widgetView.hasWalkSprintKeys && !widgetView.comboButtonStrings.isEmpty)
+        walkKeyStack.isHidden = !(widgetView.hasWalkSprintKeys && widgetView.comboButtonStrings.count > 1)
+        if widgetView.hasWalkSprintKeys {
+            let clampedWalkThreshold = min(widgetView.walkKeyThreshold, widgetView.sprintKeyThreshold)
+            if clampedWalkThreshold != widgetView.walkKeyThreshold {
+                widgetView.walkKeyThreshold = clampedWalkThreshold
+            }
+            
+            sprintKeyThresholdSlider.value = Float(widgetView.sprintKeyThreshold)
+            sprintKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", sprintKeyThresholdSlider.value)
+            autoFitLabel(sprintKeyThresholdLabel)
+            sprintKeySelector.selectedSegmentIndex = Int(widgetView.sprintKeyActionType.rawValue)
+
+            walkKeyThresholdSlider.value = Float(widgetView.walkKeyThreshold)
+            walkKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", walkKeyThresholdSlider.value)
+            walkKeySelector.selectedSegmentIndex = Int(widgetView.walkKeyActionType.rawValue)
+            autoFitLabel(walkKeyThresholdLabel)
+
+            widgetView.updateMovementThresholdPreview()
+        } else {
+            widgetView.updateMovementThresholdPreview()
+        }
+
+        
         slideThresholdStack.isHidden = !widgetView.hasSlideThreshold
         if widgetView.hasSlideThreshold {
             slideThresholdSlider.minimumValue = Float(widgetView.slideThresholdMin)
             slideThresholdSlider.maximumValue = Float(widgetView.slideThresholdMax)
             slideThresholdSlider.value = Float(widgetView.slideThreshold)
-            slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold: %.1f", widgetView.slideThreshold)
+            slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "   Slide threshold: %.1f   ", widgetView.slideThreshold)
             autoFitLabel(slideThresholdLabel)
         }
 
@@ -833,7 +883,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
         mouseDownButtonStack.isHidden = !widgetView.isMousePadWithButtonActions
         mouseButtonDownSelector.selectedSegmentIndex = Int(widgetView.mouseButtonAction.rawValue)
-        
+
         
         autoDockTimerStack.isHidden = !(widgetView.isFolder && widgetView.parentSequence == -1);
         autoDockTimerSlider.value = Float(widgetView.autoDockIdleDuration)
@@ -900,6 +950,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         stickIndicatorOffsetStack.isHidden = true
         sensitivityXStack.isHidden = true
         sensitivityYStack.isHidden = true
+        sprintKeyStack.isHidden = true
+        walkKeyStack.isHidden = true
         mouseDownButtonStack.isHidden = true
         decelerationRateStack.isHidden = true
 
@@ -1068,6 +1120,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.setVibration(style: Int(widget.vibrationStyle))
         newWidget.mouseButtonAction = widget.mouseButtonAction
         newWidget.buttonMode = widget.buttonMode
+        newWidget.sprintKeyActionType = widget.sprintKeyActionType
+        newWidget.sprintKeyThreshold = widget.sprintKeyThreshold
+        newWidget.walkKeyActionType = widget.walkKeyActionType
+        newWidget.walkKeyThreshold = widget.walkKeyThreshold
 
         guard newWidget.widgetType == widget.widgetType else { return }
         view.insertSubview(newWidget, belowSubview: widgetPanelStack)
@@ -1386,9 +1442,21 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         sensitivityYSlider.addTarget(self, action: #selector(sensitivityYSliderMoved(_:)), for: .valueChanged)
         sensitivityYLabel.text = LocalizationHelper.localizedString(forKey: "SensitivityY")
         sensitivityYStack.isHidden = true
+        
         walkModeThresholdSlider.addTarget(self, action: #selector(walkModeThresholdSliderMoved(_:)), for: .valueChanged)
         walkModeThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Walkmode threshold")
         walkModeThresholdStack.isHidden = true
+        
+        sprintKeyThresholdSlider.addTarget(self, action: #selector(sprintKeyThresholdSliderMoved(_:)), for: .valueChanged)
+        sprintKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold")
+        sprintKeySelector.addTarget(self, action: #selector(sprintKeyActionChanged(_:)), for: .valueChanged)
+        sprintKeyStack.isHidden = true
+        
+        walkKeyThresholdSlider.addTarget(self, action: #selector(walkKeyThresholdSliderMoved(_:)), for: .valueChanged)
+        walkKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold")
+        walkKeySelector.addTarget(self, action: #selector(walkKeyActionChanged(_:)), for: .valueChanged)
+        walkKeyStack.isHidden = true
+        
         minStickOffsetSlider.addTarget(self, action: #selector(minStickOffsetSliderMoved(_:)), for: .valueChanged)
         minStickOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Minimum offset")
         minStickOffsetStack.isHidden = true
@@ -1850,6 +1918,45 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @objc private func slideThresholdSliderMoved(_ sender: UISlider) {
         slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold: %.1f", sender.value)
         selectedWidgetView?.slideThreshold = CGFloat(sender.value)
+    }
+    
+    @objc private func sprintKeyActionChanged(_ sender: UISegmentedControl) {
+        selectedWidgetView?.sprintKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: UInt8(sender.selectedSegmentIndex)) ?? .hold
+    }
+
+    @objc private func sprintKeyThresholdSliderMoved(_ sender: UISlider) {
+        sprintKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", sender.value)
+        autoFitLabel(sprintKeyThresholdLabel)
+
+        guard OnScreenWidgetView.editMode, let selectedWidgetView, widgetViewSelected else { return }
+
+        if sender.value < walkKeyThresholdSlider.value {
+            walkKeyThresholdSlider.value = sender.value
+            walkKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", walkKeyThresholdSlider.value)
+            autoFitLabel(walkKeyThresholdLabel)
+        }
+
+        selectedWidgetView.sprintKeyThreshold = CGFloat(sender.value)
+        selectedWidgetView.walkKeyThreshold = CGFloat(walkKeyThresholdSlider.value)
+        selectedWidgetView.updateMovementThresholdPreview()
+    }
+    
+    @objc private func walkKeyActionChanged(_ sender: UISegmentedControl) {
+        selectedWidgetView?.walkKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: UInt8(sender.selectedSegmentIndex)) ?? .hold
+    }
+
+    @objc private func walkKeyThresholdSliderMoved(_ sender: UISlider) {
+        if sender.value > sprintKeyThresholdSlider.value {
+            sender.value = sprintKeyThresholdSlider.value
+        }
+
+        walkKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", sender.value)
+        autoFitLabel(walkKeyThresholdLabel)
+
+        guard OnScreenWidgetView.editMode, let selectedWidgetView, widgetViewSelected else { return }
+
+        selectedWidgetView.walkKeyThreshold = CGFloat(sender.value)
+        selectedWidgetView.updateMovementThresholdPreview()
     }
 
     @objc private func yawFactorSliderMoved(_ sender: UISlider) {

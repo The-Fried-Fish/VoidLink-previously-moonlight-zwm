@@ -72,6 +72,10 @@
     [encoder encodeObject:self.widgetShape forKey:@"widgetShape"];
     [encoder encodeFloat:self.walkModeThreshold forKey:@"walkModeThreshold"];
     [encoder encodeFloat:self.minStickOffset forKey:@"minStickOffset"];
+    [encoder encodeInt:self.sprintKeyActionType forKey:@"sprintKeyActionType"];
+    [encoder encodeFloat:self.sprintKeyThreshold forKey:@"sprintKeyThreshold"];
+    [encoder encodeInt:self.walkKeyActionType forKey:@"walkKeyActionType"];
+    [encoder encodeFloat:self.walkKeyThreshold forKey:@"walkKeyThreshold"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
@@ -117,6 +121,12 @@
         self.widgetShape = [decoder decodeObjectForKey:@"widgetShape"];
         self.walkModeThreshold = [decoder containsValueForKey:@"walkModeThreshold"] ? [decoder decodeFloatForKey:@"walkModeThreshold"] : 16383;
         self.minStickOffset = [decoder decodeFloatForKey:@"minStickOffset"];
+        
+        self.sprintKeyActionType = [decoder containsValueForKey:@"sprintKeyActionType"] ? [decoder decodeIntForKey:@"sprintKeyActionType"] : WalkSprintKeyActionTypeHold;
+        self.sprintKeyThreshold = [decoder containsValueForKey:@"sprintKeyThreshold"] ? [decoder decodeFloatForKey:@"sprintKeyThreshold"] : 0.6;
+        self.walkKeyActionType = [decoder containsValueForKey:@"walkKeyActionType"] ? [decoder decodeIntForKey:@"walkKeyActionType"] : WalkSprintKeyActionTypeHold;
+        self.walkKeyThreshold = [decoder containsValueForKey:@"walkKeyThreshold"] ? [decoder decodeFloatForKey:@"walkKeyThreshold"] : 0.08;
+
     }
     return self;
 }

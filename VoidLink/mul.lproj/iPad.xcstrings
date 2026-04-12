@@ -187,6 +187,66 @@
         }
       }
     },
+    "3fM-1s-S0k.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 3fM-1s-S0k.segmentTitles[0] = \"hold\"; ObjectID = \"3fM-1s-S0k\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "hold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持"
+          }
+        }
+      }
+    },
+    "3fM-1s-S0k.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 3fM-1s-S0k.segmentTitles[1] = \"toggle\"; ObjectID = \"3fM-1s-S0k\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "toggle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換"
+          }
+        }
+      }
+    },
     "3rP-dh-TJi.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Enable PiP\"; ObjectID = \"3rP-dh-TJi\";",
       "extractionState" : "extracted_with_value",
@@ -423,6 +483,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸點追蹤"
+          }
+        }
+      }
+    },
+    "5Uu-1K-ov7.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Sprint key\"; ObjectID = \"5Uu-1K-ov7\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sprint key"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "疾走键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "疾走鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "疾走鍵"
           }
         }
       }
@@ -2305,6 +2395,66 @@
         }
       }
     },
+    "csH-cx-ZWH.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; csH-cx-ZWH.segmentTitles[0] = \"hold\"; ObjectID = \"csH-cx-ZWH\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "hold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持"
+          }
+        }
+      }
+    },
+    "csH-cx-ZWH.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; csH-cx-ZWH.segmentTitles[1] = \"toggle\"; ObjectID = \"csH-cx-ZWH\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "toggle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換"
+          }
+        }
+      }
+    },
     "cyH-Fh-vW6.normalTitle" : {
       "comment" : "Class = \"UIButton\"; normalTitle = \"Button\"; ObjectID = \"cyH-Fh-vW6\";",
       "extractionState" : "extracted_with_value",
@@ -2668,6 +2818,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "聲道設定"
+          }
+        }
+      }
+    },
+    "eRk-iM-nN4.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Walk key\"; ObjectID = \"eRk-iM-nN4\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Walk key"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "静步键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "靜步鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "靜步鍵"
           }
         }
       }
@@ -3808,6 +3988,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "滑動距離閾值"
+          }
+        }
+      }
+    },
+    "kex-PV-gvq.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide threshold\"; ObjectID = \"kex-PV-gvq\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide threshold"
           }
         }
       }
@@ -5880,6 +6072,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "合成實體搖桿輸入"
+          }
+        }
+      }
+    },
+    "v4J-ot-qpz.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Slide threshold\"; ObjectID = \"v4J-ot-qpz\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Slide threshold"
           }
         }
       }

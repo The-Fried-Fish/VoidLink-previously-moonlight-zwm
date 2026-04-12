@@ -478,7 +478,11 @@ static CGRect layoutViewBounds;
         buttonState.walkModeThreshold = widgetView.dWheelWalkModeThreshold;
         buttonState.minStickOffset = widgetView.minStickOffset;
         buttonState.buttonMode = widgetView.buttonMode;
-        
+        buttonState.sprintKeyActionType = widgetView.sprintKeyActionType;
+        buttonState.sprintKeyThreshold = widgetView.sprintKeyThreshold;
+        buttonState.walkKeyActionType = widgetView.walkKeyActionType;
+        buttonState.walkKeyThreshold = widgetView.walkKeyThreshold;
+
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
         [buttonStatesEncoded addObject: buttonStateEncoded];
     }
