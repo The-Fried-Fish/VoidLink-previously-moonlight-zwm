@@ -358,18 +358,14 @@ final class AbstractGamepadOverlayView: UIView {
         guard GenericUtils.isFirstLaunchGamepadOverlayFeature() else { return }
         guard let presentingViewController = nearestViewController() else { return }
 
-        let alertController = UIAlertController(
+        AlertControllerUtil.showAlert(
+            in: presentingViewController,
             title: GenericUtils.gamepadOverlayFeatureTipTitle(),
             message: GenericUtils.gamepadOverlayFeatureTipMessage(),
-            preferredStyle: .alert
-        )
-        alertController.addAction(
-            UIAlertAction(
-                title: GenericUtils.gamepadOverlayFeatureTipButtonTitle(),
-                style: .default
+            withCancel: false,
+            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+            countdown: 6
             )
-        )
-        presentingViewController.present(alertController, animated: true)
     }
 
     private func nearestViewController() -> UIViewController? {

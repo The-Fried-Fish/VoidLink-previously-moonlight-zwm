@@ -2642,9 +2642,13 @@ import ObjectiveC.runtime
                 self.functionalButtonDelegate?.expandSettingsView()
             }
         case "DISCONNECT":
-            self.functionalButtonDelegate?.disconnectRemoteSession()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.functionalButtonDelegate?.disconnectRemoteSession()
+            }
         case "QUITAPP":
-            self.functionalButtonDelegate?.disconnectAndQuitApp()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.functionalButtonDelegate?.disconnectAndQuitApp()
+            }
         case "TOOLBOX":
             self.functionalButtonDelegate?.bringUpToolboxMenu()
         case "PIP":
