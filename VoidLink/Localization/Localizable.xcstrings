@@ -4901,25 +4901,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. By default, The widget menu button will be automatically docked to edge, then become almost transparent after staying idle for 10 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
+            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 10 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 默认状态下，控件菜单按键在闲置10秒后将自动吸附屏幕右边缘，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n"
+            "value" : "\n1. 默认状态下，控件菜单按键在闲置10秒后将自动吸附屏幕底部边缘，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕右邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕底部邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕右邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕底部邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
           }
         }
       }
