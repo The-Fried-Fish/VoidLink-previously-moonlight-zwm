@@ -10872,25 +10872,25 @@
         }
       }
     },
-    "Slide threshold: %.1f" : {
+    "Slide threshold: %.1f   " : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "滑动阈值: %.2f"
+            "value" : "滑动阈值: %.1f"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "滑動閾值: %.2f"
+            "value" : "滑動閾值: %.1f"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "滑動閾值: %.2f"
+            "value" : "滑動閾值: %.1f"
           }
         }
       }

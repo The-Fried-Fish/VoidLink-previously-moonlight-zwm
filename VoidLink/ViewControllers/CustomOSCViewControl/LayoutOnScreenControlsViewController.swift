@@ -810,7 +810,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             slideThresholdSlider.minimumValue = Float(widgetView.slideThresholdMin)
             slideThresholdSlider.maximumValue = Float(widgetView.slideThresholdMax)
             slideThresholdSlider.value = Float(widgetView.slideThreshold)
-            slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "   Slide threshold: %.1f   ", widgetView.slideThreshold)
+            slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold: %.1f   ", widgetView.slideThreshold)
             autoFitLabel(slideThresholdLabel)
         }
 
@@ -2088,7 +2088,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func slideThresholdSliderMoved(_ sender: UISlider) {
-        slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold: %.1f", sender.value)
+        slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold: %.1f   ", sender.value)
         selectedWidgetView?.slideThreshold = CGFloat(sender.value)
     }
     
