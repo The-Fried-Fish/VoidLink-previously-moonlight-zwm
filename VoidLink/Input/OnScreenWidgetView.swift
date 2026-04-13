@@ -837,6 +837,10 @@ import ObjectiveC.runtime
     @objc func setupAtrributedText(){
         var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
         
+        if !OnScreenWidgetView.editMode, self.widgetType == .touchPad {
+            text = ""
+        }
+        
         if self.hasNonEditableLabel {
             
             switch cmdString {
@@ -3302,7 +3306,6 @@ import ObjectiveC.runtime
         let rightDistance = hostView.bounds.width - frame.maxX
         let bottomDistance = hostView.bounds.height - frame.maxY
         autoDockDistance = min(rightDistance, bottomDistance)
-        print("autoDockDistance \(autoDockDistance) ...")
         autoDockDockedToBottomEdge = bottomDistance < rightDistance
         
         let targetFrame = autoDockTargetFrame(in: hostView.bounds)
