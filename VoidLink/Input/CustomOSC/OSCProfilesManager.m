@@ -205,7 +205,13 @@ static CGRect layoutViewBounds;
             NSSet *classes = [NSSet setWithObjects: [NSMutableData class], [NSMutableArray class], nil];
             profilesEncoded = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:fileData error:&error];
             [self importEncodedProfiles:profilesEncoded];
-            [self setProfileToSelected: GenericUtils.isIPhone ? 1 : 2];
+            
+            NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+            bool isRegularTF = !([bundleId isEqualToString:@"com.voidlink.iOS"]
+                                      || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
+                                      || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
+
+            [self setProfileToSelected: GenericUtils.isIPhone ? 1 : (isRegularTF ? 1: 2)];
         }
     }
 }
