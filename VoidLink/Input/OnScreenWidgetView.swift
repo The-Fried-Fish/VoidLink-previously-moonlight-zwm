@@ -3090,7 +3090,7 @@ import ObjectiveC.runtime
     
     // MARK: - Auto Dock
     private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90
-    private static let autoDockExposedThickness: CGFloat = 17
+    private static let autoDockExposedThickness: CGFloat = 22
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 5
     private static let autoDockInitialAlpha: CGFloat = 0.8
@@ -3119,7 +3119,7 @@ import ObjectiveC.runtime
     }()
     
     private var autoDockTimer: Timer?
-    private var autoDockStoredCenter: CGPoint?
+    // private var autoDockStoredCenter: CGPoint?
     private var autoDockDockedCenter: CGPoint?
     private var autoDockDockedToBottomEdge: Bool = false
     private var autoDockDistance: CGFloat = 3
@@ -3302,7 +3302,7 @@ import ObjectiveC.runtime
         hostView.layoutIfNeeded()
         layoutIfNeeded()
         
-        autoDockStoredCenter = center
+        // autoDockStoredCenter = storedCenter
         let rightDistance = hostView.bounds.width - frame.maxX
         let bottomDistance = hostView.bounds.height - frame.maxY
         autoDockDistance = min(rightDistance, bottomDistance)
@@ -3342,7 +3342,8 @@ import ObjectiveC.runtime
     }
     
     private func autoDockRestoreWidget(animated: Bool) {
-        guard autoDockIsDocked, let restoreCenter = autoDockStoredCenter else { return }
+        guard autoDockIsDocked else { return }
+        let restoreCenter = storedCenter
         OnScreenWidgetView.hasRestoredFromAutoDock = true
         autoDockStopCountdown()
         autoDockStopSettledAlphaTimer()
