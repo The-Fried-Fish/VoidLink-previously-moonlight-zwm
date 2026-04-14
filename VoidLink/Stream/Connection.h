@@ -30,5 +30,6 @@
 -(NSString*) getActiveCodecName;
 
 + (void)setVolume:(float)newVolume;
++ (void)resetSysAudioPlayback;
 
 @end

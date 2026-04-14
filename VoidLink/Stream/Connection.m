@@ -48,7 +48,6 @@ static SDL_AudioDeviceID audioDevice;
 static OPUS_MULTISTREAM_CONFIGURATION audioConfig;
 static void* audioBuffer;
 static float volume = 1.0;
-static bool sysAudioQueueReset = false;
 static int audioFrameSize;
 
 static bool useSystemAudioEngine;
@@ -57,8 +56,6 @@ static AVAudioEngine *audioEngine;
 static AVAudioPlayerNode *audioPlayerNode;
 static AVAudioPCMBuffer *pcmBuffer;
 static AVAudioFormat *audioFormat;
-static int64_t systemAudioScheduledFrames;
-static CFTimeInterval systemAudioLastFlushTime;
 
 static bool muteInBackground;
 static bool fullColorRange;
@@ -66,32 +63,6 @@ static bool fullColorRange;
 static VideoDecoderRenderer* renderer;
 
 static BandwidthTracker *bwTracker;
-
-static int64_t GetSystemAudioQueuedFrames(void)
-{
-    if (audioPlayerNode == nil) {
-        return 0;
-    }
-
-    AVAudioTime *nodeTime = audioPlayerNode.lastRenderTime;
-    if (nodeTime == nil) {
-        return systemAudioScheduledFrames;
-    }
-
-    AVAudioTime *playerTime = [audioPlayerNode playerTimeForNodeTime:nodeTime];
-    if (playerTime == nil) {
-        return systemAudioScheduledFrames;
-    }
-
-    int64_t queuedFrames = systemAudioScheduledFrames - playerTime.sampleTime;
-    return queuedFrames > 0 ? queuedFrames : 0;
-}
-
-static void ResetSystemAudioBackpressureState(void)
-{
-    systemAudioScheduledFrames = 0;
-    systemAudioLastFlushTime = 0;
-}
 
 int DrDecoderSetup(int videoFormat, int width, int height, int redrawRate, void* context, int drFlags)
 {
@@ -377,7 +348,6 @@ void ArCleanup(void)
 }
 
 void AudioEngineInit(int sampleRate, int channelCount) {
-    ResetSystemAudioBackpressureState();
     
     audioEngine = [[AVAudioEngine alloc] init];
     audioPlayerNode = [[AVAudioPlayerNode alloc] init];
@@ -430,6 +400,16 @@ void AudioEngineInit(int sampleRate, int channelCount) {
     [audioPlayerNode play];
 }
 
++ (void)resetSysAudioPlayback {
+    audioSessionInterrupted = true;
+    [audioPlayerNode stop];
+    [audioEngine stop];
+    AudioEngineInit(audioConfig.sampleRate, audioConfig.channelCount);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5*NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        audioSessionInterrupted = false;
+    });
+}
+
 void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
 {
     if(appDidEnterBackgroundWithoutPip && muteInBackground) return;
@@ -456,41 +436,20 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
         float* fbuf = (float*)audioBuffer;
         
         if(useSystemAudioEngine){
-            int64_t maxQueuedFrames = (int64_t)audioConfig.samplesPerFrame * 10;
-            CFTimeInterval now = CACurrentMediaTime();
-            if (GetSystemAudioQueuedFrames() > maxQueuedFrames &&
-                now - systemAudioLastFlushTime >= 5) {
-                // Drop stale local backlog without slowing down upstream packet
-                // consumption, which keeps background playback stable.
-                
-                NSLog(@"sdfasfdsfasdfasfasfasdfasfasfdfasf");
-                
-                sysAudioQueueReset = true;
-                dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayTime), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    sysAudioQueueReset = false;
-                });
-
-                [audioPlayerNode reset];
-                ResetSystemAudioBackpressureState();
-                systemAudioLastFlushTime = now;
-            }
-
+            // 创建 AVAudioPCMBuffer
             AVAudioFrameCount frameCount = decodeLen;
             AVAudioPCMBuffer *buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFormat frameCapacity:frameCount];
             buffer.frameLength = frameCount;
             
+            // 拷贝数据到 buffer
             for (int ch = 0; ch < audioConfig.channelCount; ch++) {
                 float *dst = buffer.floatChannelData[ch];
                 for (int i = 0; i < decodeLen; i++) {
-                    dst[i] = fbuf[i * audioConfig.channelCount + ch] * (sysAudioQueueReset ? 0 : volume); // 非交错数据
+                    dst[i] = fbuf[i * audioConfig.channelCount + ch] * volume; // 非交错数据
                 }
             }
-
-            if(!audioSessionInterrupted) {
-                [audioPlayerNode scheduleBuffer:buffer completionHandler:nil];
-                systemAudioScheduledFrames += frameCount;
-            }
+            // 播放
+            if(!audioSessionInterrupted) [audioPlayerNode scheduleBuffer:buffer completionHandler:nil];
         }
         
         else{
@@ -586,7 +545,6 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     // won't be able to acquire it if LiStartConnection is in
     // progress.
     LiInterruptConnection();
-    ResetSystemAudioBackpressureState();
     [audioPlayerNode stop];
     [audioEngine stop];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -609,7 +567,6 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     switch (type) {
         case AVAudioSessionInterruptionTypeBegan:
             audioSessionInterrupted = true;
-            ResetSystemAudioBackpressureState();
             [audioPlayerNode stop];
             [audioEngine stop];
             break;

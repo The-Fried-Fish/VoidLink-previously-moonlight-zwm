@@ -1087,6 +1087,7 @@
     //[self.pipController startPictureInPicture];
     //sleep(1);
     appDidEnterBackgroundWithoutPip = true;
+    
     NSLog(@"applicationWillResignActive %f", CACurrentMediaTime());
     [_streamView saveStreamViewWidgetChanges];
 
@@ -1105,6 +1106,11 @@
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     appDidEnterBackgroundWithoutPip = false;
     [_streamMan setNeedRequeuing:true];
+    // dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC));
+    // dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [Connection resetSysAudioPlayback];
+    // });
+    
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
