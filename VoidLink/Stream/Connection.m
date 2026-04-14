@@ -15,7 +15,6 @@
 #import "DataManager.h"
 
 #import <VideoToolbox/VideoToolbox.h>
-#include <stdatomic.h>
 
 #define SDL_MAIN_HANDLED
 #import <SDL.h>
@@ -57,7 +56,6 @@ static AVAudioEngine *audioEngine;
 static AVAudioPlayerNode *audioPlayerNode;
 static AVAudioPCMBuffer *pcmBuffer;
 static AVAudioFormat *audioFormat;
-static atomic_long systemAudioQueuedFrames;
 
 static bool muteInBackground;
 static bool fullColorRange;
@@ -65,20 +63,6 @@ static bool fullColorRange;
 static VideoDecoderRenderer* renderer;
 
 static BandwidthTracker *bwTracker;
-
-static void SystemAudioConsumeQueuedFrames(long frameCount)
-{
-    long currentFrames;
-    long newFrames;
-
-    do {
-        currentFrames = atomic_load(&systemAudioQueuedFrames);
-        newFrames = currentFrames - frameCount;
-        if (newFrames < 0) {
-            newFrames = 0;
-        }
-    } while (!atomic_compare_exchange_weak(&systemAudioQueuedFrames, &currentFrames, newFrames));
-}
 
 int DrDecoderSetup(int videoFormat, int width, int height, int redrawRate, void* context, int drFlags)
 {
@@ -364,7 +348,6 @@ void ArCleanup(void)
 }
 
 void AudioEngineInit(int sampleRate, int channelCount) {
-    atomic_store(&systemAudioQueuedFrames, 0);
     
     audioEngine = [[AVAudioEngine alloc] init];
     audioPlayerNode = [[AVAudioPlayerNode alloc] init];
@@ -443,28 +426,20 @@ void ArDecodeAndPlaySample(char* sampleData, int sampleLength)
         float* fbuf = (float*)audioBuffer;
         
         if(useSystemAudioEngine){
-            long maxQueuedFrames = (long)audioConfig.samplesPerFrame * 10;
-            while (atomic_load(&systemAudioQueuedFrames) > maxQueuedFrames) {
-                [NSThread sleepForTimeInterval:0.001f];
-            }
-
+            // 创建 AVAudioPCMBuffer
             AVAudioFrameCount frameCount = decodeLen;
             AVAudioPCMBuffer *buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFormat frameCapacity:frameCount];
             buffer.frameLength = frameCount;
             
+            // 拷贝数据到 buffer
             for (int ch = 0; ch < audioConfig.channelCount; ch++) {
                 float *dst = buffer.floatChannelData[ch];
                 for (int i = 0; i < decodeLen; i++) {
                     dst[i] = fbuf[i * audioConfig.channelCount + ch] * volume; // 非交错数据
                 }
             }
-
-            if(!audioSessionInterrupted) {
-                atomic_fetch_add(&systemAudioQueuedFrames, frameCount);
-                [audioPlayerNode scheduleBuffer:buffer completionHandler:^{
-                    SystemAudioConsumeQueuedFrames(frameCount);
-                }];
-            }
+            // 播放
+            if(!audioSessionInterrupted) [audioPlayerNode scheduleBuffer:buffer completionHandler:nil];
         }
         
         else{
@@ -560,7 +535,6 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     // won't be able to acquire it if LiStartConnection is in
     // progress.
     LiInterruptConnection();
-    atomic_store(&systemAudioQueuedFrames, 0);
     [audioPlayerNode stop];
     [audioEngine stop];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -583,7 +557,6 @@ void ClSetControllerLED(uint16_t controllerNumber, uint8_t r, uint8_t g, uint8_t
     switch (type) {
         case AVAudioSessionInterruptionTypeBegan:
             audioSessionInterrupted = true;
-            atomic_store(&systemAudioQueuedFrames, 0);
             [audioPlayerNode stop];
             [audioEngine stop];
             break;
