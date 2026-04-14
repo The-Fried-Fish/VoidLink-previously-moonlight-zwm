@@ -1795,26 +1795,30 @@
 }
 
 - (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0)){
-    if (_virtualGamepadOverlay != nil || self.view.window == nil) {
-        return;
-    }
-
-    BOOL usesXboxFaceButtons = _settings.emulatedControllerType.intValue == LI_CTYPE_XBOX;
-    
-    // CGFloat maxWidth = MIN(CGRectGetWidth(self.view.bounds) * 0.72, 620);
-    // CGFloat standardWidth = MAX(420, maxWidth);
-    
-    CGFloat standardWidth = GenericUtils.isIPhone ? 165 : 200;
-    
-    CGFloat standardhHeight = standardWidth / 1.82;
-    CGRect overlayFrame = CGRectMake(0, 0, standardWidth, standardhHeight);
-
-    AbstractGamepadOverlayView *overlayView = [[AbstractGamepadOverlayView alloc] initWithFrame:overlayFrame usesPlayStationFaceButtons:!usesXboxFaceButtons];
-    overlayView.center = CGPointMake(self.view.bounds.size.width-standardWidth/2-20, self.view.bounds.size.height-standardhHeight/2-20);
-    overlayView.userInteractionEnabled = YES;
-    [self.view addSubview:overlayView];
-
-    _virtualGamepadOverlay = overlayView;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+        
+        if (self->_virtualGamepadOverlay != nil || self.view.window == nil) {
+            return;
+        }
+        
+        BOOL usesXboxFaceButtons = self->_settings.emulatedControllerType.intValue == LI_CTYPE_XBOX;
+        
+        // CGFloat maxWidth = MIN(CGRectGetWidth(self.view.bounds) * 0.72, 620);
+        // CGFloat standardWidth = MAX(420, maxWidth);
+        
+        CGFloat standardWidth = GenericUtils.isIPhone ? 165 : 200;
+        
+        CGFloat standardhHeight = standardWidth / 1.82;
+        CGRect overlayFrame = CGRectMake(0, 0, standardWidth, standardhHeight);
+        
+        AbstractGamepadOverlayView *overlayView = [[AbstractGamepadOverlayView alloc] initWithFrame:overlayFrame usesPlayStationFaceButtons:!usesXboxFaceButtons];
+        overlayView.center = CGPointMake(self.view.bounds.size.width-standardWidth/2-20, self.view.bounds.size.height-standardhHeight/2-20);
+        overlayView.userInteractionEnabled = YES;
+        [self.view addSubview:overlayView];
+        
+        self->_virtualGamepadOverlay = overlayView;
+    });
 }
 
 
