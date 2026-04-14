@@ -631,7 +631,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             
             //NSLog(@"gamepadMask: %@", [self binaryRepresentationOfInteger:buttonFlags]); // we got the pressed OSC buttons here.
             
-            // Player 1 is always present for OSC
+            // Player 0 is always present for OSC
             LiSendMultiControllerEvent(_multiController ? controller.playerIndex : 0, [self getActiveGamepadMask],
                                        buttonFlags, leftTrigger, rightTrigger,
                                        leftStickX, leftStickY, rightStickX, rightStickY);
@@ -1149,7 +1149,7 @@ double rc_expo(double x, double expo) {
                     
                     for(NSNumber* buttonFlagId in buttonDict){
                         GCControllerButtonInput * button = (GCControllerButtonInput *)buttonDict[buttonFlagId];
-                        if(self->_mapControllerToMouse){
+                        if(self->_mapControllerToMouse && voidController.playerIndex==0){
                             if(button.pressed){
                                 if(buttonFlagId.intValue == self->_controllerMouseSwitch){
                                     self->_mouseSwitchButtonPressed = true;
@@ -1577,9 +1577,17 @@ double rc_expo(double x, double expo) {
         }
     }
 
-    // If this is player 0, it shares state with the OSC
-    voidController.mergedWithController = _oscController;
-    _oscController.mergedWithController = voidController;
+    // Only player 0 shares state with the OSC.
+    if (voidController.playerIndex == 0) {
+        voidController.mergedWithController = _oscController;
+        _oscController.mergedWithController = voidController;
+    }
+    else {
+        voidController.mergedWithController = nil;
+        if (_oscController.mergedWithController == voidController) {
+            _oscController.mergedWithController = nil;
+        }
+    }
     
     if (@available(iOS 13.0, tvOS 13.0, *)) {
         if (controller.extendedGamepad != nil &&
