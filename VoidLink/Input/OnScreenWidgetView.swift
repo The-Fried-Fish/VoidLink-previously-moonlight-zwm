@@ -3092,7 +3092,7 @@ import ObjectiveC.runtime
     private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90
     private static let autoDockExposedThickness: CGFloat = 22
     private static let autoDockVerticalInset: CGFloat = 12
-    @objc var autoDockIdleDuration: TimeInterval = 5
+    @objc var autoDockIdleDuration: TimeInterval = 0
     private static let autoDockInitialAlpha: CGFloat = 0.8
     @objc var autoDockSettledAlpha: CGFloat = 0.2
     private static let autoDockSettledAlphaDelay: TimeInterval = 2

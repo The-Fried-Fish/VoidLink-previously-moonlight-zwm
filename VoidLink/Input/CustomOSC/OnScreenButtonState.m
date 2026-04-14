@@ -87,7 +87,7 @@
         self.sequence = [decoder containsValueForKey:@"sequence"] ? [decoder decodeInt32ForKey:@"sequence"] : -1;
         self.parentSequence = [decoder containsValueForKey:@"parentSequence"] ? [decoder decodeInt32ForKey:@"parentSequence"] : -1;
         self.sequenceSet = [decoder containsValueForKey:@"sequenceSet"] ? [decoder decodeObjectForKey:@"sequenceSet"] : [NSSet set];
-        self.autoDockTimer = [decoder containsValueForKey:@"autoDockTimer"] ? [decoder decodeInt32ForKey:@"autoDockTimer"] : 10;
+        self.autoDockTimer = [decoder containsValueForKey:@"autoDockTimer"] ? [decoder decodeInt32ForKey:@"autoDockTimer"] : 0;
         self.dockedAlpha = [decoder containsValueForKey:@"dockedAlpha"] ? [decoder decodeFloatForKey:@"dockedAlpha"] : 0.2;
         
         self.alias = [decoder decodeObjectForKey:@"alias"];
