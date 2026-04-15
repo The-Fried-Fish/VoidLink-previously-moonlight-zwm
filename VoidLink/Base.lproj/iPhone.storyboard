@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="DL0-L5-LOv">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -58,13 +59,10 @@
         <scene sceneID="QYt-XN-Ojr">
             <objects>
                 <viewController id="DL0-L5-LOv" customClass="SWRevealViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="r4Q-3y-YAU"/>
-                        <viewControllerLayoutGuide type="bottom" id="iBq-4E-Dbr"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Usg-e0-g4a">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="4Hp-c3-ox0"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <connections>
@@ -101,13 +99,10 @@
         <scene sceneID="5Eb-q2-vjt">
             <objects>
                 <viewController id="mI3-9F-XwU" customClass="StreamFrameViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="u8d-aX-gHk"/>
-                        <viewControllerLayoutGuide type="bottom" id="kcN-yf-dtN"/>
-                    </layoutGuides>
                     <view key="view" multipleTouchEnabled="YES" contentMode="scaleToFill" id="p4u-yn-VXk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <viewLayoutGuide key="safeArea" id="WaX-Fe-I5B"/>
                         <color key="backgroundColor" red="0.3333357871" green="0.33332890269999998" blue="0.33333355190000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
                     <navigationItem key="navigationItem" id="8uX-4T-BiC"/>
@@ -123,10 +118,6 @@
         <scene sceneID="kPF-XD-S77">
             <objects>
                 <viewController storyboardIdentifier="loadingFrame" modalTransitionStyle="crossDissolve" modalPresentationStyle="overCurrentContext" id="9W0-2D-0Kp" customClass="LoadingFrameViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="VID-dc-yvh"/>
-                        <viewControllerLayoutGuide type="bottom" id="hby-2y-jAk"/>
-                    </layoutGuides>
                     <view key="view" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="center" id="nSw-dc-mi4">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -136,6 +127,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="cuX-QJ-2dh"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <size key="freeformSize" width="800" height="896"/>
@@ -151,22 +143,34 @@
         <scene sceneID="0t8-OY-y9y">
             <objects>
                 <viewController storyboardIdentifier="LayoutOnScreenControlsViewController" id="ZYS-Zm-PJs" customClass="LayoutOnScreenControlsViewController" customModule="VoidLink" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="OEV-LT-On1"/>
-                        <viewControllerLayoutGuide type="bottom" id="TWA-bF-hnk"/>
-                    </layoutGuides>
                     <view key="view" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Mwx-9q-yJJ">
                         <rect key="frame" x="0.0" y="0.0" width="1300" height="1800"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jnu-63-bcf" customClass="ToolBarContainerView">
-                                <rect key="frame" x="0.0" y="0.0" width="1300" height="45"/>
+                                <rect key="frame" x="0.0" y="96" width="410" height="45"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleAspectFill" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="4he-pe-kYB">
-                                        <rect key="frame" x="275" y="0.0" width="750" height="50"/>
+                                    <stackView opaque="NO" contentMode="scaleAspectFill" distribution="fillEqually" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="4he-pe-kYB">
+                                        <rect key="frame" x="0.0" y="-2.5" width="410" height="50"/>
                                         <subviews>
+                                            <button opaque="NO" tag="40" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nHH-6h-4D1" userLabel="Exit">
+                                                <rect key="frame" x="0.0" y="9.5" width="50" height="31"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="50" id="sBF-hd-nF8"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                                <color key="tintColor" systemColor="systemTealColor"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal">
+                                                    <imageReference key="image" image="arrow.left.square.fill" catalog="system" symbolScale="default"/>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="28" scale="default" weight="semibold"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="closeTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="U8V-Ry-ym9"/>
+                                                </connections>
+                                            </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pdg-l4-BvF" userLabel="Undo">
-                                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                <rect key="frame" x="60" y="0.0" width="50" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="7KW-Xe-OEK"/>
                                                     <constraint firstAttribute="width" constant="50" id="gHD-A0-AVS"/>
@@ -199,7 +203,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LPA-ea-YHC" userLabel="Save">
-                                                <rect key="frame" x="240" y="0.0" width="50" height="50"/>
+                                                <rect key="frame" x="180" y="0.0" width="50" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="50" id="Lot-pn-o60"/>
                                                     <constraint firstAttribute="height" constant="50" id="uWO-So-qxr"/>
@@ -215,7 +219,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" tag="20" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-Fo-0GK" userLabel="Trash">
-                                                <rect key="frame" x="360" y="0.0" width="50" height="50"/>
+                                                <rect key="frame" x="240" y="0.0" width="50" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="0vV-wV-Efz"/>
                                                     <constraint firstAttribute="width" constant="50" id="j9W-Ja-bVn"/>
@@ -231,7 +235,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Up4-28-sgF" userLabel="Add">
-                                                <rect key="frame" x="480" y="0.0" width="50" height="50"/>
+                                                <rect key="frame" x="300" y="0.0" width="50" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="rWU-US-9dl"/>
                                                     <constraint firstAttribute="width" constant="50" id="wWj-wB-MRd"/>
@@ -246,7 +250,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4pE-po-Zn1" userLabel="Edit">
-                                                <rect key="frame" x="600" y="0.0" width="150" height="50"/>
+                                                <rect key="frame" x="360" y="0.0" width="50" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="50" id="oFn-jm-orG"/>
                                                     <constraint firstAttribute="height" constant="50" id="sls-Vh-uxz"/>
@@ -263,12 +267,9 @@
                                                 </connections>
                                             </button>
                                         </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="750" id="6BK-sG-WTH"/>
-                                        </constraints>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zll-IP-PFt" userLabel="Chevron View">
-                                        <rect key="frame" x="624" y="50" width="52" height="25"/>
+                                        <rect key="frame" x="179" y="45" width="52" height="25"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ChevronCompactUp" translatesAutoresizingMaskIntoConstraints="NO" id="76O-3K-aa8">
                                                 <rect key="frame" x="0.0" y="0.0" width="52" height="25"/>
@@ -285,37 +286,19 @@
                                             <constraint firstItem="76O-3K-aa8" firstAttribute="leading" secondItem="Zll-IP-PFt" secondAttribute="leading" id="xdb-MV-O2f"/>
                                         </constraints>
                                     </view>
-                                    <button opaque="NO" tag="40" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nHH-6h-4D1" userLabel="Exit">
-                                        <rect key="frame" x="18" y="10" width="50" height="31"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="sBF-hd-nF8"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
-                                        <color key="tintColor" systemColor="systemTealColor"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal">
-                                            <imageReference key="image" image="arrow.left.square.fill" catalog="system" symbolScale="default"/>
-                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="28" scale="default" weight="semibold"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="closeTapped:" destination="ZYS-Zm-PJs" eventType="touchUpInside" id="U8V-Ry-ym9"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="nHH-6h-4D1" firstAttribute="top" secondItem="Jnu-63-bcf" secondAttribute="top" constant="10" id="BgT-Ab-49Z"/>
                                     <constraint firstAttribute="height" constant="45" id="OSW-rn-n8z"/>
-                                    <constraint firstItem="nHH-6h-4D1" firstAttribute="leading" secondItem="Jnu-63-bcf" secondAttribute="leading" constant="18" id="PqC-oI-mFI"/>
                                     <constraint firstItem="4he-pe-kYB" firstAttribute="centerX" secondItem="Jnu-63-bcf" secondAttribute="centerX" id="VRj-3r-zcK"/>
-                                    <constraint firstItem="Zll-IP-PFt" firstAttribute="top" secondItem="4he-pe-kYB" secondAttribute="bottom" id="lWA-W3-5cq"/>
-                                    <constraint firstItem="4he-pe-kYB" firstAttribute="top" secondItem="Jnu-63-bcf" secondAttribute="top" id="rBU-cP-Ypw"/>
+                                    <constraint firstItem="Zll-IP-PFt" firstAttribute="top" secondItem="Jnu-63-bcf" secondAttribute="bottom" id="lWA-W3-5cq"/>
+                                    <constraint firstItem="4he-pe-kYB" firstAttribute="width" secondItem="Jnu-63-bcf" secondAttribute="width" id="mTZ-Fm-C6t"/>
                                     <constraint firstAttribute="centerY" secondItem="4he-pe-kYB" secondAttribute="centerY" id="vme-I2-46x"/>
                                     <constraint firstItem="Zll-IP-PFt" firstAttribute="centerX" secondItem="Jnu-63-bcf" secondAttribute="centerX" id="yvK-OU-Gl6"/>
                                 </constraints>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="BVp-3O-vZ7" userLabel="widgetPanelStack" customClass="WidgetPanelStackView">
-                                <rect key="frame" x="375" y="132" width="550" height="1110"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="BVp-3O-vZ7" userLabel="widgetPanelStack" customClass="WidgetPanelStackView">
+                                <rect key="frame" x="-70" y="132" width="550" height="1110"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile:" textAlignment="center" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f46-Pt-0Pv">
                                         <rect key="frame" x="0.0" y="0.0" width="550" height="28"/>
@@ -1253,11 +1236,14 @@
                                 </constraints>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="LVL-X0-516"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Jnu-63-bcf" firstAttribute="leading" secondItem="Mwx-9q-yJJ" secondAttribute="leading" id="3k1-o1-EkI"/>
                             <constraint firstAttribute="trailing" secondItem="Jnu-63-bcf" secondAttribute="trailing" id="MRJ-Z6-gk9"/>
-                            <constraint firstItem="Jnu-63-bcf" firstAttribute="top" secondItem="Mwx-9q-yJJ" secondAttribute="top" id="wNr-7F-S0i" userLabel="Toolbar Top Constraint iPhone"/>
+                            <constraint firstItem="BVp-3O-vZ7" firstAttribute="centerX" secondItem="Jnu-63-bcf" secondAttribute="centerX" id="PXq-P8-0kC"/>
+                            <constraint firstItem="BVp-3O-vZ7" firstAttribute="top" secondItem="LVL-X0-516" secondAttribute="top" constant="36" id="hdQ-OQ-NTt"/>
+                            <constraint firstItem="Jnu-63-bcf" firstAttribute="top" secondItem="LVL-X0-516" secondAttribute="top" id="hhA-fN-Ye8"/>
                         </constraints>
                     </view>
                     <size key="freeformSize" width="1300" height="1800"/>
@@ -1340,7 +1326,7 @@
                         <outlet property="tipTitleLabel" destination="jh9-zs-2EL" id="aXT-Uc-XQU"/>
                         <outlet property="toolbarRootView" destination="Jnu-63-bcf" id="Y17-e2-18R"/>
                         <outlet property="toolbarStackView" destination="4he-pe-kYB" id="eVm-jM-dcv"/>
-                        <outlet property="toolbarTopConstraintiPhone" destination="wNr-7F-S0i" id="iXe-d3-R7i"/>
+                        <outlet property="toolbarTopConstraintiPhone" destination="hhA-fN-Ye8" id="mHM-0A-pgH"/>
                         <outlet property="trashCanButton" destination="dhG-Fo-0GK" id="dv6-TN-2Bj"/>
                         <outlet property="undoButton" destination="Pdg-l4-BvF" id="emD-GI-v2v"/>
                         <outlet property="vibrationStyleSelector" destination="QRV-je-HEZ" id="cEF-HG-B4h"/>
@@ -1376,10 +1362,6 @@
         <scene sceneID="C7c-yg-gQK">
             <objects>
                 <viewController storyboardIdentifier="OSCProfilesTableViewController" id="0K8-kQ-xlN" customClass="OSCProfilesTableViewController" customModule="VoidLink" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Nat-X1-41w"/>
-                        <viewControllerLayoutGuide type="bottom" id="9SV-fx-82v"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="bTO-bs-q93">
                         <rect key="frame" x="0.0" y="0.0" width="852" height="393"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1435,13 +1417,14 @@
                                 </items>
                             </navigationBar>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="tvP-w4-JSG"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="zsA-6X-Qc5" firstAttribute="leading" secondItem="bTO-bs-q93" secondAttribute="leading" constant="80" id="0Fi-vo-M6P"/>
+                            <constraint firstItem="zsA-6X-Qc5" firstAttribute="leading" secondItem="tvP-w4-JSG" secondAttribute="leading" constant="80" id="0Fi-vo-M6P"/>
                             <constraint firstAttribute="bottom" secondItem="kTH-ez-aKD" secondAttribute="bottom" constant="20" symbolic="YES" id="1FM-gO-6PR"/>
-                            <constraint firstAttribute="trailing" secondItem="kTH-ez-aKD" secondAttribute="trailing" constant="80" id="ArS-pG-QUR"/>
-                            <constraint firstItem="kTH-ez-aKD" firstAttribute="leading" secondItem="bTO-bs-q93" secondAttribute="leading" constant="80" id="Ujg-Sw-4hq"/>
-                            <constraint firstAttribute="trailing" secondItem="zsA-6X-Qc5" secondAttribute="trailing" constant="80" id="YKK-qs-mZR"/>
+                            <constraint firstItem="tvP-w4-JSG" firstAttribute="trailing" secondItem="kTH-ez-aKD" secondAttribute="trailing" constant="80" id="ArS-pG-QUR"/>
+                            <constraint firstItem="kTH-ez-aKD" firstAttribute="leading" secondItem="tvP-w4-JSG" secondAttribute="leading" constant="80" id="Ujg-Sw-4hq"/>
+                            <constraint firstItem="tvP-w4-JSG" firstAttribute="trailing" secondItem="zsA-6X-Qc5" secondAttribute="trailing" constant="80" id="YKK-qs-mZR"/>
                             <constraint firstItem="zsA-6X-Qc5" firstAttribute="top" secondItem="bTO-bs-q93" secondAttribute="topMargin" constant="16" id="gZg-eJ-rnP"/>
                             <constraint firstItem="kTH-ez-aKD" firstAttribute="top" secondItem="zsA-6X-Qc5" secondAttribute="bottom" id="txs-Df-ANQ"/>
                         </constraints>
@@ -1461,10 +1444,6 @@
         <scene sceneID="BWX-3t-Bou">
             <objects>
                 <viewController storyboardIdentifier="settingsViewController" id="Hqr-d6-YrK" customClass="SettingsViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="w7f-hk-tBX"/>
-                        <viewControllerLayoutGuide type="bottom" id="gDc-PK-wuq"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Xq6-9l-Oey" customClass="UIScrollView">
                         <rect key="frame" x="0.0" y="0.0" width="1200" height="5000"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1546,14 +1525,14 @@
                                 <rect key="frame" x="16" y="246" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Bitrate" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="459" translatesAutoresizingMaskIntoConstraints="NO" id="HvT-Ek-DAx">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="20" minValue="1" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="XZQ-na-T3z">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -1688,14 +1667,14 @@
                                 <rect key="frame" x="15" y="460" width="380" height="56.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Divider Position" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hxU-Gq-tIl" userLabel="touchPointerVelocityDividerPosition">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="17.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="OMw-Ew-fBX" userLabel="pointerVelocityModeDivider">
-                                        <rect key="frame" x="0.0" y="22.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="31"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -1708,14 +1687,14 @@
                                 <rect key="frame" x="15" y="524" width="380" height="56.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Touch Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ECJ-bg-fRJ" userLabel="touchPointerVelocityFactor">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="17.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" translatesAutoresizingMaskIntoConstraints="NO" id="MSY-s4-iCj" userLabel="touchPointerVelocityFactor">
-                                        <rect key="frame" x="0.0" y="22.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="31"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -1728,14 +1707,14 @@
                                 <rect key="frame" x="16" y="671" width="380" height="56.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Touch Move Event Interval" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XtQ-YN-4jb" userLabel="touchMoveEventIntervalLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="17.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2667" minValue="0.0" maxValue="20000" translatesAutoresizingMaskIntoConstraints="NO" id="Qqh-Oh-dOV" userLabel="touchMoveEventIntervalSlider">
-                                        <rect key="frame" x="0.0" y="22.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="31"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -1748,14 +1727,14 @@
                                 <rect key="frame" x="17" y="744" width="380" height="56.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Mouse Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hn6-X9-TaI">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="17.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" translatesAutoresizingMaskIntoConstraints="NO" id="bXi-Xx-6MW" userLabel="mousePointerVelocityFactor">
-                                        <rect key="frame" x="0.0" y="22.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="31"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -1768,14 +1747,14 @@
                                 <rect key="frame" x="472" y="744" width="380" height="56.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Gyro Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ecj-KO-Jim">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="17.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" translatesAutoresizingMaskIntoConstraints="NO" id="mHC-z4-AWQ" userLabel="mousePointerVelocityFactor">
-                                        <rect key="frame" x="0.0" y="22.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="31"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -1914,14 +1893,14 @@
                                 <rect key="frame" x="16" y="1263" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Gesture Slide Distance" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cti-T5-cSE" userLabel="Slide To Settings Distance UI Label">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.02" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="XNA-Kx-vqV">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2296,14 +2275,14 @@
                                 <rect key="frame" x="437" y="1397" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Background Session" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9et-1g-y3D" userLabel="backgroundSessionTimerLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="61" minValue="0.0" maxValue="61" translatesAutoresizingMaskIntoConstraints="NO" id="0bT-5d-w7S">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2527,14 +2506,14 @@
                                 <rect key="frame" x="437" y="1238" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Local Volume" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GbY-52-itv" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="7xn-es-SaH">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2567,14 +2546,14 @@
                                 <rect key="frame" x="437" y="1155" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Mic Volume" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n6Z-cT-3a1" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="120" translatesAutoresizingMaskIntoConstraints="NO" id="49s-nP-71W">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2726,14 +2705,14 @@
                                 <rect key="frame" x="5" y="2958" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Roll Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxk-33-Nbx" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="100" minValue="0.0" maxValue="300" translatesAutoresizingMaskIntoConstraints="NO" id="SQ5-oO-S7X">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2746,14 +2725,14 @@
                                 <rect key="frame" x="5" y="3044" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Minimum Offset (Gyro→Stick)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="52u-T9-1Hv" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="16383" translatesAutoresizingMaskIntoConstraints="NO" id="45X-gK-1ez">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2766,14 +2745,14 @@
                                 <rect key="frame" x="459" y="2763" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Slide Distance Threshold" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bsU-vw-dTl" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="Q2u-xB-TxU">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2837,14 +2816,14 @@
                                 <rect key="frame" x="18" y="1326" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Edge Trigger Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6PG-vr-boy">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="15" minValue="5" maxValue="50" translatesAutoresizingMaskIntoConstraints="NO" id="KRf-2B-Reb">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -2981,14 +2960,14 @@
                                 <rect key="frame" x="437" y="436" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Scroll Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1hc-yp-cbj" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3" translatesAutoresizingMaskIntoConstraints="NO" id="Iha-ti-PtK">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3001,14 +2980,14 @@
                                 <rect key="frame" x="437" y="516" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Pinch Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HTs-xj-li6" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3" translatesAutoresizingMaskIntoConstraints="NO" id="Vmk-CG-V7l">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3064,14 +3043,14 @@
                                 <rect key="frame" x="713" y="328" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Left Click Delay" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5S1-w1-Wnq" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="HNu-vj-Q0t">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3124,14 +3103,14 @@
                                 <rect key="frame" x="459" y="3137" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Curve Exponent" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AEN-EU-8LZ" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="1" maxValue="5" translatesAutoresizingMaskIntoConstraints="NO" id="scG-Rx-agb">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3144,14 +3123,14 @@
                                 <rect key="frame" x="459" y="3062" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Pointer Velocity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H3s-ud-yqh" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="60" translatesAutoresizingMaskIntoConstraints="NO" id="CkB-cG-N8r">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3229,14 +3208,14 @@
                                 <rect key="frame" x="459" y="3218" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Left Stick Minimum Offset" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="whI-oR-V8o" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="16383" translatesAutoresizingMaskIntoConstraints="NO" id="vOQ-zv-JOQ">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3249,14 +3228,14 @@
                                 <rect key="frame" x="459" y="3292" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Right Stick Minimum Offset" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q6s-4H-y9n" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <color key="tintColor" red="0.81533776120000001" green="0.85979419950000002" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="16383" translatesAutoresizingMaskIntoConstraints="NO" id="nOn-5b-blZ">
-                                        <rect key="frame" x="0.0" y="21.5" width="380" height="34"/>
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="30"/>
                                         <color key="tintColor" systemColor="linkColor"/>
                                     </slider>
                                 </subviews>
@@ -3366,6 +3345,7 @@
                                 </constraints>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="0sf-mG-PCk"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <size key="freeformSize" width="1200" height="5000"/>
@@ -3569,19 +3549,19 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

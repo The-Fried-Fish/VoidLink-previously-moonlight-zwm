@@ -201,7 +201,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     private var widgetSizeTransition: WidgetSizeTransition = .keepWidgetSize
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        getCurrentOrientation()
+        let dataMan = DataManager()
+        let currentSettings = dataMan.retrieveSettings()
+        if currentSettings?.unlockDisplayOrientation == true {
+            return .all
+        } else {
+            return GenericUtils.isIPhone() ? .landscape : getCurrentOrientation()
+        }
     }
 
     private func getCurrentOrientation() -> UIInterfaceOrientationMask {
@@ -1484,6 +1490,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         layoutOSC._leftStick.position = CGPoint(x: layoutOSC._leftStickBackground.frame.width / 2, y: layoutOSC._leftStickBackground.frame.height / 2)
     }
 
+    
     @objc private func moveToolbar(_ sender: UIGestureRecognizer) {
         let toolbarTopConstraint = UIDevice.current.model.hasPrefix("iPad") ? toolbarTopConstraintiPad! : toolbarTopConstraintiPhone!
         if !isToolbarHidden {

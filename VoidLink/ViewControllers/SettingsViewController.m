@@ -2739,6 +2739,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 
     self.layoutOnScreenControlsVC.view.backgroundColor = [UIColor colorWithWhite:0.55 alpha:1.0];
+    self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
 }
 
