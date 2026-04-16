@@ -302,6 +302,7 @@ struct WidgetPickerView: View {
     private let availableTabs: [WidgetPickerTab]
     private let preferredInitialTab: WidgetPickerTab?
     private let keyboardPickerMode: VirtualKeyboardMode
+    var shortcutPickerNeedAlias: Bool = false
     private let shortcutPickerTipText: String?
     private let shortcutIdentifier: String?
     @ObservedObject private var presentationState: WidgetPickerPresentationState
@@ -348,6 +349,7 @@ struct WidgetPickerView: View {
         availableTabs: [WidgetPickerTab] = WidgetPickerTab.allCases,
         preferredInitialTab: WidgetPickerTab? = nil,
         keyboardPickerMode: VirtualKeyboardMode = .picker,
+        shortcutPickerNeedAlias: Bool = false,
         shortcutPickerTipText: String? = nil,
         shortcutIdentififier: String? = nil,
         presentationState: WidgetPickerPresentationState = WidgetPickerPresentationState(),
@@ -363,6 +365,7 @@ struct WidgetPickerView: View {
         self.availableTabs = normalizedTabs
         self.preferredInitialTab = resolvedInitialTab
         self.keyboardPickerMode = keyboardPickerMode
+        self.shortcutPickerNeedAlias = shortcutPickerNeedAlias
         self.shortcutPickerTipText = shortcutPickerTipText
         self.shortcutIdentifier = shortcutIdentififier
         self.presentationState = presentationState
@@ -1770,6 +1773,7 @@ struct WidgetPickerView: View {
     }
 
     private var showsComboModeControl: Bool {
+        if isShortcutPickerMode { return false }
         guard targetWidgetKind == .button else { return false }
         if let selectedFunctionalButtonOption {
             return selectedFunctionalButtonOption.allowsSkillCombo || selectedFunctionalButtonOption.allowsShortcutCombo
@@ -1778,14 +1782,17 @@ struct WidgetPickerView: View {
     }
 
     private var showsShapeControl: Bool {
-        targetWidgetKind == .button
+        if isShortcutPickerMode { return false }
+        return targetWidgetKind == .button
     }
 
     private var showsButtonLabelField: Bool {
-        targetWidgetKind == .button
+        if isShortcutPickerMode { return shortcutPickerNeedAlias }
+        return targetWidgetKind == .button
     }
 
     private var showsIntervalSlider: Bool {
+        if isShortcutPickerMode { return false }
         guard buttonCommandCount >= 2 else { return false }
         if let selectedFunctionalButtonOption {
             return selectedFunctionalButtonOption.allowsSkillCombo
@@ -1815,7 +1822,7 @@ struct WidgetPickerView: View {
 
     private var shouldBypassCreateWidgetSheet: Bool {
         if isShortcutPickerMode {
-            return true
+            // return true
         }
 
         if containsMovementDirectionPad {

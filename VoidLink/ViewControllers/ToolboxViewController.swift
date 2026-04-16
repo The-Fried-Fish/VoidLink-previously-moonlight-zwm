@@ -18,7 +18,7 @@ import UIKit
 }
 
 
-@objc public class ToolboxViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
+@objc public class ToolboxViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, WidgetPickerViewControllerDelegate {
     
     @objc weak var specialEntryDelegate: ToolboxSpecialEntryDelegate?
     public let tableView = UITableView()
@@ -124,7 +124,7 @@ import UIKit
         
         tableView.separatorInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         // Configure buttons
-        addButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Add / Duplicate"), for: .normal)
+        addButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Add"), for: .normal)
         deleteButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Delete"), for: .normal)
         editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Edit"), for: .normal)
         exitButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Exit"), for: .normal)
@@ -257,49 +257,74 @@ import UIKit
             pinButton.backgroundColor = .clear
         }
     }
-    
-    @objc private func addButtonTapped() {
-        let previouslySelectedIndexPath = tableView.indexPathForSelectedRow //memorize selected indexpath
-        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "New Command"), message: SwiftLocalizationHelper.localizedString(forKey: "Enter a new command and alias"), preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Command") }
-        alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey: "Alias (optional)") }
-        alert.textFields?[0].keyboardType = .asciiCapable
-        alert.textFields?[0].autocorrectionType = .no
-        alert.textFields?[0].spellCheckingType = .no
-        alert.textFields?[1].keyboardType = .default
-        alert.textFields?[1].autocorrectionType = .no
-        alert.textFields?[1].spellCheckingType = .no
 
-        let submitAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Add"), style: .default) { [unowned alert] _ in
-            let keyboardCmdString = alert.textFields?[0].text ?? ""
-            let alias = alert.textFields?[1].text ?? keyboardCmdString
-            let newCommand = RemoteCommand(cmdString: keyboardCmdString, alias: alias)
-            let addCommandSuceeded = CommandManager.shared.addCommand(newCommand)
-            //self.reloadTableView() // don't know why but this reload has to be called from the CommandManager, it doesn't work here.
+    @available(iOS 13.0, *)
+    public func widgetPickerViewController(_ controller: WidgetPickerViewController, didCreateWidget payload: NSDictionary) {
+        createEntry(cmdString: payload["cmdString"] as? String, alias: payload["buttonLabel"] as? String)
+    }
+    
+    private func createEntry(cmdString: String?, alias: String?){
+        
+        let cmdString = cmdString ?? ""
+        let alias = alias ?? cmdString
+        let previouslySelectedIndexPath = tableView.indexPathForSelectedRow //memorize selected indexpath
+        
+        let newCommand = RemoteCommand(cmdString: cmdString, alias: alias)
+        let addCommandSuceeded = CommandManager.shared.addCommand(newCommand)
+        //self.reloadTableView() // don't know why but this reload has to be called from the CommandManager, it doesn't work here.
+        
+        //if previouslySelectedIndexPath == nil { return }
+        if addCommandSuceeded {
+            let lastRow = self.tableView.numberOfRows(inSection: 0) - 1  //for now there's only 1 section for the tableview, just use setion 0
+            let newEntryIndexPath = IndexPath(row: lastRow, section: 0)
+            self.tableView.selectRow(at: newEntryIndexPath, animated: true, scrollPosition: .middle) // shift the highlight to the newly added entry
+        }
+        else {
+            self.tableView.selectRow(at: previouslySelectedIndexPath, animated: true, scrollPosition: .middle) // keep the highlight on the previous entry if failed to add command
+        }
+    }
+
+    @objc private func addButtonTapped() {
+        if #available(iOS 13.0, *) {
+            let pickerViewController = WidgetPickerViewController()
+            pickerViewController.delegate = (self as WidgetPickerViewControllerDelegate)
+            pickerViewController.keyboardPickerMode = .shortcutPicker
+            pickerViewController.shortcutPickerNeedAlias = true
+            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.initialTabIdentifier = "keyboard"
+            let nav = UINavigationController(rootViewController: pickerViewController)
+            nav.modalPresentationStyle = .overFullScreen
+            self.present(nav, animated: true)
+            return
+        }
+        else{
+            let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "New Command"), message: SwiftLocalizationHelper.localizedString(forKey: "Enter a new command and alias"), preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Command") }
+            alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey: "Alias (optional)") }
+            alert.textFields?[0].keyboardType = .asciiCapable
+            alert.textFields?[0].autocorrectionType = .no
+            alert.textFields?[0].spellCheckingType = .no
+            alert.textFields?[1].keyboardType = .default
+            alert.textFields?[1].autocorrectionType = .no
+            alert.textFields?[1].spellCheckingType = .no
             
-            //if previouslySelectedIndexPath == nil { return }
-            if addCommandSuceeded {
-                let lastRow = self.tableView.numberOfRows(inSection: 0) - 1  //for now there's only 1 section for the tableview, just use setion 0
-                let newEntryIndexPath = IndexPath(row: lastRow, section: 0)
-                self.tableView.selectRow(at: newEntryIndexPath, animated: true, scrollPosition: .middle) // shift the highlight to the newly added entry
+            let submitAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Add"), style: .default) { [unowned alert] _ in
+                self.createEntry(cmdString: alert.textFields?[0].text ?? "", alias: alert.textFields?[1].text)
             }
-            else {
-                self.tableView.selectRow(at: previouslySelectedIndexPath, animated: true, scrollPosition: .middle) // keep the highlight on the previous entry if failed to add command
+            
+            let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey:"Cancel"), style: .cancel)
+            alert.addAction(submitAction)
+            alert.addAction(cancelAction)
+            
+            if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
+                if isSpecialEntrySelected() {return}
+                let selectedCommand = CommandManager.shared.getAllCommands()[selectedIndexPath.row-specialEntries.count]
+                alert.textFields?[0].text = selectedCommand.cmdString // load selected keyboard cmd string
+                //alert.textFields?[1].text = selectedCommand.alias // leave the alias input field empty
             }
+            
+            self.present(alert, animated: true)
         }
-        
-        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey:"Cancel"), style: .cancel)
-        alert.addAction(submitAction)
-        alert.addAction(cancelAction)
-        
-        if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
-            if isSpecialEntrySelected() {return}
-            let selectedCommand = CommandManager.shared.getAllCommands()[selectedIndexPath.row-specialEntries.count]
-            alert.textFields?[0].text = selectedCommand.cmdString // load selected keyboard cmd string
-            //alert.textFields?[1].text = selectedCommand.alias // leave the alias input field empty
-        }
-        
-        self.present(alert, animated: true)
     }
     
     

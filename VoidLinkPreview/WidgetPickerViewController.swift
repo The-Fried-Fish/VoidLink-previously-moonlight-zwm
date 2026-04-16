@@ -26,6 +26,7 @@ public final class WidgetPickerViewController: UIViewController {
     public var tabIdentifiers: [String] = []
     public var initialTabIdentifier: String?
     public var keyboardPickerMode: VirtualKeyboardMode = .picker
+    var shortcutPickerNeedAlias: Bool = false
     public var shortcutPickerTipText: String?
     @objc public var shortcutIdentifier: String?
 
@@ -45,6 +46,7 @@ public final class WidgetPickerViewController: UIViewController {
             availableTabs: resolvedTabs(),
             preferredInitialTab: resolvedInitialTab(),
             keyboardPickerMode: keyboardPickerMode,
+            shortcutPickerNeedAlias: shortcutPickerNeedAlias,
             shortcutPickerTipText: shortcutPickerTipText,
             shortcutIdentififier: shortcutIdentifier,
             presentationState: presentationState,
