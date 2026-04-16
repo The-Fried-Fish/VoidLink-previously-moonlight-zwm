@@ -143,6 +143,7 @@ import ObjectiveC.runtime
     
     // for movable buttons during streaming
     @objc public var relocatedDuringStreaming: Bool = false
+    @objc static var relocatedDuringStreaming: Bool = false
 
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasMinStickOffset: Bool = false
@@ -847,7 +848,7 @@ import ObjectiveC.runtime
             case "DISABLETOUCH":
                 self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: touchDisabledFLag ? "=EnableTouch" : "=DisableTouch" )
             case "GAMEPADOVERLAY":
-                self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: gamepadOverlayFLag ? "=GamepadOverlayOn" : "=GamepadOverlayOff" )
+                self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: OnScreenWidgetView.gamepadOverlayFLag ? "=GamepadOverlayOn" : "=GamepadOverlayOff" )
             default:
                 nonEditableWidgetLabel = ""
             }
@@ -2715,13 +2716,13 @@ import ObjectiveC.runtime
         self.functionalButtonDelegate?.toggleTouch(disabled: touchDisabledFLag)
     }
     
-    @objc var gamepadOverlayFLag:Bool = false
+    @objc static var gamepadOverlayFLag:Bool = false
     private func gamepadOverlayButtonUp(){
         self.relocatedDuringStreaming = true
-        gamepadOverlayFLag = !gamepadOverlayFLag
+        OnScreenWidgetView.gamepadOverlayFLag = !OnScreenWidgetView.gamepadOverlayFLag
         self.setupAtrributedText()
         if #available(iOS 13.0, *) {
-            self.functionalButtonDelegate?.toggleGamepadOverlay(overlayEnabled: gamepadOverlayFLag)
+            self.functionalButtonDelegate?.toggleGamepadOverlay(overlayEnabled: OnScreenWidgetView.gamepadOverlayFLag)
         }
     }
 
@@ -3093,6 +3094,7 @@ import ObjectiveC.runtime
     private static let autoDockExposedThickness: CGFloat = 22
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 0
+    @objc var storedAutoDockIdleDuration: TimeInterval = 0
     private static let autoDockInitialAlpha: CGFloat = 0.8
     @objc var autoDockSettledAlpha: CGFloat = 0.2
     private static let autoDockSettledAlphaDelay: TimeInterval = 2
@@ -3123,8 +3125,8 @@ import ObjectiveC.runtime
     private var autoDockDockedCenter: CGPoint?
     private var autoDockDockedToBottomEdge: Bool = false
     private var autoDockDistance: CGFloat = 3
-    private var autoDockIsDocked: Bool = false
-    private var autoDockEnabled: Bool = false
+    @objc var autoDockIsDocked: Bool = false
+    @objc var autoDockEnabled: Bool = false
     private var autoDockSettledAlphaTimer: Timer?
     private var autoDockOriginalBoundsSize: CGSize = .zero
     
@@ -3174,7 +3176,7 @@ import ObjectiveC.runtime
         autoDockRestartCountdownIfNeeded()
     }
     
-    @objc public func setAutoDockEnabled(_ enabled: Bool) {
+    @objc public func setAutoDock(enabled: Bool) {
         autoDockEnabled = enabled
         if enabled {
             OnScreenWidgetView.installAutoDockIfNeeded()
@@ -3212,7 +3214,7 @@ import ObjectiveC.runtime
         autoDockRestoreWidget(animated: animated)
     }
     
-    private func autoDockStopCountdown() {
+    @objc func autoDockStopCountdown() {
         autoDockTimer?.invalidate()
         autoDockTimer = nil
     }
@@ -3285,6 +3287,8 @@ import ObjectiveC.runtime
     private func autoDockWidgetToNearestEdge() {
         guard autoDockEnabled else {return}
         
+        autoDockIdleDuration = storedAutoDockIdleDuration
+        
         if !folded {
             restartAutoDockCountdown()
             return
@@ -3342,7 +3346,10 @@ import ObjectiveC.runtime
     }
     
     private func autoDockRestoreWidget(animated: Bool) {
-        guard autoDockIsDocked else { return }
+        guard autoDockIsDocked else {
+            restartAutoDockCountdown()
+            return
+        }
         let restoreCenter = storedCenter
         OnScreenWidgetView.hasRestoredFromAutoDock = true
         autoDockStopCountdown()
@@ -3475,6 +3482,7 @@ import ObjectiveC.runtime
                             || abs(widget.backgroundAlpha) < 0.1){
                             widget.highlightBorder(highlighted: false)
                         }
+                        if widget.hasNonEditableLabel {widget.setupAtrributedText()}
                     })
                 }
             }

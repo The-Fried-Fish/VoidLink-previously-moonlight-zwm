@@ -213,16 +213,20 @@ import Foundation
         return CGFloat(Double(str) ?? 0)
     }
     
-    @available(iOS 13.0, *)
     @objc static func isLandscape() -> Bool {
-        guard let windowScene = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive })
-        else {
-            return false
+        if #available(iOS 13.0, *) {
+            guard let windowScene = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first(where: { $0.activationState == .foregroundActive })
+            else {return false}
+            return windowScene.interfaceOrientation.isLandscape
         }
-        
-        return windowScene.interfaceOrientation.isLandscape
+        else {return GenericUtils.screenWidth > GenericUtils.screenHeight}
+    }
+    
+    @objc static func viewIsLandscape(_ view: UIView?) -> Bool {
+        guard let view else {return false}
+        return view.bounds.width > view.bounds.height
     }
     
     @objc static var screenWidth: CGFloat {

@@ -83,6 +83,19 @@ import UIKit
         //setupConstraints()
     }
 
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
+            self.pinButton.isHidden = !GenericUtils.viewIsLandscape(self.view) && GenericUtils.isIPhone()
+        }
+        
+        view.setNeedsUpdateConstraints()
+        coordinator.animate(alongsideTransition: { _ in
+            self.view.layoutIfNeeded()
+        })
+    }
+
     private func setupViews() {
         contentView = UIView(frame: self.view.frame)
                 
@@ -129,6 +142,7 @@ import UIKit
         contentView.addSubview(editButton)
         // contentView.addSubview(exitButton)
         contentView.addSubview(pinButton)
+        pinButton.isHidden = !GenericUtils.isLandscape()
         
         self.view.addSubview(contentView)
         
@@ -149,6 +163,18 @@ import UIKit
     private func isIPhone()->Bool {
         return UIDevice.current.userInterfaceIdiom == .phone
     }
+
+    private func contentWidthMultiplier() -> CGFloat {
+        /*
+        if isIPhone() && GenericUtils.viewIsLandscape(self.view) {
+            return 0.85
+        }*/
+
+        return isIPhone()
+                ? (GenericUtils.viewIsLandscape(self.view) ?  0.6 : 0.85)
+                : (GenericUtils.viewIsLandscape(self.view) ?  0.6 : 0.85)
+    }
+    
     
     @objc public func setupConstraints() {
                 
@@ -167,7 +193,7 @@ import UIKit
         NSLayoutConstraint.activate([
             
             // Set the width and height of the view
-            contentView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.52),
+            contentView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: contentWidthMultiplier()),
             contentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.93),
             // Set the width and height of the view
             //view.leadingAnchor.constraint(equalTo: view.superview!.leadingAnchor, constant: 60),

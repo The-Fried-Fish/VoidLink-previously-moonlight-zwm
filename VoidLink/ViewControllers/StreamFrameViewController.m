@@ -45,6 +45,7 @@
 - (id)initWithRefreshRate:(float)arg1 videoDynamicRange:(int)arg2;
 @end
 
+
 @implementation StreamFrameViewController {
     ControllerSupport *_controllerSupport;
     TemporarySettings *_settings;
@@ -1750,6 +1751,16 @@
     for(OnScreenWidgetView* widget in OnScreenWidgetView.mapping.allValues){
         CGPoint oldCenter = widget.center;
         CGPoint oldStoredCenter = widget.storedCenter;
+        
+        if(widget.autoDockEnabled){
+            widget.autoDockIdleDuration = fmax(widget.autoDockIdleDuration, 2.0);
+            [widget autoDockStopCountdown];
+        }
+        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+        dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+            if(widget.autoDockEnabled) [widget restoreFromAutoDockWithAnimated:true];
+        });
+        
         [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
             widget.center = CGPointMake(oldCenter.x * scaleX,oldCenter.y * scaleY);
             widget.storedCenter = CGPointMake(oldStoredCenter.x * scaleX,oldStoredCenter.y * scaleY);
@@ -1793,6 +1804,9 @@
 }
 
 - (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0)){
+    OnScreenWidgetView.gamepadOverlayFLag = overlayEnabled;
+    OnScreenWidgetView.relocatedDuringStreaming = true;
+
     if(overlayEnabled) [self loadAbstractGamepadOverlayIfNeeded];
     else {
         [_virtualGamepadOverlay removeFromSuperview];
@@ -1819,9 +1833,12 @@
         CGRect overlayFrame = CGRectMake(0, 0, standardWidth, standardhHeight);
         
         AbstractGamepadOverlayView *overlayView = [[AbstractGamepadOverlayView alloc] initWithFrame:overlayFrame usesPlayStationFaceButtons:!usesXboxFaceButtons];
+        overlayView.closeButtonDelegate = self;
         overlayView.center = CGPointMake(self.view.bounds.size.width-standardWidth/2-20, self.view.bounds.size.height-standardhHeight/2-20);
         overlayView.userInteractionEnabled = YES;
         [self.view addSubview:overlayView];
+        [overlayView registerUserInteraction];
+        [overlayView scheduleCloseButtonHideIfNeeded];
         
         self->_virtualGamepadOverlay = overlayView;
     });

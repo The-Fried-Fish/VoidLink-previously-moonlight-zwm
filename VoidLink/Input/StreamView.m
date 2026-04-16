@@ -603,7 +603,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         if(!hasFolderStateChanged) hasFolderStateChanged = widget.folded != widget.persistedFolded;
     }
         
-    if(relocatedWidgetSequences.count == 0 && !hasFolderStateChanged) return;
+    if(relocatedWidgetSequences.count == 0 && !hasFolderStateChanged && !OnScreenWidgetView.relocatedDuringStreaming) return;
     NSLog(@"relocatedWidgetSequences.count %lu, hasFolderStateChanged %d    %F", relocatedWidgetSequences.count, hasFolderStateChanged, CACurrentMediaTime());
     
     oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
@@ -651,7 +651,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         if(![self isOnScreenWidgetEnabled]) return;
         
         OnScreenWidgetView.buttonVisualFeedbackEnabled = self->settings.buttonVisualFeedback;
-        
+        OnScreenWidgetView.gamepadOverlayFLag = oscProfile.gamepadOverlayEnabled;
+        OnScreenWidgetView.relocatedDuringStreaming = false;
+
         bool hasLegacyWidget = false;
         if(reload && !OnScreenWidgetView.editMode){
             // remove all keyboard widget views first
@@ -675,6 +677,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.sequenceSet = buttonState.sequenceSet;
                     widgetView.parentSequence = buttonState.parentSequence;
                     widgetView.autoDockIdleDuration = buttonState.autoDockTimer;
+                    widgetView.storedAutoDockIdleDuration = widgetView.autoDockIdleDuration;
                     widgetView.autoDockSettledAlpha = buttonState.dockedAlpha;
                     widgetView.folded = buttonState.folded;
                     widgetView.persistedFolded = buttonState.folded;
@@ -723,10 +726,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     [widgetView setupAutoTapTimer];
                     [widgetView setupInertialScrollerWithFps:self->settings.framerate.intValue];
                     
-                    widgetView.gamepadOverlayFLag = oscProfile.gamepadOverlayEnabled;
                     [widgetView setupAtrributedText];
                     
-                    if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) [widgetView setAutoDockEnabled:true];
+                    if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) [widgetView setAutoDockWithEnabled:true];
                     
                     if(sequenceGenerated){
                         // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());

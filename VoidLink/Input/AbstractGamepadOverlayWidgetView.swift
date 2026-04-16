@@ -9,6 +9,12 @@
 import UIKit
 import SwiftUI
 
+@objc
+protocol AbstractGamepadOverlayCloseButtonDelegate: AnyObject {
+    @objc(toggleGamepadOverlayWithOverlayEnabled:)
+    func toggleGamepadOverlay(withOverlayEnabled overlayEnabled: Bool)
+}
+
 private enum AbstractGamepadOverlayPersistence {
     private static let defaults = UserDefaults.standard
 
@@ -126,6 +132,14 @@ private struct AbstractGamepadOverlayBridgeView: View {
 @available(iOS 13.0, *)
 @objc
 final class AbstractGamepadOverlayView: UIView {
+    private enum CloseButtonMetrics {
+        static let size: CGFloat = 40
+        static let topInset: CGFloat = -10
+        static let trailingInset: CGFloat = 0
+        static let symbolPointSize: CGFloat = 16
+        static let hideDelay: TimeInterval = 3
+    }
+
     private enum OverlayMaskMetrics {
         static let widthRatio: CGFloat = 0.85
         static let heightRatio: CGFloat = 1.03
@@ -149,9 +163,12 @@ final class AbstractGamepadOverlayView: UIView {
     private var panStartCenter: CGPoint = .zero
     private var activeGestureCount = 0
     private var didRestorePersistedState = false
+    private var hideCloseButtonWorkItem: DispatchWorkItem?
     private let minWidth: CGFloat = 70
     private let maxWidth: CGFloat = 520
     private let doubleTapWidths: [CGFloat] = [GenericUtils.isIPhone() ? 90 : 130, GenericUtils.isIPhone() ? 165 : 200]
+    private lazy var closeButton: UIButton = makeCloseButton()
+    @objc weak var closeButtonDelegate: AbstractGamepadOverlayCloseButtonDelegate?
 
     @objc init(frame: CGRect, usesPlayStationFaceButtons: Bool) {
         self.usesPlayStationFaceButtons = usesPlayStationFaceButtons
@@ -189,16 +206,17 @@ final class AbstractGamepadOverlayView: UIView {
         backgroundColor = .clear
         clipsToBounds = false
         isMultipleTouchEnabled = true
-        layer.mask = visualMaskLayer
         applyScale(forTargetWidth: initialDisplayWidth)
 
         addSubview(hostingController.view)
+        addSubview(closeButton)
         installGesturesIfNeeded()
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         hostedView?.frame = bounds
+        layoutCloseButton()
         updateVisualMask()
         restorePersistedStateIfNeeded()
     }
@@ -237,17 +255,21 @@ final class AbstractGamepadOverlayView: UIView {
 
     @objc private func handleSingleTap(_ recognizer: UITapGestureRecognizer) {
         guard recognizer.state == .ended else { return }
+        registerUserInteraction()
         presentFirstTouchTipIfNeeded()
+        scheduleCloseButtonHideIfNeeded()
     }
 
     @objc private func handlePan(_ recognizer: UIPanGestureRecognizer) {
         guard let superview else { return }
         switch recognizer.state {
         case .began:
+            registerUserInteraction()
             presentFirstTouchTipIfNeeded()
             beginGestureSession()
             panStartCenter = center
         case .changed, .ended:
+            registerUserInteraction()
             let translation = recognizer.translation(in: superview)
             center = CGPoint(x: panStartCenter.x + translation.x, y: panStartCenter.y + translation.y)
             if recognizer.state == .ended {
@@ -263,10 +285,12 @@ final class AbstractGamepadOverlayView: UIView {
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
         case .began:
+            registerUserInteraction()
             presentFirstTouchTipIfNeeded()
             beginGestureSession()
             pinchBaseWidth = frame.width
         case .changed, .ended:
+            registerUserInteraction()
             let nextWidth = max(minWidth, min(maxWidth, pinchBaseWidth * recognizer.scale))
             applyScale(forTargetWidth: nextWidth)
             if recognizer.state == .ended {
@@ -281,14 +305,17 @@ final class AbstractGamepadOverlayView: UIView {
 
     @objc private func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
         guard recognizer.state == .ended else { return }
+        registerUserInteraction()
         presentFirstTouchTipIfNeeded()
         applyScale(forTargetWidth: nextDoubleTapWidth())
         persistState()
+        scheduleCloseButtonHideIfNeeded()
     }
 
     private func updateVisualMask() {
         guard bounds.width > 1, bounds.height > 1 else {
             visualMaskLayer.path = nil
+            hostedView?.layer.mask = nil
             return
         }
 
@@ -325,16 +352,32 @@ final class AbstractGamepadOverlayView: UIView {
             )
         )
         visualMaskLayer.path = path.cgPath
+        hostedView?.layer.mask = visualMaskLayer
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         bounds.contains(point)
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {}
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {}
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {}
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {}
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        registerUserInteraction()
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        registerUserInteraction()
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        scheduleCloseButtonHideIfNeeded()
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        scheduleCloseButtonHideIfNeeded()
+    }
 
     private func restorePersistedStateIfNeeded() {
         guard !didRestorePersistedState,
@@ -352,6 +395,11 @@ final class AbstractGamepadOverlayView: UIView {
 
     private func beginGestureSession() {
         activeGestureCount += 1
+    }
+
+    @objc func registerUserInteraction() {
+        showCloseButton()
+        cancelPendingCloseButtonHide()
     }
 
     private func presentFirstTouchTipIfNeeded() {
@@ -383,6 +431,7 @@ final class AbstractGamepadOverlayView: UIView {
         activeGestureCount = max(0, activeGestureCount - 1)
         guard activeGestureCount == 0 else { return }
         persistState()
+        scheduleCloseButtonHideIfNeeded()
     }
 
     private func persistState() {
@@ -407,6 +456,79 @@ final class AbstractGamepadOverlayView: UIView {
         let targetScale = clampedWidth / baseRenderWidth
         transform = CGAffineTransform(scaleX: targetScale, y: targetScale)
     }
+
+    private func makeCloseButton() -> UIButton {
+        let button = UIButton(type: .system)
+        button.tintColor = UIColor.black.withAlphaComponent(0.66)
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.78)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.withAlphaComponent(0.9).cgColor
+        button.layer.shadowColor = UIColor.black.withAlphaComponent(0.05).cgColor
+        button.layer.shadowOpacity = 1
+        button.layer.shadowRadius = 4
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.alpha = 0
+        button.isHidden = true
+        button.adjustsImageWhenHighlighted = false
+        button.addTarget(self, action: #selector(handleCloseButtonTap), for: .touchUpInside)
+
+        let configuration = UIImage.SymbolConfiguration(pointSize: CloseButtonMetrics.symbolPointSize, weight: .bold)
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: configuration), for: .normal)
+        return button
+    }
+
+    private func layoutCloseButton() {
+        let size = CGFloat(Int(CloseButtonMetrics.size/2))*2
+        closeButton.frame = CGRect(
+            x: bounds.width - CloseButtonMetrics.trailingInset - size,
+            y: CloseButtonMetrics.topInset,
+            width: size,
+            height: size
+        )
+        closeButton.layer.cornerRadius = size * 0.5
+    }
+
+    private func showCloseButton() {
+        closeButton.isHidden = false
+        guard closeButton.alpha < 1 else { return }
+        UIView.animate(withDuration: 0.18) {
+            self.closeButton.alpha = 1
+        }
+    }
+
+    private func hideCloseButton() {
+        guard !closeButton.isHidden else { return }
+        UIView.animate(
+            withDuration: 0.18,
+            animations: {
+                self.closeButton.alpha = 0
+            },
+            completion: { _ in
+                self.closeButton.isHidden = true
+            }
+        )
+    }
+
+    private func cancelPendingCloseButtonHide() {
+        hideCloseButtonWorkItem?.cancel()
+        hideCloseButtonWorkItem = nil
+    }
+
+    @objc func scheduleCloseButtonHideIfNeeded() {
+        guard activeGestureCount == 0 else { return }
+        cancelPendingCloseButtonHide()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.hideCloseButton()
+            self?.hideCloseButtonWorkItem = nil
+        }
+        hideCloseButtonWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + CloseButtonMetrics.hideDelay, execute: workItem)
+    }
+
+    @objc private func handleCloseButtonTap() {
+        cancelPendingCloseButtonHide()
+        closeButtonDelegate?.toggleGamepadOverlay(withOverlayEnabled: false)
+    }
 }
 
 @available(iOS 13.0, *)
@@ -414,5 +536,10 @@ extension AbstractGamepadOverlayView: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is UIPinchGestureRecognizer)
         || (gestureRecognizer is UIPinchGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard let touchedView = touch.view else { return true }
+        return touchedView !== closeButton && !touchedView.isDescendant(of: closeButton)
     }
 }
