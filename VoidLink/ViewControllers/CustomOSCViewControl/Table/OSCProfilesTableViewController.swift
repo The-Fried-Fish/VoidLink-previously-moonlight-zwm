@@ -41,6 +41,46 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     var layoutViewBounds: CGRect = .zero
 
     private var profilesManager: OSCProfilesManager!
+    private var horizontalConstraintsConfigured = false
+
+    private func contentWidthMultiplier() -> CGFloat {
+        GenericUtils.viewIsLandscape(view) ? (GenericUtils.isIPhone() ? 0.8 : 0.65) : (GenericUtils.isIPhone() ? 0.83 : 0.85)
+    }
+
+    private func updateHorizontalLayoutConstraints() {
+        let horizontalConstraints = view.constraints.filter { constraint in
+            let firstItem = constraint.firstItem as? UIView
+            let secondItem = constraint.secondItem as? UIView
+            let involvesManagedView = firstItem == tableView ||
+                firstItem == profileTableViewNavigationBar ||
+                secondItem == tableView ||
+                secondItem == profileTableViewNavigationBar
+            let isHorizontalConstraint: Bool = {
+                switch (constraint.firstAttribute, constraint.secondAttribute) {
+                case (.leading, _), (.trailing, _), (.left, _), (.right, _), (.width, _), (.centerX, _),
+                     (_, .leading), (_, .trailing), (_, .left), (_, .right), (_, .width), (_, .centerX):
+                    return true
+                default:
+                    return false
+                }
+            }()
+
+            return involvesManagedView && isHorizontalConstraint
+        }
+
+        NSLayoutConstraint.deactivate(horizontalConstraints)
+
+        [tableView, profileTableViewNavigationBar].forEach { controlledView in
+            controlledView?.translatesAutoresizingMaskIntoConstraints = false
+        }
+
+        NSLayoutConstraint.activate([
+            profileTableViewNavigationBar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            profileTableViewNavigationBar.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: contentWidthMultiplier()),
+            tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            tableView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: contentWidthMultiplier()),
+        ])
+    }
 
     private func getCurrentOrientation() -> UIInterfaceOrientationMask {
         let bounds = UIScreen.main.bounds
@@ -86,6 +126,8 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
 
         profilesManager = OSCProfilesManager.sharedManager(layoutViewBounds)
         configureTableView()
+        updateHorizontalLayoutConstraints()
+        horizontalConstraintsConfigured = true
         tableView.alpha = 1
         tableView.backgroundColor = UIColor.black.withAlphaComponent(0.43)
 
@@ -100,6 +142,15 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
         }
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: { _ in
+            self.updateHorizontalLayoutConstraints()
+            self.view.layoutIfNeeded()
+        })
+    }
+
     @objc private func dismissSelf() {
         dismiss(animated: false)
     }
@@ -107,6 +158,10 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        if !horizontalConstraintsConfigured {
+            updateHorizontalLayoutConstraints()
+            horizontalConstraintsConfigured = true
+        }
         configureTableView()
         if profilesManager.getAllProfiles().count > 0 {
             let indexPath = IndexPath(row: profilesManager.getIndexOfSelectedProfile(), section: 0)
