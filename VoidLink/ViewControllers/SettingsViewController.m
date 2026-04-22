@@ -354,6 +354,12 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)reloadGameProfileConfigs{
     oscProfile = [oscProfileMan getSelectedProfile];
+    
+    [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(oscProfile.pointerVelocityModeDivider * 100) animated:NO]; // Load old setting.
+    [self pointerVelocityModeDividerSliderMoved:self.pointerVelocityModeDividerSlider];
+
+    [self.touchPointerVelocityFactorSlider setValue: [self map_SliderValue_fromVelocFactor: oscProfile.touchPointerVelocityFactor] animated:NO]; // Load old setting.
+    [self touchPointerVelocityFactorSliderMoved:self.touchPointerVelocityFactorSlider];
 
     self.controllerGyroSwitchButtonSetter.selectedSegmentIndex = oscProfile.controllerGyroSwitchMode;
     if(self.controllerGyroSwitchButtonSetter.selectedSegmentIndex != ControllerGyroSwitchDisabled){
@@ -401,6 +407,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)saveGameProfileConfigs{
     
+    CGFloat touchPointerVelocityFactorPercent = [self map_velocFactorDisplay_fromSliderValue:self.touchPointerVelocityFactorSlider.value];
     CGFloat yawSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.yawSensitivitySlider.value];
     CGFloat pitchSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.pitchSensitivitySlider.value];
     CGFloat rollSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.rollSensitivitySlider.value];
@@ -408,6 +415,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     bool configNotChanged = (oscProfile.mapGyroTo == self.mapGyroToSelector.selectedSegmentIndex
                              && oscProfile.yawPitchToRightStick == self.yawPitchToRightStickSwitch.isOn
                              && oscProfile.rollToLeftStick == self.rollToLeftStickSwitch.isOn
+                             && (int16_t)(oscProfile.pointerVelocityModeDivider*100) == (int16_t)self.pointerVelocityModeDividerSlider.value
+                             && (int16_t)(oscProfile.touchPointerVelocityFactor*100) == (int16_t)touchPointerVelocityFactorPercent
                              && (int16_t)(oscProfile.gyroSensitivityYaw*100) == (int16_t)yawSensitivityPercent
                              && (int16_t)(oscProfile.gyroSensitivityPitch*100) == (int16_t)pitchSensitivityPercent
                              && (int16_t)(oscProfile.gyroSensitivityRoll*100) == (int16_t)rollSensitivityPercent
@@ -427,6 +436,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     if(!configNotChanged){
         oscProfile = [oscProfileMan getSelectedProfile];
+        oscProfile.pointerVelocityModeDivider = self.pointerVelocityModeDividerSlider.value/100;
+        oscProfile.touchPointerVelocityFactor = touchPointerVelocityFactorPercent/100;
         oscProfile.mapGyroTo = self.mapGyroToSelector.selectedSegmentIndex;
         oscProfile.yawPitchToRightStick = self.yawPitchToRightStickSwitch.isOn;
         oscProfile.rollToLeftStick = self.rollToLeftStickSwitch.isOn;
@@ -482,6 +493,11 @@ BOOL isCustomResolution(int resolutionSelected) {
                                              selector:@selector(reloadGameProfileConfigs)
                                                  name:@"OscLayoutCloseNotification"
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadGameProfileConfigs)
+                                                 name:@"OscLayoutProfileSelctedInTableView"
+                                               object:nil];
+        
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(pencilProPurchaseAborted:)
                                                  name:@"PencilProPurchaseAbortedNotification"
@@ -682,6 +698,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (UILabel* )findDynamicLabelFromStack:(UIStackView* )stack{
+    
     UILabel* label;
     for(UIView *view in stack.subviews){
         if([view isKindOfClass:[UILabel class]] && [view.accessibilityIdentifier isEqualToString:@"dynamicLabel"]) label = (UILabel* )view;
@@ -773,15 +790,15 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
-- (void)addSetting:(UIStackView *)stack ofId:(NSString* )identifier withInfoTag:(BOOL)attached withDynamicLabel:(BOOL)added to:(MenuSectionView* )menuSection{
+- (void)addSetting:(UIStackView *)stack ofId:(NSString* )identifier to:(MenuSectionView* )menuSection{
     stack.accessibilityIdentifier = identifier;
     [_settingStackDict setObject:stack forKey:identifier];
-    if(attached) [self attachInfoTagForStack:stack];
-    if(added) [self addDynamicLabelForStack:stack];
+    if(stack.hasInfoTag || stack.isGameProfileSetting) [self attachInfoTagForStack:stack];
+    if(stack.hasDynamicLabel) [self addDynamicLabelForStack:stack];
     [menuSection addSubStackView:stack];
 }
     
-- (void)layoutSections{
+- (void)layoutSections {
     videoSection = [[MenuSectionView alloc] init];
     videoSection.delegate = self;
     videoSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Video"];
@@ -789,21 +806,42 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [videoSection setSectionWithIcon:[UIImage systemImageNamed:@"waveform"] size:13 sizeConstraint:-15];
     }
-    [self addSetting:self.resolutionStack ofId:@"resolutionStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
-    [self addSetting:self.fpsStack ofId:@"fpsStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.bitrateStack ofId:@"bitrateStack" withInfoTag:YES withDynamicLabel:YES to:videoSection];
-    [self addSetting:self.codecStack ofId:@"codecStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.hdrStack ofId:@"hdrStack" withInfoTag:![Utils hdrSupported] withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.sdrPerformanceWorkaroundStack ofId:@"sdrPerformanceWorkaroundStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.framePacingStack ofId:@"framePacingStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" withInfoTag:NO withDynamicLabel:YES to:videoSection];
-    [videoSection addToParentStack:_parentStack];
-    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
-    // [videoSection setExpanded:NO];
-    [self addSetting:self.pipStack ofId:@"pipStack" withInfoTag:YES withDynamicLabel:NO to:videoSection];
 
-    
+    self.resolutionStack.hasDynamicLabel = YES;
+    [self addSetting:self.resolutionStack ofId:@"resolutionStack" to:videoSection];
+
+    [self addSetting:self.fpsStack ofId:@"fpsStack" to:videoSection];
+
+    self.bitrateStack.hasInfoTag = YES;
+    self.bitrateStack.hasDynamicLabel = YES;
+    [self addSetting:self.bitrateStack ofId:@"bitrateStack" to:videoSection];
+
+    [self addSetting:self.codecStack ofId:@"codecStack" to:videoSection];
+
+    self.hdrStack.hasInfoTag = ![Utils hdrSupported];
+    [self addSetting:self.hdrStack ofId:@"hdrStack" to:videoSection];
+
+    self.yuv444Stack.hasInfoTag = YES;
+    [self addSetting:self.yuv444Stack ofId:@"yuv444Stack" to:videoSection];
+
+    self.sdrPerformanceWorkaroundStack.hasInfoTag = YES;
+    [self addSetting:self.sdrPerformanceWorkaroundStack ofId:@"sdrPerformanceWorkaroundStack" to:videoSection];
+
+    self.framePacingStack.hasInfoTag = YES;
+    [self addSetting:self.framePacingStack ofId:@"framePacingStack" to:videoSection];
+
+    self.frameQueueSizeStack.hasDynamicLabel = YES;
+    [self addSetting:self.frameQueueSizeStack ofId:@"frameQueueSizeStack" to:videoSection];
+
+    self.asyncFrameDequeueStack.hasInfoTag = YES;
+    [self addSetting:self.asyncFrameDequeueStack ofId:@"asyncFrameDequeueStack" to:videoSection];
+
+    self.pipStack.hasInfoTag = YES;
+    [self addSetting:self.pipStack ofId:@"pipStack" to:videoSection];
+
+    [videoSection addToParentStack:_parentStack];
+
+
     touchControlSection = [[MenuSectionView alloc] init];
     touchControlSection.delegate = self;
     touchControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Touch Control"];
@@ -811,23 +849,48 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [touchControlSection setSectionWithIcon:[UIImage imageNamed:@"arcade.stick.console"] size:22 sizeConstraint:-13];
     }
-    [self addSetting:self.touchModeStack ofId:@"touchModeStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" withInfoTag:YES withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.passthroughGesturesStack ofId:@"passthroughGesturesStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.pinchGestureStack ofId:@"pinchGestureStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.ctrlDownForPinchStack ofId:@"ctrlDownForPinchStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" withInfoTag:NO withDynamicLabel:YES to:touchControlSection];
-    [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" withInfoTag:YES withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
-    [self addSetting:self.trackTouchPointStack ofId:@"trackTouchPointStack" withInfoTag:NO withDynamicLabel:NO to:touchControlSection];
+
+    self.touchModeStack.hasInfoTag = YES;
+    [self addSetting:self.touchModeStack ofId:@"touchModeStack" to:touchControlSection];
+
+    self.mousePointerVelocityStack.hasDynamicLabel = YES;
+    // self.mousePointerVelocityStack.isGameProfileSetting = YES;
+    [self addSetting:self.mousePointerVelocityStack ofId:@"mousePointerVelocityStack" to:touchControlSection];
+
+    self.pointerVelocityDividerStack.hasInfoTag = YES;
+    self.pointerVelocityDividerStack.isGameProfileSetting = YES;
+    self.pointerVelocityDividerStack.hasDynamicLabel = YES;
+    [self addSetting:self.pointerVelocityDividerStack ofId:@"pointerVelocityDividerStack" to:touchControlSection];
+
+    self.pointerVelocityFactorStack.hasInfoTag = YES;
+    self.pointerVelocityFactorStack.isGameProfileSetting = YES;
+    self.pointerVelocityFactorStack.hasDynamicLabel = YES;
+    [self addSetting:self.pointerVelocityFactorStack ofId:@"pointerVelocityFactorStack" to:touchControlSection];
+
+    self.delayLeftClickStack.hasInfoTag = YES;
+    [self addSetting:self.delayLeftClickStack ofId:@"delayLeftClickStack" to:touchControlSection];
+
+    [self addSetting:self.passthroughGesturesStack ofId:@"passthroughGesturesStack" to:touchControlSection];
+    [self addSetting:self.pinchGestureStack ofId:@"pinchGestureStack" to:touchControlSection];
+
+    self.ctrlDownForPinchStack.hasInfoTag = YES;
+    [self addSetting:self.ctrlDownForPinchStack ofId:@"ctrlDownForPinchStack" to:touchControlSection];
+
+    self.scrollSensitivityStack.hasDynamicLabel = YES;
+    [self addSetting:self.scrollSensitivityStack ofId:@"scrollSensitivityStack" to:touchControlSection];
+
+    self.pinchSensitivityStack.hasDynamicLabel = YES;
+    [self addSetting:self.pinchSensitivityStack ofId:@"pinchSensitivityStack" to:touchControlSection];
+
+    self.onScreenWidgetStack.hasInfoTag = YES; // ?????
+    [self addSetting:self.onScreenWidgetStack ofId:@"onScreenWidgetStack" to:touchControlSection];
+
+    [self addSetting:self.buttonVisualFeedbackStack ofId:@"buttonVisualFeedbackStack" to:touchControlSection];
+    [self addSetting:self.trackTouchPointStack ofId:@"trackTouchPointStack" to:touchControlSection];
+
     [touchControlSection addToParentStack:_parentStack];
-    // [touchAndControlSection setExpanded:NO];
-    
+
+
     controllerSection = [[MenuSectionView alloc] init];
     controllerSection.delegate = self;
     controllerSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Controller"];
@@ -835,76 +898,167 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [controllerSection setSectionWithIcon:[UIImage systemImageNamed:@"gamecontroller"] size:30 sizeConstraint:-10];
     }
-    [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
-    [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" withInfoTag:NO withDynamicLabel:NO to:controllerSection];
-    [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" withInfoTag:YES withDynamicLabel:NO to:controllerSection];
-    [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.leftStickMinOffsetStack ofId:@"leftStickMinOffsetStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.rightStickMinOffsetStack ofId:@"rightStickMinOffsetStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.controllerToMouseStack ofId:@"controllerToMouseStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.controllerMouseVelocityStack ofId:@"controllerMouseVelocityStack" withInfoTag:NO withDynamicLabel:YES to:controllerSection];
-    [self addSetting:self.controllerMouseExpoStack ofId:@"controllerMouseExpoStack" withInfoTag:YES withDynamicLabel:YES to:controllerSection];
+
+    [self addSetting:self.swapAbxyStack ofId:@"swapAbaxyStack" to:controllerSection];
+    [self addSetting:self.hapticEngineStack ofId:@"hapticEngineStack" to:controllerSection];
+
+    self.emulatedControllerTypeStack.hasInfoTag = YES;
+    // self.emulatedControllerTypeStack.isGameProfileSetting = YES;
+    [self addSetting:self.emulatedControllerTypeStack ofId:@"emulatedControllerTypeStack" to:controllerSection];
+
+    self.gyroModeStack.hasInfoTag = YES;
+    // self.gyroModeStack.isGameProfileSetting = YES;
+    self.gyroModeStack.hasDynamicLabel = YES;
+    [self addSetting:self.gyroModeStack ofId:@"gyroModeStack" to:controllerSection];
+
+    self.gyroSensitivityStack.hasDynamicLabel = YES;
+    // self.gyroSensitivityStack.isGameProfileSetting = YES;
+    [self addSetting:self.gyroSensitivityStack ofId:@"gyroSensitivityStack" to:controllerSection];
+
+    self.leftStickMinOffsetStack.hasInfoTag = YES;
+    self.leftStickMinOffsetStack.isGameProfileSetting = YES;
+    self.leftStickMinOffsetStack.hasDynamicLabel = YES;
+    [self addSetting:self.leftStickMinOffsetStack ofId:@"leftStickMinOffsetStack" to:controllerSection];
+
+    self.rightStickMinOffsetStack.hasInfoTag = YES;
+    self.rightStickMinOffsetStack.isGameProfileSetting = YES;
+    self.rightStickMinOffsetStack.hasDynamicLabel = YES;
+    [self addSetting:self.rightStickMinOffsetStack ofId:@"rightStickMinOffsetStack" to:controllerSection];
+
+    self.controllerToMouseStack.hasInfoTag = YES;
+    self.controllerToMouseStack.hasDynamicLabel = YES;
+    [self addSetting:self.controllerToMouseStack ofId:@"controllerToMouseStack" to:controllerSection];
+
+    self.controllerMouseVelocityStack.hasDynamicLabel = YES;
+    [self addSetting:self.controllerMouseVelocityStack ofId:@"controllerMouseVelocityStack" to:controllerSection];
+
+    self.controllerMouseExpoStack.hasInfoTag = YES;
+    self.controllerMouseExpoStack.hasDynamicLabel = YES;
+    [self addSetting:self.controllerMouseExpoStack ofId:@"controllerMouseExpoStack" to:controllerSection];
+
     [controllerSection addToParentStack:_parentStack];
-    
+
+
     motionControlSection = [[MenuSectionView alloc] init];
     motionControlSection.delegate = self;
     motionControlSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Motion Control"];
     motionControlSection.identifier = @"SettingsSectionMotionControl";
-    if (@available(iOS 13.0, *)) [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] size:23 sizeConstraint:-18];
-    [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
-    [self addSetting:self.reverseHoldButtonStack ofId:@"reverseHoldButtonStack" withInfoTag:YES withDynamicLabel:YES to:motionControlSection];
-    [self addSetting:self.mapGyroToStack ofId:@"mapGyroToStack" withInfoTag:YES withDynamicLabel:NO to:motionControlSection];
-    [self addSetting:self.gyroToStickSwitchStack ofId:@"gyroToStickStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
-    [self addSetting:self.yawPitchSensitivityStack ofId:@"yawPitchSensitivityStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
+    if (@available(iOS 13.0, *)) {
+        [motionControlSection setSectionWithIcon:[UIImage imageNamed:@"gyroscope"] size:23 sizeConstraint:-18];
+    }
+
+    self.controllerGyroSwitchButtonStack.hasInfoTag = YES;
+    self.controllerGyroSwitchButtonStack.isGameProfileSetting = YES;
+    self.controllerGyroSwitchButtonStack.hasDynamicLabel = YES;
+    [self addSetting:self.controllerGyroSwitchButtonStack ofId:@"controllerGyroSwitchButtonStack" to:motionControlSection];
+
+    self.reverseHoldButtonStack.hasInfoTag = YES;
+    self.reverseHoldButtonStack.isGameProfileSetting = YES;
+    self.reverseHoldButtonStack.hasDynamicLabel = YES;
+    [self addSetting:self.reverseHoldButtonStack ofId:@"reverseHoldButtonStack" to:motionControlSection];
+
+    self.mapGyroToStack.hasInfoTag = YES;
+    self.mapGyroToStack.isGameProfileSetting = YES;
+    [self addSetting:self.mapGyroToStack ofId:@"mapGyroToStack" to:motionControlSection];
+
+    // self.gyroToStickSwitchStack.isGameProfileSetting = YES;
+    self.yawPitchToRightStickStack.isGameProfileSetting = YES;
+    [self attachInfoTagForStack:self.yawPitchToRightStickStack];
+    self.rollToLeftStickStack.isGameProfileSetting = YES;
+    [self attachInfoTagForStack:self.rollToLeftStickStack];
+    [self addSetting:self.gyroToStickSwitchStack ofId:@"gyroToStickStack" to:motionControlSection];
+
+    self.yawSensitivityStack.isGameProfileSetting = YES;
+    self.pitchSensitivityStack.isGameProfileSetting = YES;
+    [self addSetting:self.yawPitchSensitivityStack ofId:@"yawPitchSensitivityStack" to:motionControlSection];
+    [self attachInfoTagForStack:self.yawSensitivityStack];
     [self addDynamicLabelForStack:self.yawSensitivityStack];
+    [self attachInfoTagForStack:self.pitchSensitivityStack];
     [self addDynamicLabelForStack:self.pitchSensitivityStack];
-    [self addSetting:self.rollSensitivityStack ofId:@"rollSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
-    [self addSetting:self.gyroToStickMinOffsetStack ofId:@"gyroToStickMinOffsetStack" withInfoTag:NO withDynamicLabel:YES to:motionControlSection];
-    [self addSetting:self.synthPhysicalInputStack ofId:@"synthPhysicalInputStack" withInfoTag:NO withDynamicLabel:NO to:motionControlSection];
+
+    self.rollSensitivityStack.isGameProfileSetting = YES;
+    self.rollSensitivityStack.hasDynamicLabel = YES;
+    [self addSetting:self.rollSensitivityStack ofId:@"rollSensitivityStack" to:motionControlSection];
+
+    self.gyroToStickMinOffsetStack.isGameProfileSetting = YES;
+    self.gyroToStickMinOffsetStack.hasDynamicLabel = YES;
+    [self addSetting:self.gyroToStickMinOffsetStack ofId:@"gyroToStickMinOffsetStack" to:motionControlSection];
+
+    self.synthPhysicalInputStack.isGameProfileSetting = YES;
+    [self addSetting:self.synthPhysicalInputStack ofId:@"synthPhysicalInputStack" to:motionControlSection];
+
     [motionControlSection addToParentStack:_parentStack];
-    
-    
+
+
     NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
     bool loadPencilSection = ([bundleId isEqualToString:@"com.voidlink.iOS"]
                               || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
                               || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
 
-    if([GenericUtils isIPad] && loadPencilSection){
-        MenuSectionView* pencilSection = [[MenuSectionView alloc] init];
+    if ([GenericUtils isIPad] && loadPencilSection) {
+        MenuSectionView *pencilSection = [[MenuSectionView alloc] init];
         pencilSection.delegate = self;
         pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Drawing Toolkit"];
         pencilSection.identifier = @"SettingsSectionPencil";
         if (@available(iOS 13.0, *)) {
             [pencilSection setSectionWithIcon:[UIImage systemImageNamed:@"pencil.and.outline"] size:19 weight:UIImageSymbolWeightHeavy sizeConstraint:-16.5];
         }
-        [self addSetting:self.pencilTickStack ofId:@"pencilTickStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.pencilTickIntervalStack ofId:@"pencilTickIntervalStack" withInfoTag:NO withDynamicLabel:YES to:pencilSection];
-        [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.squeezeShortcutStack ofId:@"squeezeShortcutStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.hoverModeStack ofId:@"hoverModeStack" withInfoTag:YES withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
-        [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" withInfoTag:NO withDynamicLabel:NO to:pencilSection];
+
+        self.pencilTickStack.hasInfoTag = YES;
+        [self addSetting:self.pencilTickStack ofId:@"pencilTickStack" to:pencilSection];
+
+        self.pencilTickIntervalStack.hasDynamicLabel = YES;
+        [self addSetting:self.pencilTickIntervalStack ofId:@"pencilTickIntervalStack" to:pencilSection];
+
+        self.pressureCurveStack.isGameProfileSetting = YES;
+        [self addSetting:self.pressureCurveStack ofId:@"pressureCurveStack" to:pencilSection];
+
+        self.doubleTapShortcutStack.isGameProfileSetting = YES;
+        self.doubleTapShortcutStack.hasInfoTag = YES;
+        [self addSetting:self.doubleTapShortcutStack ofId:@"doubleTapShortcutStack" to:pencilSection];
+
+        self.squeezeShortcutStack.isGameProfileSetting = YES;
+        self.squeezeShortcutStack.hasInfoTag = YES;
+        [self addSetting:self.squeezeShortcutStack ofId:@"squeezeShortcutStack" to:pencilSection];
+
+        self.hoverModeStack.isGameProfileSetting = YES;
+        self.hoverModeStack.hasInfoTag = YES;
+        [self addSetting:self.hoverModeStack ofId:@"hoverModeStack" to:pencilSection];
+
+        self.pencilPausesNativeTouchStack.isGameProfileSetting = YES;
+        [self addSetting:self.pencilPausesNativeTouchStack ofId:@"pencilPausesNativeTouchStack" to:pencilSection];
+        
+        self.disablePencilSlideGestureStack.isGameProfileSetting = YES;
+        [self addSetting:self.disablePencilSlideGestureStack ofId:@"disablePencilSlideGestureStack" to:pencilSection];
+
         [pencilSection addToParentStack:_parentStack];
     }
-    
-    
+
+
     MenuSectionView *gesturesSection = [[MenuSectionView alloc] init];
     gesturesSection.delegate = self;
-    gesturesSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Gestures"];  
+    gesturesSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Gestures"];
     gesturesSection.identifier = @"SettingsSectionGestures";
     if (@available(iOS 13.0, *)) {
         [gesturesSection setSectionWithIcon:[UIImage systemImageNamed:@"hand.draw"] size:23 sizeConstraint:-11.3];
     }
-    
-    [self addSetting:self.softKeyboardGestureStack ofId:@"softKeyboardGestureStack" withInfoTag:YES withDynamicLabel:NO to:gesturesSection];
-    [self addSetting:self.slideToSettingsScreenEdgeStack ofId:@"slideToSettingsScreenEdgeStack" withInfoTag:NO withDynamicLabel:NO to:gesturesSection];
-    [self addSetting:self.slideToToolboxScreenEdgeStack ofId:@"slideToToolboxScreenEdgeStack" withInfoTag:NO withDynamicLabel:NO to:gesturesSection];
-    [self addSetting:self.slideToSettingsDistanceStack ofId:@"slideToSettingsDistanceStack" withInfoTag:YES withDynamicLabel:YES to:gesturesSection];
-    [self addSetting:self.edgeSlidingSensitivityStack ofId:@"edgeSlidingSensitivityStack" withInfoTag:YES withDynamicLabel:YES to:gesturesSection];
+
+    self.softKeyboardGestureStack.hasInfoTag = YES;
+    [self addSetting:self.softKeyboardGestureStack ofId:@"softKeyboardGestureStack" to:gesturesSection];
+
+    [self addSetting:self.slideToSettingsScreenEdgeStack ofId:@"slideToSettingsScreenEdgeStack" to:gesturesSection];
+    [self addSetting:self.slideToToolboxScreenEdgeStack ofId:@"slideToToolboxScreenEdgeStack" to:gesturesSection];
+
+    self.slideToSettingsDistanceStack.hasInfoTag = YES;
+    self.slideToSettingsDistanceStack.hasDynamicLabel = YES;
+    [self addSetting:self.slideToSettingsDistanceStack ofId:@"slideToSettingsDistanceStack" to:gesturesSection];
+
+    self.edgeSlidingSensitivityStack.hasInfoTag = YES;
+    self.edgeSlidingSensitivityStack.hasDynamicLabel = YES;
+    [self addSetting:self.edgeSlidingSensitivityStack ofId:@"edgeSlidingSensitivityStack" to:gesturesSection];
+
     [gesturesSection addToParentStack:_parentStack];
-    // [gesturesSection setExpanded:NO];
+
 
     MenuSectionView *peripheralSection = [[MenuSectionView alloc] init];
     peripheralSection.delegate = self;
@@ -913,17 +1067,21 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [peripheralSection setSectionWithIcon:[UIImage imageNamed:@"cable.connector.video"] size:20 sizeConstraint:-16.9];
     }
-    if (@available(iOS 13.0, *)) {
-        [self addSetting:self.externalDisplayModeStack ofId:@"externalDisplayModeStack" withInfoTag:YES withDynamicLabel:NO to:peripheralSection];
-    }
-    [self addSetting:self.localMousePointerModeStack ofId:@"localMousePointerModeStack" withInfoTag:YES withDynamicLabel:NO to:peripheralSection];
-    [self addSetting:self.reverseMouseWheelDirectionStack ofId:@"reverseMouseWheelDirectionStack" withInfoTag:NO withDynamicLabel:NO to:peripheralSection];
-    [self addSetting:self.citrixX1MouseStack ofId:@"citrixX1MouseStack" withInfoTag:NO withDynamicLabel:NO to:peripheralSection];
-    [peripheralSection addToParentStack:_parentStack];
-    // [peripheralSection setExpanded:NO];
 
-    
-    
+    if (@available(iOS 13.0, *)) {
+        self.externalDisplayModeStack.hasInfoTag = YES;
+        [self addSetting:self.externalDisplayModeStack ofId:@"externalDisplayModeStack" to:peripheralSection];
+    }
+
+    self.localMousePointerModeStack.hasInfoTag = YES;
+    [self addSetting:self.localMousePointerModeStack ofId:@"localMousePointerModeStack" to:peripheralSection];
+
+    [self addSetting:self.reverseMouseWheelDirectionStack ofId:@"reverseMouseWheelDirectionStack" to:peripheralSection];
+    [self addSetting:self.citrixX1MouseStack ofId:@"citrixX1MouseStack" to:peripheralSection];
+
+    [peripheralSection addToParentStack:_parentStack];
+
+
     MenuSectionView *audioSection = [[MenuSectionView alloc] init];
     audioSection.delegate = self;
     audioSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Audio"];
@@ -931,21 +1089,30 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [audioSection setSectionWithIcon:[UIImage imageNamed:@"speaker.wave.2"] size:20 sizeConstraint:-15.7];
     }
-    
-    [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
-    [self addSetting:self.localVolumeStack ofId:@"localVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
-    [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
-    [self addSetting:self.useBuiltinMicStack ofId:@"useBuiltinMicStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
-    [self addSetting:self.micVolumeStack ofId:@"micVolumeStack" withInfoTag:NO withDynamicLabel:YES to:audioSection];
-    [self addSetting:self.duckOtherAppStack ofId:@"duckOtherAppStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
-    [self addSetting:self.muteInBackgroundStack ofId:@"muteInBackgroundStack" withInfoTag:NO withDynamicLabel:NO to:audioSection];
-    // [self addSetting:self.audioEngineStack ofId:@"audioEngineStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
-    // cancel audio engine selector due to system engine is unable to playback multi-channel audio
-    [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" withInfoTag:YES withDynamicLabel:NO to:audioSection];
-    [audioSection addToParentStack:_parentStack];
-    // [audioSection setExpanded:NO];
 
-    
+    [self addSetting:self.audioOnPcStack ofId:@"audioOnPcStack" to:audioSection];
+
+    self.localVolumeStack.hasDynamicLabel = YES;
+    [self addSetting:self.localVolumeStack ofId:@"localVolumeStack" to:audioSection];
+
+    self.redirectMicStack.hasInfoTag = YES;
+    [self addSetting:self.redirectMicStack ofId:@"redirectMicStack" to:audioSection];
+
+    self.useBuiltinMicStack.hasInfoTag = YES;
+    [self addSetting:self.useBuiltinMicStack ofId:@"useBuiltinMicStack" to:audioSection];
+
+    self.micVolumeStack.hasDynamicLabel = YES;
+    [self addSetting:self.micVolumeStack ofId:@"micVolumeStack" to:audioSection];
+
+    [self addSetting:self.duckOtherAppStack ofId:@"duckOtherAppStack" to:audioSection];
+    [self addSetting:self.muteInBackgroundStack ofId:@"muteInBackgroundStack" to:audioSection];
+
+    self.audioConfigStack.hasInfoTag = YES;
+    [self addSetting:self.audioConfigStack ofId:@"audioConfigStack" to:audioSection];
+
+    [audioSection addToParentStack:_parentStack];
+
+
     otherSection = [[MenuSectionView alloc] init];
     otherSection.delegate = self;
     otherSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Others"];
@@ -953,20 +1120,31 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [otherSection setSectionWithIcon:[UIImage systemImageNamed:@"cube"] size:19.5 sizeConstraint:-17];
     }
-    [self addSetting:self.statsOverlayStack ofId:@"statsOverlayStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.unlockDisplayOrientationStack ofId:@"unlockDisplayOrientationStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.backgroundSessionTimerStack ofId:@"backgroundSessionTimerStack" withInfoTag:NO withDynamicLabel:YES to:otherSection];
-    [self addSetting:self.appThemeStack ofId:@"appThemeStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.softKeyboardHeightStack ofId:@"softKeyboardHeightStack" withInfoTag:YES withDynamicLabel:NO to:otherSection];
-    [self addSetting:self.rememberFoldStateStack ofId:@"rememberFoldStateStack" withInfoTag:NO withDynamicLabel:NO to:otherSection];
+
+    [self addSetting:self.statsOverlayStack ofId:@"statsOverlayStack" to:otherSection];
+
+    self.unlockDisplayOrientationStack.hasInfoTag = YES;
+    [self addSetting:self.unlockDisplayOrientationStack ofId:@"unlockDisplayOrientationStack" to:otherSection];
+
+    self.backgroundSessionTimerStack.hasDynamicLabel = YES;
+    [self addSetting:self.backgroundSessionTimerStack ofId:@"backgroundSessionTimerStack" to:otherSection];
+
+    [self addSetting:self.appThemeStack ofId:@"appThemeStack" to:otherSection];
+
+    self.optimizeGamesStack.hasInfoTag = YES;
+    [self addSetting:self.optimizeGamesStack ofId:@"optimizeGamesStack" to:otherSection];
+
+    [self addSetting:self.multiControllerStack ofId:@"multiControllerStack" to:otherSection];
+    [self addSetting:self.softKeyboardToolbarStack ofId:@"softKeyboardToolbarStack" to:otherSection];
+
+    self.softKeyboardHeightStack.hasInfoTag = YES;
+    [self addSetting:self.softKeyboardHeightStack ofId:@"softKeyboardHeightStack" to:otherSection];
+
+    [self addSetting:self.rememberFoldStateStack ofId:@"rememberFoldStateStack" to:otherSection];
 
     [otherSection addToParentStack:_parentStack];
-    // [otherSection setExpanded:NO];
-    
-    
+
+
     experimentalSection = [[MenuSectionView alloc] init];
     experimentalSection.delegate = self;
     experimentalSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Experimental"];
@@ -974,25 +1152,36 @@ BOOL isCustomResolution(int resolutionSelected) {
     if (@available(iOS 13.0, *)) {
         [experimentalSection setSectionWithIcon:[UIImage imageNamed:@"flask"] size:19 sizeConstraint:-19];
     }
-    
-    [self addSetting:self.touchModeStack2 ofId:@"touchModeStack2" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
-    // [self.touchModeSelector2 setEnabled:false];
-    [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
-    [self addSetting:self.relativeTouchSlideThresholdStack ofId:@"relativeTouchSlideThresholdStack" withInfoTag:YES withDynamicLabel:YES to:experimentalSection];
-    [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
-    [self addSetting:self.leftClickDelayStack ofId:@"leftClickDelayStack" withInfoTag:NO withDynamicLabel:YES to:experimentalSection];
-    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
-    // [self addSetting:self.frameTimebaseStack ofId:@"frameTimebaseStack" withInfoTag:NO withDynamicLabel:NO to:videoSection];
-    [self addSetting:self.fullColorRangeStack ofId:@"fullColorRangeStack" withInfoTag:NO withDynamicLabel:NO to:experimentalSection];
-    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
+
+    [self addSetting:self.touchModeStack2 ofId:@"touchModeStack2" to:experimentalSection];
+
+    self.touchMoveEventIntervalStack.hasDynamicLabel = YES;
+    [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" to:experimentalSection];
+
+    self.relativeTouchSlideThresholdStack.hasInfoTag = YES;
+    self.relativeTouchSlideThresholdStack.hasDynamicLabel = YES;
+    [self addSetting:self.relativeTouchSlideThresholdStack ofId:@"relativeTouchSlideThresholdStack" to:experimentalSection];
+
+    self.singleTapSensitivityStack.hasDynamicLabel = YES;
+    [self addSetting:self.singleTapSensitivityStack ofId:@"singleTapSensitivityStack" to:experimentalSection];
+
+    self.leftClickDelayStack.hasDynamicLabel = YES;
+    [self addSetting:self.leftClickDelayStack ofId:@"leftClickDelayStack" to:experimentalSection];
+
+    self.renderingBackendStack.hasInfoTag = YES;
+    [self addSetting:self.renderingBackendStack ofId:@"renderingBackendStack" to:experimentalSection];
+
+    [self addSetting:self.fullColorRangeStack ofId:@"fullColorRangeStack" to:experimentalSection];
+
+    self.performanceGraphStack.hasInfoTag = YES;
+    [self addSetting:self.performanceGraphStack ofId:@"performanceGraphStack" to:experimentalSection];
+
     [self addDynamicLabelForStack:self.graphOpacityStack];
 
-    [self addSetting:self.sendDummyEventStack ofId:@"sendDummyEventStack" withInfoTag:YES withDynamicLabel:NO to:experimentalSection];
-    
-    [experimentalSection addToParentStack:_parentStack];
-    // [experimentalSection setExpanded:NO];
-}
+    [self addSetting:self.sendDummyEventStack ofId:@"sendDummyEventStack" to:experimentalSection];
 
+    [experimentalSection addToParentStack:_parentStack];
+}
 
 - (void)handleAutoScroll:(CGPoint)location{
     bool scrollDown = location.y > self.view.bounds.size.height - 100;
@@ -1317,8 +1506,14 @@ BOOL isCustomResolution(int resolutionSelected) {
     if(button) return;
     button = [UIButton buttonWithType:UIButtonTypeSystem];
     if (@available(iOS 13.0, *)) {
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:13.5 weight:UIImageSymbolWeightBold];
-        [button setImage:[UIImage systemImageNamed:@"info.circle" withConfiguration:config] forState:UIControlStateNormal];
+        if(stack.isGameProfileSetting){
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:14.5 weight:UIImageSymbolWeightRegular];
+            [button setImage:[UIImage systemImageNamed:@"gamecontroller.circle" withConfiguration:config] forState:UIControlStateNormal];
+        }
+        else{
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:13.5 weight:UIImageSymbolWeightMedium];
+            [button setImage:[UIImage systemImageNamed:@"info.circle" withConfiguration:config] forState:UIControlStateNormal];
+        }
     } else {
         [button setTitle:@"info" forState:UIControlStateNormal];
         button.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
@@ -1342,7 +1537,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     NSString* tipText = @"";
     NSString* onlineDocLink = @"";
     bool showOnlineDocAction = false;
-    tipText = sender.superview.accessibilityIdentifier;
+    
+    tipText = @"";
     if([sender.superview.accessibilityIdentifier isEqualToString: @"bitrateStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"bitrateStackTip"];
         showOnlineDocAction = false;
@@ -1533,6 +1729,12 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"softKeyboardHeightStackTip"];
         showOnlineDocAction = false;
     }
+    
+    UIStackView* parentStack = (UIStackView* )sender.superview;
+    NSString* edgeSide = self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex == 1 ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
+    NSString* slideDist = [NSString stringWithFormat:@"%d%%", (int)(self.slideToMenuDistanceSlider.value*100)];
+    NSString* gameProfileTip = [LocalizationHelper localizedStringForKey:@"gameProfileStackTip", edgeSide, slideDist];
+    tipText = parentStack.isGameProfileSetting ? ([tipText isEqualToString:@""] ? gameProfileTip : [NSString stringWithFormat:@"%@ \n\n%@", gameProfileTip, tipText]) : tipText;
     
     UIAlertController *tipsAlertController = [UIAlertController alertControllerWithTitle: [LocalizationHelper localizedStringForKey:@"Tips"] message:tipText preferredStyle:UIAlertControllerStyleAlert];
     
@@ -2103,14 +2305,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         //TouchMode & OSC Related Settings:
 
         // pointer veloc setting, will be enable/disabled by touchMode
-        [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(self->tempSettings.pointerVelocityModeDivider.floatValue * 100) animated:NO]; // Load old setting.
         [self.pointerVelocityModeDividerSlider addTarget:self action:@selector(pointerVelocityModeDividerSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
-        [self pointerVelocityModeDividerSliderMoved:self.pointerVelocityModeDividerSlider];
 
         // init pointer veloc setting,  will be enable/disabled by touchMode
-        [self.touchPointerVelocityFactorSlider setValue: [self map_SliderValue_fromVelocFactor: self->tempSettings.touchPointerVelocityFactor.floatValue] animated:NO]; // Load old setting.
         [self.touchPointerVelocityFactorSlider addTarget:self action:@selector(touchPointerVelocityFactorSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
-        [self touchPointerVelocityFactorSliderMoved:self.touchPointerVelocityFactorSlider];
 
         // async native touch event
         // [self.asyncNativeTouchPrioritySelector setSelectedSegmentIndex:currentSettings.asyncNativeTouchPriority.intValue]; // load old setting of asyncNativeTouchPriority
@@ -2743,6 +2941,25 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self presentViewController:self.layoutOnScreenControlsVC animated:YES completion:nil];
 }
 
+- (void)mainFrameGameProfileButtonTapped{
+    [self saveGameProfileConfigs];
+    
+    self.layoutOnScreenControlsVC = [self instantiateOscLayoutViewController];
+    if (self.layoutOnScreenControlsVC == nil) {
+        return;
+    }
+
+    // self.layoutOnScreenControlsVC.view.backgroundColor = [UIColor colorWithWhite:0.55 alpha:1.0];
+    self.layoutOnScreenControlsVC.view.backgroundColor = UIColor.clearColor;
+    self.layoutOnScreenControlsVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    self.layoutOnScreenControlsVC.profileTableLoadingMode = OSCProfilesTableViewLoadingModeSelectProfileFromMainFrame;
+    [self presentViewController:self.layoutOnScreenControlsVC animated:NO completion:^{
+        [self->_layoutOnScreenControlsVC presentProfilesTableViewWithLoadingMode:OSCProfilesTableViewLoadingModeSelectProfileFromMainFrame];
+    }];
+    _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
+    _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
+}
+
 - (LayoutOnScreenControlsViewController *)instantiateOscLayoutViewController {
     BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
     NSString *storyboardName = isIPhone ? @"iPhone" : @"iPad";
@@ -2758,8 +2975,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     LayoutOnScreenControlsViewController *layoutViewController = (LayoutOnScreenControlsViewController *)viewController;
     if (!isIPhone) {
-        layoutViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        // layoutViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     }
+    
+    layoutViewController.toolbarStackView.hidden = false;
+    layoutViewController.toolbarRootView.hidden = false;
 
     return layoutViewController;
 }

@@ -47,11 +47,11 @@
     int64_t moveEventIntervalNSec;
 }
 
-- (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings{
+- (id)initWithView:(StreamView*)view settings:(TemporarySettings*)settings profile:(OSCProfile *)profile{
     self = [super init];
     self->streamView = view;
 
-    self->activateCoordSelector = settings.pointerVelocityModeDivider.floatValue != 1.0;
+    self->activateCoordSelector = profile.pointerVelocityModeDivider != 1.0;
     self->moveEventIntervalNSec =  (int64_t)(settings.touchMoveEventInterval.intValue * 1000);;
     self->streamViewBounds = view.bounds;
     
@@ -94,9 +94,9 @@
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
 
-    self->pointerVelocityDividerLocationByPoints = self->streamView.bounds.size.width * settings.pointerVelocityModeDivider.floatValue;
+    self->pointerVelocityDividerLocationByPoints = self->streamView.bounds.size.width * profile.pointerVelocityModeDivider;
     
-    [NativeTouchPointer initContextWithView:self->streamView andSettings:settings];
+    [NativeTouchPointer initContextWithView:self->streamView profile:profile];
     //_touchesCapturedByOnScreenButtons = [[NSMutableSet alloc] init];
     return self;
 }

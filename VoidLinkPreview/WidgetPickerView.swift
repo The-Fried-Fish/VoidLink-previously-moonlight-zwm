@@ -1613,6 +1613,7 @@ struct WidgetPickerView: View {
                                 in: 0...2000,
                                 step: 1
                             )
+                            .environment(\.colorScheme, .light)
                             .disabled(isShortcutMode)
                             .opacity(isShortcutMode ? 0.45 : 1.0)
                         }

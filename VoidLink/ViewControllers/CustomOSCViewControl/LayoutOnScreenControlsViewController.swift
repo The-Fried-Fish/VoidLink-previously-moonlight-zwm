@@ -282,7 +282,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         NotificationCenter.default.addObserver(self, selector: #selector(widgetViewTapped(_:)), name: Notification.Name("OnScreenWidgetViewSelected"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(OSCLayoutChanged), name: Notification.Name("OSCLayoutChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleReturnToForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        // NotificationCenter.default.addObserver(self, selector: #selector(handleEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
         OnScreenWidgetView.editMode = true
         handleMissingToolBarIcon(toolbarRootView)
@@ -346,6 +346,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc func reloadOnScreenWidgetViews() {
+        if self.profileTableLoadingMode == .selectProfileFromMainFrame { return }
+
         OnScreenWidgetView.isTweakingHighlight = false
         OnScreenWidgetView.editMode = true
 
@@ -450,6 +452,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             }
             self.layoutOSC.oscButtonLayerPool.removeAllObjects()
         }
+        
+        view.bringSubviewToFront(toolbarRootView)
     }
     
     @objc func profileRefresh() {
@@ -458,15 +462,20 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         oscProfilesTableViewController = storyboard.instantiateViewController(withIdentifier: "OSCProfilesTableViewController") as? OSCProfilesTableViewController
         oscProfilesTableViewController?.needToUpdateOscLayoutTVC = { [weak self] in
             guard let self else { return }
-            self.reloadOnScreenWidgetViews()
+            if !loadJustTapped {
+                self.reloadOnScreenWidgetViews()
+            }
+            loadJustTapped = false
             self.oscProfilesTableViewController?.currentOSCButtonLayers = self.layoutOSC.oscButtonLayerPool
         }
         oscProfilesTableViewController?.tableView?.reloadData()
         reloadOnScreenWidgetViews()
     }
 
+    @objc var profileTableLoadingMode: OSCProfilesTableViewLoadingMode = .selectProfile
     @objc(presentProfilesTableViewWithLoadingMode:)
     func presentProfilesTableView(with loadingMode: OSCProfilesTableViewLoadingMode) {
+        profileTableLoadingMode = loadingMode
         presentProfilesTableView(with: loadingMode, pickedProfileDataHandler: nil)
     }
 
@@ -482,7 +491,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         controller?.layoutViewBounds = view.bounds
         controller?.needToUpdateOscLayoutTVC = { [weak self] in
             guard let self else { return }
-            if loadingMode == .selectProfile {
+            if loadingMode == .selectProfile || loadingMode == .selectProfileFromStreamView {
                 self.reloadOnScreenWidgetViews()
             }
         }
@@ -497,8 +506,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         }
     }
 
+    private var loadJustTapped:Bool = false
     @IBAction func loadTapped(_ sender: Any?) {
-        saveTapped(nil)
+        // saveTapped(nil)
+        loadJustTapped = true
         presentProfilesTableView(with: .selectProfile)
     }
 
@@ -566,22 +577,57 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         }
     }
 
+    /*
     @objc private func handleEnterBackground() {
-        saveTapped(nil)
     }
+    */
 
     @objc private func handleReturnToForeground() {
-        setupWidgetPanel()
+        if (self.profileTableLoadingMode != .selectProfileFromMainFrame
+            && self.profileTableLoadingMode != .selectProfileFromMainFrame)
+        {setupWidgetPanel()}
         updateViewBounds()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        if UIApplication.shared.applicationState != .active { return }
         viewWillBeResized = true
         hideStickIndicators()
-        if !quickSwitchEnabled {
-            saveTapped(nil)
+        if self.profileTableLoadingMode == .selectProfile {
+            
+            let oldSize = view.bounds.size
+            let scaleX = size.width / oldSize.width
+            let scaleY = size.height / oldSize.height
+            
+            for widget in OnScreenWidgetView.mapping.values {
+                let oldCenter = widget.center
+                let oldStoredCenter = widget.storedCenter
+                
+                coordinator.animate(alongsideTransition: { _ in
+                    widget.center = CGPoint(
+                        x: oldCenter.x * scaleX,
+                        y: oldCenter.y * scaleY
+                    )
+                    widget.storedCenter = CGPoint(
+                        x: oldStoredCenter.x * scaleX,
+                        y: oldStoredCenter.y * scaleY
+                    )
+                }, completion: nil)
+            }
+            
+            for buttonLayer in self.layoutOSC.oscButtonLayerPool {
+                if let layer = buttonLayer as? CALayer {
+                    let oldPosition = layer.position
+                    coordinator.animate(alongsideTransition: { _ in
+                        if layer == self.layoutOSC._leftStick
+                           || layer == self.layoutOSC._rightStick {return}
+                        layer.position = CGPoint(
+                            x: oldPosition.x * scaleX,
+                            y: oldPosition.y * scaleY
+                        )
+                    }, completion: nil)
+                }
+            }
         }
     }
 
@@ -590,6 +636,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func handleOrientationChangeForOnScreenWidgets() {
+    
         if !viewWillBeResized { return }
         setupWidgetPanel()
         updateViewBounds()
@@ -602,7 +649,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         oscProfilesTableViewController?.layoutViewBounds = view.bounds
         OSCProfilesManager.setLayoutViewBounds(view.bounds)
         OSCProfilesManager.setOnScreenWidgetViewsSet(onScreenWidgetViews)
-        reloadOnScreenWidgetViews()
+        // reloadOnScreenWidgetViews()
     }
 
     @objc func OSCLayoutChanged() {
@@ -1472,6 +1519,24 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func handleProfileTablViewDismiss() {
+        
+        switch profileTableLoadingMode {
+        case .selectProfile:
+            if oscProfilesTableViewController?.loadingMode != .pickProfileData {
+                setupWidgetPanel()
+            }
+            else {widgetPanelStack.isHidden = false}
+        case .selectProfileFromMainFrame, .selectProfileFromStreamView:
+            clearOnScreenWidgets()
+            dismiss(animated: false)
+        case .pickProfile:
+            clearOnScreenWidgets()
+            dismiss(animated: false)
+        case .pickProfileData:
+            widgetPanelStack.isHidden = false
+        }
+        
+        /*
         if quickSwitchEnabled {
             clearOnScreenWidgets()
             dismiss(animated: false)
@@ -1480,7 +1545,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 setupWidgetPanel()
             }
             else {widgetPanelStack.isHidden = false}
-        }
+        }*/
     }
 
     private func addInnerAnalogSticksToOuterAnalogLayers() {
@@ -1554,7 +1619,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     private func setupWidgetPanel() {        
-        widgetPanelStack.isHidden = quickSwitchEnabled
+        widgetPanelStack.isHidden = profileTableLoadingMode != .selectProfile
         tipTitleLabel.textAlignment = .left
         tipTitleLabel.contentMode = .top
         tipTitleLabel.lineBreakMode = .byWordWrapping

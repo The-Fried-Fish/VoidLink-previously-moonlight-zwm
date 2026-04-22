@@ -220,13 +220,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  版面配置: %@    小工具: %@"
+            "value" : "  版面配置: %@    控制項: %@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "  版面配置: %@    小工具: %@"
+            "value" : "  版面配置: %@    控制項: %@"
           }
         }
       }
@@ -421,6 +421,29 @@
         }
       }
     },
+    "[ Edit on-screen widget layout ]" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 编辑屏显控件布局 ]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 編輯螢幕控制項佈局 ]"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[ 編輯螢幕控制項佈局 ]"
+          }
+        }
+      }
+    },
     "[ Enter picture-in-picture mode ]" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -444,48 +467,25 @@
         }
       }
     },
-    "[ On-screen widget tool ]" : {
+    "[ Switch game profile ]" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 打开屏显控件工具 ]"
+            "value" : "[ 切换游戏配置 ]"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 調整螢幕小工具版面配置 ]"
+            "value" : "[ 切換遊戲配置 ]"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[ 調整螢幕小工具版面配置 ]"
-          }
-        }
-      }
-    },
-    "[ Switch on-screen widget profile ]" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[ 切换屏显控件布局 ]"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[ 切換螢幕小工具版面配置 ]"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[ 切換螢幕小工具版面配置 ]"
+            "value" : "[ 切換遊戲配置 ]"
           }
         }
       }
@@ -3254,13 +3254,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 從螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，開啟工具欄選單.\n\n2. 選擇「調整螢幕小工具版面配置」。"
+            "value" : "\n1. 從螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，開啟工具欄選單.\n\n2. 選擇「編輯螢幕控制項佈局」。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\n1. 從螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，開啟工具欄選單.\n\n2. 選擇「調整螢幕小工具版面配置」。"
+            "state" : "translated",
+            "value" : "\n1. 從螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，開啟工具欄選單.\n\n2. 選擇「編輯螢幕控制項佈局」。"
           }
         }
       }
@@ -4083,13 +4083,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編輯選取的小工具"
+            "value" : "編輯選取的控制項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編輯選取的小工具"
+            "value" : "編輯選取的控制項"
           }
         }
       }
@@ -4907,25 +4907,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pressure curve saved with current on-screen widget profile. Check custom 'On Screen Widget' in 'Touch Control' section of the settings menu, or toolbox menu brought up by right screen edge slide gesture.\nWhen you switch widget profile, pressure curve will change too."
+            "value" : "Pressure curve saved with current game profile. To switch game profile, tap the [gamepad icon] on navigation bar.\nWhen you switch game profile, pressure curve will change too."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔压曲线已随屏显控件配置保存。见设置菜单‘触控分区’的’屏显控件’ 自定义选项， 或屏幕右边缘滑动手势调出的工具箱菜单。\n切换屏显控件配置时，笔压曲线也将随之变化。"
+            "value" : "笔压曲线已随 [游戏配置] 保存。点击导航栏的 [手柄图标] 即可切换游戏配置。\n切换屏显控件配置时，笔压曲线也将随之变化。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔壓曲線已隨「螢幕小工具」配置儲存。請至設定選單「觸控分區」中的「螢幕小工具」自訂選項，或由螢幕右側邊緣滑動手勢呼叫的工具箱選單查看。\n切換「螢幕小工具」配置時，筆壓曲線也會隨之變化。"
+            "value" : "筆壓曲線已隨［遊戲配置］保存。點擊導覽列的［手把圖示］即可切換遊戲配置。\n切換螢幕控制項配置時，筆壓曲線也將隨之變化。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "笔壓曲線已隨「螢幕小工具」配置儲存。請至設定選單「觸控分區」中的「螢幕小工具」自訂選項，或由螢幕右側邊緣滑動手勢呼叫的工具箱選單查看。\n切換「螢幕小工具」配置時，筆壓曲線也會隨之變化。"
+            "value" : "筆壓曲線已隨［遊戲配置］保存。點擊導覽列的［手把圖示］即可切換遊戲配置。\n切換螢幕控制項配置時，筆壓曲線也將隨之變化。"
           }
         }
       }
@@ -5162,6 +5162,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "功能按鍵"
+          }
+        }
+      }
+    },
+    "Game Profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遊戲配置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遊戲配置"
           }
         }
       }
@@ -5421,6 +5444,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你好！我是 VoidLink 手把即時反饋疊加層。\n\n1. 控制選單中的「🎮疊加」按鍵可以開啟或關閉我。\n\n2. 我可以透過雙擊或雙指捏合改變大小，也可以直接拖曳改變位置。"
+          }
+        }
+      }
+    },
+    "gameProfileIntroduction" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- The on-screen widget layout (including the virtual gamepad, virtual buttons, etc.), as well as the options in the settings menu marked with a [gamepad icon] (such as motion control settings), are all saved in the game profile.\n\n- To switch game profile during streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 屏显控件布局(包含虚拟手柄、虚拟按键等)，以及设置菜单中标记 [手柄图标] 的选项(如体感控制参数)，皆保存在游戏配置中。\n\n- 串流过程中, 由屏幕 %@ 边缘向内滑动 %@ 屏宽，即可在工具箱菜单中打开 [切换游戏配置]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
+          }
+        }
+      }
+    },
+    "gameProfileStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This setting is saved in [Game Profile]. To open game profile selector:\n- Tap the gamepad icon on navigation bar\n- While streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该设置保存在 [游戏配置] 中. 游戏配置切换入口:\n- 点击导航栏的手柄图标\n- 串流时，由屏幕 %@ 边缘向内滑动 %@ 屏宽，在工具箱菜单中打开 [切换游戏配置]"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此設定保存在［遊戲配置］中。遊戲配置切換入口：\n- 點擊導覽列的手把圖示\n- 串流時，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，在工具箱選單中開啟［切換遊戲配置］"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此設定保存在［遊戲配置］中。遊戲配置切換入口：\n- 點擊導覽列的手把圖示\n- 串流時，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，在工具箱選單中開啟［切換遊戲配置］"
           }
         }
       }
@@ -6813,25 +6894,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- To map gyro directly to mouse/stick, must turn off DS4 gyro mapping in “Controller” section.\n\n- All settings in “Motion Control” section are saved with on-screen widget profile, which can be selected & managed in the right edge slide toolbox menu.\n\n- Motion control can be turned on & off by controller buttons or on-screen buttons"
+            "value" : "- To map gyro directly to mouse/stick, must turn off DS4 gyro mapping in “Controller” section.\n\n- Motion control can be turned on & off by controller buttons or on-screen buttons"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 关闭“手柄”菜单分区的DS4陀螺仪映射后， 方可将陀螺仪直接映射为手柄或鼠标。\n\n- “体感控制”菜单分区的所有设置均保存在屏显控件配置中，可在右边缘滑出的工具箱菜单中切换。\n\n- 体感控制陀螺仪可由手柄按键或屏显按键开关。"
+            "value" : "- 关闭“手柄”菜单分区的DS4陀螺仪映射后， 方可将陀螺仪直接映射为手柄或鼠标。\n\n- 体感控制陀螺仪可由手柄按键或屏显按键开关。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 關閉「手柄」選單分區的 DS4 陀螺儀映射後，方可將陀螺儀直接映射為手柄或滑鼠。\n\n- 「體感控制」選單分區的所有設定皆儲存在螢幕顯示小工具配置中，可在右邊緣滑出的工具箱選單中切換。\n\n- 體感控制陀螺儀可由手把按鍵或螢幕顯示按鍵開關。"
+            "value" : "- 關閉「手柄」選單分區的 DS4 陀螺儀映射後，方可將陀螺儀直接映射為手柄或滑鼠。\n\n- 體感控制陀螺儀可由手把按鍵或螢幕顯示按鍵開關。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 關閉「手柄」選單分區的 DS4 陀螺儀映射後，方可將陀螺儀直接映射為手柄或滑鼠。\n\n- 「體感控制」選單分區的所有設定皆儲存在螢幕顯示小工具配置中，可在右邊緣滑出的工具箱選單中切換。\n\n- 體感控制陀螺儀可由手把按鍵或螢幕顯示按鍵開關。"
+            "value" : "- 關閉「手柄」選單分區的 DS4 陀螺儀映射後，方可將陀螺儀直接映射為手柄或滑鼠。\n\n- 體感控制陀螺儀可由手把按鍵或螢幕顯示按鍵開關。"
           }
         }
       }
@@ -7390,13 +7471,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新螢幕小工具"
+            "value" : "新螢幕控制項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新螢幕小工具"
+            "value" : "新螢幕控制項"
           }
         }
       }
@@ -7488,13 +7569,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請先點選一個小工具"
+            "value" : "請先點選一個控制項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請先點選一個小工具"
+            "value" : "請先點選一個控制項"
           }
         }
       }
@@ -7741,13 +7822,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕控制器與小工具"
+            "value" : "螢幕控制器與控制項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕控制器與小工具"
+            "value" : "螢幕控制器與控制項"
           }
         }
       }
@@ -8499,25 +8580,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This is saved in onscreen widget profile, which can be selected & managed in toolbox menu slide from the right screen edge."
+            "value" : "Also known as deadzone boost"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此项设置保存在屏显控件配置方案中， 可在屏幕右边缘滑出的工具箱菜单中切换。"
+            "value" : "该选项也被称为摇杆死区补偿"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此項設定儲存在螢幕小工具配置方案中，可在螢幕右邊緣滑出的工具箱選單中切換。"
+            "value" : "此選項亦稱為搖桿死區補償"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此項設定儲存在螢幕小工具配置方案中，可在螢幕右邊緣滑出的工具箱選單中切換。"
+            "value" : "此選項亦稱為搖桿死區補償"
           }
         }
       }
@@ -9444,13 +9525,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "閱讀小工具說明"
+            "value" : "閱讀控制項說明"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "閱讀小工具說明"
+            "value" : "閱讀控制項說明"
           }
         }
       }
@@ -11444,13 +11525,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "點選「確定」以開啟自訂螢幕小工具與體感控制。"
+            "value" : "點選「確定」以開啟自訂螢幕控制項與體感控制。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "點選「確定」以開啟自訂螢幕小工具與體感控制。"
+            "value" : "點選「確定」以開啟自訂螢幕控制項與體感控制。"
           }
         }
       }

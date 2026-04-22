@@ -513,7 +513,7 @@ static const float REFRESH_CYCLE = 2.0f;
         return;
     }
     
-    NSLog(@"hostCard update loop %f", CACurrentMediaTime());
+    // NSLog(@"hostCard update loop %f", CACurrentMediaTime());
     
     [self updateContentsForHost:_host];
     

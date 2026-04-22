@@ -1189,6 +1189,18 @@
         }
       }
     },
+    "Agc-qg-YgU.title" : {
+      "comment" : "Class = \"UIBarButtonItem\"; title = \"Profiles\"; ObjectID = \"Agc-qg-YgU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Profiles"
+          }
+        }
+      }
+    },
     "aGg-ET-e9F.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Edge Trigger Sensitivity\"; ObjectID = \"aGg-ET-e9F\";",
       "extractionState" : "extracted_with_value",
@@ -1280,13 +1292,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用螢幕小工具與外設"
+            "value" : "啟用螢幕控制項與外設"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用螢幕小工具與外設"
+            "value" : "啟用螢幕控制項與外設"
           }
         }
       }
@@ -4299,13 +4311,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "螢幕小工具"
+            "value" : "螢幕控制項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "螢幕小工具"
+            "value" : "螢幕控制項"
           }
         }
       }
@@ -5259,13 +5271,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕小工具佈局"
+            "value" : "螢幕控制項佈局"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "螢幕小工具佈局"
+            "value" : "螢幕控制項佈局"
           }
         }
       },
@@ -6047,30 +6059,30 @@
       }
     },
     "uFg-dv-6nT.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Synth Physical Stick Input\"; ObjectID = \"uFg-dv-6nT\";",
+      "comment" : "Class = \"UILabel\"; text = \"Blend Physical Stick Input\"; ObjectID = \"uFg-dv-6nT\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Synth Physical Stick Input"
+            "value" : "Blend Physical Stick Input"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "合成实体摇杆输入"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "合成實體搖桿輸入"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "合成實體搖桿輸入"
           }
         }
@@ -6371,13 +6383,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已收納小工具   "
+            "value" : "已收納控制項   "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已收納小工具   "
+            "value" : "已收納控制項   "
           }
         }
       }
@@ -6515,13 +6527,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "輕按任意小工具載入設定（各小工具獨立）"
+            "value" : "輕按任意控制項載入設定（各控制項獨立）"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "輕按任意小工具載入設定（各小工具獨立）"
+            "value" : "輕按任意控制項載入設定（各控制項獨立）"
           }
         }
       }

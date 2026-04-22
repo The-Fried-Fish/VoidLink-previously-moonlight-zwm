@@ -43,10 +43,11 @@
 @property (weak, nonatomic) PencilHandler* pencilHandler;
 @property (weak, nonatomic) UIViewController* streamFrameVC;
 
-- (void) setupStreamView:(ControllerSupport*)controllerSupport
-     interactionDelegate:(id<UserInteractionDelegate>)interactionDelegate
-                  config:(StreamConfiguration*)streamConfig
- streamFrameTopLayerView:(UIView* )topLayerView
+- (void) setupStreamViewWithControllerSupport:(ControllerSupport*)controllerSupport
+                          interactionDelegate:(id<UserInteractionDelegate>)interactionDelegate
+                                 streamConfig:(StreamConfiguration*)streamConfig
+                                  gameProfile:(OSCProfile* )profile
+                      streamFrameTopLayerView:(UIView* )topLayerView
 ;
 
 - (void)cleanUp;
@@ -54,12 +55,12 @@
 - (void) reloadLegacyWidgets:(OSCProfile* )profile;
 - (void) setOnScreenControls;
 - (void) disableOnScreenControls;
-- (void) reloadOnScreenControlsRealtimeWith:(ControllerSupport*)controllerSupport
-                          andConfig:(StreamConfiguration*)streamConfig;
+- (void) reloadOnScreenControlsRealtimeWithControllerSupport:(ControllerSupport*)controllerSupport
+                          streamConfig:(StreamConfiguration*)streamConfig;
 - (void) reloadOnScreenControlsWith:(ControllerSupport*)controllerSupport
                           andConfig:(StreamConfiguration*)streamConfig;
 - (void) clearOnScreenWidgets;
-- (void) reloadOnScreenWidgetViews:(bool)reload;
+- (void) reloadGameProfile:(OSCProfile* )profile reloadWidgets:(bool)reloadWidgets;
 - (void) saveStreamViewWidgetChanges;
 - (bool) isOnScreenWidgetEnabled;
 

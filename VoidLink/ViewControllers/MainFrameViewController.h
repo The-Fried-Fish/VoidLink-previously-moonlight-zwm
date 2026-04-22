@@ -23,6 +23,8 @@
 @interface MainFrameViewController : UICollectionViewController <DiscoveryCallback, PairCallback, AppCallback, AppAssetCallback, NSURLConnectionDelegate, SWRevealViewControllerDelegate, HostCardActionDelegate, AppViewUpdateLoopDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *settingsButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *profilesButton;
+
 #if !TARGET_OS_TV
 @property (nonatomic, assign) bool settingsExpandedInStreamView;
 @property (nonatomic, assign) bool sessionLaunchedWithAbsoluteTouch;

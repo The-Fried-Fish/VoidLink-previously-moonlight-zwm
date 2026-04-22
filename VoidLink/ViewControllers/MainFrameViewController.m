@@ -1160,6 +1160,59 @@ static NSMutableSet* hostList;
     }
 }
 
+- (void)profilesButtonTapped {
+    if([GenericUtils isFirstTappingGameProfileSelectorFromMainFrame]){
+        
+        DataManager* dataMan = [[DataManager alloc] init];
+        Settings* settings = [dataMan retrieveSettings];
+
+        
+        NSString* edgeSide = settings.slideToSettingsScreenEdge.intValue != UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
+        NSString* slideDist = [NSString stringWithFormat:@"%d%%", (int)(settings.slideToSettingsDistance.floatValue*100)];
+
+        [AlertControllerUtil showAlertIn:self
+                                        title:[LocalizationHelper localizedStringForKey:@"Game Profile"]
+                                      message:[LocalizationHelper localizedStringForKey:@"gameProfileIntroduction", edgeSide, slideDist]
+                                   withCancel:NO
+                                  buttonTitle:[LocalizationHelper localizedStringForKey:@"Got it!"]
+                                    countdown:6
+                                       action:^{}
+                                   completion:^{
+            [self openGameProfileSeletor];
+        }];
+    }
+    else [self openGameProfileSeletor];
+}
+
+- (void)openGameProfileSeletor{
+    if(settingsViewController){
+        [settingsViewController mainFrameGameProfileButtonTapped];
+        return;
+    }
+    
+    LayoutOnScreenControlsViewController* layoutToolVC;
+    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+    if (isIPhone) {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
+        layoutToolVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+    }
+    else {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
+        layoutToolVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+        layoutToolVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    }
+    layoutToolVC.view.backgroundColor = UIColor.clearColor;
+    layoutToolVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    
+    
+    layoutToolVC.profileTableLoadingMode = OSCProfilesTableViewLoadingModeSelectProfileFromMainFrame;
+    layoutToolVC.toolbarStackView.hidden = true;
+    layoutToolVC.toolbarRootView.hidden = true;
+    [self presentViewController:layoutToolVC animated:NO completion:^{
+        [layoutToolVC presentProfilesTableViewWithLoadingMode:OSCProfilesTableViewLoadingModeSelectProfileFromMainFrame];
+    }];
+}
+
 // currently obselete:
 - (void) setNeedsUpdateAllowedOrientation{
     if (@available(iOS 16.0, *)) {
@@ -1174,7 +1227,11 @@ static NSMutableSet* hostList;
     revealController.navBarMenuDelegate = settingsViewController;
     _settingsViewExpanded = position != FrontViewPositionLeft;
     if (position == FrontViewPositionLeft) {
-        self.navigationItem.leftBarButtonItems = @[_settingsButton];
+       if (@available(iOS 26.0, *)) {
+            _settingsButton.sharesBackground = false;
+            _profilesButton.sharesBackground = false;
+        }
+        self.navigationItem.leftBarButtonItems = @[_settingsButton, _profilesButton];
         
         if(streamFrameViewController.streamMan){
             // NSLog(@"setNeedRequeuing %f", CACurrentMediaTime());
@@ -1186,7 +1243,7 @@ static NSMutableSet* hostList;
         }
     }
     else {
-        self.navigationItem.leftBarButtonItems = @[];
+        self.navigationItem.leftBarButtonItems = @[_profilesButton];
         [settingsViewController updateTheme];
     }
 
@@ -1552,7 +1609,27 @@ static NSMutableSet* hostList;
         [_settingsButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
     }
 
+    [_profilesButton setTarget:self];
+    [_profilesButton setAction:@selector(profilesButtonTapped)];
+    if (@available(iOS 13.0, *)) {
+        [_profilesButton setTitle:nil];
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 20.5 : 23 weight:UIImageSymbolWeightRegular ];
+        UIImage *image = [[UIImage systemImageNamed:@"gamecontroller.circle" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [_profilesButton setImage:image];
+        _profilesButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
+        if(GenericUtils.liquidGlassEnabled){
+            // if(@available(iOS 26.0, *)) _settingsButton.hidesSharedBackground = YES;
+            _profilesButton.tintColor = ThemeManager.appPrimaryColor;
+        }
+    } else {
+        [_profilesButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
+    }
     
+    if (@available(iOS 26.0, *)) {
+         _settingsButton.sharesBackground = false;
+         _profilesButton.sharesBackground = false;
+     }
+
     
     
     // Set the host name button action. When it's tapped, it'll show the host selection view.

@@ -77,6 +77,7 @@ static NSSet *validPositionButtonNames;
     BOOL _swapABXY;
     BOOL _visualFeedbackEnabled;
     BOOL _largerStickLR1;
+    BOOL _firstTapFromOsc;
     CGFloat _oscTapExlusionAreaSizeFactor;
     OSCProfilesManager *profilesManager;
     NSMutableDictionary *_activeCustomOscButtonPositionDict;
@@ -187,6 +188,10 @@ static float L3_Y;
 - (void) pressDownControllerButton: (int)flag{
     [_controllerSupport setButtonFlag:_controller flags:flag];
     [_controllerSupport updateFinished:_controller];
+    if(_firstTapFromOsc){
+        _firstTapFromOsc = false;
+        [_controllerSupport updateTimerStateForOsc];
+    }
 }
 
 - (void) releaseControllerButton: (int)flag{
@@ -300,6 +305,7 @@ static float L3_Y;
 
     _activeCustomOscButtonPositionDict = [[NSMutableDictionary alloc] init];
     touchesCapturedByOnScreenControls = [[NSMutableSet alloc] init];
+    _firstTapFromOsc = true;
     
     if(![self isKindOfClass:[LayoutOnScreenControls class]]) OnScreenControls.shared = self;
     

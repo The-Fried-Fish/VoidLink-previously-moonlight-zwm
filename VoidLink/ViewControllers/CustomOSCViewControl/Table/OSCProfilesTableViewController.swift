@@ -22,7 +22,9 @@ enum FileOperation: Int {
 }
 
 @objc enum OSCProfilesTableViewLoadingMode: Int {
-    case selectProfile
+    case selectProfile  
+    case selectProfileFromStreamView
+    case selectProfileFromMainFrame
     case pickProfile
     case pickProfileData
 }
@@ -129,7 +131,9 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
         updateHorizontalLayoutConstraints()
         horizontalConstraintsConfigured = true
         tableView.alpha = 1
-        tableView.backgroundColor = UIColor.black.withAlphaComponent(0.43)
+        tableView.backgroundColor = UIColor.black.withAlphaComponent(self.loadingMode == .selectProfileFromMainFrame ? (
+            ThemeManager.userInterfaceStyle() == .dark ? 0.83 : 0.6
+        ) : 0.43)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissSelf))
         tap.cancelsTouchesInView = false
@@ -471,7 +475,10 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        if loadingMode != .selectProfile,
+        if (loadingMode != .selectProfile
+            && loadingMode != .selectProfileFromMainFrame
+            && loadingMode != .selectProfileFromStreamView
+            ),
            let touchView = touch.view,
            touchView.isDescendant(of: tableView) {
             return true

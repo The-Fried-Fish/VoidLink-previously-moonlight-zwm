@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) bool useRelativeCoords;
 
 
-+ (void)initContextWithView:(StreamView*)view andSettings:(TemporarySettings*)settings;
++ (void)initContextWithView:(StreamView*)view profile:(OSCProfile*)profile;
 + (void)cleanUpContext;
 
 - (bool)doesNeedResetCoords;

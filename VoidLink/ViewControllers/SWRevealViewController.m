@@ -818,7 +818,7 @@ const int FrontViewPositionNone = 0xff;
     DataManager* dataMan = [[DataManager alloc] init];
     Settings *currentSettings = [dataMan retrieveSettings];
 
-    NSLog(@"orientation unlocked: %d", currentSettings.unlockDisplayOrientation);
+    // NSLog(@"orientation unlocked: %d", currentSettings.unlockDisplayOrientation);
 
     if(currentSettings.unlockDisplayOrientation) return UIInterfaceOrientationMaskAll;
     else return [self isIPhone] ? UIInterfaceOrientationMaskLandscape : [self getCurrentOrientation];

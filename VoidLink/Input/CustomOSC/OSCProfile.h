@@ -58,6 +58,8 @@ typedef NS_ENUM(NSInteger, PencilHoverMode) {
 @property (nonatomic, assign) bool reverseGyroHoldButton;
 @property (nonatomic, assign) int controllerGyroSwitchHold;
 @property (nonatomic, assign) int controllerGyroSwitchToggle;
+@property (nonatomic, assign) CGFloat pointerVelocityModeDivider;
+@property (nonatomic, assign) CGFloat touchPointerVelocityFactor;
 
 @property (nonatomic, assign) bool gamepadOverlayEnabled;
 

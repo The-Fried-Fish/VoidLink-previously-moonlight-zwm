@@ -157,7 +157,9 @@
 @property (strong, nonatomic) IBOutlet UISegmentedControl *mapGyroToSelector;
 
 @property (strong, nonatomic) IBOutlet UIStackView *gyroToStickSwitchStack;
+@property (weak, nonatomic) IBOutlet UIStackView *yawPitchToRightStickStack;
 @property (strong, nonatomic) IBOutlet UISwitch *yawPitchToRightStickSwitch;
+@property (weak, nonatomic) IBOutlet UIStackView *rollToLeftStickStack;
 @property (strong, nonatomic) IBOutlet UISwitch *rollToLeftStickSwitch;
 
 @property (strong, nonatomic) IBOutlet UIStackView *yawPitchSensitivityStack;
@@ -309,5 +311,6 @@
 - (void)hideDynamicLabelsWhenOverlapped:(UIView* )view;
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack;
 - (void)updateCodecDependentSwitches;
+- (void)mainFrameGameProfileButtonTapped;
 
 @end

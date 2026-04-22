@@ -1819,7 +1819,7 @@ double rc_expo(double x, double expo) {
         NSLog(@"controller obj in dict: %@", controller);
     }
     
-    [self updateFinished:_oscController];
+    if([self gamepadGyroEnabledInSetting]) [self updateFinished:_oscController];
 }
 
 -(id)initWithConfig:(StreamConfiguration*)streamConfig delegate:(id<ControllerSupportDelegate>)delegate
@@ -2003,13 +2003,18 @@ double rc_expo(double x, double expo) {
     return false;
 }
 
+-(bool)gamepadGyroEnabledInSetting {
+    return (tempSettings.emulatedControllerType.intValue == LI_CTYPE_PS && tempSettings.gyroMode.intValue != GyroModeOff);
+}
 
 -(void)connectionEstablished {
     for (VoidController* voidController in _voidControllers.allValues) {
-        [self updateFinished:voidController];
+        if(voidController.playerIndex != 0) [self updateFinished:voidController];
     }
-
-    if (_oscEnabled) {
+    
+    //if (_oscEnabled
+    //  || (tempSettings.emulatedControllerType.intValue == LI_CTYPE_PS && tempSettings.gyroMode != GyroModeOff)) {
+    if ([self gamepadGyroEnabledInSetting]) {
         [self setButtonFlag:self->_oscController flags:A_FLAG];
         [self updateFinished:self->_oscController];
         [self clearButtonFlag:self->_oscController flags:A_FLAG];
@@ -2074,6 +2079,9 @@ double rc_expo(double x, double expo) {
     }
 }
 
+- (void)updateTimerStateForOsc{
+    [self updateTimerStateForController:self->_oscController];
+}
 
 -(void) cleanup
 {

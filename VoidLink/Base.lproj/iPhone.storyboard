@@ -41,11 +41,15 @@
                     </collectionView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="pSu-bl-gL9">
-                        <barButtonItem key="leftBarButtonItem" title="Settings" id="mSL-ru-nRm"/>
+                        <leftBarButtonItems>
+                            <barButtonItem title="Settings" id="mSL-ru-nRm"/>
+                            <barButtonItem title="Profiles" id="cnk-5b-LLX"/>
+                        </leftBarButtonItems>
                         <barButtonItem key="rightBarButtonItem" id="KDy-JC-2sU"/>
                     </navigationItem>
                     <connections>
                         <outlet property="navigationItem" destination="pSu-bl-gL9" id="bvt-g6-wbk"/>
+                        <outlet property="profilesButton" destination="cnk-5b-LLX" id="R8P-PB-chp"/>
                         <outlet property="settingsButton" destination="mSL-ru-nRm" id="6mC-zU-buT"/>
                         <outlet property="upButton" destination="KDy-JC-2sU" id="tXB-Rc-IvJ"/>
                         <segue destination="mI3-9F-XwU" kind="push" identifier="createStreamFrame" id="NuQ-Ez-IEX"/>
@@ -2610,7 +2614,7 @@
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="xMx-7R-pmH" userLabel="gyroToStickStack">
                                 <rect key="frame" x="3" y="2738" width="336" height="67"/>
                                 <subviews>
-                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="68R-uR-4PI" userLabel="substack1">
+                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="68R-uR-4PI">
                                         <rect key="frame" x="0.0" y="0.0" width="336" height="31"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Yaw&amp;Pitch → Right Stick" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AN9-U4-nUG" userLabel="uiLabel">
@@ -2628,9 +2632,10 @@
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="31" id="8bw-pt-rsb"/>
+                                            <constraint firstAttribute="width" constant="336" id="Oti-eo-Hbw"/>
                                         </constraints>
                                     </stackView>
-                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="tvL-sE-fGi" userLabel="substack2">
+                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="tvL-sE-fGi">
                                         <rect key="frame" x="0.0" y="36" width="336" height="31"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Roll → Left Stick" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3LT-qb-ZEB" userLabel="uiLabel">
@@ -3165,16 +3170,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="gkU-Rq-gB0">
-                                <rect key="frame" x="5" y="3124" width="346" height="31"/>
+                                <rect key="frame" x="5" y="3124" width="345.5" height="31"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Synth Physical Stick Input" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bx3-CM-wet" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="196" height="31"/>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Blend Physical Stick Input" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bx3-CM-wet" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="195.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HUF-g8-GD3">
-                                        <rect key="frame" x="216" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="215.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="b8v-mZ-1xt"/>
                                         </constraints>
@@ -3477,6 +3482,7 @@
                         <outlet property="rightStickMinOffsetStack" destination="aQs-Ww-sPZ" id="UAl-aP-7p8"/>
                         <outlet property="rollSensitivitySlider" destination="SQ5-oO-S7X" id="UTL-nv-UwL"/>
                         <outlet property="rollSensitivityStack" destination="5Zq-ch-iZ4" id="zYv-nH-Ut1"/>
+                        <outlet property="rollToLeftStickStack" destination="tvL-sE-fGi" id="Uor-Bf-9DL"/>
                         <outlet property="rollToLeftStickSwitch" destination="caz-QH-4dS" id="XPR-l0-M1L"/>
                         <outlet property="scrollSensitivitySlider" destination="Iha-ti-PtK" id="60F-wE-tB0"/>
                         <outlet property="scrollSensitivityStack" destination="1fy-XH-ApD" id="Utf-HX-rrg"/>
@@ -3524,6 +3530,7 @@
                         <outlet property="useBuiltinMicStack" destination="lbL-2m-AO2" id="ZDm-aL-1cC"/>
                         <outlet property="useBuiltinMicSwitch" destination="YR4-0Z-D5Z" id="rMI-TK-FGJ"/>
                         <outlet property="yawPitchSensitivityStack" destination="1z6-G8-X45" id="9M6-Kg-Ms1"/>
+                        <outlet property="yawPitchToRightStickStack" destination="68R-uR-4PI" id="w08-1G-ku8"/>
                         <outlet property="yawPitchToRightStickSwitch" destination="npQ-yh-2MA" id="u31-YT-yXS"/>
                         <outlet property="yawSensitivitySlider" destination="JBP-uF-88R" id="57t-bo-3Y4"/>
                         <outlet property="yawSensitivityStack" destination="pyS-Cc-IC3" id="4Vr-ks-9hk"/>
@@ -3549,19 +3556,19 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

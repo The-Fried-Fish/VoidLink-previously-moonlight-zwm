@@ -51,6 +51,8 @@
     [encoder encodeBool:self.reverseGyroHoldButton forKey:@"reverseGyroHoldButton"];
     [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
+    [encoder encodeFloat:self.pointerVelocityModeDivider forKey:@"pointerVelocityModeDivider"];
+    [encoder encodeFloat:self.touchPointerVelocityFactor forKey:@"touchPointerVelocityFactor"];
     [encoder encodeBool:self.gamepadOverlayEnabled forKey:@"gamepadOverlayEnabled"];
     
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
@@ -114,6 +116,10 @@
         self.reverseGyroHoldButton = [decoder containsValueForKey:@"reverseGyroHoldButton"] ? [decoder decodeBoolForKey:@"reverseGyroHoldButton"] : false;
         self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
+        
+        self.pointerVelocityModeDivider = [decoder containsValueForKey:@"pointerVelocityModeDivider"] ? [decoder decodeFloatForKey:@"pointerVelocityModeDivider"] : 0.5;
+        self.touchPointerVelocityFactor = [decoder containsValueForKey:@"touchPointerVelocityFactor"] ? [decoder decodeFloatForKey:@"touchPointerVelocityFactor"] : 1.0;
+        
         self.gamepadOverlayEnabled = [decoder containsValueForKey:@"gamepadOverlayEnabled"] ? [decoder decodeBoolForKey:@"gamepadOverlayEnabled"] : false;
 
         self.pressureCurvePoints =
@@ -212,6 +218,8 @@
     copy.reverseGyroHoldButton = self.reverseGyroHoldButton;
     copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
+    copy.pointerVelocityModeDivider = self.pointerVelocityModeDivider;
+    copy.touchPointerVelocityFactor = self.touchPointerVelocityFactor;
     copy.gamepadOverlayEnabled = self.gamepadOverlayEnabled;
     copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
     // copy.initialTouchPressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.initialTouchPressureCurvePoints copyItems:YES];

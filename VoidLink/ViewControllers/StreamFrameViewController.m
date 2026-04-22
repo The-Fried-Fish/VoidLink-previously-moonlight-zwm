@@ -179,7 +179,7 @@
 }
 
 
-- (bool)isOscLayoutToolEnabled{
+- (bool)isOnScreenWidgetEnabled{
     return (_settings.touchMode.intValue == RelativeTouch || _settings.touchMode.intValue == NativeTouch || _settings.touchMode.intValue == AbsoluteTouch || _settings.touchMode.intValue == TouchDisabled) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
@@ -230,13 +230,13 @@
 }
 
 - (void)updateToolboxSpecialEntries{
-    if([self isOscLayoutToolEnabled]){
+    if([self isOnScreenWidgetEnabled]){
         if(![toolBoxViewController.specialEntries containsObject:@"widgetLayoutTool"]) [toolBoxViewController.specialEntries insertObject:@"widgetLayoutTool" atIndex:0];
-        if(![toolBoxViewController.specialEntries containsObject:@"widgetSwitchTool"]) [toolBoxViewController.specialEntries insertObject:@"widgetSwitchTool" atIndex:1];
+        // if(![toolBoxViewController.specialEntries containsObject:@"widgetSwitchTool"]) [toolBoxViewController.specialEntries insertObject:@"widgetSwitchTool" atIndex:1];
     }
     else{
         [toolBoxViewController.specialEntries removeObject:@"widgetLayoutTool"];
-        [toolBoxViewController.specialEntries removeObject:@"widgetSwitchTool"];
+        // [toolBoxViewController.specialEntries removeObject:@"widgetSwitchTool"];
     }
     if(_settings.enablePIP){
         if(![toolBoxViewController.specialEntries containsObject:@"enterPip"]) [toolBoxViewController.specialEntries addObject:@"enterPip"];
@@ -246,9 +246,8 @@
     NSLog(@"toolBoxViewController.specialEntries %@", toolBoxViewController.specialEntries);
 }
 
-- (void)configOscLayoutTool{
-
-    if([self isOscLayoutToolEnabled]){
+- (void)prepareGameProfileSelector{
+    if(true){
         /* sets a reference to the correct 'LayoutOnScreenControlsViewController' depending on whether the user is on an iPhone or iPad */
         // _layoutOnScreenControlsVC = [[LayoutOnScreenControlsViewController alloc] init];
         BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
@@ -269,7 +268,7 @@
 }
 
 - (void)bringUpToolboxMenu{
-    [self configOscLayoutTool];
+    [self prepareGameProfileSelector];
     ToolboxViewController* oldToolboxVC = toolBoxViewController;
     toolBoxViewController = [[ToolboxViewController alloc] init];
     toolBoxViewController.specialEntryDelegate = self;
@@ -301,7 +300,7 @@
     _slideToToolboxRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:_slideToToolboxRecognizer];
     
-    if([self isOscLayoutToolEnabled]){
+    if([self isOnScreenWidgetEnabled]){
         _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleWidgetLayoutGesture)];
         _oscLayoutTapRecoginizer.numberOfTouchesRequired = _settings.oscLayoutToolFingers.intValue; //tap a predefined number of fingers to open osc layout tool
         _oscLayoutTapRecoginizer.tapDownTimeThreshold = 0.2;
@@ -363,13 +362,13 @@
     if (reloadSettings) {
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     }
-    if(!_viewJustLoaded) _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
+    _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
     
     overlayLevel = _settings.statsOverlayLevel.intValue;
     [self setupOverlayView];
     
     if(viewIsBeingResized) viewIsBeingResized = false;
-    else [self configOscLayoutTool];
+    else [self prepareGameProfileSelector];
     [self updateToolboxSpecialEntries];
     [self configGestures];
     [self configZoomGestureAndAddStreamView];
@@ -385,15 +384,14 @@
     
     if(!_viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
     // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
-    [_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig streamFrameTopLayerView:self.view]; //reinitiate setupStreamView process.
-        // we got self.view passed to streamView class as the topLayerView, will be useful in many cases
-    [self->_streamView reloadOnScreenControlsRealtimeWith:(ControllerSupport*)_controllerSupport
-                                        andConfig:(StreamConfiguration*)_streamConfig]; //reload OSC here.
+    [_streamView setupStreamViewWithControllerSupport:_controllerSupport interactionDelegate:self streamConfig:self.streamConfig gameProfile:_oscProfile streamFrameTopLayerView:self.view]; //reinitiate setupStreamView process.
+    [self->_streamView reloadOnScreenControlsRealtimeWithControllerSupport:(ControllerSupport*)_controllerSupport
+                                        streamConfig:(StreamConfiguration*)_streamConfig]; //reload OSC here.
     
     bool onScreenWidgetSwitched = previousOnScreenWidgetEnabled != [_streamView isOnScreenWidgetEnabled];
     bool needReload = onScreenWidgetSwitched && !previousOnScreenWidgetEnabled;
     OnScreenWidgetView.trackPointEnabled = _settings.touchPointTracking;
-    [_streamView reloadOnScreenWidgetViews:_viewJustLoaded||reloadOnscreenWidgets||needReload]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    [_streamView reloadGameProfile:_oscProfile reloadWidgets:reloadOnscreenWidgets||needReload];
     
     if(onScreenWidgetSwitched && previousOnScreenWidgetEnabled) [_streamView clearOnScreenWidgets];
     previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
@@ -774,7 +772,7 @@
 }
 
 - (void)handleWidgetLayoutGesture{
-    [self configOscLayoutTool];
+    [self prepareGameProfileSelector];
     [self openWidgetLayoutTool];
 }
 
@@ -797,7 +795,7 @@
     _layoutOnScreenControlsVC.quickSwitchEnabled = true;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
-    OSCProfilesTableViewLoadingMode loadingMode = pickProfile ? OSCProfilesTableViewLoadingModePickProfile : OSCProfilesTableViewLoadingModeSelectProfile;
+    OSCProfilesTableViewLoadingMode loadingMode = pickProfile ? OSCProfilesTableViewLoadingModePickProfile : OSCProfilesTableViewLoadingModeSelectProfileFromStreamView;
     [self presentViewController:_layoutOnScreenControlsVC animated:NO completion:^{
         [self->_layoutOnScreenControlsVC presentProfilesTableViewWithLoadingMode:loadingMode];
     }];
@@ -822,7 +820,8 @@
     [self->_streamView reloadOnScreenControlsWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig];
     // [self->_streamView reloadLegacyWidgets];
-    [self->_streamView reloadOnScreenWidgetViews:true]; //update keyboard buttons here
+    [self reConfigStreamViewRealtimeAndReloadSettings:NO reloadOnscreenWidgets:_settings.onscreenControls.intValue == OnScreenControlsLevelCustom];
+    // [self->_streamView reloadGameProfile:nil reloadWidgets:true]; //update keyboard buttons here
 }
 
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled{

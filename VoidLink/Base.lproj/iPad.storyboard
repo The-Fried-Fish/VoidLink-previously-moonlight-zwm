@@ -38,11 +38,15 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" id="pSu-bl-gL9">
-                        <barButtonItem key="leftBarButtonItem" title="Settings" id="mSL-ru-nRm"/>
+                        <leftBarButtonItems>
+                            <barButtonItem title="Settings" id="mSL-ru-nRm"/>
+                            <barButtonItem title="Profiles" id="Agc-qg-YgU"/>
+                        </leftBarButtonItems>
                         <barButtonItem key="rightBarButtonItem" id="KDy-JC-2sU"/>
                     </navigationItem>
                     <connections>
                         <outlet property="navigationItem" destination="pSu-bl-gL9" id="Xni-ne-p40"/>
+                        <outlet property="profilesButton" destination="Agc-qg-YgU" id="7qg-yi-h8U"/>
                         <outlet property="settingsButton" destination="mSL-ru-nRm" id="NRf-lv-vlh"/>
                         <outlet property="upButton" destination="KDy-JC-2sU" id="tXB-Rc-IvJ"/>
                         <segue destination="OIm-0n-i9v" kind="push" identifier="createStreamFrame" id="7gN-E7-Ips"/>
@@ -50,7 +54,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZYl-Xu-QyD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="608.59375" y="172.8515625"/>
+            <point key="canvasLocation" x="481" y="102"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="tWo-uo-hHg">
@@ -1877,7 +1881,7 @@
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8eE-nU-sk5" userLabel="gyroToStickStack">
                                 <rect key="frame" x="23" y="3111" width="336" height="67"/>
                                 <subviews>
-                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-fo-81z" userLabel="substack1">
+                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-fo-81z">
                                         <rect key="frame" x="0.0" y="0.0" width="336" height="31"/>
                                         <subviews>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Yaw&amp;Pitch → Right Stick" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XU0-qu-2p4" userLabel="uiLabel">
@@ -2028,16 +2032,16 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="1yf-rP-jgt">
-                                <rect key="frame" x="20" y="3530" width="346" height="31"/>
+                                <rect key="frame" x="20" y="3530" width="345.5" height="31"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Synth Physical Stick Input" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uFg-dv-6nT" userLabel="uiLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="196" height="31"/>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Blend Physical Stick Input" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uFg-dv-6nT" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="195.5" height="31"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ixf-14-Du8">
-                                        <rect key="frame" x="216" y="0.0" width="132" height="31"/>
+                                        <rect key="frame" x="215.5" y="0.0" width="132" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="Nie-vj-Gbe"/>
                                         </constraints>
@@ -2280,6 +2284,7 @@
                         <outlet property="rightStickMinOffsetStack" destination="yl0-WY-ZqV" id="hRP-Rc-60s"/>
                         <outlet property="rollSensitivitySlider" destination="P7t-Q3-rrN" id="pEv-Be-Dxe"/>
                         <outlet property="rollSensitivityStack" destination="iey-Nn-eFG" id="aco-Lz-SzN"/>
+                        <outlet property="rollToLeftStickStack" destination="fPh-yy-10O" id="xvW-U3-3id"/>
                         <outlet property="rollToLeftStickSwitch" destination="Jr5-es-If6" id="uQS-Rf-ETV"/>
                         <outlet property="scrollSensitivitySlider" destination="6Pz-di-F4h" id="PUc-gr-gEt"/>
                         <outlet property="scrollSensitivityStack" destination="aEs-8U-RwE" id="XPK-Al-tBx"/>
@@ -2330,6 +2335,7 @@
                         <outlet property="useBuiltinMicStack" destination="jCF-si-KLC" id="AnY-Ob-jE9"/>
                         <outlet property="useBuiltinMicSwitch" destination="H3f-qy-ySA" id="O76-df-ich"/>
                         <outlet property="yawPitchSensitivityStack" destination="9Cg-zf-Fjl" id="Iym-a8-nGn"/>
+                        <outlet property="yawPitchToRightStickStack" destination="RJa-fo-81z" id="bEy-yc-4LZ"/>
                         <outlet property="yawPitchToRightStickSwitch" destination="tDm-kN-h78" id="v97-60-O35"/>
                         <outlet property="yawSensitivitySlider" destination="vdl-D4-5vn" id="DqE-G7-9eQ"/>
                         <outlet property="yawSensitivityStack" destination="4Ee-fb-lEr" id="47a-rU-LQn"/>

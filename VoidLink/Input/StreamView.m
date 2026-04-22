@@ -85,9 +85,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     OSCProfilesManager* oscProfileMan;
 }
 
-- (void) setupStreamView:(ControllerSupport*)controllerSupport
+- (void) setupStreamViewWithControllerSupport:(ControllerSupport*)controllerSupport
      interactionDelegate:(id<UserInteractionDelegate>)interactionDelegate
-                  config:(StreamConfiguration*)streamConfig
+            streamConfig:(StreamConfiguration*)streamConfig
+             gameProfile:(OSCProfile* )profile
  streamFrameTopLayerView:(UIView* )topLayerView{
     self->comboKeyModifierFlags = (UIKeyModifierControl|UIKeyModifierAlternate|UIKeyModifierShift);
 
@@ -144,11 +145,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     switch (touchMode) {
         case NativeTouch:
             keyboardToggleRecognizer.immediateTriggering = false;
-            self->touchHandler = [[NativeTouchHandler alloc] initWithView:self andSettings:settings];
+            self->touchHandler = [[NativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
             break;
         case NativeTouchOnly:
             keyboardToggleRecognizer.immediateTriggering = false;
-            self->touchHandler = [[PureNativeTouchHandler alloc] initWithView:self andSettings:settings];break;
+            self->touchHandler = [[PureNativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
+            break;
         case RelativeTouch:
             self->touchHandler = [[RelativeTouchHandler alloc] initWithView:self andSettings:settings];
             keyboardToggleRecognizer.immediateTriggering = false;
@@ -528,8 +530,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     return [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
-- (void) reloadOnScreenControlsRealtimeWith:(ControllerSupport*)controllerSupport
-                         andConfig:(StreamConfiguration*)streamConfig {
+- (void) reloadOnScreenControlsRealtimeWithControllerSupport:(ControllerSupport*)controllerSupport
+                         streamConfig:(StreamConfiguration*)streamConfig {
     [self reloadOnScreenControlsWith:controllerSupport andConfig:streamConfig];
     /*
     StreamFrameViewController* vc = (StreamFrameViewController* )_streamFrameVC;
@@ -630,13 +632,17 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
 }
 
-- (void) reloadOnScreenWidgetViews:(bool)reload{
-    NSLog(@"reloadOnScreenWidgets in streamview %f", CACurrentMediaTime());
+- (void) reloadGameProfile:(OSCProfile* )profile reloadWidgets:(bool)reloadWidgets{
+    
+    self->oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
+
+    if(!profile){
+        NSLog(@"reloadOnScreenWidgets in streamview %d", reloadWidgets);
+        profile = [self->oscProfileMan getSelectedProfile]; //returns the currently selected OSCProfile
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(!self->oscProfileMan) self->oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
-        OSCProfile *oscProfile = [self->oscProfileMan getSelectedProfile]; //returns the currently selected OSCProfile
-        MotionHandler* motionHandler = [MotionHandler sharedWithProfile:oscProfile];
+        MotionHandler* motionHandler = [MotionHandler sharedWithProfile:profile];
         
         // get streamFrameVC
         if(!self->_streamFrameVC) self->_streamFrameVC = [self parentViewController];
@@ -648,24 +654,25 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         // bool customOscEnabled = [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
         
-        if(![self isOnScreenWidgetEnabled]) return;
+        // if(![self isOnScreenWidgetEnabled]) return;
         
         OnScreenWidgetView.buttonVisualFeedbackEnabled = self->settings.buttonVisualFeedback;
-        OnScreenWidgetView.gamepadOverlayFLag = oscProfile.gamepadOverlayEnabled;
+        OnScreenWidgetView.gamepadOverlayFLag = profile.gamepadOverlayEnabled;
         OnScreenWidgetView.relocatedDuringStreaming = false;
 
         bool hasLegacyWidget = false;
-        if(reload && !OnScreenWidgetView.editMode){
+        if(reloadWidgets && !OnScreenWidgetView.editMode){
             // remove all keyboard widget views first
             [self clearOnScreenWidgets];
             
             bool sequenceGenerated = false;
             bool hasMovableWidget = false;
-            for (NSInteger i = 0; i < oscProfile.buttonStatesEncoded.count; i++) {
-                NSData* buttonStateEncoded = oscProfile.buttonStatesEncoded[i];
+                        
+            for (NSInteger i = 0; i < profile.buttonStatesEncoded.count; i++) {
+                NSData* buttonStateEncoded = profile.buttonStatesEncoded[i];
                 OnScreenButtonState* buttonState = [self->oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
                 if(buttonState.widgetType == CustomOnScreenWidget){
-                    OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:oscProfile]; //reconstruct widgetView
+                    OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:profile]; //reconstruct widgetView
                     
                     widgetView.functionalButtonDelegate = (id<OnScreenFunctionalButtonDelegate>)self->_streamFrameVC;
                     widgetView.motionHandler = motionHandler;
@@ -733,7 +740,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     if(sequenceGenerated){
                         // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());
                         buttonState.sequence = widgetView.sequence;
-                        oscProfile.buttonStatesEncoded[i] = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
+                        profile.buttonStatesEncoded[i] = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
                     }
                     
                     [widgetView accessWidgetAttributes];
@@ -742,7 +749,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             }
             
             if(sequenceGenerated && hasMovableWidget){
-                [self->oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
+                [self->oscProfileMan replaceSelectedProfileWith:profile overwriteDefault:YES];
             }
             
             uint64_t buttonIndex = 9999999;
@@ -771,19 +778,19 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             }
         }
         
-        OnScreenWidgetView.unfoldedExclusiveFolderSequence = oscProfile.unfoldedExclusiveFolderSequence;
-        [OnScreenWidgetView setPostExclusiveUnfoldeds:oscProfile.postExclusiveUnfoldedSequences];
+        OnScreenWidgetView.unfoldedExclusiveFolderSequence = profile.unfoldedExclusiveFolderSequence;
+        [OnScreenWidgetView setPostExclusiveUnfoldeds:profile.postExclusiveUnfoldedSequences];
         [OnScreenWidgetView restoreFoldedStates];
         
         NSLog(@"hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
         // legacy widgets
-        if(!OnScreenWidgetView.editMode && (hasLegacyWidget || !reload)){
-            if([self isOscEnabled]) [self reloadLegacyWidgets:oscProfile];
+        if(!OnScreenWidgetView.editMode && (hasLegacyWidget || !reloadWidgets)){
+            if([self isOscEnabled]) [self reloadLegacyWidgets:profile];
             else [self disableOnScreenControls];
         }
         
-        if(reload && !OnScreenWidgetView.editMode){
-            [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
+        if(reloadWidgets && !OnScreenWidgetView.editMode){
+            [PencilHandler.shared setupPressureLUTWithProfile:profile];
         }
     });
 }
