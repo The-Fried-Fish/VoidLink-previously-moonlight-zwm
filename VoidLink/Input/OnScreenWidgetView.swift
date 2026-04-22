@@ -824,6 +824,9 @@ import ObjectiveC.runtime
     private func setSquareWidgetCornerRadius(){
         let shortSideLen = min(self.layer.bounds.size.width, self.layer.bounds.size.height)
         self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
+        if #available(iOS 13.0, *) {
+            self.layer.cornerCurve = .continuous
+        }
     }
     
     func containsNonLatin(_ text: String) -> Bool {
@@ -866,6 +869,7 @@ import ObjectiveC.runtime
         )
         label.attributedText = attr
         label.textAlignment = .center
+        label.baselineAdjustment = .alignCenters
     }
     
     private func setupView() {
@@ -900,7 +904,6 @@ import ObjectiveC.runtime
         
         self.translatesAutoresizingMaskIntoConstraints = true // this is mandatory to prevent unexpected key view location change
         
-        self.setSquareWidgetCornerRadius()
         self.layer.borderWidth = self.borderWidth
         
         self.tweakAlpha(tweakBorderAlpha: false, tweakLabelAlpha: false)
@@ -927,7 +930,7 @@ import ObjectiveC.runtime
                 label.isHidden = self.widgetLabel.uppercased() == self.touchPadString // allow touchPad label to be display if it's different from touchPad cmdString
             }
         }
-        
+                
         if !self.functionalButtonString.isEmpty{
             self.layer.borderWidth = self.borderWidth
         }
@@ -935,11 +938,10 @@ import ObjectiveC.runtime
         if self.shape == "round" {
             //setup round buttons
             self.layer.cornerRadius = self.frame.width/2
-            // self.layer.borderWidth = self.borderWidth
             label.minimumScaleFactor = 0.15  // Adjust the scale factor for oscButtons
         }
         if self.shape == "square" || self.shape == "largeSquare" {
-            //just do nothing here
+            self.setSquareWidgetCornerRadius()
         }
         
         
@@ -1809,6 +1811,9 @@ import ObjectiveC.runtime
         buttonDownVisualEffectLayer.borderColor = standardHighlightColor.cgColor
         buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -buttonDownVisualEffectLayer.borderWidth, dy: -buttonDownVisualEffectLayer.borderWidth) // Adjust the inset as needed
         buttonDownVisualEffectLayer.cornerRadius = self.layer.cornerRadius + buttonDownVisualEffectLayer.borderWidth
+        if self.shape == "square" {if #available(iOS 13.0, *) {
+            buttonDownVisualEffectLayer.cornerCurve = .continuous
+        }}
         buttonDownVisualEffectLayer.backgroundColor = UIColor.clear.cgColor;
         buttonDownVisualEffectLayer.fillColor = UIColor.clear.cgColor;
         

@@ -248,4 +248,9 @@ import Foundation
     @objc static var screenHeight: CGFloat {
         return UIScreen.main.bounds.height
     }
+    
+    @objc static var iOS18Available: Bool {
+        if #available(iOS 18.0, *) {return true}
+        else {return false}
+    }
 }
