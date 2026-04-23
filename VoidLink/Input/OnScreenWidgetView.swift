@@ -19,6 +19,7 @@ import ObjectiveC.runtime
     @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
     @objc public static var isRestoring: Bool = false
     @objc public static var hasRestoredFromAutoDock: Bool = false
+    @objc public static var autoDockRestoreInitByViewResize: Bool = false
     @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
         mapping[key] = widget
     }
@@ -3384,6 +3385,10 @@ import ObjectiveC.runtime
                 completion: {_ in
                     self.autoDockIsDocked = false
                     self.restartAutoDockCountdown()
+                    if OnScreenWidgetView.autoDockRestoreInitByViewResize {
+                        OnScreenWidgetView.autoDockRestoreInitByViewResize = false
+                        OnScreenWidgetView.hasRestoredFromAutoDock = false
+                    }
                 }
             )
         }
