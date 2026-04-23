@@ -694,12 +694,12 @@ import ObjectiveC.runtime
 
     private func tweakAlpha(tweakBorderAlpha:Bool, tweakLabelAlpha:Bool = true){
         // setup default border from self.backgroundAlpha
-        let realBackgroundAlpha = abs(self.backgroundAlpha) - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
+        let realBackgroundAlpha = max(abs(self.backgroundAlpha) - 0.18, 0) // offset to be consistent with legacy onScreen controller layer opacity
         self.backgroundColor = UIColor(white:self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
         
         if tweakBorderAlpha {
-            borderAlpha = realBackgroundAlpha * 1.01
-            defaultBorderColor = UIColor(white: self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
+            borderAlpha = realBackgroundAlpha * 1.005 * (self.backgroundAlpha>0 ? 1 : -1)
+            defaultBorderColor = UIColor(white: borderAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
             self.layer.borderColor = defaultBorderColor
         }
         
