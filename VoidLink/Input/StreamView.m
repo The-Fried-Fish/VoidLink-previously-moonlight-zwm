@@ -1012,6 +1012,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [touchHandler touchesBegan:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
+    else if(touchMode == RelativeTouch && keyboardToggleRecognizer.numberOfTouchesRequired == 1) return;
+    
     NSMutableSet* pencilTouches = [NSMutableSet set];
     for (UITouch* touch in touches) {
         if (touch.type == UITouchTypePencil) {
