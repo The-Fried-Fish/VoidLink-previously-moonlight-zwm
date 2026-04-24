@@ -1507,15 +1507,23 @@ BOOL isCustomResolution(int resolutionSelected) {
     button = [UIButton buttonWithType:UIButtonTypeSystem];
     if (@available(iOS 13.0, *)) {
         if(stack.isGameProfileSetting){
-            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:14.5 weight:UIImageSymbolWeightRegular];
-            [button setImage:[UIImage systemImageNamed:@"gamecontroller.circle" withConfiguration:config] forState:UIControlStateNormal];
+            UIImage* image;
+            if(GenericUtils.iOS18Available){
+                UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:14.5 weight:UIImageSymbolWeightRegular];
+                image = [UIImage systemImageNamed:@"gamecontroller.circle" withConfiguration:config];
+            }
+            else{
+                image = [[UIImage imageNamed: @"gamecontroller.circle.tag"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            }
+            
+            [button setImage:image forState:UIControlStateNormal];
         }
         else{
             UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:13.5 weight:UIImageSymbolWeightMedium];
             [button setImage:[UIImage systemImageNamed:@"info.circle" withConfiguration:config] forState:UIControlStateNormal];
         }
     } else {
-        [button setTitle:@"info" forState:UIControlStateNormal];
+        [button setTitle:stack.isGameProfileSetting ? @"game" : @"info" forState:UIControlStateNormal];
         button.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
         button.titleLabel.accessibilityIdentifier = @"infoButton";
     }

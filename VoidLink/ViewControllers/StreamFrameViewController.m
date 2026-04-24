@@ -551,6 +551,11 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidHide)
+                                                 name:UIKeyboardDidHideNotification
+                                               object:nil];
+
     [safeTimer start];
     #endif
 }
@@ -767,7 +772,12 @@
     [_streamView keyboardWillHide];
 }
 
-- (void)handleAbnormalKeyboards:(NSNotification *)notification{
+- (void)keyboardDidHide{
+    _streamView.bounds = _deviceWindow.bounds;
+    _streamView.frame = _deviceWindow.frame;
+}
+
+- (void)handleNonStandardKeyboard:(NSNotification *)notification{
     [_streamView handleNonStandardKeyboard:notification];
 }
 
@@ -1757,7 +1767,10 @@
         }
         dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
         dispatch_after(delayTime, dispatch_get_main_queue(), ^{
-            if(widget.autoDockEnabled) [widget restoreFromAutoDockWithAnimated:true];
+            if(widget.autoDockEnabled){
+                OnScreenWidgetView.autoDockRestoreInitByViewResize = true;
+                [widget restoreFromAutoDockWithAnimated:true];
+            }
         });
         
         [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {

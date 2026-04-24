@@ -19,6 +19,7 @@ import ObjectiveC.runtime
     @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
     @objc public static var isRestoring: Bool = false
     @objc public static var hasRestoredFromAutoDock: Bool = false
+    @objc public static var autoDockRestoreInitByViewResize: Bool = false
     @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
         mapping[key] = widget
     }
@@ -694,12 +695,12 @@ import ObjectiveC.runtime
 
     private func tweakAlpha(tweakBorderAlpha:Bool, tweakLabelAlpha:Bool = true){
         // setup default border from self.backgroundAlpha
-        let realBackgroundAlpha = abs(self.backgroundAlpha) - 0.18 // offset to be consistent with legacy onScreen controller layer opacity
+        let realBackgroundAlpha = max(abs(self.backgroundAlpha) - 0.18, 0) // offset to be consistent with legacy onScreen controller layer opacity
         self.backgroundColor = UIColor(white:self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: realBackgroundAlpha) // offset to be consistent with legacy onScreen controller layer opacity
         
         if tweakBorderAlpha {
-            borderAlpha = realBackgroundAlpha * 1.01
-            defaultBorderColor = UIColor(white: self.backgroundAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
+            borderAlpha = realBackgroundAlpha * 1.005 * (self.backgroundAlpha>0 ? 1 : -1)
+            defaultBorderColor = UIColor(white: borderAlpha>0 ? 0.1 : 0.9, alpha: abs(borderAlpha)).cgColor
             self.layer.borderColor = defaultBorderColor
         }
         
@@ -824,6 +825,9 @@ import ObjectiveC.runtime
     private func setSquareWidgetCornerRadius(){
         let shortSideLen = min(self.layer.bounds.size.width, self.layer.bounds.size.height)
         self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
+        if #available(iOS 13.0, *) {
+            self.layer.cornerCurve = .continuous
+        }
     }
     
     func containsNonLatin(_ text: String) -> Bool {
@@ -866,6 +870,7 @@ import ObjectiveC.runtime
         )
         label.attributedText = attr
         label.textAlignment = .center
+        label.baselineAdjustment = .alignCenters
     }
     
     private func setupView() {
@@ -900,7 +905,6 @@ import ObjectiveC.runtime
         
         self.translatesAutoresizingMaskIntoConstraints = true // this is mandatory to prevent unexpected key view location change
         
-        self.setSquareWidgetCornerRadius()
         self.layer.borderWidth = self.borderWidth
         
         self.tweakAlpha(tweakBorderAlpha: false, tweakLabelAlpha: false)
@@ -927,7 +931,7 @@ import ObjectiveC.runtime
                 label.isHidden = self.widgetLabel.uppercased() == self.touchPadString // allow touchPad label to be display if it's different from touchPad cmdString
             }
         }
-        
+                
         if !self.functionalButtonString.isEmpty{
             self.layer.borderWidth = self.borderWidth
         }
@@ -935,11 +939,10 @@ import ObjectiveC.runtime
         if self.shape == "round" {
             //setup round buttons
             self.layer.cornerRadius = self.frame.width/2
-            // self.layer.borderWidth = self.borderWidth
             label.minimumScaleFactor = 0.15  // Adjust the scale factor for oscButtons
         }
         if self.shape == "square" || self.shape == "largeSquare" {
-            //just do nothing here
+            self.setSquareWidgetCornerRadius()
         }
         
         
@@ -1809,6 +1812,9 @@ import ObjectiveC.runtime
         buttonDownVisualEffectLayer.borderColor = standardHighlightColor.cgColor
         buttonDownVisualEffectLayer.frame = self.bounds.insetBy(dx: -buttonDownVisualEffectLayer.borderWidth, dy: -buttonDownVisualEffectLayer.borderWidth) // Adjust the inset as needed
         buttonDownVisualEffectLayer.cornerRadius = self.layer.cornerRadius + buttonDownVisualEffectLayer.borderWidth
+        if self.shape == "square" {if #available(iOS 13.0, *) {
+            buttonDownVisualEffectLayer.cornerCurve = .continuous
+        }}
         buttonDownVisualEffectLayer.backgroundColor = UIColor.clear.cgColor;
         buttonDownVisualEffectLayer.fillColor = UIColor.clear.cgColor;
         
@@ -3379,6 +3385,10 @@ import ObjectiveC.runtime
                 completion: {_ in
                     self.autoDockIsDocked = false
                     self.restartAutoDockCountdown()
+                    if OnScreenWidgetView.autoDockRestoreInitByViewResize {
+                        OnScreenWidgetView.autoDockRestoreInitByViewResize = false
+                        OnScreenWidgetView.hasRestoredFromAutoDock = false
+                    }
                 }
             )
         }

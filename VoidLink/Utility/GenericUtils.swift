@@ -269,7 +269,11 @@ import UIKit
         return UIScreen.main.bounds.height
     }
     
-    
+    @objc static var iOS18Available: Bool {
+        if #available(iOS 18.0, *) {return true}
+        else {return false}
+    }
+        
     @objc(parentViewControllerForView:)
     static func parentViewController(for view: UIView?) -> UIViewController? {
         var responder: UIResponder? = view

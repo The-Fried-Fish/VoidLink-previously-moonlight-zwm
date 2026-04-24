@@ -1613,16 +1613,28 @@ static NSMutableSet* hostList;
     [_profilesButton setAction:@selector(profilesButtonTapped)];
     if (@available(iOS 13.0, *)) {
         [_profilesButton setTitle:nil];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 20.5 : 23 weight:UIImageSymbolWeightRegular ];
-        UIImage *image = [[UIImage systemImageNamed:@"gamecontroller.circle" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [_profilesButton setImage:image];
-        _profilesButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
-        if(GenericUtils.liquidGlassEnabled){
-            // if(@available(iOS 26.0, *)) _settingsButton.hidesSharedBackground = YES;
+        
+        UIImageSymbolConfiguration *config;
+        UIImage *image;
+        if(GenericUtils.iOS18Available){
+            config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 20.5 : 23 weight:UIImageSymbolWeightRegular ];
+            image = [[UIImage systemImageNamed: @"gamecontroller.circle" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            [_profilesButton setImage:image];
+            _profilesButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
+            if(GenericUtils.liquidGlassEnabled){
+                _profilesButton.tintColor = ThemeManager.appPrimaryColor;
+            }
+        }
+        else{
+            image = [[UIImage imageNamed: @"gamecontroller.circle.regular"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            [_profilesButton setImage:image];
+            _profilesButton.imageInsets = UIEdgeInsetsMake(-1.5, 0, -1.5, 0);
             _profilesButton.tintColor = ThemeManager.appPrimaryColor;
         }
+        
+        
     } else {
-        [_profilesButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
+        [_profilesButton setTitle:[LocalizationHelper localizedStringForKey:@"Game Profile"]];
     }
     
     if (@available(iOS 26.0, *)) {
