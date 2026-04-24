@@ -21,6 +21,11 @@
         <attribute name="uuid" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="appList" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="App" inverseName="host" inverseEntity="App" syncable="YES"/>
     </entity>
+    <entity name="InputAccessoryBarButton" representedClassName="InputAccessoryBarButton" syncable="YES" codeGenerationType="class">
+        <attribute name="buttonLabel" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cmdString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="index" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
     <entity name="Settings" representedClassName="Settings" syncable="YES" codeGenerationType="class">
         <attribute name="appTheme" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="asyncFrameDequeue" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>

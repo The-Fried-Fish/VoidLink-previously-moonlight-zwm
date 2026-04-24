@@ -8,6 +8,7 @@
 
 
 import Foundation
+import UIKit
 
 @objc public class GenericUtils: NSObject {
         
@@ -65,6 +66,18 @@ import Foundation
         }
         return false
     }
+    
+    @objc static func isFirstTappingInputAccessoryBar() -> Bool {
+        let key = "isFirstTappingInputAccessoryBar"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
 
     @objc static func gamepadOverlayFeatureTipTitle() -> String {
         SwiftLocalizationHelper.localizedString(forKey: "Gamepad Overlay")
@@ -100,6 +113,13 @@ import Foundation
     
     @objc static var legacyToolbarHeight: CGFloat {
         return 44
+    }
+    
+    @objc static var inputAccessoryBarHeight: CGFloat {
+        if #available(iOS 13.0, *){
+            return GenericUtils.isIPhone() ? 46 : 55
+        }
+        else {return 44}
     }
     
     @objc static var hostViewNavigationBarHeight: CGFloat {
@@ -247,5 +267,31 @@ import Foundation
     
     @objc static var screenHeight: CGFloat {
         return UIScreen.main.bounds.height
+    }
+    
+    
+    @objc(parentViewControllerForView:)
+    static func parentViewController(for view: UIView?) -> UIViewController? {
+        var responder: UIResponder? = view
+        while let currentResponder = responder {
+            if let viewController = currentResponder as? UIViewController {
+                return viewController
+            }
+            responder = currentResponder.next
+        }
+        return nil
+    }
+}
+
+extension UIView {
+    var parentViewController: UIViewController? {
+        var responder: UIResponder? = self
+        while let r = responder {
+            if let vc = r as? UIViewController {
+                return vc
+            }
+            responder = r.next
+        }
+        return nil
     }
 }

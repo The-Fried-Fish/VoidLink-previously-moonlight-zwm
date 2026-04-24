@@ -542,7 +542,7 @@
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleAbnormalKeyboards:)
+                                             selector:@selector(handleNonStandardKeyboard:)
                                                  name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
 
@@ -768,7 +768,7 @@
 }
 
 - (void)handleAbnormalKeyboards:(NSNotification *)notification{
-    [_streamView handleAbnormalKeyboards:notification];
+    [_streamView handleNonStandardKeyboard:notification];
 }
 
 - (void)handleWidgetLayoutGesture{

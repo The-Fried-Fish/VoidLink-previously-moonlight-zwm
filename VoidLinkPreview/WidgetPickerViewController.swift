@@ -18,6 +18,10 @@ import UIKit
 @available(iOS 13.0, *)
 @objcMembers
 public final class WidgetPickerViewController: UIViewController {
+    private static var overlayWindow: UIWindow?
+    private static weak var originalAppWindow: UIWindow?
+    private static weak var originalHostViewController: UIViewController?
+
     public weak var delegate: WidgetPickerViewControllerDelegate?
     public var isEditMode: Bool = false
     public var initialCmdString: String?
@@ -27,8 +31,10 @@ public final class WidgetPickerViewController: UIViewController {
     public var initialTabIdentifier: String?
     public var keyboardPickerMode: VirtualKeyboardMode = .picker
     var shortcutPickerNeedAlias: Bool = false
+    var shortcutPickerNeedButtonMode: Bool = false
     public var shortcutPickerTipText: String?
     @objc public var shortcutIdentifier: String?
+    public var usesOverlayPresentation: Bool = false
 
     private let presentationState = WidgetPickerPresentationState()
     private var hostingViewController: UIHostingController<WidgetPickerView>?
@@ -36,7 +42,7 @@ public final class WidgetPickerViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = usesOverlayPresentation ? .clear : .systemBackground
 
         let rootView = WidgetPickerView(
             isEditMode: isEditMode,
@@ -47,16 +53,17 @@ public final class WidgetPickerViewController: UIViewController {
             preferredInitialTab: resolvedInitialTab(),
             keyboardPickerMode: keyboardPickerMode,
             shortcutPickerNeedAlias: shortcutPickerNeedAlias,
+            shortcutPickerNeedButtonMode: shortcutPickerNeedButtonMode,
             shortcutPickerTipText: shortcutPickerTipText,
             shortcutIdentififier: shortcutIdentifier,
             presentationState: presentationState,
             onWidgetCreated: { [weak self] payload in
                 guard let self else { return }
                 self.delegate?.widgetPickerViewController(self, didCreateWidget: payload as NSDictionary)
-                self.dismiss(animated: true)
+                self.closeSelf(animated: true)
             },
             onCloseRequested: { [weak self] in
-                self?.dismiss(animated: true)
+                self?.closeSelf(animated: true)
             }
         )
         let hostingViewController = UIHostingController(rootView: rootView)
@@ -95,5 +102,96 @@ public final class WidgetPickerViewController: UIViewController {
     private func resolvedInitialTab() -> WidgetPickerTab? {
         guard let initialTabIdentifier else { return nil }
         return WidgetPickerTab(identifier: initialTabIdentifier)
+    }
+
+    public func presentAsOverlay(in parentViewController: UIViewController, animated: Bool = true) {
+        guard parent == nil else { return }
+        guard let originalAppWindow = parentViewController.view.window,
+              let windowScene = originalAppWindow.windowScene else { return }
+
+        usesOverlayPresentation = true
+        Self.originalAppWindow = originalAppWindow
+        Self.originalHostViewController = parentViewController
+        let overlayHostViewController = UIViewController()
+        overlayHostViewController.view.backgroundColor = .clear
+
+        let overlayWindow = UIWindow(windowScene: windowScene)
+        overlayWindow.frame = windowScene.screen.bounds
+        overlayWindow.windowLevel = .alert + 1
+        overlayWindow.backgroundColor = .clear
+        overlayWindow.rootViewController = overlayHostViewController
+        overlayWindow.isHidden = false
+        Self.overlayWindow = overlayWindow
+
+        loadViewIfNeeded()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.alpha = animated ? 0 : 1
+
+        overlayHostViewController.addChild(self)
+        overlayHostViewController.view.addSubview(view)
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: overlayHostViewController.view.topAnchor),
+            view.bottomAnchor.constraint(equalTo: overlayHostViewController.view.bottomAnchor),
+            view.leadingAnchor.constraint(equalTo: overlayHostViewController.view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: overlayHostViewController.view.trailingAnchor),
+        ])
+        didMove(toParent: overlayHostViewController)
+
+        guard animated else { return }
+        UIView.animate(withDuration: 0.18) {
+            self.view.alpha = 1
+        }
+    }
+
+    private func closeSelf(animated: Bool) {
+        if presentingViewController != nil {
+            dismiss(animated: animated)
+            return
+        }
+
+        guard parent != nil else {
+            Self.destroyOverlayWindowAndRestoreAppWindow()
+            return
+        }
+
+        let removeOverlay = {
+            self.willMove(toParent: nil)
+            self.view.removeFromSuperview()
+            self.removeFromParent()
+            Self.destroyOverlayWindowAndRestoreAppWindow()
+        }
+
+        guard animated else {
+            removeOverlay()
+            return
+        }
+
+        UIView.animate(
+            withDuration: 0.18,
+            animations: {
+                self.view.alpha = 0
+            },
+            completion: { _ in
+                removeOverlay()
+            }
+        )
+    }
+
+    private static func destroyOverlayWindowAndRestoreAppWindow() {
+        overlayWindow?.isHidden = true
+        overlayWindow?.rootViewController = nil
+        overlayWindow = nil
+        originalAppWindow?.makeKeyAndVisible()
+        refreshSystemGestureDeferral()
+        originalAppWindow = nil
+        originalHostViewController = nil
+    }
+
+    private static func refreshSystemGestureDeferral() {
+        guard let hostViewController = originalHostViewController else { return }
+        if #available(iOS 11.0, *) {
+            hostViewController.setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+            hostViewController.setNeedsUpdateOfHomeIndicatorAutoHidden()
+        }
     }
 }

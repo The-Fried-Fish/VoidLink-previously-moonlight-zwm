@@ -270,7 +270,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
         CGFloat screenHeight = GenericUtils.screenHeight;
         CGFloat totalKeyboardHeight = keyboardFrame.size.height;
-        CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.legacyToolbarHeight : 0;
+        CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.inputAccessoryBarHeight : 0;
         
         if(totalKeyboardHeight < screenHeight * 0.33333333333 + toolbarHeight
            || totalKeyboardHeight > screenHeight*0.8 + toolbarHeight){
@@ -311,7 +311,18 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     NSLog(@"keyboard will show %f", CACurrentMediaTime());
 }
 
-- (void)handleAbnormalKeyboards:(NSNotification *)notification{
+- (void)handleNonStandardKeyboard:(NSNotification *)notification{
+    if(!self->dockedKeyboardActionDetected){
+    
+    [self->keyboardToggleTip removeFromSuperview];
+    [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
+        
+    self->dockedKeyboardActionDetected = false;
+    self->isInputingText = !self->isInputingText;
+    
+    }
+    return;
+    /*
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
         if(!self->dockedKeyboardActionDetected){
@@ -332,6 +343,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
         }
     });
+     */
 }
 
 - (UIViewController *)parentViewController {
@@ -347,6 +359,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 // this method also deals with recovering streamview when local keyboard is turned off
 - (void)keyboardWillHide{
+    if (@available(iOS 13.0, *)) {
+        InputAccessoryBar* bar = (InputAccessoryBar* ) keyInputField.inputAccessoryView;
+        if(bar) [bar releasePressedKeys];
+    }
+    
     dockedKeyboardActionDetected = true;
     // NSLog(@"keyboard will hide markmark %f", CACurrentMediaTime());
 
@@ -459,7 +476,16 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     [customToolbarView sendSubviewToBack:glassView];
                 }
             }
-            keyInputField.inputAccessoryView = customToolbarView;
+            if (@available(iOS 13.0, *)) {
+                InputAccessoryBar *barView = [[InputAccessoryBar alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, GenericUtils.inputAccessoryBarHeight)];
+                barView.delegate = self;
+                keyInputField.inputAccessoryView = barView;
+            }
+            else {
+                keyInputField.inputAccessoryView = customToolbarView;
+            }
+            
+            
         }
     #endif
         [keyInputField becomeFirstResponder];
@@ -645,7 +671,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         MotionHandler* motionHandler = [MotionHandler sharedWithProfile:profile];
         
         // get streamFrameVC
-        if(!self->_streamFrameVC) self->_streamFrameVC = [self parentViewController];
+        if(!self->_streamFrameVC) self->_streamFrameVC = [GenericUtils parentViewControllerForView:self];
         
         /*
         if (@available(iOS 13.0, *)) {
@@ -1479,6 +1505,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         LiSendKeyboardEvent([keyCode shortValue], KEY_ACTION_UP, 0);
     }
     [keysDown removeAllObjects];
+}
+
+- (void)inputAccessoryBarDidTapClose:(InputAccessoryBar *)bar  API_AVAILABLE(ios(13.0)){
+    [keyInputField resignFirstResponder];
+    isInputingText = false;
 }
 
 - (void)onKeyboardPressed:(UITextField *)textField {

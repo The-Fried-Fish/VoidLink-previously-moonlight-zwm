@@ -3100,7 +3100,7 @@
                                                 <segments>
                                                     <segment title="slide-toggle"/>
                                                     <segment title="slide-hold"/>
-                                                    <segment title="regular"/>
+                                                    <segment title="normal"/>
                                                     <segment title="tap to toggle"/>
                                                     <segment title="movable"/>
                                                 </segments>

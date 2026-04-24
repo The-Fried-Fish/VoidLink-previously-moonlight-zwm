@@ -2276,30 +2276,30 @@
       }
     },
     "cKS-fy-Zpg.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[2] = \"regular\"; ObjectID = \"cKS-fy-Zpg\";",
+      "comment" : "Class = \"UISegmentedControl\"; cKS-fy-Zpg.segmentTitles[2] = \"normal\"; ObjectID = \"cKS-fy-Zpg\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "regular"
+            "value" : "normal"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "常规模式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "一般模式"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "一般模式"
           }
         }

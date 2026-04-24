@@ -172,6 +172,23 @@ enum WidgetCreateComboMode: String, CaseIterable, Identifiable {
 }
 
 @available(iOS 13.0, *)
+private enum ShortcutPickerButtonMode: String, CaseIterable, Identifiable {
+    case normal
+    case tapToToggle
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .normal:
+            return SwiftLocalizationHelper.localizedString(forKey: "Normal")
+        case .tapToToggle:
+            return SwiftLocalizationHelper.localizedString(forKey: "Tap to toggle")
+        }
+    }
+}
+
+@available(iOS 13.0, *)
 private enum WidgetCreateShape: String, CaseIterable, Identifiable {
     case round = "r"
     case square = "s"
@@ -303,6 +320,7 @@ struct WidgetPickerView: View {
     private let preferredInitialTab: WidgetPickerTab?
     private let keyboardPickerMode: VirtualKeyboardMode
     var shortcutPickerNeedAlias: Bool = false
+    var shortcutPickerNeedButtonMode: Bool = false
     private let shortcutPickerTipText: String?
     private let shortcutIdentifier: String?
     @ObservedObject private var presentationState: WidgetPickerPresentationState
@@ -324,6 +342,7 @@ struct WidgetPickerView: View {
     @SwiftUI.State private var selectedGyroCommand: String? = nil
     @SwiftUI.State private var showCreateWidgetSheet = false
     @SwiftUI.State private var widgetComboMode: WidgetCreateComboMode = .skill
+    @SwiftUI.State private var shortcutPickerButtonMode: ShortcutPickerButtonMode = .normal
     @SwiftUI.State private var widgetTriggerInterval: Double = 0
     @SwiftUI.State private var widgetShape: WidgetCreateShape = .round
     @SwiftUI.State private var widgetButtonLabel: String = ""
@@ -350,6 +369,7 @@ struct WidgetPickerView: View {
         preferredInitialTab: WidgetPickerTab? = nil,
         keyboardPickerMode: VirtualKeyboardMode = .picker,
         shortcutPickerNeedAlias: Bool = false,
+        shortcutPickerNeedButtonMode: Bool = false,
         shortcutPickerTipText: String? = nil,
         shortcutIdentififier: String? = nil,
         presentationState: WidgetPickerPresentationState = WidgetPickerPresentationState(),
@@ -366,6 +386,7 @@ struct WidgetPickerView: View {
         self.preferredInitialTab = resolvedInitialTab
         self.keyboardPickerMode = keyboardPickerMode
         self.shortcutPickerNeedAlias = shortcutPickerNeedAlias
+        self.shortcutPickerNeedButtonMode = shortcutPickerNeedButtonMode
         self.shortcutPickerTipText = shortcutPickerTipText
         self.shortcutIdentifier = shortcutIdentififier
         self.presentationState = presentationState
@@ -1604,6 +1625,18 @@ struct WidgetPickerView: View {
                                 .opacity(isComboModeLocked ? 0.45 : 1.0)
                             }
                         }
+
+                        if showsShortcutButtonModeControl {
+                            createWidgetSection(title: SwiftLocalizationHelper.localizedString(forKey: "Button mode")) {
+                                Picker("", selection: $shortcutPickerButtonMode) {
+                                    ForEach(ShortcutPickerButtonMode.allCases) { mode in
+                                        Text(mode.title).tag(mode)
+                                    }
+                                }
+                                .pickerStyle(SegmentedPickerStyle())
+                                .environment(\.colorScheme, .light)
+                            }
+                        }
                     }
 
                     if showsIntervalSlider {
@@ -1792,6 +1825,10 @@ struct WidgetPickerView: View {
         return targetWidgetKind == .button
     }
 
+    private var showsShortcutButtonModeControl: Bool {
+        isShortcutPickerMode && shortcutPickerNeedButtonMode && targetWidgetKind == .button
+    }
+
     private var showsIntervalSlider: Bool {
         if isShortcutPickerMode { return false }
         guard buttonCommandCount >= 2 else { return false }
@@ -1834,6 +1871,7 @@ struct WidgetPickerView: View {
 
         let hasVisibleConfigurationSection =
             showsButtonLabelField ||
+            showsShortcutButtonModeControl ||
             showsComboModeControl ||
             showsIntervalSlider ||
             showsShapeControl
@@ -1861,6 +1899,7 @@ struct WidgetPickerView: View {
         } else {
             widgetTriggerInterval = 0
         }
+        shortcutPickerButtonMode = shortcutPickerNeedsTapToToggle(initialCmdString) ? .tapToToggle : .normal
         if isEditMode,
            submissionAction == .modify,
            let initialButtonLabel,
@@ -1907,14 +1946,14 @@ struct WidgetPickerView: View {
         lastCreatedWidgetPayload = payload
         setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Widget config generated"))
         onWidgetCreated?(payload)
-        // print("widgetPicker payload =", payload as NSDictionary)
+        print("widgetPicker payload =", payload as NSDictionary)
         setCreateWidgetSheetVisible(false)
     }
 
     private func makeWidgetPayload() -> [String: String] {
         [
             "cmdString": buildCmdString(),
-            "buttonLabel": targetWidgetKind == .button ? widgetButtonLabel : "",
+            "buttonLabel": targetWidgetKind == .button ? resolvedWidgetButtonLabel() : "",
             "shape": targetWidgetKind == .button ? widgetShape.rawValue : "",
             "pickerAction": pendingSubmissionAction.payloadValue,
             "shortcutIdentifier": shortcutIdentifier ?? ""
@@ -1923,10 +1962,14 @@ struct WidgetPickerView: View {
 
     private func buildCmdString() -> String {
         if isShortcutPickerMode {
-            return selectedCmds.joined(separator: "+")
+            var cmdString = selectedCmds.joined(separator: "+")
+            if shortcutPickerButtonMode == .tapToToggle, !cmdString.isEmpty {
+                cmdString += "+NULL"
+            }
+            return cmdString
         }
 
-        let joiner = effectiveWidgetComboMode == .shortcut && showsComboModeControl ? "+" : "-"
+        let joiner = comboJoiner
         var cmdString = selectedCmds.joined(separator: joiner)
 
         let shouldAppendInterval = effectiveWidgetComboMode != .shortcut
@@ -1937,6 +1980,56 @@ struct WidgetPickerView: View {
         }
 
         return cmdString
+    }
+
+    private func resolvedWidgetButtonLabel() -> String {
+        let trimmedManualLabel = widgetButtonLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedManualLabel.isEmpty {
+            return trimmedManualLabel
+        }
+        return defaultWidgetButtonLabel()
+    }
+
+    private func defaultWidgetButtonLabel() -> String {
+        if let selectedFunctionalButtonOption {
+            return selectedFunctionalButtonOption.cmd == "FOLDER"
+                ? SwiftLocalizationHelper.localizedString(forKey: "=Folder")
+                : selectedFunctionalButtonOption.label
+        }
+
+        let labelParts = poolItems.compactMap(defaultLabelPart(for:))
+        guard !labelParts.isEmpty else { return "" }
+        return labelParts.joined(separator: comboJoiner)
+    }
+
+    private func defaultLabelPart(for item: WidgetPoolItem) -> String? {
+        switch item.source {
+        case .gamepad:
+            return item.cmd.lowercased().capitalized
+        case .keyboard:
+            let label = (item.displayText ?? item.cmd).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !label.isEmpty else { return nil }
+            if let firstCharacter = label.first, firstCharacter.isNumber {
+                return String(firstCharacter)
+            }
+            return label
+        case .functional:
+            if let option = functionalButtonOption(for: item.cmd) {
+                return option.cmd == "FOLDER"
+                    ? SwiftLocalizationHelper.localizedString(forKey: "=Folder")
+                    : option.label
+            }
+            let label = item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
+            return label.isEmpty ? nil : label
+        }
+    }
+
+    private var comboJoiner: String {
+        usesExplicitSkillComboJoiner ? "-" : "+"
+    }
+
+    private var usesExplicitSkillComboJoiner: Bool {
+        !isShortcutPickerMode && showsComboModeControl && forcedComboMode == nil && widgetComboMode == .skill
     }
 
     private func setCreateWidgetSheetVisible(_ isVisible: Bool) {
@@ -2016,6 +2109,9 @@ struct WidgetPickerView: View {
            last.range(of: #"^\d+MS$"#, options: .regularExpression) != nil {
             commands.removeLast()
         }
+        if isShortcutPickerMode, commands.last == "NULL" {
+            commands.removeLast()
+        }
 
         var parsed: [(cmd: String, source: WidgetPoolSource, isTailLocked: Bool, displayText: String?)] = []
         for rawCommand in commands where !rawCommand.isEmpty {
@@ -2040,6 +2136,18 @@ struct WidgetPickerView: View {
         }
 
         return parsed
+    }
+
+    private func shortcutPickerNeedsTapToToggle(_ cmdString: String?) -> Bool {
+        guard isShortcutPickerMode,
+              let normalized = cmdString?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .uppercased(),
+              !normalized.isEmpty else {
+            return false
+        }
+
+        return normalized.split(separator: "+").last == "NULL"
     }
 
     private func source(for cmd: String) -> WidgetPoolSource? {

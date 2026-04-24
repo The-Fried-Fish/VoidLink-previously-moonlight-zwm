@@ -2401,6 +2401,29 @@
         }
       }
     },
+    "Button mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按键模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵模式"
+          }
+        }
+      }
+    },
     "Calibrating..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6105,6 +6128,35 @@
         }
       }
     },
+    "inputAccessoryBarTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After long-pressing any button for 2 seconds, you can drag to reorder buttons or delete them."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "长按任意按键2秒后，可拖拽调整按键顺序、删除按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "長按任意按鍵2秒後，可拖曳調整按鍵順序、刪除按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "長按任意按鍵2秒後，可拖曳調整按鍵順序、刪除按鍵"
+          }
+        }
+      }
+    },
     "Interval of Multi-Touch Move Events: %d μs" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7576,6 +7628,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請先點選一個控制項"
+          }
+        }
+      }
+    },
+    "Normal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常规"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常規"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常規"
           }
         }
       }
@@ -9565,6 +9640,9 @@
         }
       }
     },
+    "Regular" : {
+      "extractionState" : "manual"
+    },
     "relativeTouchSlideThresholdStackLink" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -11005,6 +11083,29 @@
         }
       }
     },
+    "Soft Keyboard Toolbar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "软键盘工具栏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟鍵盤工具欄"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟鍵盤工具欄"
+          }
+        }
+      }
+    },
     "SoftKeyboard" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -11601,6 +11702,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自訂螢幕控制器點選手指排除區域大小：%d%%"
+          }
+        }
+      }
+    },
+    "Tap to toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点按切换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點按切換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點按切換"
           }
         }
       }

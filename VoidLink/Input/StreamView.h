@@ -31,7 +31,7 @@
 #if TARGET_OS_TV
 @interface StreamView : UIView <X1KitMouseDelegate, UITextFieldDelegate>
 #else
-@interface StreamView : UIView <X1KitMouseDelegate, UITextFieldDelegate, UIPointerInteractionDelegate>
+@interface StreamView : UIView <X1KitMouseDelegate, UITextFieldDelegate, UIPointerInteractionDelegate, InputAccessoryBarDelegate>
 #endif
 
 @property (weak, nonatomic) UIView* streamFrameTopLayerView;
@@ -73,7 +73,7 @@
 - (void)readyToBringUpSoftKeyboardByToolbox;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
-- (void)handleAbnormalKeyboards:(NSNotification *)notification;
+- (void)handleNonStandardKeyboard:(NSNotification *)notification;
 - (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight;
 
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton;
