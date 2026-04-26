@@ -2133,11 +2133,7 @@ struct WidgetPickerView: View {
     }
 
     private var comboJoiner: String {
-        usesExplicitSkillComboJoiner ? "-" : "+"
-    }
-
-    private var usesExplicitSkillComboJoiner: Bool {
-        !isShortcutPickerMode && showsComboModeControl && forcedComboMode == nil && widgetComboMode == .skill
+        (isShortcutPickerMode || effectiveWidgetComboMode == .shortcut) ? "+" : "-"
     }
 
     private func setCreateWidgetSheetVisible(_ isVisible: Bool) {
