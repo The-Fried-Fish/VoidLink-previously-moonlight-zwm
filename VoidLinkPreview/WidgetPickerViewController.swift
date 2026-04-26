@@ -120,7 +120,7 @@ public final class WidgetPickerViewController: UIViewController {
         overlayWindow.windowLevel = .alert + 1
         overlayWindow.backgroundColor = .clear
         overlayWindow.rootViewController = overlayHostViewController
-        overlayWindow.isHidden = false
+        overlayWindow.makeKeyAndVisible()
         Self.overlayWindow = overlayWindow
 
         loadViewIfNeeded()

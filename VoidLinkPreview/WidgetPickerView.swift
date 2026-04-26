@@ -226,6 +226,79 @@ struct FunctionalButtonOption: Identifiable {
 }
 
 @available(iOS 13.0, *)
+private final class WidgetLabelTextField: UITextField {
+    private let horizontalInset: CGFloat = 12
+
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        bounds.insetBy(dx: horizontalInset, dy: 0)
+    }
+
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        bounds.insetBy(dx: horizontalInset, dy: 0)
+    }
+
+    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        bounds.insetBy(dx: horizontalInset, dy: 0)
+    }
+}
+
+@available(iOS 13.0, *)
+private struct InteractiveTextField: UIViewRepresentable {
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: InteractiveTextField
+
+        init(parent: InteractiveTextField) {
+            self.parent = parent
+        }
+
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            parent.text = textField.text ?? ""
+        }
+
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return true
+        }
+    }
+
+    let placeholder: String
+    @Binding var text: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIView(context: Context) -> UITextField {
+        let textField = WidgetLabelTextField(frame: .zero)
+        textField.borderStyle = .none
+        textField.delegate = context.coordinator
+        textField.backgroundColor = UIColor.white.withAlphaComponent(0.78)
+        textField.textColor = UIColor.black.withAlphaComponent(0.82)
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [.foregroundColor: UIColor.systemGray3]
+        )
+        textField.returnKeyType = .done
+        textField.clearButtonMode = .whileEditing
+        textField.layer.cornerRadius = 12
+        textField.layer.masksToBounds = true
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.white.withAlphaComponent(0.88).cgColor
+        return textField
+    }
+
+    func updateUIView(_ uiView: UITextField, context: Context) {
+        context.coordinator.parent = self
+        if uiView.text != text {
+            uiView.text = text
+        }
+        if uiView.placeholder != placeholder {
+            uiView.placeholder = placeholder
+        }
+    }
+}
+
+@available(iOS 13.0, *)
 private struct WidgetPickerMetrics {
     let isPhone: Bool
     let outerPadding: CGFloat
@@ -736,6 +809,7 @@ struct WidgetPickerView: View {
                         }
                     }
                 }
+                .allowsHitTesting(!showGyroPicker && !showCreateWidgetSheet)
                 .padding(.top, verticalOuterPadding)
                 .padding(.leading, metrics.outerPadding)
                 .padding(.trailing, metrics.outerPadding)
@@ -1573,6 +1647,7 @@ struct WidgetPickerView: View {
         let contentSpacing: CGFloat = isPhone ? 10 : 16
         let sectionSpacing: CGFloat = isPhone ? 7 : 10
         let fieldHeight: CGFloat = isPhone ? 30 : 38
+        let segmentedControlHeight: CGFloat = isPhone ? 36 : 38
         let actionSpacing: CGFloat = isPhone ? 8 : 12
         let actionHeight: CGFloat = isPhone ? 34 : 44
         let actionFontSize: CGFloat = isPhone ? 13 : 15
@@ -1583,37 +1658,26 @@ struct WidgetPickerView: View {
         return ZStack {
             Color.black.opacity(0.28)
                 .edgesIgnoringSafeArea(.all)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    setCreateWidgetSheetVisible(false)
-                }
 
             VStack(alignment: .leading, spacing: contentSpacing) {
                 VStack(alignment: .leading, spacing: sectionSpacing) {
                     if targetWidgetKind == .button {
                         if showsButtonLabelField {
                             createWidgetSection(title: SwiftLocalizationHelper.localizedString(forKey: "Button label")) {
-                                TextField(
-                                    SwiftLocalizationHelper.localizedString(forKey: "Enter label(optional)"),
+                                InteractiveTextField(
+                                    placeholder: SwiftLocalizationHelper.localizedString(forKey: "Enter label(optional)"),
                                     text: $widgetButtonLabel
                                 )
-                                .foregroundColor(Color.black.opacity(0.82))
-                                .environment(\.colorScheme, .light)
-                                .padding(.horizontal, 12)
                                 .frame(height: fieldHeight)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .fill(Color.white.opacity(0.78))
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .stroke(Color.white.opacity(0.88), lineWidth: 1)
-                                )
                             }
+                            .zIndex(40)
                         }
 
                         if showsComboModeControl {
-                            createWidgetSection(title: SwiftLocalizationHelper.localizedString(forKey: "Combination mode")) {
+                            createInteractiveControlSection(
+                                title: SwiftLocalizationHelper.localizedString(forKey: "Combination mode"),
+                                controlHeight: segmentedControlHeight
+                            ) {
                                 Picker("", selection: widgetComboModeBinding) {
                                     ForEach(WidgetCreateComboMode.allCases) { mode in
                                         Text(mode.title).tag(mode)
@@ -1621,13 +1685,18 @@ struct WidgetPickerView: View {
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
                                 .environment(\.colorScheme, .light)
+                                .frame(height: segmentedControlHeight)
                                 .disabled(isComboModeLocked)
                                 .opacity(isComboModeLocked ? 0.45 : 1.0)
                             }
+                            .zIndex(30)
                         }
 
                         if showsShortcutButtonModeControl {
-                            createWidgetSection(title: SwiftLocalizationHelper.localizedString(forKey: "Button mode")) {
+                            createInteractiveControlSection(
+                                title: SwiftLocalizationHelper.localizedString(forKey: "Button mode"),
+                                controlHeight: segmentedControlHeight
+                            ) {
                                 Picker("", selection: $shortcutPickerButtonMode) {
                                     ForEach(ShortcutPickerButtonMode.allCases) { mode in
                                         Text(mode.title).tag(mode)
@@ -1635,25 +1704,34 @@ struct WidgetPickerView: View {
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
                                 .environment(\.colorScheme, .light)
+                                .frame(height: segmentedControlHeight)
                             }
                         }
                     }
 
                     if showsIntervalSlider {
-                        createWidgetSection(title: "\(SwiftLocalizationHelper.localizedString(forKey: "Trigger interval")): \(effectiveTriggerIntervalValue) ms") {
+                        createInteractiveControlSection(
+                            title: "\(SwiftLocalizationHelper.localizedString(forKey: "Trigger interval")): \(effectiveTriggerIntervalValue) ms",
+                            controlHeight: fieldHeight
+                        ) {
                             Slider(
                                 value: $widgetTriggerInterval,
                                 in: 0...2000,
                                 step: 1
                             )
                             .environment(\.colorScheme, .light)
-                            .disabled(isShortcutMode)
-                            .opacity(isShortcutMode ? 0.45 : 1.0)
+                                .frame(height: fieldHeight)
+                                .disabled(isShortcutMode)
+                                .opacity(isShortcutMode ? 0.45 : 1.0)
                         }
+                        .zIndex(20)
                     }
 
                     if targetWidgetKind == .button, showsShapeControl {
-                        createWidgetSection(title: SwiftLocalizationHelper.localizedString(forKey: "Shape")) {
+                        createInteractiveControlSection(
+                            title: SwiftLocalizationHelper.localizedString(forKey: "Shape"),
+                            controlHeight: segmentedControlHeight
+                        ) {
                             Picker("", selection: $widgetShape) {
                                 ForEach(WidgetCreateShape.allCases) { shape in
                                     Text(shape.title).tag(shape)
@@ -1661,7 +1739,9 @@ struct WidgetPickerView: View {
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .environment(\.colorScheme, .light)
+                            .frame(height: segmentedControlHeight)
                         }
+                        .zIndex(10)
                     }
                 }
 
@@ -1687,6 +1767,7 @@ struct WidgetPickerView: View {
                     }
                 }
                 .padding(.top, isPhone ? 2 : 0)
+                .zIndex(0)
             }
             .padding(cardPadding)
             .frame(maxWidth: cardMaxWidth)
@@ -1703,7 +1784,22 @@ struct WidgetPickerView: View {
         }
     }
 
-    private func createWidgetSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+    private func createInteractiveControlSection<Content: View>(
+        title: String,
+        controlHeight: CGFloat,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        createWidgetSection(title: title, clipsContentToBounds: true) {
+            content()
+                .frame(height: controlHeight)
+        }
+    }
+
+    private func createWidgetSection<Content: View>(
+        title: String,
+        clipsContentToBounds: Bool = false,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
         let isPhone = UIDevice.current.userInterfaceIdiom == .phone
         let titleFontSize: CGFloat = isPhone ? 11.5 : 13
         let sectionSpacing: CGFloat = isPhone ? 5 : 7
@@ -1716,7 +1812,7 @@ struct WidgetPickerView: View {
                 .font(.system(size: titleFontSize, weight: .bold, design: .rounded))
                 .foregroundColor(Color.black.opacity(0.64))
 
-            content()
+            let sectionContent = content()
                 .padding(.horizontal, sectionHorizontalPadding)
                 .padding(.vertical, sectionVerticalPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -1728,6 +1824,18 @@ struct WidgetPickerView: View {
                     RoundedRectangle(cornerRadius: sectionCornerRadius, style: .continuous)
                         .stroke(Color.white.opacity(0.94), lineWidth: 1)
                 )
+
+            if clipsContentToBounds {
+                sectionContent
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: sectionCornerRadius, style: .continuous)
+                    )
+                    .contentShape(
+                        RoundedRectangle(cornerRadius: sectionCornerRadius, style: .continuous)
+                    )
+            } else {
+                sectionContent
+            }
         }
     }
 
