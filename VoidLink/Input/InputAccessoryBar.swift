@@ -41,7 +41,7 @@ private enum InputAccessoryBarMetrics {
     static let releaseDuration: TimeInterval = 0.18
     static let reorderAnimationDuration: TimeInterval = 0.2
     static let deleteButtonSize: CGFloat = 22
-    static let deleteButtonHitExpansion: CGFloat = 10
+    static let deleteButtonHitExpansion: CGFloat = 23
     static let dragScale: CGFloat = 1.06
     static let dragLiftY: CGFloat = -2
     static let editOverlayDimAlpha: CGFloat = 0.001
@@ -439,7 +439,7 @@ private final class InputAccessoryBarItemView: UIView {
         button.frame = CGRect(x: 0, y: 0, width: bounds.width, height: InputAccessoryBarMetrics.pillHeight)
         deleteButton.frame = CGRect(
             x: bounds.width - InputAccessoryBarMetrics.deleteButtonSize + 2,
-            y: -8,
+            y: 0,
             width: InputAccessoryBarMetrics.deleteButtonSize,
             height: InputAccessoryBarMetrics.deleteButtonSize
         )

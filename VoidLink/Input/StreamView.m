@@ -262,6 +262,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)keyboardWillShow:(NSNotification *)notification{
     // NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
     dockedKeyboardActionDetected = true;
+    NSLog(@"keyboard will show markmark %d", isInputingText);
+
     if(settings.liftStreamViewForKeyboard && !isInputingText){
         isInputingText = true;
         
@@ -312,16 +314,17 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void)handleNonStandardKeyboard:(NSNotification *)notification{
-    if(!self->dockedKeyboardActionDetected){
-    
-    [self->keyboardToggleTip removeFromSuperview];
-    [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
-        
-    self->dockedKeyboardActionDetected = false;
-    self->isInputingText = !self->isInputingText;
-    
-    }
-    return;
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
+        if(!self->dockedKeyboardActionDetected){
+            [self->keyboardToggleTip removeFromSuperview];
+            if(!self->isInputingText) [self keyboardWillHide];
+            [self refreshKeyboardToggleRecognizer:self->settings.keyboardToggleFingers.intValue];
+            self->dockedKeyboardActionDetected = false;
+        }
+        return;
+    });
+
     /*
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
@@ -494,7 +497,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [keyInputField.undoManager disableUndoRegistration];
         
         //[keyboardToggleTip removeFromSuperview];
+        
+        
     }
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.025 * NSEC_PER_SEC));
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
+        if(!self->dockedKeyboardActionDetected) self->isInputingText = !self->isInputingText;
+    });
 }
 
 - (void)startInteractionTimer {
@@ -1012,7 +1021,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [touchHandler touchesBegan:touches withEvent:event];
         return; //This is a native touch oriented fork, in pure native touch mode, this call back method deals with native touch only.
     }
-    else if(touchMode == RelativeTouch && keyboardToggleRecognizer.numberOfTouchesRequired == 1) return;
+    // else if(touchMode == RelativeTouch && keyboardToggleRecognizer.numberOfTouchesRequired == 1) return;
     
     NSMutableSet* pencilTouches = [NSMutableSet set];
     for (UITouch* touch in touches) {
