@@ -1717,7 +1717,7 @@ static NSMutableSet* hostList;
             settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
             settings.asyncFrameDequeue = false;
-            settings.touchMoveEventInterval = @(45);
+            settings.touchMoveEventInterval = @(0);
             break;
         case UIUserInterfaceIdiomPad:
         default:

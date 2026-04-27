@@ -948,8 +948,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
         buttonModeStack.isHidden = widgetView.widgetType != .button
         buttonModeSelector.setEnabled(!widgetView.isFunctionalButton, forSegmentAt: Int(ButtonMode.slideToToggle.rawValue))
-        buttonModeSelector.setEnabled(!widgetView.isFunctionalButton || widgetView.isFolder, forSegmentAt: Int(ButtonMode.slideAndHold.rawValue))
-        buttonModeSelector.setEnabled(!widgetView.isFolder, forSegmentAt: Int(ButtonMode.regular.rawValue))
+        buttonModeSelector.setEnabled((!widgetView.isFunctionalButton || widgetView.isFolder)
+                                      && !widgetView.containsShortcutAction
+                                      , forSegmentAt: Int(ButtonMode.slideAndHold.rawValue))
+        // buttonModeSelector.setEnabled(!widgetView.isFolder, forSegmentAt: Int(ButtonMode.regular.rawValue))
         buttonModeSelector.setEnabled(!widgetView.isFunctionalButton || widgetView.isTapToToggleException, forSegmentAt: Int(ButtonMode.tapToToggle.rawValue))
         buttonModeSelector.selectedSegmentIndex = Int(widgetView.buttonMode.rawValue)
         

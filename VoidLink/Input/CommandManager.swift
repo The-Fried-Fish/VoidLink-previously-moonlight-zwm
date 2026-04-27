@@ -162,11 +162,15 @@ import UIKit
 
     // @objc public static let specialGameWidgets: [String] = ["YSRSV", "YSLT", "YSRT", "YSRB", "YSB", "YSRT2", "YSRB2", "YSB2", "YSEM", "YSML", "YSMR", "YSWASD"]
     
+    @objc public static let shortcutAllowedFunctionalButtonMappings: [String: Int16] = [
+        "BRUSH": 0xFF,
+        "ERASER": 0xFF,
+        "FOLDER": 0xFF,
+    ]
+    
     @objc public static let keyboardButtonMappings: [String: Int16] = [
         // Windows Key Codes
         "NULL": 0xFF,
-        "BRUSH": 0xFF,
-        "ERASER": 0xFF,
         "CTRL": 0x11,        // VK_CONTROL
         "RCTRL": 0xA3,        // VK_RCONTROL
         "SHIFT": 0x10,       // VK_SHIFT
@@ -478,7 +482,8 @@ import UIKit
     @objc public func extractAutoReleaseButtonStrings(from cmd: String) -> [String]? {
         let cmd = cmd.uppercased()
         let mergedKeys = (Set(CommandManager.keyboardButtonMappings.keys)
-                        .union(Set(CommandManager.mouseButtonMappings.keys)))
+                        .union(Set(CommandManager.mouseButtonMappings.keys))
+                        .union(Set(CommandManager.shortcutAllowedFunctionalButtonMappings.keys)))
         let keys = mergedKeys.joined(separator: "|")
         let pattern = "^(?:(\(keys))(?:\\+(\(keys))*)*)$"
 
@@ -505,7 +510,9 @@ import UIKit
         
         for key in keyStrings {
             if (CommandManager.keyboardButtonMappings.keys.contains(key)
-                || CommandManager.mouseButtonMappings.keys.contains(key)) {
+                || CommandManager.mouseButtonMappings.keys.contains(key)
+                || CommandManager.shortcutAllowedFunctionalButtonMappings.keys.contains(key)
+            ) {
                 validKeyStrings.append(key)
             } else {
                 print(" '\(key)' is not defined in key mappings")
@@ -631,7 +638,9 @@ import UIKit
     
     @objc public func sendAutoReleaseComboCommand(cmdStrings: [String]?, delay: TimeInterval = 0.2, index: Int = 0, pressOnly: Bool = false, releaseOnly:Bool = false) { // we need a large delay for WAN streaming
         // 如果已处理完所有按键，则开始释放按键
-        guard let cmdStrings = cmdStrings else { return }
+        guard var cmdStrings = cmdStrings else { return }
+        
+        cmdStrings = cmdStrings.filter { !CommandManager.shortcutAllowedFunctionalButtonMappings.keys.contains($0)}
         
         if releaseOnly {
             for keyStr in cmdStrings.reversed() {

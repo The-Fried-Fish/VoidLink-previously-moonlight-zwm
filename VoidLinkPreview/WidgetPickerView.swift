@@ -521,11 +521,11 @@ struct WidgetPickerView: View {
         FunctionalButtonOption(
             label: SwiftLocalizationHelper.localizedString(forKey: "Folder"),
             cmd: "FOLDER",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Collect, fold & unfold other widgets or subfolders"),
-            allowsKeyboardCombination: false,
-            allowsGamepadCombination: false,
-            allowsSkillCombo: false,
-            allowsShortcutCombo: false,
+            tip: SwiftLocalizationHelper.localizedString(forKey: "Collect other widgets or subfolders. Button-combo available."),
+            allowsKeyboardCombination: true,
+            allowsGamepadCombination: true,
+            allowsSkillCombo: true,
+            allowsShortcutCombo: true,
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
@@ -2049,7 +2049,7 @@ struct WidgetPickerView: View {
     }
 
     private func submitWidgetPayload() {
-        var payload = makeWidgetPayload()
+        let payload = makeWidgetPayload()
         persistCurrentTabSelection()
         lastCreatedWidgetPayload = payload
         setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Widget config generated"))

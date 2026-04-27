@@ -2608,25 +2608,25 @@
         }
       }
     },
-    "Collect, fold & unfold other widgets or subfolders" : {
+    "Collect other widgets or subfolders. Button-combo available." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收纳、折叠和展开其他控件或子控件夹"
+            "value" : "收纳其他控件或子控件夹。允许组合其他按键。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收納、摺疊和展開其他控制項或子控制項夾"
+            "value" : "收納、摺疊其他控制項或子控制項夾。允許組合其他按鍵。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收納、摺疊和展開其他控制項或子控制項夾"
+            "value" : "收納、摺疊其他控制項或子控制項夾。允許組合其他按鍵。"
           }
         }
       }

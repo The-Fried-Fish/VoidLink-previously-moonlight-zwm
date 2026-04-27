@@ -181,6 +181,7 @@ import ObjectiveC.runtime
     
     @objc public var isStickWheel: Bool = false
     @objc public var isFolder: Bool = false
+    @objc public var containsShortcutAction: Bool = false
     @objc public var hasNonEditableLabel: Bool = false
 
     // for all stick pads
@@ -438,6 +439,9 @@ import ObjectiveC.runtime
             if self.cmdString.contains("ERASER"){
                 self.functionalButtonString = "ERASER"
             }
+            if self.cmdString.contains("FOLDER") {
+                self.functionalButtonString = "FOLDER"
+            }
             if self.isFunctionalButton {
                 self.buttonMode = .movable
                 if self.functionalButtonString == "PENCILHOVER" {self.buttonMode = .regular}
@@ -517,8 +521,9 @@ import ObjectiveC.runtime
         self.hasWalkSprintKeys = self.isDirectionPad && (self.touchPadString == "WASDPAD"
                                                          || self.touchPadString == "ARROWPAD")
         self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
-        self.isFolder = self.cmdString == "FOLDER"
-        
+        self.isFolder = self.cmdString.contains("FOLDER")
+        self.containsShortcutAction = self.cmdString.contains("+")
+
         self.hasComponent = self.isStickWheel
         self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
         
@@ -2643,6 +2648,7 @@ import ObjectiveC.runtime
                 break
             }
         }
+
         switch self.functionalButtonString {
         case "FOLDER":
             self.folded = !self.folded
