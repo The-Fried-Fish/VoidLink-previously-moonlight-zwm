@@ -34,6 +34,8 @@
     [encoder encodeInt32:self.unfoldedExclusiveFolderSequence forKey:@"unfoldedExclusiveFolderSequence"];
     [encoder encodeObject:self.postExclusiveUnfoldedSequences forKey:@"postExclusiveUnfoldedSequences"];
     [encoder encodeBool:self.isSelected forKey:@"isSelected"];
+    [encoder encodeBool:self.useBuiltinGyro forKey:@"useBuiltinGyro"];
+    [encoder encodeBool:self.swapYawAndRoll forKey:@"swapYawAndRoll"];
     [encoder encodeInt64:self.mapGyroTo forKey:@"mapGyroTo"];
     [encoder encodeBool:self.yawPitchToRightStick forKey:@"yawPitchToRightStick"];
     [encoder encodeBool:self.rollToLeftStick forKey:@"rollToLeftStick"];
@@ -99,6 +101,8 @@
                                     forKey:@"postExclusiveUnfoldedSequences"] :
             [NSSet set];
         self.isSelected = [decoder decodeBoolForKey:@"isSelected"];
+        self.useBuiltinGyro = [decoder containsValueForKey:@"useBuiltinGyro"] ? [decoder decodeBoolForKey:@"useBuiltinGyro"] : true;
+        self.swapYawAndRoll = [decoder containsValueForKey:@"swapYawAndRoll"] ? [decoder decodeBoolForKey:@"swapYawAndRoll"] : false;
         self.mapGyroTo = [decoder containsValueForKey:@"mapGyroTo"] ? [decoder decodeInt64ForKey:@"mapGyroTo"] : mapGyroToMouse;
         self.yawPitchToRightStick = [decoder containsValueForKey:@"yawPitchToRightStick"] ? [decoder decodeBoolForKey:@"yawPitchToRightStick"] : true;
         self.rollToLeftStick = [decoder containsValueForKey:@"rollToLeftStick"] ? [decoder decodeBoolForKey:@"rollToLeftStick"] : false;
@@ -200,6 +204,9 @@
     copy.buttonStatesEncoded = [[NSMutableArray alloc] initWithArray:self.buttonStatesEncoded copyItems:YES];
     copy.unfoldedExclusiveFolderSequence = self.unfoldedExclusiveFolderSequence;
     copy.postExclusiveUnfoldedSequences = [self.postExclusiveUnfoldedSequences copy];
+    copy.isSelected = self.isSelected;
+    copy.useBuiltinGyro = self.useBuiltinGyro;
+    copy.swapYawAndRoll = self.swapYawAndRoll;
     copy.isSelected = self.isSelected;
     copy.mapGyroTo = self.mapGyroTo;
     copy.yawPitchToRightStick = self.yawPitchToRightStick;

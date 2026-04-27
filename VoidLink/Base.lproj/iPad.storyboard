@@ -1769,10 +1769,34 @@
                                     <constraint firstAttribute="width" constant="380" id="cHp-hJ-PUQ"/>
                                 </constraints>
                             </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6Lo-Vn-3fP" userLabel="mapGyroToStack">
-                                <rect key="frame" x="22" y="3026" width="380" height="56.5"/>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="G0n-nm-G2Y">
+                                <rect key="frame" x="22" y="3090" width="380" height="56.5"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Map Built-in Gyro to" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6gY-8I-NWq">
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro Source" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pjK-jB-97s">
+                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="lVF-ve-kTt">
+                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
+                                        <segments>
+                                            <segment title="Built-in"/>
+                                            <segment title="Controller"/>
+                                        </segments>
+                                        <color key="tintColor" red="0.6716768742" green="0.61711704730000005" blue="0.99902987480000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="380" id="Bj1-fa-Ff4"/>
+                                    <constraint firstAttribute="height" constant="56.5" id="a6g-4z-s6v"/>
+                                </constraints>
+                            </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6Lo-Vn-3fP" userLabel="mapGyroToStack">
+                                <rect key="frame" x="24" y="3234" width="380" height="56.5"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Map Gyro to" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6gY-8I-NWq">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1879,7 +1903,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8eE-nU-sk5" userLabel="gyroToStickStack">
-                                <rect key="frame" x="23" y="3111" width="336" height="67"/>
+                                <rect key="frame" x="25" y="3319" width="336" height="67"/>
                                 <subviews>
                                     <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="RJa-fo-81z">
                                         <rect key="frame" x="0.0" y="0.0" width="336" height="31"/>
@@ -1927,7 +1951,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" spacing="13.800000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="9Cg-zf-Fjl" userLabel="yawPitchSensitivityStack">
-                                <rect key="frame" x="20" y="3211" width="380" height="125"/>
+                                <rect key="frame" x="22" y="3419" width="380" height="125"/>
                                 <subviews>
                                     <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="4Ee-fb-lEr" userLabel="yawSensitivityStack">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="55.5"/>
@@ -1972,7 +1996,7 @@
                                 </subviews>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="iey-Nn-eFG" userLabel="rollSensitivityStack">
-                                <rect key="frame" x="21" y="3360" width="380" height="55.5"/>
+                                <rect key="frame" x="23" y="3568" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Roll Sensitivity" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u9Q-wm-UBm" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
@@ -1992,7 +2016,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="KRh-UP-TYS" userLabel="gyroMinStickOffset">
-                                <rect key="frame" x="22" y="3447" width="380" height="55.5"/>
+                                <rect key="frame" x="24" y="3655" width="380" height="55.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Minimum Offset (Gyro→Stick)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HqA-an-KEe" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="16.5"/>
@@ -2032,7 +2056,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="1yf-rP-jgt">
-                                <rect key="frame" x="20" y="3530" width="345.5" height="31"/>
+                                <rect key="frame" x="22" y="3738" width="345.5" height="31"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Blend Physical Stick Input" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uFg-dv-6nT" userLabel="uiLabel">
                                         <rect key="frame" x="0.0" y="0.0" width="195.5" height="31"/>
@@ -2137,6 +2161,26 @@
                                     <constraint firstAttribute="height" constant="31" id="85R-lB-gVS"/>
                                 </constraints>
                             </stackView>
+                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="EsN-yO-7OW">
+                                <rect key="frame" x="28" y="3165" width="275" height="31"/>
+                                <subviews>
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swap Yaw &amp; Roll" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MXH-vb-Zyb" userLabel="uiLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="125" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O3h-we-v4X">
+                                        <rect key="frame" x="145" y="0.0" width="132" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="9wY-CS-4Ag"/>
+                                        </constraints>
+                                    </switch>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="ZNm-dU-VEp"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -2208,6 +2252,8 @@
                         <outlet property="gyroModeStack" destination="kAD-mK-aP8" id="GvL-Yx-S2t"/>
                         <outlet property="gyroSensitivitySlider" destination="3Ge-IB-PBj" id="Pdg-ke-KG3"/>
                         <outlet property="gyroSensitivityStack" destination="T3L-Kz-2yA" id="iQS-ce-h0z"/>
+                        <outlet property="gyroSourceSelector" destination="lVF-ve-kTt" id="IeN-uQ-dI5"/>
+                        <outlet property="gyroSourceStack" destination="G0n-nm-G2Y" id="v70-cs-Jsy"/>
                         <outlet property="gyroToStickMinOffsetSlider" destination="Ywy-Tz-L2L" id="4VQ-HW-lqF"/>
                         <outlet property="gyroToStickMinOffsetStack" destination="KRh-UP-TYS" id="loh-o6-s9D"/>
                         <outlet property="gyroToStickSwitchStack" destination="8eE-nU-sk5" id="oZB-AM-iHM"/>
@@ -2315,6 +2361,8 @@
                         <outlet property="statsOverlayStack" destination="UcP-0b-nJD" id="UdI-NS-O6k"/>
                         <outlet property="swapAbxyStack" destination="2rP-Ui-wVU" id="gUR-Vz-ORP"/>
                         <outlet property="swapAbxySwitch" destination="hv7-6b-rez" id="iKX-qk-Dep"/>
+                        <outlet property="swapYawAndRollStack" destination="EsN-yO-7OW" id="Ncq-Y1-lku"/>
+                        <outlet property="swapYawAndRollSwitch" destination="O3h-we-v4X" id="lea-Tj-LPV"/>
                         <outlet property="synthPhysicalInputStack" destination="1yf-rP-jgt" id="Mbn-eV-j3G"/>
                         <outlet property="synthPhysicalInputSwitch" destination="Ixf-14-Du8" id="wgc-mg-oGN"/>
                         <outlet property="testStack" destination="aP7-M9-psT" id="xAv-s6-rea"/>

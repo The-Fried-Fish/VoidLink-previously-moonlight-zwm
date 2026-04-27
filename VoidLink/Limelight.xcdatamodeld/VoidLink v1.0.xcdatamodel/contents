@@ -36,6 +36,9 @@
         <attribute name="bitrate" attributeType="Integer 32" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="btMouseSupport" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="buttonVisualFeedback" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="controllerGyroBiasX" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerGyroBiasY" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="controllerGyroBiasZ" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="controllerMouseExpo" optional="YES" attributeType="Float" defaultValueString="1.6" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="controllerMouseLeftButton" attributeType="Integer 32" defaultValueString="16777215" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="controllerMousePointerVelocity" optional="YES" attributeType="Float" defaultValueString="12" usesScalarValueType="NO" syncable="YES"/>

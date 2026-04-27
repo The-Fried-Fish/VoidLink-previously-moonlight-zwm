@@ -11591,6 +11591,35 @@
         }
       }
     },
+    "swapYawAndRollStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable this option when the controller moves together with the screen (e.g., when using a telescopic controller)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当手柄随屏幕同一运动时(例如使用拉伸手柄)启用该选项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當手把隨螢幕同步移動時（例如使用拉伸式手把）啟用此選項"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當手把隨螢幕同步移動時（例如使用拉伸式手把）啟用此選項"
+          }
+        }
+      }
+    },
     "Switch on/off a floating gamepad overlay with live input feedback" : {
       "extractionState" : "manual",
       "localizations" : {

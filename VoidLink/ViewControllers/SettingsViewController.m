@@ -370,6 +370,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [self.reverseHoldButtonSwitch setOn:oscProfile.reverseGyroHoldButton];
 
+    [self.gyroSourceSelector setSelectedSegmentIndex:oscProfile.useBuiltinGyro ? 0 : 1];
+    [self gyroSourceChanged:self.gyroSourceSelector];
+    
+    [self.swapYawAndRollSwitch setOn:oscProfile.swapYawAndRoll];
+    
     [self.mapGyroToSelector setSelectedSegmentIndex:oscProfile.mapGyroTo];
     [self mapGyroToChanged:self.mapGyroToSelector];
     
@@ -412,7 +417,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat pitchSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.pitchSensitivitySlider.value];
     CGFloat rollSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.rollSensitivitySlider.value];
 
-    bool configNotChanged = (oscProfile.mapGyroTo == self.mapGyroToSelector.selectedSegmentIndex
+    bool configNotChanged = (
+                             (int16_t)(oscProfile.pointerVelocityModeDivider*100) == (int16_t)(self.pointerVelocityModeDividerSlider.value)
+                             && (int16_t)(oscProfile.touchPointerVelocityFactor*100) == (int16_t)touchPointerVelocityFactorPercent
+                             && oscProfile.useBuiltinGyro == self.gyroSourceSelector.selectedSegmentIndex == 0
+                             && oscProfile.swapYawAndRoll == self.swapYawAndRollSwitch.isOn
+                             && oscProfile.mapGyroTo == self.mapGyroToSelector.selectedSegmentIndex
                              && oscProfile.yawPitchToRightStick == self.yawPitchToRightStickSwitch.isOn
                              && oscProfile.rollToLeftStick == self.rollToLeftStickSwitch.isOn
                              && (int16_t)(oscProfile.pointerVelocityModeDivider*100) == (int16_t)self.pointerVelocityModeDividerSlider.value
@@ -438,6 +448,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile = [oscProfileMan getSelectedProfile];
         oscProfile.pointerVelocityModeDivider = self.pointerVelocityModeDividerSlider.value/100;
         oscProfile.touchPointerVelocityFactor = touchPointerVelocityFactorPercent/100;
+        oscProfile.useBuiltinGyro = self.gyroSourceSelector.selectedSegmentIndex == 0;
+        oscProfile.swapYawAndRoll = self.swapYawAndRollSwitch.isOn;
         oscProfile.mapGyroTo = self.mapGyroToSelector.selectedSegmentIndex;
         oscProfile.yawPitchToRightStick = self.yawPitchToRightStickSwitch.isOn;
         oscProfile.rollToLeftStick = self.rollToLeftStickSwitch.isOn;
@@ -956,6 +968,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     self.reverseHoldButtonStack.isGameProfileSetting = YES;
     self.reverseHoldButtonStack.hasDynamicLabel = YES;
     [self addSetting:self.reverseHoldButtonStack ofId:@"reverseHoldButtonStack" to:motionControlSection];
+
+    self.gyroSourceStack.isGameProfileSetting = YES;
+    [self addSetting:self.gyroSourceStack ofId:@"gyroSourceStack" to:motionControlSection];
+
+    self.swapYawAndRollStack.hasInfoTag = YES;
+    self.swapYawAndRollStack.isGameProfileSetting = YES;
+    [self addSetting:self.swapYawAndRollStack ofId:@"swapYawAndRollStack" to:motionControlSection];
 
     self.mapGyroToStack.hasInfoTag = YES;
     self.mapGyroToStack.isGameProfileSetting = YES;
@@ -1737,7 +1756,11 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"softKeyboardHeightStackTip"];
         showOnlineDocAction = false;
     }
-    
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"swapYawAndRollStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"swapYawAndRollStackTip"];
+        showOnlineDocAction = false;
+    }
+
     UIStackView* parentStack = (UIStackView* )sender.superview;
     NSString* edgeSide = self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex == 1 ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
     NSString* slideDist = [NSString stringWithFormat:@"%d%%", (int)(self.slideToMenuDistanceSlider.value*100)];
@@ -2410,6 +2433,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.controllerMouseExpoSlider addTarget:self action:@selector(controllerMouseExpoSliderMoved:) forControlEvents:UIControlEventValueChanged];
         [self controllerMouseExpoSliderMoved:self.controllerMouseExpoSlider];
 
+        [self.gyroSourceSelector addTarget:self action:@selector(gyroSourceChanged:) forControlEvents:UIControlEventValueChanged];
         [self.mapGyroToSelector addTarget:self action:@selector(mapGyroToChanged:) forControlEvents:UIControlEventValueChanged];
         [self.yawPitchToRightStickSwitch addTarget:self action:@selector(yawPitchToRightStickSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
         [self.rollToLeftStickSwitch addTarget:self action:@selector(rollToLeftStickSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
@@ -2631,6 +2655,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 }
 
+- (void)gyroSourceChanged:(UISegmentedControl* )sender{
+    [self setHidden:sender.selectedSegmentIndex != 1 forStack:_swapYawAndRollStack];
+}
+
 - (void)mapGyroToChanged:(UISegmentedControl* )sender{
     // [self setHidden:sender.selectedSegmentIndex != mapGyroToControllerStick forStack:_gyroToStickSwitchStack];
     bool mapGyroToMouseEnabled = sender.selectedSegmentIndex == mapGyroToMouse;
@@ -2666,9 +2694,16 @@ BOOL isCustomResolution(int resolutionSelected) {
                 MotionHandler* motionHandler = [MotionHandler sharedWithProfile:nil];
                 [motionHandler calibrateGyroBiasWithDuration:5 completion:^{
                     Settings* currentSettings = [self->dataMan retrieveSettings];
-                    currentSettings.gyroBiasX = [NSNumber numberWithDouble:motionHandler.gyroBiasX];
-                    currentSettings.gyroBiasY = [NSNumber numberWithDouble:motionHandler.gyroBiasY];
-                    currentSettings.gyroBiasZ = [NSNumber numberWithDouble:motionHandler.gyroBiasZ];
+                    if(self.gyroSourceSelector.selectedSegmentIndex == 0){
+                        currentSettings.gyroBiasX = [NSNumber numberWithDouble:motionHandler.gyroBiasX];
+                        currentSettings.gyroBiasY = [NSNumber numberWithDouble:motionHandler.gyroBiasY];
+                        currentSettings.gyroBiasZ = [NSNumber numberWithDouble:motionHandler.gyroBiasZ];
+                    }
+                    else{
+                        currentSettings.controllerGyroBiasX = [NSNumber numberWithDouble:motionHandler.controllerGyroBiasX];
+                        currentSettings.controllerGyroBiasY = [NSNumber numberWithDouble:motionHandler.controllerGyroBiasY];
+                        currentSettings.controllerGyroBiasZ = [NSNumber numberWithDouble:motionHandler.controllerGyroBiasZ];
+                    }
                     [self->dataMan saveData];
                 }];
                 [AlertControllerUtil showAlertIn:self

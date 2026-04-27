@@ -811,6 +811,36 @@
         }
       }
     },
+    "8AT-tJ-mCN.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Gyro Source\"; ObjectID = \"8AT-tJ-mCN\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Gyro Source"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪输入来源"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀輸入來源"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀輸入來源"
+          }
+        }
+      }
+    },
     "9Dr-3c-z61.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Label alpha\"; ObjectID = \"9Dr-3c-z61\";",
       "extractionState" : "extracted_with_value",
@@ -943,6 +973,36 @@
         }
       }
     },
+    "9KX-hM-6El.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Swap Yaw & Roll\"; ObjectID = \"9KX-hM-6El\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Swap Yaw & Roll"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/横滚互换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/橫滾互換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/橫滾互換"
+          }
+        }
+      }
+    },
     "52u-T9-1Hv.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Minimum Offset (Gyro→Stick)\"; ObjectID = \"52u-T9-1Hv\";",
       "extractionState" : "extracted_with_value",
@@ -955,19 +1015,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最小偏移量(陀螺仪→摇杆)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         }
@@ -2522,31 +2582,31 @@
       }
     },
     "GX4-zV-pQ8.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Map Built-in Gyro to\"; ObjectID = \"GX4-zV-pQ8\";",
+      "comment" : "Class = \"UILabel\"; text = \"Map Gyro to\"; ObjectID = \"GX4-zV-pQ8\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Map Built-in Gyro to"
+            "value" : "Map Gyro to"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内置陀螺仪映射为"
+            "value" : "陀螺仪映射为"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "内建陀螺儀映射為"
+            "state" : "translated",
+            "value" : "陀螺儀映射為"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "内建陀螺儀映射為"
+            "state" : "translated",
+            "value" : "陀螺儀映射為"
           }
         }
       }
@@ -2569,13 +2629,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "指針速度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "指針速度"
           }
         }
@@ -2731,13 +2791,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑鼠靈敏度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "滑鼠靈敏度"
           }
         }
@@ -2821,13 +2881,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "串流位元速率"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "串流位元速率"
           }
         }
@@ -2851,13 +2911,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "靈敏度分割位置"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "靈敏度分割位置"
           }
         }
@@ -4357,6 +4417,66 @@
         }
       }
     },
+    "p1G-aH-6bV.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; p1G-aH-6bV.segmentTitles[0] = \"Built-in\"; ObjectID = \"p1G-aH-6bV\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Built-in"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内建"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内建"
+          }
+        }
+      }
+    },
+    "p1G-aH-6bV.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; p1G-aH-6bV.segmentTitles[1] = \"Controller\"; ObjectID = \"p1G-aH-6bV\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把"
+          }
+        }
+      }
+    },
     "P4N-i6-1zD.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Enable Timebase\"; ObjectID = \"P4N-i6-1zD\";",
       "extractionState" : "extracted_with_value",
@@ -4567,13 +4687,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "內建"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "內建"
           }
         }
@@ -4879,7 +4999,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "延遲滑鼠左單擊"
           }
         }
@@ -5155,7 +5275,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "顯示本地軟鍵盤工具列"
           }
         }
@@ -5185,7 +5305,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "按鍵視覺回饋"
           }
         }
@@ -5245,7 +5365,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "恢復範本"
           }
         }
@@ -5287,7 +5407,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "串流解析度"
           }
         }
@@ -5347,7 +5467,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "左鍵"
           }
         }
@@ -5377,7 +5497,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "中鍵"
           }
         }
@@ -5407,7 +5527,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "右鍵"
           }
         }

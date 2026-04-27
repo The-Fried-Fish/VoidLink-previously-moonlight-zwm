@@ -153,6 +153,12 @@
 @property (strong, nonatomic) IBOutlet UIStackView *rememberFoldStateStack;
 @property (strong, nonatomic) IBOutlet UISwitch *rememberFoldStateSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *gyroSourceStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *gyroSourceSelector;
+
+@property (weak, nonatomic) IBOutlet UIStackView *swapYawAndRollStack;
+@property (weak, nonatomic) IBOutlet UISwitch *swapYawAndRollSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *mapGyroToStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *mapGyroToSelector;
 

@@ -45,6 +45,9 @@
 @property (nonatomic, retain) NSNumber * gyroBiasX;
 @property (nonatomic, retain) NSNumber * gyroBiasY;
 @property (nonatomic, retain) NSNumber * gyroBiasZ;
+@property (nonatomic, retain) NSNumber * controllerGyroBiasX;
+@property (nonatomic, retain) NSNumber * controllerGyroBiasY;
+@property (nonatomic, retain) NSNumber * controllerGyroBiasZ;
 @property (nonatomic, retain) NSNumber * backgroundSessionTimer;
 @property (nonatomic) enum {
     CODEC_PREF_AUTO,

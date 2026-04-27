@@ -47,6 +47,8 @@ import CoreMotion
     @objc class func shared(profile: OSCProfile?) -> MotionHandler {
         let sharedInstance = MotionHandler.sharedInstance
         guard let profile = profile else { return sharedInstance }
+        sharedInstance.useBuiltinGyro = profile.useBuiltinGyro
+        sharedInstance.swapYawAndRoll = profile.swapYawAndRoll
         sharedInstance.mapGyroTo = profile.mapGyroTo
         sharedInstance.synthesizePhysicalStick = profile.synthesizePhysicalStick
         sharedInstance.rollToLeftStick = profile.rollToLeftStick
@@ -60,10 +62,12 @@ import CoreMotion
     }
 
     @objc public var gyroControlStarted: Bool = false
+    @objc var useBuiltinGyro: Bool = true
+    @objc var swapYawAndRoll: Bool = false
     private var gyroIsWorking: Bool = false
     private var accelControlStarted: Bool = false
     private let motionManager = CMMotionManager()
-    
+    private weak var activeGCController:GCController?
     private var synthesizePhysicalStick:Bool = false
     private var mapGyroTo:MapGyroTo = .mapGyroToControllerStick
     private var rollToLeftStick:Bool = false
@@ -96,6 +100,9 @@ import CoreMotion
     @objc public var gyroBiasX: Double = 0
     @objc public var gyroBiasY: Double = 0
     @objc public var gyroBiasZ: Double = 0
+    @objc public var controllerGyroBiasX: Double = 0
+    @objc public var controllerGyroBiasY: Double = 0
+    @objc public var controllerGyroBiasZ: Double = 0
     @objc public var gyroToStickMinOffset:Double = 0
     private var yawBias:Double = 0
     private var pitchBias:Double = 0
@@ -122,7 +129,7 @@ import CoreMotion
     }
     
     @objc public override init() {
-        let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
+        // _ = OSCProfilesManager.sharedManager(CGRectZero)
         super.init()
         if #available(iOS 13.0, *) {
             let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -161,16 +168,47 @@ import CoreMotion
         self.startGyroUpdate()
     }
     
-    /// 启动传感器数据更新
     @objc public func startGyroUpdate() {
         if !gyroControlStarted {
             gyroControlStarted = true
-            if motionManager.isGyroAvailable {
-                motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
-                    guard let self = self, let data = gyroData else { return }
-                    self.handleGyroData(x: data.rotationRate.x,
-                                        y: data.rotationRate.y,
-                                        z: data.rotationRate.z)
+            
+            print("startGyroUpdate useBuiltinGyro \(useBuiltinGyro) \(CACurrentMediaTime())")
+
+            
+            if useBuiltinGyro {
+                if motionManager.isGyroAvailable {
+                    motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
+                        guard let self = self, let data = gyroData else { return }
+                        self.handleGyroData(x: data.rotationRate.x,
+                                            y: data.rotationRate.y,
+                                            z: data.rotationRate.z)
+                    }
+                }
+            }
+            else {
+                if #available(iOS 14.0, *) {
+                    if activeGCController == nil {
+                        if let controllers = ControllerUtil.activeGCControllers as? Set<GCController> {
+                            for controller in controllers {
+                                if controller.playerIndex == .index1 {
+                                    activeGCController = controller
+                                    break
+                                }
+                            }
+                        }
+                    }
+                if let motion = activeGCController?.motion {
+                    if motion.sensorsRequireManualActivation {
+                        motion.sensorsActive = true
+                    }
+                    if motion.sensorsActive {
+                        motion.valueChangedHandler = { [weak self] motion in
+                            self?.handleGyroData(x: motion.rotationRate.x,
+                                                 y: motion.rotationRate.y,
+                                                 z: motion.rotationRate.z)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -197,6 +235,9 @@ import CoreMotion
         gyroIsWorking = false
         if motionManager.isGyroActive{
             motionManager.stopGyroUpdates()
+        }
+        if #available(iOS 14.0, *) {
+            activeGCController?.motion?.sensorsActive = false
         }
         self.clearGyroInput(interruptNonGyroInput:interruptNoneGyroInput, resetLeftStick:resetLeftStick)
     }
@@ -226,67 +267,77 @@ import CoreMotion
         let correctedY:Double = y - gyroBiasY
         let correctedZ:Double = z - gyroBiasZ */
         
-        if #available(iOS 13.0, *) {
-            let orientation = (windowScene as! UIWindowScene).interfaceOrientation
-            switch orientation {
-            case .landscapeLeft:
-                yawBias = gyroBiasX
-                pitchBias = -gyroBiasY
-                rollBias = -gyroBiasZ
-                yawSource = x-yawBias
-                pitchSource = -y-pitchBias
-                rollSource = -z-rollBias
-            case .landscapeRight:
-                yawBias = -gyroBiasX
-                pitchBias = gyroBiasY
-                rollBias = -gyroBiasZ
-                yawSource = -x-yawBias
-                pitchSource = y-pitchBias
-                rollSource = -z-rollBias
-            case .portrait:
-                yawBias = -gyroBiasY
-                pitchBias = -gyroBiasX
-                rollBias = -gyroBiasZ
-                yawSource = -y-yawBias
-                pitchSource = -x-pitchBias
-                rollSource = -z-rollBias
-            case .portraitUpsideDown:
-                yawBias = gyroBiasY
-                pitchBias = gyroBiasX
-                rollBias = -gyroBiasZ
-                yawSource = y-yawBias
-                pitchSource = x-pitchBias
-                rollSource = -z-rollBias
-            default:
-                yawBias = gyroBiasX
-                pitchBias = -gyroBiasY
-                rollBias = -gyroBiasZ
-                yawSource = x-yawBias
-                pitchSource = -y-pitchBias
-                rollSource = -z-rollBias
+        if useBuiltinGyro {
+            if #available(iOS 13.0, *) {
+                let orientation = (windowScene as! UIWindowScene).interfaceOrientation
+                switch orientation {
+                case .landscapeLeft:
+                    yawBias = gyroBiasX
+                    pitchBias = -gyroBiasY
+                    rollBias = -gyroBiasZ
+                    yawSource = x-yawBias
+                    pitchSource = -y-pitchBias
+                    rollSource = -z-rollBias
+                case .landscapeRight:
+                    yawBias = -gyroBiasX
+                    pitchBias = gyroBiasY
+                    rollBias = -gyroBiasZ
+                    yawSource = -x-yawBias
+                    pitchSource = y-pitchBias
+                    rollSource = -z-rollBias
+                case .portrait:
+                    yawBias = -gyroBiasY
+                    pitchBias = -gyroBiasX
+                    rollBias = -gyroBiasZ
+                    yawSource = -y-yawBias
+                    pitchSource = -x-pitchBias
+                    rollSource = -z-rollBias
+                case .portraitUpsideDown:
+                    yawBias = gyroBiasY
+                    pitchBias = gyroBiasX
+                    rollBias = -gyroBiasZ
+                    yawSource = y-yawBias
+                    pitchSource = x-pitchBias
+                    rollSource = -z-rollBias
+                default:
+                    yawBias = gyroBiasX
+                    pitchBias = -gyroBiasY
+                    rollBias = -gyroBiasZ
+                    yawSource = x-yawBias
+                    pitchSource = -y-pitchBias
+                    rollSource = -z-rollBias
+                }
+            } else {
+                let orientation = UIApplication.shared.statusBarOrientation
+                if orientation.isLandscape {
+                    yawBias = gyroBiasX
+                    pitchBias = -gyroBiasY
+                    rollBias = -gyroBiasZ
+                    yawSource = x-yawBias
+                    pitchSource = -y-pitchBias
+                    rollSource = -z-rollBias
+                } else if orientation.isPortrait {
+                    yawBias = -gyroBiasY
+                    pitchBias = -gyroBiasX
+                    rollBias = -gyroBiasZ
+                    yawSource = -y-yawBias
+                    pitchSource = -x-pitchBias
+                    rollSource = -z-rollBias
+                }
             }
-        } else {
-            let orientation = UIApplication.shared.statusBarOrientation
-            if orientation.isLandscape {
-                yawBias = gyroBiasX
-                pitchBias = -gyroBiasY
-                rollBias = -gyroBiasZ
-                yawSource = x-yawBias
-                pitchSource = -y-pitchBias
-                rollSource = -z-rollBias
-            } else if orientation.isPortrait {
-                yawBias = -gyroBiasY
-                pitchBias = -gyroBiasX
-                rollBias = -gyroBiasZ
-                yawSource = -y-yawBias
-                pitchSource = -x-pitchBias
-                rollSource = -z-rollBias
-            }
+        }
+        else {
+            yawBias = swapYawAndRoll ? controllerGyroBiasY : -controllerGyroBiasZ
+            pitchBias = -controllerGyroBiasX
+            rollBias = swapYawAndRoll ? -controllerGyroBiasZ : controllerGyroBiasY
+            yawSource = (swapYawAndRoll ? y : -z) - yawBias
+            pitchSource = -x-pitchBias
+            rollSource = (swapYawAndRoll ? -z : y) - rollBias
         }
         
         if !gyroControlStarted {
             self.clearGyroInput(interruptNonGyroInput: interruptNoneGyroInput)
-            print("Gyro: stopped")
+            // print("Gyro: stopped")
             return
         }
         
@@ -361,12 +412,30 @@ import CoreMotion
         var sumX = 0.0, sumY = 0.0, sumZ = 0.0
         var sampleCount = 0
 
-        motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
-            guard let self = self, self.isCalibrating, let data = gyroData else { return }
-            sumX += data.rotationRate.x
-            sumY += data.rotationRate.y
-            sumZ += data.rotationRate.z
-            sampleCount += 1
+        if useBuiltinGyro {
+            motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
+                guard let self = self, self.isCalibrating, let data = gyroData else { return }
+                sumX += data.rotationRate.x
+                sumY += data.rotationRate.y
+                sumZ += data.rotationRate.z
+                sampleCount += 1
+            }
+        }
+        else if #available(iOS 14.0, *) {
+            if let motion = activeGCController?.motion {
+                if motion.sensorsRequireManualActivation {
+                    motion.sensorsActive = true
+                }
+                if motion.sensorsActive {
+                    motion.valueChangedHandler = { [weak self] motion in
+                        guard let self = self, self.isCalibrating else { return }
+                        sumX += motion.rotationRate.x
+                        sumY += motion.rotationRate.y
+                        sumZ += motion.rotationRate.z
+                        sampleCount += 1
+                    }
+                }
+            }
         }
 
         // 5秒后计算平均值
@@ -374,9 +443,16 @@ import CoreMotion
             guard let self = self else { return }
             self.motionManager.stopGyroUpdates()
             if sampleCount > 0 {
-                gyroBiasX = sumX / Double(sampleCount)
-                gyroBiasY = sumY / Double(sampleCount)
-                gyroBiasZ = sumZ / Double(sampleCount)
+                if useBuiltinGyro {
+                    gyroBiasX = sumX / Double(sampleCount)
+                    gyroBiasY = sumY / Double(sampleCount)
+                    gyroBiasZ = sumZ / Double(sampleCount)
+                }
+                else {
+                    controllerGyroBiasX = sumX / Double(sampleCount)
+                    controllerGyroBiasY = sumY / Double(sampleCount)
+                    controllerGyroBiasZ = sumZ / Double(sampleCount)
+                }
             }
             self.isCalibrating = false
             completion()

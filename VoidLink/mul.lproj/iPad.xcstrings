@@ -578,31 +578,31 @@
       }
     },
     "6gY-8I-NWq.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Map Built-in Gyro to\"; ObjectID = \"6gY-8I-NWq\";",
+      "comment" : "Class = \"UILabel\"; text = \"Map Gyro to\"; ObjectID = \"6gY-8I-NWq\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Map Built-in Gyro to"
+            "value" : "Map Gyro to"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内置陀螺仪映射为"
+            "value" : "陀螺仪映射为"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "内建陀螺儀映射為"
+            "state" : "translated",
+            "value" : "陀螺儀映射為"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "内建陀螺儀映射為"
+            "state" : "translated",
+            "value" : "陀螺儀映射為"
           }
         }
       }
@@ -3524,13 +3524,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最小偏移量(陀螺儀→搖桿)"
           }
         }
@@ -4352,6 +4352,66 @@
         }
       }
     },
+    "lVF-ve-kTt.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; lVF-ve-kTt.segmentTitles[0] = \"Built-in\"; ObjectID = \"lVF-ve-kTt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Built-in"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "內建"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "內建"
+          }
+        }
+      }
+    },
+    "lVF-ve-kTt.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; lVF-ve-kTt.segmentTitles[1] = \"Controller\"; ObjectID = \"lVF-ve-kTt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Controller"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把"
+          }
+        }
+      }
+    },
     "MaN-f7-I3g.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Frame Pacing\"; ObjectID = \"MaN-f7-I3g\";",
       "extractionState" : "extracted_with_value",
@@ -4630,6 +4690,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸控模式"
+          }
+        }
+      }
+    },
+    "MXH-vb-Zyb.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Swap Yaw & Roll\"; ObjectID = \"MXH-vb-Zyb\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Swap Yaw & Roll"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/横滚互换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/橫滾互換"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏航/橫滾互換"
           }
         }
       }
@@ -5146,6 +5236,36 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "DecelerationRate"
+          }
+        }
+      }
+    },
+    "pjK-jB-97s.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Gyro Source\"; ObjectID = \"pjK-jB-97s\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Gyro Source"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪输入来源"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀輸入來源"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀輸入來源"
           }
         }
       }

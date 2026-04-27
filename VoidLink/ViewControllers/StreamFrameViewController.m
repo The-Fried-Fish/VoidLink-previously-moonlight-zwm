@@ -453,8 +453,11 @@
     _motionHandler = [MotionHandler sharedWithProfile: nil];
     _motionHandler.gyroBiasX = _settings.gyroBiasX.doubleValue;
     _motionHandler.gyroBiasY = _settings.gyroBiasY.doubleValue;
-    _motionHandler.gyroBiasZ = _settings.gyroBiasZ.doubleValue;    
-    
+    _motionHandler.gyroBiasZ = _settings.gyroBiasZ.doubleValue;
+    _motionHandler.controllerGyroBiasX = _settings.controllerGyroBiasX.doubleValue;
+    _motionHandler.controllerGyroBiasY = _settings.controllerGyroBiasY.doubleValue;
+    _motionHandler.controllerGyroBiasZ = _settings.controllerGyroBiasZ.doubleValue;
+
     TouchPadGestureHandler.enablePinch = _settings.enablePinch;
     TouchPadGestureHandler.ctrlDownForPinch = _settings.ctrlDownForPinch;
     TouchPadGestureHandler.scrollSensitivity = _settings.scrollSensitivity.floatValue;
