@@ -542,21 +542,19 @@ import UIKit
     @objc static private(set) var squeezeStartShortcut:String = ""
     @objc static private(set) var squeezeEndShortcut:String = ""
     
-    @available(iOS 13.0, *)
     @objc static public func enterSqueezeShortcuts(in viewController: UIViewController){
-        
-        let pickerViewController = WidgetPickerViewController()
-        pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
-        pickerViewController.keyboardPickerMode = .shortcutPicker
-        pickerViewController.tabIdentifiers = ["keyboard"]
-        pickerViewController.initialTabIdentifier = "keyboard"
-        pickerViewController.shortcutIdentifier = "squeezePress"
-        pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
-        let nav = UINavigationController(rootViewController: pickerViewController)
-        nav.modalPresentationStyle = .overFullScreen
-        viewController.present(nav, animated: true)
-        return
-        
+        if #available(iOS 13.0, *) {
+            let pickerViewController = WidgetPickerViewController()
+            pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
+            pickerViewController.keyboardPickerMode = .shortcutPicker
+            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.initialTabIdentifier = "keyboard"
+            pickerViewController.shortcutIdentifier = "squeezePress"
+            pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
+            let nav = UINavigationController(rootViewController: pickerViewController)
+            nav.modalPresentationStyle = .overFullScreen
+            viewController.present(nav, animated: true)
+        }
         /*
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
         selectedProfile = oscProfileMan.getSelectedProfile()
@@ -597,19 +595,19 @@ import UIKit
         */
     }
 
-    @available(iOS 13.0, *)
     @objc static public func enterSqueezeEndShortcut(in viewController: UIViewController){
-        let pickerViewController = WidgetPickerViewController()
-        pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
-        pickerViewController.keyboardPickerMode = .shortcutPicker
-        pickerViewController.tabIdentifiers = ["keyboard"]
-        pickerViewController.initialTabIdentifier = "keyboard"
-        pickerViewController.shortcutIdentifier = "squeezeRelease"
-        pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")
-        let nav = UINavigationController(rootViewController: pickerViewController)
-        nav.modalPresentationStyle = .overFullScreen
-        viewController.present(nav, animated: true)
-        return
+        if #available(iOS 13.0, *) {
+            let pickerViewController = WidgetPickerViewController()
+            pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
+            pickerViewController.keyboardPickerMode = .shortcutPicker
+            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.initialTabIdentifier = "keyboard"
+            pickerViewController.shortcutIdentifier = "squeezeRelease"
+            pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")
+            let nav = UINavigationController(rootViewController: pickerViewController)
+            nav.modalPresentationStyle = .overFullScreen
+            viewController.present(nav, animated: true)
+        }
         
         /*
         let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
