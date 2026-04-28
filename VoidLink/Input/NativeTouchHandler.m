@@ -195,6 +195,8 @@
 
 - (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType withEvent:(UIEvent *)event{
     //if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
+    if(!touch) return;
+    
     if([blacklistedTouches containsObject:@((uintptr_t)touch)]) return;
     
     if(singleTouchDisabled
@@ -217,7 +219,8 @@
     CGFloat normalizedY = location.y / videoSize.height;
     uint8_t pointerId = [self retrievePointerIdFromDict:touch];
 
-    if([self getPointerObjFromDict:touch].needResetCoords){ // access whether the current pointer has reached the boundary, and need a coord reset.
+    NativeTouchPointer *pointer = [self getPointerObjFromDict:touch];
+    if(pointer != nil && pointer.needResetCoords){ // access whether the current pointer has reached the boundary, and need a coord reset.
         LiSendTouchEvent(LI_TOUCH_EVENT_UP, pointerId, normalizedX, normalizedY, 0, 0, 0, 0);  //event must sent from the lowest level directy by LiSendTouchEvent to simulate continous dragging to another point on screen
         LiSendTouchEvent(LI_TOUCH_EVENT_DOWN, pointerId, 0.3, 0.4, 0, 0, 0, 0);
     }else LiSendTouchEvent(touchType, pointerId, normalizedX, normalizedY,(touch.force / touch.maximumPossibleForce) / sin(touch.altitudeAngle),0.0f, 0.0f,[self getRotationFromAzimuthAngle:[touch azimuthAngleInView:streamView]]);
