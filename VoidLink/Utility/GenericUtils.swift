@@ -77,6 +77,18 @@ import UIKit
         return false
     }
     
+    @objc static func isFirstTappingFolderInLayoutTool() -> Bool {
+        let key = "hasTappedFolderInLayoutTool"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+        
     @objc static func isFirstTappingInputAccessoryBar() -> Bool {
         let key = "isFirstTappingInputAccessoryBar"
         let defaults = UserDefaults.standard
@@ -274,6 +286,13 @@ import UIKit
 
     @objc static func toCGFloat(_ str: String) -> CGFloat {
         return CGFloat(Double(str) ?? 0)
+    }
+
+    @objc(openUrl:)
+    static func openUrl(_ urlString: String) {
+        guard let url = URL(string: urlString),
+              UIApplication.shared.canOpenURL(url) else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
     
     @objc static func isLandscape() -> Bool {

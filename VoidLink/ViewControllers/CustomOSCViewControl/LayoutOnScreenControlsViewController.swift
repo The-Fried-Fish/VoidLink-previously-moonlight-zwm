@@ -368,6 +368,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     private func loadWidgets(from oscProfile: OSCProfile, to folder: OnScreenWidgetView? = nil) {
         var sequence: Int16 = folder == nil ? -1 : (folder?.getAvailableSequence() ?? -1)
+        var importedWidgetSequenceMap: [Int16: Int16] = [:]
+        var independentWidgetSequencesPriorToImport: [Int16] = []
+        var newWidgetBatch: Set<OnScreenWidgetView> = Set()
+        
         var hasLegacyWidget = false
         for case let encoded as Data in oscProfile.buttonStatesEncoded {
             guard let buttonState = self.profilesManager?.unarchiveButtonStateEncoded(encoded) else { continue }
@@ -427,12 +431,29 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 
                 guard let folder = folder else { continue }
                 if !folder.folded {
-                    folder.sequenceSet.insert(widgetView.sequence)
-                    widgetView.parentSequence = folder.sequence
+                    if widgetView.parentSequence == -1 {
+                        folder.sequenceSet.insert(widgetView.sequence)
+                        widgetView.parentSequence = folder.sequence
+                        independentWidgetSequencesPriorToImport.append(widgetView.sequence)
+                    }
+                    importedWidgetSequenceMap[buttonState.sequence] = widgetView.sequence
+                    newWidgetBatch.insert(widgetView)
                 }
                 
             } else if buttonState.widgetType == 0 {
                 hasLegacyWidget = true
+            }
+        }
+        
+        if let folder = folder {
+            for widget in newWidgetBatch where
+            widget.isFolder
+            && widget.parentSequence != -1
+            && widget != folder
+            {
+                widget.sequenceSet = Set(widget.sequenceSet.map {importedWidgetSequenceMap[$0] ?? -1})
+                if !independentWidgetSequencesPriorToImport.contains(widget.sequence) {widget.parentSequence = importedWidgetSequenceMap[widget.parentSequence] ?? -1}
+                // print("label: \(widget.widgetLabel) sequence: \(widget.sequence) set: \(widget.sequenceSet) parent: \(String(describing: OnScreenWidgetView.mapping[widget.parentSequence]?.widgetLabel))")
             }
         }
 
@@ -984,6 +1005,24 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         autoFitStack(widgetPanelStack)
     }
 
+    private func popFolderTutorialTip() {
+        AlertControllerUtil.cancelButtonString = LocalizationHelper.localizedString(forKey: "Detailed Tutorial")
+        AlertControllerUtil.showAlert(
+            in: self,
+            title: LocalizationHelper.localizedString(forKey: "Folder Button"),
+            message: LocalizationHelper.localizedString(forKey: "folderTutorialTip"),
+            withCancel: true,
+            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
+            countdown: 5,
+            completion: {
+                if AlertControllerUtil.actionCancelled {
+                    GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "folderTutorialUrl"))
+                }
+                else {return}
+            }
+        )
+    }
+    
     @objc private func widgetViewTapped(_ notification: Notification) {
         guard let widgetView = notification.object as? OnScreenWidgetView else { return }
         selectedWidgetView = widgetView
@@ -993,6 +1032,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             return
         }
         refreshPanelForSelectedWidget(widgetView)
+        
+        if (widgetView.isFolder && GenericUtils.isFirstTappingFolderInLayoutTool()) {
+            self.popFolderTutorialTip()
+        }
     }
 
     @objc private func legacyOscLayerTapped(_ notification: Notification) {

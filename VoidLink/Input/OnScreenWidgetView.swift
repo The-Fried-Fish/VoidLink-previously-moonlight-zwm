@@ -3564,7 +3564,7 @@ import ObjectiveC.runtime
             
             offshootRootFolders.remove(currentRootFolder)
             for folder in offshootRootFolders {
-                print("offshootRootFolder \(CACurrentMediaTime()) \(folder.label.text ?? "")")
+                // print("offshootRootFolder \(CACurrentMediaTime()) \(folder.label.text ?? "")")
             }
             
             guard !folder.sequenceSet.isEmpty else {return}
@@ -3596,7 +3596,7 @@ import ObjectiveC.runtime
         return widgetRef
     }
     
-    private static func getParentFolders(of widget: OnScreenWidgetView) -> Set<OnScreenWidgetView> {
+    static func getParentFolders(of widget: OnScreenWidgetView) -> Set<OnScreenWidgetView> {
         var parents = Set<OnScreenWidgetView>()
         var current = widget
         while let parent = OnScreenWidgetView.mapping[current.parentSequence] {
@@ -3637,6 +3637,9 @@ import ObjectiveC.runtime
         }
         widget.parentSequence = -1
         if widget.isFolder {
+            if widget.folded {
+                OnScreenWidgetView.set(folded: false, for: widget)
+            }
             for sequence in widget.sequenceSet {
                 guard let subWidget = OnScreenWidgetView.mapping[sequence] else {continue}
                 subWidget.parentSequence = -1

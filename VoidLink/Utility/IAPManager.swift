@@ -400,9 +400,7 @@ import StoreKit
         
         let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
             NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.learnMore, userInfo:["interruption": PurchaseInterruption.learnMore.rawValue])
-            if let url = URL(string: product.productURL()) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
+            GenericUtils.openUrl(product.productURL())
             return
         }
 

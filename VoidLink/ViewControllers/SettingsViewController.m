@@ -1788,10 +1788,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     UIAlertAction *readInstruction = [UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Online Documentation"]
                                                            style:UIAlertActionStyleDefault
                                                          handler:^(UIAlertAction *action){
-        NSURL *url = [NSURL URLWithString:onlineDocLink];
-        if ([[UIApplication sharedApplication] canOpenURL:url]) {
-            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-        }
+        [GenericUtils openUrl:onlineDocLink];
     }];
 
     

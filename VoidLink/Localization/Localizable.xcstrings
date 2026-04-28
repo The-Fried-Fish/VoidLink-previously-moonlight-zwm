@@ -3455,6 +3455,29 @@
         }
       }
     },
+    "Detailed Tutorial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详细教程"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細教程"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細教程"
+          }
+        }
+      }
+    },
     "Detecting..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5018,6 +5041,87 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "資料夾（控制項夾）"
+          }
+        }
+      }
+    },
+    "Folder Button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控件夹按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項夾按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項夾按鍵"
+          }
+        }
+      }
+    },
+    "folderTutorialTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\nDrag other widgets (buttons or touchpads). Release when the touch point enters the folder’s bounding frame to complete collecting.\n\n- When the folder is unfolded, the collected widget will snap back to its original position.\n\n- When the folder is folded, the grouped widget will be hidden.\n\n- Drag a sub-widget or a folder over the trash icon (do not release) to detach it from the collection."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n拖动其他控件(按键或触控板)，当手指触点进入控件夹边框时松开，即可完成收纳。\n\n- 当控件夹处于展开状态时， 被收纳控件将弹回原先的位置。\n\n- 当控件夹处于折叠状态时，被收纳控件将隐藏。\n\n- 拖动子控件或控件夹划过垃圾桶图标(不要松开)，即可解除收纳关系。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入資料夾邊框時放開，即可完成收納。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。\n\n- 當控制項夾處於折疊狀態時，被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入資料夾邊框時放開，即可完成收納。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。\n\n- 當控制項夾處於折疊狀態時，被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n"
+          }
+        }
+      }
+    },
+    "folderTutorialUrl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/it0qruyul6be8gr1"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/li9ogn1rlb50fn52"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/li9ogn1rlb50fn52"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/li9ogn1rlb50fn52"
           }
         }
       }

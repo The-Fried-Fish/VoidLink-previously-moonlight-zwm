@@ -31,7 +31,7 @@ import UIKit
     @objc public static var autoCompletion:Bool = false
 
     @objc class func showAlert(
-        in viewController: UIViewController,
+        in viewController: UIViewController? = nil,
         title: String?,
         message: String?,
         withCancel: Bool,
@@ -43,6 +43,8 @@ import UIKit
         var remainingSeconds = countdown
         let originalMessage = message
         var isAlertDismissed = false
+        
+        guard let viewController = viewController else {return}
 
         alertController = UIAlertController(
             title: title,
