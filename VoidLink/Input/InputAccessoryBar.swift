@@ -336,7 +336,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor(white: 0.22, alpha: 0.82)
-            : UIColor.white.withAlphaComponent(0.78)
+            : UIColor(white: 0.22, alpha: 0.6)
+            // : UIColor.white.withAlphaComponent(0.78)
         }
     }
 
@@ -344,7 +345,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor(white: 0.3, alpha: 0.92)
-            : UIColor.white.withAlphaComponent(1.0)
+            : UIColor(white: 0.3, alpha: 0.92)
+            //: UIColor.white.withAlphaComponent(1.0)
         }
     }
 
@@ -352,7 +354,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.systemBlue.withAlphaComponent(0.3)
-            : UIColor.systemBlue.withAlphaComponent(0.16)
+            : UIColor.systemBlue.withAlphaComponent(0.3)
+            //: UIColor.systemBlue.withAlphaComponent(0.16)
         }
     }
 
@@ -360,7 +363,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.white.withAlphaComponent(0.18)
-            : UIColor.white.withAlphaComponent(0.78)
+            : UIColor.white.withAlphaComponent(0.18)
+            // : UIColor.white.withAlphaComponent(0.78)
         }
     }
 
@@ -368,7 +372,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.white.withAlphaComponent(0.28)
-            : UIColor.white.withAlphaComponent(1.0)
+            : UIColor.white.withAlphaComponent(0.28)
+            // : UIColor.white.withAlphaComponent(1.0)
         }
     }
 
@@ -376,7 +381,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.systemBlue.withAlphaComponent(0.75)
-            : UIColor.systemBlue.withAlphaComponent(0.55)
+            : UIColor.systemBlue.withAlphaComponent(0.75)
+            // : UIColor.systemBlue.withAlphaComponent(0.55)
         }
     }
 
@@ -384,7 +390,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.white.withAlphaComponent(0.92)
-            : UIColor.black.withAlphaComponent(0.66)
+            : UIColor.white.withAlphaComponent(0.92)
+            // : UIColor.black.withAlphaComponent(0.66)
         }
     }
 
@@ -392,7 +399,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.white.withAlphaComponent(0.98)
-            : UIColor.systemBlue.withAlphaComponent(0.92)
+            : UIColor.white.withAlphaComponent(0.98)
+            // : UIColor.systemBlue.withAlphaComponent(0.92)
         }
     }
 
@@ -400,7 +408,8 @@ private final class InputAccessoryCapsuleButton: UIButton {
         UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor.black.withAlphaComponent(0.34)
-            : UIColor.black.withAlphaComponent(0.08)
+            : UIColor.black.withAlphaComponent(0.34)
+            // : UIColor.black.withAlphaComponent(0.08)
         }
     }
 }
@@ -912,7 +921,7 @@ final class InputAccessoryBar: UIView, UIScrollViewDelegate, WidgetPickerViewCon
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let cmdString = (payload["cmdString"] as? String)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        var displayTitle = buttonLabel.isEmpty ? cmdString : buttonLabel
+        let displayTitle = buttonLabel.isEmpty ? cmdString : buttonLabel
 
         guard !displayTitle.isEmpty else { return }
         guard !buttonRecords.contains(where: { $0.buttonLabel == buttonLabel && $0.cmdString == cmdString }) else { return }
@@ -1197,6 +1206,8 @@ final class InputAccessoryBar: UIView, UIScrollViewDelegate, WidgetPickerViewCon
             InputAccessoryBarButtonRecord(buttonLabel: "Alt", cmdString: "ALT+Null"),
             InputAccessoryBarButtonRecord(buttonLabel: "Shift", cmdString: "SHIFT+Null"),
             InputAccessoryBarButtonRecord(buttonLabel: "Tab", cmdString: "TAB+Null"),
+            InputAccessoryBarButtonRecord(buttonLabel: "←", cmdString: "LEFTARR"),
+            InputAccessoryBarButtonRecord(buttonLabel: "→", cmdString: "RIGHTARR"),
             InputAccessoryBarButtonRecord(buttonLabel: "Del", cmdString: "DEL"),
         ]
     }
