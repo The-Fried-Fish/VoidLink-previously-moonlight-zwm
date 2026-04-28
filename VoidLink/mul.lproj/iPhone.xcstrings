@@ -3422,30 +3422,30 @@
       }
     },
     "mdA-jF-9Mf.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Local Mouse Pointer\"; ObjectID = \"mdA-jF-9Mf\";",
+      "comment" : "Class = \"UILabel\"; text = \"Local Mouse Cursor\"; ObjectID = \"mdA-jF-9Mf\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Local Mouse Pointer"
+            "value" : "Local Mouse Cursor"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "本地鼠标指针"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "本地滑鼠指標"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "本地滑鼠指標"
           }
         }
@@ -3505,13 +3505,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "異步多點觸控"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "異步多點觸控"
           }
         }

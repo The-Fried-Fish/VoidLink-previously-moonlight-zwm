@@ -1372,13 +1372,13 @@
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="nE1-Al-qRc" userLabel="localMousePointerMode Stack">
                                 <rect key="frame" x="18" y="2848" width="380" height="56.5"/>
                                 <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Local Mouse Pointer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tAd-bm-2IO">
+                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Local Mouse Cursor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tAd-bm-2IO">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="4FU-iP-c6T" userLabel="Mouse Mode">
+                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="4FU-iP-c6T" userLabel="Mouse Mode">
                                         <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
                                         <segments>
                                             <segment title="Captured"/>

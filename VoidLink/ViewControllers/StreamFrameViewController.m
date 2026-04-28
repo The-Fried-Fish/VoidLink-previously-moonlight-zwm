@@ -582,7 +582,9 @@
     NSString* cmdToolEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"right"] : [LocalizationHelper localizedStringForKey:@"left"];
     uint8_t slideDist = (uint8_t)(_settings.slideToSettingsDistance.floatValue * 100);
     // 创建弹窗
-    NSString* tipText = [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist];
+    NSString* tipText = (GenericUtils.isRunningOnMacAsiPadApp
+    ? [LocalizationHelper localizedStringForKey:@"macFirstLaunchTip"]
+    : [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist])   ;
 
     [AlertControllerUtil showAlertIn:self
                                     title:[LocalizationHelper localizedStringForKey:@"First Launch Tips"]
@@ -659,7 +661,7 @@
     //[_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig];
     [self reConfigStreamViewRealtime]; // call this method again to make sure all gestures are configured & added to the superview(self.view), including the gestures added from inside the streamview.
     
-    if([self isFirstStreaming]) [self popFirstStreamingTip];
+    if([self isFirstStreaming] || GenericUtils.isFirstStreamingOnMac) [self popFirstStreamingTip];
 
 #if TARGET_OS_TV
     if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer) {

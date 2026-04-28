@@ -1239,11 +1239,14 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         return;
     }
     switch (press.key.keyCode) {
-        case UIKeyboardHIDUsageKeyboardQ:
+        case UIKeyboardHIDUsageKeyboardD:
             [_interactionDelegate streamExitRequested];
             break;
-        case UIKeyboardHIDUsageKeyboardS:
+        case UIKeyboardHIDUsageKeyboardO:
             [_interactionDelegate toggleStatsOverlay];
+            break;
+        case UIKeyboardHIDUsageKeyboardS:
+            [_interactionDelegate expandSettingsView];
             break;
         case UIKeyboardHIDUsageKeyboardM:
             [_interactionDelegate toggleMouseCapture];
@@ -1251,7 +1254,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         case UIKeyboardHIDUsageKeyboardC:
             [_interactionDelegate toggleMouseVisible];
             break;
-        case UIKeyboardHIDUsageKeyboardD:
+        case UIKeyboardHIDUsageKeyboardQ:
             [_interactionDelegate disconnectAndQuitApp];
             break;
         default:

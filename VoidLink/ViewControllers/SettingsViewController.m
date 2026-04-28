@@ -1174,8 +1174,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self addSetting:self.touchModeStack2 ofId:@"touchModeStack2" to:experimentalSection];
 
-    self.touchMoveEventIntervalStack.hasDynamicLabel = YES;
-    [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" to:experimentalSection];
+    // self.touchMoveEventIntervalStack.hasDynamicLabel = YES;
+    // [self addSetting:self.touchMoveEventIntervalStack ofId:@"touchMoveEventIntervalStack" to:experimentalSection];
 
     self.relativeTouchSlideThresholdStack.hasInfoTag = YES;
     self.relativeTouchSlideThresholdStack.hasDynamicLabel = YES;
@@ -2389,7 +2389,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.onScreenWidgetSelector addTarget:self action:@selector(onScreenWidgetChanged) forControlEvents:UIControlEventValueChanged];
         [self onScreenWidgetChanged];
 
-        // touch move event interval for native-touch.
+        /*
         [self.touchMoveEventIntervalSlider setValue:self->tempSettings.touchMoveEventInterval.intValue animated:NO]; // Load old setting.
         [self.touchMoveEventIntervalSlider addTarget:self action:@selector(touchMoveEventIntervalSliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
@@ -2398,6 +2398,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.leftClickDelaySlider setValue:self->tempSettings.leftClickDelayMs.intValue animated:NO]; // Load old setting.
         [self.leftClickDelaySlider addTarget:self action:@selector(leftClickDelaySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self leftClickDelaySliderMoved:self.leftClickDelaySlider];
+        */
 
         // this part will enable/disable oscSelector & the asyncNativeTouchPriority selector
         uint8_t touchModeSelectorIndex = self->tempSettings.touchMode.intValue == NativeTouchOnly ? NativeTouch : self->tempSettings.touchMode.intValue;
@@ -3183,10 +3184,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityDividerStack];
 
-    [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
+    // [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityDividerStack];
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityFactorStack];
-    [self setHidden:!isNativeTouch forStack:self.touchMoveEventIntervalStack];
+    // [self setHidden:!isNativeTouch forStack:self.touchMoveEventIntervalStack];
 
     /*
     [self setHidden:(sender.selectedSegmentIndex!=RelativeTouch
@@ -3384,7 +3385,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     // NSInteger fps = [self getChosenFrameRate];
-    [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
+    // [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
     [self updateBitrate];
 }
 
@@ -3993,7 +3994,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat localVolume = self.localVolumeSlider.value/100;
     CGFloat micVolume = self.micVolumeSlider.value/100;
 
-    uint16_t touchMoveEventInterval = (uint16_t)self.touchMoveEventIntervalSlider.value;
+    uint16_t touchMoveEventInterval = 0;
 
     BOOL reverseMouseWheelDirection = [self.reverseMouseWheelDirectionSelector selectedSegmentIndex] == 1;
     NSInteger asyncNativeTouchPriority = 1;

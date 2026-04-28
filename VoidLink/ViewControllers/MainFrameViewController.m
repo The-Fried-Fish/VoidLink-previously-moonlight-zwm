@@ -1740,6 +1740,15 @@ static NSMutableSet* hostList;
     [dataMan saveData];
 }
 
+- (void)updatePartialSettings{
+    if(![GenericUtils needUpdatePartialSettings]) return;
+    DataManager* dataMan = [[DataManager alloc] init];
+    Settings* settings = [dataMan retrieveSettings];
+    settings.touchMoveEventInterval = @(0);
+    settings.localMousePointerMode = @(2);
+    [dataMan saveData];
+}
+
 - (void)viewDidLoad{
     [super viewDidLoad];
     
@@ -1863,7 +1872,7 @@ static NSMutableSet* hostList;
     [IAPManager.shared fetchProducts];
     
     [self changeDefaultSettings];
-
+    [self updatePartialSettings];
     /*
     if (@available(iOS 15.0, *)) {
         [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {

@@ -22,6 +22,16 @@ import UIKit
         return true
     }
     
+    @objc static func needUpdatePartialSettings() -> Bool {
+        // let key = "needUpdateDefaultSettings20260226-1"
+        let key = "needUpdatePartialSettings20260428"
+        guard !UserDefaults.standard.bool(forKey: key) else {
+            return false
+        }
+        UserDefaults.standard.set(true, forKey: key)
+        return true
+    }
+    
     @objc static func isEnableOswForNativeTouchSwitchFirstFlipping() -> Bool {
         let key = "enableOswForNativeTouchSwitchFlipped"
         guard !UserDefaults.standard.bool(forKey: key) else {
@@ -78,6 +88,20 @@ import UIKit
         }
         return false
     }
+    
+    @objc static func isFirstStreamingOnMac() -> Bool {
+        if !isRunningOnMacAsiPadApp {return false}
+        let key = "hasStreamedOnMac"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+
 
     @objc static func gamepadOverlayFeatureTipTitle() -> String {
         SwiftLocalizationHelper.localizedString(forKey: "Gamepad Overlay")
@@ -97,6 +121,13 @@ import UIKit
 
     @objc static func isIPad() -> Bool {
         return UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
+    @objc static var isRunningOnMacAsiPadApp: Bool {
+        if #available(iOS 14.0, *) {
+            return ProcessInfo.processInfo.isiOSAppOnMac
+        }
+        return false
     }
         
     @objc static let liquidGlassEnabled: Bool = {
