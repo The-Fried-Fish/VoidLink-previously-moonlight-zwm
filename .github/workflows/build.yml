@@ -1,0 +1,51 @@
+name: Build VoidLink IPA (TrollStore unsigned)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install CocoaPods and fetch dependencies
+        run: |
+          brew install cocoapods
+          cd Limelight
+          pod install
+
+      - name: Build unsigned app
+        run: |
+          cd Limelight
+          xcodebuild \
+            -workspace Limelight.xcworkspace \
+            -scheme Limelight \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ../build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            build
+
+      - name: Package IPA
+        run: |
+          APP_PATH="./build/Build/Products/Release-iphoneos/Limelight.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "App not found at expected path: $APP_PATH"
+            exit 1
+          fi
+          mkdir Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r VoidLink.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoidLink-unsigned
+          path: VoidLink.ipa
