@@ -129,7 +129,8 @@ import ObjectiveC.runtime
     @objc public var initialCenter: CGPoint = .zero // location from persisted data
     @objc public var layoutChanges: [CGPoint] = []
     @objc public var mouseButtonAction: MouseButtonAction = .hovering;
-    
+    @objc public var mouseButtonActionDelay: TimeInterval = 0.005;
+
     //autoTapTimer
     @objc public var autoTapInterval: Int = 49;
     private var autoTapTimer: SafeTimer?
@@ -279,7 +280,7 @@ import ObjectiveC.runtime
     // for mousePad
     private var touchBegan: Bool = false
     private var directionPadTouchBegan: Bool = false
-    private var firstTouchMoved: Bool = false
+    @objc private(set) var firstTouchMoved: Bool = false
     private var mousePointerMoved: Bool
     private var twoTouchesDetected: Bool
     private var allSpawnedTouchesCount: Int = 0
@@ -329,6 +330,7 @@ import ObjectiveC.runtime
     @objc public var bulkMoveEnabled: Bool = false
     @objc public var sequenceSet: Set<Int16> = Set()
     @objc public var parentSequence: Int16 = -1
+    @objc public var standardFoldingInterval: TimeInterval = 0.05
     static weak var capturer: OnScreenWidgetView?
     
     @objc init(cmdString: String, buttonLabel: String, shape:String, profile:OSCProfile) {
@@ -535,6 +537,10 @@ import ObjectiveC.runtime
         self.hasTrackPoint = true
         self.hasNonEditableLabel = (self.cmdString == "DISABLETOUCH"
                                     || self.cmdString == "GAMEPADOVERLAY")
+        
+        self.mouseButtonActionDelay = self.cmdString.contains("ABSMOUSEPAD") ? 0.005 : 0
+        
+        self.standardFoldingInterval = widgetType == .touchPad ? 0.05 : 0.15;
     }
     
     // ======================================================================================================
@@ -2076,7 +2082,7 @@ import ObjectiveC.runtime
                 }
                 
                 if self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
-                    self.handleMousePadButtonActionDown()
+                    self.handleMousePadButtonActionDown(touch: touch)
                 }
             }
             
@@ -2433,6 +2439,10 @@ import ObjectiveC.runtime
                 }
                 self.updateTouchLocation(touch: touch)
                 break
+            case "ABSMOUSEPAD":
+                let touchLocation = touch.location(in: self.superview)
+                LiSendMousePositionEvent(Int16(touchLocation.x), Int16(touchLocation.y), Int16(self.superViewWidth), Int16(self.superViewHeight))
+                break
             case "LSWHEEL", "RSWHEEL":
                 self.handleStickWheelMove(touch: touch)
             case "LSPAD":
@@ -2507,47 +2517,72 @@ import ObjectiveC.runtime
         }
     }
     
-    private func handleMousePadButtonActionUp(){
-        switch self.mouseButtonAction{
-        case .leftButtonDown:
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
-        case .middleButtonDown:
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_MIDDLE)
-        case .rightButtonDown:
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_RIGHT)
-        case .hovering:
-            if !self.mousePointerMoved && !self.quickDoubleTapDetected {self.sendLongMouseLeftButtonClickEvent()} // deal with single tap(click)
-            if self.quickDoubleTapDetected { //deal with quick double tap
-                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT) //must release the button anyway, because the button is likely being held down since the long click turned into a dragging event.
-                if !self.mousePointerMoved {self.sendShortMouseLeftButtonClickEvent()}
-                self.quickDoubleTapDetected = false
+    private func handleMousePadButtonActionUp(touch:UITouch?=nil){
+        if let touch = touch {
+            let touchLocation = touch.location(in: self.superview)
+             switch touchPadString {
+             case "ABSMOUSEPAD":
+                 LiSendMousePositionEvent(Int16(touchLocation.x), Int16(touchLocation.y), Int16(self.superViewWidth), Int16(self.superViewHeight))
+             default:
+                 break
+             }
+        }
+        
+        DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + self.mouseButtonActionDelay) {
+            switch self.mouseButtonAction{
+            case .leftButtonDown:
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+            case .middleButtonDown:
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_MIDDLE)
+            case .rightButtonDown:
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_RIGHT)
+            case .hovering:
+                if !self.mousePointerMoved && !self.quickDoubleTapDetected {self.sendLongMouseLeftButtonClickEvent()} // deal with single tap(click)
+                if self.quickDoubleTapDetected { //deal with quick double tap
+                    LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT) //must release the button anyway, because the button is likely being held down since the long click turned into a dragging event.
+                    if !self.mousePointerMoved {self.sendShortMouseLeftButtonClickEvent()}
+                    self.quickDoubleTapDetected = false
+                }
+                self.mousePointerMoved = false // reset this flag
+            case .noClick:
+                // quickDoubleTapDetected = false
+                break
+            default:
+                break
             }
-            self.mousePointerMoved = false // reset this flag
-        case .noClick:
-            // quickDoubleTapDetected = false
-            break
-        default:
-            break
         }
     }
     
-    private func handleMousePadButtonActionDown(){
-        switch mouseButtonAction{
-        case .leftButtonDown:
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
-        case .middleButtonDown:
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_MIDDLE)
-        case .rightButtonDown:
-            LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_RIGHT)
-        case .noClick:
-            if quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
-                self.showl3r3Indicator()
-                self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+    
+    private func handleMousePadButtonActionDown(touch:UITouch?=nil){
+        DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + self.mouseButtonActionDelay) {
+            switch self.mouseButtonAction{
+            case .leftButtonDown:
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
+            case .middleButtonDown:
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_MIDDLE)
+            case .rightButtonDown:
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_RIGHT)
+            case .noClick:
+                if self.quickDoubleTapDetected && !self.comboButtonStrings.isEmpty {
+                    self.showl3r3Indicator()
+                    self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+                }
+            case .hovering:
+                break
+            default:
+                break
             }
-        case .hovering:
-            break
-        default:
-            break
+        }
+        
+        if let touch = touch {
+            let touchLocation = touch.location(in: self.superview)
+             switch touchPadString {
+             case "ABSMOUSEPAD":
+                 LiSendMousePositionEvent(Int16(touchLocation.x), Int16(touchLocation.y), Int16(self.superViewWidth), Int16(self.superViewHeight))
+             default:
+                 break
+             }
         }
     }
     
@@ -3460,7 +3495,7 @@ import ObjectiveC.runtime
                         || abs(widget.backgroundAlpha) < 0.1){
                         widget.highlightBorder(highlighted: true, color: UIColor.systemBlue.cgColor)
                     }
-                    let duration = OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0
+                    let duration = OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval) : 0
                     UIView.animate(withDuration: duration, animations: {
                         widget.center = folder.center
                     },completion: { finished in
@@ -3487,7 +3522,7 @@ import ObjectiveC.runtime
                         || abs(widget.backgroundAlpha) < 0.1){
                         widget.highlightBorder(highlighted: true, color: UIColor.systemBlue.cgColor)
                     }
-                    UIView.animate(withDuration: OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : 0.15) : 0, animations: {
+                    UIView.animate(withDuration: OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval) : 0, animations: {
                         widget.center = widget.storedCenter
                     },completion: { finished in
                         widget.capturedTouches.removeAllObjects()

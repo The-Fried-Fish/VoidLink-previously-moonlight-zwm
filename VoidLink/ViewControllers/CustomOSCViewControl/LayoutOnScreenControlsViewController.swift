@@ -2305,7 +2305,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 view.sendSubviewToBack(selectedWidgetView)
             }
         }
-        if !isToolbarHidden, let selectedWidgetView, layerIsOverlappingWithTrashcanButton(selectedWidgetView.layer) {
+        if !isToolbarHidden, let selectedWidgetView, layerIsOverlappingWithTrashcanButton(selectedWidgetView.layer), selectedWidgetView.firstTouchMoved {
             OnScreenWidgetView.setFree(widget: selectedWidgetView)
             OnScreenWidgetView.removeWidgetFromMappings(key: selectedWidgetView.sequence)
             selectedWidgetView.removeFromSuperview()

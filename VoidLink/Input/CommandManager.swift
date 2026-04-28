@@ -118,9 +118,9 @@ import UIKit
         "OSCBACK"
     ]
     
-    @objc public static let touchPadCmds: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD", "LSWHEEL", "RSWHEEL", "LTPAD", "RTPAD", "DS4TOUCH", "MOUSEPAD", "ABSMOUSE", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL", "DPAD", "TRACKBALL", "WASDPAD", "ARROWPAD"]
-    @objc public static let mousePadWithButtonActions: [String] = ["MOUSEPAD", "ABSMOUSE"]
-    @objc public static let mousePads: [String] = ["MOUSEPAD", "ABSMOUSE", "TRACKBALL"]
+    @objc public static let touchPadCmds: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD", "LSWHEEL", "RSWHEEL", "LTPAD", "RTPAD", "DS4TOUCH", "MOUSEPAD", "ABSMOUSEPAD", "ABSMOUSE", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL", "DPAD", "TRACKBALL", "WASDPAD", "ARROWPAD"]
+    @objc public static let mousePadWithButtonActions: [String] = ["MOUSEPAD", "ABSMOUSE", "ABSMOUSEPAD"]
+    @objc public static let mousePads: [String] = ["MOUSEPAD", "ABSMOUSE", "TRACKBALL", "ABSMOUSEPAD"]
     @objc public static let directionPads: [String] = ["DPAD", "WASDPAD", "ARROWPAD"]
     @objc public static let stickTouchPads: [String] = ["LSVPAD", "RSVPAD", "LSPAD", "RSPAD"]
     @objc public static let nonVectorStickPads: [String] = ["LSPAD", "RSPAD"]

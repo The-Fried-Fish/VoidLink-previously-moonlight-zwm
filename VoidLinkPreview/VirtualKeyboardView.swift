@@ -638,7 +638,7 @@ struct VirtualKeyboardView: View {
     }
 
     private func isPadLikeControl(_ key: Key) -> Bool {
-        let padCommands: Set<String> = ["WHEEL", "MOUSEPAD", "TRACKBALL"]
+        let padCommands: Set<String> = ["WHEEL", "MOUSEPAD", "TRACKBALL", "ABSMOUSEPAD"]
         if let cmd = key.cmdString(for: keyboardType) {
             return padCommands.contains(cmd)
         }
@@ -1080,18 +1080,28 @@ struct VirtualKeyboardView: View {
                         ),
                         height: keyHeight * 2 + spacing
                     )
-
-                    keyboardKeyView(
-                        Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"),
-                            width: unit * 2 + spacing,
-                            winCmdString: "TRACKBALL",
-                            macCmdString: "TRACKBALL",
-                            winKeyCode: 0xFF,
-                            macKeyCode: 0xFF
-                        ),
-                        height: keyHeight * 2 + spacing
-                    )
+                    VStack(spacing: spacing) {
+                        keyboardKeyView(
+                            Key(
+                                label: SwiftLocalizationHelper.localizedString(forKey: "Absolute MousePad"),
+                                width: unit * 2 + spacing,
+                                winCmdString: "ABSMOUSEPAD",
+                                macCmdString: "ABSMOUSEPAD",
+                                winKeyCode: 0xFF,
+                                macKeyCode: 0xFF
+                            ),
+                        )
+                        keyboardKeyView(
+                            Key(
+                                label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"),
+                                width: unit * 2 + spacing,
+                                winCmdString: "TRACKBALL",
+                                macCmdString: "TRACKBALL",
+                                winKeyCode: 0xFF,
+                                macKeyCode: 0xFF
+                            ),
+                        )
+                    }
                 }
             }
         }
@@ -1274,12 +1284,13 @@ struct VirtualKeyboardView: View {
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"), width: unit, winCmdString: "WHEELUP", macCmdString: "WHEELUP", winKeyCode: 0xFF, macKeyCode: 0xFF),
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "WheelPad"), width: unit * 2 + spacing, winCmdString: "WHEEL", macCmdString: "WHEEL", winKeyCode: 0xFF, macKeyCode: 0xFF),
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "MousePad"), width: unit * 2 + spacing, winCmdString: "MOUSEPAD", macCmdString: "MOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Absolute MousePad"), width: unit * 2 + spacing, winCmdString: "ABSMOUSEPAD", macCmdString: "ABSMOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
             Key(label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"), width: unit * 2 + spacing, winCmdString: "TRACKBALL", macCmdString: "TRACKBALL", winKeyCode: 0xFF, macKeyCode: 0xFF)
         ]
         if mode == .shortcutPicker {
             keys.removeAll { key in
                 let command = key.cmdString(for: keyboardType) ?? ""
-                return command == "WHEEL" || command == "MOUSEPAD" || command == "TRACKBALL"
+                return command == "WHEEL" || command == "MOUSEPAD" || command == "TRACKBALL" || command == "ABSMOUSEPAD"
             }
         }
         return keys

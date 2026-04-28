@@ -1257,6 +1257,7 @@ struct WidgetPickerView: View {
             "ARROWPAD",
             "WHEEL",
             "MOUSEPAD",
+            "ABSMOUSEPAD",
             "TRACKBALL"
         ]
     }
