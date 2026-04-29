@@ -40,7 +40,7 @@ enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
         case .keyboard:
             return SwiftLocalizationHelper.localizedString(forKey: "Keyboard / Mouse")
         case .functional:
-            return SwiftLocalizationHelper.localizedString(forKey: "Functional Buttons")
+            return SwiftLocalizationHelper.localizedString(forKey: "Functional Widgets")
         }
     }
 
@@ -1541,50 +1541,50 @@ struct WidgetPickerView: View {
             }
 
             if poolItems.contains(where: isPad) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional button widgets cannot be combined with touchpad controls"), type: .error)
+                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
 
             if poolItems.contains(where: { $0.source == .functional }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional button widgets cannot be combined with other functional buttons"), type: .error)
+                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with other functional widgets"), type: .error)
                 return false
             }
 
             if !option.allowsKeyboardCombination,
                poolItems.contains(where: { $0.source == .keyboard && !isPad($0) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional button cannot be combined with keyboard or mouse buttons"), type: .error)
+                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
                 return false
             }
 
             if !option.allowsGamepadCombination,
                poolItems.contains(where: { $0.source == .gamepad && !isPad($0) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional button cannot be combined with gamepad buttons"), type: .error)
+                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with gamepad buttons"), type: .error)
                 return false
             }
         }
 
         if source == .keyboard || source == .gamepad {
             if poolItems.contains(where: isPad) && poolItems.contains(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional button widgets cannot be combined with touchpad controls"), type: .error)
+                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
 
             if let existingFunctionalItem = poolItems.first(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }),
                let option = functionalButtonOption(for: existingFunctionalItem.cmd) {
                 if source == .keyboard && !option.allowsKeyboardCombination {
-                    setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional button cannot be combined with keyboard or mouse buttons"), type: .error)
+                    setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
                     return false
                 }
 
                 if source == .gamepad && !option.allowsGamepadCombination {
-                    setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional button cannot be combined with gamepad buttons"), type: .error)
+                    setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with gamepad buttons"), type: .error)
                     return false
                 }
             }
 
             if isPad(candidate),
                poolItems.contains(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional button widgets cannot be combined with touchpad controls"), type: .error)
+                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
         }

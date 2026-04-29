@@ -5247,71 +5247,71 @@
         }
       }
     },
-    "Functional button widgets cannot be combined with other functional buttons" : {
+    "Functional Widgets" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按键控件不能与其他功能按键组合"
+            "value" : "功能型控件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按鍵控制項不能與其他功能按鍵組合"
+            "value" : "功能控制項"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按鍵控制項不能與其他功能按鍵組合"
+            "value" : "功能控制項"
           }
         }
       }
     },
-    "Functional button widgets cannot be combined with touchpad controls" : {
+    "Functional widgets cannot be combined with other functional widgets" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按键控件不能与触摸板控件组合"
+            "value" : "功能型控件不能与其他功能型控件组合"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按鍵控制項不能與觸控板控制項組合"
+            "value" : "功能控制項不能與其他功能控制項組合"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按鍵控制項不能與觸控板控制項組合"
+            "value" : "功能控制項不能與其他功能控制項組合"
           }
         }
       }
     },
-    "Functional Buttons" : {
+    "Functional widgets cannot be combined with touchpad controls" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按键"
+            "value" : "功能型控件不能与触摸板控件组合"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按鍵"
+            "value" : "功能控制項不能與觸控板控制項組合"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "功能按鍵"
+            "value" : "功能控制項不能與觸控板控制項組合"
           }
         }
       }
@@ -12029,48 +12029,48 @@
         }
       }
     },
-    "This functional button cannot be combined with gamepad buttons" : {
+    "This functional widget cannot be combined with gamepad buttons" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此功能按键不能与手柄按键组合"
+            "value" : "此功能型控件不能与手柄按键组合"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此功能按鍵不能與手把按鍵組合"
+            "value" : "此功能控制項不能與手把按鍵組合"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此功能按鍵不能與手把按鍵組合"
+            "value" : "此功能控制項不能與手把按鍵組合"
           }
         }
       }
     },
-    "This functional button cannot be combined with keyboard or mouse buttons" : {
+    "This functional widget cannot be combined with keyboard or mouse buttons" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此功能按键不能与键盘或鼠标按键组合"
+            "value" : "此功能型控件不能与键盘或鼠标按键组合"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此功能按鍵不能與鍵盤或滑鼠按鍵組合"
+            "value" : "此功能控制項不能與鍵盤或滑鼠按鍵組合"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此功能按鍵不能與鍵盤或滑鼠按鍵組合"
+            "value" : "此功能控制項不能與鍵盤或滑鼠按鍵組合"
           }
         }
       }
@@ -12368,7 +12368,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "- 触控板: 拖移方式与Windows笔记本电脑触控板相同, 快速双击的第2下开始进入拖动状态.\n\n- 多点触控: 不支持macOS.\n\n- 单点鼠标: 可为macOS提供类触屏体验."
           }
         },
