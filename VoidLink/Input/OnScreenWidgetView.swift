@@ -125,8 +125,10 @@ import ObjectiveC.runtime
     
     @objc public var borderWidth: CGFloat = 0.0
     @objc public var backgroundAlpha: CGFloat = 0.5
+    @objc public var originalBackgroundAlpha: CGFloat = 0.5
     @objc public var componentAlpha: CGFloat = 1
     @objc public var labelAlpha: CGFloat = 0.82
+    @objc public var originalLabelAlpha: CGFloat = 0.82
     @objc public var borderAlpha: CGFloat = 0.1
     @objc public var highlightAlpha: CGFloat = 0.77
     @objc public var vibrationStyle: Int = 6
@@ -625,6 +627,8 @@ import ObjectiveC.runtime
         CATransaction.setDisableActions(true)
 
         self.backgroundAlpha = alpha
+        self.originalBackgroundAlpha = alpha
+        
         if self.hasComponent {
             self.componentAlpha = self.backgroundAlpha
             self.tweakAlpha(tweakBorderAlpha: false)
@@ -695,6 +699,7 @@ import ObjectiveC.runtime
     
     @objc public func tweakLabelAlpha(alpha:CGFloat){
         labelAlpha = alpha
+        originalLabelAlpha = alpha
         // label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
         self.setupAtrributedText()
     }
@@ -729,7 +734,7 @@ import ObjectiveC.runtime
             self.layer.borderColor = defaultBorderColor
         }
         
-        if tweakLabelAlpha {self.tweakLabelAlpha(alpha: backgroundAlpha > 0 ? 0.4 : -0.4)}
+        if tweakLabelAlpha {self.tweakLabelAlpha(alpha: backgroundAlpha > 0 ? 0.8 : -0.92)}
         
         if widgetType == WidgetTypeEnum.touchPad {
             self.backgroundColor = UIColor.clear // make touchPad transparent
@@ -864,6 +869,13 @@ import ObjectiveC.runtime
         return false
     }
     
+    @objc func reverseColorPhase(reversed: Bool){
+        backgroundAlpha = reversed ? (originalBackgroundAlpha.sign == .minus ? 0.5 : -0.5) : originalBackgroundAlpha
+        self.tweakAlpha(tweakBorderAlpha: true, tweakLabelAlpha: false)
+        labelAlpha = reversed ? (originalBackgroundAlpha.sign == .minus ? 0.5 : -0.9) : originalLabelAlpha
+        self.setupAtrributedText()
+    }
+    
     @objc func setupAtrributedText(){
         var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
         
@@ -886,7 +898,7 @@ import ObjectiveC.runtime
         }
                 
         let attr = NSAttributedString(
-            string: self.folded ? "[\(text)]" : text,
+            string: self.folded ? "[\(text)]" : (self.isFolder ? " 🟡 \(text)" : "\(text)"),
             attributes: [
                 .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),     // 填充色
                 .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),          // 描边色
@@ -3572,6 +3584,7 @@ import ObjectiveC.runtime
         // guard folder.folded != hidden else { return }
         folder.folded = hidden
         folder.setupAtrributedText()
+        folder.reverseColorPhase(reversed: !folder.folded)
         if hidden {
             for sequence in folder.sequenceSet {
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
