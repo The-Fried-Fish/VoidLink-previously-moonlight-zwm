@@ -2102,7 +2102,7 @@ struct WidgetPickerView: View {
     }
 
     private func resolvedWidgetButtonLabel() -> String {
-        let trimmedManualLabel = widgetButtonLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedManualLabel = widgetButtonLabel
         if !trimmedManualLabel.isEmpty {
             return trimmedManualLabel
         }
