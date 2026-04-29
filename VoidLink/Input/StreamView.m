@@ -141,34 +141,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     _pencilHandler = PencilHandler.shared;
 
     // iOS uses touch Mode depending on user preference
-    touchMode = settings.touchMode.intValue;
-    switch (touchMode) {
-        case NativeTouch:
-            keyboardToggleRecognizer.immediateTriggering = false;
-            self->touchHandler = [[NativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
-            break;
-        case NativeTouchOnly:
-            keyboardToggleRecognizer.immediateTriggering = false;
-            self->touchHandler = [[PureNativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
-            break;
-        case RelativeTouch:
-            self->touchHandler = [[RelativeTouchHandler alloc] initWithView:self andSettings:settings];
-            keyboardToggleRecognizer.immediateTriggering = false;
-            // if(settings.onscreenControls.intValue == OnScreenControlsLevelCustom) keyboardToggleRecognizer.numberOfTouchesRequired = 3; //deprecated: fixing keyboard taps to 3, in order to invoke OSC rebase in stream view by 4-finger tap.
-            break;
-        case AbsoluteTouch:
-            self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self andSettings:settings];
-            keyboardToggleRecognizer.immediateTriggering = true; //triggers signal in touchesBegan callback stage
-            break;
-        case TouchDisabled:
-            self->touchHandler = nil;
-            keyboardToggleRecognizer.immediateTriggering = false;
-            break;
-
-        default:
-            break;
-    }
-    sessionTouchHandler = touchHandler;
+    [self updateTouchHandlerWithProfile:profile];
     
     // we'll render on-screen controls on the toplayer too:
     _onScreenControls = [[OnScreenControls alloc] initWithView:self->_streamFrameTopLayerView controllerSup:controllerSupport streamConfig:streamConfig];  // don't delete, this is mandatory
@@ -246,6 +219,37 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // This is critical to ensure keyboard events are delivered to this
     // StreamView and not our parent UIView, especially on tvOS.
     [self becomeFirstResponder];
+}
+
+- (void)updateTouchHandlerWithProfile:(OSCProfile* )profile{
+    touchMode = profile.touchMode;
+    switch (touchMode) {
+        case NativeTouch:
+            keyboardToggleRecognizer.immediateTriggering = false;
+            self->touchHandler = [[NativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
+            break;
+        case NativeTouchOnly:
+            keyboardToggleRecognizer.immediateTriggering = false;
+            self->touchHandler = [[PureNativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
+            break;
+        case RelativeTouch:
+            self->touchHandler = [[RelativeTouchHandler alloc] initWithView:self andSettings:settings];
+            keyboardToggleRecognizer.immediateTriggering = false;
+            // if(settings.onscreenControls.intValue == OnScreenControlsLevelCustom) keyboardToggleRecognizer.numberOfTouchesRequired = 3; //deprecated: fixing keyboard taps to 3, in order to invoke OSC rebase in stream view by 4-finger tap.
+            break;
+        case AbsoluteTouch:
+            self->touchHandler = [[AbsoluteTouchHandler alloc] initWithView:self andSettings:settings];
+            keyboardToggleRecognizer.immediateTriggering = true; //triggers signal in touchesBegan callback stage
+            break;
+        case TouchDisabled:
+            self->touchHandler = nil;
+            keyboardToggleRecognizer.immediateTriggering = false;
+            break;
+
+        default:
+            break;
+    }
+    sessionTouchHandler = touchHandler;
 }
 
 - (void)refreshKeyboardToggleRecognizer:(uint8_t)numberOfTouches{
@@ -834,6 +838,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         }
         
         [(StreamFrameViewController* )self->_streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
+        [self updateTouchHandlerWithProfile:profile];
     });
 }
 

@@ -254,6 +254,13 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     func profileViewRefresh() {
         tableView.reloadData()
         needToUpdateOscLayoutTVC?()
+        if loadingMode != .selectProfileFromStreamView
+            && loadingMode != .pickProfile
+            && loadingMode != .pickProfileData
+            && loadingMode != .selectProfile
+        {
+            NotificationCenter.default.post(name: Notification.Name("GameProfileSelectedNotification"), object: self)
+        }
     }
 
     @IBAction func deleteTapped(_ sender: Any?) {

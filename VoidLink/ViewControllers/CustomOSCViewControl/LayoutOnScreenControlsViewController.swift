@@ -281,7 +281,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(legacyOscLayerTapped(_:)), name: Notification.Name("LegacyOscCALayerSelectedNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleProfileTablViewDismiss), name: Notification.Name("OscLayoutTableViewCloseNotification"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(dummytest), name: Notification.Name("GameProfileSelectedNotification"), object: nil)
+        // NotificationCenter.default.addObserver(self, selector: #selector(dummytest), name: Notification.Name("GameProfileSelectedNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(widgetViewTapped(_:)), name: Notification.Name("OnScreenWidgetViewSelected"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(OSCLayoutChanged), name: Notification.Name("OSCLayoutChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleReturnToForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -360,7 +360,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
             guard let oscProfile = self.profilesManager?.getSelectedProfile() else { return }
             
-            NotificationCenter.default.post(name: Notification.Name("GameProfileSelectedNotification"), object: oscProfile)
+            if self.profileTableLoadingMode == .selectProfileFromStreamView {
+                NotificationCenter.default.post(name: Notification.Name("GameProfileSelectedNotification"), object: oscProfile)
+            }
             
             self.loadWidgets(from: oscProfile)
 

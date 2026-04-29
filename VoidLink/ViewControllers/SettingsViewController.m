@@ -355,6 +355,18 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)reloadGameProfileConfigs{
     oscProfile = [oscProfileMan getSelectedProfile];
     
+    // this part will enable/disable oscSelector & the asyncNativeTouchPriority selector
+    uint8_t touchModeSelectorIndex = oscProfile.touchMode == NativeTouchOnly ? NativeTouch : oscProfile.touchMode;
+    [self.touchModeSelector1 setSelectedSegmentIndex:touchModeSelectorIndex]; //Load old touchMode setting
+    [self touchModeChanged:self.touchModeSelector1];
+    
+    [self.touchModeSelector2 addTarget:self action:@selector(touchMode2Changed:) forControlEvents:UIControlEventValueChanged];
+    self.touchModeSelector2.selectedSegmentIndex = self.touchModeSelector1.selectedSegmentIndex;
+    
+    [self.enableOswForNativeTouchSwitch setOn:oscProfile.touchMode != NativeTouchOnly];
+    [self enableOswForNativeTouchSwitchFlipped:self.enableOswForNativeTouchSwitch];
+        
+
     [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(oscProfile.pointerVelocityModeDivider * 100) animated:NO]; // Load old setting.
     [self pointerVelocityModeDividerSliderMoved:self.pointerVelocityModeDividerSlider];
 
@@ -416,9 +428,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat yawSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.yawSensitivitySlider.value];
     CGFloat pitchSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.pitchSensitivitySlider.value];
     CGFloat rollSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.rollSensitivitySlider.value];
+    TouchMode touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector1.selectedSegmentIndex : NativeTouchOnly;
 
     bool configNotChanged = (
-                             (int16_t)(oscProfile.pointerVelocityModeDivider*100) == (int16_t)(self.pointerVelocityModeDividerSlider.value)
+                             (int)oscProfile.touchMode == touchMode
+                             && (int16_t)(oscProfile.pointerVelocityModeDivider*100) == (int16_t)(self.pointerVelocityModeDividerSlider.value)
                              && (int16_t)(oscProfile.touchPointerVelocityFactor*100) == (int16_t)touchPointerVelocityFactorPercent
                              && oscProfile.useBuiltinGyro == self.gyroSourceSelector.selectedSegmentIndex == 0
                              && oscProfile.swapYawAndRoll == self.swapYawAndRollSwitch.isOn
@@ -446,6 +460,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     if(!configNotChanged){
         oscProfile = [oscProfileMan getSelectedProfile];
+        oscProfile.touchMode = (int)touchMode;
         oscProfile.pointerVelocityModeDivider = self.pointerVelocityModeDividerSlider.value/100;
         oscProfile.touchPointerVelocityFactor = touchPointerVelocityFactorPercent/100;
         oscProfile.useBuiltinGyro = self.gyroSourceSelector.selectedSegmentIndex == 0;
@@ -863,6 +878,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     }
 
     self.touchModeStack.hasInfoTag = YES;
+    self.touchModeStack.isGameProfileSetting = YES;
     [self addSetting:self.touchModeStack ofId:@"touchModeStack" to:touchControlSection];
 
     self.mousePointerVelocityStack.hasDynamicLabel = YES;
@@ -2396,21 +2412,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.leftClickDelaySlider addTarget:self action:@selector(leftClickDelaySliderMoved:) forControlEvents:(UIControlEventValueChanged)]; // Update label display when slider is being moved.
         [self leftClickDelaySliderMoved:self.leftClickDelaySlider];
         */
-
-        // this part will enable/disable oscSelector & the asyncNativeTouchPriority selector
-        uint8_t touchModeSelectorIndex = self->tempSettings.touchMode.intValue == NativeTouchOnly ? NativeTouch : self->tempSettings.touchMode.intValue;
-        [self.touchModeSelector1 setSelectedSegmentIndex:touchModeSelectorIndex]; //Load old touchMode setting
+        
+        // touchMode refactored to game profile system
         [self.touchModeSelector1 addTarget:self action:@selector(touchMode1Changed:) forControlEvents:UIControlEventValueChanged];
-        [self touchModeChanged:self.touchModeSelector1];
-        
-        [self.touchModeSelector2 addTarget:self action:@selector(touchMode2Changed:) forControlEvents:UIControlEventValueChanged];
-        self.touchModeSelector2.selectedSegmentIndex = self.touchModeSelector1.selectedSegmentIndex;
-
-        // self.enableOswSwitchStack.hidden = !(self->tempSettings.touchMode.intValue == NativeTouch || self->tempSettings.touchMode.intValue == NativeTouchOnly); // do not use setHidden to stack wrapped by a settingStack
-        
-        [self.enableOswForNativeTouchSwitch setOn:self->tempSettings.touchMode.intValue != NativeTouchOnly];
         [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
-        [self enableOswForNativeTouchSwitchFlipped:self.enableOswForNativeTouchSwitch];
 
         [self.externalDisplayModeSelector setSelectedSegmentIndex:self->tempSettings.externalDisplayMode.integerValue];
         [self.localMousePointerModeSelector setSelectedSegmentIndex:self->tempSettings.localMousePointerMode.integerValue];

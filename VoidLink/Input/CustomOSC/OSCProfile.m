@@ -54,6 +54,7 @@
     [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
     [encoder encodeFloat:self.pointerVelocityModeDivider forKey:@"pointerVelocityModeDivider"];
+    [encoder encodeInt:self.touchMode forKey:@"touchMode"];
     [encoder encodeFloat:self.touchPointerVelocityFactor forKey:@"touchPointerVelocityFactor"];
     [encoder encodeCGPoint:self.normalizedStreamViewOffset forKey:@"normalizedStreamViewOffset"];
     [encoder encodeFloat:self.streamViewScale forKey:@"streamViewScale"];
@@ -122,6 +123,7 @@
         self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
         
+        self.touchMode = [decoder containsValueForKey:@"touchMode"] ? [decoder decodeIntForKey:@"touchMode"] : NativeTouch;
         self.pointerVelocityModeDivider = [decoder containsValueForKey:@"pointerVelocityModeDivider"] ? [decoder decodeFloatForKey:@"pointerVelocityModeDivider"] : 0.5;
         self.touchPointerVelocityFactor = [decoder containsValueForKey:@"touchPointerVelocityFactor"] ? [decoder decodeFloatForKey:@"touchPointerVelocityFactor"] : 1.0;
         
@@ -229,6 +231,7 @@
     copy.reverseGyroHoldButton = self.reverseGyroHoldButton;
     copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
+    copy.touchMode = self.touchMode;
     copy.pointerVelocityModeDivider = self.pointerVelocityModeDivider;
     copy.touchPointerVelocityFactor = self.touchPointerVelocityFactor;
     copy.normalizedStreamViewOffset = self.normalizedStreamViewOffset;
