@@ -47,8 +47,8 @@ import ObjectiveC.runtime
     
     @objc public var motionHandler: MotionHandler?
     
-    @objc public weak var functionalButtonDelegate: OnScreenFunctionalButtonDelegate?
-    @objc protocol OnScreenFunctionalButtonDelegate: AnyObject {
+    @objc public weak var functionalWidgetDelegate: OnScreenFunctionalWidgetDelegate?
+    @objc protocol OnScreenFunctionalWidgetDelegate: AnyObject {
         func expandSettingsView()
         func disconnectRemoteSession()
         func disconnectAndQuitApp()
@@ -67,6 +67,14 @@ import ObjectiveC.runtime
         func presentPressureCurveVC()
         func toggleTouch(disabled:Bool)
         func toggleGamepadOverlay(overlayEnabled:Bool)
+        @objc(magnifierMoveStreamViewWithTranslation:)
+        func magnifierMoveStreamView(translation: CGVector)
+        @objc(magnifierMoveStreamViewWithTranslation:pinchDelta:)
+        func magnifierMoveStreamView(translation: CGVector, pinchDelta: CGFloat)
+        func setMagnifierViewportInteractionEnabled(_ enabled: Bool)
+        func resetMagnifierStreamView(animated:Bool)
+        @objc(restoreMagnifierStreamViewWithOffset:scale:)
+        func restoreMagnifierStreamView(offset: CGPoint, scale: CGFloat)
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -145,7 +153,7 @@ import ObjectiveC.runtime
     
     // for movable buttons during streaming
     @objc public var relocatedDuringStreaming: Bool = false
-    @objc static var relocatedDuringStreaming: Bool = false
+    @objc static var profileChangedDuringStreaming: Bool = false
 
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasMinStickOffset: Bool = false
@@ -184,6 +192,10 @@ import ObjectiveC.runtime
     @objc public var isFolder: Bool = false
     @objc public var containsShortcutAction: Bool = false
     @objc public var hasNonEditableLabel: Bool = false
+
+    @objc public var isMagnifier: Bool = false
+    private var isFirstTappingMagnifier: Bool = true
+    @objc public var animatesTransition: Bool = true
 
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
@@ -541,6 +553,8 @@ import ObjectiveC.runtime
         self.mouseButtonActionDelay = self.cmdString.contains("ABSMOUSEPAD") ? 0.005 : 0
         
         self.standardFoldingInterval = widgetType == .touchPad ? 0.05 : 0.15;
+        
+        self.isMagnifier = self.cmdString.contains("MAGNIFIER")
     }
     
     // ======================================================================================================
@@ -974,7 +988,6 @@ import ObjectiveC.runtime
         if CommandManager.stickTouchPads.contains(touchPadString) {setupL3R3Indicator()}
         if CommandManager.verticalTouchPads.contains(touchPadString) {setupL3R3Indicator()}
         if CommandManager.mousePadWithButtonActions.contains(self.touchPadString) {setupL3R3Indicator()}
-        if self.hasTrackPoint {setupTrackPoint()}
         if self.hasStickIndicator {
             if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
             if self.lrudIndicatorBall.superlayer == nil {self.lrudIndicatorBall = createStickBall()}
@@ -1032,18 +1045,8 @@ import ObjectiveC.runtime
     
     @objc var hasTrackPoint: Bool = false
     @objc static var trackPointEnabled: Bool = false
-    private var trackPoint:CAShapeLayer = CAShapeLayer()
-    @objc public func setupTrackPoint() {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        // 1. 创建圆形路径
-        
-        
-        trackPoint.removeFromSuperlayer()
-        trackPoint = GraphicUtils.makeTouchTrackpoint(in: self)
-        
-        CATransaction.commit()
-    }
+    private var trackPointMapping: [UITouch:CAShapeLayer] = [:]
+    private var trackPointPool:Set<CAShapeLayer> = Set()
 
     private func showl3r3Indicator(){
         if OnScreenWidgetView.buttonVisualFeedbackEnabled {
@@ -1632,7 +1635,6 @@ import ObjectiveC.runtime
         }
     }
     
-    
     private func handleFingerUpOrSlideout(leaveFunctionalButtonAlone: Bool = false, event: UIEvent? = nil) {
         if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
             handleButtonUp(leaveFunctionalButtonAlone:leaveFunctionalButtonAlone, event:event)
@@ -1986,7 +1988,9 @@ import ObjectiveC.runtime
         self.tickFlag = 0
         super.touchesBegan(touches, with: event)
         
-        self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button || CommandManager.mousePadWithButtonActions.contains(self.touchPadString);
+        self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
+            || CommandManager.mousePadWithButtonActions.contains(self.touchPadString)
+            || self.touchPadString == "MAGNIFIER"
 
         if !OnScreenWidgetView.editMode && self.touchPadString == "TRACKBALL" {
             stopTrackballMomentum()
@@ -2019,7 +2023,7 @@ import ObjectiveC.runtime
             self.latestTouchLocation = touchBeganLocation
         }
                 
-        allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
+        allSpawnedTouchesCount = UITouchUtil.touches(in: self, from: event).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         if allSpawnedTouchesCount == 2 {
             self.twoTouchesDetected = true
         }
@@ -2077,6 +2081,15 @@ import ObjectiveC.runtime
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                     }
+                case "MAGNIFIER":
+                    if self.isFirstTappingMagnifier, GenericUtils.isFirstTappingMagnifier() {
+                        self.popMagnifierTip()
+                    }
+                    self.isFirstTappingMagnifier = false
+                    if quickDoubleTapDetected && allSpawnedTouchesCount == 1 {
+                        OnScreenWidgetView.profileChangedDuringStreaming = true
+                        self.functionalWidgetDelegate?.resetMagnifierStreamView(animated: self.animatesTransition)
+                    }
                 default:
                     break
                 }
@@ -2125,7 +2138,20 @@ import ObjectiveC.runtime
         if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            if let touch = touches.first {
+            let trackPointGap = allSpawnedTouchesCount - trackPointPool.count
+            if trackPointGap > 0 {
+                for _ in 0..<trackPointGap {
+                    trackPointPool.insert(GraphicUtils.makeTouchTrackpoint(in: self))
+                }
+            }
+            var trackPointPoolIterator = trackPointPool.makeIterator()
+            for touch in touches {
+                guard var trackPoint = trackPointPoolIterator.next() else {continue}
+                while trackPointMapping.values.contains(trackPoint) {
+                    guard let newTrackPoint = trackPointPoolIterator.next() else {break}
+                    trackPoint = newTrackPoint
+                }
+                trackPointMapping[touch] = trackPoint
                 trackPoint.isHidden = false
                 trackPoint.position = touch.location(in: self)
             }
@@ -2344,15 +2370,14 @@ import ObjectiveC.runtime
         }
         
         if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
-            if let touch = touches.first {
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                if trackPoint.isHidden {
-                    trackPoint.isHidden = false
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            for touch in touches {
+                if let trackPoint = trackPointMapping[touch] {
+                    trackPoint.position = touch.location(in: self)
                 }
-                trackPoint.position = touch.location(in: self)
-                CATransaction.commit()
             }
+            CATransaction.commit()
         }
     }
     
@@ -2515,6 +2540,45 @@ import ObjectiveC.runtime
         if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "DS4TOUCH" {
             self.handleControllerTouchesMove(touches: touches)
         }
+        if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "MAGNIFIER" {
+            OnScreenWidgetView.profileChangedDuringStreaming = true
+            self.handleMagnifierPadMove(touches: touches, event: event)
+        }
+    }
+    
+    private func handleMagnifierPadMove(touches: Set<UITouch>, event: UIEvent?){
+        guard let event = event else { return }
+        let currentTouches = Array(UITouchUtil.touches(in: self, from: event))
+        self.functionalWidgetDelegate?.setMagnifierViewportInteractionEnabled(true)
+
+        switch currentTouches.count {
+        case 1:
+            guard let touch = currentTouches.first else { return }
+            var vector = UITouchUtil.vector(of: touch, in: self)
+            let moveHorizontally = abs(vector.dx) > abs(vector.dy)
+            vector = CGVector(dx: moveHorizontally ? vector.dx : 0, dy: moveHorizontally ? 0 : vector.dy)
+            let translation = CGVector(
+                dx: vector.dx * self.sensitivityFactorX,
+                dy: vector.dy * self.sensitivityFactorY
+            )
+            self.functionalWidgetDelegate?.magnifierMoveStreamView(translation: translation)
+        case 2:
+            let touch1 = currentTouches[0]
+            let touch2 = currentTouches[1]
+            let translationVector = UITouchUtil.midPointVector(between: touch1, and: touch2, in: self)
+            let pinchDelta = (UITouchUtil.distance(between: touch1, and: touch2, in: self)
+                              - UITouchUtil.previousDistance(between: touch1, and: touch2, in: self))
+            let translation = CGVector(
+                dx: translationVector.dx * self.sensitivityFactorX,
+                dy: translationVector.dy * self.sensitivityFactorY
+            )
+            self.functionalWidgetDelegate?.magnifierMoveStreamView(
+                translation: translation,
+                pinchDelta: pinchDelta * self.sensitivityFactorX
+            )
+        default:
+            break
+        }
     }
     
     private func handleMousePadButtonActionUp(touch:UITouch?=nil){
@@ -2646,13 +2710,13 @@ import ObjectiveC.runtime
         case "ABSTCHDRAG":
             let mouseButton = CommandManager.mouseButtonMappings[Set(self.comboButtonStrings).intersection(CommandManager.mouseButtonMappings.keys).first ?? "MLEFT"] ?? BUTTON_LEFT
             print("mouseButton \(mouseButton)");
-            self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:mouseButton)
+            self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:mouseButton)
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}
-            self.functionalButtonDelegate?.enablePencilHover()
+            self.functionalWidgetDelegate?.enablePencilHover()
         case "NOSINGLETOUCH":
             if !self.isPencilProEnabled() {break}
-            self.functionalButtonDelegate?.setAllowSingleTouchEnabled(false)
+            self.functionalWidgetDelegate?.setAllowSingleTouchEnabled(false)
         default:
             break
         }
@@ -2677,7 +2741,7 @@ import ObjectiveC.runtime
             case "NOSINGLETOUCH":
                 if !self.isPencilProEnabled() {break}
                 singleTouchEnabled = !singleTouchEnabled
-                self.functionalButtonDelegate?.setAllowSingleTouchEnabled(singleTouchEnabled)
+                self.functionalWidgetDelegate?.setAllowSingleTouchEnabled(singleTouchEnabled)
                 return
             default:
                 break
@@ -2691,61 +2755,61 @@ import ObjectiveC.runtime
         case "SETTINGS":
             temporaryDisableFolderButtonAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.functionalButtonDelegate?.expandSettingsView()
+                self.functionalWidgetDelegate?.expandSettingsView()
             }
         case "DISCONNECT":
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.functionalButtonDelegate?.disconnectRemoteSession()
+                self.functionalWidgetDelegate?.disconnectRemoteSession()
             }
         case "QUITAPP":
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.functionalButtonDelegate?.disconnectAndQuitApp()
+                self.functionalWidgetDelegate?.disconnectAndQuitApp()
             }
         case "TOOLBOX":
-            self.functionalButtonDelegate?.bringUpToolboxMenu()
+            self.functionalWidgetDelegate?.bringUpToolboxMenu()
         case "PIP":
-            self.functionalButtonDelegate?.enterPip()
+            self.functionalWidgetDelegate?.enterPip()
         case "WIDGETTOOL":
             temporaryDisableFolderButtonAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.functionalButtonDelegate?.openWidgetLayoutTool()
+                self.functionalWidgetDelegate?.openWidgetLayoutTool()
             }
         case "PROFILES","WIDGETPROFILES":
             temporaryDisableFolderButtonAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.functionalButtonDelegate?.openWidgetProfileTable(pickProfile: false)
+                self.functionalWidgetDelegate?.openWidgetProfileTable(pickProfile: false)
             }
         case "PICKPROFILE","PICKPRFL":
             temporaryDisableFolderButtonAnimation()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.functionalButtonDelegate?.openWidgetProfileTable(pickProfile: true)
+                self.functionalWidgetDelegate?.openWidgetProfileTable(pickProfile: true)
             }
         case "SOFTKEYBOARD":
-            self.functionalButtonDelegate?.bringUpSoftKeyboard()
+            self.functionalWidgetDelegate?.bringUpSoftKeyboard()
         case "ABSTCHDRAG":
-            self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
+            self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}
-            self.functionalButtonDelegate?.disablePencilHover()
+            self.functionalWidgetDelegate?.disablePencilHover()
         case "NOSINGLETOUCH":
             if !self.isPencilProEnabled() {break}
-            self.functionalButtonDelegate?.setAllowSingleTouchEnabled(true)
+            self.functionalWidgetDelegate?.setAllowSingleTouchEnabled(true)
         case "BRUSH":
             if !self.isPencilProEnabled() {break}
             var brushShortcut = self.cmdString.replacingOccurrences(of: "BRUSH+", with: "")
             brushShortcut = brushShortcut.replacingOccurrences(of: "BRUSH", with: "")
-            self.functionalButtonDelegate?.replaceBrush(shortcut: brushShortcut)
+            self.functionalWidgetDelegate?.replaceBrush(shortcut: brushShortcut)
         case "ERASER":
             if !self.isPencilProEnabled() {break}
             var eraserShortcut = self.cmdString.replacingOccurrences(of: "ERASER+", with: "")
             eraserShortcut = eraserShortcut.replacingOccurrences(of: "ERASER", with: "")
-            self.functionalButtonDelegate?.replaceEraser(shortcut: eraserShortcut)
+            self.functionalWidgetDelegate?.replaceEraser(shortcut: eraserShortcut)
         case "PRESSURECURVE":
             if ["com.voidlink.iOS"
                 , "com.voidlinkextreme.iOS"
                 , "com.voidlink.tf.debug10.iOS"
             ].contains(Bundle.main.bundleIdentifier) && GenericUtils.isIPad() {
-                self.functionalButtonDelegate?.presentPressureCurveVC()
+                self.functionalWidgetDelegate?.presentPressureCurveVC()
             }
         case "DISABLETOUCH":
             self.handleTouchDisableButtonUp()
@@ -2760,7 +2824,7 @@ import ObjectiveC.runtime
     private func handleTouchDisableButtonUp(){
         touchDisabledFLag = !touchDisabledFLag
         self.setupAtrributedText()
-        self.functionalButtonDelegate?.toggleTouch(disabled: touchDisabledFLag)
+        self.functionalWidgetDelegate?.toggleTouch(disabled: touchDisabledFLag)
     }
     
     @objc static var gamepadOverlayFLag:Bool = false
@@ -2769,7 +2833,7 @@ import ObjectiveC.runtime
         OnScreenWidgetView.gamepadOverlayFLag = !OnScreenWidgetView.gamepadOverlayFLag
         self.setupAtrributedText()
         if #available(iOS 13.0, *) {
-            self.functionalButtonDelegate?.toggleGamepadOverlay(overlayEnabled: OnScreenWidgetView.gamepadOverlayFLag)
+            self.functionalWidgetDelegate?.toggleGamepadOverlay(overlayEnabled: OnScreenWidgetView.gamepadOverlayFLag)
         }
     }
 
@@ -2920,6 +2984,8 @@ import ObjectiveC.runtime
                 self.onScreenControls?.releaseControllerButton(DOWN_FLAG)
             case "DS4TOUCH":
                 self.handleControllerTouchesUp(touches: touches)
+            case "MAGNIFIER":
+                self.functionalWidgetDelegate?.setMagnifierViewportInteractionEnabled(false)
             default:
                 break
             }
@@ -2975,7 +3041,15 @@ import ObjectiveC.runtime
         }
         
         if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
-            trackPoint.isHidden = true
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            for touch in touches {
+                if let trackPoint = trackPointMapping[touch] {
+                    trackPointMapping.removeValue(forKey: touch)
+                    trackPoint.isHidden = true
+                }
+            }
+            CATransaction.commit()
         }
         
         self.temporarilyMovable = false
@@ -3135,6 +3209,18 @@ import ObjectiveC.runtime
         }
         return true
     }
+    
+    private func popMagnifierTip() {
+        AlertControllerUtil.showAlert(
+            in: self.parentViewController,
+            title: SwiftLocalizationHelper.localizedString(forKey: "Magnifier"),
+            message: "\n\(SwiftLocalizationHelper.localizedString(forKey: "magnifierTip"))\n\n\(SwiftLocalizationHelper.localizedString(forKey: "magnifierPersistTip"))",
+            withCancel: false,
+            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
+            countdown: 5,
+        )
+    }
+
     
     // MARK: - Auto Dock
     private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90
@@ -3698,10 +3784,12 @@ import ObjectiveC.runtime
             
             if self.widgetType == WidgetTypeEnum.button && !OnScreenWidgetView.editMode {
                 self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
-                self.functionalButtonDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
+                self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
             }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
-            trackPoint.removeFromSuperlayer()
+            for trackPoint in trackPointPool {
+                trackPoint.removeFromSuperlayer()
+            }
             crossMarkLayer.removeFromSuperlayer()
             lrudIndicatorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()

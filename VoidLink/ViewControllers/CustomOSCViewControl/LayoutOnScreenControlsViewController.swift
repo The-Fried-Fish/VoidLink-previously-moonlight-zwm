@@ -174,6 +174,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBOutlet weak var walkKeyThresholdLabel: UILabel!
     @IBOutlet weak var walkKeyThresholdSlider: UISlider!
     
+    @IBOutlet weak var animatedStack: UIStackView!
+    @IBOutlet weak var animatedSelector: UISegmentedControl!
+    
     @IBOutlet weak var widgetPanelStack: UIStackView!
 
     @IBOutlet private weak var toolbarTopConstraintiPhone: NSLayoutConstraint!
@@ -278,7 +281,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(legacyOscLayerTapped(_:)), name: Notification.Name("LegacyOscCALayerSelectedNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleProfileTablViewDismiss), name: Notification.Name("OscLayoutTableViewCloseNotification"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(dummytest), name: Notification.Name("OscLayoutProfileSelctedInTableView"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(dummytest), name: Notification.Name("GameProfileSelectedNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(widgetViewTapped(_:)), name: Notification.Name("OnScreenWidgetViewSelected"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(OSCLayoutChanged), name: Notification.Name("OSCLayoutChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleReturnToForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -312,7 +315,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             widget.updateMovementThresholdPreview()
         }
         super.viewWillDisappear(animated)
-        NotificationCenter.default.post(name: Notification.Name("OscLayoutCloseNotification"), object: self)
+        NotificationCenter.default.post(name: Notification.Name("GameProfileSelectorCloseNotification"), object: self)
     }
 
     @objc func dummytest() {}
@@ -357,6 +360,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
             guard let oscProfile = self.profilesManager?.getSelectedProfile() else { return }
             
+            NotificationCenter.default.post(name: Notification.Name("GameProfileSelectedNotification"), object: oscProfile)
+            
             self.loadWidgets(from: oscProfile)
 
             if !self.quickSwitchEnabled {
@@ -400,6 +405,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widgetView.autoTapInterval = Int(buttonState.autoTapInterval)
                 widgetView.setVibration(style: Int(buttonState.vibrationStyle))
                 widgetView.mouseButtonAction = MouseButtonAction(rawValue: Int(buttonState.mouseButtonAction)) ?? .hovering
+                widgetView.animatesTransition = buttonState.animatesTransition
                 widgetView.sensitivityFactorX = buttonState.sensitivityFactorX
                 widgetView.sensitivityFactorY = buttonState.sensitivityFactorY
                 widgetView.slideThreshold = buttonState.slideThreshold
@@ -957,8 +963,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
         mouseDownButtonStack.isHidden = !widgetView.isMousePadWithButtonActions
         mouseButtonDownSelector.selectedSegmentIndex = Int(widgetView.mouseButtonAction.rawValue)
-
         
+        animatedStack.isHidden = !widgetView.isMagnifier
+        animatedSelector.selectedSegmentIndex = widgetView.animatesTransition ? 1 : 0
+
         autoDockTimerStack.isHidden = !(widgetView.isFolder && widgetView.parentSequence == -1);
         autoDockTimerSlider.value = Float(widgetView.autoDockIdleDuration)
         autoDockTimerSliderMoved(autoDockTimerSlider)
@@ -1217,6 +1225,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.minStickOffset = widget.minStickOffset
         newWidget.setVibration(style: Int(widget.vibrationStyle))
         newWidget.mouseButtonAction = widget.mouseButtonAction
+        newWidget.animatesTransition = widget.animatesTransition
         newWidget.buttonMode = widget.buttonMode
         newWidget.sprintKeyActionType = widget.sprintKeyActionType
         newWidget.sprintKeyThreshold = widget.sprintKeyThreshold
@@ -1770,6 +1779,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         stickIndicatorOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Indicator offset")
         stickIndicatorOffsetStack.isHidden = true
         
+
         autoDockTimerSlider.addTarget(self, action: #selector(autoDockTimerSliderMoved(_:)), for: .valueChanged)
         autoDockTimerLabel.text = LocalizationHelper.localizedString(forKey: "Auto dock")
         autoDockTimerStack.isHidden = true;
@@ -1782,6 +1792,11 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         mouseButtonDownSelector.addTarget(self, action: #selector(mouseDownButtonChanged(_:)), for: .valueChanged)
         mouseButtonDownSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         mouseDownButtonStack.isHidden = true
+        
+        animatedSelector.addTarget(self, action: #selector(animationChanged(_:)), for: .valueChanged)
+        animatedSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
+        animatedStack.isHidden = true
+        
         buttonModeSelector.addTarget(self, action: #selector(buttonModeChanged(_:)), for: .valueChanged)
         buttonModeSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         buttonModeStack.isHidden = true
@@ -2103,6 +2118,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         selectedWidget.autoDockSettledAlpha = CGFloat(sender.value)
         dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked alpha: %d%%", Int(sender.value*100))
         return
+    }
+    
+    @objc private func animationChanged(_ sender: UISegmentedControl) {
+        selectedWidgetView?.animatesTransition = sender.selectedSegmentIndex == 1
     }
     
     @objc private func mouseDownButtonChanged(_ sender: UISegmentedControl) {

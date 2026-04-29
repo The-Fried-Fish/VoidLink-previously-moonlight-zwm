@@ -55,7 +55,8 @@
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
     [encoder encodeFloat:self.pointerVelocityModeDivider forKey:@"pointerVelocityModeDivider"];
     [encoder encodeFloat:self.touchPointerVelocityFactor forKey:@"touchPointerVelocityFactor"];
-    [encoder encodeBool:self.gamepadOverlayEnabled forKey:@"gamepadOverlayEnabled"];
+    [encoder encodeCGPoint:self.normalizedStreamViewOffset forKey:@"normalizedStreamViewOffset"];
+    [encoder encodeFloat:self.streamViewScale forKey:@"streamViewScale"];
     
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
     // [encoder encodeObject:self.initialTouchPressureCurvePoints forKey:@"initialTouchPressureCurvePoints"];
@@ -123,6 +124,9 @@
         
         self.pointerVelocityModeDivider = [decoder containsValueForKey:@"pointerVelocityModeDivider"] ? [decoder decodeFloatForKey:@"pointerVelocityModeDivider"] : 0.5;
         self.touchPointerVelocityFactor = [decoder containsValueForKey:@"touchPointerVelocityFactor"] ? [decoder decodeFloatForKey:@"touchPointerVelocityFactor"] : 1.0;
+        
+        self.normalizedStreamViewOffset = [decoder containsValueForKey:@"normalizedStreamViewOffset"] ? [decoder decodeCGPointForKey:@"normalizedStreamViewOffset"] : CGPointZero;
+        self.streamViewScale = [decoder containsValueForKey:@"streamViewScale"] ? [decoder decodeFloatForKey:@"streamViewScale"] : 1.0;
         
         self.gamepadOverlayEnabled = [decoder containsValueForKey:@"gamepadOverlayEnabled"] ? [decoder decodeBoolForKey:@"gamepadOverlayEnabled"] : false;
 
@@ -227,6 +231,8 @@
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
     copy.pointerVelocityModeDivider = self.pointerVelocityModeDivider;
     copy.touchPointerVelocityFactor = self.touchPointerVelocityFactor;
+    copy.normalizedStreamViewOffset = self.normalizedStreamViewOffset;
+    copy.streamViewScale = self.streamViewScale;
     copy.gamepadOverlayEnabled = self.gamepadOverlayEnabled;
     copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
     // copy.initialTouchPressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.initialTouchPressureCurvePoints copyItems:YES];

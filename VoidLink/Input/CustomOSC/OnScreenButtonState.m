@@ -46,6 +46,7 @@
     [encoder encodeInt:self.sizeReference forKey:@"sizeReference"];
     [encoder encodeInt:self.vibrationStyle forKey:@"vibrationStyle"];
     [encoder encodeInt:self.mouseButtonAction forKey:@"mouseButtonAction"];
+    [encoder encodeBool:self.animatesTransition forKey:@"animatesTransition"];
     [encoder encodeInt:self.buttonMode forKey:@"slideMode"];  // buttonMode: previously slideMode, keep it for consistency
     [encoder encodeInt:self.autoTapInterval forKey:@"autoTapInterval"];
     [encoder encodeCGPoint:self.position forKey:@"position"];
@@ -95,6 +96,7 @@
         self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;
         self.vibrationStyle = [decoder containsValueForKey:@"vibrationStyle"] ? [decoder decodeIntForKey:@"vibrationStyle"] : UIImpactFeedbackStyleLight;
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
+        self.animatesTransition = [decoder containsValueForKey:@"animatesTransition"] ? [decoder decodeBoolForKey:@"animatesTransition"] : true;
         self.buttonMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
         self.autoTapInterval = [decoder containsValueForKey:@"autoTapInterval"] ? [decoder decodeIntForKey:@"autoTapInterval"] : 45;
         self.position = [decoder decodeCGPointForKey:@"position"];

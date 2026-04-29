@@ -503,11 +503,11 @@ BOOL isCustomResolution(int resolutionSelected) {
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadGameProfileConfigs)
-                                                 name:@"OscLayoutCloseNotification"
+                                                 name:@"GameProfileSelectorCloseNotification"
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadGameProfileConfigs)
-                                                 name:@"OscLayoutProfileSelctedInTableView"
+                                                 name:@"GameProfileSelectedNotification"
                                                object:nil];
         
     [[NSNotificationCenter defaultCenter] addObserver:self

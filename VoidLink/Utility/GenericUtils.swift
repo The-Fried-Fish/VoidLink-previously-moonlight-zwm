@@ -88,6 +88,18 @@ import UIKit
         }
         return false
     }
+    
+    @objc static func isFirstTappingMagnifier() -> Bool {
+        let key = "hasFirstTappingMagnifier2"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
         
     @objc static func isFirstTappingInputAccessoryBar() -> Bool {
         let key = "isFirstTappingInputAccessoryBar"

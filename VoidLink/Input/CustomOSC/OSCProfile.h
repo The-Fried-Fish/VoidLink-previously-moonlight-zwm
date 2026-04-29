@@ -62,6 +62,8 @@ typedef NS_ENUM(NSInteger, PencilHoverMode) {
 @property (nonatomic, assign) int controllerGyroSwitchToggle;
 @property (nonatomic, assign) CGFloat pointerVelocityModeDivider;
 @property (nonatomic, assign) CGFloat touchPointerVelocityFactor;
+@property (nonatomic, assign) CGPoint normalizedStreamViewOffset;
+@property (nonatomic, assign) CGFloat streamViewScale;
 
 @property (nonatomic, assign) bool gamepadOverlayEnabled;
 

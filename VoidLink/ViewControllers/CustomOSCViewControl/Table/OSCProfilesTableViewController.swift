@@ -254,7 +254,6 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
     func profileViewRefresh() {
         tableView.reloadData()
         needToUpdateOscLayoutTVC?()
-        NotificationCenter.default.post(name: Notification.Name("OscLayoutProfileSelctedInTableView"), object: self)
     }
 
     @IBAction func deleteTapped(_ sender: Any?) {

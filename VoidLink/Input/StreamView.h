@@ -62,7 +62,7 @@
                           andConfig:(StreamConfiguration*)streamConfig;
 - (void) clearOnScreenWidgets;
 - (void) reloadGameProfile:(OSCProfile* )profile reloadWidgets:(bool)reloadWidgets;
-- (void) saveStreamViewWidgetChanges;
+- (void) saveStreamingGameProfileChanges;
 - (bool) isOnScreenWidgetEnabled;
 
 - (CGSize) getVideoAreaSize;

@@ -28,7 +28,7 @@
 
 @interface StreamFrameViewController : GCEventViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, AVPictureInPictureControllerDelegate>
 #else
-@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate, OnScreenFunctionalButtonDelegate, AbstractGamepadOverlayCloseButtonDelegate>
+@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate, OnScreenFunctionalWidgetDelegate, AbstractGamepadOverlayCloseButtonDelegate>
 
 #endif
 @property (nonatomic, strong) StreamManager* streamMan;
@@ -43,6 +43,10 @@
 @property (nonatomic, strong) ImGuiRenderer *imguiView;
 @property (nonatomic, strong) UIView* virtualGamepadOverlay;
 
+@property (nonatomic, assign) CGPoint streamViewMagnifierContentOffset;
+@property (nonatomic, assign) CGFloat streamViewMagnifierZoomScale;
+
+
 
 - (void)updatePreferredDisplayMode:(BOOL)streamActive;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
@@ -50,5 +54,6 @@
 - (void)loadGameProfileConfigs:(OSCProfile* )profile;
 - (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0));
 - (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0));
+- (void)restorePersistedStreamViewOffsetAndScaleWithProfile:(OSCProfile* )profile;
 
 @end

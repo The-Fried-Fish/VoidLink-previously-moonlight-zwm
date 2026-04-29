@@ -7026,7 +7026,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "\nVoidLink 桌面模式快捷键：\n\nCtrl + Alt + Shift + D — 断开当前会话\n\nCtrl + Alt + Shift + Q — 断开当前会话并退出当前app\n\nCtrl + Alt + Shift + S — 展开设置菜单\n\nCtrl + Alt + Shift + O — 切换性能信息叠加\n\nCtrl + Alt + Shift + C — 切换鼠标指针可见性\n\n默认状态下鼠标无法在3D游戏中转动视角。如需串流游戏，请断开当前会话，前往设置菜单 -> 外设分区 -> 本地鼠标指针，选择“被窗口捕获”。"
           }
         },
@@ -7040,6 +7040,87 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "\nVoidLink 桌面模式快速鍵：\n\nCtrl + Alt + Shift + D — 中斷目前連線\n\nCtrl + Alt + Shift + Q — 中斷目前連線並退出目前app\n\nCtrl + Alt + Shift + S — 展開設定選單\n\nCtrl + Alt + Shift + O — 切換統計資訊覆蓋\n\nCtrl + Alt + Shift + C — 切換滑鼠指標可見性\n\n預設狀態下，滑鼠無法在 3D 遊戲中轉動視角。如需進行串流遊戲，請中斷目前會話，前往設定選單 → 外設分區 → 本地滑鼠指標，選擇「被視窗捕獲」。"
+          }
+        }
+      }
+    },
+    "Magnifier" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大镜"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大鏡"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大鏡"
+          }
+        }
+      }
+    },
+    "magnifierPersistTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream view offset & scale are saved in the game profile."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流视图的偏移和放大倍数保存在 [游戏配置] 中."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流視圖的偏移和放大倍率保存在 [遊戲配置] 中。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流視圖的偏移和放大倍率保存在 [遊戲配置] 中。"
+          }
+        }
+      }
+    },
+    "magnifierTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Single touch pans stream view; two-finger pinch zooms stream view. Double tap to reset."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单指平移/竖移串流视图，双指捏合缩放串流视图。双击复原串流视图。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單指平移/豎移串流視圖，雙指捏合縮放串流視圖。雙擊復原串流視圖。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單指平移/豎移串流視圖，雙指捏合縮放串流視圖。雙擊復原串流視圖。"
           }
         }
       }

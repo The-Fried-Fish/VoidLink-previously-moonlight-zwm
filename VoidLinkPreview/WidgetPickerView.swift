@@ -659,6 +659,16 @@ struct WidgetPickerView: View {
             allowsShortcutCombo: false,
             forcedComboMode: .skill
         ),
+        FunctionalButtonOption(
+            label: SwiftLocalizationHelper.localizedString(forKey: "Magnifier"),
+            cmd: "MAGNIFIER",
+            tip: SwiftLocalizationHelper.localizedString(forKey: "magnifierTip"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: .skill
+        ),
     ]
 
     private var defaultTipMessage: String {

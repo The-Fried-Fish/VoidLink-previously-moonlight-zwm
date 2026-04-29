@@ -313,6 +313,66 @@
         }
       }
     },
+    "4Zz-qG-bsx.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 4Zz-qG-bsx.segmentTitles[0] = \"no\"; ObjectID = \"4Zz-qG-bsx\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "no"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
+        }
+      }
+    },
+    "4Zz-qG-bsx.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; 4Zz-qG-bsx.segmentTitles[1] = \"yes\"; ObjectID = \"4Zz-qG-bsx\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "yes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用"
+          }
+        }
+      }
+    },
     "5JB-m0-nUF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"YUV 4:4:4\"; ObjectID = \"5JB-m0-nUF\";",
       "extractionState" : "extracted_with_value",
@@ -1887,6 +1947,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Profiles"
+          }
+        }
+      }
+    },
+    "cSB-7c-iRt.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"                                    \"; ObjectID = \"cSB-7c-iRt\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "                                    "
           }
         }
       }
@@ -4083,6 +4155,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "麥克風轉送(實驗性)"
+          }
+        }
+      }
+    },
+    "o1c-Cn-WwN.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Animated\"; ObjectID = \"o1c-Cn-WwN\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Animated"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画效果"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動畫效果"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動畫效果"
           }
         }
       }

@@ -619,7 +619,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     else return longSide;
 }
 
-- (void)saveStreamViewWidgetChanges{
+- (void)saveStreamingGameProfileChanges{
     /*
     NSMutableDictionary* relocatedWidgetDict = [NSMutableDictionary dictionary];
     
@@ -640,7 +640,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         if(!hasFolderStateChanged) hasFolderStateChanged = widget.folded != widget.persistedFolded;
     }
         
-    if(relocatedWidgetSequences.count == 0 && !hasFolderStateChanged && !OnScreenWidgetView.relocatedDuringStreaming) return;
+    if(relocatedWidgetSequences.count == 0 && !hasFolderStateChanged && !OnScreenWidgetView.profileChangedDuringStreaming) return;
     NSLog(@"relocatedWidgetSequences.count %lu, hasFolderStateChanged %d    %F", relocatedWidgetSequences.count, hasFolderStateChanged, CACurrentMediaTime());
     
     oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
@@ -660,9 +660,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         }
     }
     
+    StreamFrameViewController* streamFrameVC = (StreamFrameViewController*)_streamFrameVC;
+    
     newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
-    newProfile.gamepadOverlayEnabled = ((StreamFrameViewController*)_streamFrameVC).virtualGamepadOverlay != nil;
+    newProfile.gamepadOverlayEnabled = streamFrameVC.virtualGamepadOverlay != nil;
+    newProfile.normalizedStreamViewOffset = CGPointMake(streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
+    newProfile.streamViewScale = streamFrameVC.streamViewMagnifierZoomScale;
     
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
 }
@@ -693,7 +697,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         OnScreenWidgetView.buttonVisualFeedbackEnabled = self->settings.buttonVisualFeedback;
         OnScreenWidgetView.gamepadOverlayFLag = profile.gamepadOverlayEnabled;
-        OnScreenWidgetView.relocatedDuringStreaming = false;
+        OnScreenWidgetView.profileChangedDuringStreaming = false;
 
         bool hasLegacyWidget = false;
         if(reloadWidgets && !OnScreenWidgetView.editMode){
@@ -709,7 +713,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 if(buttonState.widgetType == CustomOnScreenWidget){
                     OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:profile]; //reconstruct widgetView
                     
-                    widgetView.functionalButtonDelegate = (id<OnScreenFunctionalButtonDelegate>)self->_streamFrameVC;
+                    widgetView.functionalWidgetDelegate = (id<OnScreenFunctionalWidgetDelegate>)self->_streamFrameVC;
                     widgetView.motionHandler = motionHandler;
                     
                     widgetView.sequence = buttonState.sequence == -1 ? i : buttonState.sequence;
@@ -735,6 +739,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.autoTapInterval = buttonState.autoTapInterval;
                     [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
                     widgetView.mouseButtonAction = buttonState.mouseButtonAction;
+                    widgetView.animatesTransition = buttonState.animatesTransition;
                     widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
                     widgetView.sensitivityFactorY = buttonState.sensitivityFactorY;
                     widgetView.slideThreshold = buttonState.slideThreshold;
@@ -827,6 +832,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         if(reloadWidgets && !OnScreenWidgetView.editMode){
             [PencilHandler.shared setupPressureLUTWithProfile:profile];
         }
+        
+        [(StreamFrameViewController* )self->_streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
     });
 }
 
