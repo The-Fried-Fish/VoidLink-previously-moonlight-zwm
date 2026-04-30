@@ -1046,19 +1046,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "键鼠布局"
+            "value" : "键鼠FPS"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "鍵鼠佈局"
+            "state" : "translated",
+            "value" : "鍵鼠FPS"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "鍵鼠佈局"
+            "state" : "translated",
+            "value" : "鍵鼠FPS"
           }
         }
       }
@@ -3700,29 +3700,6 @@
         }
       }
     },
-    "Current profile updated successfully" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当前布局已修改"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目前版面配置已成功更新"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目前版面配置已成功更新"
-          }
-        }
-      }
-    },
     "Custom Resolution Selected" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6235,6 +6212,29 @@
         }
       }
     },
+    "Gyro Button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀按鍵"
+          }
+        }
+      }
+    },
     "Gyro button on controller" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6346,6 +6346,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "陀螺儀控制項不能與方向鍵組合"
+          }
+        }
+      }
+    },
+    "gyroButtonTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Before you start, please navigate to 'Settings Menu → Motion Control Section → Map Gyro to’ to confirm whether the gyroscope output is set to mouse or controller stick."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "开始之前，请先前往 “设置菜单 → 体感控制分区 → 陀螺仪映射为” 选项确认陀螺仪输出为鼠标还是手柄摇杆。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開始之前，請先前往「設定選單 → 體感控制分區 → 陀螺儀映射為」選項，確認陀螺儀輸出為滑鼠還是手把搖桿。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開始之前，請先前往「設定選單 → 體感控制分區 → 陀螺儀映射為」選項，確認陀螺儀輸出為滑鼠還是手把搖桿。"
           }
         }
       }
@@ -7283,25 +7312,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Tap the drawer icon to duplicate the default profile, since it cannot be modified or overwritten.\n\n- Tap to load configs for each widget.\n\n- To ensure smooth gameplay without interference:\n   - Disable All gestures in: Settings → Multitasking & Gestures\n   - Disable Settings → Accessibility → Touch → AssistiveTouch\n   - Disable Settings → Accessibility → Zoom\n\n- We recommend using new widgets instead of legacy on-screen controls."
+            "value" : "- Tap the drawer icon to duplicate the default profile, since it could be overwritten after app update.\n\n- Tap to load configs for each widget.\n\n- To ensure smooth gameplay without interference:\n   - Disable All gestures in: Settings → Multitasking & Gestures\n   - Disable Settings → Accessibility → Touch → AssistiveTouch\n   - Disable Settings → Accessibility → Zoom\n\n- We recommend using new widgets instead of legacy on-screen controls."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 请点击抽屉图标复制一份默认布局，因为默认布局无法修改或覆盖。\n\n- 点击以加载每个控件的配置。\n\n- 为避免游戏过程被干扰，请务必:\n   - 设置 → 多任务与手势 → 关闭所有手势\n   - 关闭: 设置 → 辅助功能 → 触控 → 辅助触控\n   - 关闭: 设置 → 辅助功能 → 缩放\n\n- 建议使用新版屏显控件，而非旧版屏显手柄。"
+            "value" : "- 请点击抽屉图标复制一份默认布局。因为预置的模板布局可能因app升级被覆盖。\n\n- 点击以加载每个控件的配置。\n\n- 为避免游戏过程被干扰，请务必:\n   - 设置 → 多任务与手势 → 关闭所有手势\n   - 关闭: 设置 → 辅助功能 → 触控 → 辅助触控\n   - 关闭: 设置 → 辅助功能 → 缩放\n\n- 建议使用新版屏显控件，而非旧版屏显手柄。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 請點擊抽屜圖示複製一份預設版面，因為預設版面無法修改或覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
+            "value" : "- 請點擊抽屜圖示複製一份預設佈局。因為預設的模板佈局可能會因 App 升級而被覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 請點擊抽屜圖示複製一份預設版面，因為預設版面無法修改或覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
+            "value" : "- 請點擊抽屜圖示複製一份預設佈局。因為預設的模板佈局可能會因 App 升級而被覆蓋。\n\n- 點擊以載入每個元件的設定。\n\n- 為避免遊戲過程被干擾，請務必:\n   - 設定 → 多工處理與手勢 → 關閉所有手勢\n   - 關閉: 設定 → 輔助使用 → 觸控 → 輔助觸控\n   - 關閉: 設定 → 輔助使用 → 縮放\n\n- 建議使用新版螢幕控制元件，而非舊版螢幕顯示手把。"
           }
         }
       }
@@ -10078,6 +10107,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "版面清單"
+          }
+        }
+      }
+    },
+    "profileSaveTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current profile updated successfully.\nThe app update may overwrite the preset game profiles. If you just saved a preset profile, please duplicate it and modify the copy instead."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前布局已修改。\nApp升级可能覆盖预置的游戏配置，如果您刚刚保存的是预置游戏配置，先将该配置复制，后续请修改其副本。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前配置已成功更新\nApp升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前配置已成功更新\nApp升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
           }
         }
       }

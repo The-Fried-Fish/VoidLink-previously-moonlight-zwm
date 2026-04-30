@@ -2006,7 +2006,9 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
+    
+    [self resetMagnifierStreamViewWithAnimated:false];
+    
     // handle view size change for on-screen widgets
     CGSize oldSize = self.view.bounds.size;
     CGFloat scaleX = size.width  / oldSize.width;

@@ -58,6 +58,7 @@
     [encoder encodeFloat:self.touchPointerVelocityFactor forKey:@"touchPointerVelocityFactor"];
     [encoder encodeCGPoint:self.normalizedStreamViewOffset forKey:@"normalizedStreamViewOffset"];
     [encoder encodeFloat:self.streamViewScale forKey:@"streamViewScale"];
+    [encoder encodeBool:self.gamepadOverlayEnabled forKey:@"gamepadOverlayEnabled"];
     
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
     // [encoder encodeObject:self.initialTouchPressureCurvePoints forKey:@"initialTouchPressureCurvePoints"];
@@ -213,7 +214,6 @@
     copy.isSelected = self.isSelected;
     copy.useBuiltinGyro = self.useBuiltinGyro;
     copy.swapYawAndRoll = self.swapYawAndRoll;
-    copy.isSelected = self.isSelected;
     copy.mapGyroTo = self.mapGyroTo;
     copy.yawPitchToRightStick = self.yawPitchToRightStick;
     copy.rollToLeftStick = self.rollToLeftStick;

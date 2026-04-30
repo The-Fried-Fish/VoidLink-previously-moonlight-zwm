@@ -1502,7 +1502,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         let success = profilesManager.updateSelectedProfile(layoutOSC.oscButtonLayerPool)
         guard sender != nil else { return }
         let message = success
-            ? LocalizationHelper.localizedString(forKey: "Current profile updated successfully")
+            ? LocalizationHelper.localizedString(forKey: "profileSaveTip")
             : LocalizationHelper.localizedString(forKey: "Profile Default can not be overwritten")
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in

@@ -286,7 +286,8 @@ static CGRect layoutViewBounds;
     
     // NSString* persistedKey = @"widgetProfileUpdated-20251015";
     // NSString* persistedKey = @"widgetProfileUpdated-20260322";
-    NSString* persistedKey = @"widgetProfileUpdated-20260413-2";
+    // NSString* persistedKey = @"widgetProfileUpdated-20260413-2";
+    NSString* persistedKey = @"widgetProfileUpdated-20260430-1";
     BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
     
     if(profiles.count == 0 || needImportDefaultTemplates){
@@ -462,8 +463,8 @@ static CGRect layoutViewBounds;
         buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView];
         buttonState.heightFactor = [self normalizeSizeHeightFactorWith:widgetView];
         buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];
-        buttonState.backgroundAlpha = widgetView.backgroundAlpha;
-        buttonState.labelAlpha = widgetView.labelAlpha;
+        buttonState.backgroundAlpha = widgetView.originalBackgroundAlpha;
+        buttonState.labelAlpha = widgetView.originalLabelAlpha;
         buttonState.borderAlpha = widgetView.borderAlpha;
         buttonState.highlightAlpha = widgetView.highlightAlpha;
         buttonState.borderWidth = widgetView.borderWidth;

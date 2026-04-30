@@ -138,7 +138,7 @@ import ObjectiveC.runtime
     @objc public var storedCenter: CGPoint = .zero // location from persisted data
     @objc public var initialCenter: CGPoint = .zero // location from persisted data
     @objc public var layoutChanges: [CGPoint] = []
-    @objc public var mouseButtonAction: MouseButtonAction = .hovering;
+    @objc public var mouseButtonAction: MouseButtonAction = .noClick;
     @objc public var mouseButtonActionDelay: TimeInterval = 0.005;
 
     //autoTapTimer
@@ -237,6 +237,7 @@ import ObjectiveC.runtime
     @objc public var pitchFactor: CGFloat = 1.0
     @objc public var rollFactor: CGFloat = 1.0
     private var gyroControlPreviousStatus: NSMutableDictionary = NSMutableDictionary()
+    private var isFirstTappingOnscreenGyroButton: Bool = true
     
     private var superViewWidth: CGFloat = 0
     private var superViewHeight: CGFloat = 0
@@ -2663,6 +2664,10 @@ import ObjectiveC.runtime
     }
     
     private func handleMotionControlButtonDown(){
+        if isFirstTappingOnscreenGyroButton, GenericUtils.isFirstTappingOnscreenGyroButton() {
+            self.popGyroButtonTip()
+        }
+        isFirstTappingOnscreenGyroButton = false
         switch self.motionControlButtonString {
         case "GYRO":
             self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
@@ -3232,7 +3237,17 @@ import ObjectiveC.runtime
             countdown: 5,
         )
     }
-
+    
+    private func popGyroButtonTip() {
+        AlertControllerUtil.showAlert(
+            in: self.parentViewController,
+            title: SwiftLocalizationHelper.localizedString(forKey: "Gyro Button"),
+            message: "\n\(SwiftLocalizationHelper.localizedString(forKey: "gyroButtonTip"))",
+            withCancel: false,
+            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
+            countdown: 5,
+        )
+    }
     
     // MARK: - Auto Dock
     private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90

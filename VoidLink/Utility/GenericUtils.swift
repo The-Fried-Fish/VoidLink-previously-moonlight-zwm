@@ -45,7 +45,6 @@ import UIKit
         let key = "hasLaunchedPressureCurveTool"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
-        
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true
@@ -57,7 +56,6 @@ import UIKit
         let key = "hasTouchedGamepadOverlayFeature20260405-2"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
-
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true
@@ -69,7 +67,6 @@ import UIKit
         let key = "hasTappedGameProfileSelectorFromMainFrame-6"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
-
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true
@@ -81,7 +78,6 @@ import UIKit
         let key = "hasTappedFolderInLayoutTool"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
-        
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true
@@ -90,10 +86,20 @@ import UIKit
     }
     
     @objc static func isFirstTappingMagnifier() -> Bool {
-        let key = "hasFirstTappingMagnifier2"
+        let key = "hasTappedMagnifier2"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
         
+    @objc static func isFirstTappingOnscreenGyroButton() -> Bool {
+        let key = "hasTappedOnscreenGyroButton"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true
@@ -105,7 +111,6 @@ import UIKit
         let key = "isFirstTappingInputAccessoryBar"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
-
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true
@@ -118,7 +123,6 @@ import UIKit
         let key = "hasStreamedOnMac"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
-        
         if !launchedBefore {
             defaults.set(true, forKey: key)
             return true

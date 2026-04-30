@@ -669,6 +669,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
     newProfile.gamepadOverlayEnabled = streamFrameVC.virtualGamepadOverlay != nil;
+
     newProfile.normalizedStreamViewOffset = CGPointMake(streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
     newProfile.streamViewScale = streamFrameVC.streamViewMagnifierZoomScale;
     

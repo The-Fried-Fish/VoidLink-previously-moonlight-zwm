@@ -307,7 +307,7 @@ private final class InputAccessoryCapsuleButton: UIButton {
         
         if isTapToToggleMode {
             if isLogicallyPressed {
-                if !InputAccessoryBar.isEditingItems {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: comboButtons,pressOnly: true)}
+                if !InputAccessoryBar.isEditingItems {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: comboButtons, delay: 0.1, pressOnly: true)}
             }
             else {
                 CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: comboButtons, releaseOnly: true)
@@ -316,7 +316,7 @@ private final class InputAccessoryCapsuleButton: UIButton {
         }
         else {
             isLogicallyPressed = false
-            if !InputAccessoryBar.isEditingItems {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: comboButtons)}
+            if !InputAccessoryBar.isEditingItems {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: comboButtons, delay: 0.1)}
         }
         
         guard isPressVisualActive || isPressInAnimationRunning else { return }
@@ -1208,6 +1208,8 @@ final class InputAccessoryBar: UIView, UIScrollViewDelegate, WidgetPickerViewCon
             InputAccessoryBarButtonRecord(buttonLabel: "Tab", cmdString: "TAB+Null"),
             InputAccessoryBarButtonRecord(buttonLabel: "←", cmdString: "LEFTARR"),
             InputAccessoryBarButtonRecord(buttonLabel: "→", cmdString: "RIGHTARR"),
+            InputAccessoryBarButtonRecord(buttonLabel: "PgUp", cmdString: "PgUp"),
+            InputAccessoryBarButtonRecord(buttonLabel: "PgDn", cmdString: "PgDown"),
             InputAccessoryBarButtonRecord(buttonLabel: "Del", cmdString: "DEL"),
         ]
     }
