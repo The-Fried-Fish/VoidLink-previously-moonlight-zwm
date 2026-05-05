@@ -160,6 +160,7 @@ import ObjectiveC.runtime
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasMinStickOffset: Bool = false
     @objc public var hasStickIndicator: Bool = false
+    @objc public var hasDisplacementBasedStickPads: Bool = false
     @objc public var hasComponent: Bool = false
     @objc public var hasSensitivityX: Bool = false
     @objc public var sensitivityXMin: CGFloat = 0
@@ -212,6 +213,8 @@ import ObjectiveC.runtime
     private let VectorStickFactor = 1.5167
     private var weightedDeltaX: Int = 0
     private var weightedDeltaY: Int = 0
+    private var weightedOffsetX: CGFloat = 0
+    private var weightedOffsetY: CGFloat = 0
 
     // for LSPAD, RSPAD
     @objc public var offSetX: CGFloat
@@ -499,7 +502,8 @@ import ObjectiveC.runtime
     @objc public func accessWidgetAttributes(){
         self.hasMinStickOffset = (CommandManager.stickTouchPads.contains(self.touchPadString)
                                   || CommandManager.stickWheels.contains(self.touchPadString))
-        self.hasStickIndicator = CommandManager.nonVectorStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
+        self.hasStickIndicator = CommandManager.displacementBasedStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
+        self.hasDisplacementBasedStickPads = CommandManager.displacementBasedStickPads.contains(self.touchPadString)
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.stickWheels.contains(self.touchPadString)
         self.hasSlideThreshold = CommandManager.mousePads.contains(self.touchPadString)
@@ -1697,7 +1701,11 @@ import ObjectiveC.runtime
     
     private func handleButtonUp(leaveFunctionalButtonAlone:Bool = false, event: UIEvent? = nil) {
         if !self.isUserInteractionEnabled {return}
-        if !OnScreenWidgetView.editMode {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
+        if !OnScreenWidgetView.editMode {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (self.hasDisplacementBasedStickPads ? 0.02 : 0)) {
+                self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
+            }
+        }
         
         if !OnScreenWidgetView.editMode && !self.motionControlButtonString.isEmpty{
             self.handleMotionControlButtonUp()
@@ -2050,11 +2058,6 @@ import ObjectiveC.runtime
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
-                case "LSPAD","RSPAD":
-                    self.showStickIndicator()
-                    if quickDoubleTapDetected {
-                        self.showl3r3Indicator()
-                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "LSVPAD":
                     self.clearLeftStickTouchPadFlag()
                     self.inertialScroller.timer?.pause()
@@ -2111,6 +2114,36 @@ import ObjectiveC.runtime
                     self.handleMousePadButtonActionDown(touch: touch)
                 }
             }
+            
+            if touches.count == 1 {
+                switch self.touchPadString {
+                case "LSPAD":
+                    self.getVector(touch: touch)
+                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offSetX * self.sensitivityFactorY
+                    self.clearLeftStickTouchPadFlag()
+                    self.inertialScroller.timer?.pause()
+                    if widgetType == .touchPad {self.showStickIndicator()
+                        if quickDoubleTapDetected {
+                            self.showl3r3Indicator()
+                            self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
+                    }
+                case "RSPAD":
+                    self.getVector(touch: touch)
+                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offSetX * self.sensitivityFactorY
+                    self.clearRightStickTouchPadFlag()
+                    self.inertialScroller.timer?.pause()
+                    if widgetType == .touchPad {self.showStickIndicator()
+                        if quickDoubleTapDetected {
+                            self.showl3r3Indicator()
+                            self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
+                    }
+                default:
+                    break
+                }
+            }
+            
             
             if self.widgetType == WidgetTypeEnum.touchPad && self.touchPadString == "DS4TOUCH" {
                 self.handleControllerTouchesDown(touches: touches)
@@ -2415,7 +2448,6 @@ import ObjectiveC.runtime
         
         self.deltaX = currentTouchLocation.x - self.latestTouchLocation.x
         self.deltaY = currentTouchLocation.y - self.latestTouchLocation.y
-        
         if self.hasInertia && firstTouchMoved {
             self.inertialScroller.vector = UITouchUtil.vector(of: touch, in: self)
         }
@@ -2424,6 +2456,11 @@ import ObjectiveC.runtime
                              && !(self.isDirectionPad && sensitivityFactorX==0 && sensitivityFactorY==0))
         self.offSetX = touchCenteredOffset ? currentTouchLocation.x - self.touchBeganLocation.x : currentTouchLocation.x - self.bounds.midX
         self.offSetY = touchCenteredOffset ? currentTouchLocation.y - self.touchBeganLocation.y : currentTouchLocation.y - self.bounds.midY
+        if self.hasInertia && hasDisplacementBasedStickPads {
+            let circulatedOffset = ControllerUtil.circulated(offsetVector: CGVector(dx: offSetX, dy: offSetY))
+            self.offSetX = circulatedOffset.dx
+            self.offSetY = circulatedOffset.dy
+        }
     }
     
     private func updateTouchLocation(touch: UITouch){
@@ -2486,14 +2523,18 @@ import ObjectiveC.runtime
             case "LSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
-                    self.sendLeftStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY)
+                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.sendLeftStickTouchPadEvent(weightedTouchX: self.weightedOffsetX, weightedTouchY: self.weightedOffsetY, circulate: true)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
                 self.updateTouchLocation(touch: touch)
             case "RSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
-                    self.sendRightStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY)
+                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.sendRightStickTouchPadEvent(weightedTouchX: self.weightedOffsetX, weightedTouchY: self.weightedOffsetY, circulate: true)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
                 self.updateTouchLocation(touch: touch)
@@ -2922,10 +2963,34 @@ import ObjectiveC.runtime
                 self.clearRightStickTouchPadFlag()
                 self.setHiddenForStickWheelLayer(hidden: true)
             case "LSPAD":
-                self.clearLeftStickTouchPadFlag()
+                if self.inertiaEnabled() {
+                    self.getVector(touch: touches.first!)
+                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.inertialScroller.vector = CGVector(dx: weightedOffsetX, dy: weightedOffsetY)
+                    if self.inertialScroller.handler == nil {
+                        self.inertialScroller.handler = {
+                            self.sendLeftStickTouchPadEvent(weightedTouchX: self.inertialScroller.vector.dx, weightedTouchY: self.inertialScroller.vector.dy, circulate: true)
+                        }
+                    }
+                    self.inertialScroller.timer?.restart()
+                }
+                else {self.clearLeftStickTouchPadFlag()}
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "RSPAD":
-                self.clearRightStickTouchPadFlag()
+                if self.inertiaEnabled() {
+                    self.getVector(touch: touches.first!)
+                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.inertialScroller.vector = CGVector(dx: weightedOffsetX, dy: weightedOffsetY)
+                    if self.inertialScroller.handler == nil {
+                        self.inertialScroller.handler = {
+                            self.sendRightStickTouchPadEvent(weightedTouchX: self.inertialScroller.vector.dx, weightedTouchY: self.inertialScroller.vector.dy, circulate: true)
+                        }
+                    }
+                    self.inertialScroller.timer?.restart()
+                }
+                else {self.clearRightStickTouchPadFlag()}
                 if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
             case "LSVPAD":
                 if self.inertiaEnabled() {
