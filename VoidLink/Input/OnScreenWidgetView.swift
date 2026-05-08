@@ -40,8 +40,8 @@ import ObjectiveC.runtime
         // print("postExclusiveUnfoldedSequences \(postExclusiveUnfoldedSequences) \(CACurrentMediaTime())")
     }
 
-    @objc public weak var guidelineDelegate: OnScreenWidgetGuidelineUpdateDelegate?
-    @objc protocol OnScreenWidgetGuidelineUpdateDelegate: AnyObject {
+    @objc public weak var layoutUpdateDelegate: OnScreenWidgetLayoutUpdateDelegate?
+    @objc protocol OnScreenWidgetLayoutUpdateDelegate: AnyObject {
         func updateGuidelinesForOnScreenWidget(_ sender: Any)
     }
     
@@ -107,7 +107,21 @@ import ObjectiveC.runtime
     @objc public var logicallyDown: Bool = false
     @objc public var widthFactor: CGFloat = 1.0
     @objc public var heightFactor: CGFloat = 1.0
-    @objc public var componentSizeFactor: CGFloat = 2.88
+    @objc public var componentSizeFactor: CGFloat = 2.88 {
+        didSet{
+            if self.isStickWheel {
+                self.setupStickWheelLayers()
+            }
+            if self.isDisplacementBasedStickPad {
+                stickThumbSize = self.getDiameter(lengthFactor: self.componentSizeFactor)/4
+                self.denormalizedComponentSizeFactor = stickThumbSize*4/baselineDiameter
+                stickAnchorLayer.removeFromSuperlayer()
+                stickThumb.removeFromSuperlayer()
+                self.showStickIndicator()
+                self.updateStickIndicator()
+            }
+        }
+    }
 
     @objc public var buttonMode: ButtonMode = .slideToToggle
     @objc private var tapToToggleFlag: Bool = true
@@ -124,8 +138,19 @@ import ObjectiveC.runtime
 
     
     @objc public var borderWidth: CGFloat = 0.0
+    
     @objc public var backgroundAlpha: CGFloat = 0.5
-    @objc public var originalBackgroundAlpha: CGFloat = 0.5
+    @objc public var originalBackgroundAlpha: CGFloat = 0.5{
+        didSet {
+            if self.isDisplacementBasedStickPad {
+                self.stickAnchorLayer.removeFromSuperlayer()
+                self.stickThumb.removeFromSuperlayer()
+                self.showStickIndicator()
+                self.updateStickIndicator()
+            }
+        }
+    }
+    
     @objc public var componentAlpha: CGFloat = 1
     @objc public var labelAlpha: CGFloat = 0.82
     @objc public var originalLabelAlpha: CGFloat = 0.82
@@ -159,8 +184,21 @@ import ObjectiveC.runtime
 
     // for all touchPad or buttons hybrid with touchPads
     @objc public var hasMinStickOffset: Bool = false
-    @objc public var hasStickIndicator: Bool = false
-    @objc public var hasDisplacementBasedStickPads: Bool = false
+    @objc public var hasStickIndicatorOffset: Bool = false
+    @objc public var isDisplacementBasedStickPad: Bool = false
+    @objc public var hasAnchorMode: Bool = false
+
+    @objc public var hasDisplacementBasedStickPad: Bool = false {
+        didSet {
+            if hasDisplacementBasedStickPad {
+                self.sensitivityXMin = 0.17
+                self.sensitivityXMax = 1.1
+                self.sensitivityYMin = 0.17
+                self.sensitivityYMax = 1.1
+            }
+        }
+    }
+    
     @objc public var hasComponent: Bool = false
     @objc public var hasSensitivityX: Bool = false
     @objc public var sensitivityXMin: CGFloat = 0
@@ -216,16 +254,27 @@ import ObjectiveC.runtime
     private var weightedOffsetX: CGFloat = 0
     private var weightedOffsetY: CGFloat = 0
 
-    // for LSPAD, RSPAD
-    @objc public var offSetX: CGFloat
-    @objc public var offSetY: CGFloat
-    private var touchCenteredOffset: Bool = false
-    private let crossMarkColor: CGColor = UIColor(white: 1, alpha: 0.70).cgColor
-    private let stickBallColor: CGColor = UIColor(white: 1, alpha: 0.75).cgColor
-    private var stickInputScale: CGFloat = 35
+    // shared touch-pad offsets/state
+    @objc public var offsetX: CGFloat
+    @objc public var offsetY: CGFloat
+    @objc var touchPointAnchored: Bool = false {
+        didSet {
+            // guard OnScreenWidgetView.editMode else {return}
+            if self.isDisplacementBasedStickPad {
+                self.hasStickIndicatorOffset = touchPointAnchored
+                self.stickAnchorLayer.removeFromSuperlayer()
+                self.stickThumb.removeFromSuperlayer()
+                self.showStickIndicator()
+                self.updateStickIndicator()
+            }
+        }
+    }
+    
     @objc public var l3r3Indicator = CAShapeLayer()
-    private let stickBallMaxOffset = 18.0
-    @objc public var crossMarkLayer = CAShapeLayer()
+
+    // for LSPAD, RSPAD
+    @objc public var stickThumb = CAShapeLayer()
+    @objc public var stickAnchorLayer = CAShapeLayer()
     
     // LSWHEEL/RSWHEEL
     @objc public var stickWheelLayer = CALayer()
@@ -234,7 +283,18 @@ import ObjectiveC.runtime
     @objc public var dWheelWalkModeThreshold: CGFloat
 
     // this is for all stick pads and mouse Pad
-    @objc public var sensitivityFactorX: CGFloat = 1.0
+    @objc public var sensitivityFactorX: CGFloat = 1.0 {
+        didSet {
+            guard OnScreenWidgetView.editMode else {return}
+            if self.hasDisplacementBasedStickPad {
+                self.stickAnchorLayer.removeFromSuperlayer()
+                self.stickThumb.removeFromSuperlayer()
+                self.showStickIndicator()
+                self.updateStickIndicator()
+            }
+        }
+    }
+    
     @objc public var sensitivityFactorY: CGFloat = 1.0
     @objc public var yawFactor: CGFloat = 1.0
     @objc public var pitchFactor: CGFloat = 1.0
@@ -252,7 +312,13 @@ import ObjectiveC.runtime
     private var touchTapTimeInterval: TimeInterval
     private var touchTapTimeStamp: TimeInterval
     private var QUICK_TAP_TIME_INTERVAL = 0.2
-    @objc public var stickIndicatorOffset: CGFloat = 120
+    @objc public var stickIndicatorOffset: CGFloat = 120 {
+        didSet {
+            if self.isDisplacementBasedStickPad {
+                self.updateStickIndicator()
+            }
+        }
+    }
     
     // for all LRUD pads
     
@@ -275,7 +341,7 @@ import ObjectiveC.runtime
     @objc public var sprintKeyThresholdPreviewLayer = CAShapeLayer()
     
     // for DPAD LRUD pad
-    @objc public var lrudIndicatorBall = CAShapeLayer()
+    @objc public var anchorBall = CAShapeLayer()
     private let triggeringAngle = 67.5
     private enum Direction: Int {
         case right = 1
@@ -416,8 +482,8 @@ import ObjectiveC.runtime
         self.latestTouchLocation = CGPoint(x: 0, y: 0)
         self.deltaX = 0
         self.deltaY = 0
-        self.offSetX = 0
-        self.offSetY = 0
+        self.offsetX = 0
+        self.offsetY = 0
         self.onScreenControls = OnScreenControls()
         self.appWindow = UIApplication.shared.windows.first!
         self.quickDoubleTapDetected = false
@@ -473,11 +539,23 @@ import ObjectiveC.runtime
                 self.widthFactor = 2
                 self.heightFactor = 2.6
                 self.backgroundAlpha = 1
+                self.originalBackgroundAlpha = 1
                 self.componentAlpha = self.backgroundAlpha
                 self.borderAlpha = 0.05
                 self.sensitivityFactorX = 0.42
                 self.sensitivityFactorY = 0.42
                 self.componentSizeFactor = 2.8
+            }
+            if self.isDisplacementBasedStickPad {
+                self.widthFactor = 1.8
+                self.heightFactor = 1.8
+                self.backgroundAlpha = 0.43
+                self.originalBackgroundAlpha = 0.43
+                self.componentAlpha = self.backgroundAlpha
+                self.borderAlpha = 0.05
+                self.sensitivityFactorX = 0.6
+                self.sensitivityFactorY = 0.6
+                self.componentSizeFactor = 0.85
             }
             if self.isDirectionPad {
                 self.widthFactor = 2
@@ -502,8 +580,11 @@ import ObjectiveC.runtime
     @objc public func accessWidgetAttributes(){
         self.hasMinStickOffset = (CommandManager.stickTouchPads.contains(self.touchPadString)
                                   || CommandManager.stickWheels.contains(self.touchPadString))
-        self.hasStickIndicator = CommandManager.displacementBasedStickPads.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
-        self.hasDisplacementBasedStickPads = CommandManager.displacementBasedStickPads.contains(self.touchPadString)
+        
+        self.hasDisplacementBasedStickPad = CommandManager.displacementBasedStickPads.contains(self.touchPadString)
+        self.isDisplacementBasedStickPad = self.hasDisplacementBasedStickPad && widgetType == WidgetTypeEnum.touchPad
+        self.hasStickIndicatorOffset = isDisplacementBasedStickPad && touchPointAnchored
+
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.stickWheels.contains(self.touchPadString)
         self.hasSlideThreshold = CommandManager.mousePads.contains(self.touchPadString)
@@ -545,7 +626,7 @@ import ObjectiveC.runtime
         self.isFolder = self.cmdString.contains("FOLDER")
         self.containsShortcutAction = self.cmdString.contains("+")
 
-        self.hasComponent = self.isStickWheel
+        self.hasComponent = self.isStickWheel || (self.hasDisplacementBasedStickPad && self.widgetType == .touchPad && !self.touchPointAnchored)
         self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
         
         /*
@@ -562,6 +643,8 @@ import ObjectiveC.runtime
         self.standardFoldingInterval = widgetType == .touchPad ? 0.05 : 0.15;
         
         self.isMagnifier = self.cmdString.contains("MAGNIFIER")
+        
+        self.hasAnchorMode = isDisplacementBasedStickPad || isDirectionPad
     }
     
     // ======================================================================================================
@@ -719,7 +802,7 @@ import ObjectiveC.runtime
         highlightAlpha = alpha
         self.buttonDownVisualEffectLayer.borderColor = standardHighlightColor.withAlphaComponent(highlightAlpha).cgColor
         self.l3r3Indicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
-        self.lrudIndicatorBall.borderColor = self.buttonDownVisualEffectLayer.borderColor
+        self.anchorBall.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.upIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.downIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.leftIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
@@ -901,6 +984,10 @@ import ObjectiveC.runtime
 
             text = self.nonEditableWidgetLabel
         }
+        
+        if self.isDisplacementBasedStickPad {
+            text = ""
+        }
                 
         let attr = NSAttributedString(
             string: self.folded ? "[\(text)]" : (self.isFolder ? " 🟡 \(text)" : "\(text)"),
@@ -1005,12 +1092,14 @@ import ObjectiveC.runtime
         if CommandManager.stickTouchPads.contains(touchPadString) {setupL3R3Indicator()}
         if CommandManager.verticalTouchPads.contains(touchPadString) {setupL3R3Indicator()}
         if CommandManager.mousePadWithButtonActions.contains(self.touchPadString) {setupL3R3Indicator()}
-        if self.hasStickIndicator {
-            if self.crossMarkLayer.superlayer == nil {self.crossMarkLayer = createCrossMark()}
-            if self.lrudIndicatorBall.superlayer == nil {self.lrudIndicatorBall = createStickBall()}
-        }
         if self.isStickWheel {
             self.setupStickWheelLayers()
+        }
+        if self.isDisplacementBasedStickPad{
+            self.stickAnchorLayer.removeFromSuperlayer()
+            self.stickThumb.removeFromSuperlayer()
+            self.showStickIndicator()
+            self.updateStickIndicator()
         }
         if self.isFolder {
             QUICK_TAP_TIME_INTERVAL = 0.15
@@ -1030,233 +1119,17 @@ import ObjectiveC.runtime
         false
     }
     
-    @objc public func setupL3R3Indicator() {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
-        let indicatorFrame = CAShapeLayer();
-        // l3r3Indicator = CAShapeLayer();
-        
-        indicatorFrame.frame = CGRectMake(0, 0, 75*highlightSizeFactor, 75*highlightSizeFactor)
-        indicatorFrame.cornerRadius = 9 * highlightSizeFactor
-        l3r3Indicator.borderWidth = 7 * min(highlightSizeFactor,1.0)
-        l3r3Indicator.frame = indicatorFrame.bounds.insetBy(dx: -l3r3Indicator.borderWidth, dy: -l3r3Indicator.borderWidth) // Adjust the inset as needed
-        l3r3Indicator.borderColor = UIColor.clear.cgColor
-        
-        l3r3Indicator.cornerRadius = indicatorFrame.cornerRadius + l3r3Indicator.borderWidth
-        l3r3Indicator.backgroundColor = UIColor.clear.cgColor
-        l3r3Indicator.fillColor = UIColor.clear.cgColor
-        let path = UIBezierPath(roundedRect: l3r3Indicator.bounds, cornerRadius: l3r3Indicator.cornerRadius)
-        
-        l3r3Indicator.path = path.cgPath
-        l3r3Indicator.borderColor = standardHighlightColor.cgColor
-        self.l3r3Indicator.position = CGPointMake(self.bounds.width/2, self.bounds.height/2)
-        if !OnScreenWidgetView.isTweakingHighlight {l3r3Indicator.isHidden = true}
-        
-        if l3r3Indicator.superlayer == nil {
-            self.layer.addSublayer(l3r3Indicator)
-        }
-        
-        CATransaction.commit()
-    }
-    
     @objc var hasTrackPoint: Bool = false
     @objc static var trackPointEnabled: Bool = false
     private var trackPointMapping: [UITouch:CAShapeLayer] = [:]
     private var trackPointPool:Set<CAShapeLayer> = Set()
-
-    private func showl3r3Indicator(){
-        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-            
-            self.l3r3Indicator.position = CGPointMake(touchBeganLocation.x, touchBeganLocation.y)
-            self.l3r3Indicator.isHidden = false
-
-            CATransaction.commit()
-        }
-        
-        if vibrationOn {
-            vibrationGenerator.prepare()
-            vibrationGenerator.impactOccurred()
-        }
-    }
-    
-    
-    //================================================================================================
-    //Indicator overlay for on-screen game controller left or right sticks (non-vector mode)
-    
-    private func handleStickBallReachingBorder(){
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        lrudIndicatorBall.lineWidth = 0.6
-        // stickBallLayer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        lrudIndicatorBall.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        // stickBallLayer.shadowColor = stickBallLayer.strokeColor
-        CATransaction.commit()
-    }
-    
-    private func handleStickBallLeavingBorder(){
-        lrudIndicatorBall.lineWidth = 0
-        lrudIndicatorBall.shadowOffset = CGSize(width: 0.5, height: 0.5)
-        lrudIndicatorBall.shadowOpacity = 0.8
-        lrudIndicatorBall.shadowColor = UIColor.black.cgColor
-    }
-    
-    // create stick indicator: the crossMark & stickBall:
-    @objc public func showStickIndicator(){
-        // tell if the self button is located on the left or right
-        // self.selfViewOnTheRight = (self.storedCenter.x > self.appWindow.frame.width*0.5), deprecated
-        // let offsetSign = selfViewOnTheRight ? -1 : 1
-        let stickMarkerRelativeLocation:CGPoint
-        if !OnScreenWidgetView.editMode {
-            stickMarkerRelativeLocation = CGPointMake(touchBeganLocation.x, touchBeganLocation.y - self.stickIndicatorOffset)
-        }
-        else{
-            stickMarkerRelativeLocation = CGPointMake(touchBeganLocation.x, touchBeganLocation.y)
-        }
-        
-        getStickBallReady(at: stickMarkerRelativeLocation)
-        showCrossMark(at: stickMarkerRelativeLocation)
-    }
-    
-    // cross mark for left & right gamePad
-    private func createCrossMark() -> CAShapeLayer {
-        let crossLayer = CAShapeLayer()
-                
-        crossLayer.strokeColor = crossMarkColor
-        crossLayer.lineWidth = 1.2
-        crossLayer.fillColor = crossMarkColor
-        
-        let path = UIBezierPath()
-        let crossSize = 26.0
-
-        path.move(to: CGPoint(x: 0 - crossSize / 2, y: 0))
-        path.addLine(to: CGPoint(x: 0 + crossSize / 2, y: 0))
-        
-        // 竖线
-        path.move(to: CGPoint(x: 0, y: 0 - crossSize / 2))
-        path.addLine(to: CGPoint(x: 0, y: 0 + crossSize / 2))
-
-        crossLayer.path = path.cgPath
-        
-        self.layer.addSublayer(crossLayer)
-        crossLayer.shadowColor = UIColor.black.cgColor
-        crossLayer.shadowOffset = CGSize(width: 1, height: 1)
-        crossLayer.shadowRadius = 0;
-        crossLayer.shadowOpacity = 0.8
-        crossLayer.isHidden = true
-        
-        return crossLayer
-    }
-    
-    private func showCrossMark(at point: CGPoint) {
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        
-        // self.crossMarkLayer.position = CGPointMake(CGRectGetMinX(self.frame), CGRectGetMinY(self.frame))
-        self.crossMarkLayer.position = point
-        self.crossMarkLayer.isHidden = false
-        
-        CATransaction.commit()
-    }
-    
-    private func createStickBall() -> CAShapeLayer {
-        // Create a CAShapeLayer
-        let stickBallLayer = CAShapeLayer()
-        let path = UIBezierPath(arcCenter: CGPoint.zero, radius: 8, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
-        stickBallLayer.path = path.cgPath  // Assign the circular path to the shape layer
-
-        self.layer.addSublayer(stickBallLayer)
-        
-        // Set the stroke color and width (border of the circle)
-        stickBallLayer.strokeColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 1.0).cgColor
-        //stickBallLayer.
-        stickBallLayer.lineWidth = 0
-        stickBallLayer.shadowOffset = CGSize(width: 0.5, height: 0.5)
-        stickBallLayer.shadowRadius = 0;
-        stickBallLayer.shadowOpacity = 0.8
-        
-        // Set the fill color (inside of the circle)
-        stickBallLayer.fillColor = stickBallColor  // Light fill with some transparency
-        
-        stickBallLayer.isHidden = true
-        
-        return stickBallLayer
-    }
-    
-    private func getStickBallReady(at point: CGPoint) {
-        // let path = UIBezierPath(arcCenter: center, radius: 8, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
-        
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        
-        // Create a CAShapeLayer
-        // self.stickBallLayer.path = path.cgPath  // Assign the circular path to the shape layer
-        // self.stickBallLayer.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame))
-        self.lrudIndicatorBall.position = point
-        self.lrudIndicatorBall.isHidden = true
-        
-        CATransaction.commit()
-    }
-    
-    
-    @objc public func updateStickIndicator(){
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        self.lrudIndicatorBall.removeAllAnimations()
-        if !OnScreenWidgetView.editMode {
-            if self.firstTouchMoved {
-                if self.lrudIndicatorBall.isHidden {self.lrudIndicatorBall.isHidden = false}
-                let realOffsetX = touchInputToStickBallCoord(input: offSetX*sensitivityFactorX)
-                let realOffsetY = touchInputToStickBallCoord(input: offSetY*sensitivityFactorY)
-                self.lrudIndicatorBall.position = CGPointMake(touchBeganLocation.x + realOffsetX, touchBeganLocation.y + realOffsetY - self.stickIndicatorOffset)
-            }
-            /*
-            if fabs(realOffsetX) == stickBallMaxOffset || fabs(realOffsetY) == stickBallMaxOffset {handleStickBallReachingBorder()}
-            else{handleStickBallLeavingBorder()}*/
-        }
-        else{
-            if self.lrudIndicatorBall.isHidden {self.lrudIndicatorBall.isHidden = false}
-            self.lrudIndicatorBall.position = CGPointMake(CGRectGetMidX(self.crossMarkLayer.frame), CGRectGetMidY(self.crossMarkLayer.frame)-stickIndicatorOffset)
-        }
-        CATransaction.commit()
-    }
-    
-    private func resetStickBallPositionAndHideIndicator(){
-        /*
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        handleStickBallLeavingBorder()
-        CATransaction.commit()*/
-        
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(0.15)
-        self.lrudIndicatorBall.position = CGPointMake(touchBeganLocation.x, touchBeganLocation.y - self.stickIndicatorOffset)
-        CATransaction.setCompletionBlock {
-            // 动画结束后执行的代码
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                if !self.touchBegan {
-                    CATransaction.begin()
-                    CATransaction.setDisableActions(true)
-                    self.crossMarkLayer.isHidden = true
-                    self.lrudIndicatorBall.isHidden = true
-                    CATransaction.commit()
-                }
-            }
-        }
-        CATransaction.commit()
-    }
-    
-    //================================================================================================
     /// stickWheel
     private func
     setupStickWheelLayers(){
         
         let diameter = self.getDiameter(lengthFactor: self.componentSizeFactor)
         self.denormalizedComponentSizeFactor = diameter/baselineDiameter
-        
+
         // let tintColor = UIColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 1)
         let tintColor = UIColor(
             red: 0x48 / 255.0,
@@ -1305,7 +1178,7 @@ import ObjectiveC.runtime
         
         let isInWalkMode = hypot(stickOffsetVector.dx, stickOffsetVector.dy) < dWheelWalkModeThreshold
         
-        let angle = atan2(offSetY, offSetX) + .pi/2
+        let angle = atan2(offsetY, offsetX) + .pi/2
         let transform = CGAffineTransform(rotationAngle: angle)
         if isInWalkMode {
             self.stickWheelLayerSmall.setAffineTransform(transform)
@@ -1329,12 +1202,12 @@ import ObjectiveC.runtime
         case "LSWHEEL":
             DispatchQueue.global(qos: .userInteractive).async {
                 self.weightedDeltaX = 1
-                self.sendLeftStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY, circulate: true)
+                self.sendLeftStickTouchPadEvent(weightedTouchX: self.offsetX * self.sensitivityFactorX, weightedTouchY: self.offsetY * self.sensitivityFactorY, circulate: true)
             }
         case "RSWHEEL":
             DispatchQueue.global(qos: .userInteractive).async {
                 self.weightedDeltaX = 1
-                self.sendRightStickTouchPadEvent(weightedTouchX: self.offSetX * self.sensitivityFactorX, weightedTouchY: self.offSetY * self.sensitivityFactorY, circulate: true)
+                self.sendRightStickTouchPadEvent(weightedTouchX: self.offsetX * self.sensitivityFactorX, weightedTouchY: self.offsetY * self.sensitivityFactorY, circulate: true)
             }
         default:
             break
@@ -1349,8 +1222,8 @@ import ObjectiveC.runtime
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
-        lrudIndicatorBall.position = point
-        lrudIndicatorBall.isHidden = false;
+        anchorBall.position = point
+        anchorBall.isHidden = false;
         
         CATransaction.commit()
     }
@@ -1360,24 +1233,24 @@ import ObjectiveC.runtime
         let path = UIBezierPath(arcCenter: CGPoint.zero, radius: 10*min(highlightSizeFactor,1.0), startAngle: 0, endAngle: 2 * .pi, clockwise: true)
         
         // Create a CAShapeLayer
-        lrudIndicatorBall.path = path.cgPath  // Assign the circular path to the shape layer
-        if lrudIndicatorBall.superlayer == nil {
-            self.layer.addSublayer(lrudIndicatorBall)
+        anchorBall.path = path.cgPath  // Assign the circular path to the shape layer
+        if anchorBall.superlayer == nil {
+            self.layer.addSublayer(anchorBall)
         }
         
-        lrudIndicatorBall.position = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2,)
+        anchorBall.position = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2,)
 
         // Set the stroke color and width (border of the circle)
-        lrudIndicatorBall.strokeColor = stickBallColor
-        lrudIndicatorBall.lineWidth = 0
-        lrudIndicatorBall.shadowOffset = CGSize(width: 0.5, height: 0.5)
-        lrudIndicatorBall.shadowRadius = 0;
-        lrudIndicatorBall.shadowOpacity = 0.8
-        lrudIndicatorBall.name = "lrudBall"
-        if !OnScreenWidgetView.isTweakingHighlight {lrudIndicatorBall.isHidden = true}
+        anchorBall.strokeColor = stickThumbColor
+        anchorBall.lineWidth = 0
+        anchorBall.shadowOffset = CGSize(width: 0.5, height: 0.5)
+        anchorBall.shadowRadius = 0;
+        anchorBall.shadowOpacity = 0.8
+        anchorBall.name = "lrudBall"
+        if !OnScreenWidgetView.isTweakingHighlight {anchorBall.isHidden = true}
         
         // Set the fill color (inside of the circle)
-        lrudIndicatorBall.fillColor = stickBallColor  // Light fill with some transparency
+        anchorBall.fillColor = stickThumbColor  // Light fill with some transparency
     }
     
     private func setupLrudDirectionLayer(directionLayer:CAShapeLayer) {
@@ -1394,13 +1267,13 @@ import ObjectiveC.runtime
         directionLayer.borderColor = standardHighlightColor.cgColor
         directionLayer.position = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2)
         if directionLayer.superlayer == nil {
-            self.layer.insertSublayer(directionLayer, below: lrudIndicatorBall)
+            self.layer.insertSublayer(directionLayer, below: anchorBall)
         }
     }
     
     private func showLrudDirectionIndicator(with indicatorLayer:CAShapeLayer){
         // show the indicator based on the touchBeganLocation
-        indicatorLayer.position = touchCenteredOffset ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        indicatorLayer.position = touchPointAnchored ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
 
         if indicatorLayer.isHidden {
             indicatorLayer.isHidden = false
@@ -1414,13 +1287,15 @@ import ObjectiveC.runtime
     private var previousWalkMode:Bool = false
     private var previousSprintMode:Bool = false
     private func handleLrudTouchMove(){
+        if touchPointAnchored, !firstTouchMoved {
+            return
+        }
+
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
-        
-        
         if self.hasWalkSprintKeys {
-            let dist = hypot(self.offSetX, self.offSetY)
+            let dist = hypot(self.offsetX, self.offsetY)
             let isInWalkMode = dist < self.walkKeyThreshold * keyboardDpadThresholdRef * 0.5
             let isInSprintMode = dist > self.sprintKeyThreshold * keyboardDpadThresholdRef * 0.5
             
@@ -1469,10 +1344,10 @@ import ObjectiveC.runtime
         }
         
         
-        let radians  = atan2(-offSetY,offSetX)
+        let radians  = atan2(-offsetY,offsetX)
         let degrees = radians * 180 / .pi
         
-        let nearZeroPoint = sensitivityFactorX == 0 || sensitivityFactorY == 0 ? false : abs(offSetX) < 16/sensitivityFactorX && abs(offSetY) < 16/sensitivityFactorY
+        let nearZeroPoint = sensitivityFactorX == 0 || sensitivityFactorY == 0 ? false : abs(offsetX) < 16/sensitivityFactorX && abs(offsetY) < 16/sensitivityFactorY
         // NSLog("deltaX: %f, detalY: %f", deltaX, deltaY)
         
         if self.stickWheelAxis.isHidden {
@@ -1702,7 +1577,7 @@ import ObjectiveC.runtime
     private func handleButtonUp(leaveFunctionalButtonAlone:Bool = false, event: UIEvent? = nil) {
         if !self.isUserInteractionEnabled {return}
         if !OnScreenWidgetView.editMode {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (self.hasDisplacementBasedStickPads ? 0.02 : 0)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (self.hasDisplacementBasedStickPad ? 0.02 : 0)) {
                 self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
             }
         }
@@ -1756,7 +1631,7 @@ import ObjectiveC.runtime
             downIndicator.isHidden = true
         }
         
-        if !touchCenteredOffset {
+        if !touchPointAnchored {
             let axisdiameter = self.getDiameter(lengthFactor: UIDevice.current.userInterfaceIdiom == .phone ? 0.27 : 0.35)
             let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
             self.stickWheelAxis.removeFromSuperlayer()
@@ -1780,7 +1655,7 @@ import ObjectiveC.runtime
             previewLayer.lineDashPattern = [8, 6]
             previewLayer.isHidden = true
             if previewLayer.superlayer == nil {
-                layer.insertSublayer(previewLayer, below: lrudIndicatorBall)
+                layer.insertSublayer(previewLayer, below: anchorBall)
             }
         }
     }
@@ -1820,7 +1695,7 @@ import ObjectiveC.runtime
             if !selfIncluded && widget == self {return}
             widget.buttonDownVisualEffectLayer.isHidden = true;
             widget.l3r3Indicator.isHidden = true
-            widget.lrudIndicatorBall.isHidden = true
+            widget.anchorBall.isHidden = true
             widget.upIndicator.isHidden = true
             widget.downIndicator.isHidden = true
             widget.leftIndicator.isHidden = true
@@ -1869,26 +1744,6 @@ import ObjectiveC.runtime
     
     
     //=========================================send on screen controller stick/trigger events
-    private func weightedTouchInputToStickOffset(input: CGFloat) -> CGFloat{
-        let target = stickMaxOffset * input / stickInputScale
-        // return fmax(fmin(target, stickMaxOffset),-stickMaxOffset)
-        return target
-    }
-    
-    private func stickOffsetToWeightedTouchInput(offset: CGFloat) -> CGFloat {
-        return offset * stickInputScale / stickMaxOffset
-    }
-    
-    private func touchInputToStickBallCoord(input: CGFloat) -> CGFloat {
-        if input > stickInputScale {
-            return stickBallMaxOffset
-        }
-        if input < -stickInputScale {
-            return -stickBallMaxOffset
-        }
-        return input * (18/stickInputScale)
-    }
-    
     private func sendRightStickTouchPadEvent(weightedTouchX: CGFloat, weightedTouchY: CGFloat, circulate: Bool=false){
         let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
         let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
@@ -2079,7 +1934,7 @@ import ObjectiveC.runtime
                         // showLrudBall(at: touchBeganLocation)
                         CATransaction.begin()
                         CATransaction.setDisableActions(true)
-                        self.stickWheelAxis.position = touchCenteredOffset ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+                        self.stickWheelAxis.position = touchPointAnchored ? touchBeganLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
                         self.stickWheelAxis.isHidden = false
                         CATransaction.commit()
                         self.getVector(touch: touch)
@@ -2118,23 +1973,39 @@ import ObjectiveC.runtime
             if touches.count == 1 {
                 switch self.touchPadString {
                 case "LSPAD":
+                    self.hasTrackPoint = touchPointAnchored || widgetType == .button
                     self.getVector(touch: touch)
-                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
-                    self.weightedOffsetY = self.offSetX * self.sensitivityFactorY
-                    self.clearLeftStickTouchPadFlag()
+                    self.weightedOffsetX = self.offsetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offsetY * self.sensitivityFactorY
                     self.inertialScroller.timer?.pause()
-                    if widgetType == .touchPad {self.showStickIndicator()
+                    if touchPointAnchored {self.clearLeftStickTouchPadFlag()}
+                    else {self.sendLeftStickTouchPadEvent(weightedTouchX: weightedOffsetX, weightedTouchY: weightedOffsetY, circulate: true)}
+                    if widgetType == .touchPad {
+                        self.showStickIndicator()
+                        if !touchPointAnchored {
+                            self.stickThumb.fillColor = UIColor(white: 1, alpha: 0.6).cgColor
+                            self.stickThumb.strokeColor = UIColor(white: 0, alpha: 0.3).cgColor
+                            self.updateStickIndicator()
+                        }
                         if quickDoubleTapDetected {
                             self.showl3r3Indicator()
                             self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                     }
                 case "RSPAD":
+                    self.hasTrackPoint = touchPointAnchored || widgetType == .button
                     self.getVector(touch: touch)
-                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
-                    self.weightedOffsetY = self.offSetX * self.sensitivityFactorY
-                    self.clearRightStickTouchPadFlag()
+                    self.weightedOffsetX = self.offsetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offsetY * self.sensitivityFactorY
                     self.inertialScroller.timer?.pause()
-                    if widgetType == .touchPad {self.showStickIndicator()
+                    if touchPointAnchored {self.clearRightStickTouchPadFlag()}
+                    else {self.sendRightStickTouchPadEvent(weightedTouchX: weightedOffsetX, weightedTouchY: weightedOffsetY, circulate: true)}
+                    if widgetType == .touchPad {
+                        self.showStickIndicator()
+                        if !touchPointAnchored {
+                            self.stickThumb.fillColor = UIColor(white: 1, alpha: 0.6).cgColor
+                            self.stickThumb.strokeColor = UIColor(white: 0, alpha: 0.3).cgColor
+                            self.updateStickIndicator()
+                        }
                         if quickDoubleTapDetected {
                             self.showl3r3Indicator()
                             self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
@@ -2258,7 +2129,7 @@ import ObjectiveC.runtime
         }
         
         if OnScreenWidgetView.editMode {
-            guidelineDelegate?.updateGuidelinesForOnScreenWidget(self)
+            layoutUpdateDelegate?.updateGuidelinesForOnScreenWidget(self)
         }
         else {
             if self.widgetType == .button {superview?.bringSubviewToFront(self)}
@@ -2411,8 +2282,8 @@ import ObjectiveC.runtime
             if let touch = touches.first {
                 self.moveByTouch(touch: touch)
                 }
-            self.lrudIndicatorBall.removeFromSuperlayer()
-            self.crossMarkLayer.removeFromSuperlayer()
+            self.anchorBall.removeFromSuperlayer()
+            self.stickAnchorLayer.removeFromSuperlayer()
         }
         
         if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
@@ -2452,15 +2323,18 @@ import ObjectiveC.runtime
             self.inertialScroller.vector = UITouchUtil.vector(of: touch, in: self)
         }
         
-        touchCenteredOffset = (!self.isStickWheel
-                             && !(self.isDirectionPad && sensitivityFactorX==0 && sensitivityFactorY==0))
-        self.offSetX = touchCenteredOffset ? currentTouchLocation.x - self.touchBeganLocation.x : currentTouchLocation.x - self.bounds.midX
-        self.offSetY = touchCenteredOffset ? currentTouchLocation.y - self.touchBeganLocation.y : currentTouchLocation.y - self.bounds.midY
-        if self.hasInertia && hasDisplacementBasedStickPads {
+        // touchCenteredOffset = (!self.isStickWheel
+        //                      && !(self.isDirectionPad && sensitivityFactorX==0 && sensitivityFactorY==0))
+                
+        self.offsetX = (!touchPointAnchored && widgetType == .touchPad) ? currentTouchLocation.x - self.bounds.midX : currentTouchLocation.x - self.touchBeganLocation.x
+        self.offsetY = (!touchPointAnchored && widgetType == .touchPad) ? currentTouchLocation.y - self.bounds.midY : currentTouchLocation.y - self.touchBeganLocation.y
+        
+        /*
+        if hasDisplacementBasedStickPads {
             let circulatedOffset = ControllerUtil.circulated(offsetVector: CGVector(dx: offSetX, dy: offSetY))
             self.offSetX = circulatedOffset.dx
             self.offSetY = circulatedOffset.dy
-        }
+        } */
     }
     
     private func updateTouchLocation(touch: UITouch){
@@ -2523,8 +2397,8 @@ import ObjectiveC.runtime
             case "LSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
-                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
-                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.weightedOffsetX = self.offsetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offsetY * self.sensitivityFactorY
                     self.sendLeftStickTouchPadEvent(weightedTouchX: self.weightedOffsetX, weightedTouchY: self.weightedOffsetY, circulate: true)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
@@ -2532,8 +2406,8 @@ import ObjectiveC.runtime
             case "RSPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaX = 1
-                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
-                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.weightedOffsetX = self.offsetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offsetY * self.sensitivityFactorY
                     self.sendRightStickTouchPadEvent(weightedTouchX: self.weightedOffsetX, weightedTouchY: self.weightedOffsetY, circulate: true)
                 }
                 if widgetType == WidgetTypeEnum.touchPad {updateStickIndicator()}
@@ -2559,13 +2433,13 @@ import ObjectiveC.runtime
             case "LTPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaY = 1
-                    self.sendLeftTriggerTouchPadEvent(inputY: -self.offSetY*4.5*self.sensitivityFactorY)
+                    self.sendLeftTriggerTouchPadEvent(inputY: -self.offsetY*4.5*self.sensitivityFactorY)
                     self.updateTouchLocation(touch: touch)
                 }
             case "RTPAD":
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.weightedDeltaY = 1
-                    self.sendRightTriggerTouchPadEvent(inputY: -self.offSetY*4.5*self.sensitivityFactorY)
+                    self.sendRightTriggerTouchPadEvent(inputY: -self.offsetY*4.5*self.sensitivityFactorY)
                     self.updateTouchLocation(touch: touch)
                 }
             case "DPAD", "WASDPAD", "ARROWPAD":
@@ -2903,6 +2777,7 @@ import ObjectiveC.runtime
     }
     
     private func clearRightStickTouchPadFlag(){
+        if !hasInertia {stickOffsetVector = .zero}
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
         if !mixRightStickInputToGyro || self.motionHandler?.gyroMixInputStarted() != true {
@@ -2912,6 +2787,7 @@ import ObjectiveC.runtime
     }
     
     private func clearLeftStickTouchPadFlag(){
+        if !hasInertia {stickOffsetVector = .zero}
         let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
         if !mixLeftStickInputToGyro || self.motionHandler?.gyroMixInputStarted() != true {
@@ -2965,8 +2841,8 @@ import ObjectiveC.runtime
             case "LSPAD":
                 if self.inertiaEnabled() {
                     self.getVector(touch: touches.first!)
-                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
-                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.weightedOffsetX = self.offsetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offsetY * self.sensitivityFactorY
                     self.inertialScroller.vector = CGVector(dx: weightedOffsetX, dy: weightedOffsetY)
                     if self.inertialScroller.handler == nil {
                         self.inertialScroller.handler = {
@@ -2976,12 +2852,12 @@ import ObjectiveC.runtime
                     self.inertialScroller.timer?.restart()
                 }
                 else {self.clearLeftStickTouchPadFlag()}
-                if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
+                if widgetType == WidgetTypeEnum.touchPad {self.resetStickIndicator()}
             case "RSPAD":
                 if self.inertiaEnabled() {
                     self.getVector(touch: touches.first!)
-                    self.weightedOffsetX = self.offSetX * self.sensitivityFactorX
-                    self.weightedOffsetY = self.offSetY * self.sensitivityFactorY
+                    self.weightedOffsetX = self.offsetX * self.sensitivityFactorX
+                    self.weightedOffsetY = self.offsetY * self.sensitivityFactorY
                     self.inertialScroller.vector = CGVector(dx: weightedOffsetX, dy: weightedOffsetY)
                     if self.inertialScroller.handler == nil {
                         self.inertialScroller.handler = {
@@ -2991,7 +2867,7 @@ import ObjectiveC.runtime
                     self.inertialScroller.timer?.restart()
                 }
                 else {self.clearRightStickTouchPadFlag()}
-                if widgetType == WidgetTypeEnum.touchPad {self.resetStickBallPositionAndHideIndicator()}
+                if widgetType == WidgetTypeEnum.touchPad {self.resetStickIndicator()}
             case "LSVPAD":
                 if self.inertiaEnabled() {
                     if(!firstTouchMoved) {self.inertialScroller.vector = CGVector(dx: 0, dy: 0)}
@@ -3047,19 +2923,19 @@ import ObjectiveC.runtime
             case "RTPAD":
                 self.onScreenControls?.updateRightTrigger(0x00)
             case "WASDPAD":
-                self.stickWheelAxis.isHidden = touchCenteredOffset
+                self.stickWheelAxis.isHidden = touchPointAnchored
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["W"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["A"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["S"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["D"]!,Int8(KEY_ACTION_UP), 0)
             case "ARROWPAD":
-                self.stickWheelAxis.isHidden = touchCenteredOffset
+                self.stickWheelAxis.isHidden = touchPointAnchored
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["LEFT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["RIGHT_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["UP_ARROW"]!,Int8(KEY_ACTION_UP), 0)
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings["DOWN_ARROW"]!,Int8(KEY_ACTION_UP), 0)
             case "DPAD":
-                self.stickWheelAxis.isHidden = touchCenteredOffset
+                self.stickWheelAxis.isHidden = touchPointAnchored
                 self.onScreenControls?.releaseControllerButton(LEFT_FLAG)
                 self.onScreenControls?.releaseControllerButton(RIGHT_FLAG)
                 self.onScreenControls?.releaseControllerButton(UP_FLAG)
@@ -3086,7 +2962,7 @@ import ObjectiveC.runtime
                 self.downIndicator.isHidden = true
                 self.leftIndicator.isHidden = true
                 self.rightIndicator.isHidden = true
-                self.lrudIndicatorBall.isHidden = true
+                self.anchorBall.isHidden = true
             }
             
             if CommandManager.verticalTouchPads.contains(touchPadString){
@@ -3883,14 +3759,14 @@ import ObjectiveC.runtime
             for trackPoint in trackPointPool {
                 trackPoint.removeFromSuperlayer()
             }
-            crossMarkLayer.removeFromSuperlayer()
-            lrudIndicatorBall.removeFromSuperlayer()
+            stickAnchorLayer.removeFromSuperlayer()
+            anchorBall.removeFromSuperlayer()
             l3r3Indicator.removeFromSuperlayer()
             upIndicator.removeFromSuperlayer()
             downIndicator.removeFromSuperlayer()
             leftIndicator.removeFromSuperlayer()
             rightIndicator.removeFromSuperlayer()
-            lrudIndicatorBall.removeFromSuperlayer()
+            anchorBall.removeFromSuperlayer()
             stickWheelAxis.removeFromSuperlayer()
             stickWheelLayer.removeFromSuperlayer()
             stickWheelLayerSmall.removeFromSuperlayer()
@@ -3970,7 +3846,333 @@ import ObjectiveC.runtime
         verticalGuideline.removeFromSuperview()
     }
     
-    deinit {
+deinit {
         print("onScreenWidgetView deinit \(self.widgetLabel) \(CACurrentMediaTime())")
+    }
+}
+
+private final class DisplacementStickPadState {
+    var stickInputScale: CGFloat = 35
+    let stickAnchorColor: CGColor = UIColor.white.withAlphaComponent(0.75).cgColor
+    var stickThumbSize: CGFloat = 13
+    let stickThumbColor: CGColor = UIColor(white: 1, alpha: 0.75).cgColor
+    let stickThumbMaxOffset: CGFloat = 18
+}
+
+extension OnScreenWidgetView {
+    private static var displacementStickPadStateKey: UInt8 = 0
+
+    private var displacementStickPadState: DisplacementStickPadState {
+        if let state = objc_getAssociatedObject(self, &Self.displacementStickPadStateKey) as? DisplacementStickPadState {
+            return state
+        }
+        let state = DisplacementStickPadState()
+        objc_setAssociatedObject(
+            self,
+            &Self.displacementStickPadStateKey,
+            state,
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+        return state
+    }
+
+    private var stickInputScale: CGFloat {
+        get { displacementStickPadState.stickInputScale }
+        set { displacementStickPadState.stickInputScale = newValue }
+    }
+
+    private var stickAnchorColor: CGColor {
+        displacementStickPadState.stickAnchorColor
+    }
+
+    private var stickThumbSize: CGFloat {
+        get { displacementStickPadState.stickThumbSize }
+        set { displacementStickPadState.stickThumbSize = newValue }
+    }
+
+    private var stickThumbColor: CGColor {
+        displacementStickPadState.stickThumbColor
+    }
+
+    private var stickThumbMaxOffset: CGFloat {
+        displacementStickPadState.stickThumbMaxOffset
+    }
+
+    @objc public func setupL3R3Indicator() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        let indicatorFrame = CAShapeLayer()
+        indicatorFrame.frame = CGRectMake(0, 0, 60 * highlightSizeFactor, 60 * highlightSizeFactor)
+        indicatorFrame.cornerRadius = indicatorFrame.frame.width/2
+        l3r3Indicator.borderWidth = 7 * min(highlightSizeFactor, 1.0)
+        l3r3Indicator.frame = indicatorFrame.bounds.insetBy(dx: -l3r3Indicator.borderWidth, dy: -l3r3Indicator.borderWidth)
+        l3r3Indicator.borderColor = UIColor.clear.cgColor
+
+        l3r3Indicator.cornerRadius = indicatorFrame.cornerRadius + l3r3Indicator.borderWidth
+        l3r3Indicator.backgroundColor = UIColor.clear.cgColor
+        l3r3Indicator.fillColor = UIColor.clear.cgColor
+        l3r3Indicator.path = UIBezierPath(
+            roundedRect: l3r3Indicator.bounds,
+            cornerRadius: l3r3Indicator.cornerRadius
+        ).cgPath
+        l3r3Indicator.borderColor = standardHighlightColor.cgColor
+        l3r3Indicator.position = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
+        if !OnScreenWidgetView.isTweakingHighlight { l3r3Indicator.isHidden = true }
+
+        if l3r3Indicator.superlayer == nil {
+            layer.addSublayer(l3r3Indicator)
+        }
+
+        CATransaction.commit()
+    }
+
+    private func showl3r3Indicator() {
+        if OnScreenWidgetView.buttonVisualFeedbackEnabled {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            l3r3Indicator.position = CGPoint(x: touchBeganLocation.x, y: touchBeganLocation.y)
+            l3r3Indicator.isHidden = false
+            CATransaction.commit()
+        }
+
+        if vibrationOn {
+            vibrationGenerator.prepare()
+            vibrationGenerator.impactOccurred()
+        }
+    }
+
+    private func handleStickThumbReachingBorder() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        stickThumb.lineWidth = 1
+        stickThumb.shadowOffset = .zero
+        stickThumb.shadowRadius = 4
+        stickThumb.shadowOpacity = 0.28
+        CATransaction.commit()
+    }
+
+    private func handleStickThumbLeavingBorder() {
+        stickThumb.lineWidth = 0
+        stickThumb.shadowOffset = CGSize(width: 0, height: 2)
+        stickThumb.shadowRadius = 4
+        stickThumb.shadowOpacity = 0.24
+        stickThumb.shadowColor = UIColor.black.cgColor
+    }
+
+    @objc public func showStickIndicator() {
+        guard self.isDisplacementBasedStickPad else { return }
+        if self.stickAnchorLayer.superlayer == nil {self.stickAnchorLayer = createStickAnchorLayer()}
+        if self.stickThumb.superlayer == nil {self.stickThumb = createStickThumb()}
+        
+        let stickIndicatorLocation: CGPoint
+        if !OnScreenWidgetView.editMode {
+            stickIndicatorLocation = CGPoint(x: touchBeganLocation.x, y: touchBeganLocation.y - stickIndicatorOffset)
+        } else {
+            stickIndicatorLocation = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        }
+
+        getStickThumbReady(at:touchPointAnchored ? stickIndicatorLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY))
+        showStickAnchorLayer(at: touchPointAnchored ? stickIndicatorLocation : CGPoint(x: self.bounds.midX, y: self.bounds.midY))
+    }
+
+    private func createStickAnchorLayer() -> CAShapeLayer {
+        
+        let crossLayer = CAShapeLayer()
+        
+        let markColor = self.originalBackgroundAlpha>0 ? UIColor.white.withAlphaComponent(abs(self.originalBackgroundAlpha)*0.35).cgColor : UIColor.black.withAlphaComponent(abs(self.originalBackgroundAlpha)*0.35).cgColor
+        let outlineColor = self.originalBackgroundAlpha>0 ? UIColor.black.withAlphaComponent(0.1).cgColor : UIColor.white.withAlphaComponent(0.1).cgColor
+
+        let canvasSize: CGFloat = 56
+        let center = CGPoint(x: canvasSize / 2, y: canvasSize / 2)
+        let ringOuterRadius: CGFloat = touchPointAnchored ? 25 : 19/(self.sensitivityFactorX*(stickThumbMaxOffset/stickInputScale))
+        let ringInnerRadius: CGFloat = ringOuterRadius - (touchPointAnchored ? 2 : 2)
+        let triangleBaseRadius: CGFloat = touchPointAnchored ? 14 : stickThumbSize+3.7
+        let triangleApexRadius: CGFloat = touchPointAnchored ? 18 : triangleBaseRadius + (stickThumbSize<20 ? 4 : max(4, stickThumbSize*0.2))
+        let triangleHalfWidth: CGFloat = touchPointAnchored ? 3.6 : (stickThumbSize<20 ? 4 : max(4, stickThumbSize*0.2))
+        let strokeLingWdith: CGFloat = 0.5
+
+        crossLayer.bounds = CGRect(x: 0, y: 0, width: canvasSize, height: canvasSize)
+        crossLayer.fillColor = UIColor.clear.cgColor
+        crossLayer.strokeColor = UIColor.clear.cgColor
+
+        let ringLayer = CAShapeLayer()
+        ringLayer.fillColor = markColor
+        ringLayer.strokeColor = outlineColor
+        ringLayer.lineWidth = strokeLingWdith
+        ringLayer.fillRule = .evenOdd
+        let ringPath = UIBezierPath(
+            ovalIn: CGRect(
+                x: center.x - ringOuterRadius,
+                y: center.y - ringOuterRadius,
+                width: ringOuterRadius * 2,
+                height: ringOuterRadius * 2
+            )
+        )
+        ringPath.append(
+            UIBezierPath(
+                ovalIn: CGRect(
+                    x: center.x - ringInnerRadius,
+                    y: center.y - ringInnerRadius,
+                    width: ringInnerRadius * 2,
+                    height: ringInnerRadius * 2
+                )
+            ).reversing()
+        )
+        ringLayer.path = ringPath.cgPath
+        ringLayer.shadowColor = UIColor.clear.cgColor
+        ringLayer.shadowOffset = .zero
+        ringLayer.shadowRadius = 0
+        ringLayer.shadowOpacity = 0.5
+
+        let triangleLayer = CAShapeLayer()
+        triangleLayer.fillColor = self.originalBackgroundAlpha>0 ? UIColor.white.withAlphaComponent(0.25).cgColor : UIColor.black.withAlphaComponent(0.25).cgColor
+        triangleLayer.strokeColor = outlineColor
+        triangleLayer.lineWidth = strokeLingWdith
+        triangleLayer.lineJoin = .round
+        let trianglePath = UIBezierPath()
+
+        trianglePath.move(to: CGPoint(x: center.x, y: center.y - triangleApexRadius))
+        trianglePath.addLine(to: CGPoint(x: center.x - triangleHalfWidth, y: center.y - triangleBaseRadius))
+        trianglePath.addLine(to: CGPoint(x: center.x + triangleHalfWidth, y: center.y - triangleBaseRadius))
+        trianglePath.close()
+
+        trianglePath.move(to: CGPoint(x: center.x, y: center.y + triangleApexRadius))
+        trianglePath.addLine(to: CGPoint(x: center.x + triangleHalfWidth, y: center.y + triangleBaseRadius))
+        trianglePath.addLine(to: CGPoint(x: center.x - triangleHalfWidth, y: center.y + triangleBaseRadius))
+        trianglePath.close()
+
+        trianglePath.move(to: CGPoint(x: center.x + triangleApexRadius, y: center.y))
+        trianglePath.addLine(to: CGPoint(x: center.x + triangleBaseRadius, y: center.y - triangleHalfWidth))
+        trianglePath.addLine(to: CGPoint(x: center.x + triangleBaseRadius, y: center.y + triangleHalfWidth))
+        trianglePath.close()
+
+        trianglePath.move(to: CGPoint(x: center.x - triangleApexRadius, y: center.y))
+        trianglePath.addLine(to: CGPoint(x: center.x - triangleBaseRadius, y: center.y + triangleHalfWidth))
+        trianglePath.addLine(to: CGPoint(x: center.x - triangleBaseRadius, y: center.y - triangleHalfWidth))
+        trianglePath.close()
+
+        triangleLayer.path = trianglePath.cgPath
+        triangleLayer.shadowColor = UIColor.clear.cgColor
+        triangleLayer.shadowOffset = .zero
+        triangleLayer.shadowRadius = 0
+        triangleLayer.shadowOpacity = 0.5
+
+        crossLayer.addSublayer(ringLayer)
+        crossLayer.addSublayer(triangleLayer)
+        layer.addSublayer(crossLayer)
+        crossLayer.isHidden = touchPointAnchored
+        return crossLayer
+    }
+
+    private func showStickAnchorLayer(at point: CGPoint) {
+        // if !crossMarkLayer.isHidden {return}
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        stickAnchorLayer.position = point
+        stickAnchorLayer.isHidden = false
+        CATransaction.commit()
+    }
+
+    private func createStickThumb() -> CAShapeLayer {
+
+        let stickThumbLayer = CAShapeLayer()
+        stickThumbLayer.path = UIBezierPath(
+            arcCenter: .zero,
+            radius: touchPointAnchored ? 10 : stickThumbSize,
+            startAngle: 0,
+            endAngle: 2 * .pi,
+            clockwise: true
+        ).cgPath
+
+        layer.addSublayer(stickThumbLayer)
+        stickThumbLayer.strokeColor = UIColor(white: 0, alpha: 0.3).cgColor
+        stickThumbLayer.lineWidth = 1.2
+        stickThumbLayer.shadowOffset = CGSize(width: 0, height: 2)
+        stickThumbLayer.shadowRadius = 4.5
+        stickThumbLayer.shadowOpacity = 0.26
+        stickThumbLayer.fillColor = UIColor(white: 1, alpha: 0.6).cgColor
+        stickThumbLayer.isHidden = true
+        return stickThumbLayer
+    }
+
+    private func getStickThumbReady(at point: CGPoint) {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        stickThumb.position = point
+        stickThumb.isHidden = false
+        CATransaction.commit()
+    }
+
+    @objc public func updateStickIndicator() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        stickThumb.removeAllAnimations()
+        if !OnScreenWidgetView.editMode {
+            if stickThumb.isHidden { stickThumb.isHidden = false }
+            let realOffsetX = touchInputToStickBallCoord(input: stickOffsetToWeightedTouchInput(offset: stickOffsetVector.dx))
+            let realOffsetY = touchInputToStickBallCoord(input: stickOffsetToWeightedTouchInput(offset: stickOffsetVector.dy))
+            
+            let touchPointAnchoredOffset = CGPoint(
+                x: touchBeganLocation.x + realOffsetX,
+                y: touchBeganLocation.y - realOffsetY - stickIndicatorOffset
+            )
+            let fixedAnchorIndicatorOffset = CGPoint(
+                x: self.bounds.midX + realOffsetX/(self.sensitivityFactorX*(stickThumbMaxOffset/stickInputScale)),
+                y: self.bounds.midY - realOffsetY/(self.sensitivityFactorX*(stickThumbMaxOffset/stickInputScale))
+            )
+            
+            if touchPointAnchored {
+                if firstTouchMoved {stickThumb.position = touchPointAnchored ? touchPointAnchoredOffset : fixedAnchorIndicatorOffset}
+            }
+            else {stickThumb.position = fixedAnchorIndicatorOffset.isValid ? fixedAnchorIndicatorOffset : CGPoint(x: self.bounds.midX, y: self.bounds.midY)}
+        } else {
+            if stickThumb.isHidden { stickThumb.isHidden = false }
+            stickAnchorLayer.position = touchPointAnchored ? CGPoint(
+                x: self.bounds.midX,
+                y: self.bounds.midY - stickIndicatorOffset
+            ) : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        }
+        CATransaction.commit()
+    }
+
+    private func resetStickIndicator() {
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.15)
+        stickThumb.position = touchPointAnchored ? CGPoint(x: touchBeganLocation.x, y: touchBeganLocation.y - stickIndicatorOffset) : CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        if !touchPointAnchored {
+            self.stickThumb.fillColor = UIColor(white: 1, alpha: 0.25).cgColor
+            self.stickThumb.strokeColor = UIColor(white: 0, alpha: 0.3).cgColor
+        }
+        CATransaction.setCompletionBlock {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if !self.touchBegan {
+                    CATransaction.begin()
+                    CATransaction.setDisableActions(true)
+                    self.stickAnchorLayer.isHidden = self.touchPointAnchored
+                    self.stickThumb.isHidden = self.touchPointAnchored
+                    CATransaction.commit()
+                }
+            }
+        }
+        CATransaction.commit()
+    }
+
+    private func weightedTouchInputToStickOffset(input: CGFloat) -> CGFloat {
+        stickMaxOffset * input / stickInputScale
+    }
+
+    private func stickOffsetToWeightedTouchInput(offset: CGFloat) -> CGFloat {
+        offset * stickInputScale / stickMaxOffset
+    }
+
+    private func touchInputToStickBallCoord(input: CGFloat) -> CGFloat {
+        if input > stickInputScale {
+            return stickThumbMaxOffset
+        }
+        if input < -stickInputScale {
+            return -stickThumbMaxOffset
+        }
+        return input * (stickThumbMaxOffset / stickInputScale)
     }
 }

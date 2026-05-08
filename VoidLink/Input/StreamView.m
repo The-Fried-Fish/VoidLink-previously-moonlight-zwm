@@ -777,7 +777,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     [widgetView tweakHighlightAlphaWithAlpha:buttonState.highlightAlpha];
                     [widgetView setupAutoTapTimer];
                     [widgetView setupInertialScrollerWithFps:self->settings.framerate.intValue];
-                    
+                    ///
+                    widgetView.sensitivityFactorX = buttonState.sensitivityFactorX;
+                    widgetView.componentSizeFactor = buttonState.componentSizeFactor;
+                    widgetView.touchPointAnchored = buttonState.touchPointAnchored;
+                    widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
+
                     [widgetView setupAtrributedText];
                     
                     if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) [widgetView setAutoDockWithEnabled:true];

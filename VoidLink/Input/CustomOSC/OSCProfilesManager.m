@@ -462,7 +462,6 @@ static CGRect layoutViewBounds;
         buttonState.bulkMoveEnabled = widgetView.bulkMoveEnabled;
         buttonState.widthFactor = [self normalizeSizeWidthFactorWith:widgetView];
         buttonState.heightFactor = [self normalizeSizeHeightFactorWith:widgetView];
-        buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];
         buttonState.backgroundAlpha = widgetView.originalBackgroundAlpha;
         buttonState.labelAlpha = widgetView.originalLabelAlpha;
         buttonState.borderAlpha = widgetView.borderAlpha;
@@ -473,7 +472,6 @@ static CGRect layoutViewBounds;
         buttonState.vibrationStyle = widgetView.vibrationStyle;
         buttonState.mouseButtonAction = widgetView.mouseButtonAction;
         buttonState.animatesTransition = widgetView.animatesTransition;
-        buttonState.sensitivityFactorX = widgetView.sensitivityFactorX;
         buttonState.sensitivityFactorY = widgetView.sensitivityFactorY;
         buttonState.slideThreshold = widgetView.slideThreshold;
         buttonState.yawFactor = widgetView.yawFactor;
@@ -481,7 +479,6 @@ static CGRect layoutViewBounds;
         buttonState.rollFactor = widgetView.rollFactor;
         buttonState.decelerationRateX = widgetView.decelerationRateX;
         buttonState.decelerationRateY = widgetView.decelerationRateY;
-        buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
         buttonState.widgetShape = widgetView.shape;
         buttonState.walkModeThreshold = widgetView.dWheelWalkModeThreshold;
         buttonState.minStickOffset = widgetView.minStickOffset;
@@ -490,6 +487,11 @@ static CGRect layoutViewBounds;
         buttonState.sprintKeyThreshold = widgetView.sprintKeyThreshold;
         buttonState.walkKeyActionType = widgetView.walkKeyActionType;
         buttonState.walkKeyThreshold = widgetView.walkKeyThreshold;
+        ///
+        buttonState.sensitivityFactorX = widgetView.sensitivityFactorX;
+        buttonState.componentSizeFactor = [self normalizeComponentSizeFactorWith:widgetView];
+        buttonState.touchPointAnchored = widgetView.touchPointAnchored;
+        buttonState.stickIndicatorOffset = widgetView.stickIndicatorOffset;
 
         NSData *buttonStateEncoded = [NSKeyedArchiver archivedDataWithRootObject:buttonState requiringSecureCoding:YES error:nil];
         [buttonStatesEncoded addObject: buttonStateEncoded];
@@ -516,7 +518,8 @@ static CGRect layoutViewBounds;
 }
 
 - (CGFloat)normalizeComponentSizeFactorWith:(OnScreenWidgetView* )widget{
-    if(widget.isStickWheel) {
+    if(widget.isStickWheel
+       || widget.isDisplacementBasedStickPad) {
         return widget.denormalizedComponentSizeFactor*widget.baselineDiameter/[self getReferenceLen] * 10000;
     }
     return 1;

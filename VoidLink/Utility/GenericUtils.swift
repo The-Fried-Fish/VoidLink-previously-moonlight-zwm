@@ -365,3 +365,9 @@ extension UIView {
         return nil
     }
 }
+
+extension CGPoint {
+    var isValid: Bool {
+        x.isFinite && y.isFinite
+    }
+}

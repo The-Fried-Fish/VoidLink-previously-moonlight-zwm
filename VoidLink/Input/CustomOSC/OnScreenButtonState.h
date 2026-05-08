@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat rollFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat decelerationRateX; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat decelerationRateY; // for OnScreenWidgetView
+@property (nonatomic, assign) bool touchPointAnchored;
 @property (nonatomic, assign) CGFloat stickIndicatorOffset; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat walkModeThreshold; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat minStickOffset; // for OnScreenWidgetView

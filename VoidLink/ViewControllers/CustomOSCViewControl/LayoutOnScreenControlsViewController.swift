@@ -19,7 +19,7 @@ private extension LocalizationHelper {
 }
 
 @objcMembers
-final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidgetView.OnScreenWidgetGuidelineUpdateDelegate, UITextFieldDelegate {
+final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidgetView.OnScreenWidgetLayoutUpdateDelegate, UITextFieldDelegate {
     private enum AlphaSliderMode: Int {
         case widgetAlpha
         case labelAlpha
@@ -71,6 +71,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBOutlet weak var stickIndicatorOffsetLabel: UILabel!
     @IBOutlet weak var stickIndicatorOffsetSlider: UISlider!
     @IBOutlet weak var stickIndicatorOffsetStack: UIStackView!
+    
+    @IBOutlet weak var anchorModeStack: UIStackView!
+    @IBOutlet weak var anchorModeSelector: UISegmentedControl!
 
     @IBOutlet weak var sensitivityXLabel: UILabel!
     @IBOutlet weak var sensitivityXSlider: UISlider!
@@ -397,18 +400,16 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widgetView.folded = buttonState.folded
                 widgetView.revealMode = RevealMode(rawValue: Int(buttonState.revealMode)) ?? .coexist
                 widgetView.bulkMoveEnabled = buttonState.bulkMoveEnabled
-                widgetView.guidelineDelegate = self
+                widgetView.layoutUpdateDelegate = self
                 widgetView.translatesAutoresizingMaskIntoConstraints = false
                 widgetView.widthFactor = buttonState.widthFactor
                 widgetView.heightFactor = buttonState.heightFactor
-                widgetView.componentSizeFactor = buttonState.componentSizeFactor
                 widgetView.borderWidth = buttonState.borderWidth
                 widgetView.highlightSizeFactor = buttonState.highlightSizeFactor
                 widgetView.autoTapInterval = Int(buttonState.autoTapInterval)
                 widgetView.setVibration(style: Int(buttonState.vibrationStyle))
                 widgetView.mouseButtonAction = MouseButtonAction(rawValue: Int(buttonState.mouseButtonAction)) ?? .hovering
                 widgetView.animatesTransition = buttonState.animatesTransition
-                widgetView.sensitivityFactorX = buttonState.sensitivityFactorX
                 widgetView.sensitivityFactorY = buttonState.sensitivityFactorY
                 widgetView.slideThreshold = buttonState.slideThreshold
                 widgetView.yawFactor = buttonState.yawFactor
@@ -416,7 +417,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widgetView.rollFactor = buttonState.rollFactor
                 widgetView.decelerationRateX = buttonState.decelerationRateX
                 widgetView.decelerationRateY = buttonState.decelerationRateY
-                widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset
                 widgetView.dWheelWalkModeThreshold = buttonState.walkModeThreshold
                 widgetView.minStickOffset = buttonState.minStickOffset
                 widgetView.buttonMode = ButtonMode(rawValue: Int(buttonState.buttonMode)) ?? .slideToToggle
@@ -435,6 +435,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widgetView.tweakBorderAlpha(alpha: buttonState.borderAlpha)
                 widgetView.tweakHighlightAlpha(alpha: buttonState.highlightAlpha)
                 widgetView.adjustBorder(width: buttonState.borderWidth)
+                ///
+                widgetView.sensitivityFactorX = buttonState.sensitivityFactorX
+                widgetView.componentSizeFactor = buttonState.componentSizeFactor
+                widgetView.touchPointAnchored = buttonState.touchPointAnchored
+                widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset
+                
                 self.onScreenWidgetViews.add(widgetView)
                 
                 guard let folder = folder else { continue }
@@ -714,8 +720,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     private func hideStickIndicators() {
         for case let widget as OnScreenWidgetView in view.subviews {
-            widget.crossMarkLayer.isHidden = true
-            widget.lrudIndicatorBall.isHidden = true
+            widget.stickAnchorLayer.isHidden = true
+            widget.anchorBall.isHidden = true
         }
     }
 
@@ -743,7 +749,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widget.buttonDownVisualEffectLayer.isHidden = !OnScreenWidgetView.isTweakingHighlight
         widget.l3r3Indicator.isHidden = !widget.hasL3R3Indicator || !OnScreenWidgetView.isTweakingHighlight
         let hidden = !widget.isDirectionPad && !OnScreenWidgetView.isTweakingHighlight
-        widget.lrudIndicatorBall.isHidden = hidden
+        widget.anchorBall.isHidden = hidden
         widget.upIndicator.isHidden = hidden
         widget.downIndicator.isHidden = hidden
         widget.leftIndicator.isHidden = hidden
@@ -803,7 +809,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     private func refreshPanelForSelectedWidget(_ widgetView: OnScreenWidgetView) {
-        hideStickIndicators()
+        // hideStickIndicators()
         clearSickInput()
         enableCommonWidgetTools()
         widgetViewSelected = true
@@ -923,13 +929,19 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             autoFitLabel(rollFactorLabel)
         }
 
-        stickIndicatorOffsetStack.isHidden = !widgetView.hasStickIndicator
-        if widgetView.hasStickIndicator {
+        stickIndicatorOffsetStack.isHidden = !widgetView.hasStickIndicatorOffset
+        if widgetView.hasStickIndicatorOffset {
             hideStickIndicators()
             widgetView.touchBeganLocation = CGPoint(x: widgetView.frame.width / 2, y: widgetView.frame.height / 4)
             widgetView.showStickIndicator()
             stickIndicatorOffsetSlider.value = Float(widgetView.stickIndicatorOffset)
             stickIndicatorOffsetSliderMoved(stickIndicatorOffsetSlider)
+            autoFitLabel(stickIndicatorOffsetLabel)
+        }
+
+        anchorModeStack.isHidden = !widgetView.hasAnchorMode
+        if !anchorModeStack.isHidden {
+            anchorModeSelector.selectedSegmentIndex = widgetView.touchPointAnchored ? 1 : 0
             autoFitLabel(stickIndicatorOffsetLabel)
         }
 
@@ -1206,15 +1218,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.autoDockSettledAlpha = widget.autoDockSettledAlpha
         newWidget.revealMode = widget.revealMode
         newWidget.bulkMoveEnabled = widget.bulkMoveEnabled
-        newWidget.guidelineDelegate = self
+        newWidget.layoutUpdateDelegate = self
         newWidget.translatesAutoresizingMaskIntoConstraints = false
         newWidget.widthFactor = widget.widthFactor
         newWidget.heightFactor = widget.heightFactor
-        newWidget.componentSizeFactor = widget.componentSizeFactor
         newWidget.borderWidth = widget.borderWidth
         newWidget.highlightSizeFactor = widget.highlightSizeFactor
         newWidget.autoTapInterval = widget.autoTapInterval
-        newWidget.sensitivityFactorX = widget.sensitivityFactorX
         newWidget.sensitivityFactorY = widget.sensitivityFactorY
         newWidget.slideThreshold = widget.slideThreshold
         newWidget.yawFactor = widget.yawFactor
@@ -1222,7 +1232,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.rollFactor = widget.rollFactor
         newWidget.decelerationRateX = widget.decelerationRateX
         newWidget.decelerationRateY = widget.decelerationRateY
-        newWidget.stickIndicatorOffset = widget.stickIndicatorOffset
         newWidget.dWheelWalkModeThreshold = widget.dWheelWalkModeThreshold
         newWidget.minStickOffset = widget.minStickOffset
         newWidget.setVibration(style: Int(widget.vibrationStyle))
@@ -1237,6 +1246,10 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         guard newWidget.widgetType == widget.widgetType else { return }
         view.insertSubview(newWidget, belowSubview: widgetPanelStack)
         newWidget.accessWidgetAttributes()
+        newWidget.sensitivityFactorX = widget.sensitivityFactorX
+        newWidget.componentSizeFactor = widget.componentSizeFactor
+        newWidget.touchPointAnchored = widget.touchPointAnchored
+        newWidget.stickIndicatorOffset = widget.stickIndicatorOffset
 
         if createNew {
             newWidget.setLocation(position: CGPoint(x: 90, y: 130))
@@ -1276,12 +1289,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetView.isHidden = true
         widgetView.sequence = widgetView.getAvailableSequence()
         OnScreenWidgetView.set(widget: widgetView, for: widgetView.sequence)
-        widgetView.guidelineDelegate = self
+        widgetView.layoutUpdateDelegate = self
         widgetView.translatesAutoresizingMaskIntoConstraints = false
         onScreenWidgetViews.add(widgetView)
         widgetView.setLocation(position: CGPoint(x: 90, y: 130))
         widgetView.isHidden = false
         widgetView.resizeWidgetView()
+        let componentSizeFactor = widgetView.componentSizeFactor
+        widgetView.componentSizeFactor = componentSizeFactor
         widgetView.setVibration(style: Int(UIImpactFeedbackGenerator.FeedbackStyle.light.rawValue))
     }
 
@@ -1777,11 +1792,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         decelerationRateSlider.addTarget(self, action: #selector(decelerationRateSliderMoved(_:)), for: .valueChanged)
         decelerationRateLabel.text = LocalizationHelper.localizedString(forKey: "Deceleration Rate")
         decelerationRateStack.isHidden = true
+        
         stickIndicatorOffsetSlider.addTarget(self, action: #selector(stickIndicatorOffsetSliderMoved(_:)), for: .valueChanged)
         stickIndicatorOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Indicator offset")
         stickIndicatorOffsetStack.isHidden = true
         
-
+        anchorModeSelector.addTarget(self, action: #selector(anchorModeChanged(_:)), for: .valueChanged)
+        anchorModeStack.isHidden = true
+        
         autoDockTimerSlider.addTarget(self, action: #selector(autoDockTimerSliderMoved(_:)), for: .valueChanged)
         autoDockTimerLabel.text = LocalizationHelper.localizedString(forKey: "Auto dock")
         autoDockTimerStack.isHidden = true;
@@ -1933,7 +1951,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         if let selectedWidgetView, widgetViewSelected {
             selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
             selectedWidgetView.componentSizeFactor = CGFloat(sender.value)
-            selectedWidgetView.resizeWidgetView()
+            // selectedWidgetView.resizeWidgetView()
         }
     }
 
@@ -2297,11 +2315,26 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         loadDecelerationRates()
     }
 
+    @objc private func anchorModeChanged(_ sender: UISegmentedControl) {
+        if let selectedWidgetView {
+            selectedWidgetView.touchPointAnchored = sender.selectedSegmentIndex == 1
+            componentSizeStack.isHidden = sender.selectedSegmentIndex != 0
+            stickIndicatorOffsetStack.isHidden = sender.selectedSegmentIndex != 1
+            stickIndicatorOffsetSlider.value = Float(selectedWidgetView.stickIndicatorOffset)
+            self.stickIndicatorOffsetSliderMoved(stickIndicatorOffsetSlider)
+            autoFitStack(self.widgetPanelStack)
+            
+            if selectedWidgetView.isDirectionPad {
+                sensitivityXSlider.value = sender.selectedSegmentIndex == 0 ? 0.0 : 6.5
+                sensitivityXSliderMoved(sensitivityXSlider)
+            }
+        }
+    }
+
     @objc private func stickIndicatorOffsetSliderMoved(_ sender: UISlider) {
         stickIndicatorOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Indicator offset: %.0f", sender.value)
         if let selectedWidgetView {
             selectedWidgetView.stickIndicatorOffset = CGFloat(sender.value)
-            selectedWidgetView.updateStickIndicator()
         }
     }
 

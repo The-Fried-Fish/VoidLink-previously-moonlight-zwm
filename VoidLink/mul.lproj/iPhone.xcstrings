@@ -151,6 +151,18 @@
         }
       }
     },
+    "0uj-DT-rHT.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"                                    \"; ObjectID = \"0uj-DT-rHT\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "                                    "
+          }
+        }
+      }
+    },
     "1hc-yp-cbj.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Scroll Sensitivity\"; ObjectID = \"1hc-yp-cbj\";",
       "extractionState" : "extracted_with_value",
@@ -3979,6 +3991,36 @@
         }
       }
     },
+    "nh7-NY-D4z.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Anchor point\"; ObjectID = \"nh7-NY-D4z\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anchor point"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锚定模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錨定模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錨定模式"
+          }
+        }
+      }
+    },
     "nj6-9l-1j7.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; nj6-9l-1j7.segmentTitles[0] = \"Auto\"; ObjectID = \"nj6-9l-1j7\";",
       "extractionState" : "extracted_with_value",
@@ -6165,6 +6207,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "發送假事件"
+          }
+        }
+      }
+    },
+    "wCf-6a-2ln.segmentTitles[0]" : {
+      "comment" : "Class = \"UISegmentedControl\"; wCf-6a-2ln.segmentTitles[0] = \"center\"; ObjectID = \"wCf-6a-2ln\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "center"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中心"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中心"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中心"
+          }
+        }
+      }
+    },
+    "wCf-6a-2ln.segmentTitles[1]" : {
+      "comment" : "Class = \"UISegmentedControl\"; wCf-6a-2ln.segmentTitles[1] = \"touch point\"; ObjectID = \"wCf-6a-2ln\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "touch point"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触点"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸點"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸點"
           }
         }
       }

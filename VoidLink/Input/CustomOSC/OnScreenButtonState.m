@@ -62,6 +62,7 @@
     [encoder encodeFloat:self.rollFactor forKey:@"rollFactor"];
     [encoder encodeFloat:self.decelerationRateX forKey:@"decelerationRateX"];
     [encoder encodeFloat:self.decelerationRateY forKey:@"decelerationRateY"];
+    [encoder encodeBool:self.touchPointAnchored forKey:@"touchPointAnchored"];
     [encoder encodeFloat:self.stickIndicatorOffset forKey:@"stickIndicatorOffset"];
     [encoder encodeFloat:self.oscLayerSizeFactor forKey:@"oscLayerSizeFactor"];
     [encoder encodeFloat:self.backgroundAlpha forKey:@"backgroundAlpha"];
@@ -112,6 +113,7 @@
         self.rollFactor = [decoder containsValueForKey:@"rollFactor"] ? [decoder decodeFloatForKey:@"rollFactor"] : 1.0;
         self.decelerationRateX = [decoder containsValueForKey:@"decelerationRateX"] ? [decoder decodeFloatForKey:@"decelerationRateX"] : 0.5;
         self.decelerationRateY = [decoder containsValueForKey:@"decelerationRateY"] ? [decoder decodeFloatForKey:@"decelerationRateY"] : 0.5;
+        self.touchPointAnchored = [decoder containsValueForKey:@"touchPointAnchored"] ? [decoder decodeBoolForKey:@"touchPointAnchored"] : false;
         self.stickIndicatorOffset = [decoder decodeFloatForKey:@"stickIndicatorOffset"];
         self.oscLayerSizeFactor = [decoder decodeFloatForKey:@"oscLayerSizeFactor"];
         self.backgroundAlpha = [decoder containsValueForKey:@"backgroundAlpha"] ? [decoder decodeFloatForKey:@"backgroundAlpha"] : 0.5;
