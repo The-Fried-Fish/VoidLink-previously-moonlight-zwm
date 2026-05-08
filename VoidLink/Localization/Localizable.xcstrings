@@ -4195,6 +4195,29 @@
         }
       }
     },
+    "Displacement-based left stick pad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位移型左摇杆触控板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位移型左搖桿觸控板"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位移型左搖桿觸控板"
+          }
+        }
+      }
+    },
     "Displacement-based right stick pad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13250,6 +13273,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "開啟後，App 在藍牙耳機連接時將使用裝置內建麥克風，以維持藍牙耳機的最佳音質。"
+          }
+        }
+      }
+    },
+    "Velocity-based left stick pad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "矢量型左摇杆触控板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "矢量型左搖桿觸控板"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "矢量型左搖桿觸控板"
           }
         }
       }

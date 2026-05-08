@@ -68,8 +68,8 @@ enum GamepadToggleTarget: Hashable {
         case .select: return [.select]
         case .start: return [.start]
         case .home: return [.home]
-        case .leftStick: return [.ls, .lswheel, .lsPad]
-        case .rightStick: return [.rs, .rsPad, .rsvPad]
+        case .leftStick: return [.ls, .lswheel, .lsPad, .lsvPad]
+        case .rightStick: return [.rs, .rsvPad, .rsPad, .rsWheel]
         case .leftShoulder: return [.leftShoulder]
         case .rightShoulder: return [.rightShoulder]
         case .leftTrigger: return [.leftTrigger, .ltPad]
@@ -84,7 +84,7 @@ enum GamepadWidget: Hashable {
     case a, b, x, y
     case select, start, home
     case dPad, up, down, left, right
-    case ls, lsPad, lswheel, rs, rsPad, rsvPad, rsWheel
+    case ls, lsPad, lswheel, lsvPad, rs, rsvPad, rsPad, rsWheel
     case leftShoulder, rightShoulder
     case leftTrigger, ltPad, rightTrigger, rtPad
     case ds4Touchpad
@@ -107,6 +107,7 @@ enum GamepadWidget: Hashable {
         case .ls: return "LS"
         case .lswheel: return "LSWHEEL"
         case .lsPad: return "LSPAD"
+        case .lsvPad: return "LSVPAD"
         case .rs: return "RS"
         case .rsPad: return "RSPAD"
         case .rsvPad: return "RSVPAD"
@@ -138,7 +139,8 @@ enum GamepadWidget: Hashable {
         case .right: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Right")
         case .ls: return SwiftLocalizationHelper.localizedString(forKey: "LS/L3 button")
         case .lswheel: return SwiftLocalizationHelper.localizedString(forKey: "Left stick wheel")
-        case .lsPad: return SwiftLocalizationHelper.localizedString(forKey: "Left stick pad")
+        case .lsPad: return SwiftLocalizationHelper.localizedString(forKey: "Displacement-based left stick pad")
+        case .lsvPad: return SwiftLocalizationHelper.localizedString(forKey: "Velocity-based left stick pad")
         case .rs: return SwiftLocalizationHelper.localizedString(forKey: "RS/R3 button")
         case .rsPad: return SwiftLocalizationHelper.localizedString(forKey: "Displacement-based right stick pad")
         case .rsvPad: return SwiftLocalizationHelper.localizedString(forKey: "Velocity-based right stick pad")
@@ -460,23 +462,30 @@ struct AbstractGamepadView: View {
 
     private func applyStickSelection(_ widget: GamepadWidget) {
         switch widget {
-        case .ls, .lsPad, .lswheel:
+        case .ls, .lsPad, .lswheel, .lsvPad:
             leftStickHighlight = nextStickHighlightMode(
                 current: leftStickHighlight,
                 selected: widget,
                 outerWidget: .ls,
-                thumbWidgets: [.lsPad, .lswheel]
+                thumbWidgets: [.lsPad, .lswheel, .lsvPad]
             )
-            
+            if widget == .ls,
+               isCommandSelected?(GamepadWidget.lsPad.cmd) == true
+                || isCommandSelected?(GamepadWidget.lsvPad.cmd) == true
+            {
+                leftStickHighlight = .both
+            }
         case .rs, .rsPad, .rsvPad, .rsWheel:
             rightStickHighlight = nextStickHighlightMode(
                 current: rightStickHighlight,
                 selected: widget,
                 outerWidget: .rs,
-                thumbWidgets: [.rsPad, .rsvPad, .rsWheel]
+                thumbWidgets: [.rsvPad, .rsPad, .rsWheel]
             )
             if widget == .rs,
-               isCommandSelected?(GamepadWidget.rsPad.cmd) == true || isCommandSelected?(GamepadWidget.rsvPad.cmd) == true {
+               isCommandSelected?(GamepadWidget.rsPad.cmd) == true
+                || isCommandSelected?(GamepadWidget.rsvPad.cmd) == true
+            {
                 rightStickHighlight = .both
             }
             
@@ -555,11 +564,11 @@ struct AbstractGamepadView: View {
             dpadHighlight = .none
         }
         
-        if widgets.contains(.ls) || widgets.contains(.lsPad) || widgets.contains(.lswheel) {
+        if widgets.contains(.ls) || widgets.contains(.lsPad) || widgets.contains(.lswheel) || widgets.contains(.lsvPad) {
             leftStickHighlight = .none
         }
         
-        if widgets.contains(.rs) || widgets.contains(.rsPad) || widgets.contains(.rsvPad) {
+        if widgets.contains(.rs) || widgets.contains(.rsPad) || widgets.contains(.rsvPad) || widgets.contains(.rsWheel) {
             rightStickHighlight = .none
         }
         
@@ -1019,7 +1028,7 @@ struct AbstractGamepadView: View {
                         .frame(width: leftStickSize, height: leftStickSize)
                         .offset(x: leftStickCenterX, y: leftStickCenterY)
                         .onTapGesture {
-                            handleTappedWidgets([.ls, .lswheel, .lsPad], sourceIsDPad: false)
+                            handleTappedWidgets([.ls, .lswheel, .lsPad, .lsvPad], sourceIsDPad: false)
                         }
                     
                     DPadXboxStyleView(
@@ -1052,7 +1061,7 @@ struct AbstractGamepadView: View {
                         .frame(width: rightStickSize, height: rightStickSize)
                         .offset(x: rightStickCenterX, y: sharedLowerControlCenterY)
                         .onTapGesture {
-                            handleTappedWidgets([.rs, .rsPad, .rsvPad, .rsWheel], sourceIsDPad: false)
+                            handleTappedWidgets([.rs, .rsvPad, .rsPad, .rsWheel], sourceIsDPad: false)
                         }
                     
                     HomeButtonView(
@@ -1155,7 +1164,7 @@ struct AbstractGamepadView: View {
         if isCommandSelected(GamepadWidget.ls.cmd) {
             leftStickHighlight = .outerOnly
         }
-        if isCommandSelected(GamepadWidget.lsPad.cmd) || isCommandSelected(GamepadWidget.lswheel.cmd) {
+        if isCommandSelected(GamepadWidget.lsPad.cmd) || isCommandSelected(GamepadWidget.lswheel.cmd) || isCommandSelected(GamepadWidget.lsvPad.cmd) {
             leftStickHighlight = leftStickHighlight == .outerOnly ? .both : .thumbOnly
         }
 
@@ -1214,7 +1223,7 @@ struct AbstractGamepadView: View {
             } else if leftStickHighlight == .outerOnly {
                 leftStickHighlight = .none
             }
-        case GamepadWidget.lsPad.cmd, GamepadWidget.lswheel.cmd:
+        case GamepadWidget.lsPad.cmd, GamepadWidget.lswheel.cmd, GamepadWidget.lsvPad.cmd:
             if leftStickHighlight == .both {
                 leftStickHighlight = .outerOnly
             } else if leftStickHighlight == .thumbOnly {

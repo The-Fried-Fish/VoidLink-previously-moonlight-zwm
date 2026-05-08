@@ -626,7 +626,7 @@ import ObjectiveC.runtime
         self.isFolder = self.cmdString.contains("FOLDER")
         self.containsShortcutAction = self.cmdString.contains("+")
 
-        self.hasComponent = self.isStickWheel || (self.hasDisplacementBasedStickPad && self.widgetType == .touchPad && !self.touchPointAnchored)
+        self.hasComponent = self.isStickWheel || (self.isDisplacementBasedStickPad && !self.touchPointAnchored)
         self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
         
         /*

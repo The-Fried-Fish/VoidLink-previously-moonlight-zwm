@@ -1277,6 +1277,7 @@ struct WidgetPickerView: View {
             "DPAD",
             "LSWHEEL",
             "LSPAD",
+            "LSVPAD",
             "RSPAD",
             "RSVPAD",
             "RSWHEEL",
@@ -1314,6 +1315,10 @@ struct WidgetPickerView: View {
             return true
         }
 
+        if cmd == "LS", poolItems.contains(where: { $0.cmd == "LSPAD" || $0.cmd == "LSVPAD" }) {
+            return true
+        }
+        
         return false
     }
 
@@ -2293,7 +2298,7 @@ struct WidgetPickerView: View {
             "HOME",
             "DPAD",
             "OSCUP", "OSCDOWN", "OSCLEFT", "OSCRIGHT",
-            "LS", "LSWHEEL", "LSPAD",
+            "LS", "LSWHEEL", "LSPAD", "LSVPAD",
             "RS", "RSPAD", "RSVPAD", "RSWHEEL",
             "LB", "RB",
             "LT", "LTPAD",
