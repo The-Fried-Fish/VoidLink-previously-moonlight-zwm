@@ -2094,7 +2094,7 @@ struct WidgetPickerView: View {
         }
 
         let joiner = comboJoiner
-        var cmdString = selectedCmds.joined(separator: joiner)
+        var cmdString = (comboJoiner == "+" && selectedCmds.count == 1) ? "\(selectedCmds.first!)+" : selectedCmds.joined(separator: joiner)
 
         let shouldAppendInterval = effectiveWidgetComboMode != .shortcut
             && effectiveTriggerIntervalValue != 0

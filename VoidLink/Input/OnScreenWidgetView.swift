@@ -1527,13 +1527,13 @@ import ObjectiveC.runtime
         }
     }
     
-    private func handleFingerUpOrSlideout(leaveFunctionalButtonAlone: Bool = false, event: UIEvent? = nil) {
+    private func handleFingerUpOrSlideout(leaveNonSkillButtonAlone: Bool = false, event: UIEvent? = nil) {
         if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
-            handleButtonUp(leaveFunctionalButtonAlone:leaveFunctionalButtonAlone, event:event)
+            handleButtonUp(leaveNonSkillButtonAlone:leaveNonSkillButtonAlone, event:event)
         }
         else{
             self.autoTapTimer?.pause()
-            self.handleButtonUp(leaveFunctionalButtonAlone: leaveFunctionalButtonAlone)
+            self.handleButtonUp(leaveNonSkillButtonAlone: leaveNonSkillButtonAlone)
         }
     }
     
@@ -1574,7 +1574,7 @@ import ObjectiveC.runtime
         }
     }
     
-    private func handleButtonUp(leaveFunctionalButtonAlone:Bool = false, event: UIEvent? = nil) {
+    private func handleButtonUp(leaveNonSkillButtonAlone:Bool = false, event: UIEvent? = nil) {
         if !self.isUserInteractionEnabled {return}
         if !OnScreenWidgetView.editMode {
             DispatchQueue.main.asyncAfter(deadline: .now() + (self.hasDisplacementBasedStickPad ? 0.02 : 0)) {
@@ -1589,13 +1589,14 @@ import ObjectiveC.runtime
         self.buttonUpVisualEffect()
 
         if !OnScreenWidgetView.editMode && !self.functionalButtonString.isEmpty{
-            // print("handleFingerUpOrSlideout leaveFunctionalButtonAlone, \(leaveFunctionalButtonAlone) \(CACurrentMediaTime())")
-            if !leaveFunctionalButtonAlone {self.handleFunctionalButtonUp(event:event)}
+            // print("handleFingerUpOrSlideout leaveNonSkillButtonAlone, \(leaveNonSkillButtonAlone) \(CACurrentMediaTime())")
+            if !leaveNonSkillButtonAlone {self.handleFunctionalButtonUp(event:event)}
         }
         
         // legacy keyboard button combo connected by "+"
         if !OnScreenWidgetView.editMode && self.cmdString.contains("+") && !self.cmdString.contains("-"){
             if buttonMode == .movable, moveableButtonLongPressed() {return}
+            if leaveNonSkillButtonAlone {return}
             self.buttonDownVisualEffect()
             var autoReleaseComboButtons = CommandManager.shared.extractAutoReleaseButtonStrings(from: self.cmdString)!
             autoReleaseComboButtons.removeAll{
@@ -2244,7 +2245,7 @@ import ObjectiveC.runtime
                     if !captured || !isSlidableButton {return}
                     // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
                     if(widget.buttonMode == .slideToToggle || widget.buttonMode == .movable){
-                        widget.handleFingerUpOrSlideout(leaveFunctionalButtonAlone: widget.isFunctionalButton)
+                        widget.handleFingerUpOrSlideout(leaveNonSkillButtonAlone: widget.isFunctionalButton || widget.containsShortcutAction)
                         setLock.lock()
                         widget.capturedTouches.remove(touch)
                         setLock.unlock()
