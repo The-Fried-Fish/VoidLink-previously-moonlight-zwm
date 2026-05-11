@@ -748,6 +748,18 @@
 }
 #endif
 
+- (void)popKeyboardAndMouseStreamingTip {
+    [AlertControllerUtil showAlertIn:self
+                                    title:[LocalizationHelper localizedStringForKey:@"Keyboard/Mouse Connected"]
+                                  message:[LocalizationHelper localizedStringForKey:@"keyboard&MouseStreamingTip"]
+                               withCancel:NO
+                              buttonTitle:[LocalizationHelper localizedStringForKey:@"This tip won't be shown again"]
+                                countdown:5
+                                   action:^{}
+                               completion:^{
+                    }];
+}
+
 - (void)popFirstStreamingTip {
     // 初始化倒计时秒数
     
@@ -756,17 +768,19 @@
     uint8_t slideDist = (uint8_t)(_settings.slideToSettingsDistance.floatValue * 100);
     // 创建弹窗
     NSString* tipText = (GenericUtils.isRunningOnMacAsiPadApp
-    ? [LocalizationHelper localizedStringForKey:@"macFirstLaunchTip"]
-    : [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist])   ;
-
+    ? [LocalizationHelper localizedStringForKey:@"keyboard&MouseStreamingTip"]
+    : [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist]);
+    
     [AlertControllerUtil showAlertIn:self
                                     title:[LocalizationHelper localizedStringForKey:@"First Launch Tips"]
                                   message:tipText
                                withCancel:NO
-                              buttonTitle:[LocalizationHelper localizedStringForKey:@"Got it!"]
+                              buttonTitle:[LocalizationHelper localizedStringForKey:@"This tip won't be shown again"]
                                 countdown:16
                                    action:^{}
-                               completion:^{}];
+                               completion:^{
+        if(!GenericUtils.isRunningOnMacAsiPadApp && GenericUtils.isHardwareKeyboardConnected) [self popKeyboardAndMouseStreamingTip];
+    }];
     
     return;
 }
@@ -903,7 +917,7 @@
                                              selector:@selector(gameProfileSelectorClosed)
                                                  name:@"GameProfileSelectorCloseNotification"
                                                object:nil];
-
+    
 #if 0
     // FIXME: This doesn't work reliably on iPad for some reason. Showing and hiding the keyboard
     // several times in a row will not correctly restore the state of the UIScrollView.
@@ -1817,6 +1831,14 @@
         [self setNeedsUpdateOfHomeIndicatorAutoHidden];
     }
 #endif
+}
+
+- (void)keyboardConnected {
+    [GenericUtils handleKeyboardOrMouseConnectionTipIn:self];
+}
+
+- (void)mouseConnected {
+    [GenericUtils handleKeyboardOrMouseConnectionTipIn:self];
 }
 
 - (void)mousePresenceChanged {

@@ -1938,6 +1938,7 @@ double rc_expo(double x, double expo) {
             
             // Notify the delegate
             [self->_delegate mousePresenceChanged];
+            [self->_delegate mouseConnected];
         }];
         _mouseDisconnectObserver = [[NSNotificationCenter defaultCenter] addObserverForName:GCMouseDidDisconnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             Log(LOG_I, @"Mouse disconnected!");
@@ -1955,6 +1956,8 @@ double rc_expo(double x, double expo) {
         }];
         _keyboardConnectObserver = [[NSNotificationCenter defaultCenter] addObserverForName:GCKeyboardDidConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             Log(LOG_I, @"Keyboard connected!");
+            
+            [self->_delegate keyboardConnected];
             
             // Re-evaluate the on-screen control mode
             [self updateAutoOnScreenControlMode];

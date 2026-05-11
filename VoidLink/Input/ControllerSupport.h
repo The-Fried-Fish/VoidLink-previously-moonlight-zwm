@@ -15,6 +15,8 @@
 
 - (void)gamepadPresenceChanged;
 - (void)mousePresenceChanged;
+- (void)mouseConnected;
+- (void)keyboardConnected;
 - (void)streamExitRequested;
 - (void)controllerArrivalWithPlayerIndex:(int8_t)index;
 

@@ -8,9 +8,49 @@
 
 
 import Foundation
+import GameController
 import UIKit
 
 @objc public class GenericUtils: NSObject {
+    
+    @objc static var hardwareKeyboardAlreadyDetected: Bool = false
+    
+    @objc static func isHardwareKeyboardConnected() -> Bool {
+        if #available(iOS 14.0, tvOS 14.0, *) {
+            hardwareKeyboardAlreadyDetected = GCKeyboard.coalesced != nil
+            return GCKeyboard.coalesced != nil
+        }
+        return false
+    }
+    
+    @objc static func isFirstHardwareKeyboardOrMouseConnection() -> Bool {
+        let key = "hasConnectedHardwareKeyboardOrMouse"
+        guard !UserDefaults.standard.bool(forKey: key) else {
+            return false
+        }
+        UserDefaults.standard.set(true, forKey: key)
+        return true
+    }
+    
+    @objc static func handleKeyboardOrMouseConnectionTip(in vc: UIViewController) {
+        if isRunningOnMacAsiPadApp {
+            return
+        }
+        if hardwareKeyboardAlreadyDetected {
+            _ = isFirstHardwareKeyboardOrMouseConnection()
+            return;
+        }
+        else if isFirstHardwareKeyboardOrMouseConnection() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: SwiftLocalizationHelper.localizedString(forKey: "Keyboard/Mouse Connected"),
+                message: SwiftLocalizationHelper.localizedString(forKey:"keyboard&MouseStreamingTip"),
+                withCancel: false,
+                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+                countdown: 11,
+                completion: {})
+        }
+    }
         
     @objc static func needUpdateDefaultSettings() -> Bool {
         // let key = "needUpdateDefaultSettings20260226-1"
