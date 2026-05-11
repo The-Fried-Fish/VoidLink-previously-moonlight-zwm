@@ -436,7 +436,7 @@ import UIKit
             pickerViewController.tabIdentifiers = ["keyboard"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "eraser"
-            pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "Select eraser shortcut keys")
+            pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "Select eraser shortcut keys")
             let nav = UINavigationController(rootViewController: pickerViewController)
             nav.modalPresentationStyle = .overFullScreen
             viewController.present(nav, animated: true)
@@ -444,19 +444,19 @@ import UIKit
         }
 
         /*
-        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Eraser Shortcut"),
-                                      message: SwiftLocalizationHelper.localizedString(forKey: "Enter eraser keyboard shortcut:"),
+        let alert = UIAlertController(title: LocalizationHelper.localizedString(forKey: "Eraser Shortcut"),
+                                      message: LocalizationHelper.localizedString(forKey: "Enter eraser keyboard shortcut:"),
                                       preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: e, ctrl+e, alt+e ...")
+            textField.placeholder = LocalizationHelper.localizedString(forKey:"Example: e, ctrl+e, alt+e ...")
             textField.keyboardType = .asciiCapable
             textField.autocorrectionType = .no
             textField.spellCheckingType = .no
             textField.text = selectedProfile.eraserShortcut
         }
 
-        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+        let okAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
             let comboButtons = alert.textFields?[0].text ?? ""
             let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
             if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
@@ -465,8 +465,8 @@ import UIKit
             enterBrushShortcut(in: viewController)
         }
         
-        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
-            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+        let learnMoreAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: LocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
@@ -488,26 +488,26 @@ import UIKit
         pickerViewController.tabIdentifiers = ["keyboard"]
         pickerViewController.initialTabIdentifier = "keyboard"
         pickerViewController.shortcutIdentifier = "brush"
-        pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "Select brush shortcut keys")
+        pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "Select brush shortcut keys")
         let nav = UINavigationController(rootViewController: pickerViewController)
         nav.modalPresentationStyle = .overFullScreen
         viewController.present(nav, animated: true)
         return
         
         /*
-        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Brush Shortcut"),
-                                      message: SwiftLocalizationHelper.localizedString(forKey: "Enter brush keyboard shortcut:"),
+        let alert = UIAlertController(title: LocalizationHelper.localizedString(forKey: "Brush Shortcut"),
+                                      message: LocalizationHelper.localizedString(forKey: "Enter brush keyboard shortcut:"),
                                       preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: b, ctrl+b, alt+b ...")
+            textField.placeholder = LocalizationHelper.localizedString(forKey:"Example: b, ctrl+b, alt+b ...")
             textField.keyboardType = .asciiCapable
             textField.autocorrectionType = .no
             textField.spellCheckingType = .no
             textField.text = selectedProfile?.brushShortcut
         }
 
-        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+        let okAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
             let comboButtons = alert.textFields?[0].text ?? ""
             let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
             if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
@@ -524,8 +524,8 @@ import UIKit
             }
         }
         
-        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
-            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+        let learnMoreAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: LocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
@@ -550,7 +550,7 @@ import UIKit
             pickerViewController.tabIdentifiers = ["keyboard"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "squeezePress"
-            pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
+            pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
             let nav = UINavigationController(rootViewController: pickerViewController)
             nav.modalPresentationStyle = .overFullScreen
             viewController.present(nav, animated: true)
@@ -560,19 +560,19 @@ import UIKit
         selectedProfile = oscProfileMan.getSelectedProfile()
         guard let selectedProfile = selectedProfile else {return}
         
-        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
-                                      message: SwiftLocalizationHelper.localizedString(forKey: "enterSqueezePressShort"),
+        let alert = UIAlertController(title: LocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
+                                      message: LocalizationHelper.localizedString(forKey: "enterSqueezePressShort"),
                                       preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: e, ctrl+e, alt+e ...")
+            textField.placeholder = LocalizationHelper.localizedString(forKey:"Example: e, ctrl+e, alt+e ...")
             textField.keyboardType = .asciiCapable
             textField.autocorrectionType = .no
             textField.spellCheckingType = .no
             textField.text = selectedProfile.squeezeStartShortcut
         }
 
-        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+        let okAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
             let comboButtons = alert.textFields?[0].text ?? ""
             let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
             if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
@@ -581,8 +581,8 @@ import UIKit
             enterSqueezeEndShortcut(in: viewController)
         }
         
-        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
-            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+        let learnMoreAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: LocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
@@ -603,26 +603,26 @@ import UIKit
             pickerViewController.tabIdentifiers = ["keyboard"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "squeezeRelease"
-            pickerViewController.shortcutPickerTipText = SwiftLocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")
+            pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")
             let nav = UINavigationController(rootViewController: pickerViewController)
             nav.modalPresentationStyle = .overFullScreen
             viewController.present(nav, animated: true)
         }
         
         /*
-        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
-                                      message: SwiftLocalizationHelper.localizedString(forKey: "enterSqueezeReleaseShort"),
+        let alert = UIAlertController(title: LocalizationHelper.localizedString(forKey: "Squeeze Shortcut"),
+                                      message: LocalizationHelper.localizedString(forKey: "enterSqueezeReleaseShort"),
                                       preferredStyle: .alert)
         
         alert.addTextField { textField in
-            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Example: b, ctrl+b, alt+b ...")
+            textField.placeholder = LocalizationHelper.localizedString(forKey:"Example: b, ctrl+b, alt+b ...")
             textField.keyboardType = .asciiCapable
             textField.autocorrectionType = .no
             textField.spellCheckingType = .no
             textField.text = selectedProfile?.squeezeEndShortcut
         }
 
-        let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
+        let okAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default) { _ in
             let comboButtons = alert.textFields?[0].text ?? ""
             let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: comboButtons)
             if keyStrings?.count ?? 0 > 0 || comboButtons == "" {
@@ -639,8 +639,8 @@ import UIKit
             }
         }
         
-        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
-            if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
+        let learnMoreAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+            if let url = URL(string: LocalizationHelper.localizedString(forKey: "pencilKeyboardCmdURL")) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }

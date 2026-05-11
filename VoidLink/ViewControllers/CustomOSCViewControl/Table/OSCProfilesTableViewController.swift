@@ -182,32 +182,32 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
 
     @IBAction func duplicateTapped(_ sender: Any?) {
         let inputAlert = UIAlertController(
-            title: SwiftLocalizationHelper.localizedString(forKey: "Enter the name you want to save this profile as"),
+            title: LocalizationHelper.localizedString(forKey: "Enter the name you want to save this profile as"),
             message: "",
             preferredStyle: .alert
         )
         inputAlert.addTextField { textField in
-            textField.placeholder = SwiftLocalizationHelper.localizedString(forKey: "name")
+            textField.placeholder = LocalizationHelper.localizedString(forKey: "name")
             if #available(iOS 13.0, *) {
                 // textField.textColor = .label
             }
             textField.clearButtonMode = .whileEditing
             textField.borderStyle = .none
         }
-        inputAlert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Cancel"), style: .default) { _ in
+        inputAlert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Cancel"), style: .default) { _ in
             inputAlert.dismiss(animated: false)
         })
-        inputAlert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Save"), style: .default) { [weak self] _ in
+        inputAlert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Save"), style: .default) { [weak self] _ in
             guard let self else { return }
             let enteredProfileName = inputAlert.textFields?.first?.text ?? ""
 
             if enteredProfileName == "Default" {
                 let alert = UIAlertController(
                     title: "",
-                    message: SwiftLocalizationHelper.localizedString(forKey: "Saving over the 'Default' profile is not allowed"),
+                    message: LocalizationHelper.localizedString(forKey: "Saving over the 'Default' profile is not allowed"),
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
+                alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
                     alert.dismiss(animated: false) {
                         self.present(inputAlert, animated: true)
                     }
@@ -216,10 +216,10 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
             } else if enteredProfileName.isEmpty {
                 let alert = UIAlertController(
                     title: "",
-                    message: SwiftLocalizationHelper.localizedString(forKey: "Profile name cannot be blank!"),
+                    message: LocalizationHelper.localizedString(forKey: "Profile name cannot be blank!"),
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
+                alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
                     alert.dismiss(animated: false) {
                         self.present(inputAlert, animated: true)
                     }
@@ -228,19 +228,19 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
             } else if self.profilesManager.profileNameAlreadyExist(enteredProfileName) {
                 let alert = UIAlertController(
                     title: "",
-                    message: SwiftLocalizationHelper.localizedString(forKey: "Profile name already exists"),
+                    message: LocalizationHelper.localizedString(forKey: "Profile name already exists"),
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Ok"), style: .default))
+                alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default))
                 self.present(alert, animated: true)
             } else {
                 self.profilesManager.duplicateSelectedProfile(withName: enteredProfileName)
                 let alert = UIAlertController(
                     title: "",
-                    message: SwiftLocalizationHelper.localizedString(forKey: "Profile %@ duplicated from current layout", enteredProfileName),
+                    message: LocalizationHelper.localizedString(forKey: "Profile %@ duplicated from current layout", enteredProfileName),
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
+                alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
                     alert.dismiss(animated: false)
                     self.profileViewRefresh()
                 })
@@ -336,16 +336,16 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
             let profilesEncoded = try NSKeyedUnarchiver.unarchivedObject(ofClasses: classes, from: fileData) as? NSMutableArray
 
             let restoredAlert = UIAlertController(
-                title: SwiftLocalizationHelper.localizedString(forKey: ""),
-                message: SwiftLocalizationHelper.localizedString(forKey: "Pofiles imported"),
+                title: LocalizationHelper.localizedString(forKey: ""),
+                message: LocalizationHelper.localizedString(forKey: "Pofiles imported"),
                 preferredStyle: .alert
             )
             let failedAlert = UIAlertController(
-                title: SwiftLocalizationHelper.localizedString(forKey: ""),
-                message: SwiftLocalizationHelper.localizedString(forKey: "Failed to import profiles"),
+                title: LocalizationHelper.localizedString(forKey: ""),
+                message: LocalizationHelper.localizedString(forKey: "Failed to import profiles"),
                 preferredStyle: .alert
             )
-            let okAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default)
+            let okAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default)
 
             if restoreFailed || profilesEncoded == nil {
                 failedAlert.addAction(okAction)
@@ -361,11 +361,11 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
         } catch {
             restoreFailed = true
             let failedAlert = UIAlertController(
-                title: SwiftLocalizationHelper.localizedString(forKey: ""),
-                message: SwiftLocalizationHelper.localizedString(forKey: "Failed to import profiles"),
+                title: LocalizationHelper.localizedString(forKey: ""),
+                message: LocalizationHelper.localizedString(forKey: "Failed to import profiles"),
                 preferredStyle: .alert
             )
-            failedAlert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "OK"), style: .default))
+            failedAlert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "OK"), style: .default))
             present(failedAlert, animated: true)
             profileViewRefresh()
             NSLog("解码失败: \(error)")
@@ -425,7 +425,7 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
 
         if let profile = profiles.object(at: indexPath.row) as? OSCProfile, profile.name == "Default" {
             let alert = UIAlertController(title: "", message: "Deleting the 'Default' profile is not allowed", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
+            alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Ok"), style: .default) { _ in
                 alert.dismiss(animated: false)
             })
             present(alert, animated: true)

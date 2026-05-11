@@ -34,12 +34,12 @@ import UIKit
 
     @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip", "toggleStatsOverlay", "disconnectAndQuitApp"]
     private let specialEntryAliasDic : [String:String] = [
-        "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch game profile ]"),
-        "widgetLayoutTool":SwiftLocalizationHelper.localizedString(forKey: "[ Edit on-screen widget layout ]"),
-        "bringUpSoftKeyboard":SwiftLocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
-        "enterPip":SwiftLocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]"),
-        "toggleStatsOverlay":SwiftLocalizationHelper.localizedString(forKey: "[ Toggle stats overlay ]"),
-        "disconnectAndQuitApp":SwiftLocalizationHelper.localizedString(forKey: "[ Disconnect & quit app ]")
+        "widgetSwitchTool":LocalizationHelper.localizedString(forKey: "[ Switch game profile ]"),
+        "widgetLayoutTool":LocalizationHelper.localizedString(forKey: "[ Edit on-screen widget layout ]"),
+        "bringUpSoftKeyboard":LocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
+        "enterPip":LocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]"),
+        "toggleStatsOverlay":LocalizationHelper.localizedString(forKey: "[ Toggle stats overlay ]"),
+        "disconnectAndQuitApp":LocalizationHelper.localizedString(forKey: "[ Disconnect & quit app ]")
     ]
     
     private var viewPinned: Bool = false
@@ -104,7 +104,7 @@ import UIKit
         contentView.layer.masksToBounds = true
         
         // Set up the title label
-        titleLabel.text = SwiftLocalizationHelper.localizedString(forKey: "Toolbox")
+        titleLabel.text = LocalizationHelper.localizedString(forKey: "Toolbox")
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)  // Adjust font size as needed
         titleLabel.textColor = UIColor.white  // Adjust color as needed
         titleLabel.textAlignment = .center
@@ -124,10 +124,10 @@ import UIKit
         
         tableView.separatorInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         // Configure buttons
-        addButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Add"), for: .normal)
-        deleteButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Delete"), for: .normal)
-        editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Edit"), for: .normal)
-        exitButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Exit"), for: .normal)
+        addButton.setTitle(LocalizationHelper.localizedString(forKey: "Add"), for: .normal)
+        deleteButton.setTitle(LocalizationHelper.localizedString(forKey: "Delete"), for: .normal)
+        editButton.setTitle(LocalizationHelper.localizedString(forKey: "Edit"), for: .normal)
+        exitButton.setTitle(LocalizationHelper.localizedString(forKey: "Exit"), for: .normal)
         pinButton.setTitle("📌", for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 20) // Adjust the size as needed
         deleteButton.titleLabel?.font = UIFont.systemFont(ofSize: 20)
@@ -244,8 +244,8 @@ import UIKit
     private func updateEditingMode() {
         addButton.isEnabled = isEditingMode
         deleteButton.isEnabled = isEditingMode
-        if(isEditingMode){ editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Done"), for: .normal) }
-        else{ editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Edit"), for: .normal) }
+        if(isEditingMode){ editButton.setTitle(LocalizationHelper.localizedString(forKey: "Done"), for: .normal) }
+        else{ editButton.setTitle(LocalizationHelper.localizedString(forKey: "Edit"), for: .normal) }
     }
     
     @objc private func pinButtonTapped() {
@@ -298,9 +298,9 @@ import UIKit
             return
         }
         else{
-            let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "New Command"), message: SwiftLocalizationHelper.localizedString(forKey: "Enter a new command and alias"), preferredStyle: .alert)
-            alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Command") }
-            alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey: "Alias (optional)") }
+            let alert = UIAlertController(title: LocalizationHelper.localizedString(forKey: "New Command"), message: LocalizationHelper.localizedString(forKey: "Enter a new command and alias"), preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = LocalizationHelper.localizedString(forKey:"Command") }
+            alert.addTextField { $0.placeholder = LocalizationHelper.localizedString(forKey: "Alias (optional)") }
             alert.textFields?[0].keyboardType = .asciiCapable
             alert.textFields?[0].autocorrectionType = .no
             alert.textFields?[0].spellCheckingType = .no
@@ -308,11 +308,11 @@ import UIKit
             alert.textFields?[1].autocorrectionType = .no
             alert.textFields?[1].spellCheckingType = .no
             
-            let submitAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Add"), style: .default) { [unowned alert] _ in
+            let submitAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Add"), style: .default) { [unowned alert] _ in
                 self.createEntry(cmdString: alert.textFields?[0].text ?? "", alias: alert.textFields?[1].text)
             }
             
-            let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey:"Cancel"), style: .cancel)
+            let cancelAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey:"Cancel"), style: .cancel)
             alert.addAction(submitAction)
             alert.addAction(cancelAction)
             

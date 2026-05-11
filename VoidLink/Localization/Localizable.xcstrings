@@ -6379,25 +6379,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Before you start, please navigate to 'Settings Menu → Motion Control Section → Map Gyro to’ to confirm whether the gyroscope output is set to mouse or controller stick."
+            "value" : "This is a gyro switch button\nBefore you start, please navigate to 'Settings Menu → Motion Control Section → Map Gyro to’ to confirm whether the gyroscope output is set to mouse or controller stick."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "开始之前，请先前往 “设置菜单 → 体感控制分区 → 陀螺仪映射为” 选项确认陀螺仪输出为鼠标还是手柄摇杆。"
+            "state" : "translated",
+            "value" : "这是一个陀螺仪开关按键。\n开始之前，请先前往 “设置菜单 → 体感控制分区 → 陀螺仪映射为” 选项，确认陀螺仪输出为鼠标还是手柄摇杆。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "開始之前，請先前往「設定選單 → 體感控制分區 → 陀螺儀映射為」選項，確認陀螺儀輸出為滑鼠還是手把搖桿。"
+            "state" : "translated",
+            "value" : "這是一個陀螺儀開關按鍵。\n開始之前，請先前往「設定選單 → 體感控制分區 → 陀螺儀映射為」選項，確認陀螺儀輸出為滑鼠還是手把搖桿。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "開始之前，請先前往「設定選單 → 體感控制分區 → 陀螺儀映射為」選項，確認陀螺儀輸出為滑鼠還是手把搖桿。"
+            "state" : "translated",
+            "value" : "這是一個陀螺儀開關按鍵。\n開始之前，請先前往「設定選單 → 體感控制分區 → 陀螺儀映射為」選項，確認陀螺儀輸出為滑鼠還是手把搖桿。"
           }
         }
       }
@@ -6805,19 +6805,19 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "长按任意按键2秒后，可拖拽调整按键顺序、删除按键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "長按任意按鍵2秒後，可拖曳調整按鍵順序、刪除按鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "長按任意按鍵2秒後，可拖曳調整按鍵順序、刪除按鍵"
           }
         }
@@ -7664,25 +7664,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Single touch pans stream view; two-finger pinch zooms stream view. Double tap to reset."
+            "value" : "Single touch pans stream view; two-finger pinch zooms stream view. Double tap to reset.\n\nMetal rendering does not support magnifier widget."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "单指平移/竖移串流视图，双指捏合缩放串流视图。双击复原串流视图。"
+            "value" : "单指平移/竖移串流视图，双指捏合缩放串流视图。双击复原串流视图。\n\n目前 Metal 渲染模式下无法使用放大镜控件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "單指平移/豎移串流視圖，雙指捏合縮放串流視圖。雙擊復原串流視圖。"
+            "value" : "單指平移/豎移串流視圖，雙指捏合縮放串流視圖。雙擊復原串流視圖。\n\n目前 Metal 渲染模式下無法使用放大鏡控制項。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "單指平移/豎移串流視圖，雙指捏合縮放串流視圖。雙擊復原串流視圖。"
+            "value" : "單指平移/豎移串流視圖，雙指捏合縮放串流視圖。雙擊復原串流視圖。\n\n目前 Metal 渲染模式下無法使用放大鏡控制項。"
           }
         }
       }
@@ -11859,6 +11859,35 @@
         }
       }
     },
+    "slideHoldFolderButtonTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a “slide-hold” folder button. During streaming, double-tap and keep holding to drag and reposition it."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是一个“滑动时保持按下”的 folder 控件夹按键。 在串流过程中双击并保持长按，可拖动改变其位置。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一個「滑動時保持按下」的 Folder 控制項夾按鍵。在串流過程中雙擊並保持長按，可拖曳改變其位置。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一個「滑動時保持按下」的 Folder 控制項夾按鍵。在串流過程中雙擊並保持長按，可拖曳改變其位置。"
+          }
+        }
+      }
+    },
     "slideToSettingsDistanceStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -12294,6 +12323,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "立體聲 (iOS18+ 提供環繞音效)"
+          }
+        }
+      }
+    },
+    "stickWheelLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/pw0ok5cls8piwham"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/rgbk4c7nzzf044eb"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/rgbk4c7nzzf044eb"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/rgbk4c7nzzf044eb"
+          }
+        }
+      }
+    },
+    "stickWheelTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a left stick direction wheel. It is recommended to check the tutorial before use."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是一个左摇杆方向轮。建议在使用先前查看教程。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一個左搖桿方向輪。建議在使用前先查看教學。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一個左搖桿方向輪。建議在使用前先查看教學。"
           }
         }
       }
@@ -13342,6 +13429,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "矢量型右搖桿觸控板"
+          }
+        }
+      }
+    },
+    "velocityBasedTouchpadLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zw100ykch1ut4i1m"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ot4v6dgc6s1g23os"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ot4v6dgc6s1g23os"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/ot4v6dgc6s1g23os"
+          }
+        }
+      }
+    },
+    "velocityBasedTouchpadTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a velocity based, transparent right stick touchpad (RsvPad). Please increase the in-game right stick sensitivity first, then adjust the RsvPad sensitivity itself."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是一个透明的速度矢量型右摇杆触控板(RsvPad)。请先将游戏内的右摇杆灵敏度调大，再调整RsvPad自身灵敏度。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一個透明的速度向量型右搖桿觸控板（RsvPad）。請先將遊戲內的右搖桿靈敏度調高，再調整 RsvPad 自身的靈敏度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是一個透明的速度向量型右搖桿觸控板（RsvPad）。請先將遊戲內的右搖桿靈敏度調高，再調整 RsvPad 自身的靈敏度。"
           }
         }
       }

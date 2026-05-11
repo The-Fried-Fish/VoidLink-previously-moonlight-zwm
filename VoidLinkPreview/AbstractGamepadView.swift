@@ -125,34 +125,34 @@ enum GamepadWidget: Hashable {
     
     var description: String {
         switch self {
-        case .a: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad A")
-        case .b: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad B")
-        case .x: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad X")
-        case .y: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Y")
-        case .select: return SwiftLocalizationHelper.localizedString(forKey: "Select")
-        case .start: return SwiftLocalizationHelper.localizedString(forKey: "Start")
-        case .home: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Home")
-        case .dPad: return SwiftLocalizationHelper.localizedString(forKey: "Dpad")
-        case .up: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Up")
-        case .down: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Down")
-        case .left: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Left")
-        case .right: return SwiftLocalizationHelper.localizedString(forKey: "Gamepad Right")
-        case .ls: return SwiftLocalizationHelper.localizedString(forKey: "LS/L3 button")
-        case .lswheel: return SwiftLocalizationHelper.localizedString(forKey: "Left stick wheel")
-        case .lsPad: return SwiftLocalizationHelper.localizedString(forKey: "Displacement-based left stick pad")
-        case .lsvPad: return SwiftLocalizationHelper.localizedString(forKey: "Velocity-based left stick pad")
-        case .rs: return SwiftLocalizationHelper.localizedString(forKey: "RS/R3 button")
-        case .rsPad: return SwiftLocalizationHelper.localizedString(forKey: "Displacement-based right stick pad")
-        case .rsvPad: return SwiftLocalizationHelper.localizedString(forKey: "Velocity-based right stick pad")
-        case .rsWheel: return SwiftLocalizationHelper.localizedString(forKey: "Right stick wheel")
-        case .leftShoulder: return SwiftLocalizationHelper.localizedString(forKey: "LB/L1")
-        case .rightShoulder: return SwiftLocalizationHelper.localizedString(forKey: "RB/R1")
-        case .leftTrigger: return SwiftLocalizationHelper.localizedString(forKey: "LT/L2 button")
-        case .ltPad: return SwiftLocalizationHelper.localizedString(forKey: "Left trigger pad")
-        case .rightTrigger: return SwiftLocalizationHelper.localizedString(forKey: "RT/R2 button")
-        case .rtPad: return SwiftLocalizationHelper.localizedString(forKey: "Right trigger pad")
-        case .ds4Touchpad: return SwiftLocalizationHelper.localizedString(forKey: "DS4 touchpad")
-        case .ds4TouchpadButton: return SwiftLocalizationHelper.localizedString(forKey: "DS4 touchpad button")
+        case .a: return LocalizationHelper.localizedString(forKey: "Gamepad A")
+        case .b: return LocalizationHelper.localizedString(forKey: "Gamepad B")
+        case .x: return LocalizationHelper.localizedString(forKey: "Gamepad X")
+        case .y: return LocalizationHelper.localizedString(forKey: "Gamepad Y")
+        case .select: return LocalizationHelper.localizedString(forKey: "Select")
+        case .start: return LocalizationHelper.localizedString(forKey: "Start")
+        case .home: return LocalizationHelper.localizedString(forKey: "Gamepad Home")
+        case .dPad: return LocalizationHelper.localizedString(forKey: "Dpad")
+        case .up: return LocalizationHelper.localizedString(forKey: "Gamepad Up")
+        case .down: return LocalizationHelper.localizedString(forKey: "Gamepad Down")
+        case .left: return LocalizationHelper.localizedString(forKey: "Gamepad Left")
+        case .right: return LocalizationHelper.localizedString(forKey: "Gamepad Right")
+        case .ls: return LocalizationHelper.localizedString(forKey: "LS/L3 button")
+        case .lswheel: return LocalizationHelper.localizedString(forKey: "Left stick wheel")
+        case .lsPad: return LocalizationHelper.localizedString(forKey: "Displacement-based left stick pad")
+        case .lsvPad: return LocalizationHelper.localizedString(forKey: "Velocity-based left stick pad")
+        case .rs: return LocalizationHelper.localizedString(forKey: "RS/R3 button")
+        case .rsPad: return LocalizationHelper.localizedString(forKey: "Displacement-based right stick pad")
+        case .rsvPad: return LocalizationHelper.localizedString(forKey: "Velocity-based right stick pad")
+        case .rsWheel: return LocalizationHelper.localizedString(forKey: "Right stick wheel")
+        case .leftShoulder: return LocalizationHelper.localizedString(forKey: "LB/L1")
+        case .rightShoulder: return LocalizationHelper.localizedString(forKey: "RB/R1")
+        case .leftTrigger: return LocalizationHelper.localizedString(forKey: "LT/L2 button")
+        case .ltPad: return LocalizationHelper.localizedString(forKey: "Left trigger pad")
+        case .rightTrigger: return LocalizationHelper.localizedString(forKey: "RT/R2 button")
+        case .rtPad: return LocalizationHelper.localizedString(forKey: "Right trigger pad")
+        case .ds4Touchpad: return LocalizationHelper.localizedString(forKey: "DS4 touchpad")
+        case .ds4TouchpadButton: return LocalizationHelper.localizedString(forKey: "DS4 touchpad button")
         }
     }
 }
@@ -1304,7 +1304,7 @@ struct GamepadWidgetPickerOverlay: View {
 
             VStack(spacing: 0) {
                 VStack(spacing: cardSpacing) {
-                    Text(SwiftLocalizationHelper.localizedString(forKey: "Select Control"))
+                    Text(LocalizationHelper.localizedString(forKey: "Select Control"))
                         .font(.system(size: titleFontSize, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                     
@@ -1346,7 +1346,7 @@ struct GamepadWidgetPickerOverlay: View {
                         Button(action: {
                             onCancel()
                         }) {
-                            Text(SwiftLocalizationHelper.localizedString(forKey: "Cancel"))
+                            Text(LocalizationHelper.localizedString(forKey: "Cancel"))
                                 .font(.system(size: actionButtonFontSize, weight: .bold, design: .rounded))
                                 .foregroundColor(Color.white.opacity(0.9))
                                 .frame(maxWidth: .infinity)
@@ -1365,7 +1365,7 @@ struct GamepadWidgetPickerOverlay: View {
                         Button(action: {
                             onReset()
                         }) {
-                            Text(SwiftLocalizationHelper.localizedString(forKey: "Reset"))
+                            Text(LocalizationHelper.localizedString(forKey: "Reset"))
                                 .font(.system(size: actionButtonFontSize, weight: .bold, design: .rounded))
                                 .foregroundColor(Color.white.opacity(0.9))
                                 .frame(maxWidth: .infinity)

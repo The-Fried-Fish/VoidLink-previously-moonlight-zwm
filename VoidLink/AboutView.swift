@@ -53,7 +53,7 @@ public struct AboutView: View {
             }
             
             // 说明文字
-            Text(SwiftLocalizationHelper.localizedString(forKey: "From the player community, to the player community."))
+            Text(LocalizationHelper.localizedString(forKey: "From the player community, to the player community."))
                 .multilineTextAlignment(.center)
                 .font(Font.caption.italic())
                 .lineLimit(nil)
@@ -61,7 +61,7 @@ public struct AboutView: View {
                 .padding()
 
             
-            Text(SwiftLocalizationHelper.localizedString(forKey: "VoidLink delivers better performance now!"))
+            Text(LocalizationHelper.localizedString(forKey: "VoidLink delivers better performance now!"))
                 .multilineTextAlignment(.center)
                 .font(Font.callout.bold())
                 .lineLimit(nil)
@@ -69,11 +69,11 @@ public struct AboutView: View {
 
             // 链接按钮
             if #available(iOS 14.0, *) {
-                Link(SwiftLocalizationHelper.localizedString(forKey: "Learn more & join us"), destination: URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink"))!)
+                Link(LocalizationHelper.localizedString(forKey: "Learn more & join us"), destination: URL(string: LocalizationHelper.localizedString(forKey: "supportLink"))!)
                     .padding(.top, 10)
                 Spacer()
                 // OK 按钮
-                Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                Button(LocalizationHelper.localizedString(forKey: "OK")) {
                     aboutVC.dismiss(animated:true)
                 }
                 .padding()
@@ -83,9 +83,9 @@ public struct AboutView: View {
                 .cornerRadius(12)
             } else {
                 HStack(spacing: 20) {
-                    Button(SwiftLocalizationHelper.localizedString(forKey: "Join us")) {
+                    Button(LocalizationHelper.localizedString(forKey: "Join us")) {
                         // 打开链接
-                        if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink")) {
+                        if let url = URL(string: LocalizationHelper.localizedString(forKey: "supportLink")) {
                             UIApplication.shared.open(url)
                         }
                     }
@@ -96,7 +96,7 @@ public struct AboutView: View {
                     .frame(height: 33)
                     .frame(minWidth: 100)
                     /*
-                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                    Button(LocalizationHelper.localizedString(forKey: "OK")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .padding()
@@ -105,7 +105,7 @@ public struct AboutView: View {
                     .cornerRadius(12)
                     .frame(height: 33)
                     .frame(minWidth: 100)*/
-                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                    Button(LocalizationHelper.localizedString(forKey: "OK")) {
                         aboutVC.dismiss(animated:true)
                     }
                     .padding()

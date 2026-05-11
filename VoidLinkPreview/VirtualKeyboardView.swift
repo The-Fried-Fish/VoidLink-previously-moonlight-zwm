@@ -461,7 +461,7 @@ struct VirtualKeyboardView: View {
                 ),
                 KeyboardWidgetOption(
                     command: "WASDPAD",
-                    description: SwiftLocalizationHelper.localizedString(forKey: "WASD direction pad"),
+                    description: LocalizationHelper.localizedString(forKey: "WASD direction pad"),
                     highlightedLabels: ["W", "A", "S", "D"],
                     family: .wasd,
                     selectionState: .pad
@@ -478,7 +478,7 @@ struct VirtualKeyboardView: View {
                 ),
                 KeyboardWidgetOption(
                     command: "ARROWPAD",
-                    description: SwiftLocalizationHelper.localizedString(forKey: "Arrow direction pad"),
+                    description: LocalizationHelper.localizedString(forKey: "Arrow direction pad"),
                     highlightedLabels: ["↑", "↓", "←", "→"],
                     family: .arrow,
                     selectionState: .pad
@@ -493,10 +493,10 @@ struct VirtualKeyboardView: View {
             return key.label
         case .arrow:
             switch key.label {
-            case "↑": return SwiftLocalizationHelper.localizedString(forKey: "Up Arrow")
-            case "↓": return SwiftLocalizationHelper.localizedString(forKey: "Down Arrow")
-            case "←": return SwiftLocalizationHelper.localizedString(forKey: "Left Arrow")
-            case "→": return SwiftLocalizationHelper.localizedString(forKey: "Right Arrow")
+            case "↑": return LocalizationHelper.localizedString(forKey: "Up Arrow")
+            case "↓": return LocalizationHelper.localizedString(forKey: "Down Arrow")
+            case "←": return LocalizationHelper.localizedString(forKey: "Left Arrow")
+            case "→": return LocalizationHelper.localizedString(forKey: "Right Arrow")
             default: return key.label
             }
         }
@@ -801,8 +801,8 @@ struct VirtualKeyboardView: View {
                     KeyView(
                         key: Key(
                             label: showsMouseWidgets
-                                ? SwiftLocalizationHelper.localizedString(forKey: "Mouse Widgets")
-                                : SwiftLocalizationHelper.localizedString(forKey: "Numpad"),
+                                ? LocalizationHelper.localizedString(forKey: "Mouse Widgets")
+                                : LocalizationHelper.localizedString(forKey: "Numpad"),
                             width: unit * 2 + spacing,
                             sfSymbolName: showsMouseWidgets
                                 ? "computermouse.fill"
@@ -820,8 +820,8 @@ struct VirtualKeyboardView: View {
                     KeyView(
                         key: Key(
                             label: showsMouseWidgets
-                                ? SwiftLocalizationHelper.localizedString(forKey: "numpad")
-                                : SwiftLocalizationHelper.localizedString(forKey: "mouse widgets"),
+                                ? LocalizationHelper.localizedString(forKey: "numpad")
+                                : LocalizationHelper.localizedString(forKey: "mouse widgets"),
                             width: unit * 2 + spacing,
                             winCmdString: "NULL",
                             macCmdString: "NULL",
@@ -908,7 +908,7 @@ struct VirtualKeyboardView: View {
             HStack(spacing: spacing) {
                 KeyView(
                     key: Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Left Button"),
+                        label: LocalizationHelper.localizedString(forKey: "Left Button"),
                         width: unit * 2 + spacing,
                         winCmdString: "MLEFT",
                         macCmdString: "MLEFT",
@@ -919,7 +919,7 @@ struct VirtualKeyboardView: View {
                     keyboardType: keyboardType,
                     mode: mode,
                     highlightStyle: highlightStyle(for: Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Left Button"),
+                        label: LocalizationHelper.localizedString(forKey: "Left Button"),
                         width: unit * 2 + spacing,
                         winCmdString: "MLEFT",
                         macCmdString: "MLEFT",
@@ -928,7 +928,7 @@ struct VirtualKeyboardView: View {
                     )),
                     action: {
                         handleKeyTap(Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Left Button"),
+                            label: LocalizationHelper.localizedString(forKey: "Left Button"),
                             width: unit * 2 + spacing,
                             winCmdString: "MLEFT",
                             macCmdString: "MLEFT",
@@ -940,7 +940,7 @@ struct VirtualKeyboardView: View {
 
                 KeyView(
                     key: Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Right Button"),
+                        label: LocalizationHelper.localizedString(forKey: "Right Button"),
                         width: unit * 2 + spacing,
                         winCmdString: "MRIGHT",
                         macCmdString: "MRIGHT",
@@ -951,7 +951,7 @@ struct VirtualKeyboardView: View {
                     keyboardType: keyboardType,
                     mode: mode,
                     highlightStyle: highlightStyle(for: Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Right Button"),
+                        label: LocalizationHelper.localizedString(forKey: "Right Button"),
                         width: unit * 2 + spacing,
                         winCmdString: "MRIGHT",
                         macCmdString: "MRIGHT",
@@ -960,7 +960,7 @@ struct VirtualKeyboardView: View {
                     )),
                     action: {
                         handleKeyTap(Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Right Button"),
+                            label: LocalizationHelper.localizedString(forKey: "Right Button"),
                             width: unit * 2 + spacing,
                             winCmdString: "MRIGHT",
                             macCmdString: "MRIGHT",
@@ -974,7 +974,7 @@ struct VirtualKeyboardView: View {
             HStack(spacing: spacing) {
                 keyboardKeyView(
                     Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "Middle Button"),
+                        label: LocalizationHelper.localizedString(forKey: "Middle Button"),
                         width: unit * 2 + spacing,
                         winCmdString: "MMIDDLE",
                         macCmdString: "MMIDDLE",
@@ -985,7 +985,7 @@ struct VirtualKeyboardView: View {
 
                 keyboardKeyView(
                     Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "X1"),
+                        label: LocalizationHelper.localizedString(forKey: "X1"),
                         width: unit,
                         winCmdString: "MX1",
                         macCmdString: "MX1",
@@ -996,7 +996,7 @@ struct VirtualKeyboardView: View {
 
                 keyboardKeyView(
                     Key(
-                        label: SwiftLocalizationHelper.localizedString(forKey: "X2"),
+                        label: LocalizationHelper.localizedString(forKey: "X2"),
                         width: unit,
                         winCmdString: "MX2",
                         macCmdString: "MX2",
@@ -1010,7 +1010,7 @@ struct VirtualKeyboardView: View {
                 HStack(spacing: spacing) {
                     keyboardKeyView(
                         Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nUp"),
+                            label: LocalizationHelper.localizedString(forKey: "Wheel\nUp"),
                             width: unit,
                             winCmdString: "WHEELDOWN",
                             macCmdString: "WHEELDOWN",
@@ -1021,7 +1021,7 @@ struct VirtualKeyboardView: View {
 
                     keyboardKeyView(
                         Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"),
+                            label: LocalizationHelper.localizedString(forKey: "Wheel\nDown"),
                             width: unit,
                             winCmdString: "WHEELUP",
                             macCmdString: "WHEELUP",
@@ -1034,7 +1034,7 @@ struct VirtualKeyboardView: View {
                 HStack(spacing: spacing) {
                     keyboardKeyView(
                         Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nUp"),
+                            label: LocalizationHelper.localizedString(forKey: "Wheel\nUp"),
                             width: unit,
                             winCmdString: "WHEELDOWN",
                             macCmdString: "WHEELDOWN",
@@ -1045,7 +1045,7 @@ struct VirtualKeyboardView: View {
 
                     keyboardKeyView(
                         Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"),
+                            label: LocalizationHelper.localizedString(forKey: "Wheel\nDown"),
                             width: unit,
                             winCmdString: "WHEELUP",
                             macCmdString: "WHEELUP",
@@ -1056,7 +1056,7 @@ struct VirtualKeyboardView: View {
 
                     keyboardKeyView(
                         Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "WheelPad"),
+                            label: LocalizationHelper.localizedString(forKey: "WheelPad"),
                             width: unit * 2 + spacing,
                             winCmdString: "WHEEL",
                             macCmdString: "WHEEL",
@@ -1071,7 +1071,7 @@ struct VirtualKeyboardView: View {
                 HStack(spacing: spacing) {
                     keyboardKeyView(
                         Key(
-                            label: SwiftLocalizationHelper.localizedString(forKey: "MousePad"),
+                            label: LocalizationHelper.localizedString(forKey: "MousePad"),
                             width: unit * 2 + spacing,
                             winCmdString: "MOUSEPAD",
                             macCmdString: "MOUSEPAD",
@@ -1083,7 +1083,7 @@ struct VirtualKeyboardView: View {
                     VStack(spacing: spacing) {
                         keyboardKeyView(
                             Key(
-                                label: SwiftLocalizationHelper.localizedString(forKey: "Absolute MousePad"),
+                                label: LocalizationHelper.localizedString(forKey: "Absolute MousePad"),
                                 width: unit * 2 + spacing,
                                 winCmdString: "ABSMOUSEPAD",
                                 macCmdString: "ABSMOUSEPAD",
@@ -1093,7 +1093,7 @@ struct VirtualKeyboardView: View {
                         )
                         keyboardKeyView(
                             Key(
-                                label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"),
+                                label: LocalizationHelper.localizedString(forKey: "Trackball"),
                                 width: unit * 2 + spacing,
                                 winCmdString: "TRACKBALL",
                                 macCmdString: "TRACKBALL",
@@ -1275,17 +1275,17 @@ struct VirtualKeyboardView: View {
 
     private var mouseWidgetKeys: [Key] {
         var keys = [
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Left Button"), width: unit * 2 + spacing, winCmdString: "MLEFT", macCmdString: "MLEFT", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Right Button"), width: unit * 2 + spacing, winCmdString: "MRIGHT", macCmdString: "MRIGHT", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Middle Button"), width: unit * 2 + spacing, winCmdString: "MMIDDLE", macCmdString: "MMIDDLE", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "X1"), width: unit, winCmdString: "MX1", macCmdString: "MX1", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "X2"), width: unit, winCmdString: "MX2", macCmdString: "MX2", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nUp"), width: unit, winCmdString: "WHEELDOWN", macCmdString: "WHEELDOWN", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Wheel\nDown"), width: unit, winCmdString: "WHEELUP", macCmdString: "WHEELUP", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "WheelPad"), width: unit * 2 + spacing, winCmdString: "WHEEL", macCmdString: "WHEEL", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "MousePad"), width: unit * 2 + spacing, winCmdString: "MOUSEPAD", macCmdString: "MOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Absolute MousePad"), width: unit * 2 + spacing, winCmdString: "ABSMOUSEPAD", macCmdString: "ABSMOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
-            Key(label: SwiftLocalizationHelper.localizedString(forKey: "Trackball"), width: unit * 2 + spacing, winCmdString: "TRACKBALL", macCmdString: "TRACKBALL", winKeyCode: 0xFF, macKeyCode: 0xFF)
+            Key(label: LocalizationHelper.localizedString(forKey: "Left Button"), width: unit * 2 + spacing, winCmdString: "MLEFT", macCmdString: "MLEFT", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "Right Button"), width: unit * 2 + spacing, winCmdString: "MRIGHT", macCmdString: "MRIGHT", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "Middle Button"), width: unit * 2 + spacing, winCmdString: "MMIDDLE", macCmdString: "MMIDDLE", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "X1"), width: unit, winCmdString: "MX1", macCmdString: "MX1", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "X2"), width: unit, winCmdString: "MX2", macCmdString: "MX2", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "Wheel\nUp"), width: unit, winCmdString: "WHEELDOWN", macCmdString: "WHEELDOWN", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "Wheel\nDown"), width: unit, winCmdString: "WHEELUP", macCmdString: "WHEELUP", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "WheelPad"), width: unit * 2 + spacing, winCmdString: "WHEEL", macCmdString: "WHEEL", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "MousePad"), width: unit * 2 + spacing, winCmdString: "MOUSEPAD", macCmdString: "MOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "Absolute MousePad"), width: unit * 2 + spacing, winCmdString: "ABSMOUSEPAD", macCmdString: "ABSMOUSEPAD", winKeyCode: 0xFF, macKeyCode: 0xFF),
+            Key(label: LocalizationHelper.localizedString(forKey: "Trackball"), width: unit * 2 + spacing, winCmdString: "TRACKBALL", macCmdString: "TRACKBALL", winKeyCode: 0xFF, macKeyCode: 0xFF)
         ]
         if mode == .shortcutPicker {
             keys.removeAll { key in
@@ -1505,7 +1505,7 @@ struct KeyboardWidgetPickerOverlay: View {
                 }
 
             VStack(spacing: 14) {
-                Text(SwiftLocalizationHelper.localizedString(forKey: "Select Control"))
+                Text(LocalizationHelper.localizedString(forKey: "Select Control"))
                     .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
 
@@ -1544,7 +1544,7 @@ struct KeyboardWidgetPickerOverlay: View {
                     Button(action: {
                         onCancel()
                     }) {
-                        Text(SwiftLocalizationHelper.localizedString(forKey: "Cancel"))
+                        Text(LocalizationHelper.localizedString(forKey: "Cancel"))
                             .font(.system(size: 15, weight: .bold, design: .rounded))
                             .foregroundColor(Color.white.opacity(0.9))
                             .frame(maxWidth: .infinity)
@@ -1563,7 +1563,7 @@ struct KeyboardWidgetPickerOverlay: View {
                     Button(action: {
                         onReset()
                     }) {
-                        Text(SwiftLocalizationHelper.localizedString(forKey: "Reset"))
+                        Text(LocalizationHelper.localizedString(forKey: "Reset"))
                             .font(.system(size: 15, weight: .bold, design: .rounded))
                             .foregroundColor(Color.white.opacity(0.9))
                             .frame(maxWidth: .infinity)

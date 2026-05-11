@@ -235,7 +235,6 @@ import ObjectiveC.runtime
     @objc public var hasNonEditableLabel: Bool = false
 
     @objc public var isMagnifier: Bool = false
-    private var isFirstTappingMagnifier: Bool = true
     @objc public var animatesTransition: Bool = true
 
     // for all stick pads
@@ -300,7 +299,6 @@ import ObjectiveC.runtime
     @objc public var pitchFactor: CGFloat = 1.0
     @objc public var rollFactor: CGFloat = 1.0
     private var gyroControlPreviousStatus: NSMutableDictionary = NSMutableDictionary()
-    private var isFirstTappingOnscreenGyroButton: Bool = true
     
     private var superViewWidth: CGFloat = 0
     private var superViewHeight: CGFloat = 0
@@ -965,7 +963,7 @@ import ObjectiveC.runtime
     }
     
     @objc func setupAtrributedText(){
-        var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : SwiftLocalizationHelper.localizedString(forKey: self.widgetLabel)
+        var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : LocalizationHelper.localizedString(forKey: self.widgetLabel)
         
         if !OnScreenWidgetView.editMode, self.widgetType == .touchPad {
             text = ""
@@ -975,9 +973,9 @@ import ObjectiveC.runtime
             
             switch cmdString {
             case "DISABLETOUCH":
-                self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: touchDisabledFLag ? "=EnableTouch" : "=DisableTouch" )
+                self.nonEditableWidgetLabel = LocalizationHelper.localizedString(forKey: touchDisabledFLag ? "=EnableTouch" : "=DisableTouch" )
             case "GAMEPADOVERLAY":
-                self.nonEditableWidgetLabel = SwiftLocalizationHelper.localizedString(forKey: OnScreenWidgetView.gamepadOverlayFLag ? "=GamepadOverlayOn" : "=GamepadOverlayOff" )
+                self.nonEditableWidgetLabel = LocalizationHelper.localizedString(forKey: OnScreenWidgetView.gamepadOverlayFLag ? "=GamepadOverlayOn" : "=GamepadOverlayOff" )
             default:
                 nonEditableWidgetLabel = ""
             }
@@ -1909,6 +1907,7 @@ import ObjectiveC.runtime
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
                 switch self.touchPadString {
                 case "LSWHEEL","RSWHEEL":
+                    GenericUtils.handleStickWheelTip(in: self.parentViewController)
                     self.getVector(touch: touch)
                     self.handleStickWheelMove(touch: touch)
                     if quickDoubleTapDetected {
@@ -1921,6 +1920,7 @@ import ObjectiveC.runtime
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "RSVPAD":
+                    GenericUtils.handleVelocityBasedTouchpadTip(in: self.parentViewController)
                     self.clearRightStickTouchPadFlag()
                     self.inertialScroller.timer?.pause()
                     if quickDoubleTapDetected {
@@ -1954,10 +1954,7 @@ import ObjectiveC.runtime
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
                     }
                 case "MAGNIFIER":
-                    if self.isFirstTappingMagnifier, GenericUtils.isFirstTappingMagnifier() {
-                        self.popMagnifierTip()
-                    }
-                    self.isFirstTappingMagnifier = false
+                    GenericUtils.handleMagnifierTip(in: self.parentViewController)
                     if quickDoubleTapDetected && allSpawnedTouchesCount == 1 {
                         OnScreenWidgetView.profileChangedDuringStreaming = true
                         self.functionalWidgetDelegate?.resetMagnifierStreamView(animated: self.animatesTransition)
@@ -2580,10 +2577,7 @@ import ObjectiveC.runtime
     }
     
     private func handleMotionControlButtonDown(){
-        if isFirstTappingOnscreenGyroButton, GenericUtils.isFirstTappingOnscreenGyroButton() {
-            self.popGyroButtonTip()
-        }
-        isFirstTappingOnscreenGyroButton = false
+        GenericUtils.handleGyroButtonTip(in: self.parentViewController)
         switch self.motionControlButtonString {
         case "GYRO":
             self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
@@ -2638,6 +2632,7 @@ import ObjectiveC.runtime
         switch self.functionalButtonString {
         case "FOLDER":
             if self.buttonMode != .slideAndHold {break}
+            GenericUtils.handleSlideAndHoldFolderButtonTip(in: self.parentViewController)
             self.folded = false
             OnScreenWidgetView.set(folded: false, for: self)
         case "ABSTCHDRAG":
@@ -3168,29 +3163,7 @@ import ObjectiveC.runtime
         }
         return true
     }
-    
-    private func popMagnifierTip() {
-        AlertControllerUtil.showAlert(
-            in: self.parentViewController,
-            title: SwiftLocalizationHelper.localizedString(forKey: "Magnifier"),
-            message: "\n\(SwiftLocalizationHelper.localizedString(forKey: "magnifierTip"))\n\n\(SwiftLocalizationHelper.localizedString(forKey: "magnifierPersistTip"))",
-            withCancel: false,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
-            countdown: 5,
-        )
-    }
-    
-    private func popGyroButtonTip() {
-        AlertControllerUtil.showAlert(
-            in: self.parentViewController,
-            title: SwiftLocalizationHelper.localizedString(forKey: "Gyro Button"),
-            message: "\n\(SwiftLocalizationHelper.localizedString(forKey: "gyroButtonTip"))",
-            withCancel: false,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
-            countdown: 5,
-        )
-    }
-    
+        
     // MARK: - Auto Dock
     private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90
     private static let autoDockExposedThickness: CGFloat = 22

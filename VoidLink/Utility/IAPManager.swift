@@ -57,7 +57,7 @@ import StoreKit
     func productName() -> String {
         switch self {
         case .PencilProPack:
-            return SwiftLocalizationHelper.localizedString(forKey: "Drawing Toolkit")
+            return LocalizationHelper.localizedString(forKey: "Drawing Toolkit")
         default:
             return ""
         }
@@ -66,7 +66,7 @@ import StoreKit
     func productURL() -> String {
         switch self {
         case .PencilProPack:
-            return SwiftLocalizationHelper.localizedString(forKey: "PencilProPackURL")
+            return LocalizationHelper.localizedString(forKey: "PencilProPackURL")
         default:
             return ""
         }
@@ -75,7 +75,7 @@ import StoreKit
     func productDescription() -> String {
         switch self {
         case .PencilProPack:
-            return SwiftLocalizationHelper.localizedString(forKey: "PencilProPackDescription")
+            return LocalizationHelper.localizedString(forKey: "PencilProPackDescription")
         default:
             return ""
         }
@@ -372,14 +372,14 @@ import StoreKit
     @objc static public func inAppPurchaseAction(viewController: UIViewController, product: AddOnProduct){
         
         let alert = UIAlertController(title: product.productName(),
-                                      message: SwiftLocalizationHelper.localizedString(forKey: "No purchase found", product.productName()),
+                                      message: LocalizationHelper.localizedString(forKey: "No purchase found", product.productName()),
                                       preferredStyle: .alert)
 
-        let unlockAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Purchase Now"), style: .default) { _ in
+        let unlockAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Purchase Now"), style: .default) { _ in
             IAPManager.shared.purchase(product)
         }
         
-        let restoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Restore Purchase"), style: .default) { _ in
+        let restoreAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Restore Purchase"), style: .default) { _ in
             if #available(iOS 13.0, *) {
                 Task{
                     do {
@@ -398,7 +398,7 @@ import StoreKit
             }
         }
         
-        let learnMoreAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
+        let learnMoreAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Learn More"), style: .default) { _ in
             NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.learnMore, userInfo:["interruption": PurchaseInterruption.learnMore.rawValue])
             GenericUtils.openUrl(product.productURL())
             return

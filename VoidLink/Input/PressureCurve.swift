@@ -590,13 +590,13 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
     
     override func viewDidAppear(_ animated: Bool) {
         /*
-        AlertControllerUtil.cancelButtonString = SwiftLocalizationHelper.localizedString(forKey: "No")
+        AlertControllerUtil.cancelButtonString = LocalizationHelper.localizedString(forKey: "No")
         AlertControllerUtil.showAlert(
             in: self,
-            title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
-            message: SwiftLocalizationHelper.localizedString(forKey:"Reset the pen pressure curve by starting from the pen pressure test?"),
+            title: LocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
+            message: LocalizationHelper.localizedString(forKey:"Reset the pen pressure curve by starting from the pen pressure test?"),
             withCancel: true,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Yes"),
+            buttonTitle: LocalizationHelper.localizedString(forKey: "Yes"),
             countdown: 0,
             action: {},
             completion: {
@@ -721,7 +721,7 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
     
     @objc func hookFilterDepthSliderMoved(_ sender: UISlider) {
         phase1StrokeSampleIndexEnd = Int32(sender.value.rounded())
-        hookFilterLabel.text = "\(SwiftLocalizationHelper.localizedString(forKey: "Stroke start hook filtering depth: "))\(String(format: "%d", Int32(sender.value)))";
+        hookFilterLabel.text = "\(LocalizationHelper.localizedString(forKey: "Stroke start hook filtering depth: "))\(String(format: "%d", Int32(sender.value)))";
         if sender.value > strokeEqualizationDepthSlider.value {
             strokeEqualizationDepthSlider.value = sender.value
             strokeEqualizationDepthSliderMoved(strokeEqualizationDepthSlider)
@@ -731,12 +731,12 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
     @objc func strokeEqualizationDepthSliderMoved(_ sender: UISlider) {
         sender.value = max(sender.value, hookFilterSlider.value)
         phase2StrokeSampleIndexEnd = Int32(sender.value.rounded())
-        strokeEqualizationDepthLabel.text = "\(SwiftLocalizationHelper.localizedString(forKey: "Stroke start equalization depth: "))\(String(format: "%d", Int32(sender.value)))";
+        strokeEqualizationDepthLabel.text = "\(LocalizationHelper.localizedString(forKey: "Stroke start equalization depth: "))\(String(format: "%d", Int32(sender.value)))";
     }
     
     @objc func strokeEqualizationStrengthSliderMoved(_ sender: UISlider) {
         // sender.value = sender.value
-        strokeEqualizationStrengthLabel.text = "\(SwiftLocalizationHelper.localizedString(forKey: "Stroke start force scaling: "))\(String(format: "%.2f", sender.value))";
+        strokeEqualizationStrengthLabel.text = "\(LocalizationHelper.localizedString(forKey: "Stroke start force scaling: "))\(String(format: "%.2f", sender.value))";
     }
 
     
@@ -773,20 +773,20 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
         ])
         
         if curveView.testStage == .curveStage {
-            let resetButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Reset"), style: .plain, target: self, action: #selector(resetTapped))
-            let undoButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Undo"), style: .plain, target: self, action: #selector(undoTapped))
-            let rangeTestButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Pressure-range-test"), style: .plain, target: self, action: #selector(pressureRangeTest))
-            // curvePhaseButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Initial-touch-curve"), style: .plain, target: self, action: #selector(curvePhaseButtonTapped))
+            let resetButton = UIBarButtonItem(title: LocalizationHelper.localizedString(forKey: "Reset"), style: .plain, target: self, action: #selector(resetTapped))
+            let undoButton = UIBarButtonItem(title: LocalizationHelper.localizedString(forKey: "Undo"), style: .plain, target: self, action: #selector(undoTapped))
+            let rangeTestButton = UIBarButtonItem(title: LocalizationHelper.localizedString(forKey: "Pressure-range-test"), style: .plain, target: self, action: #selector(pressureRangeTest))
+            // curvePhaseButton = UIBarButtonItem(title: LocalizationHelper.localizedString(forKey: "Initial-touch-curve"), style: .plain, target: self, action: #selector(curvePhaseButtonTapped))
             curvePhase = .stroke
-            saveButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Save"), style: .plain, target: self, action: #selector(saveTapped))
-            // let quitButton = UIBarButtonItem(title: SwiftLocalizationHelper.localizedString(forKey: "Exit"), style: .plain, target: self, action: #selector(exitTapped))
+            saveButton = UIBarButtonItem(title: LocalizationHelper.localizedString(forKey: "Save"), style: .plain, target: self, action: #selector(saveTapped))
+            // let quitButton = UIBarButtonItem(title: LocalizationHelper.localizedString(forKey: "Exit"), style: .plain, target: self, action: #selector(exitTapped))
             navItem.leftBarButtonItems = [resetButton, undoButton, rangeTestButton,]
             navItem.rightBarButtonItems = [saveButton]
         }
                 
         
         if curveView.testStage == .drawingStage {
-            navItem = UINavigationItem(title: SwiftLocalizationHelper.localizedString(forKey: "Pressure Range Test"))
+            navItem = UINavigationItem(title: LocalizationHelper.localizedString(forKey: "Pressure Range Test"))
         }
         
         if #available(iOS 26.0, *) {
@@ -810,10 +810,10 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
     public func showCurveStageTips() {
         AlertControllerUtil.showAlert(
             in: self,
-            title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
-            message: SwiftLocalizationHelper.localizedString(forKey:"Adjust the pressure curve by adding or dragging the purple squares."),
+            title: LocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
+            message: LocalizationHelper.localizedString(forKey:"Adjust the pressure curve by adding or dragging the purple squares."),
             withCancel: false,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+            buttonTitle: LocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
             countdown: 6
             )
     }
@@ -840,9 +840,9 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
             AlertControllerUtil.showAlert(
                 in: self,
                 title: "",
-                message: SwiftLocalizationHelper.localizedString(forKey:"PencilProPackLowOSVersionTip"),
+                message: LocalizationHelper.localizedString(forKey:"PencilProPackLowOSVersionTip"),
                 withCancel: false,
-                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
+                buttonTitle: LocalizationHelper.localizedString(forKey: "OK"),
                 countdown: 0)
         }
     }
@@ -850,10 +850,10 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
     @objc private func pressureRangeTest() {
         AlertControllerUtil.showAlert(
             in: self,
-            title: SwiftLocalizationHelper.localizedString(forKey: "Pressure Range Test"),
-            message: SwiftLocalizationHelper.localizedString(forKey:"pressureRangeTestTip"),
+            title: LocalizationHelper.localizedString(forKey: "Pressure Range Test"),
+            message: LocalizationHelper.localizedString(forKey:"pressureRangeTestTip"),
             withCancel: true,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "OK"),
+            buttonTitle: LocalizationHelper.localizedString(forKey: "OK"),
             countdown: 0,
             completion:{
                 if AlertControllerUtil.actionCancelled { return }
@@ -870,10 +870,10 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
         switch curvePhase {
         case .initialTouch:
             // initialTouchCurvePoints = curveView.curve.polylinePoints
-            curvePhaseButton.title = SwiftLocalizationHelper.localizedString(forKey:"Initial-touch-curve")
+            curvePhaseButton.title = LocalizationHelper.localizedString(forKey:"Initial-touch-curve")
         case .stroke:
             strokeCurvePoints = curveView.curve.polylinePoints
-            curvePhaseButton.title = SwiftLocalizationHelper.localizedString(forKey:"Stroke-curve")
+            curvePhaseButton.title = LocalizationHelper.localizedString(forKey:"Stroke-curve")
         }
         curvePhase = curvePhase.next()
         displayCurve()
@@ -908,10 +908,10 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
             if self.isFirstLaunch {
                 AlertControllerUtil.showAlert(
                     in: self,
-                    title: SwiftLocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
-                    message: SwiftLocalizationHelper.localizedString(forKey:"firstPressureCurvePersistTip"),
+                    title: LocalizationHelper.localizedString(forKey: "Pen Pressure Curve"),
+                    message: LocalizationHelper.localizedString(forKey:"firstPressureCurvePersistTip"),
                     withCancel: false,
-                    buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+                    buttonTitle: LocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
                     countdown: 11,
                     completion: {
                         PencilHandler.shared?.setupPressureLUT()
@@ -922,8 +922,8 @@ class PressureCurveViewController: UIViewController, UIGestureRecognizerDelegate
                 AlertControllerUtil.autoCompletion = true
                 AlertControllerUtil.showAlert(
                     in: self,
-                    title: SwiftLocalizationHelper.localizedString(forKey: ""),
-                    message: SwiftLocalizationHelper.localizedString(forKey:"Pressure curve saved"),
+                    title: LocalizationHelper.localizedString(forKey: ""),
+                    message: LocalizationHelper.localizedString(forKey:"Pressure curve saved"),
                     withCancel: false,
                     buttonTitle: "",
                     countdown: 1,

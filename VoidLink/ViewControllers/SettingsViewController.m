@@ -1661,7 +1661,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         showOnlineDocAction = true;
         onlineDocLink = [LocalizationHelper localizedStringForKey:@"yourMotionControlSoution"];
     }
-
     
     if([sender.superview.accessibilityIdentifier isEqualToString: @"renderingBackendStack"]){
         tipText = [LocalizationHelper localizedStringForKey:@"renderingBackendStackTip"];

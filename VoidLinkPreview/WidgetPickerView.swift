@@ -36,11 +36,11 @@ enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
     var title: String {
         switch self {
         case .gamepad:
-            return SwiftLocalizationHelper.localizedString(forKey: "Gamepad")
+            return LocalizationHelper.localizedString(forKey: "Gamepad")
         case .keyboard:
-            return SwiftLocalizationHelper.localizedString(forKey: "Keyboard / Mouse")
+            return LocalizationHelper.localizedString(forKey: "Keyboard / Mouse")
         case .functional:
-            return SwiftLocalizationHelper.localizedString(forKey: "Functional Widgets")
+            return LocalizationHelper.localizedString(forKey: "Functional Widgets")
         }
     }
 
@@ -138,18 +138,18 @@ private enum WidgetPickerSubmissionAction: String {
     var confirmationTitle: String {
         switch self {
         case .create:
-            return SwiftLocalizationHelper.localizedString(forKey: "Create New")
+            return LocalizationHelper.localizedString(forKey: "Create New")
         case .modify:
-            return SwiftLocalizationHelper.localizedString(forKey: "Modify")
+            return LocalizationHelper.localizedString(forKey: "Modify")
         }
     }
 
     var poolActionTitle: String {
         switch self {
         case .create:
-            return SwiftLocalizationHelper.localizedString(forKey: "Create New")
+            return LocalizationHelper.localizedString(forKey: "Create New")
         case .modify:
-            return SwiftLocalizationHelper.localizedString(forKey: "Modify")
+            return LocalizationHelper.localizedString(forKey: "Modify")
         }
     }
 }
@@ -164,9 +164,9 @@ enum WidgetCreateComboMode: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .skill:
-            return SwiftLocalizationHelper.localizedString(forKey: "Skill combo")
+            return LocalizationHelper.localizedString(forKey: "Skill combo")
         case .shortcut:
-            return SwiftLocalizationHelper.localizedString(forKey: "Shortcut combo")
+            return LocalizationHelper.localizedString(forKey: "Shortcut combo")
         }
     }
 }
@@ -181,9 +181,9 @@ private enum ShortcutPickerButtonMode: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .normal:
-            return SwiftLocalizationHelper.localizedString(forKey: "Normal")
+            return LocalizationHelper.localizedString(forKey: "Normal")
         case .tapToToggle:
-            return SwiftLocalizationHelper.localizedString(forKey: "Tap to toggle")
+            return LocalizationHelper.localizedString(forKey: "Tap to toggle")
         }
     }
 }
@@ -198,9 +198,9 @@ private enum WidgetCreateShape: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .round:
-            return SwiftLocalizationHelper.localizedString(forKey: "Circle")
+            return LocalizationHelper.localizedString(forKey: "Circle")
         case .square:
-            return SwiftLocalizationHelper.localizedString(forKey: "Square")
+            return LocalizationHelper.localizedString(forKey: "Square")
         }
     }
 }
@@ -473,15 +473,15 @@ struct WidgetPickerView: View {
         _tipMessage = SwiftUI.State(
             initialValue: (keyboardPickerMode == .shortcutPicker && !(shortcutPickerTipText ?? "").isEmpty)
                 ? (shortcutPickerTipText ?? "")
-                : SwiftLocalizationHelper.localizedString(forKey: "Tap any control to add it")
+                : LocalizationHelper.localizedString(forKey: "Tap any control to add it")
         )
     }
 
     private let functionalButtonOptions: [FunctionalButtonOption] = [
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Settings"),
+            label: LocalizationHelper.localizedString(forKey: "Settings"),
             cmd: "SETTINGS",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Expands setting menu during streaming"),
+            tip: LocalizationHelper.localizedString(forKey: "Expands setting menu during streaming"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -489,9 +489,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Disconnect"),
+            label: LocalizationHelper.localizedString(forKey: "Disconnect"),
             cmd: "DISCONNECT",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Disconnect current connection"),
+            tip: LocalizationHelper.localizedString(forKey: "Disconnect current connection"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -499,9 +499,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Quit app"),
+            label: LocalizationHelper.localizedString(forKey: "Quit app"),
             cmd: "QUITAPP",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Disconnect and quit current app"),
+            tip: LocalizationHelper.localizedString(forKey: "Disconnect and quit current app"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -509,9 +509,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Enter PiP"),
+            label: LocalizationHelper.localizedString(forKey: "Enter PiP"),
             cmd: "PIP",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Enter picture-in-picture mode"),
+            tip: LocalizationHelper.localizedString(forKey: "Enter picture-in-picture mode"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -519,9 +519,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Folder"),
+            label: LocalizationHelper.localizedString(forKey: "Folder"),
             cmd: "FOLDER",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Collect other widgets or subfolders. Button-combo available."),
+            tip: LocalizationHelper.localizedString(forKey: "Collect other widgets or subfolders. Button-combo available."),
             allowsKeyboardCombination: true,
             allowsGamepadCombination: true,
             allowsSkillCombo: true,
@@ -529,9 +529,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Toolbox"),
+            label: LocalizationHelper.localizedString(forKey: "Toolbox"),
             cmd: "TOOLBOX",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Activate toolbox menu during streaming"),
+            tip: LocalizationHelper.localizedString(forKey: "Activate toolbox menu during streaming"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -539,9 +539,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Edit layout"),
+            label: LocalizationHelper.localizedString(forKey: "Edit layout"),
             cmd: "WIDGETTOOL",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Open on-screen widget layout tool"),
+            tip: LocalizationHelper.localizedString(forKey: "Open on-screen widget layout tool"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -549,9 +549,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Pick profile"),
+            label: LocalizationHelper.localizedString(forKey: "Pick profile"),
             cmd: "PICKPRFL",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Pick a game/on-screen-widget profile"),
+            tip: LocalizationHelper.localizedString(forKey: "Pick a game/on-screen-widget profile"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -559,9 +559,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Profiles"),
+            label: LocalizationHelper.localizedString(forKey: "Profiles"),
             cmd: "PROFILES",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Select a game/on-screen-widget profile"),
+            tip: LocalizationHelper.localizedString(forKey: "Select a game/on-screen-widget profile"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -569,9 +569,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "SoftKeyboard"),
+            label: LocalizationHelper.localizedString(forKey: "SoftKeyboard"),
             cmd: "SOFTKEYBOARD",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Bring up softkeyboard"),
+            tip: LocalizationHelper.localizedString(forKey: "Bring up softkeyboard"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -580,9 +580,9 @@ struct WidgetPickerView: View {
         ),
         
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Disable touch"),
+            label: LocalizationHelper.localizedString(forKey: "Disable touch"),
             cmd: "DISABLETOUCH",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Temporarily disable touch input for stream view"),
+            tip: LocalizationHelper.localizedString(forKey: "Temporarily disable touch input for stream view"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -590,9 +590,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "🎮 overlay switch"),
+            label: LocalizationHelper.localizedString(forKey: "🎮 overlay switch"),
             cmd: "GAMEPADOVERLAY",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Switch on/off a floating gamepad overlay with live input feedback"),
+            tip: LocalizationHelper.localizedString(forKey: "Switch on/off a floating gamepad overlay with live input feedback"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -600,9 +600,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Pressure curve"),
+            label: LocalizationHelper.localizedString(forKey: "Pressure curve"),
             cmd: "PRESSURECURVE",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Opens pencil pressure curve tool"),
+            tip: LocalizationHelper.localizedString(forKey: "Opens pencil pressure curve tool"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -610,9 +610,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Pencil hover"),
+            label: LocalizationHelper.localizedString(forKey: "Pencil hover"),
             cmd: "PENCILHOVER",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Force pencil entering hovering on host"),
+            tip: LocalizationHelper.localizedString(forKey: "Force pencil entering hovering on host"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -620,9 +620,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Brush shortcut"),
+            label: LocalizationHelper.localizedString(forKey: "Brush shortcut"),
             cmd: "BRUSH",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Combine this with a brush keyboard shortcut for PC software"),
+            tip: LocalizationHelper.localizedString(forKey: "Combine this with a brush keyboard shortcut for PC software"),
             allowsKeyboardCombination: true,
             allowsGamepadCombination: true,
             allowsSkillCombo: false,
@@ -630,9 +630,9 @@ struct WidgetPickerView: View {
             forcedComboMode: .shortcut
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Eraser shortcut"),
+            label: LocalizationHelper.localizedString(forKey: "Eraser shortcut"),
             cmd: "ERASER",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Combine this with a eraser keyboard shortcut for PC software"),
+            tip: LocalizationHelper.localizedString(forKey: "Combine this with a eraser keyboard shortcut for PC software"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -640,9 +640,9 @@ struct WidgetPickerView: View {
             forcedComboMode: .shortcut
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Disable single point touch"),
+            label: LocalizationHelper.localizedString(forKey: "Disable single point touch"),
             cmd: "NOSINGLETOUCH",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Disable single finger touch for stream view"),
+            tip: LocalizationHelper.localizedString(forKey: "Disable single finger touch for stream view"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -650,9 +650,9 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Absolute touch drag"),
+            label: LocalizationHelper.localizedString(forKey: "Absolute touch drag"),
             cmd: "ABSTCHDRAG",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "Replace mouse button action in single point touch mode with another button temporarily"),
+            tip: LocalizationHelper.localizedString(forKey: "Replace mouse button action in single point touch mode with another button temporarily"),
             allowsKeyboardCombination: true,
             allowsGamepadCombination: true,
             allowsSkillCombo: true,
@@ -660,9 +660,9 @@ struct WidgetPickerView: View {
             forcedComboMode: .skill
         ),
         FunctionalButtonOption(
-            label: SwiftLocalizationHelper.localizedString(forKey: "Magnifier"),
+            label: LocalizationHelper.localizedString(forKey: "Magnifier"),
             cmd: "MAGNIFIER",
-            tip: SwiftLocalizationHelper.localizedString(forKey: "magnifierTip"),
+            tip: LocalizationHelper.localizedString(forKey: "magnifierTip"),
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
@@ -675,7 +675,7 @@ struct WidgetPickerView: View {
         if isShortcutPickerMode, let shortcutPickerTipText, !shortcutPickerTipText.isEmpty {
             return shortcutPickerTipText
         }
-        return SwiftLocalizationHelper.localizedString(forKey: "Tap any control to add it")
+        return LocalizationHelper.localizedString(forKey: "Tap any control to add it")
     }
 
     private var tipMessageColor: Color {
@@ -744,19 +744,19 @@ struct WidgetPickerView: View {
         if poolItems.isEmpty {
             resetTipMessage()
         } else if movementPadNeedsWalkKeyTip {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Please select a sprint key"))
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Please select a sprint key"))
         } else if movementPadNeedsSprintKeyTip {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Sprint key set. Select a walk key (optional, you can skip and create)"))
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Sprint key set. Select a walk key (optional, you can skip and create)"))
         } else if movementPadHasReachedSingleKeyLimit {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Sprint and walk keys are set"))
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Sprint and walk keys are set"))
         } else if hasButtonThenPadCombination {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "A button with touchpad functionality will be created"))
+            setTipMessage(LocalizationHelper.localizedString(forKey: "A button with touchpad functionality will be created"))
         } else if hasPadThenButtonCombination {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "A touchpad with double-tap button triggering will be created"))
+            setTipMessage(LocalizationHelper.localizedString(forKey: "A touchpad with double-tap button triggering will be created"))
         } else if let selectedFunctionalButtonOption {
             setTipMessage(selectedFunctionalButtonOption.tip)
         } else if hasAnySingleItem || hasMultipleButtonItemsOnly {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "You can continue adding controls to this combination"))
+            setTipMessage(LocalizationHelper.localizedString(forKey: "You can continue adding controls to this combination"))
         } else {
             resetTipMessage()
         }
@@ -866,7 +866,7 @@ struct WidgetPickerView: View {
         return ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: pickerSectionSpacing) {
                 HStack(alignment: .center, spacing: 10) {
-                    Text(SwiftLocalizationHelper.localizedString(forKey: "Widget Picker"))
+                    Text(LocalizationHelper.localizedString(forKey: "Widget Picker"))
                         .font(.system(size: pickerTitleFontSize, weight: .bold, design: .rounded))
                         .foregroundColor(Color.black.opacity(0.82))
                         .lineLimit(1)
@@ -1053,14 +1053,14 @@ struct WidgetPickerView: View {
 
         return VStack(alignment: .leading, spacing: metrics.poolSectionSpacing) {
             VStack(alignment: .leading, spacing: poolHeaderSpacing) {
-                Text(SwiftLocalizationHelper.localizedString(forKey: "Widget Pool"))
+                Text(LocalizationHelper.localizedString(forKey: "Widget Pool"))
                     .font(.system(size: poolTitleFontSize, weight: .bold, design: .rounded))
                     .foregroundColor(Color.black.opacity(0.82))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                 
 
-                Text(SwiftLocalizationHelper.localizedString(forKey: "Selected widgets are queued here in tap order."))
+                Text(LocalizationHelper.localizedString(forKey: "Selected widgets are queued here in tap order."))
                     .font(.system(size: poolSubtitleFontSize, weight: .medium, design: .rounded))
                     .foregroundColor(Color.black.opacity(0.48))
                     .lineLimit(metrics.isPhone ? 1 : 2)
@@ -1081,7 +1081,7 @@ struct WidgetPickerView: View {
 
             if keyboardPickerMode != .shortcutPicker {
                 PoolActionChip(
-                        title: SwiftLocalizationHelper.localizedString(forKey: "Gyro switch button"),
+                        title: LocalizationHelper.localizedString(forKey: "Gyro switch button"),
                         isPrimary: false,
                         height: poolChipHeight,
                         fontSize: poolChipFontSize,
@@ -1117,10 +1117,10 @@ struct WidgetPickerView: View {
             HStack(spacing: metrics.isPhone ? 8 : 12) {
                 PoolActionChip(
                     title: isShortcutPickerMode
-                        ? SwiftLocalizationHelper.localizedString(forKey: "Create shortcut")
+                        ? LocalizationHelper.localizedString(forKey: "Create shortcut")
                         : (isEditMode
                             ? WidgetPickerSubmissionAction.create.poolActionTitle
-                            : SwiftLocalizationHelper.localizedString(forKey: "Create widget")),
+                            : LocalizationHelper.localizedString(forKey: "Create widget")),
                     isPrimary: true,
                     height: poolChipHeight,
                     fontSize: poolChipFontSize,
@@ -1142,7 +1142,7 @@ struct WidgetPickerView: View {
                 }
 
                 PoolActionChip(
-                    title: SwiftLocalizationHelper.localizedString(forKey: "Reset"),
+                    title: LocalizationHelper.localizedString(forKey: "Reset"),
                     isPrimary: false,
                     height: poolChipHeight,
                     fontSize: poolChipFontSize,
@@ -1475,7 +1475,7 @@ struct WidgetPickerView: View {
 
         if movementPadHasReachedSingleKeyLimit {
             setTipMessage(
-                SwiftLocalizationHelper.localizedString(forKey: "Walk and sprint keys are already set. No more keys can be added"),
+                LocalizationHelper.localizedString(forKey: "Walk and sprint keys are already set. No more keys can be added"),
                 type: .error
             )
             return false
@@ -1490,12 +1490,12 @@ struct WidgetPickerView: View {
         )
 
         if occupiedSlots + candidate.span > maxPoolSlots {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Widget pool is full"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Widget pool is full"), type: .error)
             return false
         }
 
         if isPad(candidate), poolItems.contains(where: isPad) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Cannot select two touchpad controls at the same time"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Cannot select two touchpad controls at the same time"), type: .error)
             return false
         }
 
@@ -1507,7 +1507,7 @@ struct WidgetPickerView: View {
                    || (isDirectionPadSingleCommand(cmd) && isDirectionPadContainerCommand(existing.cmd))
                )
            }) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Direction pad cannot be combined with their inner button"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Direction pad cannot be combined with their inner button"), type: .error)
             return false
         }
 
@@ -1515,37 +1515,37 @@ struct WidgetPickerView: View {
            poolItems.contains(where: { existing in
                triggerGroup(for: existing.cmd) == candidateTriggerGroup && existing.cmd != cmd
            }) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Trigger button cannot be combined with trigger pad"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Trigger button cannot be combined with trigger pad"), type: .error)
             return false
         }
 
         if directionPadPriorityCommands.contains(cmd), poolItems.contains(where: { gyroCommands.contains($0.cmd) }) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Direction pad cannot be combined with gyro button"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Direction pad cannot be combined with gyro button"), type: .error)
             return false
         }
 
         if gyroCommands.contains(cmd), poolItems.contains(where: { directionPadPriorityCommands.contains($0.cmd) }) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Gyro widgets cannot be combined with direction pad"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Gyro widgets cannot be combined with direction pad"), type: .error)
             return false
         }
 
         if cmd == "LSWHEEL", !poolItems.isEmpty {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "LS wheel must be placed alone"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "LS wheel must be placed alone"), type: .error)
             return false
         }
 
         if !poolItems.isEmpty, poolItems.contains(where: { $0.cmd == "LSWHEEL" }) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "LsWheel cannot be combined with other widgets"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "LsWheel cannot be combined with other widgets"), type: .error)
             return false
         }
         
         if cmd == "RSWHEEL", !poolItems.isEmpty {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "RS wheel must be placed alone"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "RS wheel must be placed alone"), type: .error)
             return false
         }
 
         if !poolItems.isEmpty, poolItems.contains(where: { $0.cmd == "RSWHEEL" }) {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "RsWheel cannot be combined with other widgets"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "RsWheel cannot be combined with other widgets"), type: .error)
             return false
         }
 
@@ -1556,50 +1556,50 @@ struct WidgetPickerView: View {
             }
 
             if poolItems.contains(where: isPad) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
+                setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
 
             if poolItems.contains(where: { $0.source == .functional }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with other functional widgets"), type: .error)
+                setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with other functional widgets"), type: .error)
                 return false
             }
 
             if !option.allowsKeyboardCombination,
                poolItems.contains(where: { $0.source == .keyboard && !isPad($0) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
+                setTipMessage(LocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
                 return false
             }
 
             if !option.allowsGamepadCombination,
                poolItems.contains(where: { $0.source == .gamepad && !isPad($0) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with gamepad buttons"), type: .error)
+                setTipMessage(LocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with gamepad buttons"), type: .error)
                 return false
             }
         }
 
         if source == .keyboard || source == .gamepad {
             if poolItems.contains(where: isPad) && poolItems.contains(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
+                setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
 
             if let existingFunctionalItem = poolItems.first(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }),
                let option = functionalButtonOption(for: existingFunctionalItem.cmd) {
                 if source == .keyboard && !option.allowsKeyboardCombination {
-                    setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
+                    setTipMessage(LocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
                     return false
                 }
 
                 if source == .gamepad && !option.allowsGamepadCombination {
-                    setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with gamepad buttons"), type: .error)
+                    setTipMessage(LocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with gamepad buttons"), type: .error)
                     return false
                 }
             }
 
             if isPad(candidate),
                poolItems.contains(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) {
-                setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
+                setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
         }
@@ -1620,11 +1620,11 @@ struct WidgetPickerView: View {
         [
             GyroButtonOption(
                 cmd: "GYRO",
-                description: SwiftLocalizationHelper.localizedString(forKey: "Gyro on while activated")
+                description: LocalizationHelper.localizedString(forKey: "Gyro on while activated")
             ),
             GyroButtonOption(
                 cmd: "GYROPAUSE",
-                description: SwiftLocalizationHelper.localizedString(forKey: "Gyro off while activated")
+                description: LocalizationHelper.localizedString(forKey: "Gyro off while activated")
             )
         ]
     }
@@ -1679,9 +1679,9 @@ struct WidgetPickerView: View {
                 VStack(alignment: .leading, spacing: sectionSpacing) {
                     if targetWidgetKind == .button {
                         if showsButtonLabelField {
-                            createWidgetSection(title: SwiftLocalizationHelper.localizedString(forKey: "Button label")) {
+                            createWidgetSection(title: LocalizationHelper.localizedString(forKey: "Button label")) {
                                 InteractiveTextField(
-                                    placeholder: SwiftLocalizationHelper.localizedString(forKey: "Enter label(optional)"),
+                                    placeholder: LocalizationHelper.localizedString(forKey: "Enter label(optional)"),
                                     text: $widgetButtonLabel
                                 )
                                 .frame(height: fieldHeight)
@@ -1691,7 +1691,7 @@ struct WidgetPickerView: View {
 
                         if showsComboModeControl {
                             createInteractiveControlSection(
-                                title: SwiftLocalizationHelper.localizedString(forKey: "Combination mode"),
+                                title: LocalizationHelper.localizedString(forKey: "Combination mode"),
                                 controlHeight: segmentedControlHeight
                             ) {
                                 Picker("", selection: widgetComboModeBinding) {
@@ -1710,7 +1710,7 @@ struct WidgetPickerView: View {
 
                         if showsShortcutButtonModeControl {
                             createInteractiveControlSection(
-                                title: SwiftLocalizationHelper.localizedString(forKey: "Button mode"),
+                                title: LocalizationHelper.localizedString(forKey: "Button mode"),
                                 controlHeight: segmentedControlHeight
                             ) {
                                 Picker("", selection: $shortcutPickerButtonMode) {
@@ -1727,7 +1727,7 @@ struct WidgetPickerView: View {
 
                     if showsIntervalSlider {
                         createInteractiveControlSection(
-                            title: "\(SwiftLocalizationHelper.localizedString(forKey: "Trigger interval")): \(effectiveTriggerIntervalValue) ms",
+                            title: "\(LocalizationHelper.localizedString(forKey: "Trigger interval")): \(effectiveTriggerIntervalValue) ms",
                             controlHeight: fieldHeight
                         ) {
                             Slider(
@@ -1745,7 +1745,7 @@ struct WidgetPickerView: View {
 
                     if targetWidgetKind == .button, showsShapeControl {
                         createInteractiveControlSection(
-                            title: SwiftLocalizationHelper.localizedString(forKey: "Shape"),
+                            title: LocalizationHelper.localizedString(forKey: "Shape"),
                             controlHeight: segmentedControlHeight
                         ) {
                             Picker("", selection: $widgetShape) {
@@ -1763,7 +1763,7 @@ struct WidgetPickerView: View {
 
                 HStack(spacing: actionSpacing) {
                     PoolActionChip(
-                        title: SwiftLocalizationHelper.localizedString(forKey: "Cancel"),
+                        title: LocalizationHelper.localizedString(forKey: "Cancel"),
                         isPrimary: false,
                         height: actionHeight,
                         fontSize: actionFontSize,
@@ -2031,7 +2031,7 @@ struct WidgetPickerView: View {
             widgetButtonLabel = initialButtonLabel
         } else if targetWidgetKind == .button,
                   let selectedFunctionalButtonOption {
-            widgetButtonLabel = selectedFunctionalButtonOption.cmd == "FOLDER" ?  SwiftLocalizationHelper.localizedString(forKey: "=Folder") : selectedFunctionalButtonOption.label
+            widgetButtonLabel = selectedFunctionalButtonOption.cmd == "FOLDER" ?  LocalizationHelper.localizedString(forKey: "=Folder") : selectedFunctionalButtonOption.label
         } else {
             widgetButtonLabel = ""
         }
@@ -2050,7 +2050,7 @@ struct WidgetPickerView: View {
 
     private func presentCreateWidgetSheet(for submissionAction: WidgetPickerSubmissionAction) {
         guard isShortcutPickerMode || !poolItems.isEmpty else {
-            setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Select at least one command before creating a widget"), type: .error)
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Select at least one command before creating a widget"), type: .error)
             return
         }
 
@@ -2068,7 +2068,7 @@ struct WidgetPickerView: View {
         let payload = makeWidgetPayload()
         persistCurrentTabSelection()
         lastCreatedWidgetPayload = payload
-        setTipMessage(SwiftLocalizationHelper.localizedString(forKey: "Widget config generated"))
+        setTipMessage(LocalizationHelper.localizedString(forKey: "Widget config generated"))
         onWidgetCreated?(payload)
         print("widgetPicker payload =", payload as NSDictionary)
         setCreateWidgetSheetVisible(false)
@@ -2117,7 +2117,7 @@ struct WidgetPickerView: View {
     private func defaultWidgetButtonLabel() -> String {
         if let selectedFunctionalButtonOption {
             return selectedFunctionalButtonOption.cmd == "FOLDER"
-                ? SwiftLocalizationHelper.localizedString(forKey: "=Folder")
+                ? LocalizationHelper.localizedString(forKey: "=Folder")
                 : selectedFunctionalButtonOption.label
         }
 
@@ -2140,7 +2140,7 @@ struct WidgetPickerView: View {
         case .functional:
             if let option = functionalButtonOption(for: item.cmd) {
                 return option.cmd == "FOLDER"
-                    ? SwiftLocalizationHelper.localizedString(forKey: "=Folder")
+                    ? LocalizationHelper.localizedString(forKey: "=Folder")
                     : option.label
             }
             let label = item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -2585,11 +2585,11 @@ struct GyroButtonPickerOverlay: View {
                 }
 
             VStack(spacing: 14) {
-                Text(SwiftLocalizationHelper.localizedString(forKey: "Select Gyro Button"))
+                Text(LocalizationHelper.localizedString(forKey: "Select Gyro Button"))
                     .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
 
-                Text(SwiftLocalizationHelper.localizedString(forKey: "Choose a gyro control style"))
+                Text(LocalizationHelper.localizedString(forKey: "Choose a gyro control style"))
                     .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundColor(Color.white.opacity(0.78))
                     .multilineTextAlignment(.center)
@@ -2628,7 +2628,7 @@ struct GyroButtonPickerOverlay: View {
                 Button(action: {
                     onCancel()
                 }) {
-                    Text(SwiftLocalizationHelper.localizedString(forKey: "Cancel"))
+                    Text(LocalizationHelper.localizedString(forKey: "Cancel"))
                         .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundColor(Color.white.opacity(0.9))
                         .frame(maxWidth: .infinity)

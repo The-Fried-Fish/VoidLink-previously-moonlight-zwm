@@ -175,10 +175,10 @@ import Foundation
         case .x: return "X"
         case .y: return "Y"
             
-        case .dpadUp: return SwiftLocalizationHelper.localizedString(forKey: "Up")
-        case .dpadDown: return SwiftLocalizationHelper.localizedString(forKey: "Down")
-        case .dpadLeft: return SwiftLocalizationHelper.localizedString(forKey: "Left")
-        case .dpadRight: return SwiftLocalizationHelper.localizedString(forKey: "Right")
+        case .dpadUp: return LocalizationHelper.localizedString(forKey: "Up")
+        case .dpadDown: return LocalizationHelper.localizedString(forKey: "Down")
+        case .dpadLeft: return LocalizationHelper.localizedString(forKey: "Left")
+        case .dpadRight: return LocalizationHelper.localizedString(forKey: "Right")
             
         case .leftShoulder: return "LB"
         case .rightShoulder: return "RB"
@@ -190,17 +190,17 @@ import Foundation
         case .back: return "Back"
         case .special: return "Home"
             
-        case .paddle1: return SwiftLocalizationHelper.localizedString(forKey: "Paddle1")
-        case .paddle2: return SwiftLocalizationHelper.localizedString(forKey: "Paddle2")
-        case .paddle3: return SwiftLocalizationHelper.localizedString(forKey: "Paddle3")
-        case .paddle4: return SwiftLocalizationHelper.localizedString(forKey: "Paddle4")
-        case .touchpadButton: return SwiftLocalizationHelper.localizedString(forKey: "Touch button")
+        case .paddle1: return LocalizationHelper.localizedString(forKey: "Paddle1")
+        case .paddle2: return LocalizationHelper.localizedString(forKey: "Paddle2")
+        case .paddle3: return LocalizationHelper.localizedString(forKey: "Paddle3")
+        case .paddle4: return LocalizationHelper.localizedString(forKey: "Paddle4")
+        case .touchpadButton: return LocalizationHelper.localizedString(forKey: "Touch button")
         case .misc: return "Misc"
             
         case .leftTrigger: return "LT"
         case .rightTrigger: return "RT"
             
-        case .null: return SwiftLocalizationHelper.localizedString(forKey: "Null")
+        case .null: return LocalizationHelper.localizedString(forKey: "Null")
             
         default: return "UNKNOWN"
         }

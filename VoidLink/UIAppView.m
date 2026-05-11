@@ -266,7 +266,7 @@ static UIImage* noImage;
         return;
     }
     
-    NSLog(@"appview update loop %f", CACurrentMediaTime());
+    // NSLog(@"appview update loop %f", CACurrentMediaTime());
     
     // Update the app image if neccessary
     if ((_appOverlay != nil && ![_app.id isEqualToString:_app.host.currentGame]) ||

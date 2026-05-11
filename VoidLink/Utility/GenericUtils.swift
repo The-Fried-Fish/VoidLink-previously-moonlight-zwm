@@ -32,7 +32,7 @@ import UIKit
         return true
     }
     
-    @objc static func handleKeyboardOrMouseConnectionTip(in vc: UIViewController) {
+    @objc static func handleKeyboardOrMouseConnectionTip(in vc: UIViewController?) {
         if isRunningOnMacAsiPadApp {
             return
         }
@@ -43,10 +43,10 @@ import UIKit
         else if isFirstHardwareKeyboardOrMouseConnection() {
             AlertControllerUtil.showAlert(
                 in: vc,
-                title: SwiftLocalizationHelper.localizedString(forKey: "Keyboard/Mouse Connected"),
-                message: SwiftLocalizationHelper.localizedString(forKey:"keyboard&MouseStreamingTip"),
+                title: LocalizationHelper.localizedString(forKey: "Keyboard/Mouse Connected"),
+                message: LocalizationHelper.localizedString(forKey:"keyboard&MouseStreamingTip"),
                 withCancel: false,
-                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+                buttonTitle: LocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
                 countdown: 11,
                 completion: {})
         }
@@ -125,7 +125,10 @@ import UIKit
         return false
     }
     
+    @objc static var hasTappedMagnifier = false
     @objc static func isFirstTappingMagnifier() -> Bool {
+        guard !hasTappedMagnifier else { return false }
+        hasTappedMagnifier = true
         let key = "hasTappedMagnifier2"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
@@ -135,8 +138,81 @@ import UIKit
         }
         return false
     }
-        
+    @objc static func handleMagnifierTip(in vc: UIViewController?) {
+        if isFirstTappingMagnifier() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Magnifier"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "magnifierTip"))\n\n\(LocalizationHelper.localizedString(forKey: "magnifierPersistTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 5,
+            )
+        }
+    }
+    
+    @objc static var hasTappedVelocityBasedTouchpad = false
+    @objc static func isFirstTappingVelocityBasedTouchpad() -> Bool {
+        guard !hasTappedVelocityBasedTouchpad else { return false }
+        hasTappedVelocityBasedTouchpad = true
+        let key = "hasTappedVelocityBasedTouchpad6"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleVelocityBasedTouchpadTip(in vc: UIViewController?) {
+        if isFirstTappingVelocityBasedTouchpad() {
+            AlertControllerUtil.cancelButtonString = LocalizationHelper.localizedString(forKey: "Detailed Tutorial")
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "velocityBasedTouchpadTip"))",
+                withCancel: true,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 5,
+                completion: {
+                    if AlertControllerUtil.actionCancelled {
+                        GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "velocityBasedTouchpadLink"))
+                    }
+                }
+            )
+        }
+    }
+    
+    @objc static var hasTappedSlideAndHoldFolderButton = false
+    @objc static func isFirstTappingSlideAndHoldFolderButton() -> Bool {
+        guard !hasTappedSlideAndHoldFolderButton else { return false }
+        hasTappedSlideAndHoldFolderButton = true
+        let key = "hasTappedSlideAndHoldFolderButton2"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleSlideAndHoldFolderButtonTip(in vc: UIViewController?) {
+        if isFirstTappingSlideAndHoldFolderButton() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "slideHoldFolderButtonTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 5,
+            )
+        }
+    }
+    
+    @objc static var hasTappedOnscreenGyroButton = false
     @objc static func isFirstTappingOnscreenGyroButton() -> Bool {
+        guard !hasTappedOnscreenGyroButton else { return false }
+        hasTappedOnscreenGyroButton = true
         let key = "hasTappedOnscreenGyroButton"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
@@ -145,6 +221,56 @@ import UIKit
             return true
         }
         return false
+    }
+    @objc static func handleGyroButtonTip(in vc: UIViewController?) {
+        if isFirstTappingOnscreenGyroButton() {
+            AlertControllerUtil.cancelButtonString = LocalizationHelper.localizedString(forKey: "Detailed Tutorial")
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "gyroButtonTip"))",
+                withCancel: true,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 5,
+                completion: {
+                    if AlertControllerUtil.actionCancelled {
+                        GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "yourMotionControlSoution"))
+                    }
+                }
+            )
+        }
+    }
+    
+    @objc static var hasTappedStickWheel = false
+    @objc static func isFirstTappingStickWheel() -> Bool {
+        guard !hasTappedStickWheel else { return false }
+        hasTappedStickWheel = true
+        let key = "hasTappedStickWheel"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleStickWheelTip(in vc: UIViewController?) {
+        if isFirstTappingStickWheel() {
+            AlertControllerUtil.cancelButtonString = LocalizationHelper.localizedString(forKey: "Detailed Tutorial")
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "stickWheelTip"))",
+                withCancel: true,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 5,
+                completion: {
+                    if AlertControllerUtil.actionCancelled {
+                        GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "stickWheelLink"))
+                    }
+                }
+            )
+        }
     }
         
     @objc static func isFirstTappingInputAccessoryBar() -> Bool {
@@ -172,15 +298,15 @@ import UIKit
 
 
     @objc static func gamepadOverlayFeatureTipTitle() -> String {
-        SwiftLocalizationHelper.localizedString(forKey: "Gamepad Overlay")
+        LocalizationHelper.localizedString(forKey: "Gamepad Overlay")
     }
 
     @objc static func gamepadOverlayFeatureTipMessage() -> String {
-        SwiftLocalizationHelper.localizedString(forKey: "gamepadOverlayFeatureTip")
+        LocalizationHelper.localizedString(forKey: "gamepadOverlayFeatureTip")
     }
 
     @objc static func gamepadOverlayFeatureTipButtonTitle() -> String {
-        SwiftLocalizationHelper.localizedString(forKey: "Got it!")
+        LocalizationHelper.localizedString(forKey: "Got it!")
     }
     
     @objc static func isIPhone() -> Bool {

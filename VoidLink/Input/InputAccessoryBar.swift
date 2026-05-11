@@ -275,10 +275,10 @@ private final class InputAccessoryCapsuleButton: UIButton {
             InputAccessoryBar.isFirstTap = false
             AlertControllerUtil.showAlert(
                 in: self.parentViewController!,
-                title: SwiftLocalizationHelper.localizedString(forKey: "Soft Keyboard Toolbar"),
-                message: SwiftLocalizationHelper.localizedString(forKey:"inputAccessoryBarTip"),
+                title: LocalizationHelper.localizedString(forKey: "Soft Keyboard Toolbar"),
+                message: LocalizationHelper.localizedString(forKey:"inputAccessoryBarTip"),
                 withCancel: false,
-                buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
                 countdown: 6,
                 completion: {
                 })

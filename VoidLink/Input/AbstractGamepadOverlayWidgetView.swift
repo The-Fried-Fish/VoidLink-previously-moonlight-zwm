@@ -411,7 +411,7 @@ final class AbstractGamepadOverlayView: UIView {
             title: GenericUtils.gamepadOverlayFeatureTipTitle(),
             message: GenericUtils.gamepadOverlayFeatureTipMessage(),
             withCancel: false,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
+            buttonTitle: LocalizationHelper.localizedString(forKey: "This tip won't be shown again"),
             countdown: 6
             )
     }

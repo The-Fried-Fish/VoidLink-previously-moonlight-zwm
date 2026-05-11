@@ -11,13 +11,6 @@
 
 import UIKit
 
-private extension LocalizationHelper {
-    static func localizedString(forKey key: String, _ args: CVarArg...) -> String {
-        let format = NSLocalizedString(key, tableName: "Localizable", bundle: .main, value: "", comment: "")
-        return String(format: format, arguments: args)
-    }
-}
-
 @objcMembers
 final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidgetView.OnScreenWidgetLayoutUpdateDelegate, UITextFieldDelegate {
     private enum AlphaSliderMode: Int {
@@ -549,7 +542,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @IBAction func importFromOtherButtonTapped(_ sender: Any?) {
-        // importFromOtherButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Import"), for: .normal)
+        // importFromOtherButton.setTitle(LocalizationHelper.localizedString(forKey: "Import"), for: .normal)
         presentProfilesTableView(with: .pickProfileData) { [weak self] profile in
             if profile.name == self?.profilesManager.getSelectedProfile().name {return}
             self?.loadWidgets(from: profile, to: self?.selectedWidgetView)
@@ -1034,7 +1027,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             title: LocalizationHelper.localizedString(forKey: "Folder Button"),
             message: LocalizationHelper.localizedString(forKey: "folderTutorialTip"),
             withCancel: true,
-            buttonTitle: SwiftLocalizationHelper.localizedString(forKey: "Got it!"),
+            buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
             countdown: 5,
             completion: {
                 if AlertControllerUtil.actionCancelled {
@@ -1897,7 +1890,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     private func applyTitle(_ title:String, for button: UIButton, state: UIControl.State = .normal) {
-        let title = SwiftLocalizationHelper.localizedString(forKey: title)
+        let title = LocalizationHelper.localizedString(forKey: title)
         let attr: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor(red: 115/255.0, green: 224/255.0, blue: 251/255.0, alpha: 1.0),
             .font: UIFont.systemFont(ofSize: 11, weight: .medium)

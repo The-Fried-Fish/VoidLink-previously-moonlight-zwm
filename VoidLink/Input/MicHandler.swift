@@ -110,12 +110,12 @@ public class MicHandler: NSObject {
     private static func showSettingsAlert() {
         guard let topVC = topViewController() else { return }
         let alert = UIAlertController(
-            title:  SwiftLocalizationHelper.localizedString(forKey: "Microphone Permission") ,
-            message: SwiftLocalizationHelper.localizedString(forKey: "micPermissionTip"),
+            title:  LocalizationHelper.localizedString(forKey: "Microphone Permission") ,
+            message: LocalizationHelper.localizedString(forKey: "micPermissionTip"),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Cancel"), style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Go to Settings") , style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Cancel"), style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Go to Settings") , style: .default, handler: { _ in
             openSettings()
         }))
         topVC.present(alert, animated: true, completion: nil)

@@ -59,7 +59,7 @@ import UIKit
             cancelButtonString = "Cancel"
         }
         
-        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: cancelButtonString), style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: cancelButtonString), style: .cancel) { _ in
             isAlertDismissed = true
             actionCancelled = true
             completion?()
