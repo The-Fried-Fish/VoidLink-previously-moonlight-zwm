@@ -42,6 +42,7 @@
 @property (nonatomic, strong) MetalViewController *metalViewController;
 @property (nonatomic, strong) ImGuiRenderer *imguiView;
 @property (nonatomic, strong) UIView* virtualGamepadOverlay;
+@property (nonatomic, strong) UIScrollView* scrollView;
 
 @property (nonatomic, assign) CGPoint streamViewMagnifierContentOffset;
 @property (nonatomic, assign) CGFloat streamViewMagnifierZoomScale;
@@ -55,5 +56,6 @@
 - (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0));
 - (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0));
 - (void)restorePersistedStreamViewOffsetAndScaleWithProfile:(OSCProfile* )profile;
+- (void)updateMagnifierViewportMetrics;
 
 @end

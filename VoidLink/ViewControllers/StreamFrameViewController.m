@@ -61,7 +61,6 @@
     UILabel *_tipLabel;
     UIActivityIndicatorView *_spinner;
     StreamView *_streamView;
-    UIScrollView *_scrollView;
     BOOL _magnifierViewportInteractionActive;
     BOOL _userIsInteracting;
     bool viewIsBeingResized;
@@ -391,6 +390,9 @@
     }
 
     BOOL interactionEnabled = _magnifierViewportInteractionActive;
+    if (@available(iOS 17.0, *)) {
+        _scrollView.allowsKeyboardScrolling = false;
+    }
     _scrollView.scrollEnabled = interactionEnabled;
     _scrollView.panGestureRecognizer.enabled = interactionEnabled;
     _scrollView.pinchGestureRecognizer.enabled = interactionEnabled;
@@ -441,16 +443,29 @@
     [self syncMagnifierStateFromScrollView];
 }
 
+- (void)handleScrollPan:(UIPanGestureRecognizer *)gesture {
+    switch (gesture.state){
+        case UIGestureRecognizerStateEnded:
+            if(_settings.touchMode.intValue == AbsoluteTouch && _scrollView.zoomScale < 1.0) [self resetMagnifierStreamViewWithAnimated:true];
+            break;
+        default:
+            break;
+    }
+}
+
 - (void)configZoomGestureAndAddStreamView{
     BOOL shouldWrapInScrollView = [self shouldWrapStreamViewInScrollView];
 
     if (shouldWrapInScrollView) {
         if(!_scrollView) _scrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
+        _scrollView.scrollsToTop = false;
         _scrollView.frame = self.view.bounds;
         _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 #if !TARGET_OS_TV
         [_scrollView.panGestureRecognizer setMinimumNumberOfTouches:2];
         [_scrollView.panGestureRecognizer setMaximumNumberOfTouches:2]; // reduce competing with keyboardToggleRecognizer in StreamView.
+        [_scrollView.panGestureRecognizer addTarget:self
+                                             action:@selector(handleScrollPan:)];
 #endif
         [_scrollView setShowsHorizontalScrollIndicator:NO];
         [_scrollView setShowsVerticalScrollIndicator:NO];
@@ -1004,7 +1019,7 @@
 }
 
 - (void)setMagnifierViewportInteractionEnabled:(BOOL)enabled {
-    _magnifierViewportInteractionActive = enabled;
+    _magnifierViewportInteractionActive = enabled || _settings.touchMode.intValue == AbsoluteTouch;
     [self updateScrollViewInteractionState];
 }
 

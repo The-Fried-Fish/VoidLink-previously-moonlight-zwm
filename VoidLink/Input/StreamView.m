@@ -29,8 +29,12 @@
 #import "StreamFrameViewController.h"
 
 
-static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
+@interface StreamView()
+@property (weak, nonatomic) StreamFrameViewController* streamFrameVC;
+@end
 
+
+static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 /*
  Stream Video has been moved out of this class to _renderView in StreamFrameViewController.
@@ -663,15 +667,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             newProfile.buttonStatesEncoded[i] = newButtonStateEncoded;
         }
     }
-    
-    StreamFrameViewController* streamFrameVC = (StreamFrameViewController*)_streamFrameVC;
-    
+        
     newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
-    newProfile.gamepadOverlayEnabled = streamFrameVC.virtualGamepadOverlay != nil;
+    newProfile.gamepadOverlayEnabled = _streamFrameVC.virtualGamepadOverlay != nil;
 
-    newProfile.normalizedStreamViewOffset = CGPointMake(streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
-    newProfile.streamViewScale = streamFrameVC.streamViewMagnifierZoomScale;
+    newProfile.normalizedStreamViewOffset = CGPointMake(_streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, _streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
+    newProfile.streamViewScale = _streamFrameVC.streamViewMagnifierZoomScale;
     
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
 }
@@ -689,7 +691,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         MotionHandler* motionHandler = [MotionHandler sharedWithProfile:profile];
         
         // get streamFrameVC
-        if(!self->_streamFrameVC) self->_streamFrameVC = [GenericUtils parentViewControllerForView:self];
+        if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[GenericUtils parentViewControllerForView:self];
         
         /*
         if (@available(iOS 13.0, *)) {
@@ -843,7 +845,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             [PencilHandler.shared setupPressureLUTWithProfile:profile];
         }
         
-        [(StreamFrameViewController* )self->_streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
+        [self.streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
         [self updateTouchHandlerWithProfile:profile];
     });
 }
@@ -1280,7 +1282,36 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     }
 }
 
+- (BOOL)isOptionVerticalArrowPress:(UIPress *)press {
+    if (@available(iOS 13.4, tvOS 13.4, *)) {
+        UIKey *key = press.key;
+        if (key == nil) {
+            return NO;
+        }
+
+        return key.modifierFlags == UIKeyModifierAlternate &&
+               (key.keyCode == UIKeyboardHIDUsageKeyboardUpArrow ||
+                key.keyCode == UIKeyboardHIDUsageKeyboardDownArrow);
+    }
+
+    return NO;
+}
+
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    if (@available(iOS 17.0, *)) nil;
+    else {
+        BOOL shouldBypassMagnifierInset = NO;
+        for (UIPress *press in presses) {
+            if ([self isOptionVerticalArrowPress:press]) {
+                shouldBypassMagnifierInset = YES;
+                break;
+            }
+        }
+        if (shouldBypassMagnifierInset) {
+            _streamFrameVC.scrollView.contentInset = UIEdgeInsetsZero;
+        }
+    }
+    
     BOOL handled = NO;
     
     if (@available(iOS 13.4, tvOS 13.4, *)) {
@@ -1301,6 +1332,21 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    if (@available(iOS 17.0, *)) nil;
+    else {
+        BOOL shouldRestoreMagnifierMetrics = NO;
+        for (UIPress *press in presses) {
+            if ([self isOptionVerticalArrowPress:press]) {
+                shouldRestoreMagnifierMetrics = YES;
+                break;
+            }
+        }
+        if (shouldRestoreMagnifierMetrics) {
+            [_streamFrameVC updateMagnifierViewportMetrics];
+            [_streamFrameVC resetMagnifierStreamViewWithAnimated:NO];
+        }
+    }
+    
     BOOL handled = NO;
     
     if (@available(iOS 13.4, tvOS 13.4, *)) {

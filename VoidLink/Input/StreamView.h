@@ -42,7 +42,6 @@
 @property (assign, nonatomic) bool widgetToolOpened;
 @property (strong, nonatomic) OnScreenControls* onScreenControls;
 @property (weak, nonatomic) PencilHandler* pencilHandler;
-@property (weak, nonatomic) UIViewController* streamFrameVC;
 
 - (void) setupStreamViewWithControllerSupport:(ControllerSupport*)controllerSupport
                           interactionDelegate:(id<UserInteractionDelegate>)interactionDelegate
