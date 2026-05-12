@@ -1930,13 +1930,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func widgetSizeSliderMoved(_ sender: UISlider) {
-        widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size: %.2f", sender.value)
-        widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", sender.value)
-        widgetHeightSlider.value = sender.value
         if let selectedWidgetView, widgetViewSelected {
             selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
+            let aspectRatio = selectedWidgetView.heightFactor / selectedWidgetView.widthFactor
             selectedWidgetView.widthFactor = CGFloat(sender.value)
-            selectedWidgetView.heightFactor = CGFloat(sender.value)
+            selectedWidgetView.heightFactor = selectedWidgetView.widthFactor * aspectRatio
+            widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size: %.2f", sender.value)
+            widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", selectedWidgetView.heightFactor)
+            widgetHeightSlider.value = Float(selectedWidgetView.heightFactor)
         }
         if let selectedControllerLayer, controllerLayerSelected {
             layoutOSC.resizeControllerLayer(with: selectedControllerLayer, and: CGFloat(sender.value))

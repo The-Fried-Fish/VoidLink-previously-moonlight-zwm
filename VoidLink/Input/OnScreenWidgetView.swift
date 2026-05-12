@@ -1124,6 +1124,9 @@ import ObjectiveC.runtime
             self.showStickIndicator()
             self.updateStickIndicator()
         }
+        if self.isDirectionPad {
+            self.setupLrudDirectionIndicatorlayers()
+        }
         if self.isFolder {
             QUICK_TAP_TIME_INTERVAL = 0.15
         }
@@ -1655,14 +1658,14 @@ import ObjectiveC.runtime
             downIndicator.isHidden = true
         }
         
-        if !touchPointAnchored {
+        if !touchPointAnchored || OnScreenWidgetView.editMode {
             let axisdiameter = self.getDiameter(lengthFactor: UIDevice.current.userInterfaceIdiom == .phone ? 0.27 : 0.35)
             let axisSize = CGSize(width: axisdiameter, height: axisdiameter)
             self.stickWheelAxis.removeFromSuperlayer()
             self.stickWheelAxis = GraphicUtils.makeSVGLayer(from: "StickWheelAxis-0.75", in: self.layer, targetSize: axisSize)
             GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.5))
             self.layer.addSublayer(self.stickWheelAxis)
-            self.stickWheelAxis.isHidden = false
+            self.stickWheelAxis.isHidden = !OnScreenWidgetView.editMode
         }
 
         setupMovementThresholdPreviewLayersIfNeeded()
