@@ -1237,7 +1237,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.setVibration(style: Int(widget.vibrationStyle))
         newWidget.mouseButtonAction = widget.mouseButtonAction
         newWidget.animatesTransition = widget.animatesTransition
-        newWidget.buttonMode = widget.buttonMode
         newWidget.sprintKeyActionType = widget.sprintKeyActionType
         newWidget.sprintKeyThreshold = widget.sprintKeyThreshold
         newWidget.walkKeyActionType = widget.walkKeyActionType
@@ -1246,6 +1245,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         guard newWidget.widgetType == widget.widgetType else { return }
         view.insertSubview(newWidget, belowSubview: widgetPanelStack)
         newWidget.accessWidgetAttributes()
+        newWidget.buttonMode = (newWidget.widgetType == .button && newWidget.touchPadString != "") ? .regular : widget.buttonMode
         newWidget.sensitivityFactorX = widget.sensitivityFactorX
         newWidget.componentSizeFactor = widget.componentSizeFactor
         newWidget.touchPointAnchored = widget.touchPointAnchored
@@ -1934,7 +1934,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
             let aspectRatio = selectedWidgetView.heightFactor / selectedWidgetView.widthFactor
             selectedWidgetView.widthFactor = CGFloat(sender.value)
-            selectedWidgetView.heightFactor = selectedWidgetView.widthFactor * aspectRatio
+            selectedWidgetView.heightFactor = min(max(CGFloat(sender.minimumValue), selectedWidgetView.widthFactor * aspectRatio), CGFloat(sender.maximumValue))
             widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size: %.2f", sender.value)
             widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", selectedWidgetView.heightFactor)
             widgetHeightSlider.value = Float(selectedWidgetView.heightFactor)

@@ -557,7 +557,7 @@ import ObjectiveC.runtime
             }
         }
         
-        if self.widgetType == WidgetTypeEnum.touchPad {
+        if self.widgetType == .touchPad {
             if self.isStickWheel {
                 self.widthFactor = 2
                 self.heightFactor = 2.6
@@ -585,6 +585,12 @@ import ObjectiveC.runtime
                 self.heightFactor = 2
                 self.sensitivityFactorX = 0
                 self.sensitivityFactorY = 0
+            }
+        }
+        if self.widgetType == .button {
+            if self.isFolder {
+                self.widthFactor = 1.17
+                self.heightFactor = 0.77
             }
         }
                 
