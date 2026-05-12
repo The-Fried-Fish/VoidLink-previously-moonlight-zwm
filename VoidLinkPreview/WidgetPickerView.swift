@@ -2129,7 +2129,7 @@ struct WidgetPickerView: View {
     private func defaultLabelPart(for item: WidgetPoolItem) -> String? {
         switch item.source {
         case .gamepad:
-            return item.cmd.lowercased().capitalized
+            return item.displayCmd
         case .keyboard:
             let label = (item.displayText ?? item.cmd).trimmingCharacters(in: .whitespacesAndNewlines)
             guard !label.isEmpty else { return nil }

@@ -958,9 +958,16 @@ import ObjectiveC.runtime
             self.denormalizedHeightFactor = widgetSize.height/baselineHeightLargeSquare;
         }
         
-        NSLayoutConstraint.activate([
+        NSLayoutConstraint.activate(self.shape == "round" ? [
+            label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 13), // set up label size contrain within UIView
+            label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -13),
+            label.centerXAnchor.constraint(equalTo: centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor),]
+            : [
             label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10), // set up label size contrain within UIView
             label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+            label.topAnchor.constraint(equalTo: self.topAnchor, constant: 8), // set up label size contrain within UIView
+            label.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),])
         
@@ -969,9 +976,27 @@ import ObjectiveC.runtime
         }
     }
     
+    private func automaticSquareButtonCornerRadius(for size: CGSize) -> CGFloat {
+        let shortSideLen = min(size.width, size.height)
+        let longSideLen = max(size.width, size.height)
+        let aspectRatio = longSideLen / max(shortSideLen, 1)
+        let aspectProgress = min(max((aspectRatio - 1) / 1.6, 0), 1)
+        let radiusRatio = 0.34 - aspectProgress * 0.08
+        let minRadius: CGFloat = min(16, shortSideLen/2)
+        let maxRadius: CGFloat = 30
+        return min(max(shortSideLen * radiusRatio, minRadius), maxRadius)
+    }
+    
     private func setSquareWidgetCornerRadius(){
-        let shortSideLen = min(self.layer.bounds.size.width, self.layer.bounds.size.height)
-        self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
+        let boundsSize = self.layer.bounds.size
+        let shortSideLen = min(boundsSize.width, boundsSize.height)
+        
+        if self.widgetType == .button, self.shape == "square" {
+            self.layer.cornerRadius = automaticSquareButtonCornerRadius(for: boundsSize)
+        } else {
+            self.layer.cornerRadius = shortSideLen/2 < 16 ? shortSideLen/3.2 : 16
+        }
+
         if #available(iOS 13.0, *) {
             self.layer.cornerCurve = .continuous
         }
