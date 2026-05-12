@@ -127,6 +127,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     private var bulkEditStacks: [UIStackView]? = []
     private var preBulkEditStacks: [UIStackView] = []
 
+    @IBOutlet weak var bulkWidthStack: UIStackView!
+    @IBOutlet weak var bulkWidthLabel: UILabel!
+    @IBOutlet weak var bulkWidthSlider: UISlider!
+    
+    @IBOutlet weak var bulkHeightStack: UIStackView!
+    @IBOutlet weak var bulkHeightLabel: UILabel!
+    @IBOutlet weak var bulkHeightSlider: UISlider!
     
     @IBOutlet weak var bulkAlphaStack: UIStackView!
     @IBOutlet weak var bulkAlphaLabel: UILabel!
@@ -290,7 +297,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        bulkEditStacks = [bulkAlphaStack, bulkBorderAlphaStack, bulkLabelAlphaStack, bulkBorderWidthStack, bulkHighlightAlphaStack, bulkHighlightSizeStack]
+        bulkEditStacks = [bulkWidthStack, bulkHeightStack, bulkAlphaStack, bulkBorderAlphaStack, bulkLabelAlphaStack, bulkBorderWidthStack, bulkHighlightAlphaStack, bulkHighlightSizeStack]
         bulkEditEnabled = false
         OnScreenWidgetView.editMode = true
         selectedWidgetView = nil
@@ -1830,13 +1837,17 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         applyTitle("Import", for: importFromOtherButton)
         applyTitle("Batch edit", for: bulkEditButton, state: .normal)
         
+        bulkWidthSlider.addTarget(self, action: #selector(bulkWidthSliderMoved(_:)), for: .valueChanged)
+        bulkWidthLabel.text = LocalizationHelper.localizedString(forKey: "Width")
         
-        
-        bulkBorderWidthSlider.addTarget(self, action: #selector(bulkBorderWidthSliderMoved(_:)), for: .valueChanged)
-        bulkBorderWidthLabel.text = LocalizationHelper.localizedString(forKey: "Border width")
+        bulkHeightSlider.addTarget(self, action: #selector(bulkHeightSliderMoved(_:)), for: .valueChanged)
+        bulkHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height")
         
         bulkAlphaSlider.addTarget(self, action: #selector(bulkAlphaSliderMoved(_:)), for: .valueChanged)
         bulkAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Alpha")
+        
+        bulkBorderWidthSlider.addTarget(self, action: #selector(bulkBorderWidthSliderMoved(_:)), for: .valueChanged)
+        bulkBorderWidthLabel.text = LocalizationHelper.localizedString(forKey: "Border width")
         
         bulkLabelAlphaSlider.addTarget(self, action: #selector(bulkLabelAlphaSliderMoved(_:)), for: .valueChanged)
         bulkLabelAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label alpha")
@@ -2004,6 +2015,42 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widget.adjustBorder(width: CGFloat(sender.value))
             }
         }
+    }
+    
+    @objc private func bulkWidthSliderMoved(_ sender: UISlider) {
+        guard let selectedWidget = selectedWidgetView else {return}
+        bulkWidthLabel.text = LocalizationHelper.localizedString(forKey: "Width: %.2f", sender.value)
+        if selectedWidget.isFolder {
+            for sequence in selectedWidget.sequenceSet {
+                let widget = OnScreenWidgetView.mapping[sequence];
+                if widget?.widgetType == .touchPad { continue }
+                widget?.widthFactor = CGFloat(sender.value)
+            }
+        }
+        else if selectedWidget.parentSequence == -1 {
+             for widget in OnScreenWidgetView.mapping.values where widget.parentSequence == -1 {
+                 if widget.widgetType == .touchPad { continue }
+                 widget.widthFactor = CGFloat(sender.value)
+             }
+         }
+    }
+
+    @objc private func bulkHeightSliderMoved(_ sender: UISlider) {
+        guard let selectedWidget = selectedWidgetView else {return}
+        bulkHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", sender.value)
+        if selectedWidget.isFolder {
+            for sequence in selectedWidget.sequenceSet {
+                let widget = OnScreenWidgetView.mapping[sequence];
+                if widget?.widgetType == .touchPad { continue }
+                widget?.heightFactor = CGFloat(sender.value)
+            }
+        }
+        else if selectedWidget.parentSequence == -1 {
+             for widget in OnScreenWidgetView.mapping.values where widget.parentSequence == -1 {
+                 if widget.widgetType == .touchPad { continue }
+                 widget.heightFactor = CGFloat(sender.value)
+             }
+         }
     }
     
     @objc private func bulkAlphaSliderMoved(_ sender: UISlider) {

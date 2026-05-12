@@ -1963,6 +1963,18 @@
         }
       }
     },
+    "cPX-zb-vAO.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Height\"; ObjectID = \"cPX-zb-vAO\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Height"
+          }
+        }
+      }
+    },
     "cSB-7c-iRt.text" : {
       "comment" : "Class = \"UILabel\"; text = \"                                    \"; ObjectID = \"cSB-7c-iRt\";",
       "extractionState" : "extracted_with_value",
@@ -3381,6 +3393,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "振動引擎"
+          }
+        }
+      }
+    },
+    "lhL-an-uDS.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Width\"; ObjectID = \"lhL-an-uDS\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Width"
           }
         }
       }

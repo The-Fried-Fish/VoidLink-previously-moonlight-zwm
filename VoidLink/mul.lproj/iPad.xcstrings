@@ -2545,6 +2545,18 @@
         }
       }
     },
+    "D7h-Kq-SRP.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Width\"; ObjectID = \"D7h-Kq-SRP\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Width"
+          }
+        }
+      }
+    },
     "dfj-BB-Vby.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Passthrough Gestures\"; ObjectID = \"dfj-BB-Vby\";",
       "extractionState" : "extracted_with_value",
@@ -6438,6 +6450,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "合成實體搖桿輸入"
+          }
+        }
+      }
+    },
+    "V1y-Wk-uHM.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Height\"; ObjectID = \"V1y-Wk-uHM\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Height"
           }
         }
       }
