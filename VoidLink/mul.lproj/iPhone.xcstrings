@@ -3577,6 +3577,36 @@
         }
       }
     },
+    "MlL-QS-OPZ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Globe Key as Escape\"; ObjectID = \"MlL-QS-OPZ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Globe Key as Escape"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地球键用作ESC"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地球鍵用作ESC"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地球鍵用作ESC"
+          }
+        }
+      }
+    },
     "MMc-Yp-e6i.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Async Native Touch\"; ObjectID = \"MMc-Yp-e6i\";",
       "extractionState" : "extracted_with_value",

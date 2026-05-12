@@ -111,7 +111,7 @@
 @property (nonatomic) BOOL mapControllerToMouse;
 @property (nonatomic, retain) NSNumber * controllerMousePointerVelocity;
 @property (nonatomic, retain) NSNumber * controllerMouseExpo;
-
+@property (nonatomic) BOOL globeAsEscape;
 
 // Pencil settings:
 @property (nonatomic, retain) NSNumber * pencilTickMode;

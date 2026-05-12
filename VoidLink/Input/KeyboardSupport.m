@@ -256,7 +256,7 @@
                 NSLog(@"Undefined key pressed");
                 return false;
             case 669: // This value corresponds to the "Globe" or "Language" key on most Apple branded iPad keyboards.
-                keyCode = 0x1B; // This value corresponds to "Escape", which is missing from most Apple branded iPad keyboards.
+                keyCode = GenericUtils.globeAsEscape ? 0x1B : 0XFF; // This value corresponds to "Escape", which is missing from most Apple branded iPad keyboards.
                 break;
             default:
                 NSLog(@"Unhandled HID usage: %lu", (unsigned long)key.keyCode);

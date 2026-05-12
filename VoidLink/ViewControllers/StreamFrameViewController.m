@@ -627,6 +627,8 @@
     TouchPadGestureHandler.displayLinkRate = _settings.framerate.intValue;
     
     [self setMagnifierViewportInteractionEnabled:_settings.touchMode.intValue == AbsoluteTouch && !_settings.passthroughGestures];
+    
+    GenericUtils.globeAsEscape = _settings.globeAsEscape;
 
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);

@@ -505,6 +505,8 @@ import UIKit
         if #available(iOS 18.0, *) {return true}
         else {return false}
     }
+    
+    @objc static var globeAsEscape: Bool = false
         
     @objc(parentViewControllerForView:)
     static func parentViewController(for view: UIView?) -> UIViewController? {

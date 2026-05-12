@@ -168,7 +168,7 @@
     self.controllerMouseStick = settings.controllerMouseStick;
     self.controllerMousePointerVelocity = settings.controllerMousePointerVelocity;
     self.controllerMouseExpo = settings.controllerMouseExpo;
-    
+    self.globeAsEscape = settings.globeAsEscape;
     
     // Pencil settings:
     self.pencilTickMode = settings.pencilTickMode;

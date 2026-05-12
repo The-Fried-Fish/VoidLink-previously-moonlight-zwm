@@ -131,6 +131,7 @@
                asyncFrameDequeue:(BOOL)asyncFrameDequeue
         sdrPerformanceWorkaround:(BOOL)sdrPerformanceWorkaround
               softKeyboardHeight:(CGFloat)softKeyboardHeight
+                   globeAsEscape:(BOOL)globeAsEscape
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer{
     
     __block Settings* settingsToSave = settings;
@@ -211,6 +212,7 @@
         settingsToSave.controllerMousePointerVelocity = [NSNumber numberWithFloat:controllerMousePointerVelocity];
         settingsToSave.controllerMouseExpo = [NSNumber numberWithFloat:controllerMouseExpo];
         settingsToSave.softKeyboardHeight = softKeyboardHeight;
+        settingsToSave.globeAsEscape = globeAsEscape;
         settingsToSave.rememberFoldState = rememberFoldState;
         [self saveData];
     }];

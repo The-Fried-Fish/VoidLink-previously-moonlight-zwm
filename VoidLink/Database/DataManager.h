@@ -154,6 +154,7 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
                asyncFrameDequeue:(BOOL)asyncFrameDequeue
         sdrPerformanceWorkaround:(BOOL)sdrPerformanceWorkaround
               softKeyboardHeight:(CGFloat)softKeyboardHeight
+                   globeAsEscape:(BOOL)globeAsEscape
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

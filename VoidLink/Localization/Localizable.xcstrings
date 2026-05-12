@@ -6166,6 +6166,35 @@
         }
       }
     },
+    "globeAsEscapeStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disable this if you’re not using a Magic Keyboard for iPad without an escape key."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果外接键盘自带ESC键，可以关闭此选项。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果外接鍵盤自帶 Esc 鍵，可以關閉此選項。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果外接鍵盤自帶 Esc 鍵，可以關閉此選項。"
+          }
+        }
+      }
+    },
     "Go to Settings" : {
       "extractionState" : "manual",
       "localizations" : {

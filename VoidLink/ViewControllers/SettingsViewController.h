@@ -270,8 +270,10 @@
 @property (weak, nonatomic) IBOutlet UIStackView *trackTouchPointStack;
 @property (weak, nonatomic) IBOutlet UISwitch *trackTouchPointSwitch;
 
-@property (strong, nonatomic) IBOutlet UIStackView *testStack;
+@property (weak, nonatomic) IBOutlet UIStackView *globeAsEscapeStack;
+@property (weak, nonatomic) IBOutlet UISwitch *globeAsEscapeSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;
 

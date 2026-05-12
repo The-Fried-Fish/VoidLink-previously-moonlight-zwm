@@ -1113,6 +1113,9 @@ BOOL isCustomResolution(int resolutionSelected) {
 
     [self addSetting:self.reverseMouseWheelDirectionStack ofId:@"reverseMouseWheelDirectionStack" to:peripheralSection];
     [self addSetting:self.citrixX1MouseStack ofId:@"citrixX1MouseStack" to:peripheralSection];
+    
+    self.globeAsEscapeStack.hasInfoTag = YES;
+    [self addSetting:self.globeAsEscapeStack ofId:@"globeAsEscapeStack" to:peripheralSection];
 
     [peripheralSection addToParentStack:_parentStack];
 
@@ -1775,6 +1778,10 @@ BOOL isCustomResolution(int resolutionSelected) {
         tipText = [LocalizationHelper localizedStringForKey:@"swapYawAndRollStackTip"];
         showOnlineDocAction = false;
     }
+    if([sender.superview.accessibilityIdentifier isEqualToString: @"globeAsEscapeStack"]){
+        tipText = [LocalizationHelper localizedStringForKey:@"globeAsEscapeStackTip"];
+        showOnlineDocAction = false;
+    }
 
     UIStackView* parentStack = (UIStackView* )sender.superview;
     NSString* edgeSide = self.slideToSettingsScreenEdgeSelector.selectedSegmentIndex == 1 ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
@@ -2178,6 +2185,8 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
         [self.citrixX1MouseSwitch setOn:self->tempSettings.btMouseSupport];
+        [self.globeAsEscapeSwitch setOn:self->tempSettings.globeAsEscape];
+        
         [self.optimizeGamesSwitch setOn: self->tempSettings.optimizeGames];
         [self.multiControllerSwitch setOn:self->tempSettings.multiController];
         [self.swapAbxySwitch setOn:self->tempSettings.swapABXYButtons];
@@ -4056,6 +4065,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL enableFrameTimebase = false;
     BOOL asyncFrameDequeue = self.asyncFrameDequeueSwitch.isOn;
     CGFloat softKeyboardHeight = self.softKeyboardHeightSwitch.isOn ? self->softKeyboardHeight : 0;
+    BOOL globeAsEscape = self.globeAsEscapeSwitch.isOn;
     NSInteger backgroundSessionTimer = self.backgroundSessionTimerSlider.value == self.backgroundSessionTimerSlider.maximumValue ? (uint32_t) INT16_MAX : (uint32_t)self.backgroundSessionTimerSlider.value;
     
     [dataMan saveSettings:currentSettings
@@ -4133,6 +4143,7 @@ BOOL isCustomResolution(int resolutionSelected) {
                    asyncFrameDequeue:asyncFrameDequeue
             sdrPerformanceWorkaround:sdrPerformanceWorkaround
                   softKeyboardHeight:softKeyboardHeight
+                       globeAsEscape:globeAsEscape
               backgroundSessionTimer:backgroundSessionTimer];
 }
 
