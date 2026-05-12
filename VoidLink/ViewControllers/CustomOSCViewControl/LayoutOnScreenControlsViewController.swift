@@ -971,7 +971,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         mouseDownButtonStack.isHidden = !widgetView.isMousePadWithButtonActions
         mouseButtonDownSelector.selectedSegmentIndex = Int(widgetView.mouseButtonAction.rawValue)
         
-        animatedStack.isHidden = !widgetView.isMagnifier
+        animatedStack.isHidden = !(widgetView.isMagnifier || widgetView.isFolder)
         animatedSelector.selectedSegmentIndex = widgetView.animatesTransition ? 1 : 0
 
         autoDockTimerStack.isHidden = !(widgetView.isFolder && widgetView.parentSequence == -1);
@@ -1722,11 +1722,15 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         }
 
         widgetSizeSlider.addTarget(self, action: #selector(widgetSizeSliderMoved(_:)), for: .valueChanged)
+        widgetSizeSlider.addTarget(self, action: #selector(widgetSizeSliderTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
         widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size")
         widgetSizeStack.isHidden = true
+        
         widgetHeightSlider.addTarget(self, action: #selector(widgetHeightSliderMoved(_:)), for: .valueChanged)
+        widgetHeightSlider.addTarget(self, action: #selector(widgetSizeSliderTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
         widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height")
         widgetHeightStack.isHidden = true
+        
         componentSizeSlider.addTarget(self, action: #selector(componentSizeSliderMoved(_:)), for: .valueChanged)
         componentSizeLabel.text = LocalizationHelper.localizedString(forKey: "Component size")
         componentSizeStack.isHidden = true
@@ -1922,10 +1926,17 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
             selectedWidgetView.widthFactor = CGFloat(sender.value)
             selectedWidgetView.heightFactor = CGFloat(sender.value)
-            selectedWidgetView.resizeWidgetView()
         }
         if let selectedControllerLayer, controllerLayerSelected {
             layoutOSC.resizeControllerLayer(with: selectedControllerLayer, and: CGFloat(sender.value))
+        }
+    }
+    
+    @objc private func widgetSizeSliderTouchUp(_ sender: UISlider) {
+        if let selectedWidgetView, widgetViewSelected {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                selectedWidgetView.isBeingResized = false
+            }
         }
     }
 
@@ -1935,7 +1946,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
             if selectedWidgetView.shape == "round" { return }
             selectedWidgetView.heightFactor = CGFloat(sender.value)
-            selectedWidgetView.resizeWidgetView()
         }
     }
 
@@ -1944,7 +1954,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         if let selectedWidgetView, widgetViewSelected {
             selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
             selectedWidgetView.componentSizeFactor = CGFloat(sender.value)
-            // selectedWidgetView.resizeWidgetView()
         }
     }
 

@@ -2522,7 +2522,7 @@
                         <viewControllerLayoutGuide type="bottom" id="eaS-aj-VtA"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Acw-S4-f8a">
-                        <rect key="frame" x="0.0" y="0.0" width="1300" height="1500"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1300" height="3000"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fZU-G0-fgM" userLabel="Toolbar Root View" customClass="ToolBarContainerView">
@@ -3483,16 +3483,16 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="330" height="31"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lar-2o-R7c">
-                                                        <rect key="frame" x="0.0" y="0.0" width="35" height="31"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="10" height="31"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="35" id="Uly-QK-Ss9"/>
+                                                            <constraint firstAttribute="width" constant="10" id="Uly-QK-Ss9"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2TR-Kd-ro4">
-                                                        <rect key="frame" x="35" y="0.0" width="90" height="31"/>
+                                                        <rect key="frame" x="10" y="0.0" width="90" height="31"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="90" id="QKh-al-ndE"/>
                                                         </constraints>
@@ -3525,7 +3525,7 @@
                                                         </connections>
                                                     </button>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BlQ-y7-iDS">
-                                                        <rect key="frame" x="125" y="0.0" width="5" height="31"/>
+                                                        <rect key="frame" x="100" y="0.0" width="5" height="31"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="5" id="WKZ-kW-aww"/>
                                                         </constraints>
@@ -3534,7 +3534,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cyH-Fh-vW6">
-                                                        <rect key="frame" x="130" y="0.0" width="90" height="31"/>
+                                                        <rect key="frame" x="105" y="0.0" width="90" height="31"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="90" id="UeY-vl-Bq1"/>
                                                         </constraints>
@@ -3567,7 +3567,7 @@
                                                         </connections>
                                                     </button>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocb-R1-UYc">
-                                                        <rect key="frame" x="220" y="0.0" width="5" height="31"/>
+                                                        <rect key="frame" x="195" y="0.0" width="5" height="31"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="5" id="xI6-7Y-omo"/>
                                                         </constraints>
@@ -3576,9 +3576,9 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aGh-QR-gBW">
-                                                        <rect key="frame" x="225" y="0.0" width="100" height="31"/>
+                                                        <rect key="frame" x="200" y="0.0" width="125" height="31"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="90" id="Osk-FF-3gf"/>
+                                                            <constraint firstAttribute="width" constant="120" id="Osk-FF-3gf"/>
                                                         </constraints>
                                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                         <state key="normal" title="Button">
@@ -3662,7 +3662,7 @@
                     </view>
                     <toolbarItems/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
-                    <size key="freeformSize" width="1300" height="1500"/>
+                    <size key="freeformSize" width="1300" height="3000"/>
                     <connections>
                         <outlet property="addButton" destination="fKN-ja-TRi" id="R2n-QF-aSj"/>
                         <outlet property="anchorModeSelector" destination="PSA-W8-aR5" id="8Et-5Y-7oF"/>

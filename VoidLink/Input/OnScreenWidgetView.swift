@@ -105,8 +105,33 @@ import ObjectiveC.runtime
     private var comboKeyTimeIntervalMs: UInt32 = 0
     
     @objc public var logicallyDown: Bool = false
-    @objc public var widthFactor: CGFloat = 1.0
-    @objc public var heightFactor: CGFloat = 1.0
+    
+    @objc public var isBeingResized: Bool = false
+    @objc public var widthFactor: CGFloat = 1.0 {
+        didSet{
+            isBeingResized = true
+            self.resizeWidgetView()
+            if OnScreenWidgetView.editMode {self.highlightBorderDuringResizing()}
+        }
+    }
+    @objc public var heightFactor: CGFloat = 1.0 {
+        didSet{
+            isBeingResized = true
+            self.resizeWidgetView()
+            if OnScreenWidgetView.editMode {self.highlightBorderDuringResizing()}
+        }
+    }
+    private func highlightBorderDuringResizing() {
+        if widgetType == .touchPad {
+            self.highlightBorder(highlighted: true, color: standardHighlightColor.cgColor)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                if !self.isBeingResized {
+                    self.highlightBorder(highlighted: false)
+                }
+            }
+        }
+    }
+    
     @objc public var componentSizeFactor: CGFloat = 2.88 {
         didSet{
             if self.isStickWheel {
@@ -751,8 +776,8 @@ import ObjectiveC.runtime
         translatesAutoresizingMaskIntoConstraints = false
         
         // replace invalid factor values
-        if self.widthFactor == 0 {self.widthFactor = 1.0}
-        if self.heightFactor == 0 {self.heightFactor = 1.0}
+        // if self.widthFactor == 0 {self.widthFactor = 1.0}
+        // if self.heightFactor == 0 {self.heightFactor = 1.0}
         
         /*
          NSLayoutConstraint.activate([
@@ -3522,9 +3547,11 @@ import ObjectiveC.runtime
                     widget.isUserInteractionEnabled = false
                     if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
                         || abs(widget.backgroundAlpha) < 0.1){
-                        widget.highlightBorder(highlighted: true, color: UIColor.systemBlue.cgColor)
+                        widget.highlightBorder(highlighted: folder.animatesTransition, color: UIColor.systemBlue.cgColor)
                     }
-                    let duration = OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval) : 0
+                    let duration = (OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition)
+                    ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval)
+                    : 0
                     UIView.animate(withDuration: duration, animations: {
                         widget.center = folder.center
                     },completion: { finished in
@@ -3549,9 +3576,12 @@ import ObjectiveC.runtime
                     widget.isHidden = false
                     if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
                         || abs(widget.backgroundAlpha) < 0.1){
-                        widget.highlightBorder(highlighted: true, color: UIColor.systemBlue.cgColor)
+                        widget.highlightBorder(highlighted: folder.animatesTransition, color: UIColor.systemBlue.cgColor)
                     }
-                    UIView.animate(withDuration: OnScreenWidgetView.enableFolderAnimation ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval) : 0, animations: {
+                    UIView.animate(withDuration: (OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition)
+                                   ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval)
+                                   : 0
+                                   , animations: {
                         widget.center = widget.storedCenter
                     },completion: { finished in
                         widget.capturedTouches.removeAllObjects()
@@ -3560,7 +3590,9 @@ import ObjectiveC.runtime
                         widget.isHidden = folder.folded
                         if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
                             || abs(widget.backgroundAlpha) < 0.1){
-                            widget.highlightBorder(highlighted: false)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + (widget.widgetType == .touchPad ? 0.15 : 0)) {
+                                widget.highlightBorder(highlighted: false)
+                            }
                         }
                         if widget.hasNonEditableLabel {widget.setupAtrributedText()}
                     })
