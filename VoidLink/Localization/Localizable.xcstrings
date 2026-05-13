@@ -10280,6 +10280,29 @@
         }
       }
     },
+    "Profile updated successfully" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置已保存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置已儲存"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置已儲存"
+          }
+        }
+      }
+    },
     "Profile: %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10332,24 +10355,24 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Current profile updated successfully.\nThe app update may overwrite the preset game profiles. If you just saved a preset profile, please duplicate it and modify the copy instead."
+            "value" : "The app update may overwrite the preset game profiles. If you just saved a preset profile, please duplicate it and modify the copy instead."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "当前布局已修改。\nApp升级可能覆盖预置的游戏配置，如果您刚刚保存的是预置游戏配置，先将该配置复制，后续请修改其副本。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "目前配置已成功更新\nApp升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "目前配置已成功更新\nApp升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
           }
         }
