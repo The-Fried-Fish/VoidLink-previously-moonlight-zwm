@@ -338,7 +338,35 @@ import UIKit
             )
         }
     }
-        
+    
+    @objc static var hasChangedTouchMode = false
+    @objc static func isFirstChangingTouchMode() -> Bool {
+        guard !hasChangedTouchMode else { return false }
+        hasChangedTouchMode = true
+        let key = "hasChangedTouchMode5"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleTouchModeChangingTip(in vc: UIViewController?) {
+        if isFirstChangingTouchMode() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "touchModeStackTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 6,
+                completion: {
+                }
+            )
+        }
+    }
+
     @objc static func isFirstTappingInputAccessoryBar() -> Bool {
         let key = "isFirstTappingInputAccessoryBar"
         let defaults = UserDefaults.standard

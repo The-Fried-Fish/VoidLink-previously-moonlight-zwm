@@ -9015,25 +9015,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- VoidLink supports rich, powerful custom on screen widgets including keyboard buttons, gamepad button & joysticks, mouse touchpad & button. Check online document for detail.\n\n- Multi-finger tap gesture is available for launching widget layout tool during streaming."
+            "value" : "VoidLink supports rich, powerful custom on screen widgets including keyboard buttons, gamepad button & joysticks, mouse touchpad & button. Check online document for detail."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- VoidLink具备丰富而强大的自定义屏显控件，类型包括：键盘按键、手柄按键和摇杆、鼠标触摸板和按键等。详见在线文档。 \n\n- 可通过多指轻按手势在串流时打开控件布局工具。"
+            "value" : "VoidLink具备丰富而强大的自定义屏显控件，类型包括：键盘按键、手柄按键和摇杆、鼠标触摸板和按键等。详见在线文档。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。\n\n- 可透過多指輕點手勢，在串流時開啟控制元件佈局工具。"
+            "value" : "VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。\n\n- 可透過多指輕點手勢，在串流時開啟控制元件佈局工具。"
+            "value" : "VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。"
           }
         }
       }
@@ -9049,7 +9049,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "透明度: %.2f"
           }
         },
@@ -13355,25 +13355,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Touchpad: Dragging works exactly like on Windows laptop touchpad. A quick double-tap, starting from the second tap, enters drag mode.\n\n- Native Touch: Aka multi-touch passthrough, not supported on macOS.\n\n- Single Point: Provides a touchscreen-like experience on macOS."
+            "value" : "- Touchpad: Windows laptop style touchpad. Double tap and hold to drag, 2-finger tap to click right button, 2-finger slide to scroll mouse wheel.\nTouchpad mode is not recommended for 3D games. Use MousePad on-screen widget instead.\n\n- Native Touch: Use your PC as a Windows tablet. Not supported on macOS host.\n\n- Single Point: Provides a touchscreen-like experience on macOS."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 触控板: 拖移方式与Windows笔记本电脑触控板相同, 快速双击的第2下开始进入拖动状态.\n\n- 多点触控: 不支持macOS.\n\n- 单点鼠标: 可为macOS提供类触屏体验."
+            "value" : "- 触控板: Windows笔记本电脑风格触控板相同, 快速双击并滑动即可拖动，双指快速轻按触发鼠标右键，双指滑动滚动鼠标滚轮。\n不推荐用于3D游戏，游戏时请用 MousePad 屏显控件。\n\n- 多点触控: 以Windows 平板的方式使用PC主机。不支持 macOS 主机\n\n- 单点鼠标: 可为macOS提供类触屏体验."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
+            "value" : "- 觸控板：與 Windows 筆記型電腦風格觸控板相同，快速雙擊並滑動即可拖曳，雙指快速輕按觸發滑鼠右鍵，雙指滑動可捲動滑鼠滾輪。\n不建議用於 3D 遊戲，遊戲時請使用 MousePad 螢幕控制項。\n\n- 多點觸控：以 Windows 平板的方式操作 PC 主機。不支援 macOS 主機。\n\n\n- 單點滑鼠：可為 macOS 提供類觸控螢幕體驗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "- 觸控板：拖曳方式與 Windows 筆記型電腦觸控板完全相同。快速輕點兩下，從第二次輕點開始進入拖曳模式。\n\n- 多点觸控：macOS 不支援。\n\n- 單點滑鼠：在 macOS 上提供類似觸控螢幕的體驗。"
+            "state" : "translated",
+            "value" : "- 觸控板：與 Windows 筆記型電腦風格觸控板相同，快速雙擊並滑動即可拖曳，雙指快速輕按觸發滑鼠右鍵，雙指滑動可捲動滑鼠滾輪。\n不建議用於 3D 遊戲，遊戲時請使用 MousePad 螢幕控制項。\n\n- 多點觸控：以 Windows 平板的方式操作 PC 主機。不支援 macOS 主機。\n\n\n- 單點滑鼠：可為 macOS 提供類觸控螢幕體驗。"
           }
         }
       }

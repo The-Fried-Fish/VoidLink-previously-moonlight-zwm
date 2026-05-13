@@ -3175,17 +3175,15 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)touchMode1Changed:(UISegmentedControl* )sender {
-    // [UIView animateWithDuration:0 animations:^{
-        self.touchModeSelector2.selectedSegmentIndex = sender.selectedSegmentIndex;
-    // } completion:^(BOOL finished) {
-        // 动画完成时执行的代码
-        [self touchModeChanged:sender];
-    // }];
+    [GenericUtils handleTouchModeChangingTipIn:self];
+    self.touchModeSelector2.selectedSegmentIndex = sender.selectedSegmentIndex;
+    [self touchModeChanged:sender];
 }
 
 - (void)touchModeChanged:(UISegmentedControl* )sender {
     // Disable On-Screen Controls & Widgets in non-relative touch mode
     // bool customOscEnabled = [self isOswEnabled] && [self.onScreenWidgetSelector selectedSegmentIndex] == OnScreenControlsLevelCustom;
+    
     bool isNativeTouch = sender.selectedSegmentIndex == NativeTouch;
     bool isEgmerging = self.enableOswSwitchStack.hidden != !isNativeTouch && isNativeTouch;
     self.enableOswSwitchStack.hidden = !isNativeTouch;
