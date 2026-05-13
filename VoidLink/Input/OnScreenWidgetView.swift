@@ -588,9 +588,9 @@ import ObjectiveC.runtime
             }
         }
         if self.widgetType == .button {
-            if self.isFolder {
-                self.widthFactor = 1.17
-                self.heightFactor = 0.77
+            if self.isFolder || self.isFunctionalButton {
+                self.widthFactor = GenericUtils.isIPhone() ? 0.88 : 1.17
+                self.heightFactor = GenericUtils.isIPhone() ? 0.56 : 0.77
             }
         }
                 

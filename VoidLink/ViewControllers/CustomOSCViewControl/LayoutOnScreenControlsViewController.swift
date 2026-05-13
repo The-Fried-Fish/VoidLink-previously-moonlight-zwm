@@ -2226,7 +2226,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         AlertControllerUtil.showAlert(
             in: self,
             title: LocalizationHelper.localizedString(forKey: "Tips"),
-            message: "\n\(LocalizationHelper.localizedString(forKey: "bulkEditTip"))",
+            message: LocalizationHelper.localizedString(forKey: "bulkEditTip"),
             withCancel: false,
             buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
             countdown: 0,
