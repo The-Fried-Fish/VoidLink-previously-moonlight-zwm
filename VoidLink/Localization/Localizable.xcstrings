@@ -13482,19 +13482,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 触控板: Windows笔记本电脑风格触控板相同, 快速双击并滑动即可拖动，双指快速轻按触发鼠标右键，双指滑动滚动鼠标滚轮。\n不推荐用于3D游戏，游戏时请用 MousePad 屏显控件。\n\n- 多点触控: 以Windows 平板的方式使用PC主机。不支持 macOS 主机\n\n- 单点鼠标: 可为macOS提供类触屏体验."
+            "value" : "- 触控板: Windows笔记本电脑风格触控板，快速双击并滑动即可拖动，双指快速轻按触发鼠标右键，双指滑动滚动鼠标滚轮。\n不推荐用于3D游戏，游戏时请用 MousePad 屏显控件。\n\n- 多点触控: 以Windows 平板的方式使用PC主机。不支持 macOS 主机。\n\n- 单点鼠标: 可为macOS提供类触屏体验。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 觸控板：與 Windows 筆記型電腦風格觸控板相同，快速雙擊並滑動即可拖曳，雙指快速輕按觸發滑鼠右鍵，雙指滑動可捲動滑鼠滾輪。\n不建議用於 3D 遊戲，遊戲時請使用 MousePad 螢幕控制項。\n\n- 多點觸控：以 Windows 平板的方式操作 PC 主機。不支援 macOS 主機。\n\n\n- 單點滑鼠：可為 macOS 提供類觸控螢幕體驗。"
+            "value" : "- 觸控板：與 Windows 筆記型電腦風格觸控板，快速雙擊並滑動即可拖曳，雙指快速輕按觸發滑鼠右鍵，雙指滑動可捲動滑鼠滾輪。\n不建議用於 3D 遊戲，遊戲時請使用 MousePad 螢幕控制項。\n\n- 多點觸控：以 Windows 平板的方式操作 PC 主機。不支援 macOS 主機。\n\n\n- 單點滑鼠：可為 macOS 提供類觸控螢幕體驗。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 觸控板：與 Windows 筆記型電腦風格觸控板相同，快速雙擊並滑動即可拖曳，雙指快速輕按觸發滑鼠右鍵，雙指滑動可捲動滑鼠滾輪。\n不建議用於 3D 遊戲，遊戲時請使用 MousePad 螢幕控制項。\n\n- 多點觸控：以 Windows 平板的方式操作 PC 主機。不支援 macOS 主機。\n\n\n- 單點滑鼠：可為 macOS 提供類觸控螢幕體驗。"
+            "value" : "- 觸控板：與 Windows 筆記型電腦風格觸控板，快速雙擊並滑動即可拖曳，雙指快速輕按觸發滑鼠右鍵，雙指滑動可捲動滑鼠滾輪。\n不建議用於 3D 遊戲，遊戲時請使用 MousePad 螢幕控制項。\n\n- 多點觸控：以 Windows 平板的方式操作 PC 主機。不支援 macOS 主機。\n\n\n- 單點滑鼠：可為 macOS 提供類觸控螢幕體驗。"
           }
         }
       }
@@ -13587,6 +13587,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸發間隔"
+          }
+        }
+      }
+    },
+    "Tutorial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看教程"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看教學"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看教學"
           }
         }
       }
