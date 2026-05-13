@@ -2222,16 +2222,28 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         )
     }
     
+    private func popBulkEditTip() {
+        AlertControllerUtil.showAlert(
+            in: self,
+            title: LocalizationHelper.localizedString(forKey: "Tips"),
+            message: "\n\(LocalizationHelper.localizedString(forKey: "bulkEditTip"))",
+            withCancel: false,
+            buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+            countdown: 0,
+        )
+    }
 
     @objc private func collectionHiddenChanged(_ sender: UISegmentedControl) {
         if let selectedWidget {
             OnScreenWidgetView.set(folded: sender.selectedSegmentIndex == 1, for: selectedWidget)
+            if sender.selectedSegmentIndex == 1, bulkEditEnabled {
+                self.bulkEditButtonTapped(self.bulkEditButton)
+            }
         }
         self.bulkEditButton.isEnabled = sender.selectedSegmentIndex == 0
         self.importFromOtherButton.isEnabled = sender.selectedSegmentIndex == 0
         self.clearFolderButton.isEnabled = sender.selectedSegmentIndex  == 0
         self.widgetAlphaSlider.isEnabled = sender.selectedSegmentIndex == 1
-        // self.placeHolderLabel1.isHidden = sender.selectedSegmentIndex == 0
     }
 
     @objc private func bulkMoveChanged(_ sender: UISegmentedControl) {
@@ -2414,6 +2426,11 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         let point = touch.location(in: widgetPanelStack)
         return widgetPanelStack.hitTest(point, with: nil) != nil
     }
+    
+    private func bulkEditButtonTouched(_ touch: UITouch) -> Bool {
+        let point = touch.location(in: bulkEditButton)
+        return bulkEditButton.bounds.contains(point)
+    }
 
     private func handleWidgetPanelMove(_ touch: UITouch) {
         guard widgetPanelMovedByTouch else { return }
@@ -2440,6 +2457,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             }
             if widgetPanelTouched(touch), selectedWidget != nil {
                 GenericUtils.handleWidgetPanelTip(in: self)
+            }
+            if bulkEditButtonTouched(touch), selectedWidget?.isFolder == true, selectedWidget?.folded == true {
+                self.popBulkEditTip()
             }
         }
         for touch in touches {

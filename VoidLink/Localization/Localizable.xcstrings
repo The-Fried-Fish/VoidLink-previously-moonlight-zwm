@@ -2871,6 +2871,35 @@
         }
       }
     },
+    "bulkEditTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please unfold the folder button before batch editing"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先展开 folder 控制夹按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請先展開 folder 控制項夾按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請先展開 folder 控制項夾按鍵"
+          }
+        }
+      }
+    },
     "Button label" : {
       "extractionState" : "manual",
       "localizations" : {
