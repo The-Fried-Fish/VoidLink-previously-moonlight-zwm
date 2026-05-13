@@ -1936,6 +1936,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         }
         if let selectedControllerLayer, controllerLayerSelected {
             layoutOSC.resizeControllerLayer(with: selectedControllerLayer, and: CGFloat(sender.value))
+            widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size: %.2f", sender.value)
+            widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", sender.value)
+            widgetHeightSlider.value = sender.value
         }
     }
     

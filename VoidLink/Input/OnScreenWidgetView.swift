@@ -1696,7 +1696,7 @@ import ObjectiveC.runtime
             self.stickWheelAxis = GraphicUtils.makeSVGLayer(from: "StickWheelAxis-0.75", in: self.layer, targetSize: axisSize)
             GraphicUtils.changeColor(layer: self.stickWheelAxis, color: UIColor(white: 1, alpha: 0.5))
             self.layer.addSublayer(self.stickWheelAxis)
-            self.stickWheelAxis.isHidden = !OnScreenWidgetView.editMode
+            self.stickWheelAxis.isHidden = false
         }
 
         setupMovementThresholdPreviewLayersIfNeeded()

@@ -1156,6 +1156,35 @@
         }
       }
     },
+    "=legacyOSCTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A demo of legacy on-screen controls inherited from moonlight-zwm replaced by better on-screen widgets"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moonlight-ZWM旧版虚拟手柄陈列布局：已由更强大的屏显控件替代。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moonlight-ZWM 舊版虛擬手把陳列佈局：已由更強大的螢幕控制項取代。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moonlight-ZWM 舊版虛擬手把陳列佈局：已由更強大的螢幕控制項取代。"
+          }
+        }
+      }
+    },
     "=map" : {
       "extractionState" : "manual",
       "localizations" : {
