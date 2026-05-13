@@ -759,16 +759,17 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     private func loadWidgetAlphas() {
         guard let selectedWidget, widgetViewSelected else { return }
         setHiddenForWidgetHighlights(selectedWidget)
+        self.widgetAlphaSlider.isEnabled = selectedWidget.folded || !selectedWidget.isFolder
         switch alphaSliderMode {
         case .widgetAlpha:
             widgetAlphaSlider.maximumValue = 1
             widgetAlphaSlider.minimumValue = -1
-            widgetAlphaSlider.value = Float(selectedWidget.backgroundAlpha)
+            widgetAlphaSlider.value = Float(selectedWidget.originalBackgroundAlpha)
             widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Opacity: %.2f", widgetAlphaSlider.value)
         case .labelAlpha:
             widgetAlphaSlider.maximumValue = 1
             widgetAlphaSlider.minimumValue = -1
-            widgetAlphaSlider.value = Float(selectedWidget.labelAlpha)
+            widgetAlphaSlider.value = Float(selectedWidget.originalLabelAlpha)
             widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label opacity: %.2f", widgetAlphaSlider.value)
         case .borderAlpha:
             widgetAlphaSlider.maximumValue = 1
@@ -2229,6 +2230,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         self.bulkEditButton.isEnabled = sender.selectedSegmentIndex == 0
         self.importFromOtherButton.isEnabled = sender.selectedSegmentIndex == 0
         self.clearFolderButton.isEnabled = sender.selectedSegmentIndex  == 0
+        self.widgetAlphaSlider.isEnabled = sender.selectedSegmentIndex == 1
         // self.placeHolderLabel1.isHidden = sender.selectedSegmentIndex == 0
     }
 
