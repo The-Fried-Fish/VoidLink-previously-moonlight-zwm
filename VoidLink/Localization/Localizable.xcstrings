@@ -2739,6 +2739,29 @@
         }
       }
     },
+    "Border opacity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "边界透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邊界透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邊界透明度"
+          }
+        }
+      }
+    },
     "Border opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4334,7 +4357,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "吸附后透明度: %d%%"
           }
         },
@@ -6692,6 +6715,29 @@
         }
       }
     },
+    "Highlight opacity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高亮透明度"
+          }
+        }
+      }
+    },
     "Highlight opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6703,7 +6749,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "高亮透明度: %.2f"
           }
         },
@@ -7142,6 +7188,29 @@
         }
       }
     },
+    "Label opacity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標籤透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標籤透明度"
+          }
+        }
+      }
+    },
     "Label opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7153,7 +7222,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "标签透明度: %.2f"
           }
         },
@@ -9038,6 +9107,29 @@
         }
       }
     },
+    "Opacity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透明度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透明度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透明度"
+          }
+        }
+      }
+    },
     "Opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10401,20 +10493,20 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "当前布局已修改。\nApp升级可能覆盖预置的游戏配置，如果您刚刚保存的是预置游戏配置，先将该配置复制，后续请修改其副本。"
+            "state" : "translated",
+            "value" : "App升级可能覆盖预置的游戏配置，如果您刚刚保存的是预置游戏配置，先将该配置复制，后续请修改其副本。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "目前配置已成功更新\nApp升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
+            "state" : "translated",
+            "value" : "App升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "目前配置已成功更新\nApp升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
+            "state" : "translated",
+            "value" : "App升級可能會覆蓋預設的遊戲配置，如果您剛剛儲存的是預設遊戲配置，先將該配置複製，後續請修改其副本。"
           }
         }
       }
