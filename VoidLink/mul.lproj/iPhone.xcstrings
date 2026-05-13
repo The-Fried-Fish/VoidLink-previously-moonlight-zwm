@@ -284,13 +284,13 @@
       }
     },
     "4Kd-Cc-aYN.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Highlight alpha\"; ObjectID = \"4Kd-Cc-aYN\";",
+      "comment" : "Class = \"UILabel\"; text = \"Highlight opacity\"; ObjectID = \"4Kd-Cc-aYN\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Highlight alpha"
+            "value" : "Highlight opacity"
           }
         }
       }
@@ -914,13 +914,13 @@
       }
     },
     "9Dr-3c-z61.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Label alpha\"; ObjectID = \"9Dr-3c-z61\";",
+      "comment" : "Class = \"UILabel\"; text = \"Label opacity\"; ObjectID = \"9Dr-3c-z61\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Label alpha"
+            "value" : "Label opacity"
           }
         }
       }
@@ -2390,13 +2390,13 @@
       }
     },
     "eRy-My-vvU.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Border alpha\"; ObjectID = \"eRy-My-vvU\";",
+      "comment" : "Class = \"UILabel\"; text = \"Border opacity\"; ObjectID = \"eRy-My-vvU\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Border alpha"
+            "value" : "Border opacity"
           }
         }
       }
@@ -3332,13 +3332,13 @@
       }
     },
     "kxI-bn-pRU.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Docked alpha\"; ObjectID = \"kxI-bn-pRU\";",
+      "comment" : "Class = \"UILabel\"; text = \"Docked opacity\"; ObjectID = \"kxI-bn-pRU\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Docked alpha"
+            "value" : "Docked opacity"
           }
         }
       }
@@ -5204,13 +5204,13 @@
       }
     },
     "qPQ-U2-aSg.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Alpha\"; ObjectID = \"qPQ-U2-aSg\";",
+      "comment" : "Class = \"UILabel\"; text = \"Opacity\"; ObjectID = \"qPQ-U2-aSg\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Alpha"
+            "value" : "Opacity"
           }
         }
       }

@@ -2243,29 +2243,6 @@
         }
       }
     },
-    "Alpha: %.2f" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "透明度: %.2f"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "透明度: %.2f"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "透明度: %.2f"
-          }
-        }
-      }
-    },
     "Applications" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2750,12 +2727,18 @@
         }
       }
     },
-    "Border alpha: %.2f" : {
+    "Border opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
-        "zh-Hans" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Border opacity: %.2f  "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "边界透明度: %.2f"
           }
         },
@@ -2930,6 +2913,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按鍵模式"
+          }
+        }
+      }
+    },
+    "buttonModeLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/tvlizqfgoidrn20o"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/mbyiwshw8bxhktlh"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/mbyiwshw8bxhktlh"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/mbyiwshw8bxhktlh"
+          }
+        }
+      }
+    },
+    "buttonModeTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap “Tutorial” to learn about button modes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击 “看教程” 了解按键模式。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點擊「看教學」了解按鍵模式。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點擊「看教學」了解按鍵模式。"
           }
         }
       }
@@ -4241,18 +4282,18 @@
         }
       }
     },
-    "Docked alpha: %d%%" : {
+    "Docked opacity: %d%%" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Docked alpha: %d%"
+            "value" : "Docked opacity: %d%%   "
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "吸附后透明度: %d%%"
           }
         },
@@ -5434,25 +5475,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 10 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
+            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 10 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side\n\nIf the screen shows large green or purple color artifacts, disable variable display refresh rate on the PC and set the display refresh rate to match the streaming frame rate."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 默认状态下，控件菜单按键在闲置10秒后将自动吸附屏幕底部边缘，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n"
+            "value" : "\n1. 默认状态下，控件菜单按键在闲置10秒后将自动吸附屏幕底部边缘，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n\n若画面出现大片发绿、发紫的颜色异常，请在主机端关闭可变显示刷新率，并将显示刷新率设定为与串流帧率一致。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕底部邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
+            "state" : "needs_review",
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕底部邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常，請在主機端關閉可變顯示更新率，並將顯示更新率設定為與串流幀率一致。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕底部邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
+            "state" : "needs_review",
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置10秒後將自動吸附至螢幕底部邊緣，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常，請在主機端關閉可變顯示更新率，並將顯示更新率設定為與串流幀率一致。"
           }
         }
       }
@@ -5555,30 +5596,59 @@
         }
       }
     },
+    "folderButtonModeTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder button supports the following modes:\n\n- Slide and hold: Expands while pressed and collapses when released. Double-tap and hold to drag during streaming.\n\n- Movable: Tap to toggle expand/collapse. Long press to enter draggable mode.\n\n- Normal: Tap to toggle expand/collapse state. Cannot be dragged and moved during streaming."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder 控件夹按键支持以下模式：\n\n- 滑动时按下: 按压时展开，松开折叠。双击并长按可在串流过程中拖动。\n\n- 可移动：点按切换展开 / 折叠。长按进入可拖动状态。\n\n- 常规：点按切换展开 / 折叠状态。无法在串流中被拖动。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder 控件夾按鍵支援以下模式：\n\n- 滑動時按下：按壓時展開，鬆開折疊。雙擊並長按可在串流過程中拖動。\n\n- 可移動：點按切換展開／折疊狀態。長按進入可拖動狀態。\n\n- 常規：點按切換展開／折疊狀態。無法在串流中被拖動。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder 控件夾按鍵支援以下模式：\n\n- 滑動時按下：按壓時展開，鬆開折疊。雙擊並長按可在串流過程中拖動。\n\n- 可移動：點按切換展開／折疊狀態。長按進入可拖動狀態。\n\n- 常規：點按切換展開／折疊狀態。無法在串流中被拖動。"
+          }
+        }
+      }
+    },
     "folderTutorialTip" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nDrag other widgets (buttons or touchpads). Release when the touch point enters the folder’s bounding frame to complete collecting.\n\n- When the folder is unfolded, the collected widget will snap back to its original position.\n\n- When the folder is folded, the grouped widget will be hidden.\n\n- Drag a sub-widget or a folder over the trash icon (do not release) to detach it from the collection."
+            "value" : "\nDrag other widgets (buttons or touchpads). Release when the touch point enters the folder’s bounding frame to complete collecting.\n\n- When the folder is unfolded, the collected widget will snap back to its original position.\n\n- When the folder is folded, the collected widget will be hidden.\n\n- Drag a sub-widget or a folder over the trash icon (do not release) to detach it from the collection."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "\n拖动其他控件(按键或触控板)，当手指触点进入控件夹边框时松开，即可完成收纳。\n\n- 当控件夹处于展开状态时， 被收纳控件将弹回原先的位置。\n\n- 当控件夹处于折叠状态时，被收纳控件将隐藏。\n\n- 拖动子控件或控件夹划过垃圾桶图标(不要松开)，即可解除收纳关系。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "\n拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入資料夾邊框時放開，即可完成收納。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。\n\n- 當控制項夾處於折疊狀態時，被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "\n拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入資料夾邊框時放開，即可完成收納。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。\n\n- 當控制項夾處於折疊狀態時，被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n"
           }
         }
@@ -6581,12 +6651,18 @@
         }
       }
     },
-    "Highlight alpha: %.2f" : {
+    "Highlight opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
-        "zh-Hans" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Highlight opacity: %.2f  "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "高亮透明度: %.2f"
           }
         },
@@ -6898,6 +6974,35 @@
         }
       }
     },
+    "invalidButtonModeTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This button is not applicable in this mode."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此模式不适用该按键。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此模式不適用該按鍵。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此模式不適用該按鍵。"
+          }
+        }
+      }
+    },
     "Keyboard / Mouse" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6996,12 +7101,18 @@
         }
       }
     },
-    "Label alpha: %.2f" : {
+    "Label opacity: %.2f" : {
       "extractionState" : "manual",
       "localizations" : {
-        "zh-Hans" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Label opacity: %.2f  "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "标签透明度: %.2f"
           }
         },
@@ -8882,6 +8993,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "- VoidLink 提供豐富且強大的自訂螢幕顯示元件，類型包含：鍵盤按鍵、手把按鍵與搖桿、滑鼠觸控板及按鍵等。詳細資訊請參考線上說明文件。\n\n- 可透過多指輕點手勢，在串流時開啟控制元件佈局工具。"
+          }
+        }
+      }
+    },
+    "Opacity: %.2f" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opacity: %.2f   "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "透明度: %.2f"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透明度: %.2f"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透明度: %.2f"
           }
         }
       }
@@ -13939,6 +14079,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "控制項池已滿"
+          }
+        }
+      }
+    },
+    "widgetPanelLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/dcke52amz8ay3g37"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zrg0ga93avz4s747"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zrg0ga93avz4s747"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/zrg0ga93avz4s747"
+          }
+        }
+      }
+    },
+    "widgetPanelTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- Tap the “Opacity” or “Border Width” label to reveal hidden features.\n\n- If batch edit is unavailable, tap & unfold the parent folder button"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 点击“透明度” 、“边界宽度” 标签，可切换出隐藏功能。\n\n- 若无批量编辑功能，请点击上一级 Folder 控件夹按键，并将其展开。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 點擊「透明度」 「邊界寬度」標籤，可切換出隱藏功能。\n\n- 若無批次編輯功能，請點擊上一級 Folder 控制項夾按鍵，並將其展開。\n"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 點擊「透明度」 「邊界寬度」標籤，可切換出隱藏功能。\n\n- 若無批次編輯功能，請點擊上一級 Folder 控制項夾按鍵，並將其展開。\n"
           }
         }
       }

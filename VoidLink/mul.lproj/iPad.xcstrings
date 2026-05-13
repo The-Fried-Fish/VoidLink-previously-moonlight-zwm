@@ -2,13 +2,13 @@
   "sourceLanguage" : "en",
   "strings" : {
     "1sF-08-aCr.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Highlight alpha\"; ObjectID = \"1sF-08-aCr\";",
+      "comment" : "Class = \"UILabel\"; text = \"Highlight opacity\"; ObjectID = \"1sF-08-aCr\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Highlight alpha"
+            "value" : "Highlight opacity"
           }
         }
       }
@@ -4383,13 +4383,13 @@
       }
     },
     "kSX-ci-kx5.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Label alpha\"; ObjectID = \"kSX-ci-kx5\";",
+      "comment" : "Class = \"UILabel\"; text = \"Label opacity\"; ObjectID = \"kSX-ci-kx5\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Label alpha"
+            "value" : "Label opacity"
           }
         }
       }
@@ -5505,13 +5505,13 @@
       }
     },
     "Pwa-YK-6Q2.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Alpha\"; ObjectID = \"Pwa-YK-6Q2\";",
+      "comment" : "Class = \"UILabel\"; text = \"Opacity\"; ObjectID = \"Pwa-YK-6Q2\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Alpha"
+            "value" : "Opacity"
           }
         }
       }
@@ -5669,13 +5669,13 @@
       }
     },
     "qFn-D7-7aD.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Docked alpha\"; ObjectID = \"qFn-D7-7aD\";",
+      "comment" : "Class = \"UILabel\"; text = \"Docked opacity\"; ObjectID = \"qFn-D7-7aD\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Docked alpha"
+            "value" : "Docked opacity"
           }
         }
       }
@@ -5975,13 +5975,13 @@
       }
     },
     "sAF-Vy-ZzK.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Border alpha\"; ObjectID = \"sAF-Vy-ZzK\";",
+      "comment" : "Class = \"UILabel\"; text = \"Border opacity\"; ObjectID = \"sAF-Vy-ZzK\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Border alpha"
+            "value" : "Border opacity"
           }
         }
       }
@@ -6989,13 +6989,13 @@
       }
     },
     "yF0-Tu-L8X.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Alpha\"; ObjectID = \"yF0-Tu-L8X\";",
+      "comment" : "Class = \"UILabel\"; text = \"Opacity\"; ObjectID = \"yF0-Tu-L8X\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Alpha"
+            "value" : "Opacity"
           }
         }
       }

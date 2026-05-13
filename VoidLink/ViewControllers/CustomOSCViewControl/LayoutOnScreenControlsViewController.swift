@@ -188,7 +188,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     private var oscProfilesTableViewController: OSCProfilesTableViewController?
     private var profilesManager: OSCProfilesManager!
     private var bulkEditEnabled: Bool = false
-    private var selectedWidgetView: OnScreenWidgetView?
+    private var selectedWidget: OnScreenWidgetView?
     private var alphaSliderMode: AlphaSliderMode = .widgetAlpha
     private var borderWidthSliderMode: BorderWidthSliderMode = .widgetBorderWidth
     private var decelerationRateSliderMode: DecelerationRateSliderMode = .decelerationRateX
@@ -300,7 +300,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         bulkEditStacks = [bulkWidthStack, bulkHeightStack, bulkAlphaStack, bulkBorderAlphaStack, bulkLabelAlphaStack, bulkBorderWidthStack, bulkHighlightAlphaStack, bulkHighlightSizeStack]
         bulkEditEnabled = false
         OnScreenWidgetView.editMode = true
-        selectedWidgetView = nil
+        selectedWidget = nil
         widgetPanelStoredCenter = widgetPanelStack.center
         profileRefresh()
         setupWidgetPanel()
@@ -519,7 +519,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         pickedProfileDataHandler: ((OSCProfile) -> Void)? = nil
     ) {
         hideStickIndicators()
-        if loadingMode != .pickProfileData {selectedWidgetView = nil}
+        if loadingMode != .pickProfileData {selectedWidget = nil}
         let storyboardName = UIDevice.current.userInterfaceIdiom == .phone ? "iPhone" : "iPad"
         let storyboard = UIStoryboard(name: storyboardName, bundle: nil)
         let controller = storyboard.instantiateViewController(withIdentifier: "OSCProfilesTableViewController") as? OSCProfilesTableViewController
@@ -552,19 +552,19 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         // importFromOtherButton.setTitle(LocalizationHelper.localizedString(forKey: "Import"), for: .normal)
         presentProfilesTableView(with: .pickProfileData) { [weak self] profile in
             if profile.name == self?.profilesManager.getSelectedProfile().name {return}
-            self?.loadWidgets(from: profile, to: self?.selectedWidgetView)
+            self?.loadWidgets(from: profile, to: self?.selectedWidget)
         }
     }
 
     @IBAction func clearFolderButtonTapped(_ sender: Any?) {
         for widget in OnScreenWidgetView.mapping.values {
-            if widget.parentSequence == selectedWidgetView?.sequence, widget.sequenceSet.isEmpty {
+            if widget.parentSequence == selectedWidget?.sequence, widget.sequenceSet.isEmpty {
                 OnScreenWidgetView.mapping.removeValue(forKey: widget.sequence)
                 widget.removeFromSuperview()
             }
         }
                 
-        selectedWidgetView?.sequenceSet = Set()
+        selectedWidget?.sequenceSet = Set()
     }
     
     private func setBulkEditStackHidden(_ hidden:Bool) {
@@ -591,8 +591,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             stack.isHidden = hidden
         }
         
-        buttonModeStack.isHidden = !hidden || (selectedWidgetView?.widgetType != .button)
-        collectedWidgetsStack.isHidden = selectedWidgetView?.isFolder != true
+        buttonModeStack.isHidden = !hidden || (selectedWidget?.widgetType != .button)
+        collectedWidgetsStack.isHidden = selectedWidget?.isFolder != true
         
         if GenericUtils.isIPhone() {
             vibrationStyleStack.isHidden = false
@@ -602,7 +602,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @IBAction func bulkEditButtonTapped(_ sender: Any?) {
-        guard let selectedWidgetView = selectedWidgetView else {return}
+        guard let selectedWidgetView = selectedWidget else {return}
         if !bulkEditEnabled {applyTitle("Batch updated", for: sender as! UIButton)}
         else {applyTitle("Batch edit", for: sender as! UIButton)}
         bulkEditEnabled = !bulkEditEnabled
@@ -679,7 +679,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     private func updateViewBounds() {
         viewWillBeResized = false
-        selectedWidgetView = nil
+        selectedWidget = nil
         selectedControllerLayer = nil
         oscProfilesTableViewController?.layoutViewBounds = view.bounds
         OSCProfilesManager.setLayoutViewBounds(view.bounds)
@@ -757,52 +757,52 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     private func loadWidgetAlphas() {
-        guard let selectedWidgetView, widgetViewSelected else { return }
-        setHiddenForWidgetHighlights(selectedWidgetView)
+        guard let selectedWidget, widgetViewSelected else { return }
+        setHiddenForWidgetHighlights(selectedWidget)
         switch alphaSliderMode {
         case .widgetAlpha:
             widgetAlphaSlider.maximumValue = 1
             widgetAlphaSlider.minimumValue = -1
-            widgetAlphaSlider.value = Float(selectedWidgetView.backgroundAlpha)
-            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Alpha: %.2f", widgetAlphaSlider.value)
+            widgetAlphaSlider.value = Float(selectedWidget.backgroundAlpha)
+            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Opacity: %.2f", widgetAlphaSlider.value)
         case .labelAlpha:
             widgetAlphaSlider.maximumValue = 1
             widgetAlphaSlider.minimumValue = -1
-            widgetAlphaSlider.value = Float(selectedWidgetView.labelAlpha)
-            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label alpha: %.2f", widgetAlphaSlider.value)
+            widgetAlphaSlider.value = Float(selectedWidget.labelAlpha)
+            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label opacity: %.2f", widgetAlphaSlider.value)
         case .borderAlpha:
             widgetAlphaSlider.maximumValue = 1
             widgetAlphaSlider.minimumValue = -1
-            widgetAlphaSlider.value = Float(selectedWidgetView.borderAlpha)
-            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Border alpha: %.2f", widgetAlphaSlider.value)
+            widgetAlphaSlider.value = Float(selectedWidget.borderAlpha)
+            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Border opacity: %.2f", widgetAlphaSlider.value)
         case .highlightAlpha:
             widgetAlphaSlider.maximumValue = 1
             widgetAlphaSlider.minimumValue = 0
-            widgetAlphaSlider.value = Float(selectedWidgetView.highlightAlpha)
-            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Highlight alpha: %.2f", widgetAlphaSlider.value)
+            widgetAlphaSlider.value = Float(selectedWidget.highlightAlpha)
+            widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Highlight opacity: %.2f", widgetAlphaSlider.value)
         }
     }
 
     private func loadWidgetWidths() {
-        guard let selectedWidgetView, widgetViewSelected else { return }
-        setHiddenForWidgetHighlights(selectedWidgetView)
+        guard let selectedWidget, widgetViewSelected else { return }
+        setHiddenForWidgetHighlights(selectedWidget)
         switch borderWidthSliderMode {
         case .widgetBorderWidth:
             widgetBorderWidthSlider.minimumValue = 0
             widgetBorderWidthSlider.maximumValue = 8
-            widgetBorderWidthSlider.setValue(Float(selectedWidgetView.borderWidth), animated: false)
+            widgetBorderWidthSlider.setValue(Float(selectedWidget.borderWidth), animated: false)
             widgetBorderWidthLabel.text = LocalizationHelper.localizedString(forKey: "Border width: %.2f", widgetBorderWidthSlider.value)
         case .highlightSize:
             widgetBorderWidthSlider.minimumValue = 0.01
             widgetBorderWidthSlider.maximumValue = 2
-            widgetBorderWidthSlider.setValue(Float(selectedWidgetView.highlightSizeFactor), animated: false)
+            widgetBorderWidthSlider.setValue(Float(selectedWidget.highlightSizeFactor), animated: false)
             widgetBorderWidthLabel.text = LocalizationHelper.localizedString(forKey: "Highlight size: %.2f", widgetBorderWidthSlider.value)
         }
     }
 
     private func loadDecelerationRates() {
-        guard let selectedWidgetView else { return }
-        let value = decelerationRateSliderMode == .decelerationRateX ? selectedWidgetView.decelerationRateX : selectedWidgetView.decelerationRateY
+        guard let selectedWidget else { return }
+        let value = decelerationRateSliderMode == .decelerationRateX ? selectedWidget.decelerationRateX : selectedWidget.decelerationRateY
         decelerationRateSlider.value = Float(value)
         let key = decelerationRateSliderMode == .decelerationRateX ? "DecelerationRateX: %.3f  " : "DecelerationRateY: %.3f  "
         decelerationRateLabel.text = LocalizationHelper.localizedString(forKey: key, decelerationRateSlider.value)
@@ -815,8 +815,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetViewSelected = true
         controllerLayerSelected = false
 
-        if widgetView !== selectedWidgetView {
-            selectedWidgetView?.setAutoTapIntervalByText(str: autoTapField.text ?? "")
+        if widgetView !== selectedWidget {
+            selectedWidget?.setAutoTapIntervalByText(str: autoTapField.text ?? "")
         }
         
         widgetView.hideAllHighlightLayersOfAllWidgets(selfIncluded: true)
@@ -824,7 +824,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         autoFitLabel(currentProfileLabel)
         currentProfileLabel.textAlignment = .left
         currentProfileLabel.text = LocalizationHelper.localizedString(forKey: "  Profile: %@    Alias: %@    Cmd: %@    Parent: %@", profilesManager.getSelectedProfile().name, widgetView.widgetLabel, widgetView.cmdString,           LocalizationHelper.localizedString(forKey:OnScreenWidgetView.mapping[widgetView.parentSequence]?.widgetLabel ?? "null"))
-        if selectedWidgetView?.hasWalkSprintKeys == true {
+        if selectedWidget?.hasWalkSprintKeys == true {
             let cmdCounts = widgetView.comboButtonStrings.count
             currentProfileLabel.text = LocalizationHelper.localizedString(forKey: "  Cmd: %@    Sprint: %@    Walk: %@    Parent: %@",
                 widgetView.cmdString, cmdCounts>0 ? widgetView.comboButtonStrings[0] : LocalizationHelper.localizedString(forKey: "null"),
@@ -990,12 +990,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         dockedAlphaSliderMoved(dockedAlphaSlider)
 
         buttonModeStack.isHidden = widgetView.widgetType != .button
-        buttonModeSelector.setEnabled(!widgetView.isFunctionalButton, forSegmentAt: Int(ButtonMode.slideToToggle.rawValue))
-        buttonModeSelector.setEnabled((!widgetView.isFunctionalButton || widgetView.isFolder)
-                                      && !widgetView.containsShortcutAction
-                                      , forSegmentAt: Int(ButtonMode.slideAndHold.rawValue))
-        // buttonModeSelector.setEnabled(!widgetView.isFolder, forSegmentAt: Int(ButtonMode.regular.rawValue))
-        buttonModeSelector.setEnabled(!widgetView.isFunctionalButton || widgetView.isTapToToggleException, forSegmentAt: Int(ButtonMode.tapToToggle.rawValue))
         buttonModeSelector.selectedSegmentIndex = Int(widgetView.buttonMode.rawValue)
         
         collectedWidgetsStack.isHidden = !widgetView.isFolder
@@ -1047,7 +1041,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     
     @objc private func widgetViewTapped(_ notification: Notification) {
         guard let widgetView = notification.object as? OnScreenWidgetView else { return }
-        selectedWidgetView = widgetView
+        selectedWidget = widgetView
         layoutOSC.updateGuidelinesFor(onScreenWidget: widgetView)
         if bulkEditEnabled {
             bulkEditButtonTapped(bulkEditButton) // this will call refreshPanelForSelectedWidget too
@@ -1065,7 +1059,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         enableCommonWidgetTools()
         hideStickIndicators()
         widgetViewSelected = false
-        selectedWidgetView = nil
+        selectedWidget = nil
         autoTapStack.isHidden = true
         stickIndicatorOffsetStack.isHidden = true
         sensitivityXStack.isHidden = true
@@ -1090,7 +1084,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetAlphaSlider.value = Float(alpha)
         widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size: %.2f", sizeFactor)
         widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", sizeFactor)
-        widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Alpha: %.2f", alpha)
+        widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Opacity: %.2f", alpha)
         if isIPhone() {
             vibrationStyleStack.isHidden = false
             if let style = OnScreenControls.layerVibrationStyleDic()?.object(forKey: controllerLayer.name ?? "") as? NSNumber {
@@ -1148,13 +1142,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             } else {
                 present(alert, animated: true)
             }
-        } else if let selectedWidgetView {
-            if selectedWidgetView.layoutChanges.count > 1 {
-                selectedWidgetView.undoRelocation()
+        } else if let selectedWidget {
+            if selectedWidget.layoutChanges.count > 1 {
+                selectedWidget.undoRelocation()
             } else {
                 present(alert, animated: true)
             }
-            undoButton.alpha = selectedWidgetView.layoutChanges.count > 1 ? 1.0 : 0.3
+            undoButton.alpha = selectedWidget.layoutChanges.count > 1 ? 1.0 : 0.3
         }
     }
 
@@ -1269,7 +1263,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.tweakHighlightAlpha(alpha: widget.highlightAlpha)
         newWidget.adjustBorder(width: widget.borderWidth)
         onScreenWidgetViews.add(newWidget)
-        selectedWidgetView = newWidget
+        selectedWidget = newWidget
         if !createNew {
             onScreenWidgetViews.remove(widget)
             widget.removeFromSuperview()
@@ -1465,12 +1459,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         let params = payload.mutableCopy() as? NSMutableDictionary ?? NSMutableDictionary()
         let pickerAction = ((params["pickerAction"] as? String) ?? "").lowercased()
         params.removeObject(forKey: "pickerAction")
-        if pickerAction == "modify", let selectedWidgetView {
-            updateWidget(selectedWidgetView, params: params, createNew: false)
+        if pickerAction == "modify", let selectedWidget {
+            updateWidget(selectedWidget, params: params, createNew: false)
             return
         }
-        if pickerAction == "create", controller.isEditMode, let selectedWidgetView {
-            updateWidget(selectedWidgetView, params: params, createNew: true)
+        if pickerAction == "create", controller.isEditMode, let selectedWidget {
+            updateWidget(selectedWidget, params: params, createNew: true)
             return
         }
         createWidgetFromParams(params)
@@ -1478,7 +1472,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     @IBAction func editTapped(_ sender: Any?) {
         GenericUtils.autoPopSoftKeyboard = false
-        guard let selectedWidgetView else {
+        guard let selectedWidget else {
             AlertControllerUtil.autoCompletion = true
             AlertControllerUtil.showAlert(in: self, title: "", message: LocalizationHelper.localizedString(forKey: "No widget selected"), withCancel: false, buttonTitle: "", countdown: 1, action: {}, completion: {})
             return
@@ -1489,16 +1483,16 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             pickerViewController.tabIdentifiers = ["gamepad", "keyboard", "functional"]
             pickerViewController.initialTabIdentifier = "gamepad"
             pickerViewController.isEditMode = true
-            pickerViewController.initialCmdString = selectedWidgetView.cmdString
-            pickerViewController.initialButtonLabel = selectedWidgetView.widgetLabel
-            pickerViewController.initialShape = selectedWidgetView.shape
+            pickerViewController.initialCmdString = selectedWidget.cmdString
+            pickerViewController.initialButtonLabel = selectedWidget.widgetLabel
+            pickerViewController.initialShape = selectedWidget.shape
             let nav = UINavigationController(rootViewController: pickerViewController)
             nav.modalPresentationStyle = .overFullScreen
             present(nav, animated: true)
             return
         }
 
-        presentLegacyEditWidgetAlert(for: selectedWidgetView)
+        presentLegacyEditWidgetAlert(for: selectedWidget)
     }
 
     @IBAction func saveTapped(_ sender: Any?) {
@@ -1536,8 +1530,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         let color = overlapping ? UIColor.red : trashCanStoryBoardColor ?? UIColor.systemTeal
         trashCanButton.tintColor = color
         trashCanButton.titleLabel?.textColor = color
-        if overlapping, let selectedWidgetView {
-            OnScreenWidgetView.setFree(widget: selectedWidgetView)
+        if overlapping, let selectedWidget {
+            OnScreenWidgetView.setFree(widget: selectedWidget)
         }
         undoButton.alpha = 1.0
     }
@@ -1547,7 +1541,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     private func clearSickInput() {
-        if selectedWidgetView != nil && widgetViewSelected {
+        if selectedWidget != nil && widgetViewSelected {
             OnScreenControls.shared()?.clearLeftStickTouchPadFlag()
             OnScreenControls.shared()?.clearRightStickTouchPadFlag()
         }
@@ -1743,7 +1737,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         componentSizeStack.isHidden = true
         alphaSliderMode = .widgetAlpha
         widgetAlphaSlider.addTarget(self, action: #selector(widgetAlphaSliderMoved(_:)), for: .valueChanged)
-        widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Alpha")
+        widgetAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Opacity")
         widgetAlphaLabel.isUserInteractionEnabled = true
         widgetAlphaLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchAlphaSlider(_:))))
         borderWidthSliderMode = .widgetBorderWidth
@@ -1809,7 +1803,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         autoDockTimerStack.isHidden = true;
         
         dockedAlphaSlider.addTarget(self, action: #selector(dockedAlphaSliderMoved(_:)), for: .valueChanged)
-        dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked alpha")
+        dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked opacity")
         dockedAlphaStack.isHidden = true;
 
         let whiteAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.white]
@@ -1844,20 +1838,20 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         bulkHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height")
         
         bulkAlphaSlider.addTarget(self, action: #selector(bulkAlphaSliderMoved(_:)), for: .valueChanged)
-        bulkAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Alpha")
+        bulkAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Opacity")
         
         bulkBorderWidthSlider.addTarget(self, action: #selector(bulkBorderWidthSliderMoved(_:)), for: .valueChanged)
         bulkBorderWidthLabel.text = LocalizationHelper.localizedString(forKey: "Border width")
         
         bulkLabelAlphaSlider.addTarget(self, action: #selector(bulkLabelAlphaSliderMoved(_:)), for: .valueChanged)
-        bulkLabelAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label alpha")
+        bulkLabelAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label opacity")
         
         bulkBorderAlphaSlider.addTarget(self, action: #selector(bulkBorderAlphaSliderMoved(_:)), for: .valueChanged)
-        bulkBorderAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Border alpha")
+        bulkBorderAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Border opacity")
 
         bulkHighlightAlphaSlider.addTarget(self, action: #selector(bulkHighlightAlphaSliderMoved(_:)), for: .valueChanged)
         bulkHighlightAlphaSlider.addTarget(self, action: #selector(bulkHighlightAlphaSliderMoveStopped(_:)), for: [.touchUpInside, .touchUpOutside])
-        bulkHighlightAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Highlight alpha")
+        bulkHighlightAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Highlight opacity")
 
         bulkHighlightSizeSlider.minimumValue = 0.01
         bulkHighlightSizeSlider.maximumValue = 2
@@ -1916,7 +1910,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == autoTapField {
             textField.resignFirstResponder()
-            selectedWidgetView?.setAutoTapIntervalByText(str: textField.text ?? "")
+            selectedWidget?.setAutoTapIntervalByText(str: textField.text ?? "")
         }
         return true
     }
@@ -1930,14 +1924,14 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func widgetSizeSliderMoved(_ sender: UISlider) {
-        if let selectedWidgetView, widgetViewSelected {
-            selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
-            let aspectRatio = selectedWidgetView.heightFactor / selectedWidgetView.widthFactor
-            selectedWidgetView.widthFactor = CGFloat(sender.value)
-            selectedWidgetView.heightFactor = min(max(CGFloat(sender.minimumValue), selectedWidgetView.widthFactor * aspectRatio), CGFloat(sender.maximumValue))
+        if let selectedWidget, widgetViewSelected {
+            selectedWidget.translatesAutoresizingMaskIntoConstraints = true
+            let aspectRatio = selectedWidget.heightFactor / selectedWidget.widthFactor
+            selectedWidget.widthFactor = CGFloat(sender.value)
+            selectedWidget.heightFactor = min(max(CGFloat(sender.minimumValue), selectedWidget.widthFactor * aspectRatio), CGFloat(sender.maximumValue))
             widgetSizeLabel.text = LocalizationHelper.localizedString(forKey: "Size: %.2f", sender.value)
-            widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", selectedWidgetView.heightFactor)
-            widgetHeightSlider.value = Float(selectedWidgetView.heightFactor)
+            widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", selectedWidget.heightFactor)
+            widgetHeightSlider.value = Float(selectedWidget.heightFactor)
         }
         if let selectedControllerLayer, controllerLayerSelected {
             layoutOSC.resizeControllerLayer(with: selectedControllerLayer, and: CGFloat(sender.value))
@@ -1945,39 +1939,39 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func widgetSizeSliderTouchUp(_ sender: UISlider) {
-        if let selectedWidgetView, widgetViewSelected {
+        if let selectedWidget, widgetViewSelected {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                selectedWidgetView.isBeingResized = false
+                selectedWidget.isBeingResized = false
             }
         }
     }
 
     @objc private func widgetHeightSliderMoved(_ sender: UISlider) {
         widgetHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", sender.value)
-        if let selectedWidgetView, widgetViewSelected {
-            selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
-            if selectedWidgetView.shape == "round" { return }
-            selectedWidgetView.heightFactor = CGFloat(sender.value)
+        if let selectedWidget, widgetViewSelected {
+            selectedWidget.translatesAutoresizingMaskIntoConstraints = true
+            if selectedWidget.shape == "round" { return }
+            selectedWidget.heightFactor = CGFloat(sender.value)
         }
     }
 
     @objc private func componentSizeSliderMoved(_ sender: UISlider) {
         componentSizeLabel.text = LocalizationHelper.localizedString(forKey: "Component size: %.2f   ", sender.value)
-        if let selectedWidgetView, widgetViewSelected {
-            selectedWidgetView.translatesAutoresizingMaskIntoConstraints = true
-            selectedWidgetView.componentSizeFactor = CGFloat(sender.value)
+        if let selectedWidget, widgetViewSelected {
+            selectedWidget.translatesAutoresizingMaskIntoConstraints = true
+            selectedWidget.componentSizeFactor = CGFloat(sender.value)
         }
     }
 
     @objc private func widgetAlphaSliderMoved(_ sender: UISlider) {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        if let selectedWidgetView, widgetViewSelected {
+        if let selectedWidget, widgetViewSelected {
             switch alphaSliderMode {
-            case .widgetAlpha: selectedWidgetView.adjustTransparency(alpha: CGFloat(sender.value), tweakBorderAlpha: true)
-            case .labelAlpha: selectedWidgetView.tweakLabelAlpha(alpha: CGFloat(sender.value))
-            case .borderAlpha: selectedWidgetView.tweakBorderAlpha(alpha: CGFloat(sender.value))
-            case .highlightAlpha: selectedWidgetView.tweakHighlightAlpha(alpha: CGFloat(sender.value))
+            case .widgetAlpha: selectedWidget.adjustTransparency(alpha: CGFloat(sender.value), tweakBorderAlpha: true)
+            case .labelAlpha: selectedWidget.tweakLabelAlpha(alpha: CGFloat(sender.value))
+            case .borderAlpha: selectedWidget.tweakBorderAlpha(alpha: CGFloat(sender.value))
+            case .highlightAlpha: selectedWidget.tweakHighlightAlpha(alpha: CGFloat(sender.value))
             }
             loadWidgetAlphas()
         }
@@ -1988,15 +1982,15 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func widgetBorderWidthSliderMoved(_ sender: UISlider) {
-        if let selectedWidgetView, widgetViewSelected {
+        if let selectedWidget, widgetViewSelected {
             switch borderWidthSliderMode {
             case .widgetBorderWidth:
-                selectedWidgetView.adjustBorder(width: CGFloat(sender.value))
+                selectedWidget.adjustBorder(width: CGFloat(sender.value))
             case .highlightSize:
-                selectedWidgetView.highlightSizeFactor = CGFloat(sender.value)
-                if selectedWidgetView.widgetType == .button { selectedWidgetView.setupButtonDownVisualEffectLayer() }
-                if selectedWidgetView.hasL3R3Indicator { selectedWidgetView.setupL3R3Indicator() }
-                if selectedWidgetView.isDirectionPad { selectedWidgetView.setupLrudDirectionIndicatorlayers() }
+                selectedWidget.highlightSizeFactor = CGFloat(sender.value)
+                if selectedWidget.widgetType == .button { selectedWidget.setupButtonDownVisualEffectLayer() }
+                if selectedWidget.hasL3R3Indicator { selectedWidget.setupL3R3Indicator() }
+                if selectedWidget.isDirectionPad { selectedWidget.setupLrudDirectionIndicatorlayers() }
             }
         }
         loadWidgetWidths()
@@ -2004,7 +1998,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     
     
     @objc private func bulkBorderWidthSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         bulkBorderWidthLabel.text = LocalizationHelper.localizedString(forKey: "Border width: %.2f", sender.value)
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
@@ -2019,7 +2013,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func bulkWidthSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         bulkWidthLabel.text = LocalizationHelper.localizedString(forKey: "Width: %.2f", sender.value)
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
@@ -2037,7 +2031,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func bulkHeightSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         bulkHeightLabel.text = LocalizationHelper.localizedString(forKey: "Height: %.2f", sender.value)
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
@@ -2055,8 +2049,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func bulkAlphaSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
-        bulkAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Alpha: %.2f", sender.value)
+        guard let selectedWidget = selectedWidget else {return}
+        bulkAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Opacity: %.2f", sender.value)
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
                 let widget = OnScreenWidgetView.mapping[sequence];
@@ -2073,8 +2067,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func bulkLabelAlphaSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
-        bulkLabelAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label alpha: %.2f", sender.value)
+        guard let selectedWidget = selectedWidget else {return}
+        bulkLabelAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Label opacity: %.2f", sender.value)
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
                 OnScreenWidgetView.mapping[sequence]?.tweakLabelAlpha(alpha: CGFloat(sender.value))
@@ -2088,8 +2082,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func bulkBorderAlphaSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
-        bulkBorderAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Border alpha: %.2f", sender.value)
+        guard let selectedWidget = selectedWidget else {return}
+        bulkBorderAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Border opacity: %.2f", sender.value)
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
                 OnScreenWidgetView.mapping[sequence]?.tweakBorderAlpha(alpha: CGFloat(sender.value))
@@ -2103,8 +2097,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func bulkHighlightAlphaSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
-        bulkHighlightAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Highlight alpha: %.2f", sender.value)
+        guard let selectedWidget = selectedWidget else {return}
+        bulkHighlightAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Highlight opacity: %.2f", sender.value)
         OnScreenWidgetView.isTweakingHighlight = true
         if selectedWidget.isFolder {
             for sequence in selectedWidget.sequenceSet {
@@ -2123,7 +2117,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func bulkHighlightAlphaSliderMoveStopped(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             OnScreenWidgetView.isTweakingHighlight = false
             if selectedWidget.isFolder {
@@ -2142,7 +2136,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func bulkHighlightSizeSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         bulkHighlightSizeLabel.text = LocalizationHelper.localizedString(forKey: "Highlight size: %.2f", sender.value)
         OnScreenWidgetView.isTweakingHighlight = true
         CATransaction.begin()
@@ -2177,34 +2171,60 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
     
     @objc private func autoDockTimerSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         selectedWidget.autoDockIdleDuration = TimeInterval(Int(sender.value))
         autoDockTimerLabel.text = Int(sender.value) == 0 ? LocalizationHelper.localizedString(forKey: "Auto dock disabled", Int(sender.value)) : LocalizationHelper.localizedString(forKey: "Auto dock: %d s", Int(sender.value))
         return
     }
 
     @objc private func dockedAlphaSliderMoved(_ sender: UISlider) {
-        guard let selectedWidget = selectedWidgetView else {return}
+        guard let selectedWidget = selectedWidget else {return}
         selectedWidget.autoDockSettledAlpha = CGFloat(sender.value)
-        dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked alpha: %d%%", Int(sender.value*100))
+        dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked opacity: %d%%", Int(sender.value*100))
         return
     }
     
     @objc private func animationChanged(_ sender: UISegmentedControl) {
-        selectedWidgetView?.animatesTransition = sender.selectedSegmentIndex == 1
+        selectedWidget?.animatesTransition = sender.selectedSegmentIndex == 1
     }
     
     @objc private func mouseDownButtonChanged(_ sender: UISegmentedControl) {
-        selectedWidgetView?.mouseButtonAction = MouseButtonAction(rawValue: sender.selectedSegmentIndex) ?? .hovering
+        selectedWidget?.mouseButtonAction = MouseButtonAction(rawValue: sender.selectedSegmentIndex) ?? .hovering
     }
 
     @objc private func buttonModeChanged(_ sender: UISegmentedControl) {
-        selectedWidgetView?.buttonMode = ButtonMode(rawValue: sender.selectedSegmentIndex) ?? .slideToToggle
+        if let selectedWidget {
+            switch sender.selectedSegmentIndex {
+            case ButtonMode.slideToToggle.rawValue where selectedWidget.isFunctionalButton:
+                self.handleInvalidButtonModeTipsFor(widget: selectedWidget, sender: sender)
+            case ButtonMode.slideAndHold.rawValue where (selectedWidget.isFunctionalButton && !selectedWidget.isFolder) || selectedWidget.containsShortcutAction:
+                self.handleInvalidButtonModeTipsFor(widget: selectedWidget, sender: sender)
+            case ButtonMode.tapToToggle.rawValue where selectedWidget.isFunctionalButton && !selectedWidget.isTapToToggleException:
+                self.handleInvalidButtonModeTipsFor(widget: selectedWidget, sender: sender)
+            default:
+                GenericUtils.handleButtonModeTip(in: self)
+                selectedWidget.buttonMode = ButtonMode(rawValue: sender.selectedSegmentIndex) ?? .slideToToggle
+            }
+        }
     }
+    private func handleInvalidButtonModeTipsFor(widget: OnScreenWidgetView, sender: UISegmentedControl) {
+        AlertControllerUtil.showAlert(
+            in: self,
+            title: LocalizationHelper.localizedString(forKey: "Tips"),
+            message: "\n\(LocalizationHelper.localizedString(forKey: "invalidButtonModeTip"))\n\n\(LocalizationHelper.localizedString(forKey:widget.isFolder ? "folderButtonModeTip" : ""))",
+            withCancel: false,
+            buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+            countdown: 0,
+            completion: {
+                sender.selectedSegmentIndex = sender.previousSelectedSegmentIndex
+            }
+        )
+    }
+    
 
     @objc private func collectionHiddenChanged(_ sender: UISegmentedControl) {
-        if let selectedWidgetView {
-            OnScreenWidgetView.set(folded: sender.selectedSegmentIndex == 1, for: selectedWidgetView)
+        if let selectedWidget {
+            OnScreenWidgetView.set(folded: sender.selectedSegmentIndex == 1, for: selectedWidget)
         }
         self.bulkEditButton.isEnabled = sender.selectedSegmentIndex == 0
         self.importFromOtherButton.isEnabled = sender.selectedSegmentIndex == 0
@@ -2213,18 +2233,18 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func bulkMoveChanged(_ sender: UISegmentedControl) {
-        selectedWidgetView?.bulkMoveEnabled = sender.selectedSegmentIndex == 1
+        selectedWidget?.bulkMoveEnabled = sender.selectedSegmentIndex == 1
     }
 
     @objc private func revealModeChanged(_ sender: UISegmentedControl) {
-        if let selectedWidgetView {
-            selectedWidgetView.revealMode = RevealMode(rawValue: sender.selectedSegmentIndex) ?? .coexist
-            OnScreenWidgetView.set(folded: selectedWidgetView.folded, for: selectedWidgetView)
+        if let selectedWidget {
+            selectedWidget.revealMode = RevealMode(rawValue: sender.selectedSegmentIndex) ?? .coexist
+            OnScreenWidgetView.set(folded: selectedWidget.folded, for: selectedWidget)
         }
     }
 
     @objc private func vibrationStyleChanged(_ sender: UISegmentedControl) {
-        guard let selectedWidgetView = selectedWidgetView else {return}
+        guard let selectedWidgetView = selectedWidget else {return}
         
         if #available(iOS 13.0, *) {
             if sender.selectedSegmentIndex <= UIImpactFeedbackGenerator.FeedbackStyle.rigid.rawValue {
@@ -2248,28 +2268,28 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     @objc private func sensitivityXSliderMoved(_ sender: UISlider) {
-        let key = selectedWidgetView?.hasSensitivityY == true ? "SensitivityX: %.2f" : "Sensitivity: %.2f"
+        let key = selectedWidget?.hasSensitivityY == true ? "SensitivityX: %.2f" : "Sensitivity: %.2f"
         sensitivityXLabel.text = LocalizationHelper.localizedString(forKey: key, sender.value)
         sensitivityYLabel.text = LocalizationHelper.localizedString(forKey: "SensitivityY: %.2f", sender.value)
         sensitivityYSlider.value = sender.value
-        selectedWidgetView?.sensitivityFactorX = CGFloat(sender.value)
-        selectedWidgetView?.sensitivityFactorY = CGFloat(sender.value)
+        selectedWidget?.sensitivityFactorX = CGFloat(sender.value)
+        selectedWidget?.sensitivityFactorY = CGFloat(sender.value)
     }
 
     @objc private func sensitivityYSliderMoved(_ sender: UISlider) {
         sensitivityYLabel.text = LocalizationHelper.localizedString(forKey: "SensitivityY: %.2f", sender.value)
-        selectedWidgetView?.sensitivityFactorY = CGFloat(sender.value)
+        selectedWidget?.sensitivityFactorY = CGFloat(sender.value)
     }
 
     @objc private func walkModeThresholdSliderMoved(_ sender: UISlider) {
         walkModeThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Walkmode threshold: %.0f   ", sender.value)
-        if let selectedWidgetView, widgetViewSelected {
-            selectedWidgetView.dWheelWalkModeThreshold = CGFloat(sender.value)
+        if let selectedWidget, widgetViewSelected {
+            selectedWidget.dWheelWalkModeThreshold = CGFloat(sender.value)
             guard let onScreenControls = OnScreenControls.shared() else { return }
-            if selectedWidgetView.touchPadString == "LSWHEEL" {
+            if selectedWidget.touchPadString == "LSWHEEL" {
                 onScreenControls.sendLeftStickTouchPadEvent(0, CGFloat(sender.value))
             }
-            if selectedWidgetView.touchPadString == "RSWHEEL" {
+            if selectedWidget.touchPadString == "RSWHEEL" {
                 onScreenControls.sendRightStickTouchPadEvent(0, CGFloat(sender.value))
             }
         }
@@ -2277,17 +2297,17 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     @objc private func minStickOffsetSliderMoved(_ sender: UISlider) {
         minStickOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Minimum offset: %.0f", sender.value)
-        if let selectedWidgetView, widgetViewSelected {
-            selectedWidgetView.minStickOffset = CGFloat(sender.value)
+        if let selectedWidget, widgetViewSelected {
+            selectedWidget.minStickOffset = CGFloat(sender.value)
             guard let onScreenControls = OnScreenControls.shared() else { return }
-            if selectedWidgetView.touchPadString == "LSPAD"
-                || selectedWidgetView.touchPadString == "LSVPAD"
-                || selectedWidgetView.touchPadString == "LSWHEEL" {
+            if selectedWidget.touchPadString == "LSPAD"
+                || selectedWidget.touchPadString == "LSVPAD"
+                || selectedWidget.touchPadString == "LSWHEEL" {
                 onScreenControls.sendLeftStickTouchPadEvent(CGFloat(sender.value), 0)
             }
-            if selectedWidgetView.touchPadString == "RSPAD"
-                || selectedWidgetView.touchPadString == "RSVPAD"
-                || selectedWidgetView.touchPadString == "RSWHEEL" {
+            if selectedWidget.touchPadString == "RSPAD"
+                || selectedWidget.touchPadString == "RSVPAD"
+                || selectedWidget.touchPadString == "RSWHEEL" {
                 onScreenControls.sendRightStickTouchPadEvent(CGFloat(sender.value), 0)
             }
         }
@@ -2295,18 +2315,18 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     @objc private func slideThresholdSliderMoved(_ sender: UISlider) {
         slideThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold: %.1f   ", sender.value)
-        selectedWidgetView?.slideThreshold = CGFloat(sender.value)
+        selectedWidget?.slideThreshold = CGFloat(sender.value)
     }
     
     @objc private func sprintKeyActionChanged(_ sender: UISegmentedControl) {
-        selectedWidgetView?.sprintKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: UInt8(sender.selectedSegmentIndex)) ?? .hold
+        selectedWidget?.sprintKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: UInt8(sender.selectedSegmentIndex)) ?? .hold
     }
 
     @objc private func sprintKeyThresholdSliderMoved(_ sender: UISlider) {
         sprintKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", sender.value)
         autoFitLabel(sprintKeyThresholdLabel)
 
-        guard OnScreenWidgetView.editMode, let selectedWidgetView, widgetViewSelected else { return }
+        guard OnScreenWidgetView.editMode, let selectedWidget, widgetViewSelected else { return }
 
         if sender.value < walkKeyThresholdSlider.value {
             walkKeyThresholdSlider.value = sender.value
@@ -2314,13 +2334,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             autoFitLabel(walkKeyThresholdLabel)
         }
 
-        selectedWidgetView.sprintKeyThreshold = CGFloat(sender.value)
-        selectedWidgetView.walkKeyThreshold = CGFloat(walkKeyThresholdSlider.value)
-        selectedWidgetView.updateMovementThresholdPreview()
+        selectedWidget.sprintKeyThreshold = CGFloat(sender.value)
+        selectedWidget.walkKeyThreshold = CGFloat(walkKeyThresholdSlider.value)
+        selectedWidget.updateMovementThresholdPreview()
     }
     
     @objc private func walkKeyActionChanged(_ sender: UISegmentedControl) {
-        selectedWidgetView?.walkKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: UInt8(sender.selectedSegmentIndex)) ?? .hold
+        selectedWidget?.walkKeyActionType = OnScreenWidgetView.WalkSprintKeyActionType(rawValue: UInt8(sender.selectedSegmentIndex)) ?? .hold
     }
 
     @objc private func walkKeyThresholdSliderMoved(_ sender: UISlider) {
@@ -2331,50 +2351,50 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         walkKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: " Slide threshold: %0.2f  ", sender.value)
         autoFitLabel(walkKeyThresholdLabel)
 
-        guard OnScreenWidgetView.editMode, let selectedWidgetView, widgetViewSelected else { return }
+        guard OnScreenWidgetView.editMode, let selectedWidget, widgetViewSelected else { return }
 
-        selectedWidgetView.walkKeyThreshold = CGFloat(sender.value)
-        selectedWidgetView.updateMovementThresholdPreview()
+        selectedWidget.walkKeyThreshold = CGFloat(sender.value)
+        selectedWidget.updateMovementThresholdPreview()
     }
 
     @objc private func yawFactorSliderMoved(_ sender: UISlider) {
         yawFactorLabel.text = LocalizationHelper.localizedString(forKey: "Yaw factor: %.2f", sender.value)
         pitchFactorLabel.text = LocalizationHelper.localizedString(forKey: "Pitch factor: %.2f", sender.value)
         pitchFactorSlider.value = sender.value
-        selectedWidgetView?.yawFactor = CGFloat(sender.value)
-        selectedWidgetView?.pitchFactor = CGFloat(sender.value)
+        selectedWidget?.yawFactor = CGFloat(sender.value)
+        selectedWidget?.pitchFactor = CGFloat(sender.value)
     }
 
     @objc private func pitchFactorSliderMoved(_ sender: UISlider) {
         pitchFactorLabel.text = LocalizationHelper.localizedString(forKey: "Pitch factor: %.2f", sender.value)
-        selectedWidgetView?.pitchFactor = CGFloat(sender.value)
+        selectedWidget?.pitchFactor = CGFloat(sender.value)
     }
 
     @objc private func rollFactorSliderMoved(_ sender: UISlider) {
         rollFactorLabel.text = LocalizationHelper.localizedString(forKey: "Roll factor: %.2f", sender.value)
-        selectedWidgetView?.rollFactor = CGFloat(sender.value)
+        selectedWidget?.rollFactor = CGFloat(sender.value)
     }
 
     @objc private func decelerationRateSliderMoved(_ sender: UISlider) {
-        if let selectedWidgetView {
+        if let selectedWidget {
             switch decelerationRateSliderMode {
-            case .decelerationRateX: selectedWidgetView.decelerationRateX = CGFloat(sender.value)
-            case .decelerationRateY: selectedWidgetView.decelerationRateY = CGFloat(sender.value)
+            case .decelerationRateX: selectedWidget.decelerationRateX = CGFloat(sender.value)
+            case .decelerationRateY: selectedWidget.decelerationRateY = CGFloat(sender.value)
             }
         }
         loadDecelerationRates()
     }
 
     @objc private func anchorModeChanged(_ sender: UISegmentedControl) {
-        if let selectedWidgetView {
-            selectedWidgetView.touchPointAnchored = sender.selectedSegmentIndex == 1
+        if let selectedWidget {
+            selectedWidget.touchPointAnchored = sender.selectedSegmentIndex == 1
             componentSizeStack.isHidden = sender.selectedSegmentIndex != 0
             stickIndicatorOffsetStack.isHidden = sender.selectedSegmentIndex != 1
-            stickIndicatorOffsetSlider.value = Float(selectedWidgetView.stickIndicatorOffset)
+            stickIndicatorOffsetSlider.value = Float(selectedWidget.stickIndicatorOffset)
             self.stickIndicatorOffsetSliderMoved(stickIndicatorOffsetSlider)
             autoFitStack(self.widgetPanelStack)
             
-            if selectedWidgetView.isDirectionPad {
+            if selectedWidget.isDirectionPad {
                 sensitivityXSlider.value = sender.selectedSegmentIndex == 0 ? 0.0 : 6.5
                 sensitivityXSliderMoved(sensitivityXSlider)
             }
@@ -2383,8 +2403,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     @objc private func stickIndicatorOffsetSliderMoved(_ sender: UISlider) {
         stickIndicatorOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Indicator offset: %.0f", sender.value)
-        if let selectedWidgetView {
-            selectedWidgetView.stickIndicatorOffset = CGFloat(sender.value)
+        if let selectedWidget {
+            selectedWidget.stickIndicatorOffset = CGFloat(sender.value)
         }
     }
 
@@ -2416,6 +2436,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             if widgetPanelMovedByTouch {
                 latestTouchLocation = touch.location(in: view)
             }
+            if widgetPanelTouched(touch), selectedWidget != nil {
+                GenericUtils.handleWidgetPanelTip(in: self)
+            }
         }
         for touch in touches {
             var touchLocation = touch.location(in: view)
@@ -2446,17 +2469,17 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         widgetPanelStack.isUserInteractionEnabled = true
-        if let selectedWidgetView {
-            view.insertSubview(selectedWidgetView, belowSubview: widgetPanelStack)
-            if selectedWidgetView.widgetType == .touchPad {
-                view.sendSubviewToBack(selectedWidgetView)
+        if let selectedWidget {
+            view.insertSubview(selectedWidget, belowSubview: widgetPanelStack)
+            if selectedWidget.widgetType == .touchPad {
+                view.sendSubviewToBack(selectedWidget)
             }
         }
-        if !isToolbarHidden, let selectedWidgetView, layerIsOverlappingWithTrashcanButton(selectedWidgetView.layer), selectedWidgetView.firstTouchMoved {
-            OnScreenWidgetView.setFree(widget: selectedWidgetView)
-            OnScreenWidgetView.removeWidgetFromMappings(key: selectedWidgetView.sequence)
-            selectedWidgetView.removeFromSuperview()
-            onScreenWidgetViews.remove(selectedWidgetView)
+        if !isToolbarHidden, let selectedWidget, layerIsOverlappingWithTrashcanButton(selectedWidget.layer), selectedWidget.firstTouchMoved {
+            OnScreenWidgetView.setFree(widget: selectedWidget)
+            OnScreenWidgetView.removeWidgetFromMappings(key: selectedWidget.sequence)
+            selectedWidget.removeFromSuperview()
+            onScreenWidgetViews.remove(selectedWidget)
         }
         if !isToolbarHidden, let draggedLayer = layoutOSC.layerBeingDragged, layerIsOverlappingWithTrashcanButton(draggedLayer) {
             draggedLayer.isHidden = true

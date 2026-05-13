@@ -919,7 +919,7 @@ static float L3_Y;
                     [buttonLayer.name isEqualToString:@"rightButton"] ||
                     [buttonLayer.name isEqualToString:@"downButton"] ||
                     [buttonLayer.name isEqualToString:@"leftButton"]){
-                    // NSLog(@"layerName: %@, alpha: %f", buttonLayer.name, buttonStateDecoded.backgroundAlpha);
+                    // NSLog(@"layerName: %@, opacity: %f", buttonLayer.name, buttonStateDecoded.backgroundAlpha);
                     [self adjustControllerLayerOpacityWith:buttonLayer and:buttonStateDecoded.backgroundAlpha];
                 }
                 if([buttonLayer.name isEqualToString:@"leftStickBackground"]){
@@ -2056,7 +2056,7 @@ static float L3_Y;
     if (layer == self._rightStickBackground) {
         self._rightStick.opacity = targetAlpha;
         self._rightStickBackground.opacity = targetAlpha + 1.0f/6.0f;
-        NSLog(@"right stick init alpha: %f", targetAlpha);
+        NSLog(@"right stick init opacity: %f", targetAlpha);
     }
 
     if (layer == self._leftStickBackground){

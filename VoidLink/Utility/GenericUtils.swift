@@ -9,9 +9,13 @@
 
 import Foundation
 import GameController
+import ObjectiveC
 import UIKit
 
 @objc public class GenericUtils: NSObject {
+    @objc static func installSegmentedControlPreviousSelectionTracking() {
+        UISegmentedControl.installPreviousSelectionTracking()
+    }
     
     @objc static var hardwareKeyboardAlreadyDetected: Bool = false
     
@@ -115,7 +119,7 @@ import UIKit
     }
     
     @objc static func isFirstTappingFolderInLayoutTool() -> Bool {
-        let key = "hasTappedFolderInLayoutTool"
+        let key = "hasTappedFolderInLayoutTool2"
         let defaults = UserDefaults.standard
         let launchedBefore = defaults.bool(forKey: key)
         if !launchedBefore {
@@ -241,6 +245,36 @@ import UIKit
         }
     }
     
+    @objc static var hasTappedButtonModeSelector = false
+    @objc static func isFirstTappingButtonModeSelector() -> Bool {
+        guard !hasTappedButtonModeSelector else { return false }
+        hasTappedButtonModeSelector = true
+        let key = "hasTappedButtonModeSelector3"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleButtonModeTip(in vc: UIViewController?) {
+        if isFirstTappingButtonModeSelector() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "buttonModeTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Tutorial"),
+                countdown: 3,
+                completion: {
+                    GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "buttonModeLink"))
+                }
+            )
+        }
+    }
+
+    
     @objc static var hasTappedStickWheel = false
     @objc static func isFirstTappingStickWheel() -> Bool {
         guard !hasTappedStickWheel else { return false }
@@ -267,6 +301,38 @@ import UIKit
                 completion: {
                     if AlertControllerUtil.actionCancelled {
                         GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "stickWheelLink"))
+                    }
+                }
+            )
+        }
+    }
+    
+    @objc static var hasTappedWidgetPanel = false
+    @objc static func isFirstTappingWidgetPanel() -> Bool {
+        guard !hasTappedWidgetPanel else { return false }
+        hasTappedWidgetPanel = true
+        let key = "hasTappedWidgetPanel7"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleWidgetPanelTip(in vc: UIViewController?) {
+        if isFirstTappingWidgetPanel() {
+            // AlertControllerUtil.cancelButtonString = LocalizationHelper.localizedString(forKey: "Detailed Tutorial")
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "widgetPanelTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 6,
+                completion: {
+                    if AlertControllerUtil.actionCancelled {
+                        GenericUtils.openUrl(LocalizationHelper.localizedString(forKey: "widgetPanelLink"))
                     }
                 }
             )
@@ -537,5 +603,150 @@ extension UIView {
 extension CGPoint {
     var isValid: Bool {
         x.isFinite && y.isFinite
+    }
+}
+
+
+private var previousSelectedSegmentIndexKey: UInt8 = 0
+private var lastKnownSelectedSegmentIndexKey: UInt8 = 0
+extension UISegmentedControl {
+    @objc static func installPreviousSelectionTracking() {
+        _ = enablePreviousSelectionTracking
+    }
+
+    private static let enablePreviousSelectionTracking: Void = {
+        guard
+            let originalSetter = class_getInstanceMethod(
+                UISegmentedControl.self,
+                #selector(setter: UISegmentedControl.selectedSegmentIndex)
+            ),
+            let swizzledSetter = class_getInstanceMethod(
+                UISegmentedControl.self,
+                #selector(UISegmentedControl.vl_setSelectedSegmentIndex(_:))
+            ),
+            let originalSendAction = class_getInstanceMethod(
+                UISegmentedControl.self,
+                #selector(UISegmentedControl.sendAction(_:to:for:))
+            ),
+            let swizzledSendAction = class_getInstanceMethod(
+                UISegmentedControl.self,
+                #selector(UISegmentedControl.vl_sendAction(_:to:for:))
+            )
+        else {
+            return
+        }
+
+        swizzleMethod(
+            on: UISegmentedControl.self,
+            originalMethod: originalSetter,
+            originalSelector: #selector(setter: UISegmentedControl.selectedSegmentIndex),
+            swizzledMethod: swizzledSetter,
+            swizzledSelector: #selector(UISegmentedControl.vl_setSelectedSegmentIndex(_:))
+        )
+        swizzleMethod(
+            on: UISegmentedControl.self,
+            originalMethod: originalSendAction,
+            originalSelector: #selector(UISegmentedControl.sendAction(_:to:for:)),
+            swizzledMethod: swizzledSendAction,
+            swizzledSelector: #selector(UISegmentedControl.vl_sendAction(_:to:for:))
+        )
+    }()
+
+    @objc var previousSelectedSegmentIndex: Int {
+        Self.installPreviousSelectionTracking()
+        initializeLastKnownIndexIfNeeded()
+        return (objc_getAssociatedObject(self, &previousSelectedSegmentIndexKey) as? NSNumber)?.intValue
+            ?? selectedSegmentIndex
+    }
+
+    @objc func resetPreviousSelectedSegmentIndex() {
+        Self.installPreviousSelectionTracking()
+        storePreviousSelectedSegmentIndex(selectedSegmentIndex)
+        storeLastKnownSelectedSegmentIndex(selectedSegmentIndex)
+    }
+
+    @objc private func vl_setSelectedSegmentIndex(_ newValue: Int) {
+        Self.installPreviousSelectionTracking()
+        initializeLastKnownIndexIfNeeded()
+
+        let currentValue = selectedSegmentIndex
+        if currentValue != newValue {
+            storePreviousSelectedSegmentIndex(newValue)
+            storeLastKnownSelectedSegmentIndex(newValue)
+        }
+
+        vl_setSelectedSegmentIndex(newValue)
+    }
+
+    @objc private func vl_sendAction(_ action: Selector, to target: Any?, for event: UIEvent?) {
+        Self.installPreviousSelectionTracking()
+        updatePreviousSelectedSegmentIndexIfNeeded()
+        vl_sendAction(action, to: target, for: event)
+    }
+
+    private func initializeLastKnownIndexIfNeeded() {
+        guard objc_getAssociatedObject(self, &lastKnownSelectedSegmentIndexKey) == nil else {
+            return
+        }
+        storeLastKnownSelectedSegmentIndex(selectedSegmentIndex)
+    }
+
+    private func updatePreviousSelectedSegmentIndexIfNeeded() {
+        initializeLastKnownIndexIfNeeded()
+
+        let currentValue = selectedSegmentIndex
+        let lastKnownValue = (objc_getAssociatedObject(self, &lastKnownSelectedSegmentIndexKey) as? NSNumber)?.intValue
+            ?? UISegmentedControl.noSegment
+
+        guard currentValue != lastKnownValue else {
+            return
+        }
+
+        storePreviousSelectedSegmentIndex(lastKnownValue)
+        storeLastKnownSelectedSegmentIndex(currentValue)
+    }
+
+    private func storePreviousSelectedSegmentIndex(_ value: Int) {
+        objc_setAssociatedObject(
+            self,
+            &previousSelectedSegmentIndexKey,
+            NSNumber(value: value),
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+    }
+
+    private func storeLastKnownSelectedSegmentIndex(_ value: Int) {
+        objc_setAssociatedObject(
+            self,
+            &lastKnownSelectedSegmentIndexKey,
+            NSNumber(value: value),
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+    }
+
+    private static func swizzleMethod(
+        on cls: AnyClass,
+        originalMethod: Method,
+        originalSelector: Selector,
+        swizzledMethod: Method,
+        swizzledSelector: Selector
+    ) {
+        let didAddMethod = class_addMethod(
+            cls,
+            originalSelector,
+            method_getImplementation(swizzledMethod),
+            method_getTypeEncoding(swizzledMethod)
+        )
+
+        if didAddMethod {
+            class_replaceMethod(
+                cls,
+                swizzledSelector,
+                method_getImplementation(originalMethod),
+                method_getTypeEncoding(originalMethod)
+            )
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod)
+        }
     }
 }
