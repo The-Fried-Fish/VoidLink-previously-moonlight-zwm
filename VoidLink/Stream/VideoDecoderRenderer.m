@@ -29,6 +29,7 @@
 #include <libavformat/avio.h>
 #include <libavutil/mem.h>
 #include <mach/mach_time.h>
+#include <math.h>
 
 // Define for extra logging related to frame pacing
 //#define DISPLAYLINK_VERBOSE
@@ -76,16 +77,34 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
         [_view.layer addSublayer:_displayLayer];
     }
 
+    // Update aspect ratio from the actual stream dimensions if we have a format description
+    float aspectRatioToUse = _streamAspectRatio;
+    if (_formatDesc != NULL) {
+        CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(_formatDesc);
+        if (dimensions.width > 0 && dimensions.height > 0) {
+            aspectRatioToUse = (float)dimensions.width / (float)dimensions.height;
+            if (fabsf(aspectRatioToUse - _streamAspectRatio) > 0.001f) {
+                Log(LOG_I, @"Stream resolution changed: updating aspect ratio from %.4f to %.4f (%dx%d)",
+                    _streamAspectRatio, aspectRatioToUse, dimensions.width, dimensions.height);
+                _streamAspectRatio = aspectRatioToUse;
+                // Also update StreamView's aspect ratio for correct touch input mapping (if it's a StreamView)
+                if ([_view respondsToSelector:@selector(setStreamAspectRatio:)]) {
+                    [(StreamView*)_view setStreamAspectRatio:aspectRatioToUse];
+                }
+            }
+        }
+    }
+
     // Ensure the AVSampleBufferDisplayLayer is sized to preserve the aspect ratio
     // of the video stream. We used to use AVLayerVideoGravityResizeAspect, but that
     // respects the PAR encoded in the SPS which causes our computed video-relative
     // touch location to be wrong in StreamView if the aspect ratio of the host
     // desktop doesn't match the aspect ratio of the stream.
     CGSize videoSize;
-    if (_view.bounds.size.width > _view.bounds.size.height * _streamAspectRatio) {
-        videoSize = CGSizeMake(_view.bounds.size.height * _streamAspectRatio, _view.bounds.size.height);
+    if (_view.bounds.size.width > _view.bounds.size.height * aspectRatioToUse) {
+        videoSize = CGSizeMake(_view.bounds.size.height * aspectRatioToUse, _view.bounds.size.height);
     } else {
-        videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / _streamAspectRatio);
+        videoSize = CGSizeMake(_view.bounds.size.width, _view.bounds.size.width / aspectRatioToUse);
     }
 
     [CATransaction begin];
@@ -836,6 +855,25 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         else {
             // Unsupported codec!
             abort();
+        }
+
+        // Check if the resolution changed and reinitialize the display layer if needed
+        if (_formatDesc != NULL) {
+            CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(_formatDesc);
+            float newAspectRatio = (float)dimensions.width / (float)dimensions.height;
+
+            // If aspect ratio changed significantly, reinitialize the display layer on the main thread
+            if (fabsf(newAspectRatio - _streamAspectRatio) > 0.001f) {
+                Log(LOG_I, @"Resolution change detected in IDR frame: %dx%d (aspect ratio %.4f -> %.4f)",
+                    dimensions.width, dimensions.height, _streamAspectRatio, newAspectRatio);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self reinitializeDisplayLayer];
+                    // Post notification so StreamFrameViewController can update the StreamView's aspect ratio
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"StreamAspectRatioChanged"
+                                                                        object:self
+                                                                      userInfo:@{@"aspectRatio": @(newAspectRatio)}];
+                });
+            }
         }
     }
 

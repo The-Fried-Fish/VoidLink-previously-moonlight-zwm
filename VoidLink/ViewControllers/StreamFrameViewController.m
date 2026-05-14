@@ -919,7 +919,11 @@
                                              selector:@selector(gameProfileSelectorClosed)
                                                  name:@"GameProfileSelectorCloseNotification"
                                                object:nil];
-    
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleStreamAspectRatioChanged:)
+                                                 name:@"StreamAspectRatioChanged"
+                                               object:nil];
 #if 0
     // FIXME: This doesn't work reliably on iPad for some reason. Showing and hiding the keyboard
     // several times in a row will not correctly restore the state of the UIScrollView.
@@ -1103,6 +1107,15 @@
     // [self->_streamView reloadLegacyWidgets];
     [self reConfigStreamViewRealtimeAndReloadSettings:NO reloadOnscreenWidgets:_settings.onscreenControls.intValue == OnScreenControlsLevelCustom];
     // [self->_streamView reloadGameProfile:nil reloadWidgets:true]; //update keyboard buttons here
+}
+
+- (void)handleStreamAspectRatioChanged:(NSNotification *)notification {
+    NSNumber *aspectRatioNum = notification.userInfo[@"aspectRatio"];
+    if (aspectRatioNum && _streamView) {
+        CGFloat aspectRatio = [aspectRatioNum doubleValue];
+        Log(LOG_I, @"Updating StreamView aspect ratio to %.4f", aspectRatio);
+        _streamView.streamAspectRatio = aspectRatio;
+    }
 }
 
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled{
