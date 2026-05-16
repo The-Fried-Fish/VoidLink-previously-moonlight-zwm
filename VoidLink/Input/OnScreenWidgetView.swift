@@ -17,8 +17,9 @@ import ObjectiveC.runtime
     }
 
     @objc public static var mapping: [Int16:OnScreenWidgetView] = [:]
-    @objc public static var isRestoring: Bool = false
-    @objc public static var hasRestoredFromAutoDock: Bool = false
+    @objc public static var isRestoringFolderStates: Bool = false
+    @objc public static var deferSlideGestureDueToAutoDockRestore: Bool = false
+    @objc public static var deferScreenEdgeSysGesturesDueToOnScreenWidgets: Bool = false
     @objc public static var autoDockRestoreInitByViewResize: Bool = false
     @objc public static func set(widget:OnScreenWidgetView, for key:Int16) {
         mapping[key] = widget
@@ -3296,9 +3297,9 @@ import ObjectiveC.runtime
     @objc private func vl_autoDock_touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         OnScreenWidgetView.autoDockOriginalTouchesEndedIMP?(self, #selector(OnScreenWidgetView.touchesEnded(_:with:)), touches, event)
         guard autoDockEnabled else { return }
-        if OnScreenWidgetView.hasRestoredFromAutoDock {
+        if OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore {
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.02){
-                OnScreenWidgetView.hasRestoredFromAutoDock = false
+                OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore = false
             }
         }
         autoDockRestartCountdownIfNeeded()
@@ -3459,6 +3460,11 @@ import ObjectiveC.runtime
         ) {
             self.frame = targetFrame
             self.transform = CGAffineTransform(scaleX: 0.985, y: 0.985)
+            
+            if ControllerUtil.activeGCControllers.count > 0, !GenericUtils.iOS26Available {
+                self.parentViewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
+            }
+            
         } completion: { _ in
             UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
                 self.autoDockApplyTemporarySize()
@@ -3480,12 +3486,14 @@ import ObjectiveC.runtime
     }
     
     private func autoDockRestoreWidget(animated: Bool) {
+        OnScreenWidgetView.deferScreenEdgeSysGesturesDueToOnScreenWidgets = true
+        self.parentViewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
         guard autoDockIsDocked else {
             restartAutoDockCountdown()
             return
         }
         let restoreCenter = storedCenter
-        OnScreenWidgetView.hasRestoredFromAutoDock = true
+        OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore = true
         autoDockStopCountdown()
         autoDockStopSettledAlphaTimer()
         autoDockRestoreOriginalSize()
@@ -3515,8 +3523,9 @@ import ObjectiveC.runtime
                     self.restartAutoDockCountdown()
                     if OnScreenWidgetView.autoDockRestoreInitByViewResize {
                         OnScreenWidgetView.autoDockRestoreInitByViewResize = false
-                        OnScreenWidgetView.hasRestoredFromAutoDock = false
+                        OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore = false
                     }
+                    OnScreenWidgetView.deferScreenEdgeSysGesturesDueToOnScreenWidgets = false
                 }
             )
         }
@@ -3647,7 +3656,7 @@ import ObjectiveC.runtime
         setCollection(hidden: folded, for: folder)
         if !folded, folder.revealMode == .exclusive {
             OnScreenWidgetView.unfoldedExclusiveFolderSequence = folder.sequence
-            if(!isRestoring) {OnScreenWidgetView.postExclusiveUnfoldedSequences.removeAll()}
+            if(!isRestoringFolderStates) {OnScreenWidgetView.postExclusiveUnfoldedSequences.removeAll()}
             let currentRootFolder = OnScreenWidgetView.getRootFolder(of: folder) ?? folder
             var offshootRootFolders:Set<OnScreenWidgetView> = Set()
             folder.forEachWidget{ widget in
@@ -3709,6 +3718,25 @@ import ObjectiveC.runtime
         }
         return false
     }
+    
+    @objc static var onlyRootFolderVisible: Bool {
+        var visibleNonFolerCount:Int = 0
+        var visibleFolderCount:Int = 0
+        for widget in OnScreenWidgetView.mapping.values {
+            if widget.isHidden {continue}
+            if widget.isFolder {
+                visibleFolderCount += 1
+                if visibleFolderCount > 1 {return false}
+                continue
+            }
+            else {
+                visibleNonFolerCount += 1
+                if visibleNonFolerCount > 0 {return false}
+                continue
+            }
+        }
+        return true
+    }
 
     private static func putWidget(_ widget:OnScreenWidgetView, into folder:OnScreenWidgetView){
         guard !OnScreenWidgetView.getParentFolders(of: folder).contains(widget), !folder.isHidden else { return }
@@ -3744,7 +3772,7 @@ import ObjectiveC.runtime
     }
     
     @objc static func restoreFoldedStates(){
-        isRestoring = true
+        isRestoringFolderStates = true
         var unfoldedExclusiveFolder: OnScreenWidgetView?
         if unfoldedExclusiveFolderSequence != -1 {
             unfoldedExclusiveFolder = OnScreenWidgetView.mapping[unfoldedExclusiveFolderSequence]
@@ -3767,7 +3795,7 @@ import ObjectiveC.runtime
             OnScreenWidgetView.set(folded: false, for: folder)
         }
         
-        isRestoring = false
+        isRestoringFolderStates = false
     }
     
     @objc static func getMaxSequence() -> Int16{

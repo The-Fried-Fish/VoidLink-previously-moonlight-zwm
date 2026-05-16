@@ -53,7 +53,7 @@ CGFloat startPointX;
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // [super touchesEnded:touches withEvent:event];
     if(_excludePencilEvent && touches.anyObject.type != UITouchTypeDirect) return;
-    if(OnScreenWidgetView.hasRestoredFromAutoDock) return;
+    if(OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore) return;
     if([touches containsObject:capturedUITouch]){
         CGFloat _endPointX = [capturedUITouch locationInView:self.view].x;
         CGFloat screenWidthInPoints = self.view.frame.size.width;

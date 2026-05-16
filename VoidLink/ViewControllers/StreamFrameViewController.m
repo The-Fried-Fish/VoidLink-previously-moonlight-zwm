@@ -2029,7 +2029,8 @@
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
-    if ( [_controllerSupport getConnectedGamepadCount] > 0 && [_streamView getCurrentOscState] == OnScreenControlsLevelOff &&
+    if(OnScreenWidgetView.deferScreenEdgeSysGesturesDueToOnScreenWidgets) return NO;
+    if ( [_controllerSupport getConnectedGamepadCount] > 0 &&
         _userIsInteracting == NO) {
         // Autohide the home bar when a gamepad is connected
         // and the on-screen controls are disabled. We can't

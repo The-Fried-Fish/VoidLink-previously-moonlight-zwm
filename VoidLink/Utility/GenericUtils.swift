@@ -417,6 +417,14 @@ import UIKit
         }
         return false
     }
+    
+    @objc static let iOS26Available: Bool = {
+        if #available(iOS 26.0, tvOS 26.0, *) {
+            return true
+        } else {
+            return false
+        }
+    }()
         
     @objc static let liquidGlassEnabled: Bool = {
         if #available(iOS 26.0, tvOS 26.0, *) {
