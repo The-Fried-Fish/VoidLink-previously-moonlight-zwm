@@ -440,6 +440,7 @@ import ObjectiveC.runtime
     @objc public var parentSequence: Int16 = -1
     @objc public var standardFoldingInterval: TimeInterval = 0.05
     static weak var capturer: OnScreenWidgetView?
+    @objc static weak var deepestButton: OnScreenWidgetView?
     
     @objc init(cmdString: String, buttonLabel: String, shape:String, profile:OSCProfile) {
 
@@ -3638,6 +3639,9 @@ import ObjectiveC.runtime
                             }
                         }
                         if widget.hasNonEditableLabel {widget.setupAtrributedText()}
+                        if widget.widgetType == .touchPad, let deepestButton = OnScreenWidgetView.deepestButton {
+                            widget.superview?.insertSubview(widget, belowSubview: deepestButton)
+                        }
                     })
                 }
             }

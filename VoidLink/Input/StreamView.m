@@ -814,6 +814,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                         if (index<buttonIndex){
                             buttonIndex = index;
                             deepestButton = subview;
+                            OnScreenWidgetView.deepestButton = (OnScreenWidgetView* )deepestButton;
                         }
                     }
                 }
