@@ -429,6 +429,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat pitchSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.pitchSensitivitySlider.value];
     CGFloat rollSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.rollSensitivitySlider.value];
     TouchMode touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector1.selectedSegmentIndex : NativeTouchOnly;
+    bool leftStickMinOffsetSliderNotMoved = (int16_t)(oscProfile.physicalLeftStickMinOffset) == (int16_t)self.leftStickMinOffsetSlider.value;
+    bool rightStickMinOffsetSliderNotMoved = (int16_t)(oscProfile.physicalRightStickMinOffset) == (int16_t)self.rightStickMinOffsetSlider.value;
 
     bool configNotChanged = (
                              (int)oscProfile.touchMode == touchMode
@@ -448,8 +450,8 @@ BOOL isCustomResolution(int resolutionSelected) {
                              && oscProfile.synthesizePhysicalStick == self.synthPhysicalInputSwitch.isOn
                              && oscProfile.controllerGyroSwitchMode == self.controllerGyroSwitchButtonSetter.selectedSegmentIndex
                              && oscProfile.reverseGyroHoldButton == self.reverseHoldButtonSwitch.isOn
-                             && (int16_t)(oscProfile.physicalLeftStickMinOffset) == (int16_t)self.leftStickMinOffsetSlider.value
-                             && (int16_t)(oscProfile.physicalRightStickMinOffset) == (int16_t)self.rightStickMinOffsetSlider.value
+                             && leftStickMinOffsetSliderNotMoved
+                             && rightStickMinOffsetSliderNotMoved
                              && oscProfile.pressureCurveEnabled == self.pressureCurveSwitch.isOn
                              && oscProfile.doubleTapShorcutEnabled == self.doubleTapShortcutSwitch.isOn
                              && oscProfile.squeezeShorcutEnabled == self.squeezeShortcutSwitch.isOn
@@ -485,6 +487,14 @@ BOOL isCustomResolution(int resolutionSelected) {
         oscProfile.pencilHoverMode = self.hoverModeSelector.selectedSegmentIndex;
         [oscProfileMan replaceSelectedProfileWith:oscProfile overwriteDefault:YES];
         if(PencilHandler.shared) [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
+    }
+    
+    if(!leftStickMinOffsetSliderNotMoved || !rightStickMinOffsetSliderNotMoved){
+        if(OnScreenControls.shared){
+            [OnScreenControls.shared clearLeftStickTouchPadFlag];
+            [OnScreenControls.shared clearRightStickTouchPadFlag];
+        }
+        else LiSendControllerEvent(0, 0, 0, 0, 0, 0, 0);
     }
 }
 
@@ -617,11 +627,6 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    if(OnScreenControls.shared){
-        [OnScreenControls.shared clearLeftStickTouchPadFlag];
-        [OnScreenControls.shared clearRightStickTouchPadFlag];
-    }
-    else LiSendControllerEvent(0, 0, 0, 0, 0, 0, 0);
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
