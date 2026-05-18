@@ -63,9 +63,9 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>VoidLink uses the local network to connect to your gaming PC for streaming.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>VoidLink需要麦克风访问权限。现阶段，麦克风重定向仅支持Sunshine基地版，且麦克风音频流【未经加密】。
+	<string>麦克风访问权限允许VoidLink 实现麦克风重定向。麦克风重定向仅支持Sunshine基地版。
 
-VoidLink uses microphone to stream your voice to gaming PC. Microphone redirection currently works with Sunshine-Foundation (a fork of Sunshine) only, and the mic audio stream is NOT ENCRYPTED at this stage.</string>
+VoidLink uses microphone to stream your voice to PC host. Microphone redirection works with Sunshine-Foundation (a fork of Sunshine) only.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>VoidLink uses the device Gyro and Acceleration data to emulate motion controls when streaming.</string>
 	<key>UIApplicationSceneManifest</key>

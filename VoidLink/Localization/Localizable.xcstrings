@@ -8082,25 +8082,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Please grant microphone permission in your system settings, then re-enable “Redirect Mic.”\n\n- Currently, mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\nThis feature is experimental, and the microphone audio stream is NOT ENCRYPTED at this stage.\n"
+            "value" : "- Please grant microphone permission in your system settings, then re-enable “Redirect Mic.”\n\n- Mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\n\n- The mic audio will be encrypted during streaming"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 请前往系统设置授予 App 麦克风权限，再回到此菜单启用麦克风重定向。\n\n- 目前麦克风重定向仅支持 Sunshine 基地版，且为实验性功能。须注意，现阶段的 Mic 音频流 【未经加密】。"
+            "value" : "- 请前往系统设置授予 App 麦克风权限，再回到此菜单启用麦克风重定向。\n\n- 仅 Sunshine 基地版 支持麦克风重定风。\n\n- 麦克风音频在串流时将被加密传输。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。"
+            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 麥克風轉送僅支援 Sunshine 基地版。\n\n- 麥克風音訊在串流時將被加密傳輸。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。須注意，現階段的 Mic 音訊流【未經加密】。"
+            "value" : "- 請前往系統設定授予 App 麥克風權限，再回到此選單啟用麥克風轉送。\n\n- 麥克風轉送僅支援 Sunshine 基地版。\n\n- 麥克風音訊在串流時將被加密傳輸。"
           }
         }
       }
@@ -10799,25 +10799,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Currently, mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\n\n- This feature is experimental, and the microphone audio stream is NOT ENCRYPTED at this stage."
+            "value" : "- Mic redirection is only supported with Sunshine-Foundation (a Sunshine fork).\n\n- Mic audio will be encrypted during streaming"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "目前麦克风重定向仅支持 Sunshine 基地版，且为实验性功能。 \n须注意，现阶段的 Mic 音频流 【未经加密】。"
+            "value" : "- 仅 Sunshine 基地版 支持麦克风重定风。\n\n- 麦克风音频在串流时将被加密传输。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。\n須注意，現階段的 Mic 音訊流【未經加密】。"
+            "value" : "- 麥克風轉送僅支援 Sunshine 基地版。\n\n- 麥克風音訊在串流時將被加密傳輸。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "目前麥克風轉送僅支援 Sunshine 基地版，且為實驗性功能。\n須注意，現階段的 Mic 音訊流【未經加密】。"
+            "value" : "- 麥克風轉送僅支援 Sunshine 基地版。\n\n- 麥克風音訊在串流時將被加密傳輸。"
           }
         }
       }
@@ -10836,7 +10836,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fqd6l1kgt482on8a"
           }
         },

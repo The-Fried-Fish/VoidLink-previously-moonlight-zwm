@@ -4226,31 +4226,31 @@
       }
     },
     "nz2-5g-YSQ.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Redirect Mic (Experimental)\"; ObjectID = \"nz2-5g-YSQ\";",
+      "comment" : "Class = \"UILabel\"; text = \"Redirect Mic\"; ObjectID = \"nz2-5g-YSQ\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Redirect Mic (Experimental)"
+            "value" : "Redirect Mic"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麦克风重定向(实验性)"
+            "value" : "麦克风重定向"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麥克風轉送(實驗性)"
+            "value" : "麥克風轉送"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麥克風轉送(實驗性)"
+            "value" : "麥克風轉送"
           }
         }
       }
@@ -6661,13 +6661,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "被視窗捕獲"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "被視窗捕獲"
           }
         }

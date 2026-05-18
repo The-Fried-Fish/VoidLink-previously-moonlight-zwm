@@ -3843,31 +3843,31 @@
       }
     },
     "jaM-yS-ldb.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Redirect Mic (Experimental)\"; ObjectID = \"jaM-yS-ldb\";",
+      "comment" : "Class = \"UILabel\"; text = \"Redirect Mic\"; ObjectID = \"jaM-yS-ldb\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Redirect Mic (Experimental)"
+            "value" : "Redirect Mic"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麦克风重定向(实验性)"
+            "value" : "麦克风重定向"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麥克風轉送(實驗性)"
+            "value" : "麥克風轉送"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "麥克風轉送(實驗性)"
+            "value" : "麥克風轉送"
           }
         }
       }
