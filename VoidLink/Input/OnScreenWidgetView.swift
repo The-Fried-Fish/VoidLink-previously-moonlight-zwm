@@ -3673,7 +3673,7 @@ import ObjectiveC.runtime
                             }
                         }
                         if widget.hasNonEditableLabel {widget.setupAtrributedText()}
-                        if widget.widgetType == .touchPad, let deepestButton = OnScreenWidgetView.deepestButton {
+                        if !OnScreenWidgetView.editMode, widget.widgetType == .touchPad, let deepestButton = OnScreenWidgetView.deepestButton {
                             widget.superview?.insertSubview(widget, belowSubview: deepestButton)
                         }
                     })
