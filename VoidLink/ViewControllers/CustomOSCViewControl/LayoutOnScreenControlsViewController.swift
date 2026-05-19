@@ -1761,14 +1761,18 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         walkModeThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Walkmode threshold")
         walkModeThresholdStack.isHidden = true
         
+        let whiteAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.white]
+        
         sprintKeyThresholdSlider.addTarget(self, action: #selector(sprintKeyThresholdSliderMoved(_:)), for: .valueChanged)
         sprintKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold")
         sprintKeySelector.addTarget(self, action: #selector(sprintKeyActionChanged(_:)), for: .valueChanged)
+        sprintKeySelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         sprintKeyStack.isHidden = true
         
         walkKeyThresholdSlider.addTarget(self, action: #selector(walkKeyThresholdSliderMoved(_:)), for: .valueChanged)
         walkKeyThresholdLabel.text = LocalizationHelper.localizedString(forKey: "Slide threshold")
         walkKeySelector.addTarget(self, action: #selector(walkKeyActionChanged(_:)), for: .valueChanged)
+        walkKeySelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         walkKeyStack.isHidden = true
         
         minStickOffsetSlider.addTarget(self, action: #selector(minStickOffsetSliderMoved(_:)), for: .valueChanged)
@@ -1796,9 +1800,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         stickIndicatorOffsetLabel.text = LocalizationHelper.localizedString(forKey: "Indicator offset")
         stickIndicatorOffsetStack.isHidden = true
         
-        anchorModeSelector.addTarget(self, action: #selector(anchorModeChanged(_:)), for: .valueChanged)
-        anchorModeStack.isHidden = true
-        
         autoDockTimerSlider.addTarget(self, action: #selector(autoDockTimerSliderMoved(_:)), for: .valueChanged)
         autoDockTimerLabel.text = LocalizationHelper.localizedString(forKey: "Auto dock")
         autoDockTimerStack.isHidden = true;
@@ -1806,8 +1807,11 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         dockedAlphaSlider.addTarget(self, action: #selector(dockedAlphaSliderMoved(_:)), for: .valueChanged)
         dockedAlphaLabel.text = LocalizationHelper.localizedString(forKey: "Docked opacity")
         dockedAlphaStack.isHidden = true;
-
-        let whiteAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.white]
+        
+        anchorModeSelector.addTarget(self, action: #selector(anchorModeChanged(_:)), for: .valueChanged)
+        anchorModeSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
+        anchorModeStack.isHidden = true
+        
         mouseButtonDownSelector.addTarget(self, action: #selector(mouseDownButtonChanged(_:)), for: .valueChanged)
         mouseButtonDownSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         mouseDownButtonStack.isHidden = true
@@ -1819,11 +1823,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         buttonModeSelector.addTarget(self, action: #selector(buttonModeChanged(_:)), for: .valueChanged)
         buttonModeSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         buttonModeStack.isHidden = true
+        
         collectedWidgetsSelector.addTarget(self, action: #selector(collectionHiddenChanged(_:)), for: .valueChanged)
         collectedWidgetsSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         revealModeSelector.addTarget(self, action: #selector(revealModeChanged(_:)), for: .valueChanged)
         revealModeSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         collectedWidgetsStack.isHidden = true
+        
         bulkMoveSelector.addTarget(self, action: #selector(bulkMoveChanged(_:)), for: .valueChanged)
         bulkMoveSelector.setTitleTextAttributes(whiteAttrs, for: .normal)
         bulkMoveStack.isHidden = true
@@ -2405,16 +2411,20 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @objc private func anchorModeChanged(_ sender: UISegmentedControl) {
         if let selectedWidget {
             selectedWidget.touchPointAnchored = sender.selectedSegmentIndex == 1
-            componentSizeStack.isHidden = sender.selectedSegmentIndex != 0
-            stickIndicatorOffsetStack.isHidden = sender.selectedSegmentIndex != 1
-            stickIndicatorOffsetSlider.value = Float(selectedWidget.stickIndicatorOffset)
-            self.stickIndicatorOffsetSliderMoved(stickIndicatorOffsetSlider)
-            autoFitStack(self.widgetPanelStack)
+            
+            if selectedWidget.isDisplacementBasedStickPad {
+                componentSizeStack.isHidden = sender.selectedSegmentIndex != 0
+                stickIndicatorOffsetStack.isHidden = sender.selectedSegmentIndex != 1
+                stickIndicatorOffsetSlider.value = Float(selectedWidget.stickIndicatorOffset)
+                self.stickIndicatorOffsetSliderMoved(stickIndicatorOffsetSlider)
+            }
             
             if selectedWidget.isDirectionPad {
                 sensitivityXSlider.value = sender.selectedSegmentIndex == 0 ? 0.0 : 6.5
                 sensitivityXSliderMoved(sensitivityXSlider)
             }
+            
+            autoFitStack(self.widgetPanelStack)
         }
     }
 

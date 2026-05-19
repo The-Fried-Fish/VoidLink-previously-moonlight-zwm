@@ -361,6 +361,8 @@ import ObjectiveC.runtime
     @objc public var downIndicator = CAShapeLayer()
     @objc public var leftIndicator = CAShapeLayer()
     @objc public var rightIndicator = CAShapeLayer()
+    @objc public var sprintSign = CALayer()
+    @objc public var walkSign = CALayer()
     @objc public var walkKeyThresholdPreviewLayer = CAShapeLayer()
     @objc public var sprintKeyThresholdPreviewLayer = CAShapeLayer()
     
@@ -842,6 +844,8 @@ import ObjectiveC.runtime
         self.rightIndicator.borderColor = self.buttonDownVisualEffectLayer.borderColor
         self.walkKeyThresholdPreviewLayer.strokeColor = self.buttonDownVisualEffectLayer.borderColor
         self.sprintKeyThresholdPreviewLayer.strokeColor = self.buttonDownVisualEffectLayer.borderColor
+        GraphicUtils.changeColor(layer: self.sprintSign, color: standardHighlightColor.withAlphaComponent(highlightAlpha))
+        GraphicUtils.changeColor(layer: self.walkSign, color: standardHighlightColor.withAlphaComponent(highlightAlpha))
     }
 
     private func tweakAlpha(tweakBorderAlpha:Bool, tweakLabelAlpha:Bool = true){
@@ -1317,8 +1321,8 @@ import ObjectiveC.runtime
     private func setupLrudDirectionLayer(directionLayer:CAShapeLayer) {
         let indicatorFrame = CAShapeLayer();
         indicatorFrame.frame = CGRectMake(0, 0, 75*highlightSizeFactor, 75*highlightSizeFactor)
-        indicatorFrame.cornerRadius = 9 * highlightSizeFactor
-        directionLayer.borderWidth = 6 * min(1.0, highlightSizeFactor)
+        indicatorFrame.cornerRadius = 23 * highlightSizeFactor
+        directionLayer.borderWidth = 5.3 * min(1.0, highlightSizeFactor)
         directionLayer.frame = indicatorFrame.bounds.insetBy(dx: -directionLayer.borderWidth, dy: -directionLayer.borderWidth) // Adjust the inset as needed
         directionLayer.cornerRadius = indicatorFrame.cornerRadius + directionLayer.borderWidth
         directionLayer.backgroundColor = UIColor.clear.cgColor
@@ -1373,7 +1377,7 @@ import ObjectiveC.runtime
                         self.sendComboButtonsUpEvent(comboStrings: [self.comboButtonStrings[0]])
                     }
                 }
-                
+                self.sprintSign.isHidden = !isInSprintMode
                 if !directionPadTouchBegan, isInSprintMode, vibrationOn {
                     vibrationGenerator.prepare()
                     vibrationGenerator.impactOccurred()
@@ -1393,7 +1397,7 @@ import ObjectiveC.runtime
                         self.sendComboButtonsUpEvent(comboStrings: [self.comboButtonStrings[1]])
                     }
                 }
-                
+                self.walkSign.isHidden = !isInWalkMode
                 if !directionPadTouchBegan, isInWalkMode, vibrationOn {
                     vibrationGenerator.prepare()
                     vibrationGenerator.impactOccurred()
@@ -1670,6 +1674,7 @@ import ObjectiveC.runtime
         }
     }
     
+    
     @objc public func setupLrudDirectionIndicatorlayers() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -1702,6 +1707,26 @@ import ObjectiveC.runtime
             self.layer.addSublayer(self.stickWheelAxis)
             self.stickWheelAxis.isHidden = false
         }
+        
+        self.sprintSign.removeFromSuperlayer()
+        self.sprintSign = GraphicUtils.makeSVGLayer(from: "sprintSign", in: self.upIndicator, at:CGPoint(x: 0.5+0.028, y: 0.5-0.22), targetSize: CGSize(width: 26*highlightSizeFactor, height: 26*highlightSizeFactor))
+        GraphicUtils.changeColor(layer: self.sprintSign, color: standardHighlightColor)
+        self.upIndicator.addSublayer(self.sprintSign)
+        var frameInSelfLayer = self.upIndicator.convert(self.sprintSign.frame, to: self.layer)
+        self.sprintSign.removeFromSuperlayer()
+        self.layer.addSublayer(self.sprintSign)
+        self.sprintSign.frame = frameInSelfLayer
+        self.sprintSign.isHidden = !OnScreenWidgetView.editMode
+        
+        self.walkSign.removeFromSuperlayer()
+        self.walkSign = GraphicUtils.makeSVGLayer(from: "walkSign", in: self.upIndicator, at:CGPoint(x: 0.5+0.032, y: 0.5-0.22), targetSize: CGSize(width: 32*highlightSizeFactor, height: 32*highlightSizeFactor))
+        GraphicUtils.changeColor(layer: self.walkSign, color: standardHighlightColor)
+        self.upIndicator.addSublayer(self.walkSign)
+        frameInSelfLayer = self.upIndicator.convert(self.walkSign.frame, to: self.layer)
+        self.walkSign.removeFromSuperlayer()
+        self.layer.addSublayer(self.walkSign)
+        self.walkSign.frame = frameInSelfLayer
+        self.walkSign.isHidden = true
 
         setupMovementThresholdPreviewLayersIfNeeded()
         updateMovementThresholdPreview()
@@ -3027,6 +3052,8 @@ import ObjectiveC.runtime
                 self.leftIndicator.isHidden = true
                 self.rightIndicator.isHidden = true
                 self.anchorBall.isHidden = true
+                self.sprintSign.isHidden = true
+                self.walkSign.isHidden = true
             }
             
             if CommandManager.verticalTouchPads.contains(touchPadString){

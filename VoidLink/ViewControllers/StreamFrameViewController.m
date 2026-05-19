@@ -788,9 +788,9 @@
 }
 
 - (void)updateTheme {
-    self.view.backgroundColor = ThemeManager.menuBackgroundColor;
-    _stageLabel.textColor = [ThemeManager.textColor colorWithAlphaComponent:0.9];
-    _spinner.color = ThemeManager.textColor;
+    self.view.backgroundColor = UIColor.blackColor;
+    _stageLabel.textColor = [UIColor.whiteColor colorWithAlphaComponent:0.9];
+    _spinner.color = UIColor.whiteColor;
 }
 
 - (void)viewDidLoad
@@ -817,6 +817,7 @@
     _stageLabel.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2);
     
     _spinner = [[UIActivityIndicatorView alloc] init];
+    _spinner.color = UIColor.whiteColor;
     [_spinner setUserInteractionEnabled:NO];
 #if TARGET_OS_TV
     [_spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -967,6 +968,12 @@
     _mainFrameViewcontroller.sessionLaunchedWithAbsoluteTouch = _settings.touchMode.intValue == AbsoluteTouch;
     
     OnScreenWidgetView.gamepadArrivalReported = false;
+    
+    OnScreenWidgetView.enableFolderAnimation = false;
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        OnScreenWidgetView.enableFolderAnimation = true;
+    });
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
