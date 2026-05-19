@@ -302,8 +302,8 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         OnScreenWidgetView.editMode = true
         selectedWidget = nil
         widgetPanelStoredCenter = widgetPanelStack.center
-        profileRefresh()
         setupWidgetPanel()
+        profileRefresh()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
