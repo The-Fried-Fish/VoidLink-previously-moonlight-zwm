@@ -632,14 +632,14 @@ import ObjectiveC.runtime
             self.sensitivityYMax = 16.0
         }
 
-        self.hasYawFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == MapGyroTo.mapGyroToMouse || oscProfile.yawPitchToRightStick)
+        self.hasYawFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == .mapGyroToMouse || oscProfile.yawPitchToRightStick)
         self.hasPitchFactor = self.hasYawFactor
         self.yawFactorMin = 0
         self.yawFactorMax = 1.0
         self.pitchFactorMin = 0
         self.pitchFactorMax = 1.0
         
-        self.hasRollFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick && oscProfile.rollToLeftStick)
+        self.hasRollFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == .mapGyroToControllerStick && oscProfile.rollToLeftStick)
         
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
@@ -1808,7 +1808,7 @@ import ObjectiveC.runtime
         let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
         let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
         
-        let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+        let mixRightStickInputToGyro = (oscProfile.mapGyroTo == .mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
         if !mixRightStickInputToGyro || (self.motionHandler?.gyroMixInputStarted() != true) {
             
@@ -1816,13 +1816,14 @@ import ObjectiveC.runtime
             self.onScreenControls?.sendRightStickTouchPadEvent(stickOffsetVector.dx, stickOffsetVector.dy)
         }
         self.motionHandler?.mixOnScreenRightStickAndGyroInput(x: targetX, y: targetY)
+        if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
     }
     
     private func sendLeftStickTouchPadEvent(weightedTouchX:CGFloat, weightedTouchY:CGFloat, circulate:Bool=false){
         let targetX = self.weightedTouchInputToStickOffset(input: weightedTouchX)
         let targetY = -self.weightedTouchInputToStickOffset(input: weightedTouchY)
         
-        let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+        let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == .mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
         if !mixLeftStickInputToGyro || (self.motionHandler?.gyroMixInputStarted() != true) {
             
@@ -1830,6 +1831,7 @@ import ObjectiveC.runtime
             self.onScreenControls?.sendLeftStickTouchPadEvent(stickOffsetVector.dx, stickOffsetVector.dy)
         }
         self.motionHandler?.mixOnScreenLeftStickAndGyroInput(x: targetX, y: targetY)
+        if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
     }
      
     private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
@@ -1872,6 +1874,7 @@ import ObjectiveC.runtime
             for comboString in comboStrings {
                 if CommandManager.oscButtonMappings.keys.contains(comboString) {
                     self.sendOscButtonDownEvent(oscString: comboString)
+                    if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
                 }
                 if CommandManager.keyboardButtonMappings.keys.contains(comboString) {
                     LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[comboString]!,Int8(KEY_ACTION_DOWN), 0)
@@ -2642,8 +2645,10 @@ import ObjectiveC.runtime
         switch self.motionControlButtonString {
         case "GYRO":
             self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
+            if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
         case "GYROPAUSE":
             self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput:false)
+            if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
             break
         case "ACCEL":
             break
@@ -2835,7 +2840,7 @@ import ObjectiveC.runtime
     
     private func clearRightStickTouchPadFlag(){
         if !hasInertia {stickOffsetVector = .zero}
-        let mixRightStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+        let mixRightStickInputToGyro = (oscProfile.mapGyroTo == .mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
         if !mixRightStickInputToGyro || self.motionHandler?.gyroMixInputStarted() != true {
             self.onScreenControls?.clearRightStickTouchPadFlag()
@@ -2845,7 +2850,7 @@ import ObjectiveC.runtime
     
     private func clearLeftStickTouchPadFlag(){
         if !hasInertia {stickOffsetVector = .zero}
-        let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == MapGyroTo.mapGyroToControllerStick
+        let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == .mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
         if !mixLeftStickInputToGyro || self.motionHandler?.gyroMixInputStarted() != true {
             self.onScreenControls?.clearLeftStickTouchPadFlag()
@@ -3806,6 +3811,7 @@ import ObjectiveC.runtime
         return OnScreenWidgetView.mapping.keys.max() ?? -1
     }
 
+    @objc static var gamepadArrivalReported: Bool = false
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         OnScreenWidgetView.installAutoDockIfNeeded()
@@ -3817,14 +3823,14 @@ import ObjectiveC.runtime
             label.alpha = 1
             autoDockRestoreOriginalAlpha()
             if self.motionControlButtonString == "GYRO" {
-                self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput: true)
+                if OnScreenWidgetView.gamepadArrivalReported {self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput: true)}
                 self.motionHandler?.gyroStarter = nil
             }
             if self.motionControlButtonString == "ACCEL" {}
             if self.motionControlButtonString == "MOTION" {}
             
             if self.widgetType == WidgetTypeEnum.button && !OnScreenWidgetView.editMode {
-                self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)
+                if OnScreenWidgetView.gamepadArrivalReported {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
                 self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
             }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
@@ -3843,8 +3849,10 @@ import ObjectiveC.runtime
             stickWheelLayer.removeFromSuperlayer()
             stickWheelLayerSmall.removeFromSuperlayer()
             self.inertialScroller.timer?.clean()
-            self.clearLeftStickTouchPadFlag()
-            self.clearRightStickTouchPadFlag()
+            if OnScreenWidgetView.gamepadArrivalReported {
+                self.clearLeftStickTouchPadFlag()
+                self.clearRightStickTouchPadFlag()
+            }
             self.autoTapTimer?.clean()
             self.onScreenControls = nil
         }

@@ -811,7 +811,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
 
     private func refreshPanelForSelectedWidget(_ widgetView: OnScreenWidgetView) {
         // hideStickIndicators()
-        clearSickInput()
+        if OnScreenWidgetView.gamepadArrivalReported {clearSickInput()}
         enableCommonWidgetTools()
         widgetViewSelected = true
         controllerLayerSelected = false

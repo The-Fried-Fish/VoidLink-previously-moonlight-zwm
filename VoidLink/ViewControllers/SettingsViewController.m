@@ -489,7 +489,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         if(PencilHandler.shared) [PencilHandler.shared setupPressureLUTWithProfile:oscProfile];
     }
     
-    if(!leftStickMinOffsetSliderNotMoved || !rightStickMinOffsetSliderNotMoved){
+    if(!leftStickMinOffsetSliderNotMoved || !rightStickMinOffsetSliderNotMoved || OnScreenWidgetView.gamepadArrivalReported){
         if(OnScreenControls.shared){
             [OnScreenControls.shared clearLeftStickTouchPadFlag];
             [OnScreenControls.shared clearRightStickTouchPadFlag];
@@ -2972,18 +2972,21 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self findDynamicLabelFromStack:_gyroToStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
     if(settingsViewJustExpanded) return;
     LiSendControllerEvent(0, 0, 0, _rollToLeftStickSwitch.isOn?sender.value:0, 0, _yawPitchToRightStickSwitch.isOn?sender.value:0, 0);
+    OnScreenWidgetView.gamepadArrivalReported = true;
 }
 
 - (void)leftStickMinOffsetSliderMoved:(UISlider* )sender{
     [self findDynamicLabelFromStack:_leftStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
     if(settingsViewJustExpanded) return;
     LiSendControllerEvent(0, 0, 0, sender.value, 0, 0, 0);
+    OnScreenWidgetView.gamepadArrivalReported = true;
 }
 
 - (void)rightStickMinOffsetSliderMoved:(UISlider* )sender{
     [self findDynamicLabelFromStack:_rightStickMinOffsetStack].text = [NSString stringWithFormat:@"  %d  ", (int16_t)sender.value];
     if(settingsViewJustExpanded) return;
     LiSendControllerEvent(0, 0, 0, 0, 0, sender.value, 0);
+    OnScreenWidgetView.gamepadArrivalReported = true;
 }
 
 - (void)invokeOscLayout{

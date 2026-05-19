@@ -965,6 +965,8 @@
     }
     
     _mainFrameViewcontroller.sessionLaunchedWithAbsoluteTouch = _settings.touchMode.intValue == AbsoluteTouch;
+    
+    OnScreenWidgetView.gamepadArrivalReported = false;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
