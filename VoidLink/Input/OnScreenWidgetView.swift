@@ -236,13 +236,13 @@ import ObjectiveC.runtime
     @objc public var slideThresholdMin: CGFloat = 0
     @objc public var slideThresholdMax: CGFloat = 20
     @objc public var hasYawFactor: Bool = false
-    @objc public var yawFactorMin: CGFloat = 0
+    @objc public var yawFactorMin: CGFloat = -1
     @objc public var yawFactorMax: CGFloat = 1
     @objc public var hasPitchFactor: Bool = false
-    @objc public var pitchFactorMin: CGFloat = 0
+    @objc public var pitchFactorMin: CGFloat = -1
     @objc public var pitchFactorMax: CGFloat = 1
     @objc public var hasRollFactor: Bool = false
-    @objc public var rollFactorMin: CGFloat = 0
+    @objc public var rollFactorMin: CGFloat = -1
     @objc public var rollFactorMax: CGFloat = 1
 
     @objc public var hasAutoTap: Bool = false
@@ -634,12 +634,14 @@ import ObjectiveC.runtime
 
         self.hasYawFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == .mapGyroToMouse || oscProfile.yawPitchToRightStick)
         self.hasPitchFactor = self.hasYawFactor
-        self.yawFactorMin = 0
+        self.yawFactorMin = -1.0
         self.yawFactorMax = 1.0
-        self.pitchFactorMin = 0
+        self.pitchFactorMin = -1.0
         self.pitchFactorMax = 1.0
         
         self.hasRollFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == .mapGyroToControllerStick && oscProfile.rollToLeftStick)
+        self.rollFactorMin = -1.0
+        self.rollFactorMax = 1.0
         
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
