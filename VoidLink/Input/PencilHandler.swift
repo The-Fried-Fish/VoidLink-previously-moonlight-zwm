@@ -437,9 +437,7 @@ import UIKit
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "eraser"
             pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "Select eraser shortcut keys")
-            let nav = UINavigationController(rootViewController: pickerViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            viewController.present(nav, animated: true)
+            pickerViewController.presentOverFullScreen(from: viewController)
             return
         }
 
@@ -489,9 +487,7 @@ import UIKit
         pickerViewController.initialTabIdentifier = "keyboard"
         pickerViewController.shortcutIdentifier = "brush"
         pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "Select brush shortcut keys")
-        let nav = UINavigationController(rootViewController: pickerViewController)
-        nav.modalPresentationStyle = .overFullScreen
-        viewController.present(nav, animated: true)
+        pickerViewController.presentOverFullScreen(from: viewController)
         return
         
         /*
@@ -551,9 +547,7 @@ import UIKit
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "squeezePress"
             pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
-            let nav = UINavigationController(rootViewController: pickerViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            viewController.present(nav, animated: true)
+            pickerViewController.presentOverFullScreen(from: viewController)
         }
         /*
         let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
@@ -604,9 +598,7 @@ import UIKit
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "squeezeRelease"
             pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")
-            let nav = UINavigationController(rootViewController: pickerViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            viewController.present(nav, animated: true)
+            pickerViewController.presentOverFullScreen(from: viewController)
         }
         
         /*

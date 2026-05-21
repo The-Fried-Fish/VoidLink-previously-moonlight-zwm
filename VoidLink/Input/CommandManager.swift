@@ -531,7 +531,7 @@ import UIKit
         }
         
         for (index, key) in validKeyStrings.enumerated() {
-            print("Valid Key \(index): \(key)")
+            // print("Valid Key \(index): \(key)")
         }
         
         return validKeyStrings
@@ -540,56 +540,72 @@ import UIKit
     
     //super combo key button strings
     @objc public func extractCmdStrings(from input: String) -> [String]? {
-        let input = input.uppercased()
-        let combinedStrings =  [CommandManager.keyboardButtonMappings.keys.map { $0 as String },
-                                CommandManager.oscButtonMappings.keys.map { $0 as String },
-                                CommandManager.mouseButtonMappings.keys.map { $0 as String },
-                                CommandManager.functionalButtonCmds.map { $0 as String },
-                                CommandManager.motionControlButtonCmds.map { $0 as String },
-                                CommandManager.touchPadCmds.map { $0 as String }
-                                ]
-                                .lazy
-                                .flatMap { $0 }  // 三维展开
-                                .map(String.init(describing:)) // 安全类型转换
-        
-        let keys = combinedStrings.joined(separator: "|")
-        let pattern = "^(?:\(keys))(?:-(?:\(keys)))*(?:-\\d+MS)?$"
-
-        
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
-            print("Failed to create regex")
-            return nil
-        }
-        let range = NSRange(location: 0, length: input.utf16.count)
-        guard let match = regex.firstMatch(in: input, options: [], range: range) else {
-            print("No match found for input: \(input)")
-            return nil
-        }
-        // print("Regex matched for input: \(input)")
-        
-        let matchedString = (input as NSString).substring(with: match.range(at: 0))
-        let cmdStrings = matchedString.split(separator: "-").map { String($0) }
-        
-        guard !cmdStrings.isEmpty else {
-            print("No key strings found in the matched string")
-            return nil
-        }
-        
         var validCmdStrings: [String] = []
-        
-        for key in cmdStrings {
-            validCmdStrings.append(key)
+
+        if GenericUtils.isGUIWidgetPickerAvailable {
+            let cmdStrings = input
+                .split(separator: "-")
+                .map { String($0) }
+
+            guard !cmdStrings.isEmpty else {
+                print("No key strings found in the input string")
+                return nil
+            }
+
+            for key in cmdStrings {
+                validCmdStrings.append(key)
+            }
         }
-       
-        if validCmdStrings.isEmpty {
-            print("No valid key strings found in the matched string")
-            return nil
+        else {
+            let input = input.uppercased()
+            let combinedStrings =  [CommandManager.keyboardButtonMappings.keys.map { $0 as String },
+                                    CommandManager.oscButtonMappings.keys.map { $0 as String },
+                                    CommandManager.mouseButtonMappings.keys.map { $0 as String },
+                                    CommandManager.functionalButtonCmds.map { $0 as String },
+                                    CommandManager.motionControlButtonCmds.map { $0 as String },
+                                    CommandManager.touchPadCmds.map { $0 as String }
+            ]
+                .lazy
+                .flatMap { $0 }  // 三维展开
+                .map(String.init(describing:)) // 安全类型转换
+            
+            let keys = combinedStrings.joined(separator: "|")
+            let pattern = "^(?:\(keys))(?:-(?:\(keys)))*(?:-\\d+MS)?$"
+            
+            
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+                print("Failed to create regex")
+                return nil
+            }
+            let range = NSRange(location: 0, length: input.utf16.count)
+            guard let match = regex.firstMatch(in: input, options: [], range: range) else {
+                print("No match found for input: \(input)")
+                return nil
+            }
+            // print("Regex matched for input: \(input)")
+            
+            let matchedString = (input as NSString).substring(with: match.range(at: 0))
+            let cmdStrings = matchedString.split(separator: "-").map { String($0) }
+            
+            guard !cmdStrings.isEmpty else {
+                print("No key strings found in the matched string")
+                return nil
+            }
+            
+            for key in cmdStrings {
+                validCmdStrings.append(key)
+            }
+            
+            if validCmdStrings.isEmpty {
+                print("No valid key strings found in the matched string")
+                return nil
+            }
+            
         }
         
         for (index, key) in validCmdStrings.enumerated() {
             print("Valid Key \(index): \(key)")
         }
-        
         return validCmdStrings
     }
 

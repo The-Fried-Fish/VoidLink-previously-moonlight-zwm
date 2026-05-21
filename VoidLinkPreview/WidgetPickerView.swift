@@ -10,6 +10,18 @@ import SwiftUI
 import UIKit
 
 @available(iOS 13.0, *)
+private extension View {
+    @ViewBuilder
+    func widgetPickerIgnoreKeyboardSafeAreaWhenAvailable() -> some View {
+        if #available(iOS 14.0, *) {
+            ignoresSafeArea(.keyboard, edges: .bottom)
+        } else {
+            self
+        }
+    }
+}
+
+@available(iOS 13.0, *)
 final class WidgetPickerPresentationState: ObservableObject {
     @Published var hasHostAppeared = false
 }
@@ -63,6 +75,7 @@ enum WidgetPoolSource: Equatable {
     case gamepad
     case keyboard
     case functional
+    case interval
 }
 
 @available(iOS 13.0, *)
@@ -72,6 +85,7 @@ enum WidgetPoolVisualKind: Equatable {
     case keyboardButton
     case keyboardPad
     case functionalButton
+    case triggerInterval
 }
 
 @available(iOS 13.0, *)
@@ -84,22 +98,28 @@ struct WidgetPoolItem: Identifiable {
     let displayText: String?
 
     var displayCmd: String {
+        if let displayText, !displayText.isEmpty {
+            return displayText
+        }
         switch source {
         case .gamepad:
-            if cmd.hasPrefix("OSC") {
-                return String(cmd.dropFirst(3))
+            let baseCommand = WidgetPickerView.selectionIdentifier(for: cmd)
+            if baseCommand.hasPrefix("OSC") {
+                return String(baseCommand.dropFirst(3))
             }
-            return cmd
+            return baseCommand
         case .keyboard:
             return displayText ?? cmd
         case .functional:
             return cmd
+        case .interval:
+            return WidgetPickerView.intervalDisplayText(for: cmd)
         }
     }
 
     var span: Int {
         switch visualKind {
-        case .gamepadButton, .keyboardButton, .functionalButton:
+        case .gamepadButton, .keyboardButton, .functionalButton, .triggerInterval:
             return 1
         case .gamepadPad, .keyboardPad:
             return 2
@@ -167,6 +187,43 @@ enum WidgetCreateComboMode: String, CaseIterable, Identifiable {
             return LocalizationHelper.localizedString(forKey: "Skill combo")
         case .shortcut:
             return LocalizationHelper.localizedString(forKey: "Shortcut combo")
+        }
+    }
+}
+
+@available(iOS 13.0, *)
+private enum WidgetButtonMacroMode: Int, CaseIterable, Identifiable {
+    case holdUntilRelease = 0
+    case timedRelease = 1
+    case tap = 2
+
+    var id: Int { rawValue }
+
+    var title: String {
+        switch self {
+        case .holdUntilRelease:
+            return LocalizationHelper.localizedString(forKey: "Hold until release")
+        case .timedRelease:
+            return LocalizationHelper.localizedString(forKey: "Timed release")
+        case .tap:
+            return LocalizationHelper.localizedString(forKey: "Tap")
+        }
+    }
+}
+
+@available(iOS 13.0, *)
+private enum TriggerIntervalEditMode: Int, CaseIterable, Identifiable {
+    case all = 0
+    case individual = 1
+
+    var id: Int { rawValue }
+
+    var title: String {
+        switch self {
+        case .all:
+            return LocalizationHelper.localizedString(forKey: "Set all")
+        case .individual:
+            return LocalizationHelper.localizedString(forKey: "Set this")
         }
     }
 }
@@ -263,6 +320,7 @@ private struct InteractiveTextField: UIViewRepresentable {
 
     let placeholder: String
     @Binding var text: String
+    var isEnabled: Bool = true
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -295,6 +353,13 @@ private struct InteractiveTextField: UIViewRepresentable {
         if uiView.placeholder != placeholder {
             uiView.placeholder = placeholder
         }
+        if uiView.isEnabled != isEnabled {
+            DispatchQueue.main.async {
+                uiView.isEnabled = isEnabled
+                uiView.isUserInteractionEnabled = isEnabled
+            }
+        }
+        uiView.alpha = isEnabled ? 1.0 : 0.45
     }
 }
 
@@ -385,6 +450,11 @@ struct WidgetPickerView: View {
     }
 
     private let maxPoolSlots = 16
+    private let buttonMacroMinimumDuration: Double = 30
+    private let buttonMacroTimedMinimumDuration: Double = 50
+    private let buttonMacroMaximumDuration: Double = 2000
+    private let triggerIntervalMinimumDuration: Double = 0
+    private let triggerIntervalMaximumDuration: Double = 3000
     private let isEditMode: Bool
     private let initialCmdString: String?
     private let initialButtonLabel: String?
@@ -423,6 +493,18 @@ struct WidgetPickerView: View {
     @SwiftUI.State private var pendingSubmissionAction: WidgetPickerSubmissionAction = .create
     @SwiftUI.State private var didApplyInitialConfiguration: Bool = false
     @SwiftUI.State private var selectionSyncToken: Int = 0
+    @SwiftUI.State private var showButtonMacroSheet = false
+    @SwiftUI.State private var editingButtonMacroItemID: UUID? = nil
+    @SwiftUI.State private var buttonMacroMode: WidgetButtonMacroMode = .holdUntilRelease
+    @SwiftUI.State private var buttonMacroDuration: Double = 2000
+    @SwiftUI.State private var buttonMacroManualDurationText: String = ""
+    @SwiftUI.State private var showTriggerIntervalSheet = false
+    @SwiftUI.State private var editingTriggerIntervalItemID: UUID? = nil
+    @SwiftUI.State private var triggerIntervalEditMode: TriggerIntervalEditMode = .all
+    @SwiftUI.State private var triggerIntervalEditorValue: Double = 0
+    @SwiftUI.State private var triggerIntervalManualValueText: String = ""
+    @SwiftUI.State private var suppressKeyboardDrivenLayoutAnimation = false
+    @SwiftUI.State private var poolGridInteractionResetToken: Int = 0
 
     private static func restoredTab(from availableTabs: [WidgetPickerTab]) -> WidgetPickerTab {
         if let persistedIdentifier = UserDefaults.standard.string(forKey: lastSelectedTabDefaultsKey),
@@ -633,8 +715,8 @@ struct WidgetPickerView: View {
             label: LocalizationHelper.localizedString(forKey: "Eraser shortcut"),
             cmd: "ERASER",
             tip: LocalizationHelper.localizedString(forKey: "Combine this with a eraser keyboard shortcut for PC software"),
-            allowsKeyboardCombination: false,
-            allowsGamepadCombination: false,
+            allowsKeyboardCombination: true,
+            allowsGamepadCombination: true,
             allowsSkillCombo: false,
             allowsShortcutCombo: true,
             forcedComboMode: .shortcut
@@ -720,7 +802,10 @@ struct WidgetPickerView: View {
     }
 
     private var selectedMovementPadCommand: String? {
-        poolItems.first(where: { $0.cmd == "WASDPAD" || $0.cmd == "ARROWPAD" })?.cmd
+        poolItems.first(where: {
+            let command = Self.selectionIdentifier(for: $0.cmd)
+            return command == "WASDPAD" || command == "ARROWPAD"
+        })?.cmd
     }
 
     private var movementPadSingleButtonCount: Int {
@@ -756,97 +841,156 @@ struct WidgetPickerView: View {
         } else if let selectedFunctionalButtonOption {
             setTipMessage(selectedFunctionalButtonOption.tip)
         } else if hasAnySingleItem || hasMultipleButtonItemsOnly {
-            setTipMessage(LocalizationHelper.localizedString(forKey: "You can continue adding controls to this combination"))
+            setTipMessage(
+                LocalizationHelper.localizedString(
+                    forKey: "Continue adding controls to this combination, or tap button in the pool to set macro."
+                )
+            )
         } else {
             resetTipMessage()
         }
     }
 
+    private var pickerMetrics: WidgetPickerMetrics {
+        WidgetPickerMetrics.make(for: UIDevice.current.userInterfaceIdiom == .phone)
+    }
+
     var body: some View {
-        GeometryReader { proxy in
-            let metrics = WidgetPickerMetrics.make(for: UIDevice.current.userInterfaceIdiom == .phone)
-            let usesVerticalLayout = proxy.size.height > proxy.size.width
-            let isPadPortrait = !metrics.isPhone && usesVerticalLayout
-            let isPhonePortrait = metrics.isPhone && usesVerticalLayout
-            let verticalOuterPadding = isPhonePortrait ? metrics.outerPadding * 0.5 : metrics.outerPadding
-            let reclaimedBottomSafeArea = isPhonePortrait ? proxy.safeAreaInsets.bottom : 0
-            let leftWidth = max(metrics.isPhone ? 0 : 420, proxy.size.width * metrics.leftWidthRatio)
-            let rightWidth = max(
-                metrics.rightPanelMinWidth,
-                proxy.size.width - leftWidth - metrics.panelSpacing - metrics.outerPadding * 2
-            )
-            let sharedVerticalAvailableHeight = proxy.size.height - metrics.panelSpacing - verticalOuterPadding * 2
-            let poolVerticalBonusHeight = isPhonePortrait ? 16.0 : 20.0
-            let sharedVerticalHeight = max(220, sharedVerticalAvailableHeight * 0.5)
-            let verticalPoolHeight = max(220, sharedVerticalHeight + poolVerticalBonusHeight)
-            let verticalPickerHeight = max(220, sharedVerticalAvailableHeight - verticalPoolHeight)
-            let bottomStackPadding = isPhonePortrait ? (verticalOuterPadding - reclaimedBottomSafeArea) : verticalOuterPadding
+        ZStack {
+            mainPickerBackdropAndContent
 
-            ZStack {
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(red: 0.95, green: 0.97, blue: 1.0),
-                        Color(red: 0.84, green: 0.92, blue: 0.94)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .edgesIgnoringSafeArea(.all)
-
-                RoundedRectangle(cornerRadius: metrics.blurCornerRadius, style: .continuous)
-                    .fill(Color.white.opacity(0.30))
-                    .blur(radius: 40)
-                    .padding(metrics.blurPadding)
-
-                Group {
-                    if usesVerticalLayout {
-                        VStack(alignment: .leading, spacing: metrics.panelSpacing) {
-                            widgetPoolPanel(metrics: metrics, isPadPortrait: isPadPortrait)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: verticalPoolHeight)
-
-                            widgetPickerPanel(metrics: metrics, isPadPortrait: isPadPortrait)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: verticalPickerHeight)
-                        }
-                    } else {
-                        HStack(alignment: .top, spacing: metrics.panelSpacing) {
-                            widgetPoolPanel(metrics: metrics, isPadPortrait: isPadPortrait)
-                                .frame(width: rightWidth)
-
-                            widgetPickerPanel(metrics: metrics, isPadPortrait: isPadPortrait)
-                                .frame(width: leftWidth)
-                        }
+            if showGyroPicker {
+                GyroButtonPickerOverlay(
+                    options: gyroOptions,
+                    onSelect: { option in
+                        selectGyroOption(option)
+                    },
+                    onCancel: {
+                        showGyroPicker = false
                     }
-                }
-                .allowsHitTesting(!showGyroPicker && !showCreateWidgetSheet)
-                .padding(.top, verticalOuterPadding)
-                .padding(.leading, metrics.outerPadding)
-                .padding(.trailing, metrics.outerPadding)
-                .padding(.bottom, bottomStackPadding)
-                .edgesIgnoringSafeArea(.bottom)
+                )
+                .zIndex(999)
+            }
 
-                if showGyroPicker {
-                    GyroButtonPickerOverlay(
-                        options: gyroOptions,
-                        onSelect: { option in
-                            selectGyroOption(option)
-                        },
-                        onCancel: {
-                            showGyroPicker = false
-                        }
-                    )
-                    .zIndex(999)
-                }
+            if showCreateWidgetSheet {
+                createWidgetSheet
+                    .zIndex(1000)
+            }
 
-                if showCreateWidgetSheet {
-                    createWidgetSheet
-                        .zIndex(1000)
-                }
+            if showButtonMacroSheet {
+                buttonMacroSheet
+                    .zIndex(1001)
+            }
+
+            if showTriggerIntervalSheet {
+                triggerIntervalSheet
+                    .zIndex(1002)
             }
         }
+        .transaction { transaction in
+            if suppressKeyboardDrivenLayoutAnimation {
+                transaction.animation = nil
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { notification in
+            guard showCreateWidgetSheet || showButtonMacroSheet || showTriggerIntervalSheet else { return }
+            suppressKeyboardDrivenLayoutAnimation = true
+            resetKeyboardAnimationSuppression(using: notification)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { notification in
+            guard showCreateWidgetSheet || showButtonMacroSheet || showTriggerIntervalSheet else { return }
+            suppressKeyboardDrivenLayoutAnimation = true
+            resetKeyboardAnimationSuppression(using: notification)
+        }
         .onAppear {
+            UISegmentedControl.appearance().apportionsSegmentWidthsByContent = true
             applyInitialConfigurationIfNeeded()
+        }
+        .onDisappear {
+            UISegmentedControl.appearance().apportionsSegmentWidthsByContent = false
+        }
+    }
+
+    private var mainPickerBackdropAndContent: some View {
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.95, green: 0.97, blue: 1.0),
+                    Color(red: 0.84, green: 0.92, blue: 0.94)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+
+            RoundedRectangle(cornerRadius: pickerMetrics.blurCornerRadius, style: .continuous)
+                .fill(Color.white.opacity(0.30))
+                .blur(radius: 40)
+                .padding(pickerMetrics.blurPadding)
+
+            GeometryReader { contentProxy in
+                let usesVerticalLayout = contentProxy.size.height > contentProxy.size.width
+                let isPadPortrait = !pickerMetrics.isPhone && usesVerticalLayout
+                let isPhonePortrait = pickerMetrics.isPhone && usesVerticalLayout
+                let verticalOuterPadding = isPhonePortrait ? pickerMetrics.outerPadding * 0.5 : pickerMetrics.outerPadding
+                let reclaimedBottomSafeArea = isPhonePortrait ? contentProxy.safeAreaInsets.bottom : 0
+                let centeredContentTopInset = pickerMetrics.isPhone ? 0 : contentProxy.safeAreaInsets.top
+                let centeredContentBottomInset = pickerMetrics.isPhone ? 0 : contentProxy.safeAreaInsets.bottom
+                let leftWidth = max(pickerMetrics.isPhone ? 0 : 420, contentProxy.size.width * pickerMetrics.leftWidthRatio)
+                let rightWidth = max(
+                    pickerMetrics.rightPanelMinWidth,
+                    contentProxy.size.width - leftWidth - pickerMetrics.panelSpacing - pickerMetrics.outerPadding * 2
+                )
+                let centeredContentHeight = max(
+                    contentProxy.size.height - centeredContentTopInset - centeredContentBottomInset,
+                    0
+                )
+                let sharedVerticalAvailableHeight = centeredContentHeight - pickerMetrics.panelSpacing - verticalOuterPadding * 2
+                let poolVerticalBonusHeight = isPhonePortrait ? 16.0 : 20.0
+                let sharedVerticalHeight = max(220, sharedVerticalAvailableHeight * 0.5)
+                let verticalPoolHeight = max(220, sharedVerticalHeight + poolVerticalBonusHeight)
+                let verticalPickerHeight = max(220, sharedVerticalAvailableHeight - verticalPoolHeight)
+                let bottomStackPadding = isPhonePortrait ? (verticalOuterPadding - reclaimedBottomSafeArea) : verticalOuterPadding
+
+                VStack {
+                    Group {
+                        if usesVerticalLayout {
+                            VStack(alignment: .leading, spacing: pickerMetrics.panelSpacing) {
+                                widgetPoolPanel(metrics: pickerMetrics, isPadPortrait: isPadPortrait)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: verticalPoolHeight)
+
+                                widgetPickerPanel(metrics: pickerMetrics, isPadPortrait: isPadPortrait)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: verticalPickerHeight)
+                            }
+                        } else {
+                            HStack(alignment: .top, spacing: pickerMetrics.panelSpacing) {
+                                widgetPoolPanel(metrics: pickerMetrics, isPadPortrait: isPadPortrait)
+                                    .frame(width: rightWidth)
+
+                                widgetPickerPanel(metrics: pickerMetrics, isPadPortrait: isPadPortrait)
+                                    .frame(width: leftWidth)
+                            }
+                        }
+                    }
+                    .allowsHitTesting(!showGyroPicker && !showCreateWidgetSheet && !showButtonMacroSheet && !showTriggerIntervalSheet)
+                    .padding(.top, verticalOuterPadding)
+                    .padding(.leading, pickerMetrics.outerPadding)
+                    .padding(.trailing, pickerMetrics.outerPadding)
+                    .padding(.bottom, bottomStackPadding)
+                    .frame(maxWidth: .infinity, maxHeight: centeredContentHeight, alignment: .center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+        }
+        .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
+    }
+
+    private func resetKeyboardAnimationSuppression(using notification: Notification) {
+        let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.35
+        DispatchQueue.main.asyncAfter(deadline: .now() + max(duration, 0.05)) {
+            suppressKeyboardDrivenLayoutAnimation = false
         }
     }
 
@@ -881,23 +1025,26 @@ struct WidgetPickerView: View {
                 ZStack {
                     pickerSurface(metrics: metrics)
 
-                    switch selectedTab {
-                    case .gamepad:
-                        AbstractGamepadView(
-                            gamepadType: selectedGamepadType,
-                            metricsProfile: .picker,
-                            canSelectCommand: { canSelectCommand($0, source: .gamepad) },
-                            isCommandSelected: { selectedCmds.contains($0) },
-                            onCommandSelected: { appendCommand($0, source: .gamepad) },
-                            onCommandDeselected: { removeCommand($0, source: .gamepad) },
-                            resetToken: resetToken,
-                            selectionSyncToken: selectionSyncToken,
-                            externalDeselectionCommand: gamepadDeselectionCommand,
-                            externalDeselectionToken: gamepadDeselectionToken
-                        )
-                        .padding(.horizontal, pickerInsetGamepadHorizontal)
-                        .padding(.vertical, pickerInsetGamepadVertical)
-                    case .keyboard:
+                    AbstractGamepadView(
+                        gamepadType: selectedGamepadType,
+                        metricsProfile: .picker,
+                        canSelectCommand: { canSelectCommand($0, source: .gamepad) },
+                        isCommandSelected: { selectedCmds.contains($0) },
+                        onCommandSelected: { appendCommand($0, source: .gamepad) },
+                        onCommandDeselected: { removeCommand($0, source: .gamepad) },
+                        resetToken: resetToken,
+                        selectionSyncToken: selectionSyncToken,
+                        externalDeselectionCommand: gamepadDeselectionCommand,
+                        externalDeselectionToken: gamepadDeselectionToken
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.horizontal, pickerInsetGamepadHorizontal)
+                    .padding(.vertical, pickerInsetGamepadVertical)
+                    .contentShape(Rectangle())
+                    .opacity(contentVisibilityOpacity(for: .gamepad))
+                    .allowsHitTesting(isContentInteractive(for: .gamepad))
+                    .accessibility(hidden: !isContentVisible(for: .gamepad))
+
                     VirtualKeyboardView(
                         mode: keyboardPickerMode,
                         canSelectCommand: { canSelectCommand($0, source: .keyboard) },
@@ -905,26 +1052,25 @@ struct WidgetPickerView: View {
                         onCommandSelected: { appendCommand($0, source: .keyboard) },
                         onCommandDeselected: { removeCommand($0, source: .keyboard) },
                         resetToken: resetToken,
-                            selectionSyncToken: selectionSyncToken,
-                            externalDeselectionCommand: keyboardDeselectionCommand,
-                            externalDeselectionToken: keyboardDeselectionToken
-                        )
-                        .padding(pickerInsetKeyboard)
-                    case .functional:
-                        Group {
-                            if presentationState.hasHostAppeared {
-                                FunctionalButtonCollectionView(
-                                    items: functionalButtonOptions,
-                                    isSelected: { selectedCmds.contains($0) },
-                                    onSelect: { handleFunctionalButtonSelection($0) },
-                                    onDeselect: { handleFunctionalButtonDeselection($0) }
-                                )
-                            } else {
-                                Color.clear
-                            }
-                        }
-                            .padding(pickerInsetFunctional)
-                    }
+                        selectionSyncToken: selectionSyncToken,
+                        externalDeselectionCommand: keyboardDeselectionCommand,
+                        externalDeselectionToken: keyboardDeselectionToken
+                    )
+                    .padding(pickerInsetKeyboard)
+                    .opacity(contentVisibilityOpacity(for: .keyboard))
+                    .allowsHitTesting(isContentInteractive(for: .keyboard))
+                    .accessibility(hidden: !isContentVisible(for: .keyboard))
+
+                    FunctionalButtonCollectionView(
+                        items: functionalButtonOptions,
+                        isSelected: { selectedCmds.contains($0) },
+                        onSelect: { handleFunctionalButtonSelection($0) },
+                        onDeselect: { handleFunctionalButtonDeselection($0) }
+                    )
+                    .padding(pickerInsetFunctional)
+                    .opacity(contentVisibilityOpacity(for: .functional))
+                    .allowsHitTesting(isContentInteractive(for: .functional))
+                    .accessibility(hidden: !isContentVisible(for: .functional))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .mask(
@@ -991,6 +1137,18 @@ struct WidgetPickerView: View {
         .background(panelCardFill(metrics: metrics))
         .overlay(panelCardStroke(metrics: metrics))
         .shadow(color: Color.black.opacity(0.08), radius: metrics.panelShadowRadius, x: 0, y: metrics.panelShadowYOffset)
+    }
+
+    private func isContentVisible(for tab: WidgetPickerTab) -> Bool {
+        presentationState.hasHostAppeared && selectedTab == tab
+    }
+
+    private func isContentInteractive(for tab: WidgetPickerTab) -> Bool {
+        isContentVisible(for: tab)
+    }
+
+    private func contentVisibilityOpacity(for tab: WidgetPickerTab) -> Double {
+        isContentVisible(for: tab) ? 1 : 0
     }
 
     private func widgetPickerTabBar(metrics: WidgetPickerMetrics, isPadPortrait: Bool = false) -> some View {
@@ -1075,13 +1233,15 @@ struct WidgetPickerView: View {
                 spacing: metrics.poolGridSpacing,
                 contentInset: metrics.poolGridInset
             )
+                .id(poolGridInteractionResetToken)
                 .aspectRatio(1, contentMode: .fit)
                 .frame(maxWidth: poolGridWidth ?? .infinity, alignment: .center)
                 .frame(maxWidth: .infinity, alignment: .center)
 
             if keyboardPickerMode != .shortcutPicker {
-                PoolActionChip(
-                        title: LocalizationHelper.localizedString(forKey: "Gyro switch button"),
+                HStack(spacing: metrics.isPhone ? 8 : 12) {
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Gyro button"),
                         isPrimary: false,
                         height: poolChipHeight,
                         fontSize: poolChipFontSize,
@@ -1112,6 +1272,16 @@ struct WidgetPickerView: View {
                             }
                         }
                     )
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Insert trigger interval"),
+                        isPrimary: false,
+                        height: poolChipHeight,
+                        fontSize: poolChipFontSize,
+                        cornerRadius: metrics.chipCornerRadius
+                    ) {
+                        handleInsertTriggerIntervalTap()
+                    }
+                }
             }
 
             HStack(spacing: metrics.isPhone ? 8 : 12) {
@@ -1221,10 +1391,12 @@ struct WidgetPickerView: View {
     private func panelCardStroke(metrics: WidgetPickerMetrics) -> some View {
         RoundedRectangle(cornerRadius: metrics.panelCornerRadius, style: .continuous)
             .stroke(Color.white.opacity(0.82), lineWidth: 1.1)
+            .allowsHitTesting(false)
     }
 
     private func appendCommand(_ cmd: String, source: WidgetPoolSource) {
         let existingCount = poolItems.count
+        let shouldRebalanceTriggerIntervals = hasTriggerIntervalSlots
         guard !cmd.isEmpty else { return }
         let item = WidgetPoolItem(
             cmd: cmd,
@@ -1235,18 +1407,22 @@ struct WidgetPickerView: View {
         )
 
         if shouldInsertCommandAtFront(cmd) {
-            selectedCmds.insert(cmd, at: 0)
+            selectedCmds.insert(Self.selectionIdentifier(for: cmd), at: 0)
             poolItems.insert(item, at: 0)
         } else if shouldKeepItemAtPoolTail(item), !poolItems.isEmpty {
-            selectedCmds.append(cmd)
+            selectedCmds.append(Self.selectionIdentifier(for: cmd))
             poolItems.append(item)
         } else if let trailingPadIndex = trailingCombinablePadIndex {
-            selectedCmds.insert(cmd, at: trailingPadIndex)
+            selectedCmds.insert(Self.selectionIdentifier(for: cmd), at: trailingPadIndex)
             poolItems.insert(item, at: trailingPadIndex)
         } else {
-            selectedCmds.append(cmd)
+            selectedCmds.append(Self.selectionIdentifier(for: cmd))
             poolItems.append(item)
         }
+        if shouldRebalanceTriggerIntervals {
+            rebalanceTriggerIntervalItems()
+        }
+        normalizeLeadingFunctionalItemPriorityIfNeeded()
         updateTipMessageForCurrentPoolState()
     }
 
@@ -1258,6 +1434,8 @@ struct WidgetPickerView: View {
             return .functionalButton
         case .keyboard:
             return keyboardPadCommands.contains(cmd) ? .keyboardPad : .keyboardButton
+        case .interval:
+            return .triggerInterval
         }
     }
 
@@ -1307,6 +1485,10 @@ struct WidgetPickerView: View {
     }
 
     private func shouldInsertCommandAtFront(_ cmd: String) -> Bool {
+        if leadingPriorityFunctionalCommands.contains(Self.selectionIdentifier(for: cmd)) {
+            return true
+        }
+
         if priorityFirstCommands.contains(cmd) {
             return true
         }
@@ -1320,6 +1502,27 @@ struct WidgetPickerView: View {
         }
         
         return false
+    }
+
+    private var leadingPriorityFunctionalCommands: Set<String> {
+        ["FOLDER", "ERASER", "BRUSH"]
+    }
+
+    private func normalizeLeadingFunctionalItemPriorityIfNeeded() {
+        guard let leadingItemIndex = poolItems.firstIndex(where: {
+            leadingPriorityFunctionalCommands.contains(Self.selectionIdentifier(for: $0.cmd))
+        }), leadingItemIndex > 0 else {
+            return
+        }
+
+        let leadingItem = poolItems.remove(at: leadingItemIndex)
+        let leadingIdentifier = Self.selectionIdentifier(for: leadingItem.cmd)
+        poolItems.insert(leadingItem, at: 0)
+
+        if let selectedItemIndex = selectedCmds.firstIndex(of: leadingIdentifier), selectedItemIndex > 0 {
+            let selectedItem = selectedCmds.remove(at: selectedItemIndex)
+            selectedCmds.insert(selectedItem, at: 0)
+        }
     }
 
     private func shouldMarkItemAsTailLocked(cmd: String, source: WidgetPoolSource, existingCount: Int) -> Bool {
@@ -1398,7 +1601,7 @@ struct WidgetPickerView: View {
     }
 
     private func triggerGroup(for cmd: String) -> String? {
-        switch cmd {
+        switch Self.selectionIdentifier(for: cmd) {
         case "LT", "LTPAD":
             return "LT"
         case "RT", "RTPAD":
@@ -1409,15 +1612,16 @@ struct WidgetPickerView: View {
     }
 
     private func directionPadGroup(for cmd: String) -> String? {
-        if cmd == "WASDPAD" || wasdSingleCommands.contains(cmd) {
+        let normalized = Self.selectionIdentifier(for: cmd)
+        if normalized == "WASDPAD" || wasdSingleCommands.contains(normalized) {
             return "WASD"
         }
 
-        if cmd == "ARROWPAD" || arrowSingleCommands.contains(cmd) {
+        if normalized == "ARROWPAD" || arrowSingleCommands.contains(normalized) {
             return "ARROW"
         }
 
-        if cmd == "DPAD" || dpadSingleCommands.contains(cmd) {
+        if normalized == "DPAD" || dpadSingleCommands.contains(normalized) {
             return "DPAD"
         }
 
@@ -1435,42 +1639,430 @@ struct WidgetPickerView: View {
     private func removeCommand(_ cmd: String, source: WidgetPoolSource) {
         guard !cmd.isEmpty else { return }
 
-        if let cmdIndex = selectedCmds.firstIndex(of: cmd) {
-            selectedCmds.remove(at: cmdIndex)
+        let shouldRebalanceTriggerIntervals = hasTriggerIntervalSlots && source != .interval
+
+        if source != .interval {
+            let selectionIdentifier = Self.selectionIdentifier(for: cmd)
+            if let cmdIndex = selectedCmds.firstIndex(of: selectionIdentifier) {
+                selectedCmds.remove(at: cmdIndex)
+            }
         }
 
         if let itemIndex = poolItems.firstIndex(where: { $0.cmd == cmd && $0.source == source }) {
             poolItems.remove(at: itemIndex)
         }
 
+        if shouldRebalanceTriggerIntervals {
+            rebalanceTriggerIntervalItems()
+        }
+
         updateTipMessageForCurrentPoolState()
         selectionSyncToken += 1
     }
 
-    private func handlePoolItemTap(_ item: WidgetPoolItem) {
+    private func removePoolItem(_ item: WidgetPoolItem) {
+        let deselectionCommand = Self.selectionIdentifier(for: item.cmd)
         removeCommand(item.cmd, source: item.source)
+        let shouldClearHighlight = !selectedCmds.contains(deselectionCommand)
 
         switch item.source {
         case .keyboard:
-            keyboardDeselectionCommand = item.cmd
-            keyboardDeselectionToken += 1
+            if shouldClearHighlight {
+                keyboardDeselectionCommand = deselectionCommand
+                keyboardDeselectionToken += 1
+            }
         case .gamepad:
-            gamepadDeselectionCommand = item.cmd
-            gamepadDeselectionToken += 1
+            if shouldClearHighlight {
+                gamepadDeselectionCommand = deselectionCommand
+                gamepadDeselectionToken += 1
+            }
         case .functional:
-            if selectedGyroCommand == item.cmd {
+            if shouldClearHighlight, selectedGyroCommand == deselectionCommand {
                 selectedGyroCommand = nil
             }
+        case .interval:
+            break
         }
+    }
+
+    private func handlePoolItemTap(_ item: WidgetPoolItem) {
+        if isTriggerIntervalItem(item) {
+            prepareTriggerIntervalSheet(for: item)
+            showTriggerIntervalSheet = true
+            return
+        }
+
+        let shouldPresentMacroSheet = shouldPresentButtonMacroSheet(for: item)
+        NSLog(
+            "WidgetPickerView handlePoolItemTap cmd=%@ visualKind=%@ shouldPresentMacroSheet=%@",
+            item.cmd,
+            String(describing: item.visualKind),
+            shouldPresentMacroSheet ? "YES" : "NO"
+        )
+
+        if shouldPresentMacroSheet {
+            prepareButtonMacroSheet(for: item)
+            showButtonMacroSheet = true
+            return
+        }
+
+        removePoolItem(item)
+    }
+
+    private func shouldPresentButtonMacroSheet(for item: WidgetPoolItem) -> Bool {
+        guard !isShortcutPickerMode else { return false }
+        guard !containsMovementDirectionPad else { return false }
+        switch item.visualKind {
+        case .keyboardButton, .gamepadButton:
+            return true
+        case .gamepadPad, .keyboardPad, .functionalButton, .triggerInterval:
+            return false
+        }
+    }
+
+    private func prepareButtonMacroSheet(for item: WidgetPoolItem) {
+        editingButtonMacroItemID = item.id
+        buttonMacroManualDurationText = ""
+        let displaySuffix = macroDisplaySuffix(for: item)
+        if displaySuffix == localizedTapLabel {
+            buttonMacroMode = .tap
+        } else if let duration = Self.macroDuration(for: item.cmd) {
+            buttonMacroMode = .timedRelease
+            if isButtonMacroDurationWithinSliderRange(duration) {
+                buttonMacroDuration = Double(duration)
+            } else {
+                buttonMacroManualDurationText = String(duration)
+                buttonMacroDuration = buttonMacroTimedMinimumDuration
+            }
+        } else {
+            buttonMacroMode = .holdUntilRelease
+        }
+        normalizeButtonMacroState()
+    }
+
+    private func normalizeButtonMacroState() {
+        switch buttonMacroMode {
+        case .holdUntilRelease:
+            buttonMacroDuration = buttonMacroMaximumDuration
+        case .timedRelease:
+            buttonMacroDuration = min(buttonMacroMaximumDuration, max(buttonMacroTimedMinimumDuration, buttonMacroDuration.rounded()))
+        case .tap:
+            buttonMacroDuration = buttonMacroMinimumDuration
+        }
+    }
+
+    private var buttonMacroModeSelectionBinding: Binding<Int> {
+        Binding(
+            get: { buttonMacroMode.rawValue },
+            set: { newValue in
+                buttonMacroMode = WidgetButtonMacroMode(rawValue: newValue) ?? .holdUntilRelease
+                normalizeButtonMacroState()
+            }
+        )
+    }
+
+    private var localizedTapLabel: String {
+        LocalizationHelper.localizedString(forKey: "tap")
+    }
+
+    private func macroDisplaySuffix(for item: WidgetPoolItem) -> String? {
+        guard let displayText = item.displayText else { return nil }
+        let lines = displayText
+            .components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        return lines.count >= 2 ? lines.last : nil
+    }
+
+    private func baseDisplayLabel(for item: WidgetPoolItem) -> String {
+        if let displayText = item.displayText {
+            let firstLine = displayText
+                .components(separatedBy: .newlines)
+                .first?
+                .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if !firstLine.isEmpty {
+                return firstLine
+            }
+        }
+        return item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var manualButtonMacroDurationValue: Int? {
+        let trimmedValue = buttonMacroManualDurationText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedValue.isEmpty, let duration = Int(trimmedValue), duration >= 0 else {
+            return nil
+        }
+        return duration
+    }
+
+    private func isButtonMacroDurationWithinSliderRange(_ duration: Int) -> Bool {
+        duration >= Int(buttonMacroMinimumDuration) && duration <= Int(buttonMacroMaximumDuration)
+    }
+
+    private var buttonMacroDurationTitleText: String {
+        let pressDurationTitle = LocalizationHelper.localizedString(forKey: "Press duration")
+        if manualButtonMacroDurationValue != nil {
+            return "\(pressDurationTitle): "
+        }
+
+        switch buttonMacroMode {
+        case .holdUntilRelease:
+            return pressDurationTitle
+        case .timedRelease, .tap:
+            return LocalizationHelper.localizedString(forKey: "Press duration: %d ms", effectiveButtonMacroDurationValue)
+        }
+    }
+
+    private var effectiveButtonMacroDurationValue: Int {
+        if let manualButtonMacroDurationValue {
+            return manualButtonMacroDurationValue
+        }
+        switch buttonMacroMode {
+        case .holdUntilRelease:
+            return Int(buttonMacroMaximumDuration)
+        case .timedRelease:
+            return Int(min(buttonMacroMaximumDuration, max(buttonMacroTimedMinimumDuration, buttonMacroDuration.rounded())))
+        case .tap:
+            return Int(buttonMacroMinimumDuration)
+        }
+    }
+
+    private func dismissButtonMacroSheet() {
+        NSLog("WidgetPickerView dismissButtonMacroSheet resetTokenBefore=%d", poolGridInteractionResetToken)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        DispatchQueue.main.async {
+            showButtonMacroSheet = false
+            editingButtonMacroItemID = nil
+            poolGridInteractionResetToken += 1
+            NSLog("WidgetPickerView dismissButtonMacroSheet resetTokenAfter=%d", poolGridInteractionResetToken)
+        }
+    }
+
+    private func removeEditingButtonMacroItem() {
+        guard let editingButtonMacroItemID,
+              let item = poolItems.first(where: { $0.id == editingButtonMacroItemID }) else {
+            dismissButtonMacroSheet()
+            return
+        }
+
+        dismissButtonMacroSheet()
+        removePoolItem(item)
+    }
+
+    private func applyButtonMacroChanges() {
+        guard let editingButtonMacroItemID,
+              let itemIndex = poolItems.firstIndex(where: { $0.id == editingButtonMacroItemID }) else {
+            dismissButtonMacroSheet()
+            return
+        }
+
+        let item = poolItems[itemIndex]
+        let baseCommand = Self.selectionIdentifier(for: item.cmd)
+        let baseLabel = baseDisplayLabel(for: item)
+
+        let resolvedCommand: String
+        let resolvedDisplayText: String
+        switch buttonMacroMode {
+        case .holdUntilRelease:
+            resolvedCommand = baseCommand
+            resolvedDisplayText = baseLabel
+        case .timedRelease:
+            let duration = effectiveButtonMacroDurationValue
+            resolvedCommand = "\(baseCommand).\(duration)"
+            resolvedDisplayText = "\(baseLabel)\n\(LocalizationHelper.localizedString(forKey: "↓%dms", duration))"
+        case .tap:
+            resolvedCommand = "\(baseCommand).30"
+            resolvedDisplayText = "\(baseLabel)\n\(localizedTapLabel)"
+        }
+
+        poolItems[itemIndex] = WidgetPoolItem(
+            cmd: resolvedCommand,
+            source: item.source,
+            visualKind: item.visualKind,
+            staysAtTail: item.staysAtTail,
+            displayText: resolvedDisplayText
+        )
+        updateTipMessageForCurrentPoolState()
+        dismissButtonMacroSheet()
     }
 
     private func isPad(_ item: WidgetPoolItem) -> Bool {
         item.visualKind == .keyboardPad || item.visualKind == .gamepadPad
     }
 
-    private func canSelectCommand(_ cmd: String, source: WidgetPoolSource) -> Bool {
-        if selectedCmds.contains(cmd) {
+    private func isTriggerIntervalItem(_ item: WidgetPoolItem) -> Bool {
+        item.visualKind == .triggerInterval
+    }
+
+    private func isButtonItem(_ item: WidgetPoolItem) -> Bool {
+        switch item.visualKind {
+        case .gamepadButton, .keyboardButton, .functionalButton:
+            return true
+        case .gamepadPad, .keyboardPad, .triggerInterval:
             return false
+        }
+    }
+
+    private var hasTriggerIntervalSlots: Bool {
+        poolItems.contains(where: isTriggerIntervalItem)
+    }
+
+    private var buttonItemsInPool: [WidgetPoolItem] {
+        poolItems.filter(isButtonItem)
+    }
+
+    private var triggerIntervalItems: [WidgetPoolItem] {
+        poolItems.filter(isTriggerIntervalItem)
+    }
+
+    private func makeTriggerIntervalItem(milliseconds: Int) -> WidgetPoolItem {
+        WidgetPoolItem(
+            cmd: Self.makeTriggerIntervalCommand(milliseconds: milliseconds),
+            source: .interval,
+            visualKind: .triggerInterval,
+            staysAtTail: false,
+            displayText: nil
+        )
+    }
+
+    private func rebalanceTriggerIntervalItems(defaultMilliseconds: Int? = nil) {
+        let baseItems = poolItems.filter { !isTriggerIntervalItem($0) }
+        let buttonCount = baseItems.filter(isButtonItem).count
+        guard buttonCount >= 2 else {
+            poolItems = baseItems
+            return
+        }
+
+        let existingValues = triggerIntervalItems.compactMap { Self.triggerIntervalMilliseconds(for: $0.cmd) }
+        var nextIntervalIndex = 0
+        var remainingButtons = buttonCount
+        var rebuiltItems: [WidgetPoolItem] = []
+
+        for item in baseItems {
+            rebuiltItems.append(item)
+            guard isButtonItem(item) else { continue }
+            remainingButtons -= 1
+            guard remainingButtons > 0 else { continue }
+            let milliseconds = defaultMilliseconds
+                ?? (nextIntervalIndex < existingValues.count ? existingValues[nextIntervalIndex] : nil)
+                ?? 0
+            rebuiltItems.append(makeTriggerIntervalItem(milliseconds: milliseconds))
+            nextIntervalIndex += 1
+        }
+
+        poolItems = rebuiltItems
+        normalizeLeadingFunctionalItemPriorityIfNeeded()
+    }
+
+    private func handleInsertTriggerIntervalTap() {
+        guard !containsMovementDirectionPad else {
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Trigger interval cannot be inserted when WASDPAD or ARROWPAD is in the pool"), type: .error)
+            return
+        }
+
+        let buttonCount = buttonItemsInPool.count
+        guard buttonCount >= 2 else {
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Select at least two button controls before inserting trigger intervals"), type: .error)
+            return
+        }
+
+        if hasTriggerIntervalSlots {
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Trigger interval slots are already inserted"))
+            return
+        }
+
+        let requiredSlots = buttonCount - 1
+        guard occupiedSlots + requiredSlots <= maxPoolSlots else {
+            setTipMessage(LocalizationHelper.localizedString(forKey: "Not enough room to insert trigger interval slots"), type: .error)
+            return
+        }
+
+        rebalanceTriggerIntervalItems(defaultMilliseconds: 0)
+        updateTipMessageForCurrentPoolState()
+    }
+
+    private func prepareTriggerIntervalSheet(for item: WidgetPoolItem) {
+        editingTriggerIntervalItemID = item.id
+        triggerIntervalManualValueText = ""
+        let currentValue = Self.triggerIntervalMilliseconds(for: item.cmd) ?? 0
+        let allValues = triggerIntervalItems.compactMap { Self.triggerIntervalMilliseconds(for: $0.cmd) }
+        let uniformNonZeroValue = allValues.allSatisfy { $0 > 0 } ? allValues.first : nil
+        let allValuesAreEqual = !allValues.isEmpty && Set(allValues).count == 1
+
+        if allValuesAreEqual, let uniformValue = uniformNonZeroValue {
+            triggerIntervalEditMode = .all
+            triggerIntervalEditorValue = Double(uniformValue)
+        } else {
+            triggerIntervalEditMode = .individual
+            triggerIntervalEditorValue = Double(max(Int(triggerIntervalMinimumDuration), currentValue))
+        }
+    }
+
+    private var manualTriggerIntervalValue: Int? {
+        let trimmedValue = triggerIntervalManualValueText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedValue.isEmpty, let value = Int(trimmedValue), value >= 0 else {
+            return nil
+        }
+        return value
+    }
+
+    private var triggerIntervalTitleText: String {
+        let title = LocalizationHelper.localizedString(forKey: "Trigger interval")
+        if manualTriggerIntervalValue != nil {
+            return "\(title): "
+        }
+        return "\(title): \(effectiveTriggerIntervalEditorValue) ms"
+    }
+
+    private var effectiveTriggerIntervalEditorValue: Int {
+        if let manualTriggerIntervalValue {
+            return manualTriggerIntervalValue
+        }
+        return Int(min(triggerIntervalMaximumDuration, max(triggerIntervalMinimumDuration, triggerIntervalEditorValue.rounded())))
+    }
+
+    private var triggerIntervalEditModeBinding: Binding<Int> {
+        Binding(
+            get: { triggerIntervalEditMode.rawValue },
+            set: { newValue in
+                triggerIntervalEditMode = TriggerIntervalEditMode(rawValue: newValue) ?? .all
+            }
+        )
+    }
+
+    private func dismissTriggerIntervalSheet() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        DispatchQueue.main.async {
+            showTriggerIntervalSheet = false
+            editingTriggerIntervalItemID = nil
+            poolGridInteractionResetToken += 1
+        }
+    }
+
+    private func applyTriggerIntervalChanges() {
+        let newMilliseconds = effectiveTriggerIntervalEditorValue
+
+        switch triggerIntervalEditMode {
+        case .all:
+            for index in poolItems.indices where isTriggerIntervalItem(poolItems[index]) {
+                poolItems[index] = makeTriggerIntervalItem(milliseconds: newMilliseconds)
+            }
+        case .individual:
+            guard let editingTriggerIntervalItemID,
+                  let itemIndex = poolItems.firstIndex(where: { $0.id == editingTriggerIntervalItemID }) else {
+                dismissTriggerIntervalSheet()
+                return
+            }
+            poolItems[itemIndex] = makeTriggerIntervalItem(milliseconds: newMilliseconds)
+        }
+
+        updateTipMessageForCurrentPoolState()
+        dismissTriggerIntervalSheet()
+    }
+
+    private func canSelectCommand(_ cmd: String, source: WidgetPoolSource) -> Bool {
+        if selectedCmds.contains(Self.selectionIdentifier(for: cmd)) {
+            return canAppendDuplicateCommand(cmd, source: source)
         }
 
         if movementPadHasReachedSingleKeyLimit {
@@ -1489,7 +2081,8 @@ struct WidgetPickerView: View {
             displayText: keyboardPoolDisplayText(for: cmd, source: source)
         )
 
-        if occupiedSlots + candidate.span > maxPoolSlots {
+        let additionalIntervalSlotCost = hasTriggerIntervalSlots && isButtonItem(candidate) ? 1 : 0
+        if occupiedSlots + candidate.span + additionalIntervalSlotCost > maxPoolSlots {
             setTipMessage(LocalizationHelper.localizedString(forKey: "Widget pool is full"), type: .error)
             return false
         }
@@ -1608,6 +2201,17 @@ struct WidgetPickerView: View {
         return true
     }
 
+    private func canAppendDuplicateCommand(_ cmd: String, source: WidgetPoolSource) -> Bool {
+        let selectionIdentifier = Self.selectionIdentifier(for: cmd)
+        guard let lastMatchingItem = poolItems.last(where: {
+            $0.source == source && Self.selectionIdentifier(for: $0.cmd) == selectionIdentifier
+        }) else {
+            return false
+        }
+
+        return Self.macroDuration(for: lastMatchingItem.cmd) != nil
+    }
+
     private func functionalButtonOption(for cmd: String) -> FunctionalButtonOption? {
         functionalButtonOptions.first(where: { $0.cmd == cmd })
     }
@@ -1699,9 +2303,7 @@ struct WidgetPickerView: View {
                                         Text(mode.title).tag(mode)
                                     }
                                 }
-                                .pickerStyle(SegmentedPickerStyle())
-                                .environment(\.colorScheme, .light)
-                                .frame(height: segmentedControlHeight)
+                                .sheetSegmentedControlStyle(height: segmentedControlHeight)
                                 .disabled(isComboModeLocked)
                                 .opacity(isComboModeLocked ? 0.45 : 1.0)
                             }
@@ -1718,9 +2320,7 @@ struct WidgetPickerView: View {
                                         Text(mode.title).tag(mode)
                                     }
                                 }
-                                .pickerStyle(SegmentedPickerStyle())
-                                .environment(\.colorScheme, .light)
-                                .frame(height: segmentedControlHeight)
+                                .sheetSegmentedControlStyle(height: segmentedControlHeight)
                             }
                         }
                     }
@@ -1753,9 +2353,7 @@ struct WidgetPickerView: View {
                                     Text(shape.title).tag(shape)
                                 }
                             }
-                            .pickerStyle(SegmentedPickerStyle())
-                            .environment(\.colorScheme, .light)
-                            .frame(height: segmentedControlHeight)
+                            .sheetSegmentedControlStyle(height: segmentedControlHeight)
                         }
                         .zIndex(10)
                     }
@@ -1798,7 +2396,338 @@ struct WidgetPickerView: View {
             .shadow(color: Color.black.opacity(0.12), radius: 24, x: 0, y: 12)
             .padding(.horizontal, horizontalInset)
         }
+        .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
     }
+
+    private var buttonMacroSheet: some View {
+        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+        let contentSpacing: CGFloat = isPhone ? 10 : 16
+        let sectionSpacing: CGFloat = isPhone ? 7 : 10
+        let fieldHeight: CGFloat = isPhone ? 30 : 38
+        let segmentedControlHeight: CGFloat = isPhone ? 36 : 38
+        let actionSpacing: CGFloat = isPhone ? 8 : 12
+        let actionHeight: CGFloat = isPhone ? 34 : 44
+        let actionFontSize: CGFloat = isPhone ? 13 : 15
+        let cardPadding: CGFloat = isPhone ? 12 : 18
+        let cardMaxWidth: CGFloat = isPhone ? 320 : 420
+        let cardCornerRadius: CGFloat = isPhone ? 22 : 28
+        let horizontalInset: CGFloat = isPhone ? 14 : 24
+        return ZStack {
+            Color.black.opacity(0.28)
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(alignment: .leading, spacing: contentSpacing) {
+                VStack(alignment: .leading, spacing: sectionSpacing) {
+
+                    if true {
+                        createInteractiveControlSection(
+                            title: LocalizationHelper.localizedString(forKey: "Action mode"),
+                            controlHeight: segmentedControlHeight
+                        ) {
+                            Picker("", selection: buttonMacroModeSelectionBinding) {
+                                ForEach(WidgetButtonMacroMode.allCases) { mode in
+                                    Text(mode.title).tag(mode.rawValue)
+                                }
+                            }
+                            .sheetSegmentedControlStyle(height: segmentedControlHeight)
+                        }
+                        .zIndex(30)
+                    }
+
+                    if true {
+                        createInteractiveControlSection(
+                            title: buttonMacroDurationTitleText,
+                            controlHeight: fieldHeight
+                        ) {
+                            Slider(
+                                value: $buttonMacroDuration,
+                                in: buttonMacroMinimumDuration...buttonMacroMaximumDuration,
+                                step: 1
+                            )
+                            .environment(\.colorScheme, .light)
+                            .frame(height: fieldHeight)
+                            .disabled(buttonMacroMode != .timedRelease || manualButtonMacroDurationValue != nil)
+                            .opacity((buttonMacroMode == .timedRelease && manualButtonMacroDurationValue == nil) ? 1.0 : 0.45)
+                        }
+                        .zIndex(20)
+                    }
+                    
+                    //if true {
+                        createWidgetSection(title: LocalizationHelper.localizedString(forKey: "Manually enter press duration in milliseconds")) {
+                            InteractiveTextField(
+                                placeholder: LocalizationHelper.localizedString(forKey: ""),
+                                text: $buttonMacroManualDurationText,
+                                isEnabled: buttonMacroMode == .timedRelease
+                            )
+                            .frame(height: fieldHeight)
+                        }
+                        .zIndex(40)
+                    // }
+                }
+
+                HStack(spacing: actionSpacing) {
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Cancel"),
+                        isPrimary: false,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        dismissButtonMacroSheet()
+                    }
+
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Remove"),
+                        isPrimary: false,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        removeEditingButtonMacroItem()
+                    }
+
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Confirm"),
+                        isPrimary: true,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        applyButtonMacroChanges()
+                    }
+                }
+                .padding(.top, isPhone ? 2 : 0)
+                .zIndex(0)
+            }
+            .padding(cardPadding)
+            .frame(maxWidth: cardMaxWidth)
+            .background(
+                RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                    .fill(Color(red: 0.94, green: 0.97, blue: 0.98).opacity(0.98))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                            .stroke(Color.white.opacity(0.96), lineWidth: 1.1)
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.12), radius: 24, x: 0, y: 12)
+            .padding(.horizontal, horizontalInset)
+        }
+        // .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
+    }
+
+    /*
+    private var buttonMacroSheet: some View {
+        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+        let contentSpacing: CGFloat = isPhone ? 10 : 16
+        let segmentedControlHeight: CGFloat = isPhone ? 36 : 38
+        let sliderHeight: CGFloat = isPhone ? 30 : 38
+        let actionSpacing: CGFloat = isPhone ? 8 : 12
+        let actionHeight: CGFloat = isPhone ? 34 : 44
+        let actionFontSize: CGFloat = isPhone ? 13 : 15
+        let cardPadding: CGFloat = isPhone ? 12 : 18
+        let cardMaxWidth: CGFloat = isPhone ? 320 : 420
+        let cardCornerRadius: CGFloat = isPhone ? 22 : 28
+        let horizontalInset: CGFloat = isPhone ? 14 : 24
+
+        return ZStack {
+            Color.black.opacity(0.28)
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(alignment: .leading, spacing: contentSpacing) {
+                createInteractiveControlSection(
+                    title: LocalizationHelper.localizedString(forKey: "Action mode"),
+                    controlHeight: segmentedControlHeight
+                ) {
+                    Picker("", selection: buttonMacroModeSelectionBinding) {
+                        ForEach(WidgetButtonMacroMode.allCases) { mode in
+                            Text(mode.title).tag(mode.rawValue)
+                        }
+                    }
+                    .sheetSegmentedControlStyle(height: segmentedControlHeight)
+                }
+
+                createInteractiveControlSection(
+                    title: buttonMacroDurationTitleText,
+                    controlHeight: sliderHeight
+                ) {
+                    Slider(
+                        value: $buttonMacroDuration,
+                        in: buttonMacroMinimumDuration...buttonMacroMaximumDuration,
+                        step: 1
+                    )
+                    .environment(\.colorScheme, .light)
+                    .frame(height: sliderHeight)
+                    .disabled(buttonMacroMode != .timedRelease || manualButtonMacroDurationValue != nil)
+                    .opacity((buttonMacroMode == .timedRelease && manualButtonMacroDurationValue == nil) ? 1.0 : 0.45)
+                }
+
+                createInteractiveControlContainer(controlHeight: sliderHeight) {
+                    InteractiveTextField(
+                        placeholder: LocalizationHelper.localizedString(forKey: "Manually enter press duration in milliseconds"),
+                        text: $buttonMacroManualDurationText,
+                        isEnabled: buttonMacroMode == .timedRelease
+                    )
+                    .frame(height: sliderHeight)
+                }
+
+                HStack(spacing: actionSpacing) {
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Cancel"),
+                        isPrimary: false,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        dismissButtonMacroSheet()
+                    }
+
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Remove"),
+                        isPrimary: false,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        removeEditingButtonMacroItem()
+                    }
+
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Confirm"),
+                        isPrimary: true,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        applyButtonMacroChanges()
+                    }
+                }
+            }
+            .padding(cardPadding)
+            .frame(maxWidth: cardMaxWidth)
+            .background(
+                RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                    .fill(Color(red: 0.94, green: 0.97, blue: 0.98).opacity(0.98))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                            .stroke(Color.white.opacity(0.96), lineWidth: 1.1)
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.12), radius: 24, x: 0, y: 12)
+            .padding(.horizontal, horizontalInset)
+        }
+    }
+     */
+
+    private var triggerIntervalSheet: some View {
+        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+        let contentSpacing: CGFloat = isPhone ? 10 : 16
+        let sectionSpacing: CGFloat = isPhone ? 7 : 10
+        let fieldHeight: CGFloat = isPhone ? 30 : 38
+        let segmentedControlHeight: CGFloat = isPhone ? 36 : 38
+        let actionSpacing: CGFloat = isPhone ? 8 : 12
+        let actionHeight: CGFloat = isPhone ? 34 : 44
+        let actionFontSize: CGFloat = isPhone ? 13 : 15
+        let cardPadding: CGFloat = isPhone ? 12 : 18
+        let cardMaxWidth: CGFloat = isPhone ? 320 : 420
+        let cardCornerRadius: CGFloat = isPhone ? 22 : 28
+        let horizontalInset: CGFloat = isPhone ? 14 : 24
+
+        return ZStack {
+            Color.black.opacity(0.28)
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(alignment: .leading, spacing: contentSpacing) {
+                VStack(alignment: .leading, spacing: sectionSpacing) {
+                    createInteractiveControlSection(
+                        title: "",
+                        controlHeight: segmentedControlHeight
+                    ) {
+                        Picker("", selection: triggerIntervalEditModeBinding) {
+                            ForEach(TriggerIntervalEditMode.allCases) { mode in
+                                Text(mode.title).tag(mode.rawValue)
+                            }
+                        }
+                        .sheetSegmentedControlStyle(height: segmentedControlHeight)
+                    }
+                    .zIndex(30)
+
+                    createInteractiveControlSection(
+                        title: triggerIntervalTitleText,
+                        controlHeight: fieldHeight
+                    ) {
+                        Slider(
+                            value: $triggerIntervalEditorValue,
+                            in: triggerIntervalMinimumDuration...triggerIntervalMaximumDuration,
+                            step: 1
+                        )
+                        .environment(\.colorScheme, .light)
+                        .frame(height: fieldHeight)
+                        .disabled(manualTriggerIntervalValue != nil)
+                        .opacity(manualTriggerIntervalValue == nil ? 1.0 : 0.45)
+                    }
+                    .zIndex(20)
+                    
+                    createWidgetSection(title: LocalizationHelper.localizedString(forKey: "Trigger interval")) {
+                        InteractiveTextField(
+                            placeholder: LocalizationHelper.localizedString(forKey: "Manually enter trigger interval in milliseconds"),
+                            text: $triggerIntervalManualValueText
+                        )
+                        .frame(height: fieldHeight)
+                    }
+                    .zIndex(40)
+                }
+
+                HStack(spacing: actionSpacing) {
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Cancel"),
+                        isPrimary: false,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        dismissTriggerIntervalSheet()
+                    }
+
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Confirm"),
+                        isPrimary: true,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        applyTriggerIntervalChanges()
+                    }
+                }
+                .padding(.top, isPhone ? 2 : 0)
+                .zIndex(0)
+            }
+            .padding(cardPadding)
+            .frame(maxWidth: cardMaxWidth)
+            .background(
+                RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                    .fill(Color(red: 0.94, green: 0.97, blue: 0.98).opacity(0.98))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                            .stroke(Color.white.opacity(0.96), lineWidth: 1.1)
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.12), radius: 24, x: 0, y: 12)
+            .padding(.horizontal, horizontalInset)
+        }
+        // .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
+    }
+
+    /*
+    private func createInteractiveControlContainer<Content: View>(
+        controlHeight: CGFloat,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        createWidgetControlContainer(clipsContentToBounds: true) {
+            content()
+                .frame(height: controlHeight)
+        }
+    }
+     */
 
     private func createInteractiveControlSection<Content: View>(
         title: String,
@@ -1855,8 +2784,49 @@ struct WidgetPickerView: View {
         }
     }
 
+    /*
+    @ViewBuilder
+    private func createWidgetControlContainer<Content: View>(
+        clipsContentToBounds: Bool,
+        sectionHorizontalPadding: CGFloat? = nil,
+        sectionVerticalPadding: CGFloat? = nil,
+        sectionCornerRadius: CGFloat? = nil,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+        let horizontalPadding = sectionHorizontalPadding ?? (isPhone ? 9 : 12)
+        let verticalPadding = sectionVerticalPadding ?? (isPhone ? 6 : 10)
+        let cornerRadius = sectionCornerRadius ?? (isPhone ? 12 : 14)
+
+        let sectionContent = content()
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(Color.white.opacity(0.9))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(Color.white.opacity(0.94), lineWidth: 1)
+            )
+
+        if clipsContentToBounds {
+            sectionContent
+                .clipShape(
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                )
+                .contentShape(
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                )
+        } else {
+            sectionContent
+        }
+    }
+    */
+
     private var firstPoolItem: WidgetPoolItem? {
-        poolItems.first
+        poolItems.first(where: { !isTriggerIntervalItem($0) })
     }
 
     private var targetWidgetKind: WidgetCreateTargetKind {
@@ -1864,7 +2834,7 @@ struct WidgetPickerView: View {
         switch firstPoolItem.visualKind {
         case .gamepadPad, .keyboardPad:
             return .pad
-        case .gamepadButton, .keyboardButton, .functionalButton:
+        case .gamepadButton, .keyboardButton, .functionalButton, .triggerInterval:
             return .button
         }
     }
@@ -1882,7 +2852,7 @@ struct WidgetPickerView: View {
             switch item.visualKind {
             case .gamepadButton, .keyboardButton, .functionalButton:
                 return true
-            case .gamepadPad, .keyboardPad:
+            case .gamepadPad, .keyboardPad, .triggerInterval:
                 return false
             }
         }.count
@@ -1909,6 +2879,9 @@ struct WidgetPickerView: View {
 
     private var forcedComboMode: WidgetCreateComboMode? {
         guard showsComboModeControl else { return nil }
+        if hasTriggerIntervalSlots {
+            return .skill
+        }
         if targetWidgetKind == .button && (hasPadCommand || hasGamepadButtonCommand) {
             return .skill
         }
@@ -1955,6 +2928,7 @@ struct WidgetPickerView: View {
 
     private var showsIntervalSlider: Bool {
         if isShortcutPickerMode { return false }
+        if hasTriggerIntervalSlots { return false }
         guard buttonCommandCount >= 2 else { return false }
         if let selectedFunctionalButtonOption {
             return selectedFunctionalButtonOption.allowsSkillCombo
@@ -1979,7 +2953,10 @@ struct WidgetPickerView: View {
     }
 
     private var containsMovementDirectionPad: Bool {
-        poolItems.contains { $0.cmd == "WASDPAD" || $0.cmd == "ARROWPAD" }
+        poolItems.contains {
+            let command = Self.selectionIdentifier(for: $0.cmd)
+            return command == "WASDPAD" || command == "ARROWPAD"
+        }
     }
 
     private var shouldBypassCreateWidgetSheet: Bool {
@@ -2086,7 +3063,7 @@ struct WidgetPickerView: View {
 
     private func buildCmdString() -> String {
         if isShortcutPickerMode {
-            var cmdString = selectedCmds.joined(separator: "+")
+            var cmdString = poolItems.map(\.cmd).joined(separator: "+")
             if shortcutPickerButtonMode == .tapToToggle, !cmdString.isEmpty {
                 cmdString += "+NULL"
             }
@@ -2094,7 +3071,42 @@ struct WidgetPickerView: View {
         }
 
         let joiner = comboJoiner
-        var cmdString = (comboJoiner == "+" && selectedCmds.count == 1) ? "\(selectedCmds.first!)+" : selectedCmds.joined(separator: joiner)
+        if hasTriggerIntervalSlots {
+            let intervalValues = triggerIntervalItems.compactMap { Self.triggerIntervalMilliseconds(for: $0.cmd) }
+            let nonIntervalCommands = poolItems.filter { !isTriggerIntervalItem($0) }.map(\.cmd)
+            guard !nonIntervalCommands.isEmpty else { return "" }
+
+            if intervalValues.allSatisfy({ $0 == 0 }) {
+                return (comboJoiner == "+" && nonIntervalCommands.count == 1)
+                    ? "\(nonIntervalCommands[0])+"
+                    : nonIntervalCommands.joined(separator: joiner)
+            }
+
+            if let firstInterval = intervalValues.first,
+               firstInterval > 0,
+               intervalValues.allSatisfy({ $0 == firstInterval }) {
+                var cmdString = (comboJoiner == "+" && nonIntervalCommands.count == 1)
+                    ? "\(nonIntervalCommands[0])+"
+                    : nonIntervalCommands.joined(separator: joiner)
+                cmdString += "-\(firstInterval)MS"
+                return cmdString
+            }
+
+            let inlineTokens = poolItems.compactMap { item -> String? in
+                if isTriggerIntervalItem(item) {
+                    guard let milliseconds = Self.triggerIntervalMilliseconds(for: item.cmd), milliseconds > 0 else {
+                        return nil
+                    }
+                    return "\(milliseconds)MS"
+                }
+                return item.cmd
+            }
+            return inlineTokens.joined(separator: joiner)
+        }
+
+        let payloadCommands = poolItems.map(\.cmd)
+        guard !payloadCommands.isEmpty else { return "" }
+        var cmdString = (comboJoiner == "+" && payloadCommands.count == 1) ? "\(payloadCommands[0])+" : payloadCommands.joined(separator: joiner)
 
         let shouldAppendInterval = effectiveWidgetComboMode != .shortcut
             && effectiveTriggerIntervalValue != 0
@@ -2123,20 +3135,30 @@ struct WidgetPickerView: View {
 
         let labelParts = poolItems.compactMap(defaultLabelPart(for:))
         guard !labelParts.isEmpty else { return "" }
-        return labelParts.joined(separator: comboJoiner)
+        return sanitizedAutoButtonLabel(labelParts.joined(separator: comboJoiner))
+    }
+
+    private func sanitizedAutoButtonLabel(_ value: String) -> String {
+        value.components(separatedBy: .whitespacesAndNewlines).joined()
     }
 
     private func defaultLabelPart(for item: WidgetPoolItem) -> String? {
+        if isTriggerIntervalItem(item) {
+            return nil
+        }
+        if let displayText = item.displayText?.trimmingCharacters(in: .whitespacesAndNewlines), !displayText.isEmpty {
+            return sanitizedAutoButtonLabel(displayText)
+        }
         switch item.source {
         case .gamepad:
-            return item.displayCmd
+            return sanitizedAutoButtonLabel(item.displayCmd)
         case .keyboard:
             let label = (item.displayText ?? item.cmd).trimmingCharacters(in: .whitespacesAndNewlines)
             guard !label.isEmpty else { return nil }
             if let firstCharacter = label.first, firstCharacter.isNumber {
                 return String(firstCharacter)
             }
-            return label
+            return sanitizedAutoButtonLabel(label)
         case .functional:
             if let option = functionalButtonOption(for: item.cmd) {
                 return option.cmd == "FOLDER"
@@ -2144,7 +3166,9 @@ struct WidgetPickerView: View {
                     : option.label
             }
             let label = item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
-            return label.isEmpty ? nil : label
+            return label.isEmpty ? nil : sanitizedAutoButtonLabel(label)
+        case .interval:
+            return nil
         }
     }
 
@@ -2179,7 +3203,9 @@ struct WidgetPickerView: View {
         let parsedCommands = parseCommands(from: initialCmdString)
         guard !parsedCommands.isEmpty else { return }
 
-        selectedCmds = parsedCommands.map(\.cmd)
+        selectedCmds = parsedCommands
+            .filter { $0.source != .interval }
+            .map { Self.selectionIdentifier(for: $0.cmd) }
         poolItems = parsedCommands.map { descriptor in
             WidgetPoolItem(
                 cmd: descriptor.cmd,
@@ -2189,9 +3215,12 @@ struct WidgetPickerView: View {
                 displayText: descriptor.displayText
             )
         }
+        normalizeLeadingFunctionalItemPriorityIfNeeded()
         selectedGyroCommand = parsedCommands.first(where: { gyroCommands.contains($0.cmd) })?.cmd
 
-        if let preferredTab = parsedCommands.first(where: { $0.source != .functional || !gyroCommands.contains($0.cmd) })?.source {
+        if let preferredTab = parsedCommands.first(where: {
+            $0.source != .interval && ($0.source != .functional || !gyroCommands.contains($0.cmd))
+        })?.source {
             switch preferredTab {
             case .gamepad:
                 selectedTab = .gamepad
@@ -2199,6 +3228,8 @@ struct WidgetPickerView: View {
                 selectedTab = .keyboard
             case .functional:
                 selectedTab = .functional
+            case .interval:
+                break
             }
         } else if parsedCommands.contains(where: { $0.source == .functional }) {
             selectedTab = .functional
@@ -2225,34 +3256,67 @@ struct WidgetPickerView: View {
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
         }
 
-        if let last = commands.last,
-           last.range(of: #"^\d+MS$"#, options: .regularExpression) != nil {
-            commands.removeLast()
-        }
         if isShortcutPickerMode, commands.last == "NULL" {
             commands.removeLast()
         }
 
         var parsed: [(cmd: String, source: WidgetPoolSource, isTailLocked: Bool, displayText: String?)] = []
+        var trailingUniformInterval: Int? = nil
+        if let last = commands.last,
+           let trailingInterval = Self.triggerIntervalMilliseconds(for: last) {
+            trailingUniformInterval = trailingInterval
+            commands.removeLast()
+        }
+
         for rawCommand in commands where !rawCommand.isEmpty {
-            let canonicalCommand = canonicalCommand(for: rawCommand)
-            guard let source = source(for: canonicalCommand) else { continue }
-            let displayText: String?
-            if source == .keyboard {
-                displayText = canonicalCommand
-            } else {
-                displayText = nil
+            if let intervalValue = Self.triggerIntervalMilliseconds(for: rawCommand) {
+                parsed.append((cmd: Self.makeTriggerIntervalCommand(milliseconds: intervalValue), source: .interval, isTailLocked: false, displayText: nil))
+                continue
             }
+
+            let canonicalCommand = canonicalCommand(for: rawCommand)
+            let selectionIdentifier = Self.selectionIdentifier(for: canonicalCommand)
+            guard let source = source(for: selectionIdentifier) else { continue }
+            let displayText = macroDisplayText(for: canonicalCommand, source: source)
 
             let item = WidgetPoolItem(
                 cmd: canonicalCommand,
                 source: source,
-                visualKind: visualKind(for: canonicalCommand, source: source),
+                visualKind: visualKind(for: selectionIdentifier, source: source),
                 staysAtTail: false,
                 displayText: displayText
             )
             let isTailLocked = parsed.isEmpty ? false : isCombinableNonDirectionPad(item)
             parsed.append((cmd: canonicalCommand, source: source, isTailLocked: isTailLocked, displayText: displayText))
+        }
+
+        if let trailingUniformInterval {
+            var rebuilt: [(cmd: String, source: WidgetPoolSource, isTailLocked: Bool, displayText: String?)] = []
+            let buttonDescriptorCount = parsed.filter { descriptor in
+                let visualKind = visualKind(for: descriptor.cmd, source: descriptor.source)
+                switch visualKind {
+                case .gamepadButton, .keyboardButton, .functionalButton:
+                    return true
+                case .gamepadPad, .keyboardPad, .triggerInterval:
+                    return false
+                }
+            }.count
+            var remainingButtons = buttonDescriptorCount
+
+            for descriptor in parsed {
+                rebuilt.append(descriptor)
+                let visualKind = visualKind(for: descriptor.cmd, source: descriptor.source)
+                switch visualKind {
+                case .gamepadButton, .keyboardButton, .functionalButton:
+                    remainingButtons -= 1
+                    if remainingButtons > 0 {
+                        rebuilt.append((cmd: Self.makeTriggerIntervalCommand(milliseconds: trailingUniformInterval), source: .interval, isTailLocked: false, displayText: nil))
+                    }
+                case .gamepadPad, .keyboardPad, .triggerInterval:
+                    break
+                }
+            }
+            return rebuilt
         }
 
         return parsed
@@ -2271,6 +3335,9 @@ struct WidgetPickerView: View {
     }
 
     private func source(for cmd: String) -> WidgetPoolSource? {
+        if Self.triggerIntervalMilliseconds(for: cmd) != nil {
+            return .interval
+        }
         if gamepadCommands.contains(cmd) {
             return .gamepad
         }
@@ -2289,6 +3356,80 @@ struct WidgetPickerView: View {
         default:
             return cmd
         }
+    }
+
+    private func macroDisplayText(for cmd: String, source: WidgetPoolSource) -> String? {
+        let selectionIdentifier = Self.selectionIdentifier(for: cmd)
+        let baseLabel = baseDisplayText(for: selectionIdentifier, source: source)
+        guard let duration = Self.macroDuration(for: cmd) else {
+            return source == .keyboard ? baseLabel : (baseLabel == selectionIdentifier ? nil : baseLabel)
+        }
+
+        let format = duration == Int(buttonMacroMinimumDuration)
+            ? LocalizationHelper.localizedString(forKey: "tap")
+            : LocalizationHelper.localizedString(forKey: "↓%dms", duration)
+        let suffix = duration == Int(buttonMacroMinimumDuration)
+            ? format
+            : String(format: format, duration)
+        return "\(baseLabel)\n\(suffix)"
+    }
+
+    private func baseDisplayText(for cmd: String, source: WidgetPoolSource) -> String {
+        switch source {
+        case .gamepad:
+            if cmd.hasPrefix("OSC") {
+                return String(cmd.dropFirst(3))
+            }
+            return cmd
+        case .keyboard:
+            return cmd
+        case .functional:
+            if let option = functionalButtonOption(for: cmd) {
+                return option.cmd == "FOLDER"
+                    ? LocalizationHelper.localizedString(forKey: "=Folder")
+                    : option.label
+            }
+            return cmd
+        case .interval:
+            return Self.intervalDisplayText(for: cmd)
+        }
+    }
+
+    static func selectionIdentifier(for cmd: String) -> String {
+        guard let duration = macroDuration(for: cmd), duration > 0 else { return cmd }
+        let suffix = ".\(duration)"
+        guard cmd.hasSuffix(suffix) else { return cmd }
+        return String(cmd.dropLast(suffix.count))
+    }
+
+    static func macroDuration(for cmd: String) -> Int? {
+        guard let dotIndex = cmd.lastIndex(of: ".") else { return nil }
+        let suffixStart = cmd.index(after: dotIndex)
+        guard suffixStart < cmd.endIndex else { return nil }
+        let suffix = cmd[suffixStart...]
+        guard suffix.allSatisfy(\.isNumber), let duration = Int(suffix) else { return nil }
+        return duration
+    }
+
+    static func triggerIntervalMilliseconds(for cmd: String) -> Int? {
+        let normalized = cmd.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard normalized.hasSuffix("MS") else { return nil }
+        let numericPart = normalized.dropLast(2)
+        guard !numericPart.isEmpty,
+              numericPart.allSatisfy(\.isNumber),
+              let milliseconds = Int(numericPart) else {
+            return nil
+        }
+        return milliseconds
+    }
+
+    static func makeTriggerIntervalCommand(milliseconds: Int) -> String {
+        "\(milliseconds)MS"
+    }
+
+    static func intervalDisplayText(for cmd: String) -> String {
+        guard let milliseconds = triggerIntervalMilliseconds(for: cmd) else { return cmd.lowercased() }
+        return "\(milliseconds)ms"
     }
 
     private var gamepadCommands: Set<String> {
@@ -2571,6 +3712,16 @@ struct PoolActionChip: View {
 }
 
 @available(iOS 13.0, *)
+private extension View {
+    func sheetSegmentedControlStyle(height: CGFloat) -> some View {
+        self
+            .pickerStyle(SegmentedPickerStyle())
+            .environment(\.colorScheme, .light)
+            .frame(height: height)
+    }
+}
+
+@available(iOS 13.0, *)
 struct GyroButtonPickerOverlay: View {
     let options: [GyroButtonOption]
     let onSelect: (GyroButtonOption) -> Void
@@ -2705,6 +3856,10 @@ struct WidgetPoolGridView: View {
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
                             .stroke(Color.white.opacity(0.75), lineWidth: 1.2)
                     )
+                    .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .onTapGesture {
+                        NSLog("WidgetPickerView pool grid background tapped")
+                    }
 
                 ForEach(0..<columns, id: \.self) { column in
                     ForEach(0..<columns, id: \.self) { row in
@@ -2719,6 +3874,7 @@ struct WidgetPoolGridView: View {
                                 x: gridOriginX + CGFloat(column) * (cellSize + spacing) + cellSize * 0.5,
                                 y: gridOriginY + CGFloat(row) * (cellSize + spacing) + cellSize * 0.5
                             )
+                            .allowsHitTesting(false)
                     }
                 }
 
@@ -2730,13 +3886,22 @@ struct WidgetPoolGridView: View {
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            NSLog(
+                                "WidgetPickerView pool item tapped cmd=%@ id=%@ row=%d column=%d span=%d",
+                                placement.item.cmd,
+                                placement.item.id.uuidString,
+                                placement.row,
+                                placement.column,
+                                placement.item.span
+                            )
                             onItemTap(placement.item)
                         }
                         .position(
-                            x: gridOriginX + CGFloat(placement.column) * (cellSize + spacing)
-                                + (cellSize * CGFloat(placement.item.span) + spacing * CGFloat(placement.item.span - 1)) * 0.5,
-                            y: gridOriginY + CGFloat(placement.row) * (cellSize + spacing) + cellSize * 0.5
-                        )
+                        x: gridOriginX + CGFloat(placement.column) * (cellSize + spacing)
+                            + (cellSize * CGFloat(placement.item.span) + spacing * CGFloat(placement.item.span - 1)) * 0.5,
+                        y: gridOriginY + CGFloat(placement.row) * (cellSize + spacing) + cellSize * 0.5
+                    )
+                    .zIndex(1)
                 }
             }
         }
@@ -2765,6 +3930,9 @@ struct WidgetPoolGridView: View {
                             .font(.system(size: max(11, cellSize * 0.18), weight: .bold, design: .rounded))
                             .foregroundColor(Color.black.opacity(0.70))
                             .minimumScaleFactor(0.6)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 6)
                     )
                     .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 4)
             } else if item.visualKind == .keyboardButton {
@@ -2789,6 +3957,7 @@ struct WidgetPoolGridView: View {
                             .foregroundColor(Color.black.opacity(0.70))
                             .minimumScaleFactor(0.6)
                             .lineLimit(2)
+                            .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
                     )
                     .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 4)
@@ -2814,6 +3983,7 @@ struct WidgetPoolGridView: View {
                             .foregroundColor(Color.black.opacity(0.72))
                             .minimumScaleFactor(0.7)
                             .lineLimit(2)
+                            .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
                     )
                     .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 4)
@@ -2839,6 +4009,7 @@ struct WidgetPoolGridView: View {
                             .foregroundColor(Color.black.opacity(0.72))
                             .minimumScaleFactor(0.7)
                             .lineLimit(2)
+                            .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
                     )
                     .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 4)

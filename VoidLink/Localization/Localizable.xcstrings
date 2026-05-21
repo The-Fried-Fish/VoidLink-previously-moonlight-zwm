@@ -935,7 +935,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "陀螺仪+右摇杆"
           }
         },
@@ -2096,6 +2096,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "單點滑鼠觸控拖曳"
+          }
+        }
+      }
+    },
+    "Action mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作模式"
           }
         }
       }
@@ -3390,6 +3413,29 @@
         }
       }
     },
+    "Confirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确定"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
+          }
+        }
+      }
+    },
     "Connecting" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3599,6 +3645,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "繼續"
+          }
+        }
+      }
+    },
+    "Continue adding controls to this combination, or tap button in the pool to set macro." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续向此组合添加控件，或点按池中的按钮以设置宏。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續向此組合加入控制項，或點按池中的按鈕以設定巨集。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續向此組合加入控制項，或點按池中的按鈕以設定巨集。"
           }
         }
       }
@@ -6427,6 +6496,29 @@
         }
       }
     },
+    "Gyro button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪开关"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀開關"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺儀開關"
+          }
+        }
+      }
+    },
     "Gyro Button" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6515,29 +6607,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "啟用時開啟陀螺儀"
-          }
-        }
-      }
-    },
-    "Gyro switch button" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "陀螺仪切换按键"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "陀螺儀切換按鍵"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "陀螺儀切換按鍵"
           }
         }
       }
@@ -6838,6 +6907,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高亮尺寸: %.2f"
+          }
+        }
+      }
+    },
+    "Hold until release" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按压直至松开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按壓直至鬆開"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按壓直至鬆開"
           }
         }
       }
@@ -10183,6 +10275,98 @@
         }
       }
     },
+    "Press duration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按压时长"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按壓時長"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按壓時長"
+          }
+        }
+      }
+    },
+    "Press duration: %d ms" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按压时长: %d ms"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按壓時長: %d ms"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按壓時長: %d ms"
+          }
+        }
+      }
+    },
+    "Manually enter press duration in milliseconds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动输入按压时长, 单位毫秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入按壓時長, 單位毫秒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入按壓時長, 單位毫秒"
+          }
+        }
+      }
+    },
+    "Manually enter trigger interval in milliseconds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动输入间隔，单位毫秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入間隔，單位毫秒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入間隔，單位毫秒"
+          }
+        }
+      }
+    },
     "Press the button for mouse left button" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10225,6 +10409,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按下用於操作滑鼠右鍵的按鍵"
+          }
+        }
+      }
+    },
+    "Pressed for %dms" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↓ %dms"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↓ %dms"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↓ %dms"
           }
         }
       }
@@ -12912,6 +13119,52 @@
         }
       }
     },
+    "tap" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单击"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單擊"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單擊"
+          }
+        }
+      }
+    },
+    "Tap" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单击"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單擊"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單擊"
+          }
+        }
+      }
+    },
     "Tap 'OK' to set on-screen widget to 'Custom' and enable motion control." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13230,6 +13483,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "該提示將不再彈出"
+          }
+        }
+      }
+    },
+    "Timed release" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定时松开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定時鬆開"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定時鬆開"
           }
         }
       }
@@ -14487,25 +14763,163 @@
         }
       }
     },
-    "You can continue adding controls to this combination" : {
+    "Insert trigger interval" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以继续向此组合添加控件"
+            "value" : "插入触发间隔"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以繼續向此組合加入控制項"
+            "value" : "插入觸發間隔"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以繼續向此組合加入控制項"
+            "value" : "插入觸發間隔"
+          }
+        }
+      }
+    },
+    "Not enough room to insert trigger interval slots" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有足够空间插入触发间隔格"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有足夠空間插入觸發間隔格"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有足夠空間插入觸發間隔格"
+          }
+        }
+      }
+    },
+    "Select at least two button controls before inserting trigger intervals" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请至少先选择两个按钮型控件，再插入触发间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請至少先選擇兩個按鈕型控制項，再插入觸發間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請至少先選擇兩個按鈕型控制項，再插入觸發間隔"
+          }
+        }
+      }
+    },
+    "Set all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "统一设置间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統一設定間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統一設定間隔"
+          }
+        }
+      }
+    },
+    "Set this" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单独设置间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單獨設定間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單獨設定間隔"
+          }
+        }
+      }
+    },
+    "Trigger interval cannot be inserted when WASDPAD or ARROWPAD is in the pool" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "池中存在 WASDPAD 或 ARROWPAD 时，不能插入触发间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "池中存在 WASDPAD 或 ARROWPAD 時，不能插入觸發間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "池中存在 WASDPAD 或 ARROWPAD 時，不能插入觸發間隔"
+          }
+        }
+      }
+    },
+    "Trigger interval slots are already inserted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触发间隔格已经插入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸發間隔格已經插入"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸發間隔格已經插入"
           }
         }
       }

@@ -453,17 +453,6 @@ import ObjectiveC.runtime
             // 安全解包并处理 `comboKeyStrings`
             if var comboStrings = CommandManager.shared.extractCmdStrings(from: self.cmdString) {
                 
-                // extract timeInterval
-                if let lastString = comboStrings.last, lastString.contains("MS") {
-                    // 移除 "MS" 后的部分并转换为整数
-                    let timeIntervalString = lastString.replacingOccurrences(of: "MS", with: "")
-                    // 安全地将字符串转换为整数
-                    if let timeInterval = UInt32(timeIntervalString) {
-                        self.comboKeyTimeIntervalMs = timeInterval
-                    } else {print("无法将时间字符串转换为整数")}
-                    comboStrings.removeLast()
-                }
-                
                 if CommandManager.touchPadCmds.contains(comboStrings.first ?? "") {self.widgetType = WidgetTypeEnum.touchPad}
                 else {self.widgetType = WidgetTypeEnum.button}
                 
@@ -1322,6 +1311,9 @@ import ObjectiveC.runtime
         let indicatorFrame = CAShapeLayer();
         indicatorFrame.frame = CGRectMake(0, 0, 75*highlightSizeFactor, 75*highlightSizeFactor)
         indicatorFrame.cornerRadius = 23 * highlightSizeFactor
+        if #available(iOS 13.0, *) {
+            indicatorFrame.cornerCurve = .continuous
+        }
         directionLayer.borderWidth = 5.3 * min(1.0, highlightSizeFactor)
         directionLayer.frame = indicatorFrame.bounds.insetBy(dx: -directionLayer.borderWidth, dy: -directionLayer.borderWidth) // Adjust the inset as needed
         directionLayer.cornerRadius = indicatorFrame.cornerRadius + directionLayer.borderWidth
@@ -1896,44 +1888,136 @@ import ObjectiveC.runtime
     }
     
     //==============================================================================
-    private func sendComboButtonsDownEvent(comboStrings: [String]) {
+    
+    private var hasUnifiedTriggerInterval: Bool {
+        if let lastString = comboButtonStrings.last, lastString.contains("MS") {
+            return true
+        }
+        else {return false}
+    }
+    
+    private func getMilliSecIntervalFrom(intervalString: String?) -> UInt32{
+        guard let timeIntervalString = intervalString?.replacingOccurrences(of: "MS", with: "") else { return 0 }
+        if let timeInterval = UInt32(timeIntervalString) {
+            return timeInterval
+        }
+        else {return 0}
+    }
+    
+    private func getMilliSecIntervalFrom(cmdString: String) -> UInt32{
+        if cmdString.contains(".") {
+            let intervalString = cmdString.split(separator: ".").last.map(String.init)
+            return getMilliSecIntervalFrom(intervalString: intervalString)
+        }
+        else {return 0}
+    }
+    
+    private func handleButtonStringDown(_ buttonString: String) {
+        let realButtonString: String
+        if buttonString.contains(".") {
+            realButtonString = buttonString.split(separator: ".").first.map(String.init)!
+            DispatchQueue.global().asyncAfter(deadline: .now() + Double(getMilliSecIntervalFrom(cmdString: buttonString))/1000) {
+                self.handleButtonStringUp(realButtonString)
+            }
+        }
+        else {realButtonString = buttonString}
         DispatchQueue.global(qos: .userInteractive).async {
-            for comboString in comboStrings {
-                if CommandManager.oscButtonMappings.keys.contains(comboString) {
-                    self.sendOscButtonDownEvent(oscString: comboString)
-                    if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
+            if CommandManager.oscButtonMappings.keys.contains(realButtonString) {
+                self.sendOscButtonDownEvent(oscString: realButtonString)
+                if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
+            }
+            if CommandManager.keyboardButtonMappings.keys.contains(realButtonString) {
+                LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[realButtonString]!,Int8(KEY_ACTION_DOWN), 0)
+            }
+            if CommandManager.mouseButtonMappings.keys.contains(realButtonString), self.functionalButtonString != "ABSTCHDRAG" {
+                let button = Int32(CommandManager.mouseButtonMappings[realButtonString]!)
+                if abs(button) == 0xFF {
+                    LiSendScrollEvent(button>0 ? 3 : -3)
                 }
-                if CommandManager.keyboardButtonMappings.keys.contains(comboString) {
-                    LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[comboString]!,Int8(KEY_ACTION_DOWN), 0)
-                }
-                if CommandManager.mouseButtonMappings.keys.contains(comboString), self.functionalButtonString != "ABSTCHDRAG" {
-                    let button = Int32(CommandManager.mouseButtonMappings[comboString]!)
-                    if abs(button) == 0xFF {
-                        LiSendScrollEvent(button>0 ? 3 : -3)
+                else {LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), button)}
+            }
+        }
+    }
+    
+    private func sendComboButtonsDownEvent(comboStrings: [String]) {
+        let hasUnifiedTriggerInterval = self.hasUnifiedTriggerInterval
+        if hasUnifiedTriggerInterval {
+            self.comboKeyTimeIntervalMs = self.getMilliSecIntervalFrom(intervalString: comboStrings.last!)
+        }
+        if #available(iOS 13.0, *) {
+            Task {
+                for cmdString in comboStrings {
+                    let isIntervalCmd = cmdString.contains("MS")
+                    let triggerDelay = hasUnifiedTriggerInterval
+                    ? self.comboKeyTimeIntervalMs :
+                    ( isIntervalCmd ? self.getMilliSecIntervalFrom(intervalString: cmdString) : 0)
+                    
+                    if hasUnifiedTriggerInterval || !isIntervalCmd {
+                        self.handleButtonStringDown(cmdString)
                     }
-                    else {LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), button)}
+                    
+                    if cmdString != comboStrings.last {
+                        try? await Task.sleep(nanoseconds: UInt64(triggerDelay)*1_000_000)
+                    }
                 }
-                if comboString != comboStrings.last {
-                    usleep(self.comboKeyTimeIntervalMs*1000) // delay xxx ms
+            }
+        } else {
+            DispatchQueue.global(qos: .userInteractive).async {
+                for comboString in comboStrings {
+                    self.handleButtonStringDown(comboString)
+                    if comboString != comboStrings.last {
+                        usleep(hasUnifiedTriggerInterval ? self.comboKeyTimeIntervalMs*1000 : 0) // delay xxx ms
+                    }
                 }
             }
         }
     }
     
-    private func sendComboButtonsUpEvent(comboStrings: [String]) {
+    private func handleButtonStringUp(_ buttonString: String) {
+        if buttonString.contains(".") {return}
         DispatchQueue.global(qos: .userInteractive).async {
-            for comboString in comboStrings {
-                if CommandManager.oscButtonMappings.keys.contains(comboString) {
-                    self.sendOscButtonUpEvent(oscString: comboString)
+            if CommandManager.oscButtonMappings.keys.contains(buttonString) {
+                self.sendOscButtonUpEvent(oscString: buttonString)
+            }
+            if CommandManager.keyboardButtonMappings.keys.contains(buttonString) {
+                LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[buttonString]!,Int8(KEY_ACTION_UP), 0)
+            }
+            if CommandManager.mouseButtonMappings.keys.contains(buttonString) {
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), Int32(CommandManager.mouseButtonMappings[buttonString]!))
+            }
+        }
+    }
+    
+    private func sendComboButtonsUpEvent(comboStrings: [String]) {
+        let hasUnifiedTriggerInterval = self.hasUnifiedTriggerInterval
+        if hasUnifiedTriggerInterval {
+            self.comboKeyTimeIntervalMs = self.getMilliSecIntervalFrom(intervalString: comboStrings.last!)
+        }
+        if #available(iOS 13.0, *) {
+            Task {
+                for cmdString in comboStrings {
+                    let isIntervalCmd = cmdString.contains("MS")
+                    let triggerDelay = hasUnifiedTriggerInterval
+                    ? self.comboKeyTimeIntervalMs :
+                    ( isIntervalCmd ? self.getMilliSecIntervalFrom(intervalString: cmdString) : 0)
+                    
+                    if hasUnifiedTriggerInterval || !isIntervalCmd {
+                        self.handleButtonStringUp(cmdString)
+                    }
+                    
+                    if cmdString != comboStrings.last {
+                        try? await Task.sleep(nanoseconds: UInt64(triggerDelay)*1_000_000)
+                    }
                 }
-                if CommandManager.keyboardButtonMappings.keys.contains(comboString) {
-                    LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[comboString]!,Int8(KEY_ACTION_UP), 0)
-                }
-                if CommandManager.mouseButtonMappings.keys.contains(comboString) {
-                    LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), Int32(CommandManager.mouseButtonMappings[comboString]!))
-                }
-                if comboString != comboStrings.last {
-                    usleep(self.comboKeyTimeIntervalMs*1000) // delay xxx ms
+            }
+        } else {
+            DispatchQueue.global(qos: .userInteractive).async {
+                for comboString in comboStrings {
+                    self.handleButtonStringUp(comboString)
+                    if comboString != comboStrings.last {
+                        self.handleButtonStringUp(comboString)
+                        usleep(self.comboKeyTimeIntervalMs*1000) // delay xxx ms
+                    }
                 }
             }
         }

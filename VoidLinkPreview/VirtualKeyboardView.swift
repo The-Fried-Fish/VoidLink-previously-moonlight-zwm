@@ -368,6 +368,21 @@ struct VirtualKeyboardView: View {
         let keyID = regularHighlightID(for: key)
         
         if highlightedKeyIDs.contains(keyID) {
+            if mode != .shortcutPicker {
+                let cmd = key.cmdString(for: keyboardType) ?? ""
+                guard !cmd.isEmpty else { return }
+                if canSelectCommand?(cmd) == false {
+                    return
+                }
+                VirtualKeyboardView.tappedKeyLabels = [key.label]
+                VirtualKeyboardView.selectedCmd = cmd
+                VirtualKeyboardView.lastSelectionDisplayText = poolDisplayText(for: key)
+                VirtualKeyboardView.lastSelectionUsesMacLayout = keyboardType == .mac
+                VirtualKeyboardView.lastSelectionFromMouseWidgets = isMouseWidgetKey(key)
+                VirtualKeyboardView.lastSelectionUsesFnCommandDisplay = usesFnCommandDisplay(for: key)
+                onCommandSelected?(cmd)
+                return
+            }
             highlightedKeyIDs.remove(keyID)
             if let cmd = key.cmdString(for: keyboardType), !cmd.isEmpty {
                 onCommandDeselected?(cmd)
@@ -406,6 +421,20 @@ struct VirtualKeyboardView: View {
         }
 
         if directionSingleKeyLabels.contains(key.label) {
+            if mode != .shortcutPicker {
+                let command = key.cmdString(for: keyboardType) ?? key.label
+                if canSelectCommand?(command) == false {
+                    return
+                }
+                VirtualKeyboardView.tappedKeyLabels = [key.label]
+                VirtualKeyboardView.selectedCmd = command
+                VirtualKeyboardView.lastSelectionDisplayText = poolDisplayText(for: key)
+                VirtualKeyboardView.lastSelectionUsesMacLayout = keyboardType == .mac
+                VirtualKeyboardView.lastSelectionFromMouseWidgets = false
+                VirtualKeyboardView.lastSelectionUsesFnCommandDisplay = false
+                onCommandSelected?(command)
+                return
+            }
             directionSingleKeyLabels.remove(key.label)
             if let cmd = key.cmdString(for: keyboardType), !cmd.isEmpty {
                 onCommandDeselected?(cmd)

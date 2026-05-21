@@ -74,8 +74,12 @@ public final class WidgetPickerViewController: UIViewController {
         view.addSubview(hostingViewController.view)
         hostingViewController.didMove(toParent: self)
 
+        let hostingTopAnchor = UIDevice.current.userInterfaceIdiom == .phone
+            ? view.safeAreaLayoutGuide.topAnchor
+            : view.topAnchor
+
         NSLayoutConstraint.activate([
-            hostingViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            hostingViewController.view.topAnchor.constraint(equalTo: hostingTopAnchor),
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             hostingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -89,9 +93,29 @@ public final class WidgetPickerViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        presentationState.hasHostAppeared = false
+    }
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         presentationState.hasHostAppeared = true
+    }
+
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        presentationState.hasHostAppeared = false
+
+        coordinator.animate(alongsideTransition: nil) { [weak self] context in
+            guard let self else { return }
+            guard !context.isCancelled else {
+                self.presentationState.hasHostAppeared = true
+                return
+            }
+            self.presentationState.hasHostAppeared = true
+        }
     }
 
     private func resolvedTabs() -> [WidgetPickerTab] {
@@ -102,6 +126,11 @@ public final class WidgetPickerViewController: UIViewController {
     private func resolvedInitialTab() -> WidgetPickerTab? {
         guard let initialTabIdentifier else { return nil }
         return WidgetPickerTab(identifier: initialTabIdentifier)
+    }
+
+    public func presentOverFullScreen(from presenter: UIViewController, animated: Bool = true) {
+        modalPresentationStyle = .overFullScreen
+        presenter.present(self, animated: animated)
     }
 
     public func presentAsOverlay(in parentViewController: UIViewController, animated: Bool = true) {

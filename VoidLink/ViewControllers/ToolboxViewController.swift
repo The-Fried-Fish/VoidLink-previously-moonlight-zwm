@@ -292,9 +292,7 @@ import UIKit
             pickerViewController.shortcutPickerNeedAlias = true
             pickerViewController.tabIdentifiers = ["keyboard"]
             pickerViewController.initialTabIdentifier = "keyboard"
-            let nav = UINavigationController(rootViewController: pickerViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            self.present(nav, animated: true)
+            pickerViewController.presentOverFullScreen(from: self)
             return
         }
         else{

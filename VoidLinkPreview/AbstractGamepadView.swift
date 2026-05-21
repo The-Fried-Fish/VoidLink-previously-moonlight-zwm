@@ -399,6 +399,14 @@ struct AbstractGamepadView: View {
     
     private func toggle(_ target: GamepadToggleTarget) {
         if activeButtons.contains(target) {
+            if target.widgets.count == 1, let widget = target.widgets.first {
+                if canSelectCommand?(widget.cmd) == false {
+                    return
+                }
+                AbstractGamepadView.selectedCmd = widget.cmd
+                onCommandSelected?(widget.cmd)
+                return
+            }
             activeButtons.remove(target)
             for widget in target.widgets {
                 onCommandDeselected?(widget.cmd)

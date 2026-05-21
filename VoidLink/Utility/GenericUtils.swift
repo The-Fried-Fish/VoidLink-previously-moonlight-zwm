@@ -434,6 +434,14 @@ import UIKit
             return false
         }
     }()
+    
+    @objc static let isGUIWidgetPickerAvailable: Bool = {
+        if #available(iOS 13.0, tvOS 13.0, *) {
+            return true
+        } else {
+            return false
+        }
+    }()
 
     @objc static let menuSeparatorWidth: CGFloat = 0.7
     @objc static let menuSectionSeparatorWidth: CGFloat = 0.7

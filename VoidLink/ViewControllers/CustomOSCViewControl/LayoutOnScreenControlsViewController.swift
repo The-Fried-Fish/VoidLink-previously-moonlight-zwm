@@ -1446,9 +1446,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             pickerViewController.delegate = self
             pickerViewController.tabIdentifiers = ["gamepad", "keyboard", "functional"]
             pickerViewController.initialTabIdentifier = "gamepad"
-            let nav = UINavigationController(rootViewController: pickerViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            present(nav, animated: true)
+            pickerViewController.presentOverFullScreen(from: self)
             return
         }
 
@@ -1487,9 +1485,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             pickerViewController.initialCmdString = selectedWidget.cmdString
             pickerViewController.initialButtonLabel = selectedWidget.widgetLabel
             pickerViewController.initialShape = selectedWidget.shape
-            let nav = UINavigationController(rootViewController: pickerViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            present(nav, animated: true)
+            pickerViewController.presentOverFullScreen(from: self)
             return
         }
 
