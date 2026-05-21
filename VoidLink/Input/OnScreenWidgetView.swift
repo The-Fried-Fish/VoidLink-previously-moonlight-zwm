@@ -3248,6 +3248,14 @@ import ObjectiveC.runtime
             }
         }
         
+        if OnScreenWidgetView.isVerticallyAligned {
+            self.center = CGPoint(x:OnScreenWidgetView.alignedX, y:self.center.y)
+            OnScreenWidgetView.isVerticallyAligned = false
+        }
+        if OnScreenWidgetView.isHorizontallyAligned {
+            self.center = CGPoint(x:self.center.x, y:OnScreenWidgetView.alignedY)
+            OnScreenWidgetView.isHorizontallyAligned = false
+        }
     }
     
     @objc public func setAutoTapIntervalByText(str: String){
@@ -4039,7 +4047,11 @@ import ObjectiveC.runtime
         v.layer.shadowRadius = 2
         return v
     }()
-    
+    @objc static var isHorizontallyAligned:Bool = false
+    @objc static var alignedX:CGFloat = 0
+    @objc static var isVerticallyAligned:Bool = false
+    @objc static var alignedY:CGFloat = 0
+
     private static func updateStreamViewGuidelines(for widget:OnScreenWidgetView){
         if !widget.moveableButtonLongPressed() {return}
         if horizontalGuideline.superview == nil {
@@ -4055,9 +4067,15 @@ import ObjectiveC.runtime
         var verticallyAligned = false
         widget.forEachWidget{ otherWidget in
             guard otherWidget != widget else {return}
+            
             if widget.isFolder, widget.bulkMoveEnabled, widget.sequenceSet.contains(otherWidget.sequence) {return}
-            verticallyAligned = verticallyAligned ? verticallyAligned : widget.center.x > otherWidget.center.x-1 && widget.center.x < otherWidget.center.x+1
-            horizontallyAligned = horizontallyAligned ? horizontallyAligned : widget.center.y > otherWidget.center.y-1 && widget.center.y < otherWidget.center.y+1
+            verticallyAligned = verticallyAligned ? verticallyAligned : widget.center.x > otherWidget.center.x-2 && widget.center.x < otherWidget.center.x+2
+            OnScreenWidgetView.isVerticallyAligned = verticallyAligned;
+            if verticallyAligned {OnScreenWidgetView.alignedX = otherWidget.center.x}
+            
+            horizontallyAligned = horizontallyAligned ? horizontallyAligned : widget.center.y > otherWidget.center.y-2 && widget.center.y < otherWidget.center.y+2
+            OnScreenWidgetView.isHorizontallyAligned = horizontallyAligned;
+            if horizontallyAligned {OnScreenWidgetView.alignedY = otherWidget.center.y}
         }
         horizontalGuideline.backgroundColor = horizontallyAligned ? .yellow : .blue
         verticalGuideline.backgroundColor = verticallyAligned ? .yellow : .blue

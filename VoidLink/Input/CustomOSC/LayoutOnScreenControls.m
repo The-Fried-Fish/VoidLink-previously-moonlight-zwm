@@ -138,11 +138,14 @@
      */
     
     horizontalGuideline.backgroundColor = [UIColor blueColor]; // change horizontal guideline back to blue if it doesn't line up with one of the on screen buttons
+    OnScreenWidgetView.isHorizontallyAligned = false;
     for (CALayer *button in self.OSCButtonLayerPool) { // horizontal guideline position check
         if ((layerBeingDragged != button) && !button.isHidden) {
-            if ((horizontalGuideline.center.y < button.position.y + 1) &&
-                (horizontalGuideline.center.y > button.position.y - 1)) {
+            if ((horizontalGuideline.center.y < button.position.y + 2) &&
+                (horizontalGuideline.center.y > button.position.y - 2)) {
                 horizontalGuideline.backgroundColor = [UIColor yellowColor];
+                OnScreenWidgetView.isHorizontallyAligned = true;
+                OnScreenWidgetView.alignedY = button.position.y;
                 break;
             }
         }
@@ -151,32 +154,38 @@
         if ([view isKindOfClass:[OnScreenWidgetView class]] && view != widget) {
             OnScreenWidgetView* otherWidget = (OnScreenWidgetView *) view;
             if(widget.isFolder && widget.bulkMoveEnabled && [widget.sequenceSet containsObject:@(otherWidget.sequence)]) break;
-            if((horizontalGuideline.center.y < view.center.y + 1) && (horizontalGuideline.center.y > view.center.y - 1)) {
+            if((horizontalGuideline.center.y < view.center.y + 2) && (horizontalGuideline.center.y > view.center.y - 2)) {
                 horizontalGuideline.backgroundColor = [UIColor yellowColor];
+                OnScreenWidgetView.isHorizontallyAligned = true;
+                OnScreenWidgetView.alignedY = view.center.y;
                 break;
             }
         }
     }
 
     verticalGuideline.backgroundColor = [UIColor blueColor]; // change vertical guideline back to blue if it doesn't line up with one of the on screen buttons
+    OnScreenWidgetView.isVerticallyAligned = false;
     for (CALayer *button in self.OSCButtonLayerPool) { // vertical guideline position check
         if ((layerBeingDragged != button) && !button.isHidden) {
-            if ((verticalGuideline.center.x < button.position.x + 1) &&
-                (verticalGuideline.center.x > button.position.x - 1)) {
+            if ((verticalGuideline.center.x < button.position.x + 2) &&
+                (verticalGuideline.center.x > button.position.x - 2)) {
                 verticalGuideline.backgroundColor = [UIColor yellowColor];
+                OnScreenWidgetView.isVerticallyAligned = true;
+                OnScreenWidgetView.alignedX = button.position.x;
                 break;
             }
         }
     }
     for(UIView* view in self.layoutToolVC.view.subviews){
         if ([view isKindOfClass:[OnScreenWidgetView class]] && view != widget) {
-            if ((verticalGuideline.center.x < view.center.x + 1) && (verticalGuideline.center.x > view.center.x - 1)) {
+            if ((verticalGuideline.center.x < view.center.x + 2) && (verticalGuideline.center.x > view.center.x - 2)) {
                 verticalGuideline.backgroundColor = [UIColor yellowColor];
+                OnScreenWidgetView.isVerticallyAligned = true;
+                OnScreenWidgetView.alignedX = view.center.x;
                 break;
             }
         }
     }
-     
 }
 
 - (void) updateGuidelinesForLegacyOnScreenControls{
