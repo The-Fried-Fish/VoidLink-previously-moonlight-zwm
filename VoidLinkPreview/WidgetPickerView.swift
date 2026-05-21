@@ -8,6 +8,7 @@
 
 import SwiftUI
 import UIKit
+import Combine
 
 @available(iOS 13.0, *)
 private extension View {
@@ -449,7 +450,7 @@ struct WidgetPickerView: View {
         case error
     }
 
-    private let maxPoolSlots = 16
+    private let maxPoolSlots = 64
     private let buttonMacroMinimumDuration: Double = 30
     private let buttonMacroTimedMinimumDuration: Double = 50
     private let buttonMacroMaximumDuration: Double = 2000
@@ -505,6 +506,8 @@ struct WidgetPickerView: View {
     @SwiftUI.State private var triggerIntervalManualValueText: String = ""
     @SwiftUI.State private var suppressKeyboardDrivenLayoutAnimation = false
     @SwiftUI.State private var poolGridInteractionResetToken: Int = 0
+    @SwiftUI.State private var poolAutoScrollTargetItemID: UUID? = nil
+    @SwiftUI.State private var poolAutoScrollRequestToken: Int = 0
 
     private static func restoredTab(from availableTabs: [WidgetPickerTab]) -> WidgetPickerTab {
         if let persistedIdentifier = UserDefaults.standard.string(forKey: lastSelectedTabDefaultsKey),
@@ -1156,6 +1159,7 @@ struct WidgetPickerView: View {
         let tabFontSize = isPadPortrait ? 12.0 : metrics.tabFontSize
         let tabHorizontalPadding = isPadPortrait ? 10.0 : metrics.tabHorizontalPadding
         let tabHeight = isPadPortrait ? 30.0 : metrics.tabHeight
+        let tabMinWidth = isPadPortrait ? 88.0 : (metrics.isPhone ? 43 : 50)
 
         return HStack(spacing: tabSpacing) {
             ForEach(availableTabs) { tab in
@@ -1166,6 +1170,7 @@ struct WidgetPickerView: View {
                         .font(.system(size: tabFontSize, weight: .bold, design: .rounded))
                         .foregroundColor(selectedTab == tab ? Color.white : Color.black.opacity(0.56))
                         .padding(.horizontal, tabHorizontalPadding)
+                        .frame(minWidth: tabMinWidth)
                         .frame(height: tabHeight)
                         .background(
                             Capsule()
@@ -1231,7 +1236,9 @@ struct WidgetPickerView: View {
                 items: poolItems,
                 onItemTap: { handlePoolItemTap($0) },
                 spacing: metrics.poolGridSpacing,
-                contentInset: metrics.poolGridInset
+                contentInset: metrics.poolGridInset,
+                scrollTargetItemID: poolAutoScrollTargetItemID,
+                scrollRequestToken: poolAutoScrollRequestToken
             )
                 .id(poolGridInteractionResetToken)
                 .aspectRatio(1, contentMode: .fit)
@@ -1349,6 +1356,7 @@ struct WidgetPickerView: View {
                         .font(.system(size: customFontSize ?? metrics.tipFontSize, weight: .semibold, design: .rounded))
                         .foregroundColor(tipMessageColor)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.5)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
@@ -1423,6 +1431,8 @@ struct WidgetPickerView: View {
             rebalanceTriggerIntervalItems()
         }
         normalizeLeadingFunctionalItemPriorityIfNeeded()
+        poolAutoScrollTargetItemID = item.id
+        poolAutoScrollRequestToken += 1
         updateTipMessageForCurrentPoolState()
     }
 
@@ -1832,8 +1842,8 @@ struct WidgetPickerView: View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         DispatchQueue.main.async {
             showButtonMacroSheet = false
-            editingButtonMacroItemID = nil
-            poolGridInteractionResetToken += 1
+            // editingButtonMacroItemID = nil
+            // poolGridInteractionResetToken += 1
             NSLog("WidgetPickerView dismissButtonMacroSheet resetTokenAfter=%d", poolGridInteractionResetToken)
         }
     }
@@ -2034,8 +2044,8 @@ struct WidgetPickerView: View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         DispatchQueue.main.async {
             showTriggerIntervalSheet = false
-            editingTriggerIntervalItemID = nil
-            poolGridInteractionResetToken += 1
+            // editingTriggerIntervalItemID = nil
+            // poolGridInteractionResetToken += 1
         }
     }
 
@@ -2514,6 +2524,106 @@ struct WidgetPickerView: View {
         }
         // .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
     }
+    
+    private var triggerIntervalSheet: some View {
+        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+        let contentSpacing: CGFloat = isPhone ? 10 : 16
+        let sectionSpacing: CGFloat = isPhone ? 7 : 10
+        let fieldHeight: CGFloat = isPhone ? 30 : 38
+        let segmentedControlHeight: CGFloat = isPhone ? 36 : 38
+        let actionSpacing: CGFloat = isPhone ? 8 : 12
+        let actionHeight: CGFloat = isPhone ? 34 : 44
+        let actionFontSize: CGFloat = isPhone ? 13 : 15
+        let cardPadding: CGFloat = isPhone ? 12 : 18
+        let cardMaxWidth: CGFloat = isPhone ? 320 : 420
+        let cardCornerRadius: CGFloat = isPhone ? 22 : 28
+        let horizontalInset: CGFloat = isPhone ? 14 : 24
+
+        return ZStack {
+            Color.black.opacity(0.28)
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(alignment: .leading, spacing: contentSpacing) {
+                VStack(alignment: .leading, spacing: sectionSpacing) {
+                    createInteractiveControlSection(
+                        title: "",
+                        controlHeight: segmentedControlHeight
+                    ) {
+                        Picker("", selection: triggerIntervalEditModeBinding) {
+                            ForEach(TriggerIntervalEditMode.allCases) { mode in
+                                Text(mode.title).tag(mode.rawValue)
+                            }
+                        }
+                        .sheetSegmentedControlStyle(height: segmentedControlHeight)
+                    }
+                    .zIndex(30)
+
+                    createInteractiveControlSection(
+                        title: triggerIntervalTitleText,
+                        controlHeight: fieldHeight
+                    ) {
+                        Slider(
+                            value: $triggerIntervalEditorValue,
+                            in: triggerIntervalMinimumDuration...triggerIntervalMaximumDuration,
+                            step: 1
+                        )
+                        .environment(\.colorScheme, .light)
+                        .frame(height: fieldHeight)
+                        .disabled(manualTriggerIntervalValue != nil)
+                        .opacity(manualTriggerIntervalValue == nil ? 1.0 : 0.45)
+                    }
+                    .zIndex(20)
+                    
+                    createWidgetSection(title: LocalizationHelper.localizedString(forKey: "Manually enter trigger interval in milliseconds")) {
+                        InteractiveTextField(
+                            placeholder: "",
+                            text: $triggerIntervalManualValueText
+                        )
+                        .frame(height: fieldHeight)
+                    }
+                    .zIndex(40)
+                }
+
+                HStack(spacing: actionSpacing) {
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Cancel"),
+                        isPrimary: false,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        dismissTriggerIntervalSheet()
+                    }
+
+                    PoolActionChip(
+                        title: LocalizationHelper.localizedString(forKey: "Confirm"),
+                        isPrimary: true,
+                        height: actionHeight,
+                        fontSize: actionFontSize,
+                        cornerRadius: 14
+                    ) {
+                        applyTriggerIntervalChanges()
+                    }
+                }
+                .padding(.top, isPhone ? 2 : 0)
+                .zIndex(0)
+            }
+            .padding(cardPadding)
+            .frame(maxWidth: cardMaxWidth)
+            .background(
+                RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                    .fill(Color(red: 0.94, green: 0.97, blue: 0.98).opacity(0.98))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                            .stroke(Color.white.opacity(0.96), lineWidth: 1.1)
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.12), radius: 24, x: 0, y: 12)
+            .padding(.horizontal, horizontalInset)
+        }
+        // .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
+    }
+
 
     /*
     private var buttonMacroSheet: some View {
@@ -2618,104 +2728,6 @@ struct WidgetPickerView: View {
     }
      */
 
-    private var triggerIntervalSheet: some View {
-        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
-        let contentSpacing: CGFloat = isPhone ? 10 : 16
-        let sectionSpacing: CGFloat = isPhone ? 7 : 10
-        let fieldHeight: CGFloat = isPhone ? 30 : 38
-        let segmentedControlHeight: CGFloat = isPhone ? 36 : 38
-        let actionSpacing: CGFloat = isPhone ? 8 : 12
-        let actionHeight: CGFloat = isPhone ? 34 : 44
-        let actionFontSize: CGFloat = isPhone ? 13 : 15
-        let cardPadding: CGFloat = isPhone ? 12 : 18
-        let cardMaxWidth: CGFloat = isPhone ? 320 : 420
-        let cardCornerRadius: CGFloat = isPhone ? 22 : 28
-        let horizontalInset: CGFloat = isPhone ? 14 : 24
-
-        return ZStack {
-            Color.black.opacity(0.28)
-                .edgesIgnoringSafeArea(.all)
-
-            VStack(alignment: .leading, spacing: contentSpacing) {
-                VStack(alignment: .leading, spacing: sectionSpacing) {
-                    createInteractiveControlSection(
-                        title: "",
-                        controlHeight: segmentedControlHeight
-                    ) {
-                        Picker("", selection: triggerIntervalEditModeBinding) {
-                            ForEach(TriggerIntervalEditMode.allCases) { mode in
-                                Text(mode.title).tag(mode.rawValue)
-                            }
-                        }
-                        .sheetSegmentedControlStyle(height: segmentedControlHeight)
-                    }
-                    .zIndex(30)
-
-                    createInteractiveControlSection(
-                        title: triggerIntervalTitleText,
-                        controlHeight: fieldHeight
-                    ) {
-                        Slider(
-                            value: $triggerIntervalEditorValue,
-                            in: triggerIntervalMinimumDuration...triggerIntervalMaximumDuration,
-                            step: 1
-                        )
-                        .environment(\.colorScheme, .light)
-                        .frame(height: fieldHeight)
-                        .disabled(manualTriggerIntervalValue != nil)
-                        .opacity(manualTriggerIntervalValue == nil ? 1.0 : 0.45)
-                    }
-                    .zIndex(20)
-                    
-                    createWidgetSection(title: LocalizationHelper.localizedString(forKey: "Trigger interval")) {
-                        InteractiveTextField(
-                            placeholder: LocalizationHelper.localizedString(forKey: "Manually enter trigger interval in milliseconds"),
-                            text: $triggerIntervalManualValueText
-                        )
-                        .frame(height: fieldHeight)
-                    }
-                    .zIndex(40)
-                }
-
-                HStack(spacing: actionSpacing) {
-                    PoolActionChip(
-                        title: LocalizationHelper.localizedString(forKey: "Cancel"),
-                        isPrimary: false,
-                        height: actionHeight,
-                        fontSize: actionFontSize,
-                        cornerRadius: 14
-                    ) {
-                        dismissTriggerIntervalSheet()
-                    }
-
-                    PoolActionChip(
-                        title: LocalizationHelper.localizedString(forKey: "Confirm"),
-                        isPrimary: true,
-                        height: actionHeight,
-                        fontSize: actionFontSize,
-                        cornerRadius: 14
-                    ) {
-                        applyTriggerIntervalChanges()
-                    }
-                }
-                .padding(.top, isPhone ? 2 : 0)
-                .zIndex(0)
-            }
-            .padding(cardPadding)
-            .frame(maxWidth: cardMaxWidth)
-            .background(
-                RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
-                    .fill(Color(red: 0.94, green: 0.97, blue: 0.98).opacity(0.98))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
-                            .stroke(Color.white.opacity(0.96), lineWidth: 1.1)
-                    )
-            )
-            .shadow(color: Color.black.opacity(0.12), radius: 24, x: 0, y: 12)
-            .padding(.horizontal, horizontalInset)
-        }
-        // .widgetPickerIgnoreKeyboardSafeAreaWhenAvailable()
-    }
 
     /*
     private func createInteractiveControlContainer<Content: View>(
@@ -3826,8 +3838,12 @@ struct WidgetPoolGridView: View {
     let onItemTap: (WidgetPoolItem) -> Void
     let spacing: CGFloat
     let contentInset: CGFloat
+    let scrollTargetItemID: UUID?
+    let scrollRequestToken: Int
 
     private let columns = 4
+    private let visibleRows = 4
+    @SwiftUI.State private var lastHandledScrollRequestToken: Int = -1
 
     var body: some View {
         GeometryReader { proxy in
@@ -3835,12 +3851,16 @@ struct WidgetPoolGridView: View {
             let height = proxy.size.height
             let availableSide = max(min(width, height) - contentInset * 2, 1)
             let cellSize = (availableSide - CGFloat(columns - 1) * spacing) / CGFloat(columns)
-            let gridSide = cellSize * CGFloat(columns) + spacing * CGFloat(columns - 1)
-            let gridOriginX = (width - gridSide) * 0.5
-            let gridOriginY = (height - gridSide) * 0.5
             let placements = makePlacements(for: items, columns: columns)
+            let totalRows = max(visibleRows, (placements.map(\.row).max() ?? -1) + 1)
+            let gridWidth = cellSize * CGFloat(columns) + spacing * CGFloat(columns - 1)
+            let viewportGridHeight = cellSize * CGFloat(visibleRows) + spacing * CGFloat(visibleRows - 1)
+            let contentGridHeight = cellSize * CGFloat(totalRows) + spacing * CGFloat(max(totalRows - 1, 0))
+            let viewportHeight = viewportGridHeight + contentInset * 2
+            let contentHeight = contentGridHeight + contentInset * 2
+            let gridOriginX = (width - gridWidth) * 0.5
 
-            ZStack(alignment: .topLeading) {
+            ZStack {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .fill(
                         LinearGradient(
@@ -3861,50 +3881,129 @@ struct WidgetPoolGridView: View {
                         NSLog("WidgetPickerView pool grid background tapped")
                     }
 
-                ForEach(0..<columns, id: \.self) { column in
-                    ForEach(0..<columns, id: \.self) { row in
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.white.opacity(0.16))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 5]))
+                Group {
+                    if #available(iOS 14.0, *) {
+                        poolScrollViewWithAutoScroll(
+                            width: width,
+                            cellSize: cellSize,
+                            contentHeight: contentHeight,
+                            contentInset: contentInset,
+                            totalRows: totalRows,
+                            gridOriginX: gridOriginX,
+                            placements: placements,
+                            showsIndicators: totalRows > visibleRows
+                        )
+                    } else {
+                        ScrollView(.vertical, showsIndicators: totalRows > visibleRows) {
+                            poolGridContent(
+                                width: width,
+                                cellSize: cellSize,
+                                contentHeight: contentHeight,
+                                contentInset: contentInset,
+                                totalRows: totalRows,
+                                gridOriginX: gridOriginX,
+                                placements: placements
                             )
-                            .frame(width: cellSize, height: cellSize)
-                            .position(
-                                x: gridOriginX + CGFloat(column) * (cellSize + spacing) + cellSize * 0.5,
-                                y: gridOriginY + CGFloat(row) * (cellSize + spacing) + cellSize * 0.5
-                            )
-                            .allowsHitTesting(false)
+                        }
                     }
                 }
+                .frame(height: viewportHeight)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            }
+            .frame(height: viewportHeight)
+        }
+    }
 
-                ForEach(placements) { placement in
-                    poolItemView(for: placement.item, cellSize: cellSize)
-                        .frame(
-                            width: cellSize * CGFloat(placement.item.span) + spacing * CGFloat(placement.item.span - 1),
-                            height: cellSize
-                        )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            NSLog(
-                                "WidgetPickerView pool item tapped cmd=%@ id=%@ row=%d column=%d span=%d",
-                                placement.item.cmd,
-                                placement.item.id.uuidString,
-                                placement.row,
-                                placement.column,
-                                placement.item.span
-                            )
-                            onItemTap(placement.item)
-                        }
-                        .position(
-                        x: gridOriginX + CGFloat(placement.column) * (cellSize + spacing)
-                            + (cellSize * CGFloat(placement.item.span) + spacing * CGFloat(placement.item.span - 1)) * 0.5,
-                        y: gridOriginY + CGFloat(placement.row) * (cellSize + spacing) + cellSize * 0.5
-                    )
-                    .zIndex(1)
+    @available(iOS 14.0, *)
+    private func poolScrollViewWithAutoScroll(
+        width: CGFloat,
+        cellSize: CGFloat,
+        contentHeight: CGFloat,
+        contentInset: CGFloat,
+        totalRows: Int,
+        gridOriginX: CGFloat,
+        placements: [WidgetPoolPlacement],
+        showsIndicators: Bool
+    ) -> some View {
+        ScrollViewReader { scrollProxy in
+            ScrollView(.vertical, showsIndicators: showsIndicators) {
+                poolGridContent(
+                    width: width,
+                    cellSize: cellSize,
+                    contentHeight: contentHeight,
+                    contentInset: contentInset,
+                    totalRows: totalRows,
+                    gridOriginX: gridOriginX,
+                    placements: placements
+                )
+            }
+            .onReceive(Just(scrollRequestToken)) { requestToken in
+                guard requestToken != lastHandledScrollRequestToken else { return }
+                lastHandledScrollRequestToken = requestToken
+                guard let scrollTargetItemID else { return }
+                DispatchQueue.main.async {
+                    scrollProxy.scrollTo(scrollTargetItemID, anchor: .bottom)
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func poolGridContent(
+        width: CGFloat,
+        cellSize: CGFloat,
+        contentHeight: CGFloat,
+        contentInset: CGFloat,
+        totalRows: Int,
+        gridOriginX: CGFloat,
+        placements: [WidgetPoolPlacement]
+    ) -> some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(0..<columns, id: \.self) { column in
+                ForEach(0..<totalRows, id: \.self) { row in
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.white.opacity(0.16))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 5]))
+                        )
+                        .frame(width: cellSize, height: cellSize)
+                        .position(
+                            x: gridOriginX + CGFloat(column) * (cellSize + spacing) + cellSize * 0.5,
+                            y: contentInset + CGFloat(row) * (cellSize + spacing) + cellSize * 0.5
+                        )
+                        .allowsHitTesting(false)
+                }
+            }
+
+            ForEach(placements) { placement in
+                poolItemView(for: placement.item, cellSize: cellSize)
+                    .frame(
+                        width: cellSize * CGFloat(placement.item.span) + spacing * CGFloat(placement.item.span - 1),
+                        height: cellSize
+                    )
+                    .contentShape(Rectangle())
+                    .id(placement.item.id)
+                    .onTapGesture {
+                        NSLog(
+                            "WidgetPickerView pool item tapped cmd=%@ id=%@ row=%d column=%d span=%d",
+                            placement.item.cmd,
+                            placement.item.id.uuidString,
+                            placement.row,
+                            placement.column,
+                            placement.item.span
+                        )
+                        onItemTap(placement.item)
+                    }
+                    .position(
+                        x: gridOriginX + CGFloat(placement.column) * (cellSize + spacing)
+                            + (cellSize * CGFloat(placement.item.span) + spacing * CGFloat(placement.item.span - 1)) * 0.5,
+                        y: contentInset + CGFloat(placement.row) * (cellSize + spacing) + cellSize * 0.5
+                    )
+                    .zIndex(1)
+            }
+        }
+        .frame(width: width, height: contentHeight, alignment: .topLeading)
     }
 
     private func poolItemView(for item: WidgetPoolItem, cellSize: CGFloat) -> some View {
@@ -3929,7 +4028,7 @@ struct WidgetPoolGridView: View {
                         Text(item.displayCmd)
                             .font(.system(size: max(11, cellSize * 0.18), weight: .bold, design: .rounded))
                             .foregroundColor(Color.black.opacity(0.70))
-                            .minimumScaleFactor(0.6)
+                            .minimumScaleFactor(0.25)
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 6)
@@ -3955,7 +4054,7 @@ struct WidgetPoolGridView: View {
                         Text(item.displayCmd)
                             .font(.system(size: max(11, cellSize * 0.18), weight: .bold, design: .rounded))
                             .foregroundColor(Color.black.opacity(0.70))
-                            .minimumScaleFactor(0.6)
+                            .minimumScaleFactor(0.25)
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
