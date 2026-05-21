@@ -453,7 +453,7 @@ import ObjectiveC.runtime
         
         if !self.cmdString.contains("+"){
             // 安全解包并处理 `comboKeyStrings`
-            if var comboStrings = CommandManager.shared.extractCmdStrings(from: self.cmdString) {
+            if let comboStrings = CommandManager.shared.extractCmdStrings(from: self.cmdString) {
                 
                 if CommandManager.touchPadCmds.contains(comboStrings.first ?? "") {self.widgetType = WidgetTypeEnum.touchPad}
                 else {self.widgetType = WidgetTypeEnum.button}
@@ -3932,6 +3932,23 @@ import ObjectiveC.runtime
         isRestoringFolderStates = false
     }
     
+    @objc static func getDeepestButton() -> OnScreenWidgetView?{
+        var maxIndex: Int = Int.max
+        var deepestButton: OnScreenWidgetView?
+        for widget in OnScreenWidgetView.mapping.values.filter({ $0.widgetType == .button}){
+            let currentIndex = widget.superview?.subviews.firstIndex(of: widget)
+            if let currentIndex = currentIndex {
+                if currentIndex < maxIndex {
+                    maxIndex = currentIndex
+                    deepestButton = widget
+                }
+            }
+            else {continue}
+        }
+        OnScreenWidgetView.deepestButton = deepestButton
+        return deepestButton
+    }
+    
     @objc static func getMaxSequence() -> Int16{
         return OnScreenWidgetView.mapping.keys.max() ?? -1
     }
@@ -4052,7 +4069,7 @@ import ObjectiveC.runtime
     }
     
 deinit {
-        print("onScreenWidgetView deinit \(self.widgetLabel) \(CACurrentMediaTime())")
+        print("onScreenWidgetView deinit \(self.widgetLabel))")
     }
 }
 

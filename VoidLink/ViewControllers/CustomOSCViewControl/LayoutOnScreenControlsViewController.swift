@@ -492,6 +492,16 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             self.layoutOSC.oscButtonLayerPool.removeAllObjects()
         }
         
+        OnScreenWidgetView.deepestButton = nil;
+        _ = OnScreenWidgetView.getDeepestButton()
+        if let deepestButton = OnScreenWidgetView.deepestButton {
+            for widget in OnScreenWidgetView.mapping.values {
+                if widget.widgetType == .touchPad {
+                    widget.superview?.insertSubview(widget, belowSubview: deepestButton)
+                }
+            }
+        }
+        
         view.bringSubviewToFront(toolbarRootView)
     }
     

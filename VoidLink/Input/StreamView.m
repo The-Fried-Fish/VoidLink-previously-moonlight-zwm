@@ -805,21 +805,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 [self->oscProfileMan replaceSelectedProfileWith:profile overwriteDefault:YES];
             }
             
-            uint64_t buttonIndex = 9999999;
-            UIView* deepestButton;
-            for (UIView *subview in self->_streamFrameTopLayerView.subviews) {
-                if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
-                    OnScreenWidgetView* widget = (OnScreenWidgetView* ) subview;
-                    if(widget.widgetType == WidgetTypeEnumButton){
-                        uint64_t index = [self->_streamFrameTopLayerView.subviews indexOfObject:subview];
-                        if (index<buttonIndex){
-                            buttonIndex = index;
-                            deepestButton = subview;
-                            OnScreenWidgetView.deepestButton = (OnScreenWidgetView* )deepestButton;
-                        }
-                    }
-                }
-            }
+            OnScreenWidgetView.deepestButton = nil;
+            UIView* deepestButton = [OnScreenWidgetView getDeepestButton];
             if(deepestButton){
                 for (UIView *subview in self->_streamFrameTopLayerView.subviews) {
                     if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
