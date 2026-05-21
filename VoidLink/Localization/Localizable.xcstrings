@@ -3707,19 +3707,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "继续向此组合添加控件，或点按池中的按钮以设置宏。"
+            "value" : "继续向此组合添加控件，或点按池中的按键以设置宏。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繼續向此組合加入控制項，或點按池中的按鈕以設定巨集。"
+            "value" : "繼續向此組合加入控制項，或點按池中的按鍵以設定巨集。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繼續向此組合加入控制項，或點按池中的按鈕以設定巨集。"
+            "value" : "繼續向此組合加入控制項，或點按池中的按鍵以設定巨集。"
           }
         }
       }
