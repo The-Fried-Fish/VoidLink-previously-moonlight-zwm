@@ -1562,7 +1562,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     }
 
     private func clearSickInput() {
-        if selectedWidget != nil && widgetViewSelected {
+        if selectedWidget != nil && widgetViewSelected && OnScreenWidgetView.gamepadArrivalReported {
             OnScreenControls.shared()?.clearLeftStickTouchPadFlag()
             OnScreenControls.shared()?.clearRightStickTouchPadFlag()
         }

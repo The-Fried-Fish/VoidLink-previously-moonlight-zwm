@@ -3729,7 +3729,7 @@ import ObjectiveC.runtime
                     widget.isUserInteractionEnabled = false
                     if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
                         || abs(widget.backgroundAlpha) < 0.1){
-                        widget.highlightBorder(highlighted: folder.animatesTransition, color: UIColor.systemBlue.cgColor)
+                        widget.highlightBorder(highlighted: OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition, color: OnScreenWidgetView.enableFolderAnimation ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor)
                     }
                     let duration = (OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition)
                     ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval)
@@ -3758,7 +3758,7 @@ import ObjectiveC.runtime
                     widget.isHidden = false
                     if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
                         || abs(widget.backgroundAlpha) < 0.1){
-                        widget.highlightBorder(highlighted: folder.animatesTransition, color: UIColor.systemBlue.cgColor)
+                        widget.highlightBorder(highlighted: OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition, color: OnScreenWidgetView.enableFolderAnimation ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor)
                     }
                     UIView.animate(withDuration: (OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition)
                                    ? (folder.buttonMode == .slideAndHold ? 0.05 : widget.standardFoldingInterval)

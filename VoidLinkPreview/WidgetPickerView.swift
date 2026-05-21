@@ -357,7 +357,6 @@ private struct InteractiveTextField: UIViewRepresentable {
         if uiView.isEnabled != isEnabled {
             DispatchQueue.main.async {
                 uiView.isEnabled = isEnabled
-                uiView.isUserInteractionEnabled = isEnabled
             }
         }
         uiView.alpha = isEnabled ? 1.0 : 0.45
@@ -2462,7 +2461,7 @@ struct WidgetPickerView: View {
                         .zIndex(20)
                     }
                     
-                    //if true {
+                    if true {
                         createWidgetSection(title: LocalizationHelper.localizedString(forKey: "Manually enter press duration in milliseconds")) {
                             InteractiveTextField(
                                 placeholder: LocalizationHelper.localizedString(forKey: ""),
@@ -2472,7 +2471,7 @@ struct WidgetPickerView: View {
                             .frame(height: fieldHeight)
                         }
                         .zIndex(40)
-                    // }
+                    }
                 }
 
                 HStack(spacing: actionSpacing) {
