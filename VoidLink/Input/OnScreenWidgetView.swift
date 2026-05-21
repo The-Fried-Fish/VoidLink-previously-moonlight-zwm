@@ -194,6 +194,8 @@ import ObjectiveC.runtime
 
     //autoTapTimer
     @objc public var autoTapInterval: Int = 49;
+    @objc public var autoTapRepeats: UInt32 = 0;
+    private var autoTapCount: UInt32 = 0;
     private var autoTapTimer: SafeTimer?
     
     private let appWindow: UIView
@@ -676,6 +678,15 @@ import ObjectiveC.runtime
         if self.widgetType == WidgetTypeEnum.button, autoTapInterval >= OnScreenWidgetView.MinAutotapInterval {
             self.autoTapTimer = SafeTimer(interval:0.001 * Double(autoTapInterval)) {
                 // print("timer instance \(Unmanaged.passUnretained(self.autoTapTimer!).toOpaque()), \(CACurrentMediaTime())")
+                if self.autoTapRepeats > 0 {
+                    self.autoTapCount += 1
+                    if self.autoTapCount >= self.autoTapRepeats {
+                        self.autoTapTimer?.pause()
+                        if self.buttonMode == .tapToToggle {
+                            self.tapToToggleFlag = !self.tapToToggleFlag
+                        }
+                    }
+                }
                 self.handleButtonDown()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.025) {
                     self.handleButtonUp()
@@ -1580,6 +1591,7 @@ import ObjectiveC.runtime
             handleButtonDown()
         }
         else{
+            self.autoTapCount = 0
             self.autoTapTimer?.restart()
         }
     }

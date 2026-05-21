@@ -49,6 +49,7 @@
     [encoder encodeBool:self.animatesTransition forKey:@"animatesTransition"];
     [encoder encodeInt:self.buttonMode forKey:@"slideMode"];  // buttonMode: previously slideMode, keep it for consistency
     [encoder encodeInt:self.autoTapInterval forKey:@"autoTapInterval"];
+    [encoder encodeInt:self.autoTapRepeats forKey:@"autoTapRepeats"];
     [encoder encodeCGPoint:self.position forKey:@"position"];
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
     [encoder encodeFloat:self.widthFactor forKey:@"widthFactor"];
@@ -100,6 +101,7 @@
         self.animatesTransition = [decoder containsValueForKey:@"animatesTransition"] ? [decoder decodeBoolForKey:@"animatesTransition"] : true;
         self.buttonMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;
         self.autoTapInterval = [decoder containsValueForKey:@"autoTapInterval"] ? [decoder decodeIntForKey:@"autoTapInterval"] : 45;
+        self.autoTapRepeats = [decoder containsValueForKey:@"autoTapRepeats"] ? [decoder decodeIntForKey:@"autoTapRepeats"] : 0;
         self.position = [decoder decodeCGPointForKey:@"position"];
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];

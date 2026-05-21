@@ -744,6 +744,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.borderWidth = buttonState.borderWidth;
                     widgetView.highlightSizeFactor = buttonState.highlightSizeFactor;
                     widgetView.autoTapInterval = buttonState.autoTapInterval;
+                    widgetView.autoTapRepeats = buttonState.autoTapRepeats;
                     [widgetView setVibrationWithStyle:buttonState.vibrationStyle];
                     widgetView.mouseButtonAction = buttonState.mouseButtonAction;
                     widgetView.animatesTransition = buttonState.animatesTransition;

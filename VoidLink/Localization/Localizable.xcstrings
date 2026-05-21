@@ -1985,6 +1985,29 @@
         }
       }
     },
+    "0 - infinite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 - 无限"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 - 無限"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 - 無限"
+          }
+        }
+      }
+    },
     "A button with touchpad functionality will be created" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2545,6 +2568,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "連點定時器   "
+          }
+        }
+      }
+    },
+    "autoTapTimerTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Min: 50ms. 0 - disable. ms(milliSec),s(sec),m(min). ⏎ save"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低: 50ms, 输入0关闭. 单位: ms毫秒, s秒, m分钟. ⏎ 保存."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. ⏎ 儲存."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. ⏎ 儲存."
           }
         }
       }
@@ -7136,6 +7188,29 @@
         }
       }
     },
+    "Insert trigger interval" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插入触发间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插入觸發間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插入觸發間隔"
+          }
+        }
+      }
+    },
     "Interval of Multi-Touch Move Events: %d μs" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8087,6 +8162,52 @@
         }
       }
     },
+    "Manually enter press duration in milliseconds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动输入按压时长, 单位毫秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入按壓時長, 單位毫秒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入按壓時長, 單位毫秒"
+          }
+        }
+      }
+    },
+    "Manually enter trigger interval in milliseconds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动输入间隔，单位毫秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入間隔，單位毫秒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動輸入間隔，單位毫秒"
+          }
+        }
+      }
+    },
     "Map controller to mouse" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8285,29 +8406,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搖桿最小偏移量 (0~32766)"
-          }
-        }
-      }
-    },
-    "Minimum: 50ms. 0 to disable. ms(milliSec),s(sec),m(min). ⏎ to save" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最低: 50ms, 输入0关闭. 单位: ms毫秒, s秒, m分钟. 按 ⏎ 保存设定值."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. 按 ⏎ 儲存設定值."
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. 按 ⏎ 儲存設定值."
           }
         }
       }
@@ -8821,6 +8919,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "常規"
+          }
+        }
+      }
+    },
+    "Not enough room to insert trigger interval slots" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有足够空间插入触发间隔格"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有足夠空間插入觸發間隔格"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有足夠空間插入觸發間隔格"
           }
         }
       }
@@ -10317,52 +10438,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按壓時長: %d ms"
-          }
-        }
-      }
-    },
-    "Manually enter press duration in milliseconds" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手动输入按压时长, 单位毫秒"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動輸入按壓時長, 單位毫秒"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動輸入按壓時長, 單位毫秒"
-          }
-        }
-      }
-    },
-    "Manually enter trigger interval in milliseconds" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手动输入间隔，单位毫秒"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動輸入間隔，單位毫秒"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動輸入間隔，單位毫秒"
           }
         }
       }
@@ -11879,6 +11954,29 @@
         }
       }
     },
+    "Select at least two button controls before inserting trigger intervals" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请至少先选择两个按钮型控件，再插入触发间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請至少先選擇兩個按鈕型控制項，再插入觸發間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請至少先選擇兩個按鈕型控制項，再插入觸發間隔"
+          }
+        }
+      }
+    },
     "Select brush shortcut keys" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -12138,6 +12236,29 @@
         }
       }
     },
+    "Set all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "统一设置间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統一設定間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統一設定間隔"
+          }
+        }
+      }
+    },
     "Set PC/Game resolution:" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -12157,6 +12278,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定電腦/遊戲解析度："
+          }
+        }
+      }
+    },
+    "Set this" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单独设置间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單獨設定間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單獨設定間隔"
           }
         }
       }
@@ -13867,6 +14011,52 @@
         }
       }
     },
+    "Trigger interval cannot be inserted when WASDPAD or ARROWPAD is in the pool" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "池中存在 WASDPAD 或 ARROWPAD 时，不能插入触发间隔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "池中存在 WASDPAD 或 ARROWPAD 時，不能插入觸發間隔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "池中存在 WASDPAD 或 ARROWPAD 時，不能插入觸發間隔"
+          }
+        }
+      }
+    },
+    "Trigger interval slots are already inserted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触发间隔格已经插入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸發間隔格已經插入"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸發間隔格已經插入"
+          }
+        }
+      }
+    },
     "Tutorial" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -14759,167 +14949,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "是"
-          }
-        }
-      }
-    },
-    "Insert trigger interval" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "插入触发间隔"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "插入觸發間隔"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "插入觸發間隔"
-          }
-        }
-      }
-    },
-    "Not enough room to insert trigger interval slots" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有足够空间插入触发间隔格"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有足夠空間插入觸發間隔格"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有足夠空間插入觸發間隔格"
-          }
-        }
-      }
-    },
-    "Select at least two button controls before inserting trigger intervals" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请至少先选择两个按钮型控件，再插入触发间隔"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請至少先選擇兩個按鈕型控制項，再插入觸發間隔"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請至少先選擇兩個按鈕型控制項，再插入觸發間隔"
-          }
-        }
-      }
-    },
-    "Set all" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "统一设置间隔"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "統一設定間隔"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "統一設定間隔"
-          }
-        }
-      }
-    },
-    "Set this" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "单独设置间隔"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "單獨設定間隔"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "單獨設定間隔"
-          }
-        }
-      }
-    },
-    "Trigger interval cannot be inserted when WASDPAD or ARROWPAD is in the pool" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "池中存在 WASDPAD 或 ARROWPAD 时，不能插入触发间隔"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "池中存在 WASDPAD 或 ARROWPAD 時，不能插入觸發間隔"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "池中存在 WASDPAD 或 ARROWPAD 時，不能插入觸發間隔"
-          }
-        }
-      }
-    },
-    "Trigger interval slots are already inserted" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "触发间隔格已经插入"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "觸發間隔格已經插入"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "觸發間隔格已經插入"
           }
         }
       }

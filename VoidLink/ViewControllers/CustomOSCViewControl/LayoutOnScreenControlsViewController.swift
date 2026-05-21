@@ -97,9 +97,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBOutlet weak var mouseButtonDownSelector: UISegmentedControl!
     @IBOutlet weak var buttonModeStack: UIStackView!
     @IBOutlet weak var buttonModeSelector: UISegmentedControl!
+    
     @IBOutlet weak var autoTapStack: UIStackView!
     @IBOutlet weak var autoTapLabel: UILabel!
     @IBOutlet weak var autoTapField: UITextField!
+    @IBOutlet weak var autoTapRepeatsField: UITextField!
+    
     @IBOutlet weak var slideThresholdStack: UIStackView!
     @IBOutlet weak var slideThresholdLabel: UILabel!
     @IBOutlet weak var slideThresholdSlider: UISlider!
@@ -407,6 +410,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 widgetView.borderWidth = buttonState.borderWidth
                 widgetView.highlightSizeFactor = buttonState.highlightSizeFactor
                 widgetView.autoTapInterval = Int(buttonState.autoTapInterval)
+                widgetView.autoTapRepeats = UInt32(buttonState.autoTapRepeats)
                 widgetView.setVibration(style: Int(buttonState.vibrationStyle))
                 widgetView.mouseButtonAction = MouseButtonAction(rawValue: Int(buttonState.mouseButtonAction)) ?? .hovering
                 widgetView.animatesTransition = buttonState.animatesTransition
@@ -966,9 +970,18 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         autoTapField.textColor = .white
         autoTapField.keyboardType = .numbersAndPunctuation
         autoTapField.attributedPlaceholder = NSAttributedString(
-            string: LocalizationHelper.localizedString(forKey: "Minimum: 50ms. 0 to disable. ms(milliSec),s(sec),m(min). ⏎ to save"),
-            attributes: [.foregroundColor: UIColor.white.withAlphaComponent(0.77)]
+            string: LocalizationHelper.localizedString(forKey: "autoTapTimerTip"),
+            attributes: [.foregroundColor: UIColor.white.withAlphaComponent(0.77), .font: UIFont.systemFont(ofSize: 10)]
         )
+        
+        autoTapRepeatsField.text = widgetView.autoTapRepeats == 0 ? "∞" : "\(widgetView.autoTapRepeats)"
+        autoTapRepeatsField.textColor = .white
+        autoTapRepeatsField.keyboardType = .numbersAndPunctuation
+        autoTapRepeatsField.attributedPlaceholder = NSAttributedString(
+            string: LocalizationHelper.localizedString(forKey: "0 - infinite"),
+            attributes: [.foregroundColor: UIColor.white.withAlphaComponent(0.77), .font: UIFont.systemFont(ofSize: 10)]
+        )
+        
         autoFitLabel(autoTapLabel)
 
         decelerationRateStack.isHidden = !widgetView.hasInertia
@@ -1220,6 +1233,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.borderWidth = widget.borderWidth
         newWidget.highlightSizeFactor = widget.highlightSizeFactor
         newWidget.autoTapInterval = widget.autoTapInterval
+        newWidget.autoTapRepeats = widget.autoTapRepeats
         newWidget.sensitivityFactorY = widget.sensitivityFactorY
         newWidget.slideThreshold = widget.slideThreshold
         newWidget.yawFactor = widget.yawFactor
@@ -1743,9 +1757,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetBorderWidthLabel.isUserInteractionEnabled = true
         widgetBorderWidthLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchBorderWidthSlider(_:))))
         borderWidthAlphaStack.isHidden = true
+        
         autoTapLabel.text = LocalizationHelper.localizedString(forKey: "Autotap timer   ")
         autoTapField.delegate = self
+        autoTapRepeatsField.delegate = self
         autoTapStack.isHidden = true
+        
         sensitivityXSlider.addTarget(self, action: #selector(sensitivityXSliderMoved(_:)), for: .valueChanged)
         sensitivityXLabel.text = LocalizationHelper.localizedString(forKey: "SensitivityX")
         sensitivityXStack.isHidden = true
@@ -1914,6 +1931,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         if textField == autoTapField {
             textField.resignFirstResponder()
             selectedWidget?.setAutoTapIntervalByText(str: textField.text ?? "")
+        }
+        if textField == autoTapRepeatsField {
+            textField.resignFirstResponder()
+            if let repeats = UInt32(textField.text ?? "") {
+                selectedWidget?.autoTapRepeats = repeats
+            }
+            else {selectedWidget?.autoTapRepeats = 0}
         }
         return true
     }

@@ -2677,6 +2677,36 @@
         }
       }
     },
+    "gSL-YJ-0ME.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Repeats\"; ObjectID = \"gSL-YJ-0ME\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Repeats"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循环次数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循環次數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循環次數"
+          }
+        }
+      }
+    },
     "GX4-zV-pQ8.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Map Gyro to\"; ObjectID = \"GX4-zV-pQ8\";",
       "extractionState" : "extracted_with_value",

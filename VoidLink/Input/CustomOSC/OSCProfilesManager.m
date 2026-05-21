@@ -470,6 +470,7 @@ static CGRect layoutViewBounds;
         buttonState.borderWidth = widgetView.borderWidth;
         buttonState.highlightSizeFactor = widgetView.highlightSizeFactor;
         buttonState.autoTapInterval = widgetView.autoTapInterval;
+        buttonState.autoTapRepeats = widgetView.autoTapRepeats;
         buttonState.vibrationStyle = widgetView.vibrationStyle;
         buttonState.mouseButtonAction = widgetView.mouseButtonAction;
         buttonState.animatesTransition = widgetView.animatesTransition;

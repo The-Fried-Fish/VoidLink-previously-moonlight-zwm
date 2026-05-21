@@ -3620,6 +3620,36 @@
         }
       }
     },
+    "iiK-9g-N5s.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Repeats\"; ObjectID = \"iiK-9g-N5s\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Repeats"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循环次数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循環次數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循環次數"
+          }
+        }
+      }
+    },
     "iPd-Ra-Lbl.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Full Color Range\"; ObjectID = \"iPd-Ra-Lbl\";",
       "extractionState" : "extracted_with_value",
