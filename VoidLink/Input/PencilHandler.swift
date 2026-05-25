@@ -16,7 +16,7 @@ import UIKit
     weak var streamView: UIView?
     // private var tickTimer: SafeTimer
     private var pencilInteraction: Any?
-    private var streamAspectRatio: Float
+    @objc var streamAspectRatio: Float
     private var tickInterval: TimeInterval
     private var manualTick: Bool
     private var pencilTickEnabled: Bool
