@@ -562,15 +562,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #endif
 }
 
-
-// we'll enable on screen buttons, and disable on screen controllers for absolute touch
-- (bool) isOscEnabled{
-    return (touchMode == RelativeTouch || touchMode == NativeTouch || touchMode == AbsoluteTouch || touchMode == TouchDisabled) && settings.onscreenControls.intValue != OnScreenControlsLevelOff;
-}
-
 // we'll enable on screen buttons, and disable on screen controllers for absolute touch
 - (bool) isOnScreenWidgetEnabled{
-    return [self isOscEnabled] && settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+    return settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void) reloadOnScreenControlsRealtimeWithControllerSupport:(ControllerSupport*)controllerSupport
@@ -594,7 +588,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         RelativeTouchHandler* relativeTouchHandler = (RelativeTouchHandler *)touchHandler;
         onScreenControls.mouseRightClickTapRecognizer = relativeTouchHandler.mouseRightClickTapRecognizer;
     } */
-    if([self isOscEnabled]) [_onScreenControls setLevel:(OnScreenControlsLevel)settings.onscreenControls.intValue];
+    if([self isOnScreenWidgetEnabled]) [_onScreenControls setLevel:(OnScreenControlsLevel)settings.onscreenControls.intValue];
 }
 
 
@@ -826,7 +820,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         NSLog(@"hasLegacyWidget %d %f", hasLegacyWidget, CACurrentMediaTime());
         // legacy widgets
         if(!OnScreenWidgetView.editMode && (hasLegacyWidget || !reloadWidgets)){
-            if([self isOscEnabled]) [self reloadLegacyWidgets:profile];
+            if([self isOnScreenWidgetEnabled]) [self reloadLegacyWidgets:profile];
             else [self disableOnScreenControls];
         }
         
@@ -1059,8 +1053,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     [self startInteractionTimer];
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
-    if(touchMode == NativeTouch || touchMode == RelativeTouch){
-        [self->_onScreenControls handleTouchDownEvent:targetTouches];
+    if(touchMode != AbsoluteTouch){
+        if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchDownEvent:targetTouches];
         [self->touchHandler touchesBegan:targetTouches withEvent:event];
     }
     else if(![_onScreenControls handleTouchDownEvent:targetTouches]) [touchHandler touchesBegan:targetTouches withEvent:event];
@@ -1236,9 +1230,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     hasUserInteracted = YES;
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
-    if(self->touchMode == NativeTouch || self->touchMode == RelativeTouch){
+    if(self->touchMode != AbsoluteTouch){
         [self->touchHandler touchesMoved:targetTouches withEvent:event];
-        [self->_onScreenControls handleTouchMovedEvent:targetTouches];
+        if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchMovedEvent:targetTouches];
     }
     else if(![self->_onScreenControls handleTouchMovedEvent:targetTouches]) [self->touchHandler touchesMoved:targetTouches withEvent:event];
 }
@@ -1388,9 +1382,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     hasUserInteracted = YES;
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
-    if(touchMode == NativeTouch || touchMode == RelativeTouch){
+    if(touchMode != AbsoluteTouch){
         [self->touchHandler touchesEnded:targetTouches withEvent:event]; // when touches ended, must call the native touchhandler before onScreenControls, since the NSSet of touches captured by on screen button shall be updated later
-        [self->_onScreenControls handleTouchUpEvent:targetTouches];
+        if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchUpEvent:targetTouches];
     }
     else if(![_onScreenControls handleTouchUpEvent:targetTouches]) [touchHandler touchesEnded:targetTouches withEvent:event];
 }

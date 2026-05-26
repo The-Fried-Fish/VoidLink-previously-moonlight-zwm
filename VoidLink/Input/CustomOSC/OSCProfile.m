@@ -125,6 +125,8 @@
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
         
         self.touchMode = [decoder containsValueForKey:@"touchMode"] ? [decoder decodeIntForKey:@"touchMode"] : NativeTouch;
+        if(self.touchMode == NativeTouchOnly) self.touchMode = NativeTouch;
+        
         self.pointerVelocityModeDivider = [decoder containsValueForKey:@"pointerVelocityModeDivider"] ? [decoder decodeFloatForKey:@"pointerVelocityModeDivider"] : 0.5;
         self.touchPointerVelocityFactor = [decoder containsValueForKey:@"touchPointerVelocityFactor"] ? [decoder decodeFloatForKey:@"touchPointerVelocityFactor"] : 1.0;
         

@@ -180,7 +180,7 @@
 
 
 - (bool)isOnScreenWidgetEnabled{
-    return (_oscProfile.touchMode == RelativeTouch || _oscProfile.touchMode == NativeTouch || _oscProfile.touchMode == AbsoluteTouch || _oscProfile.touchMode == TouchDisabled) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+    return _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {    // Ensure we have the renderer and its layer

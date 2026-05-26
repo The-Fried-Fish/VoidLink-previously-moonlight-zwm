@@ -2543,7 +2543,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (bool)isNotNativeTouchOnly{
-    return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector1.selectedSegmentIndex == NativeTouch) || self.touchModeSelector1.selectedSegmentIndex != NativeTouch;
+    // return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector1.selectedSegmentIndex == NativeTouch) || self.touchModeSelector1.selectedSegmentIndex != NativeTouch;
+    return true;
 }
 
 - (void)handleOswGestureChange{
@@ -3193,8 +3194,10 @@ BOOL isCustomResolution(int resolutionSelected) {
     // bool customOscEnabled = [self isOswEnabled] && [self.onScreenWidgetSelector selectedSegmentIndex] == OnScreenControlsLevelCustom;
     
     bool isNativeTouch = sender.selectedSegmentIndex == NativeTouch;
-    bool isEgmerging = self.enableOswSwitchStack.hidden != !isNativeTouch && isNativeTouch;
-    self.enableOswSwitchStack.hidden = !isNativeTouch;
+    // bool isEgmerging = self.enableOswSwitchStack.hidden != !isNativeTouch && isNativeTouch;
+    bool isEgmerging = false;
+    // self.enableOswSwitchStack.hidden = !isNativeTouch;
+    self.enableOswSwitchStack.hidden = true;
     if(isEgmerging) [self highlightEmergingStack:self.enableOswSwitchStack];
 
     
