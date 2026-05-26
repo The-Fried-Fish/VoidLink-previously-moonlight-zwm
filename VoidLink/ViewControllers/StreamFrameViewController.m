@@ -180,7 +180,7 @@
 
 
 - (bool)isOnScreenWidgetEnabled{
-    return (_settings.touchMode.intValue == RelativeTouch || _settings.touchMode.intValue == NativeTouch || _settings.touchMode.intValue == AbsoluteTouch || _settings.touchMode.intValue == TouchDisabled) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
+    return (_oscProfile.touchMode == RelativeTouch || _oscProfile.touchMode == NativeTouch || _oscProfile.touchMode == AbsoluteTouch || _oscProfile.touchMode == TouchDisabled) && _settings.onscreenControls.intValue == OnScreenControlsLevelCustom;
 }
 
 - (void)setupPiPControllerWithRenderer:(VideoDecoderRenderer *)videoRenderer {    // Ensure we have the renderer and its layer
@@ -300,6 +300,7 @@
     _slideToToolboxRecognizer.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:_slideToToolboxRecognizer];
     
+    /*
     if([self isOnScreenWidgetEnabled]){
         _oscLayoutTapRecoginizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(handleWidgetLayoutGesture)];
         _oscLayoutTapRecoginizer.numberOfTouchesRequired = _settings.oscLayoutToolFingers.intValue; //tap a predefined number of fingers to open osc layout tool
@@ -310,7 +311,7 @@
         [self.view addGestureRecognizer:_oscLayoutTapRecoginizer];
         _oscLayoutTapRecoginizer.touchCapturingView = _streamView;
     }
-    
+    */
 }
 
 - (BOOL)currentProfileContainsMagnifierWidget {
@@ -446,7 +447,7 @@
 - (void)handleScrollPan:(UIPanGestureRecognizer *)gesture {
     switch (gesture.state){
         case UIGestureRecognizerStateEnded:
-            if(_settings.touchMode.intValue == AbsoluteTouch && _scrollView.zoomScale < 1.0) [self resetMagnifierStreamViewWithAnimated:true];
+            if(_oscProfile.touchMode == AbsoluteTouch && _scrollView.zoomScale < 1.0) [self resetMagnifierStreamViewWithAnimated:true];
             break;
         default:
             break;
@@ -626,7 +627,7 @@
     TouchPadGestureHandler.pinchSensitivity = _settings.pinchSensitivity.floatValue;
     TouchPadGestureHandler.displayLinkRate = _settings.framerate.intValue;
     
-    [self setMagnifierViewportInteractionEnabled:_settings.touchMode.intValue == AbsoluteTouch && !_settings.passthroughGestures];
+    [self setMagnifierViewportInteractionEnabled:_oscProfile.touchMode == AbsoluteTouch && !_settings.passthroughGestures];
     
     GenericUtils.globeAsEscape = _settings.globeAsEscape;
 
@@ -964,9 +965,7 @@
         [self.view insertSubview:self.metalViewController.view atIndex:0];
         [self.metalViewController didMoveToParentViewController:self];
     }
-    
-    _mainFrameViewcontroller.sessionLaunchedWithAbsoluteTouch = _settings.touchMode.intValue == AbsoluteTouch;
-    
+        
     OnScreenWidgetView.gamepadArrivalReported = false;
     
     OnScreenWidgetView.enableFolderAnimation = false;
@@ -1048,7 +1047,7 @@
 }
 
 - (void)setMagnifierViewportInteractionEnabled:(BOOL)enabled {
-    _magnifierViewportInteractionActive = enabled || _settings.touchMode.intValue == AbsoluteTouch;
+    _magnifierViewportInteractionActive = enabled || (_oscProfile.touchMode == AbsoluteTouch && !_settings.passthroughGestures);
     [self updateScrollViewInteractionState];
 }
 
@@ -1064,7 +1063,7 @@
     [self setMagnifierViewportInteractionEnabled:true];
     CGPoint streamViewOffset = CGPointMake(profile.normalizedStreamViewOffset.x*self.view.bounds.size.width, profile.normalizedStreamViewOffset.y*self.view.bounds.size.height);
     [self restoreMagnifierStreamViewWithOffset:streamViewOffset scale:profile.streamViewScale animated:YES];
-    [self setMagnifierViewportInteractionEnabled:_settings.touchMode.intValue == AbsoluteTouch && !_settings.passthroughGestures];
+    [self setMagnifierViewportInteractionEnabled:profile.touchMode == AbsoluteTouch && !_settings.passthroughGestures];
 }
 
 - (void)restoreMagnifierStreamViewWithOffset:(CGPoint)offset scale:(CGFloat)scale {

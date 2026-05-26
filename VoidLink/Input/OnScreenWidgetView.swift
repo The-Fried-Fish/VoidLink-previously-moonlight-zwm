@@ -482,10 +482,10 @@ import ObjectiveC.runtime
             self.widgetType = WidgetTypeEnum.button // legacy combo button connected by "+"
         }
 
-        print("widgetType: \(self.widgetType)")
-        print("touchPadString: \(self.touchPadString)")
+        // print("widgetType: \(self.widgetType)")
+        // print("touchPadString: \(self.touchPadString)")
         for comboButtonString in comboButtonStrings {
-            print("comboButtonString: \(comboButtonString)")
+            // print("comboButtonString: \(comboButtonString)")
         }
         
         self.widgetLabel = buttonLabel
