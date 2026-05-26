@@ -3214,7 +3214,6 @@ import ObjectiveC.runtime
                     OnScreenWidgetView.putWidget(self, into: capturer)
                 }
             }
-            OnScreenWidgetView.capturer = nil
 
             guard let superview = superview else { return }
             
@@ -3248,14 +3247,17 @@ import ObjectiveC.runtime
             }
         }
         
-        if OnScreenWidgetView.isVerticallyAligned {
-            self.center = CGPoint(x:OnScreenWidgetView.alignedX, y:self.center.y)
-            OnScreenWidgetView.isVerticallyAligned = false
+        if OnScreenWidgetView.capturer == nil, OnScreenWidgetView.editMode {
+            if OnScreenWidgetView.isVerticallyAligned {
+                self.center = CGPoint(x:OnScreenWidgetView.alignedX, y:self.center.y)
+                OnScreenWidgetView.isVerticallyAligned = false
+            }
+            if OnScreenWidgetView.isHorizontallyAligned {
+                self.center = CGPoint(x:self.center.x, y:OnScreenWidgetView.alignedY)
+                OnScreenWidgetView.isHorizontallyAligned = false
+            }
         }
-        if OnScreenWidgetView.isHorizontallyAligned {
-            self.center = CGPoint(x:self.center.x, y:OnScreenWidgetView.alignedY)
-            OnScreenWidgetView.isHorizontallyAligned = false
-        }
+        OnScreenWidgetView.capturer = nil
     }
     
     @objc public func setAutoTapIntervalByText(str: String){
@@ -3414,7 +3416,7 @@ import ObjectiveC.runtime
             return
         }
         if autoDockIsDocked {
-            autoDockRestoreWidget(animated: true)
+            autoDockRestoreWidget(animated: false)
             return
         }
         autoDockStopCountdown()
@@ -3646,7 +3648,13 @@ import ObjectiveC.runtime
         
         let completion: (Bool) -> Void = { _ in
             self.autoDockDockedCenter = nil
-            self.autoDockRestartCountdownIfNeeded()
+            self.autoDockIsDocked = false
+            self.restartAutoDockCountdown()
+            if OnScreenWidgetView.autoDockRestoreInitByViewResize {
+                OnScreenWidgetView.autoDockRestoreInitByViewResize = false
+                OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore = false
+            }
+            OnScreenWidgetView.deferScreenEdgeSysGesturesDueToOnScreenWidgets = false
         }
         
         if animated {
@@ -3658,13 +3666,7 @@ import ObjectiveC.runtime
                 options: [.allowUserInteraction, .curveEaseOut],
                 animations: animations,
                 completion: {_ in
-                    self.autoDockIsDocked = false
-                    self.restartAutoDockCountdown()
-                    if OnScreenWidgetView.autoDockRestoreInitByViewResize {
-                        OnScreenWidgetView.autoDockRestoreInitByViewResize = false
-                        OnScreenWidgetView.deferSlideGestureDueToAutoDockRestore = false
-                    }
-                    OnScreenWidgetView.deferScreenEdgeSysGesturesDueToOnScreenWidgets = false
+                    completion(true)
                 }
             )
         }
