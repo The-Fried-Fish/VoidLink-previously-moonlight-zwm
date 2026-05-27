@@ -273,7 +273,7 @@ struct GyroButtonOption: Identifiable {
 @available(iOS 13.0, *)
 struct FunctionalButtonOption: Identifiable {
     let id = UUID()
-    let label: String
+    let localizationKey: String
     let cmd: String
     let tip: String
     let allowsKeyboardCombination: Bool
@@ -563,7 +563,7 @@ struct WidgetPickerView: View {
 
     private let functionalButtonOptions: [FunctionalButtonOption] = [
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Settings"),
+            localizationKey: "=settings",
             cmd: "SETTINGS",
             tip: LocalizationHelper.localizedString(forKey: "Expands setting menu during streaming"),
             allowsKeyboardCombination: false,
@@ -573,7 +573,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Disconnect"),
+            localizationKey: "=disconnect",
             cmd: "DISCONNECT",
             tip: LocalizationHelper.localizedString(forKey: "Disconnect current connection"),
             allowsKeyboardCombination: false,
@@ -583,7 +583,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Quit app"),
+            localizationKey: "=quitApp",
             cmd: "QUITAPP",
             tip: LocalizationHelper.localizedString(forKey: "Disconnect and quit current app"),
             allowsKeyboardCombination: false,
@@ -593,7 +593,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Enter PiP"),
+            localizationKey: "=enterPiP",
             cmd: "PIP",
             tip: LocalizationHelper.localizedString(forKey: "Enter picture-in-picture mode"),
             allowsKeyboardCombination: false,
@@ -603,7 +603,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Folder"),
+            localizationKey: "=Folder",
             cmd: "FOLDER",
             tip: LocalizationHelper.localizedString(forKey: "Collect other widgets or subfolders. Button-combo available."),
             allowsKeyboardCombination: true,
@@ -613,7 +613,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Toolbox"),
+            localizationKey: "=toolbox",
             cmd: "TOOLBOX",
             tip: LocalizationHelper.localizedString(forKey: "Activate toolbox menu during streaming"),
             allowsKeyboardCombination: false,
@@ -623,7 +623,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Edit layout"),
+            localizationKey: "=widgetTool",
             cmd: "WIDGETTOOL",
             tip: LocalizationHelper.localizedString(forKey: "Open on-screen widget layout tool"),
             allowsKeyboardCombination: false,
@@ -633,7 +633,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Pick profile"),
+            localizationKey: "=pickProfile",
             cmd: "PICKPRFL",
             tip: LocalizationHelper.localizedString(forKey: "Pick a game/on-screen-widget profile"),
             allowsKeyboardCombination: false,
@@ -643,7 +643,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Profiles"),
+            localizationKey: "=profiles",
             cmd: "PROFILES",
             tip: LocalizationHelper.localizedString(forKey: "Select a game/on-screen-widget profile"),
             allowsKeyboardCombination: false,
@@ -653,7 +653,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "SoftKeyboard"),
+            localizationKey: "=softkeyboard",
             cmd: "SOFTKEYBOARD",
             tip: LocalizationHelper.localizedString(forKey: "Bring up softkeyboard"),
             allowsKeyboardCombination: false,
@@ -664,7 +664,7 @@ struct WidgetPickerView: View {
         ),
         
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Disable touch"),
+            localizationKey: "=DisableTouch",
             cmd: "DISABLETOUCH",
             tip: LocalizationHelper.localizedString(forKey: "Temporarily disable touch input for stream view"),
             allowsKeyboardCombination: false,
@@ -674,7 +674,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "🎮 overlay switch"),
+            localizationKey: "=gamepadOverlaySwitch",
             cmd: "GAMEPADOVERLAY",
             tip: LocalizationHelper.localizedString(forKey: "Switch on/off a floating gamepad overlay with live input feedback"),
             allowsKeyboardCombination: false,
@@ -684,7 +684,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Pressure curve"),
+            localizationKey: "=pressureCurve",
             cmd: "PRESSURECURVE",
             tip: LocalizationHelper.localizedString(forKey: "Opens pencil pressure curve tool"),
             allowsKeyboardCombination: false,
@@ -694,7 +694,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Pencil hover"),
+            localizationKey: "=pencilHover",
             cmd: "PENCILHOVER",
             tip: LocalizationHelper.localizedString(forKey: "Force pencil entering hovering on host"),
             allowsKeyboardCombination: false,
@@ -704,7 +704,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Brush shortcut"),
+            localizationKey: "=brushShortcut",
             cmd: "BRUSH",
             tip: LocalizationHelper.localizedString(forKey: "Combine this with a brush keyboard shortcut for PC software"),
             allowsKeyboardCombination: true,
@@ -714,7 +714,7 @@ struct WidgetPickerView: View {
             forcedComboMode: .shortcut
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Eraser shortcut"),
+            localizationKey: "=eraserShortcut",
             cmd: "ERASER",
             tip: LocalizationHelper.localizedString(forKey: "Combine this with a eraser keyboard shortcut for PC software"),
             allowsKeyboardCombination: true,
@@ -724,7 +724,7 @@ struct WidgetPickerView: View {
             forcedComboMode: .shortcut
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Disable single point touch"),
+            localizationKey: "=disableSinglePointTouch",
             cmd: "NOSINGLETOUCH",
             tip: LocalizationHelper.localizedString(forKey: "Disable single finger touch for stream view"),
             allowsKeyboardCombination: false,
@@ -734,7 +734,7 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Absolute touch drag"),
+            localizationKey: "=absoluteTouchDrag",
             cmd: "ABSTCHDRAG",
             tip: LocalizationHelper.localizedString(forKey: "Replace mouse button action in single point touch mode with another button temporarily"),
             allowsKeyboardCombination: true,
@@ -744,7 +744,7 @@ struct WidgetPickerView: View {
             forcedComboMode: .skill
         ),
         FunctionalButtonOption(
-            label: LocalizationHelper.localizedString(forKey: "Magnifier"),
+            localizationKey: "=magnifier",
             cmd: "MAGNIFIER",
             tip: LocalizationHelper.localizedString(forKey: "magnifierTip"),
             allowsKeyboardCombination: false,
@@ -2225,6 +2225,10 @@ struct WidgetPickerView: View {
         functionalButtonOptions.first(where: { $0.cmd == cmd })
     }
 
+    private func localizedFunctionalButtonLabel(for option: FunctionalButtonOption) -> String {
+        LocalizationHelper.localizedString(forKey: option.localizationKey)
+    }
+
     private var occupiedSlots: Int {
         poolItems.reduce(0) { $0 + $1.span }
     }
@@ -3019,7 +3023,7 @@ struct WidgetPickerView: View {
             widgetButtonLabel = initialButtonLabel
         } else if targetWidgetKind == .button,
                   let selectedFunctionalButtonOption {
-            widgetButtonLabel = selectedFunctionalButtonOption.cmd == "FOLDER" ?  LocalizationHelper.localizedString(forKey: "=Folder") : selectedFunctionalButtonOption.label
+            widgetButtonLabel = localizedFunctionalButtonLabel(for: selectedFunctionalButtonOption)
         } else {
             widgetButtonLabel = ""
         }
@@ -3132,6 +3136,10 @@ struct WidgetPickerView: View {
     private func resolvedWidgetButtonLabel() -> String {
         let trimmedManualLabel = widgetButtonLabel
         if !trimmedManualLabel.isEmpty {
+            if let selectedFunctionalButtonOption,
+               trimmedManualLabel == localizedFunctionalButtonLabel(for: selectedFunctionalButtonOption) {
+                return selectedFunctionalButtonOption.localizationKey
+            }
             return trimmedManualLabel
         }
         return defaultWidgetButtonLabel()
@@ -3139,9 +3147,7 @@ struct WidgetPickerView: View {
 
     private func defaultWidgetButtonLabel() -> String {
         if let selectedFunctionalButtonOption {
-            return selectedFunctionalButtonOption.cmd == "FOLDER"
-                ? LocalizationHelper.localizedString(forKey: "=Folder")
-                : selectedFunctionalButtonOption.label
+            return selectedFunctionalButtonOption.localizationKey
         }
 
         let labelParts = poolItems.compactMap(defaultLabelPart(for:))
@@ -3172,9 +3178,7 @@ struct WidgetPickerView: View {
             return sanitizedAutoButtonLabel(label)
         case .functional:
             if let option = functionalButtonOption(for: item.cmd) {
-                return option.cmd == "FOLDER"
-                    ? LocalizationHelper.localizedString(forKey: "=Folder")
-                    : option.label
+                return option.localizationKey
             }
             let label = item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
             return label.isEmpty ? nil : sanitizedAutoButtonLabel(label)
@@ -3396,9 +3400,7 @@ struct WidgetPickerView: View {
             return cmd
         case .functional:
             if let option = functionalButtonOption(for: cmd) {
-                return option.cmd == "FOLDER"
-                    ? LocalizationHelper.localizedString(forKey: "=Folder")
-                    : option.label
+                return localizedFunctionalButtonLabel(for: option)
             }
             return cmd
         case .interval:
@@ -3623,7 +3625,7 @@ struct FunctionalCollectionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(item.label)
+            Text(LocalizationHelper.localizedString(forKey: item.localizationKey))
                 .font(.system(size: labelFontSize, weight: .bold, design: .rounded))
                 .foregroundColor(Color.black.opacity(0.70))
                 .minimumScaleFactor(0.7)
