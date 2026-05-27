@@ -32,6 +32,7 @@ enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
     case gamepad = "Gamepad"
     case keyboard = "Keyboard & Mouse"
     case functional = "Functional"
+    case shortcuts = "Shortcuts"
 
     var id: String { rawValue }
 
@@ -43,6 +44,8 @@ enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
             return "keyboard"
         case .functional:
             return "functional"
+        case .shortcuts:
+            return "shortcuts"
         }
     }
 
@@ -54,6 +57,8 @@ enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
             return LocalizationHelper.localizedString(forKey: "Keyboard / Mouse")
         case .functional:
             return LocalizationHelper.localizedString(forKey: "Functional Widgets")
+        case .shortcuts:
+            return LocalizationHelper.localizedString(forKey: "ShortcutsTab")
         }
     }
 
@@ -65,6 +70,8 @@ enum WidgetPickerTab: String, CaseIterable, Identifiable, Equatable {
             self = .keyboard
         case "functional", "function", "functions":
             self = .functional
+        case "shortcuts", "shortcut", "shortcutlibrary", "shortcut_library", "shortcut-library":
+            self = .shortcuts
         default:
             return nil
         }
@@ -76,6 +83,7 @@ enum WidgetPoolSource: Equatable {
     case gamepad
     case keyboard
     case functional
+    case shortcuts
     case interval
 }
 
@@ -86,6 +94,7 @@ enum WidgetPoolVisualKind: Equatable {
     case keyboardButton
     case keyboardPad
     case functionalButton
+    case shortcutButton
     case triggerInterval
 }
 
@@ -113,6 +122,8 @@ struct WidgetPoolItem: Identifiable {
             return displayText ?? cmd
         case .functional:
             return cmd
+        case .shortcuts:
+            return cmd
         case .interval:
             return WidgetPickerView.intervalDisplayText(for: cmd)
         }
@@ -120,7 +131,7 @@ struct WidgetPoolItem: Identifiable {
 
     var span: Int {
         switch visualKind {
-        case .gamepadButton, .keyboardButton, .functionalButton, .triggerInterval:
+        case .gamepadButton, .keyboardButton, .functionalButton, .shortcutButton, .triggerInterval:
             return 1
         case .gamepadPad, .keyboardPad:
             return 2
@@ -755,6 +766,42 @@ struct WidgetPickerView: View {
         ),
     ]
 
+    private let shortcutLibraryOptions: [FunctionalButtonOption] = [
+        FunctionalButtonOption(localizationKey: "=nvidiaShot", cmd: "ALT+F1", tip: LocalizationHelper.localizedString(forKey: "=nvidiaShot"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=nvidiaRec", cmd: "ALT+F9", tip: LocalizationHelper.localizedString(forKey: "=nvidiaRec"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=hdr", cmd: "WIN+ALT+B", tip: LocalizationHelper.localizedString(forKey: "=hdr"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=taskManager", cmd: "CTRL+SHIFT+ESC", tip: LocalizationHelper.localizedString(forKey: "=taskManager"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=snip", cmd: "WIN+SHIFT+S", tip: LocalizationHelper.localizedString(forKey: "=snip"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=copy", cmd: "CTRL+C", tip: LocalizationHelper.localizedString(forKey: "=copy"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=cut", cmd: "CTRL+X", tip: LocalizationHelper.localizedString(forKey: "=cut"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=paste", cmd: "CTRL+V", tip: LocalizationHelper.localizedString(forKey: "=paste"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=undo", cmd: "CTRL+Z", tip: LocalizationHelper.localizedString(forKey: "=undo"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=redo", cmd: "CTRL+Y", tip: LocalizationHelper.localizedString(forKey: "=redo"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=selectAll", cmd: "CTRL+A", tip: LocalizationHelper.localizedString(forKey: "=selectAll"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=save", cmd: "CTRL+S", tip: LocalizationHelper.localizedString(forKey: "=save"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=find", cmd: "CTRL+F", tip: LocalizationHelper.localizedString(forKey: "=find"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=zoomIn", cmd: "CTRL+EQUALS", tip: LocalizationHelper.localizedString(forKey: "=zoomIn"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=zoomOut", cmd: "CTRL+MINUS", tip: LocalizationHelper.localizedString(forKey: "=zoomOut"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=ime", cmd: "WIN+SPACE", tip: LocalizationHelper.localizedString(forKey: "=ime"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=lang", cmd: "ALT+SHIFT", tip: LocalizationHelper.localizedString(forKey: "=lang"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=switchWindow", cmd: "ALT+TAB", tip: LocalizationHelper.localizedString(forKey: "=switchWindow"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=closeWindow", cmd: "ALT+F4", tip: LocalizationHelper.localizedString(forKey: "=closeWindow"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=desktop", cmd: "WIN+D", tip: LocalizationHelper.localizedString(forKey: "=desktop"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=fileExplorer", cmd: "WIN+E", tip: LocalizationHelper.localizedString(forKey: "=fileExplorer"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=settingsShortcut", cmd: "WIN+I", tip: LocalizationHelper.localizedString(forKey: "=settingsShortcut"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=lock", cmd: "WIN+L", tip: LocalizationHelper.localizedString(forKey: "=lock"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=run", cmd: "WIN+R", tip: LocalizationHelper.localizedString(forKey: "=run"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=search", cmd: "WIN+S", tip: LocalizationHelper.localizedString(forKey: "=search"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=taskView", cmd: "WIN+TAB", tip: LocalizationHelper.localizedString(forKey: "=taskView"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=snapLeft", cmd: "WIN+LEFTARR", tip: LocalizationHelper.localizedString(forKey: "=snapLeft"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=snapRight", cmd: "WIN+RIGHTARR", tip: LocalizationHelper.localizedString(forKey: "=snapRight"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=maximize", cmd: "WIN+UPARR", tip: LocalizationHelper.localizedString(forKey: "=maximize"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=minimize", cmd: "WIN+DOWNARR", tip: LocalizationHelper.localizedString(forKey: "=minimize"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=newFolder", cmd: "CTRL+SHIFT+N", tip: LocalizationHelper.localizedString(forKey: "=newFolder"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=newTab", cmd: "CTRL+T", tip: LocalizationHelper.localizedString(forKey: "=newTab"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+        FunctionalButtonOption(localizationKey: "=closeTab", cmd: "CTRL+W", tip: LocalizationHelper.localizedString(forKey: "=closeTab"), allowsKeyboardCombination: false, allowsGamepadCombination: false, allowsSkillCombo: false, allowsShortcutCombo: false, forcedComboMode: .shortcut),
+    ]
+
     private var defaultTipMessage: String {
         if isShortcutPickerMode, let shortcutPickerTipText, !shortcutPickerTipText.isEmpty {
             return shortcutPickerTipText
@@ -1073,6 +1120,17 @@ struct WidgetPickerView: View {
                     .opacity(contentVisibilityOpacity(for: .functional))
                     .allowsHitTesting(isContentInteractive(for: .functional))
                     .accessibility(hidden: !isContentVisible(for: .functional))
+
+                    FunctionalButtonCollectionView(
+                        items: shortcutLibraryOptions,
+                        isSelected: { selectedCmds.contains($0) },
+                        onSelect: { handleShortcutLibrarySelection($0) },
+                        onDeselect: { handleShortcutLibraryDeselection($0) }
+                    )
+                    .padding(pickerInsetFunctional)
+                    .opacity(contentVisibilityOpacity(for: .shortcuts))
+                    .allowsHitTesting(isContentInteractive(for: .shortcuts))
+                    .accessibility(hidden: !isContentVisible(for: .shortcuts))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .mask(
@@ -1441,6 +1499,8 @@ struct WidgetPickerView: View {
             return gamepadPadCommands.contains(cmd) ? .gamepadPad : .gamepadButton
         case .functional:
             return .functionalButton
+        case .shortcuts:
+            return .shortcutButton
         case .keyboard:
             return keyboardPadCommands.contains(cmd) ? .keyboardPad : .keyboardButton
         case .interval:
@@ -1689,6 +1749,8 @@ struct WidgetPickerView: View {
             if shouldClearHighlight, selectedGyroCommand == deselectionCommand {
                 selectedGyroCommand = nil
             }
+        case .shortcuts:
+            break
         case .interval:
             break
         }
@@ -1724,7 +1786,7 @@ struct WidgetPickerView: View {
         switch item.visualKind {
         case .keyboardButton, .gamepadButton:
             return true
-        case .gamepadPad, .keyboardPad, .functionalButton, .triggerInterval:
+        case .gamepadPad, .keyboardPad, .functionalButton, .shortcutButton, .triggerInterval:
             return false
         }
     }
@@ -1905,7 +1967,7 @@ struct WidgetPickerView: View {
 
     private func isButtonItem(_ item: WidgetPoolItem) -> Bool {
         switch item.visualKind {
-        case .gamepadButton, .keyboardButton, .functionalButton:
+        case .gamepadButton, .keyboardButton, .functionalButton, .shortcutButton:
             return true
         case .gamepadPad, .keyboardPad, .triggerInterval:
             return false
@@ -2151,8 +2213,8 @@ struct WidgetPickerView: View {
             return false
         }
 
-        if source == .functional, !gyroCommands.contains(cmd) {
-            guard let option = functionalButtonOption(for: cmd) else {
+        if (source == .functional || source == .shortcuts), !gyroCommands.contains(cmd) {
+            guard let option = functionalButtonOption(for: cmd) ?? shortcutLibraryOption(for: cmd) else {
                 resetTipMessage()
                 return false
             }
@@ -2162,7 +2224,7 @@ struct WidgetPickerView: View {
                 return false
             }
 
-            if poolItems.contains(where: { $0.source == .functional }) {
+            if poolItems.contains(where: { $0.source == .functional || $0.source == .shortcuts }) {
                 setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with other functional widgets"), type: .error)
                 return false
             }
@@ -2181,13 +2243,13 @@ struct WidgetPickerView: View {
         }
 
         if source == .keyboard || source == .gamepad {
-            if poolItems.contains(where: isPad) && poolItems.contains(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) {
+            if poolItems.contains(where: isPad) && poolItems.contains(where: { ($0.source == .functional || $0.source == .shortcuts) && !gyroCommands.contains($0.cmd) }) {
                 setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
 
-            if let existingFunctionalItem = poolItems.first(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }),
-               let option = functionalButtonOption(for: existingFunctionalItem.cmd) {
+            if let existingFunctionalItem = poolItems.first(where: { ($0.source == .functional || $0.source == .shortcuts) && !gyroCommands.contains($0.cmd) }),
+               let option = functionalButtonOption(for: existingFunctionalItem.cmd) ?? shortcutLibraryOption(for: existingFunctionalItem.cmd) {
                 if source == .keyboard && !option.allowsKeyboardCombination {
                     setTipMessage(LocalizationHelper.localizedString(forKey: "This functional widget cannot be combined with keyboard or mouse buttons"), type: .error)
                     return false
@@ -2200,7 +2262,7 @@ struct WidgetPickerView: View {
             }
 
             if isPad(candidate),
-               poolItems.contains(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) {
+               poolItems.contains(where: { ($0.source == .functional || $0.source == .shortcuts) && !gyroCommands.contains($0.cmd) }) {
                 setTipMessage(LocalizationHelper.localizedString(forKey: "Functional widgets cannot be combined with touchpad controls"), type: .error)
                 return false
             }
@@ -2223,6 +2285,10 @@ struct WidgetPickerView: View {
 
     private func functionalButtonOption(for cmd: String) -> FunctionalButtonOption? {
         functionalButtonOptions.first(where: { $0.cmd == cmd })
+    }
+
+    private func shortcutLibraryOption(for cmd: String) -> FunctionalButtonOption? {
+        shortcutLibraryOptions.first(where: { $0.cmd == cmd })
     }
 
     private func localizedFunctionalButtonLabel(for option: FunctionalButtonOption) -> String {
@@ -2273,6 +2339,15 @@ struct WidgetPickerView: View {
 
     private func handleFunctionalButtonDeselection(_ option: FunctionalButtonOption) {
         removeCommand(option.cmd, source: .functional)
+    }
+
+    private func handleShortcutLibrarySelection(_ option: FunctionalButtonOption) {
+        guard canSelectCommand(option.cmd, source: .shortcuts) else { return }
+        appendCommand(option.cmd, source: .shortcuts)
+    }
+
+    private func handleShortcutLibraryDeselection(_ option: FunctionalButtonOption) {
+        removeCommand(option.cmd, source: .shortcuts)
     }
 
     private var createWidgetSheet: some View {
@@ -2849,7 +2924,7 @@ struct WidgetPickerView: View {
         switch firstPoolItem.visualKind {
         case .gamepadPad, .keyboardPad:
             return .pad
-        case .gamepadButton, .keyboardButton, .functionalButton, .triggerInterval:
+        case .gamepadButton, .keyboardButton, .functionalButton, .shortcutButton, .triggerInterval:
             return .button
         }
     }
@@ -2859,13 +2934,13 @@ struct WidgetPickerView: View {
     }
 
     private var isFunctionalOnlySelection: Bool {
-        firstPoolItem?.source == .functional
+        firstPoolItem?.source == .functional || firstPoolItem?.source == .shortcuts
     }
 
     private var buttonCommandCount: Int {
         poolItems.filter { item in
             switch item.visualKind {
-            case .gamepadButton, .keyboardButton, .functionalButton:
+            case .gamepadButton, .keyboardButton, .functionalButton, .shortcutButton:
                 return true
             case .gamepadPad, .keyboardPad, .triggerInterval:
                 return false
@@ -2886,10 +2961,10 @@ struct WidgetPickerView: View {
     }
 
     private var selectedFunctionalButtonOption: FunctionalButtonOption? {
-        guard let functionalItem = poolItems.first(where: { $0.source == .functional && !gyroCommands.contains($0.cmd) }) else {
+        guard let functionalItem = poolItems.first(where: { ($0.source == .functional || $0.source == .shortcuts) && !gyroCommands.contains($0.cmd) }) else {
             return nil
         }
-        return functionalButtonOption(for: functionalItem.cmd)
+        return functionalButtonOption(for: functionalItem.cmd) ?? shortcutLibraryOption(for: functionalItem.cmd)
     }
 
     private var forcedComboMode: WidgetCreateComboMode? {
@@ -3182,6 +3257,12 @@ struct WidgetPickerView: View {
             }
             let label = item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
             return label.isEmpty ? nil : sanitizedAutoButtonLabel(label)
+        case .shortcuts:
+            if let option = shortcutLibraryOption(for: item.cmd) {
+                return option.localizationKey
+            }
+            let label = item.displayCmd.trimmingCharacters(in: .whitespacesAndNewlines)
+            return label.isEmpty ? nil : sanitizedAutoButtonLabel(label)
         case .interval:
             return nil
         }
@@ -3243,11 +3324,15 @@ struct WidgetPickerView: View {
                 selectedTab = .keyboard
             case .functional:
                 selectedTab = .functional
+            case .shortcuts:
+                selectedTab = .shortcuts
             case .interval:
                 break
             }
         } else if parsedCommands.contains(where: { $0.source == .functional }) {
             selectedTab = .functional
+        } else if parsedCommands.contains(where: { $0.source == .shortcuts }) {
+            selectedTab = .shortcuts
         }
 
         updateTipMessageForCurrentPoolState()
@@ -3259,6 +3344,10 @@ struct WidgetPickerView: View {
             .uppercased()
 
         guard !normalized.isEmpty else { return [] }
+
+        if isShortcutPickerMode, shortcutLibraryCommands.contains(normalized) {
+            return [(cmd: normalized, source: .shortcuts, isTailLocked: false, displayText: macroDisplayText(for: normalized, source: .shortcuts))]
+        }
 
         var commands: [String]
         if normalized.contains("+") {
@@ -3310,7 +3399,7 @@ struct WidgetPickerView: View {
             let buttonDescriptorCount = parsed.filter { descriptor in
                 let visualKind = visualKind(for: descriptor.cmd, source: descriptor.source)
                 switch visualKind {
-                case .gamepadButton, .keyboardButton, .functionalButton:
+                case .gamepadButton, .keyboardButton, .functionalButton, .shortcutButton:
                     return true
                 case .gamepadPad, .keyboardPad, .triggerInterval:
                     return false
@@ -3322,7 +3411,7 @@ struct WidgetPickerView: View {
                 rebuilt.append(descriptor)
                 let visualKind = visualKind(for: descriptor.cmd, source: descriptor.source)
                 switch visualKind {
-                case .gamepadButton, .keyboardButton, .functionalButton:
+                case .gamepadButton, .keyboardButton, .functionalButton, .shortcutButton:
                     remainingButtons -= 1
                     if remainingButtons > 0 {
                         rebuilt.append((cmd: Self.makeTriggerIntervalCommand(milliseconds: trailingUniformInterval), source: .interval, isTailLocked: false, displayText: nil))
@@ -3355,6 +3444,9 @@ struct WidgetPickerView: View {
         }
         if gamepadCommands.contains(cmd) {
             return .gamepad
+        }
+        if isShortcutPickerMode, shortcutLibraryCommands.contains(cmd) {
+            return .shortcuts
         }
         if functionalCommands.contains(cmd) {
             return .functional
@@ -3400,6 +3492,11 @@ struct WidgetPickerView: View {
             return cmd
         case .functional:
             if let option = functionalButtonOption(for: cmd) {
+                return localizedFunctionalButtonLabel(for: option)
+            }
+            return cmd
+        case .shortcuts:
+            if let option = shortcutLibraryOption(for: cmd) {
                 return localizedFunctionalButtonLabel(for: option)
             }
             return cmd
@@ -3463,6 +3560,10 @@ struct WidgetPickerView: View {
 
     private var functionalCommands: Set<String> {
         Set(functionalButtonOptions.map(\.cmd)).union(gyroCommands)
+    }
+
+    private var shortcutLibraryCommands: Set<String> {
+        Set(shortcutLibraryOptions.map(\.cmd))
     }
 
     private enum InitialWidgetShape {
@@ -4061,7 +4162,7 @@ struct WidgetPoolGridView: View {
                             .padding(.horizontal, 8)
                     )
                     .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 4)
-            } else if item.visualKind == .functionalButton {
+            } else if item.visualKind == .functionalButton || item.visualKind == .shortcutButton {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(
                         LinearGradient(

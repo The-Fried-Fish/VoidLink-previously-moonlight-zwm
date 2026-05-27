@@ -663,7 +663,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     if (@available(iOS 13.0, *)) {
         WidgetPickerViewController *pickerViewController = [[WidgetPickerViewController alloc] init];
         pickerViewController.delegate = self;
-        pickerViewController.tabIdentifiers = @[@"gamepad", @"keyboard", @"functional"];
+        pickerViewController.tabIdentifiers = @[@"gamepad", @"keyboard", @"functional", @"shortcuts"];
         pickerViewController.initialTabIdentifier = @"gamepad";
 
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:pickerViewController];
@@ -800,7 +800,7 @@ typedef NS_ENUM(NSUInteger, DecelerationRateSliderMode) {
     if (@available(iOS 13.0, *)) {
         WidgetPickerViewController *pickerViewController = [[WidgetPickerViewController alloc] init];
         pickerViewController.delegate = self;
-        pickerViewController.tabIdentifiers = @[@"gamepad", @"keyboard", @"functional"];
+        pickerViewController.tabIdentifiers = @[@"gamepad", @"keyboard", @"functional", @"shortcuts"];
         pickerViewController.initialTabIdentifier = @"gamepad";
         pickerViewController.isEditMode = true;
         pickerViewController.initialCmdString = self->selectedWidgetView.cmdString;

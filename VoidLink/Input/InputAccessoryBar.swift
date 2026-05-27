@@ -70,7 +70,7 @@ private struct InputAccessoryBarButtonRecord {
     }
 
     var displayTitle: String {
-        buttonLabel.isEmpty ? cmdString : buttonLabel
+        buttonLabel.isEmpty ? cmdString : LocalizationHelper.localizedString(forKey: buttonLabel)
     }
 }
 
@@ -817,7 +817,7 @@ final class InputAccessoryBar: UIView, UIScrollViewDelegate, WidgetPickerViewCon
         pickerViewController.keyboardPickerMode = .shortcutPicker
         pickerViewController.shortcutPickerNeedAlias = true
         pickerViewController.shortcutPickerNeedButtonMode = true
-        pickerViewController.tabIdentifiers = ["keyboard"]
+        pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
         pickerViewController.initialTabIdentifier = "keyboard"
 
         parentViewController.view.endEditing(true)

@@ -433,7 +433,7 @@ import UIKit
             let pickerViewController = WidgetPickerViewController()
             pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
             pickerViewController.keyboardPickerMode = .shortcutPicker
-            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "eraser"
             pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "Select eraser shortcut keys")
@@ -483,7 +483,7 @@ import UIKit
         let pickerViewController = WidgetPickerViewController()
         pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
         pickerViewController.keyboardPickerMode = .shortcutPicker
-        pickerViewController.tabIdentifiers = ["keyboard"]
+        pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
         pickerViewController.initialTabIdentifier = "keyboard"
         pickerViewController.shortcutIdentifier = "brush"
         pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "Select brush shortcut keys")
@@ -543,7 +543,7 @@ import UIKit
             let pickerViewController = WidgetPickerViewController()
             pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
             pickerViewController.keyboardPickerMode = .shortcutPicker
-            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "squeezePress"
             pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "squeezePressShortcutPickerTip")
@@ -594,7 +594,7 @@ import UIKit
             let pickerViewController = WidgetPickerViewController()
             pickerViewController.delegate = (viewController as! any WidgetPickerViewControllerDelegate)
             pickerViewController.keyboardPickerMode = .shortcutPicker
-            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.shortcutIdentifier = "squeezeRelease"
             pickerViewController.shortcutPickerTipText = LocalizationHelper.localizedString(forKey: "squeezeReleaseShortcutPickerTip")

@@ -290,7 +290,7 @@ import UIKit
             pickerViewController.delegate = (self as WidgetPickerViewControllerDelegate)
             pickerViewController.keyboardPickerMode = .shortcutPicker
             pickerViewController.shortcutPickerNeedAlias = true
-            pickerViewController.tabIdentifiers = ["keyboard"]
+            pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
             pickerViewController.initialTabIdentifier = "keyboard"
             pickerViewController.presentOverFullScreen(from: self)
             return
@@ -393,7 +393,7 @@ import UIKit
         }
         else {
             let command = CommandManager.shared.getAllCommands()[indexPath.row-specialEntries.count]
-            cell.textLabel?.text = command.alias
+            cell.textLabel?.text = LocalizationHelper.localizedString(forKey: command.alias) 
         }
         return cell
     }

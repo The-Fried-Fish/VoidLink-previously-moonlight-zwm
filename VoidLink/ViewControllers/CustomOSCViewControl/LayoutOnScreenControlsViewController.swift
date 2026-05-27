@@ -1468,7 +1468,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         if #available(iOS 13.0, *) {
             let pickerViewController = WidgetPickerViewController()
             pickerViewController.delegate = self
-            pickerViewController.tabIdentifiers = ["gamepad", "keyboard", "functional"]
+            pickerViewController.tabIdentifiers = ["gamepad", "keyboard", "functional","shortcuts"]
             pickerViewController.initialTabIdentifier = "gamepad"
             pickerViewController.presentOverFullScreen(from: self)
             return
@@ -1503,7 +1503,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         if #available(iOS 13.0, *) {
             let pickerViewController = WidgetPickerViewController()
             pickerViewController.delegate = self
-            pickerViewController.tabIdentifiers = ["gamepad", "keyboard", "functional"]
+            pickerViewController.tabIdentifiers = ["gamepad", "keyboard", "functional", "shortcuts"]
             pickerViewController.initialTabIdentifier = "gamepad"
             pickerViewController.isEditMode = true
             pickerViewController.initialCmdString = selectedWidget.cmdString

@@ -1669,11 +1669,12 @@ import ObjectiveC.runtime
             if buttonMode == .movable, moveableButtonLongPressed() {return}
             if leaveNonSkillButtonAlone {return}
             self.buttonDownVisualEffect()
-            var autoReleaseComboButtons = CommandManager.shared.extractAutoReleaseButtonStrings(from: self.cmdString)!
-            autoReleaseComboButtons.removeAll{
-                Set(CommandManager.pencilProButtonCmds).contains($0)
+            if var autoReleaseComboButtons = CommandManager.shared.extractAutoReleaseButtonStrings(from: self.cmdString) {
+                autoReleaseComboButtons.removeAll{
+                    Set(CommandManager.pencilProButtonCmds).contains($0)
+                }
+                CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: autoReleaseComboButtons) // send multi-key command
             }
-            CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: autoReleaseComboButtons) // send multi-key command
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.buttonUpVisualEffect()
             }
