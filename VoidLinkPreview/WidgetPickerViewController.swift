@@ -218,9 +218,7 @@ public final class WidgetPickerViewController: UIViewController {
 
     private static func refreshSystemGestureDeferral() {
         guard let hostViewController = originalHostViewController else { return }
-        if #available(iOS 11.0, *) {
-            hostViewController.setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
-            hostViewController.setNeedsUpdateOfHomeIndicatorAutoHidden()
-        }
+        hostViewController.setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+        hostViewController.setNeedsUpdateOfHomeIndicatorAutoHidden()
     }
 }

@@ -1587,6 +1587,7 @@ import ObjectiveC.runtime
     
     //==== Button widget tap down=============================================
     private func handleTapDownOrSlidein() {
+        if self.isHidden {return}
         if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
             handleButtonDown()
         }
@@ -1597,6 +1598,7 @@ import ObjectiveC.runtime
     }
     
     private func handleFingerUpOrSlideout(leaveNonSkillButtonAlone: Bool = false, event: UIEvent? = nil) {
+        if self.isHidden {return}
         if autoTapInterval < OnScreenWidgetView.MinAutotapInterval {
             handleButtonUp(leaveNonSkillButtonAlone:leaveNonSkillButtonAlone, event:event)
         }
@@ -3593,7 +3595,7 @@ import ObjectiveC.runtime
         
         self.autoDockIsDocked = true
         UIView.animate(
-            withDuration: 0.62,
+            withDuration: 0.1,
             delay: 0,
             usingSpringWithDamping: OnScreenWidgetView.autoDockGoDamping,
             initialSpringVelocity: 0.35,
@@ -3607,7 +3609,7 @@ import ObjectiveC.runtime
             }
             
         } completion: { _ in
-            UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
+            UIView.animate(withDuration: 0, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
                 self.autoDockApplyTemporarySize()
                 self.transform = .identity
                 self.label.alpha = 0
@@ -3713,18 +3715,19 @@ import ObjectiveC.runtime
             if !widget.isHidden {
                 widget.center = CGPoint(x: widget.center.x+vector.dx, y: widget.center.y+vector.dy)
             }
+            widget.layoutChanges.append(widget.storedCenter)
             widget.relocatedDuringStreaming = true
         }
     }
     
     @objc static var enableFolderAnimation:Bool = true
-    private static func setCollection(hidden:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false) {
+    private static func setCollection(folded:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false) {
         guard folder.isFolder else {return}
         // guard folder.folded != hidden else { return }
-        folder.folded = hidden
+        folder.folded = folded
         folder.setupAtrributedText()
         folder.reverseColorPhase(reversed: !folder.folded)
-        if hidden {
+        if folded {
             for sequence in folder.sequenceSet {
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
                 DispatchQueue.main.async {
@@ -3739,7 +3742,7 @@ import ObjectiveC.runtime
                     UIView.animate(withDuration: duration, animations: {
                         widget.center = folder.center
                     },completion: { finished in
-                        widget.isUserInteractionEnabled = !hidden
+                        widget.isUserInteractionEnabled = !folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
                         if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
@@ -3790,14 +3793,22 @@ import ObjectiveC.runtime
             for sequence in folder.sequenceSet {
                 guard let widget = OnScreenWidgetView.mapping[sequence] else {continue}
                 guard widget.isFolder, widget != exception else {continue}
-                OnScreenWidgetView.setCollection(hidden: hidden, for: widget, exception: exception, recursive: true)
+                OnScreenWidgetView.setCollection(folded: folded, for: widget, exception: exception, recursive: true)
             }
+        }
+    }
+    
+    private static func setCollection(hidden:Bool, for folder:OnScreenWidgetView) {
+        for sequence in folder.sequenceSet {
+            guard let widget = OnScreenWidgetView.mapping[sequence] else {continue}
+            widget.isHidden = hidden
         }
     }
     
     @objc static func set(folded:Bool, for folder:OnScreenWidgetView) { // folder综合逻辑
         guard folder.isFolder else {return}
-        setCollection(hidden: folded, for: folder)
+        setCollection(folded: folded, for: folder)
+        
         if !folded, folder.revealMode == .exclusive {
             OnScreenWidgetView.unfoldedExclusiveFolderSequence = folder.sequence
             if(!isRestoringFolderStates) {OnScreenWidgetView.postExclusiveUnfoldedSequences.removeAll()}
@@ -3811,17 +3822,17 @@ import ObjectiveC.runtime
             }
             
             offshootRootFolders.remove(currentRootFolder)
-            for folder in offshootRootFolders {
+            for _ in offshootRootFolders {
                 // print("offshootRootFolder \(CACurrentMediaTime()) \(folder.label.text ?? "")")
             }
             
             guard !folder.sequenceSet.isEmpty else {return}
             for folder in offshootRootFolders {
-                setCollection(hidden: true, for: folder, recursive: true)
+                setCollection(folded: true, for: folder, recursive: true)
             }
             
             guard currentRootFolder != folder else {return}
-            setCollection(hidden: true, for:currentRootFolder, exception: folder, recursive: true)
+            setCollection(folded: true, for:currentRootFolder, exception: folder, recursive: true)
         }
         if folded, folder.revealMode == .exclusive {
             OnScreenWidgetView.unfoldedExclusiveFolderSequence = -1
@@ -3830,7 +3841,22 @@ import ObjectiveC.runtime
             if folded {
                 OnScreenWidgetView.postExclusiveUnfoldedSequences.remove(folder.sequence)
             }
-            else {OnScreenWidgetView.postExclusiveUnfoldedSequences.insert(folder.sequence)}
+            else {
+                OnScreenWidgetView.postExclusiveUnfoldedSequences.insert(folder.sequence)
+                for unfoldedExclusiveFolder in OnScreenWidgetView.mapping.values.filter({$0.isFolder
+                    && !$0.folded
+                    && $0 != folder
+                    && $0.revealMode == .exclusive
+                    && !OnScreenWidgetView.getParentFolders(of: $0).contains(folder)}) {
+                    OnScreenWidgetView.setCollection(folded: true, for: unfoldedExclusiveFolder)
+                }
+            }
+        }
+        
+        if folder.buttonMode == .slideAndHold, folder.isOnlyRootFolder(), folder.revealMode == .coexist {
+            for otherUnfoldedFolder in OnScreenWidgetView.mapping.values.filter({$0.isFolder && !$0.folded && $0 != folder}) {
+                OnScreenWidgetView.setCollection(hidden: !folded, for: otherUnfoldedFolder)
+            }
         }
     }
     
@@ -3863,8 +3889,14 @@ import ObjectiveC.runtime
         return false
     }
     
+    private func isOnlyRootFolder() -> Bool {
+        let rootFolders = OnScreenWidgetView.mapping.values.filter({$0.isFolder && $0.parentSequence == -1})
+        if rootFolders.count != 1 {return false}
+        return rootFolders.contains(self)
+    }
+    
     @objc static var onlyRootFolderVisible: Bool {
-        var visibleNonFolerCount:Int = 0
+        var visibleNonFolderCount:Int = 0
         var visibleFolderCount:Int = 0
         for widget in OnScreenWidgetView.mapping.values {
             if widget.isHidden {continue}
@@ -3874,8 +3906,8 @@ import ObjectiveC.runtime
                 continue
             }
             else {
-                visibleNonFolerCount += 1
-                if visibleNonFolerCount > 0 {return false}
+                visibleNonFolderCount += 1
+                if visibleNonFolderCount > 0 {return false}
                 continue
             }
         }
@@ -3923,7 +3955,7 @@ import ObjectiveC.runtime
         }
         
         for widget in OnScreenWidgetView.mapping.values {
-            OnScreenWidgetView.setCollection(hidden: widget.folded, for: widget, exception: unfoldedExclusiveFolder)
+            OnScreenWidgetView.setCollection(folded: widget.folded, for: widget, exception: unfoldedExclusiveFolder)
         }
         
         if(unfoldedExclusiveFolder != nil){
