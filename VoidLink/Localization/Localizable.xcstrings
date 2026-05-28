@@ -9020,25 +9020,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nKeyboard Shortcuts for VoidLink (Desktop Mode):\n\nCtrl(Control) + Alt(Opt) + Shift + D — Disconnect the current session\n\nCtrl(Control) + Alt(Opt) + Shift + Q — Disconnect the current session and quit current app\n\nCtrl(Control) + Alt(Opt) + Shift + S — Expand the settings menu\n\nCtrl(Control) + Alt(Opt) + Shift + O — Toggle the statistics overlay\n\nCtrl(Control) + Alt(Opt) + Shift + C — Toggle mouse pointer visibility\n\nBy default, the mouse cannot control the camera in 3D games. To stream games, please disconnect the current session, then go to Settings → Peripheral Section → Local Mouse Cursor, and select “Capture”."
+            "value" : "\nKeyboard Shortcuts for VoidLink (Desktop Mode):\n\nCtrl(Control) + Alt(Opt) + Shift + D — Disconnect the current session\n\nCtrl(Control) + Alt(Opt) + Shift + Q — Disconnect the current session and quit current app\n\nCtrl(Control) + Alt(Opt) + Shift + S — Expand the settings menu\n\nCtrl(Control) + Alt(Opt) + Shift + O — Toggle the statistics overlay\n\nCtrl(Control) + Alt(Opt) + Shift + C — Toggle mouse pointer visibility\n\nBy default, the mouse cursor can’t be moved out of app window. To do this, please disconnect the current session, then go to Settings → Peripheral Section → Local Mouse Cursor, and select “Visible” (Note: you can’t control the camera in 3D games by this mode)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nVoidLink 桌面模式快捷键：\n\nCtrl(Control) + Alt(Opt) + Shift + D — 断开当前会话\n\nCtrl(Control) + Alt(Opt) + Shift + Q — 断开当前会话并退出当前app\n\nCtrl(Control) + Alt(Opt) + Shift + S — 展开设置菜单\n\nCtrl(Control) + Alt(Opt) + Shift + O — 切换性能信息叠加\n\nCtrl(Control) + Alt(Opt) + Shift + C — 切换鼠标指针可见性\n\n默认状态下鼠标无法在3D游戏中转动视角。如需串流游戏，请断开当前会话，前往设置菜单 -> 外设分区 -> 本地鼠标指针，选择“被窗口捕获”。"
+            "value" : "\nVoidLink 桌面模式快捷键：\n\nCtrl(Control) + Alt(Opt) + Shift + D — 断开当前会话\n\nCtrl(Control) + Alt(Opt) + Shift + Q — 断开当前会话并退出当前app\n\nCtrl(Control) + Alt(Opt) + Shift + S — 展开设置菜单\n\nCtrl(Control) + Alt(Opt) + Shift + O — 切换性能信息叠加\n\nCtrl(Control) + Alt(Opt) + Shift + C — 切换鼠标指针可见性\n\n默认状态下鼠标无法移出 app 窗口。如需做到这点，请断开当前会话，前往设置菜单 -> 外设分区 -> 本地鼠标指针，选择“可见” (注意：该模式无法操控 3D 游戏视角)。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nVoidLink 桌面模式快速鍵：\n\nCtrl(Control) + Alt(Opt) + Shift + D — 中斷目前連線\n\nCtrl(Control) + Alt(Opt) + Shift + Q — 中斷目前連線並退出目前app\n\nCtrl(Control) + Alt(Opt) + Shift + S — 展開設定選單\n\nCtrl(Control) + Alt(Opt) + Shift + O — 切換統計資訊覆蓋\n\nCtrl(Control) + Alt(Opt) + Shift + C — 切換滑鼠指標可見性\n\n預設狀態下，滑鼠無法在 3D 遊戲中轉動視角。如需進行串流遊戲，請中斷目前會話，前往設定選單 → 外設分區 → 本地滑鼠指標，選擇「被視窗捕獲」。"
+            "value" : "\nVoidLink 桌面模式快速鍵：\n\nCtrl(Control) + Alt(Opt) + Shift + D — 中斷目前連線\n\nCtrl(Control) + Alt(Opt) + Shift + Q — 中斷目前連線並退出目前app\n\nCtrl(Control) + Alt(Opt) + Shift + S — 展開設定選單\n\nCtrl(Control) + Alt(Opt) + Shift + O — 切換統計資訊覆蓋\n\nCtrl(Control) + Alt(Opt) + Shift + C — 切換滑鼠指標可見性\n\n預設狀態下，滑鼠無法移出 App 視窗。如需做到這點，請中斷連線，前往設定選單 -> 外設分區 -> 本地滑鼠指標，選擇「可見」（注意：此模式無法操控 3D 遊戲視角）。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nVoidLink 桌面模式快速鍵：\n\nCtrl(Control) + Alt(Opt) + Shift + D — 中斷目前連線\n\nCtrl(Control) + Alt(Opt) + Shift + Q — 中斷目前連線並退出目前app\n\nCtrl(Control) + Alt(Opt) + Shift + S — 展開設定選單\n\nCtrl(Control) + Alt(Opt) + Shift + O — 切換統計資訊覆蓋\n\nCtrl(Control) + Alt(Opt) + Shift + C — 切換滑鼠指標可見性\n\n預設狀態下，滑鼠無法在 3D 遊戲中轉動視角。如需進行串流遊戲，請中斷目前會話，前往設定選單 → 外設分區 → 本地滑鼠指標，選擇「被視窗捕獲」。"
+            "value" : "\nVoidLink 桌面模式快速鍵：\n\nCtrl(Control) + Alt(Opt) + Shift + D — 中斷目前連線\n\nCtrl(Control) + Alt(Opt) + Shift + Q — 中斷目前連線並退出目前app\n\nCtrl(Control) + Alt(Opt) + Shift + S — 展開設定選單\n\nCtrl(Control) + Alt(Opt) + Shift + O — 切換統計資訊覆蓋\n\nCtrl(Control) + Alt(Opt) + Shift + C — 切換滑鼠指標可見性\n\n預設狀態下，滑鼠無法移出 App 視窗。如需做到這點，請中斷連線，前往設定選單 -> 外設分區 -> 本地滑鼠指標，選擇「可見」（注意：此模式無法操控 3D 遊戲視角）。"
           }
         }
       }
