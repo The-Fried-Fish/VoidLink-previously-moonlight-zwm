@@ -1069,6 +1069,35 @@
         }
       }
     },
+    "=dummyPad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dummy pad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触控挡板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控擋板"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控擋板"
+          }
+        }
+      }
+    },
     "=edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6352,6 +6381,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "DS4 觸控板按鍵"
+          }
+        }
+      }
+    },
+    "dummyPadTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A dummy touchpad that does nothing"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "一块啥都不干的挡板区域"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "一塊啥都不幹的擋板區域"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "一塊啥都不幹的擋板區域"
           }
         }
       }

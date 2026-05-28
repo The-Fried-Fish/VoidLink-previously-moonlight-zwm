@@ -759,6 +759,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.walkKeyActionType = buttonState.walkKeyActionType;
                     widgetView.walkKeyThreshold = buttonState.walkKeyThreshold;
                     
+                    widgetView.hidden = !OnScreenWidgetView.enableFolderAnimation && widgetView.parentSequence != -1;
                     // Add the widgetView to the view controller's view
                     [self->_streamFrameTopLayerView addSubview:widgetView]; // add keyboard button to the stream frame view. must add it to the target view before setting location.
                     buttonState.position = [self denormalizeWidgetPosition:buttonState.position];

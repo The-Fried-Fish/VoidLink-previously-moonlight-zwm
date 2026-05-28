@@ -764,6 +764,16 @@ struct WidgetPickerView: View {
             allowsShortcutCombo: false,
             forcedComboMode: .skill
         ),
+        FunctionalButtonOption(
+            localizationKey: "=dummyPad",
+            cmd: "DUMMYPAD",
+            tip: LocalizationHelper.localizedString(forKey: "dummyPadTip"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: .skill
+        ),
     ]
 
     private let shortcutLibraryOptions: [FunctionalButtonOption] = [

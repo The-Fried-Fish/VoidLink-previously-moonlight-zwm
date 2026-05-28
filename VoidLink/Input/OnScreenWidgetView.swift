@@ -3854,9 +3854,9 @@ import ObjectiveC.runtime
             }
         }
         
-        if folder.buttonMode == .slideAndHold, folder.isOnlyRootFolder(), folder.revealMode == .coexist {
-            for otherUnfoldedFolder in OnScreenWidgetView.mapping.values.filter({$0.isFolder && !$0.folded && $0 != folder}) {
-                OnScreenWidgetView.setCollection(hidden: !folded, for: otherUnfoldedFolder)
+        if folder.buttonMode == .slideAndHold, folder.parentSequence == -1, folder.revealMode == .coexist {
+            for unfoldedSubfolder in OnScreenWidgetView.mapping.values.filter({$0.isFolder && !$0.folded && $0 != folder && OnScreenWidgetView.getParentFolders(of: $0).contains(folder)}) {
+                OnScreenWidgetView.setCollection(hidden: !folded, for: unfoldedSubfolder)
             }
         }
     }
