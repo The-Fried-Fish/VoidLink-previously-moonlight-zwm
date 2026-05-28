@@ -2365,7 +2365,9 @@ import ObjectiveC.runtime
             setLock.lock()
             let captured = widget.capturedTouches.contains(touch)
             setLock.unlock()
-            if !captured || widget.buttonMode == .regular {return}
+            let parentFolder = OnScreenWidgetView.mapping[widget.parentSequence]
+            let parentFolderIsSlidableFolder = parentFolder?.isFolder == true && parentFolder?.buttonMode == .slideAndHold
+            if !captured || (widget.buttonMode == .regular && !parentFolderIsSlidableFolder) {return}
             // let needReleaseButton =  (isLocation(touch.location(in: superview), in: widget) // for slideToToggle & movable+slidable buttons
             //                           || widget.buttonMode == .slideAndHold) // for slideAndHold buttons
             widget.handleFingerUpOrSlideout(event: event)
@@ -2377,10 +2379,10 @@ import ObjectiveC.runtime
         // only called by self
         for touch in touches {
             var exclusiveFolders: Set<OnScreenWidgetView> = Set()
-            self.forEachWidget(){ widget in // self included here.
+            for widget in OnScreenWidgetView.mapping.values {
                 guard widget.revealMode != .exclusive || !isLocation(touch.location(in: superview), in: widget) else {
                     exclusiveFolders.insert(widget)
-                    return
+                    continue
                 }
                 processWidget(widget, with: touch)
             }
@@ -2391,7 +2393,6 @@ import ObjectiveC.runtime
     }
     
     private func forEachWidget(_ action: (OnScreenWidgetView) -> Void) {
-        // 遍历 superview 的 subviews，如果 superview 为 nil，则遍历空数组
         for subview in self.superview?.subviews ?? [] {
             if let widget = subview as? OnScreenWidgetView {
                 action(widget)
@@ -2407,18 +2408,20 @@ import ObjectiveC.runtime
     private func handleButtonSliding(touches: Set<UITouch>) {
         for touch in touches {
             let locationInSuperView = touch.location(in: self.superview)
-            self.forEachWidget{ widget in
-                if widget.widgetType != WidgetTypeEnum.button {return}
+            for widget in OnScreenWidgetView.mapping.values {
+                let parentFolder = OnScreenWidgetView.mapping[widget.parentSequence]
+                if widget.widgetType != WidgetTypeEnum.button {continue}
                 let isSlidableButton = (widget.buttonMode == .slideToToggle
                                         || widget.buttonMode == .slideAndHold
                                         || (widget.buttonMode == .movable && widget != self)
+                                        || (widget.buttonMode == .regular && parentFolder?.isFolder == true && parentFolder?.buttonMode == .slideAndHold)
                 )
                 if isLocation(locationInSuperView, in: widget){
                     setLock.lock()
                     let captured = widget.capturedTouches.contains(touch)
                     setLock.unlock()
                     if captured || !isSlidableButton
-                        {return}
+                        {continue}
                     setLock.lock()
                     widget.capturedTouches.add(touch)
                     setLock.unlock()
@@ -2429,9 +2432,9 @@ import ObjectiveC.runtime
                     setLock.lock()
                     let captured = widget.capturedTouches.contains(touch)
                     setLock.unlock()
-                    if !captured || !isSlidableButton {return}
+                    if !captured || !isSlidableButton {continue}
                     // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
-                    if(widget.buttonMode == .slideToToggle || widget.buttonMode == .movable){
+                    if(widget.buttonMode == .slideToToggle || widget.buttonMode == .movable || widget.buttonMode == .regular){
                         widget.handleFingerUpOrSlideout(leaveNonSkillButtonAlone: widget.isFunctionalButton || widget.containsShortcutAction)
                         setLock.lock()
                         widget.capturedTouches.remove(touch)
@@ -3815,17 +3818,18 @@ import ObjectiveC.runtime
             if(!isRestoringFolderStates) {OnScreenWidgetView.postExclusiveUnfoldedSequences.removeAll()}
             let currentRootFolder = OnScreenWidgetView.getRootFolder(of: folder) ?? folder
             var offshootRootFolders:Set<OnScreenWidgetView> = Set()
-            folder.forEachWidget{ widget in
-                guard folder != widget else {return}
+            
+            for widget in OnScreenWidgetView.mapping.values {
+                guard folder != widget else {continue}
                 let rootFolder = getRootFolder(of: widget)
-                guard let rootFolder = rootFolder else {return}
+                guard let rootFolder = rootFolder else {continue}
                 offshootRootFolders.insert(rootFolder)
             }
             
             offshootRootFolders.remove(currentRootFolder)
-            for _ in offshootRootFolders {
+            // for _ in offshootRootFolders {
                 // print("offshootRootFolder \(CACurrentMediaTime()) \(folder.label.text ?? "")")
-            }
+            // }
             
             guard !folder.sequenceSet.isEmpty else {return}
             for folder in offshootRootFolders {
