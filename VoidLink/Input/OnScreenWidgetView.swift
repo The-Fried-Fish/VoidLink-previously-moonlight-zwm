@@ -3212,6 +3212,12 @@ import ObjectiveC.runtime
             if center != layoutChanges.last {
                 layoutChanges.append(center)
             }
+            if self.isFolder, self.bulkMoveEnabled {
+                for sequence in self.sequenceSet {
+                    guard let widget = OnScreenWidgetView.mapping[sequence] else {continue}
+                    widget.layoutChanges.append(widget.storedCenter)
+                }
+            }
             
             if OnScreenWidgetView.capturer != nil {
                 if firstTouchMoved {undoRelocation()}
@@ -3719,7 +3725,6 @@ import ObjectiveC.runtime
             if !widget.isHidden {
                 widget.center = CGPoint(x: widget.center.x+vector.dx, y: widget.center.y+vector.dy)
             }
-            widget.layoutChanges.append(widget.storedCenter)
             widget.relocatedDuringStreaming = true
         }
     }
@@ -3811,6 +3816,7 @@ import ObjectiveC.runtime
     
     @objc static func set(folded:Bool, for folder:OnScreenWidgetView) { // folder综合逻辑
         guard folder.isFolder else {return}
+        OnScreenWidgetView.profileChangedDuringStreaming = true
         setCollection(folded: folded, for: folder)
         
         if !folded, folder.revealMode == .exclusive {
@@ -3849,11 +3855,13 @@ import ObjectiveC.runtime
             else {
                 OnScreenWidgetView.postExclusiveUnfoldedSequences.insert(folder.sequence)
                 for unfoldedExclusiveFolder in OnScreenWidgetView.mapping.values.filter({$0.isFolder
+                    && folder.parentSequence != -1
                     && !$0.folded
                     && $0 != folder
                     && $0.revealMode == .exclusive
-                    && !OnScreenWidgetView.getParentFolders(of: $0).contains(folder)}) {
-                    OnScreenWidgetView.setCollection(folded: true, for: unfoldedExclusiveFolder)
+                    && !OnScreenWidgetView.getParentFolders(of: folder).contains($0)
+                    }) {
+                    OnScreenWidgetView.setCollection(folded: true, for: unfoldedExclusiveFolder, recursive: true)
                 }
             }
         }
@@ -3928,6 +3936,12 @@ import ObjectiveC.runtime
         widget.parentSequence = folder.sequence
         folder.sequenceSet.insert(widget.sequence)
         widget.isHidden = folder.folded
+        if widget.isFolder, widget.bulkMoveEnabled {
+            for sequence in widget.sequenceSet {
+                guard let subWidget = OnScreenWidgetView.mapping[sequence] else {continue}
+                subWidget.undoRelocation()
+            }
+        }
         /*
         if folder.buttonMode == .slideAndHold, widget.isFunctionalButton {
             widget.buttonMode = .slideToToggle
@@ -4105,7 +4119,7 @@ import ObjectiveC.runtime
         var horizontallyAligned = false
         var verticallyAligned = false
         widget.forEachWidget{ otherWidget in
-            guard otherWidget != widget else {return}
+            guard otherWidget != widget, otherWidget.isHidden == false else {return}
             
             if widget.isFolder, widget.bulkMoveEnabled, widget.sequenceSet.contains(otherWidget.sequence) {return}
             verticallyAligned = verticallyAligned ? verticallyAligned : widget.center.x > otherWidget.center.x-2 && widget.center.x < otherWidget.center.x+2

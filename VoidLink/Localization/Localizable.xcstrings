@@ -750,6 +750,35 @@
         }
       }
     },
+    "=bumperRadial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radial"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "肩键轮盘"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "肩鍵輪盤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "肩鍵輪盤"
+          }
+        }
+      }
+    },
     "=closeTab" : {
       "extractionState" : "manual",
       "localizations" : {

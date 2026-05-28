@@ -698,7 +698,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         OnScreenWidgetView.buttonVisualFeedbackEnabled = self->settings.buttonVisualFeedback;
         OnScreenWidgetView.gamepadOverlayFLag = profile.gamepadOverlayEnabled;
-        OnScreenWidgetView.profileChangedDuringStreaming = false;
 
         bool hasLegacyWidget = false;
         if(reloadWidgets && !OnScreenWidgetView.editMode){
@@ -831,6 +830,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         [self.streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
         [self updateTouchHandlerWithProfile:profile];
+        OnScreenWidgetView.profileChangedDuringStreaming = false;
     });
 }
 

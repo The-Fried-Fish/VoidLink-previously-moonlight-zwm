@@ -3180,7 +3180,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" alpha="0.76999998092651367" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="cKS-fy-Zpg">
-                                                <rect key="frame" x="130" y="0.0" width="420" height="32"/>
+                                                <rect key="frame" x="130" y="0.0" width="470" height="32"/>
                                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <segments>
                                                     <segment title="slide-toggle"/>
@@ -3193,9 +3193,9 @@
                                                 <color key="selectedSegmentTintColor" red="0.23087820410000001" green="0.4576539993" blue="0.51765710119999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             </segmentedControl>
                                             <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="                                    " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dOF-FW-cBU" userLabel="uiLabel">
-                                                <rect key="frame" x="550" y="0.0" width="100" height="31"/>
+                                                <rect key="frame" x="600" y="0.0" width="50" height="31"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="100" id="hfV-um-PjK"/>
+                                                    <constraint firstAttribute="width" constant="50" id="hfV-um-PjK"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
