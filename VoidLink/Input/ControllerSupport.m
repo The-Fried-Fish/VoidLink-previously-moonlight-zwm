@@ -773,6 +773,12 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
         return YES;
     }
     
+    for(OnScreenWidgetView* widget in OnScreenWidgetView.mapping.allValues) {
+        if(widget.isFolder && widget.parentSequence<0 && widget.autoDockIdleDuration>0) {
+            [widget restartAutoDockCountdown];
+        }
+    }
+    
     uint8_t type = LI_CTYPE_UNKNOWN;
     uint16_t capabilities = 0;
     uint32_t supportedButtonFlags = 0;

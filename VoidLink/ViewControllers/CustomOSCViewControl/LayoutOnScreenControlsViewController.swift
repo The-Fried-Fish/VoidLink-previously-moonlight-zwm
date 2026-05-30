@@ -388,6 +388,15 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         var hasLegacyWidget = false
         for case let encoded as Data in oscProfile.buttonStatesEncoded {
             guard let buttonState = self.profilesManager?.unarchiveButtonStateEncoded(encoded) else { continue }
+            
+            if folder != nil {
+                if buttonState.alias == "=widgets"
+                    || buttonState.alias == "=pickProfile"
+                    || buttonState.alias == "widgetTool" {
+                    continue
+                }
+            }
+            
             if buttonState.widgetType == 1 {
                 let widgetView = OnScreenWidgetView.widget(cmdString: buttonState.name, buttonLabel: buttonState.alias, shape: buttonState.widgetShape, profile: oscProfile)
                 widgetView.sequence = (buttonState.sequence == -1 || folder != nil) ? {
@@ -573,6 +582,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @IBAction func clearFolderButtonTapped(_ sender: Any?) {
         for widget in OnScreenWidgetView.mapping.values {
             if widget.parentSequence == selectedWidget?.sequence, widget.sequenceSet.isEmpty {
+                selectedWidget?.sequenceSet.remove(widget.sequence)
                 OnScreenWidgetView.mapping.removeValue(forKey: widget.sequence)
                 widget.removeFromSuperview()
             }

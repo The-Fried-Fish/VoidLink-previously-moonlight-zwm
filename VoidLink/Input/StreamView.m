@@ -782,8 +782,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
                     [widgetView setupAtrributedText];
                     
-                    if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) [widgetView setAutoDockWithEnabled:true];
-                    
+                    if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) {
+                        [widgetView setAutoDockWithEnabled:true];
+                        if(ControllerUtil.activeGCControllers.count > 0) [widgetView restartAutoDockCountdown];
+                    }
+                        
                     if(sequenceGenerated){
                         // NSLog(@"widgetView.sequence %d %f", widgetView.sequence, CACurrentMediaTime());
                         buttonState.sequence = widgetView.sequence;

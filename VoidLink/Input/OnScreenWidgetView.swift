@@ -446,7 +446,8 @@ import ObjectiveC.runtime
     @objc public var standardFoldingInterval: TimeInterval = 0.05
     static weak var capturer: OnScreenWidgetView?
     @objc static weak var deepestButton: OnScreenWidgetView?
-    
+    @objc static var autoDockEnabledFolders: Set<OnScreenWidgetView>?
+
     @objc init(cmdString: String, buttonLabel: String, shape:String, profile:OSCProfile) {
 
         self.cmdString = cmdString
@@ -2413,11 +2414,12 @@ import ObjectiveC.runtime
             for widget in OnScreenWidgetView.mapping.values {
                 let parentFolder = OnScreenWidgetView.mapping[widget.parentSequence]
                 if widget.widgetType != WidgetTypeEnum.button {continue}
-                let isSlidableButton = (widget.buttonMode == .slideToToggle
+                var isSlidableButton = (widget.buttonMode == .slideToToggle
                                         || widget.buttonMode == .slideAndHold
                                         || (widget.buttonMode == .movable && widget != self)
                                         || (widget.buttonMode == .regular && parentFolder?.isFolder == true && parentFolder?.buttonMode == .slideAndHold)
                 )
+                isSlidableButton = isSlidableButton && !widget.autoDockIsDocked
                 if isLocation(locationInSuperView, in: widget){
                     setLock.lock()
                     let captured = widget.capturedTouches.contains(touch)
@@ -3380,7 +3382,7 @@ import ObjectiveC.runtime
     }
         
     // MARK: - Auto Dock
-    private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 90 : 90
+    private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 70 : 90
     private static let autoDockExposedThickness: CGFloat = 22
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 0
@@ -3470,7 +3472,7 @@ import ObjectiveC.runtime
         autoDockEnabled = enabled
         if enabled {
             OnScreenWidgetView.installAutoDockIfNeeded()
-            autoDockRestartCountdownIfNeeded()
+            // autoDockRestartCountdownIfNeeded()
         }
         else {
             autoDockStopCountdown()
@@ -3586,6 +3588,12 @@ import ObjectiveC.runtime
         // if hasUnfoldedSubfolders() {return}
         
         self.isUserInteractionEnabled = false
+        
+        if let deepstButton = OnScreenWidgetView.deepestButton {
+            self.superview?.insertSubview(self, belowSubview: deepstButton)
+            OnScreenWidgetView.deepestButton = self
+        }
+        
         guard let hostView = superview,
               !OnScreenWidgetView.editMode,
               autoDockEnabled,
@@ -4064,7 +4072,7 @@ import ObjectiveC.runtime
         else{
             self.superViewWidth = (superview?.bounds.size.width)!
             self.superViewHeight = (superview?.bounds.size.height)!
-            autoDockRestartCountdownIfNeeded()
+            // autoDockRestartCountdownIfNeeded()
         }
     }
     
