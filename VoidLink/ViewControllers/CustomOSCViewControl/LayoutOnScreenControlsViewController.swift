@@ -1548,6 +1548,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         layoutOSC.updateGuidelinesFor(onScreenWidget: widget)
         view.bringSubviewToFront(widget)
         let overlapping = layerIsOverlappingWithTrashcanButton(widget.layer)
+        selectedWidget?.isOverlappingWithTrashcan = overlapping
         let color = overlapping ? UIColor.red : trashCanStoryBoardColor ?? UIColor.systemTeal
         trashCanButton.tintColor = color
         trashCanButton.titleLabel?.textColor = color
@@ -2489,7 +2490,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         let commonLayer = view.layer
         let rect1 = layer.convert(layer.bounds, to: commonLayer)
         let rect2 = trashCanButton.layer.convert(trashCanButton.layer.bounds, to: commonLayer)
-        return rect1.intersects(rect2)
+        return rect1.intersects(rect2)  && !self.isToolbarHidden
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

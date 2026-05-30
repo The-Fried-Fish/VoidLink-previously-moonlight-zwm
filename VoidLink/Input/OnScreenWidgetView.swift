@@ -107,6 +107,7 @@ import ObjectiveC.runtime
     
     @objc public var logicallyDown: Bool = false
     
+    @objc public var isOverlappingWithTrashcan: Bool = false
     @objc public var isBeingResized: Bool = false
     @objc public var widthFactor: CGFloat = 1.0 {
         didSet{
@@ -2236,6 +2237,7 @@ import ObjectiveC.runtime
         }
         // here is in edit mode:
         else{
+            OnScreenWidgetView.capturer = nil
             self.handleButtonDown()
             NotificationCenter.default.post(name: Notification.Name("OnScreenWidgetViewSelected"),object: self) // inform layout tool controller to fetch button size factors. self will be passed as the object of the notification
         }
@@ -2275,7 +2277,7 @@ import ObjectiveC.runtime
                     widget.highlightBorder(highlighted: true, color: standardHighlightColor.cgColor)
                 }
                 else if widget.isFolder {
-                    if isLocation(currentLocation, in: widget), !self.sequenceSet.contains(widget.sequence), !widget.isHidden {
+                    if isLocation(currentLocation, in: widget), !self.sequenceSet.contains(widget.sequence), !widget.isHidden, !widget.isOverlappingWithTrashcan {
                         // self.layer.borderColor = UIColor.systemYellow.cgColor
                         widget.highlightBorder(highlighted: true)
                         OnScreenWidgetView.capturer = widget
