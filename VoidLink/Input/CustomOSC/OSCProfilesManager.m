@@ -207,11 +207,13 @@ static CGRect layoutViewBounds;
             [self importEncodedProfiles:profilesEncoded];
             
             NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+            /*
             bool isRegularTF = !([bundleId isEqualToString:@"com.voidlink.iOS"]
                                       || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
                                       || [bundleId isEqualToString:@"com.voidlink.tf.debug10.iOS"]);
 
-            [self setProfileToSelected: GenericUtils.isIPhone ? 1 : (isRegularTF ? 1: 2)];
+            [self setProfileToSelected: GenericUtils.isIPhone ? 1 : (isRegularTF ? 1: 2)]; */
+            [self setProfileToSelected: 0];
         }
     }
 }
@@ -288,7 +290,8 @@ static CGRect layoutViewBounds;
     // NSString* persistedKey = @"widgetProfileUpdated-20260322";
     // NSString* persistedKey = @"widgetProfileUpdated-20260413-2";
     // NSString* persistedKey = @"widgetProfileUpdated-20260430-1";
-    NSString* persistedKey = @"widgetProfileUpdated-20260513-1";
+    // NSString* persistedKey = @"widgetProfileUpdated-20260513-1";
+    NSString* persistedKey = @"widgetProfileUpdated-20260530";
     BOOL needImportDefaultTemplates = [defaults objectForKey:persistedKey] == nil;
     
     if(profiles.count == 0 || needImportDefaultTemplates){
