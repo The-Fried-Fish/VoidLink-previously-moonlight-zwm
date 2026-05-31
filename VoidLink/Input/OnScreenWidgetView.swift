@@ -3740,7 +3740,7 @@ import ObjectiveC.runtime
     }
     
     @objc static var enableFolderAnimation:Bool = true
-    private static func setCollection(folded:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false) {
+    private static func setCollection(folded:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false, isExclusiveFolderAction:Bool = false) {
         guard folder.isFolder else {return}
         // guard folder.folded != hidden else { return }
         folder.folded = folded
@@ -3749,6 +3749,9 @@ import ObjectiveC.runtime
         if folded {
             for sequence in folder.sequenceSet {
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
+                if OnScreenWidgetView.editMode, widget.isFolder, !widget.folded, !isExclusiveFolderAction {
+                    continue
+                }
                 DispatchQueue.main.async {
                     widget.isUserInteractionEnabled = false
                     if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
@@ -3827,7 +3830,7 @@ import ObjectiveC.runtime
     @objc static func set(folded:Bool, for folder:OnScreenWidgetView) { // folder综合逻辑
         guard folder.isFolder else {return}
         OnScreenWidgetView.profileChangedDuringStreaming = true
-        setCollection(folded: folded, for: folder)
+        setCollection(folded: folded, for: folder, isExclusiveFolderAction: folder.revealMode == .exclusive)
         
         if !folded, folder.revealMode == .exclusive {
             OnScreenWidgetView.unfoldedExclusiveFolderSequence = folder.sequence
@@ -3849,11 +3852,11 @@ import ObjectiveC.runtime
             
             guard !folder.sequenceSet.isEmpty else {return}
             for folder in offshootRootFolders {
-                setCollection(folded: true, for: folder, recursive: true)
+                setCollection(folded: true, for: folder, recursive: true, isExclusiveFolderAction: true)
             }
             
             guard currentRootFolder != folder else {return}
-            setCollection(folded: true, for:currentRootFolder, exception: folder, recursive: true)
+            setCollection(folded: true, for:currentRootFolder, exception: folder, recursive: true, isExclusiveFolderAction: true)
         }
         if folded, folder.revealMode == .exclusive {
             OnScreenWidgetView.unfoldedExclusiveFolderSequence = -1
