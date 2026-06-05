@@ -8,7 +8,6 @@
 #import "DataManager.h"
 #import "LocalizationHelper.h"
 #import "OSCProfile.h"
-#import "OSCProfilesManager.h"
 #import "LayoutOnScreenControls.h"
 #import "ToolBarContainerView.h"
 #import "opus.h"

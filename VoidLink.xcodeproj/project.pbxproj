@@ -47,7 +47,7 @@
 		84351B0E2C29ACCB00A77989 /* LayoutOnScreenControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B072C29ACCA00A77989 /* LayoutOnScreenControls.m */; };
 		84351B0F2C29ACCB00A77989 /* OnScreenButtonState.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B092C29ACCA00A77989 /* OnScreenButtonState.m */; };
 		84351B102C29ACCB00A77989 /* OSCProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B0A2C29ACCA00A77989 /* OSCProfile.m */; };
-		84351B112C29ACCB00A77989 /* OSCProfilesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B0B2C29ACCB00A77989 /* OSCProfilesManager.m */; };
+		84351B112C29ACCB00A77989 /* OSCProfilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D4E0A22FBBBBCC00112233 /* OSCProfilesManager.swift */; };
 		84351B2D2C29AD6100A77989 /* ToolBarContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84351B292C29AD6000A77989 /* ToolBarContainerView.m */; };
 		84351B5D2C29ADBE00A77989 /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84351B5B2C29ADBE00A77989 /* ProfileTableViewCell.xib */; };
 		843667F02D9D7173004A7D7F /* widgetTemplates.bin in Resources */ = {isa = PBXBuildFile; fileRef = 843667EF2D9D7173004A7D7F /* widgetTemplates.bin */; };
@@ -216,10 +216,9 @@
 		84203F222C5F24C00032EEED /* OnScreenWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnScreenWidgetView.swift; sourceTree = "<group>"; };
 		84351B062C29ACCA00A77989 /* OnScreenButtonState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnScreenButtonState.h; sourceTree = "<group>"; };
 		84351B072C29ACCA00A77989 /* LayoutOnScreenControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutOnScreenControls.m; sourceTree = "<group>"; };
-		84351B082C29ACCA00A77989 /* OSCProfilesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCProfilesManager.h; sourceTree = "<group>"; };
 		84351B092C29ACCA00A77989 /* OnScreenButtonState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnScreenButtonState.m; sourceTree = "<group>"; };
 		84351B0A2C29ACCA00A77989 /* OSCProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSCProfile.m; sourceTree = "<group>"; };
-		84351B0B2C29ACCB00A77989 /* OSCProfilesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSCProfilesManager.m; sourceTree = "<group>"; };
+		A1D4E0A22FBBBBCC00112233 /* OSCProfilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSCProfilesManager.swift; sourceTree = "<group>"; };
 		84351B0C2C29ACCB00A77989 /* LayoutOnScreenControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutOnScreenControls.h; sourceTree = "<group>"; };
 		84351B0D2C29ACCB00A77989 /* OSCProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCProfile.h; sourceTree = "<group>"; };
 		84351B292C29AD6000A77989 /* ToolBarContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToolBarContainerView.m; sourceTree = "<group>"; };
@@ -492,8 +491,7 @@
 				84351B092C29ACCA00A77989 /* OnScreenButtonState.m */,
 				84351B0D2C29ACCB00A77989 /* OSCProfile.h */,
 				84351B0A2C29ACCA00A77989 /* OSCProfile.m */,
-				84351B082C29ACCA00A77989 /* OSCProfilesManager.h */,
-				84351B0B2C29ACCB00A77989 /* OSCProfilesManager.m */,
+				A1D4E0A22FBBBBCC00112233 /* OSCProfilesManager.swift */,
 			);
 			path = CustomOSC;
 			sourceTree = "<group>";
@@ -1159,7 +1157,7 @@
 				FB53E1431BE5DC4400CD6ECE /* IdManager.m in Sources */,
 				189AD29A2DE7446000E24B88 /* HostCollectionViewController.m in Sources */,
 				9897B6A1221260EF00966419 /* VoidController.m in Sources */,
-				84351B112C29ACCB00A77989 /* OSCProfilesManager.m in Sources */,
+				84351B112C29ACCB00A77989 /* OSCProfilesManager.swift in Sources */,
 				FB89462919F646E200339C8A /* mkcert.c in Sources */,
 				FB9AFD281A7C84ED00872C98 /* HttpResponse.m in Sources */,
 				FB89463019F646E200339C8A /* StreamConfiguration.m in Sources */,

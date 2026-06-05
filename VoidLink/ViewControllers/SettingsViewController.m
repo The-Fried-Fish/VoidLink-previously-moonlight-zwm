@@ -15,7 +15,6 @@
 #import "VoidLink-Swift.h"
 #import "Connection.h"
 #import "Plot.h"
-#import "OSCProfilesManager.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 

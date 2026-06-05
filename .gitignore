@@ -4,6 +4,7 @@
 .DS_Store
 Build
 DerivedData
+build-home/
 *.xccheckout
 .github
 README.md

@@ -13199,6 +13199,29 @@
         }
       }
     },
+    "Restored" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢复"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢復"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢復"
+          }
+        }
+      }
+    },
     "Resume App" : {
       "extractionState" : "manual",
       "localizations" : {

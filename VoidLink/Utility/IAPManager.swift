@@ -48,7 +48,7 @@ import StoreKit
         case (.PencilProPack, "com.voidlink.tf.debug10.iOS"):
             return "com.pencilpro.voidlink.debug.iOS"
         case (.PencilProPack, "com.voidlink.tf.iOS"):
-            return "com.pencilpro.voidlink.tf.iOS"
+            return ""
         default:
             return ""
         }
@@ -370,6 +370,9 @@ import StoreKit
     }
     
     @objc static public func inAppPurchaseAction(viewController: UIViewController, product: AddOnProduct){
+        
+        
+        
         
         let alert = UIAlertController(title: product.productName(),
                                       message: LocalizationHelper.localizedString(forKey: "No purchase found", product.productName()),

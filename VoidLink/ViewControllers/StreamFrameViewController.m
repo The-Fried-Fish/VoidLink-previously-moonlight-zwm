@@ -24,8 +24,6 @@
 #import "CustomTapGestureRecognizer.h"
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
-#import "OSCProfilesManager.h"
-#import "VoidLink-Swift.h"
 #import "NativeTouchPointer.h"
 
 #include <sys/socket.h>

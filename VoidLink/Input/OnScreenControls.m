@@ -18,7 +18,7 @@
     #import <CoreMotion/CoreMotion.h>
 #endif
 #import "OnScreenButtonState.h"
-#import "OSCProfilesManager.h"
+#import "VoidLink-Swift.h"
 #import "DataManager.h"
 
 #define UPDATE_BUTTON(x, y) (buttonFlags = \

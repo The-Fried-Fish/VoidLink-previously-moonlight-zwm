@@ -171,6 +171,7 @@ static CGRect layoutViewBounds;
     if(profile && targetProfiles.count > 1) [targetProfiles removeObject:profile];
      */
     
+    /*
     NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
     bool importPencilProProfile = ([bundleId isEqualToString:@"com.voidlink.iOS"]
                               || [bundleId isEqualToString:@"com.voidlinkextreme.iOS"]
@@ -179,7 +180,8 @@ static CGRect layoutViewBounds;
     if(!importPencilProProfile && [GenericUtils isIPad]){
         [profilesEncoded removeObjectAtIndex:1];
     }
-
+     */
+    
     if(targetProfiles.count > 0) [targetProfiles removeObjectAtIndex:0];
     NSMutableArray* localEncodedPofiles = [self encodedProfilesFromArray:targetProfiles];
     [profilesEncoded addObjectsFromArray:localEncodedPofiles];
@@ -278,6 +280,18 @@ static CGRect layoutViewBounds;
         [profilesDecoded addObject: profileDecoded];
     }
     _currentProfiles = profilesDecoded;
+    return profilesDecoded;
+}
+
+- (NSMutableArray *) decodeProfilesFrom:(NSMutableArray* )profilesEncoded {
+    NSSet *classes = [NSSet setWithObjects:[NSString class], [NSMutableData class], [NSMutableArray class], [OSCProfile class], [OnScreenButtonState class], nil];
+    NSMutableArray *profilesDecoded = [[NSMutableArray alloc] init];
+    OSCProfile *profileDecoded;
+    for (NSData *profileEncoded in profilesEncoded) {
+        
+        profileDecoded = [NSKeyedUnarchiver unarchivedObjectOfClasses: classes fromData:profileEncoded error: nil];
+        [profilesDecoded addObject: profileDecoded];
+    }
     return profilesDecoded;
 }
 
