@@ -31,6 +31,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 #include <Limelight.h>
 
 #if TARGET_OS_TV
@@ -44,6 +45,37 @@
 @property(readonly, nonatomic) float refreshRate;
 - (id)initWithRefreshRate:(float)arg1 videoDynamicRange:(int)arg2;
 @end
+
+static NSString* VLTerminationHintForErrorCode(int errorCode) {
+    switch (errorCode) {
+        case ML_ERROR_CONTROL_DISCONNECT_TIMEOUT:
+            return @"Timeout type: control disconnect timeout.\nThe control stream started disconnecting, but the final disconnect event never arrived before the timeout expired.";
+        case ML_ERROR_CONTROL_UNEXPECTED_DISCONNECT:
+            return @"Timeout type: enet peer timeout disconnect / unexpected control stream disconnect.\nThe established control stream was dropped by ENet or the host/network unexpectedly.";
+        case -1:
+            return @"Possible causes:\n- control disconnect timeout\n- enet peer timeout disconnect\n- unexpected control stream disconnect\n- video receive socket failure\n- audio receive socket failure\n- input send socket failure\n- control message send/ack failure\n- loss stats/control buffer malloc failure\n- video buffer malloc failure\n- audio packet malloc failure\n- unknown socket failure";
+        case ETIMEDOUT:
+            return @"Timeout type: socket or control channel timeout.";
+        case ECONNRESET:
+            return @"Possible cause: the host or network reset the connection.";
+        case EPIPE:
+            return @"Possible cause: write failed because the peer closed the connection.";
+        case ECONNABORTED:
+            return @"Possible cause: the local network stack aborted the connection.";
+        case ENETDOWN:
+            return @"Possible cause: the local network interface went down.";
+        case ENETUNREACH:
+            return @"Possible cause: the network became unreachable.";
+        case EHOSTUNREACH:
+            return @"Possible cause: the host became unreachable.";
+        case ENOBUFS:
+            return @"Possible cause: the network stack ran out of buffer space.";
+        case ENOMEM:
+            return @"Possible cause: memory allocation failed.";
+        default:
+            return nil;
+    }
+}
 
 
 @implementation StreamFrameViewController {
@@ -1608,6 +1640,7 @@
                 default:
                 {
                     NSString* errorString;
+                    NSString* errorHint;
                     if (abs(errorCode) > 1000) {
                         // We'll assume large errors are hex values
                         errorString = [NSString stringWithFormat:@"%08X", (uint32_t)errorCode];
@@ -1616,9 +1649,13 @@
                         // Smaller values will just be printed as decimal (probably errno.h values)
                         errorString = [NSString stringWithFormat:@"%d", errorCode];
                     }
+                    errorHint = VLTerminationHintForErrorCode(errorCode);
                     
                     title = [LocalizationHelper localizedStringForKey: @"Connection Terminated"];
                     message = [LocalizationHelper localizedStringForKey: @"The connection was terminated, Error code: %@", errorString];
+                    if (errorHint != nil) {
+                        message = [message stringByAppendingFormat:@"\n\n%@", errorHint];
+                    }
                     break;
                 }
             }
