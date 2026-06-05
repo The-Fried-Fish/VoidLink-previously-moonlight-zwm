@@ -2177,6 +2177,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         NSInteger renderingBackend = [self->tempSettings.renderingBackend integerValue];
         [self.renderingBackendSelector setSelectedSegmentIndex:renderingBackend];
         [self.renderingBackendSelector addTarget:self action:@selector(renderingBackendChanged:) forControlEvents:UIControlEventValueChanged];
+        [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
         NSInteger framePacingMode = [self->tempSettings.framePacingMode integerValue];
         [self.framePacingModeSelector setSelectedSegmentIndex:framePacingMode];
@@ -2187,7 +2188,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self.asyncFrameDequeueSwitch setOn:self->tempSettings.asyncFrameDequeue];
         [self.sdrPerformanceWorkaroundSwitch setOn:self->tempSettings.sdrPerformanceWorkaround];
 
-        [self renderingBackendChanged:self.renderingBackendSelector]; // Update PiP and frame pacing state based on current selection
 
         [self.citrixX1MouseSwitch setOn:self->tempSettings.btMouseSupport];
         [self.globeAsEscapeSwitch setOn:self->tempSettings.globeAsEscape];
@@ -2566,7 +2566,6 @@ BOOL isCustomResolution(int resolutionSelected) {
         // Set pacing method to Queue and disable selector
         [self.framePacingModeSelector setSelectedSegmentIndex:FramePacingModeQueue];
         [self.framePacingModeSelector setEnabled:NO];
-        [self setHidden:true forStack:self.asyncFrameDequeueStack];
     } else {
         // Balanced mode (AVSB renderer) - enable PiP toggle if iOS 15+
         if (@available(iOS 15.0, *)) {
@@ -2576,7 +2575,6 @@ BOOL isCustomResolution(int resolutionSelected) {
             [self.pipSwitch setEnabled:NO];
         }
         [self.framePacingModeSelector setEnabled:YES];
-        [self setHidden:false forStack:self.asyncFrameDequeueStack];
     }
 
     // Get the current settings to compare with the new selection

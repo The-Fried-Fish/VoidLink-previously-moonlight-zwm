@@ -784,7 +784,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     
                     if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) {
                         [widgetView setAutoDockWithEnabled:true];
-                        if(ControllerUtil.activeGCControllers.count > 0) [widgetView restartAutoDockCountdown];
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
+                                       dispatch_get_main_queue(), ^{
+                            if(!AlertControllerUtil.isCountingDown) [widgetView restartAutoDockCountdown];
+                        });
                     }
                         
                     if(sequenceGenerated){
@@ -804,6 +807,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             
             OnScreenWidgetView.deepestButton = nil;
             UIView* deepestButton = [OnScreenWidgetView getDeepestButton];
+            NSMutableSet* motionControlButtons = [NSMutableSet new];
             if(deepestButton){
                 for (UIView *subview in self->_streamFrameTopLayerView.subviews) {
                     if ([subview isKindOfClass:[OnScreenWidgetView class]]) {
@@ -811,7 +815,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                         if(widget.widgetType == WidgetTypeEnumTouchPad){
                             [self->_streamFrameTopLayerView insertSubview:subview belowSubview:deepestButton];
                         }
+                        if(widget.isMotionControlButton) [motionControlButtons addObject:widget];
                     }
+                }
+                for(OnScreenWidgetView* button in motionControlButtons) {
+                    [self->_streamFrameTopLayerView insertSubview:button belowSubview:deepestButton];
                 }
             }
         }

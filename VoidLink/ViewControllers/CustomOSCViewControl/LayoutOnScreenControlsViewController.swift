@@ -307,6 +307,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetPanelStoredCenter = widgetPanelStack.center
         setupWidgetPanel()
         profileRefresh()
+        if !toolbarStackView.isHidden {
+            GenericUtils.handleLayoutToolTip(in: self)
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -474,12 +477,13 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         
         if let folder = folder {
             for widget in newWidgetBatch where
-            widget.isFolder
-            && widget.parentSequence != -1
+            widget.parentSequence != -1
             && widget != folder
             {
-                widget.sequenceSet = Set(widget.sequenceSet.map {importedWidgetSequenceMap[$0] ?? -1})
-                if !independentWidgetSequencesPriorToImport.contains(widget.sequence) {widget.parentSequence = importedWidgetSequenceMap[widget.parentSequence] ?? -1}
+                if widget.isFolder {widget.sequenceSet = Set(widget.sequenceSet.map {importedWidgetSequenceMap[$0] ?? -1})}
+                if !independentWidgetSequencesPriorToImport.contains(widget.sequence) {
+                    widget.parentSequence = importedWidgetSequenceMap[widget.parentSequence] ?? folder.sequence
+                }
                 // print("label: \(widget.widgetLabel) sequence: \(widget.sequence) set: \(widget.sequenceSet) parent: \(String(describing: OnScreenWidgetView.mapping[widget.parentSequence]?.widgetLabel))")
             }
         }
@@ -487,9 +491,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         for case let widget as OnScreenWidgetView in self.onScreenWidgetViews {
             widget.accessWidgetAttributes()
         }
-
-        OnScreenWidgetView.unfoldedExclusiveFolderSequence = oscProfile.unfoldedExclusiveFolderSequence
-        OnScreenWidgetView.setPostExclusiveUnfoldeds(oscProfile.postExclusiveUnfoldedSequences as NSSet)
+        
+        OnScreenWidgetView.unfoldedExclusiveFolderSequence = folder == nil ? -1 : oscProfile.unfoldedExclusiveFolderSequence
+        if folder == nil {OnScreenWidgetView.setPostExclusiveUnfoldeds(oscProfile.postExclusiveUnfoldedSequences as NSSet)}
         OnScreenWidgetView.restoreFoldedStates()
         
         if hasLegacyWidget {
@@ -503,12 +507,15 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         
         OnScreenWidgetView.deepestButton = nil;
         _ = OnScreenWidgetView.getDeepestButton()
+        var motionControlButtons = Set<OnScreenWidgetView>()
         if let deepestButton = OnScreenWidgetView.deepestButton {
             for widget in OnScreenWidgetView.mapping.values {
                 if widget.widgetType == .touchPad {
-                    widget.superview?.insertSubview(widget, belowSubview: deepestButton)
+                    self.view.insertSubview(widget, belowSubview: deepestButton)
                 }
+                if widget.isMotionControlButton {motionControlButtons.insert(widget)}
             }
+            for button in motionControlButtons {self.view.insertSubview(button, belowSubview: deepestButton)}
         }
         
         view.bringSubviewToFront(toolbarRootView)
@@ -1083,8 +1090,12 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         }
         refreshPanelForSelectedWidget(widgetView)
         
-        if (widgetView.isFolder && GenericUtils.isFirstTappingFolderInLayoutTool()) {
+        if widgetView.isFolder && GenericUtils.isFirstTappingFolderInLayoutTool() {
             self.popFolderTutorialTip()
+        }
+        if widgetView.widgetLabel == "=virtualGamepad"
+            || widgetView.widgetLabel == "=kbm" {
+            GenericUtils.handleGamingLayoutFolderTip(in: self)
         }
     }
 
@@ -1244,6 +1255,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.sequence = widget.sequence
         newWidget.autoDockIdleDuration = widget.autoDockIdleDuration
         newWidget.autoDockSettledAlpha = widget.autoDockSettledAlpha
+        newWidget.folded = widget.folded
         newWidget.revealMode = widget.revealMode
         newWidget.bulkMoveEnabled = widget.bulkMoveEnabled
         newWidget.layoutUpdateDelegate = self
@@ -1292,8 +1304,11 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         OnScreenWidgetView.set(widget: newWidget, for: newWidget.sequence)
         newWidget.sizeReference = widget.sizeReference
         newWidget.resizeWidgetView()
-        newWidget.adjustTransparency(alpha: widget.backgroundAlpha, tweakBorderAlpha: false)
-        newWidget.tweakLabelAlpha(alpha: widget.labelAlpha)
+        
+        newWidget.adjustTransparency(alpha: widget.originalBackgroundAlpha, tweakBorderAlpha: false)
+        newWidget.tweakLabelAlpha(alpha: widget.originalLabelAlpha)
+        if widget.isFolder {newWidget.reverseColorPhase(reversed: !newWidget.folded)}
+
         newWidget.tweakBorderAlpha(alpha: widget.borderAlpha)
         newWidget.tweakHighlightAlpha(alpha: widget.highlightAlpha)
         newWidget.adjustBorder(width: widget.borderWidth)
@@ -1622,7 +1637,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
             if oscProfilesTableViewController?.loadingMode != .pickProfileData {
                 setupWidgetPanel()
             }
-            else {widgetPanelStack.isHidden = false}
+            else {
+                widgetPanelStack.isHidden = false
+            }
         case .selectProfileFromMainFrame, .selectProfileFromStreamView:
             clearOnScreenWidgets()
             dismiss(animated: false)
@@ -2547,7 +2564,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         widgetPanelStack.isUserInteractionEnabled = true
         if let selectedWidget {
             view.insertSubview(selectedWidget, belowSubview: widgetPanelStack)
-            if selectedWidget.widgetType == .touchPad {
+            if selectedWidget.widgetType == .touchPad || selectedWidget.isMotionControlButton {
                 view.sendSubviewToBack(selectedWidget)
             }
         }

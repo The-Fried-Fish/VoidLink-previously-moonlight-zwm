@@ -10,7 +10,7 @@ import UIKit
 import SVGKit
 import ObjectiveC.runtime
 
-@objc class OnScreenWidgetView: UIView {
+@objc class OnScreenWidgetView: UIButton {
     @objc(widgetWithCmdString:buttonLabel:shape:profile:)
     class func widget(cmdString: String, buttonLabel: String, shape: String, profile: OSCProfile) -> OnScreenWidgetView {
         return OnScreenWidgetView(cmdString: cmdString, buttonLabel: buttonLabel, shape: shape, profile: profile)
@@ -124,7 +124,7 @@ import ObjectiveC.runtime
         }
     }
     private func highlightBorderDuringResizing() {
-        if widgetType == .touchPad {
+        if widgetType == .touchPad || self.isMotionControlButton {
             self.highlightBorder(highlighted: true, color: standardHighlightColor.cgColor)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 if !self.isBeingResized {
@@ -252,6 +252,7 @@ import ObjectiveC.runtime
     @objc public var isMousePadWithButtonActions: Bool = false
     @objc public var hasInertia: Bool = false
     @objc public var isFunctionalButton: Bool = false
+    @objc public var isMotionControlButton: Bool = false
     @objc public var isTapToToggleException: Bool = false
     @objc public var hasHapticFeedback: Bool = false
     @objc public var isDirectionPad: Bool = false
@@ -262,6 +263,7 @@ import ObjectiveC.runtime
     @objc public var isFolder: Bool = false
     @objc public var containsShortcutAction: Bool = false
     @objc public var hasNonEditableLabel: Bool = false
+    @objc public var hasTemporaryLabel: Bool = false
 
     @objc public var isMagnifier: Bool = false
     @objc public var animatesTransition: Bool = true
@@ -610,7 +612,7 @@ import ObjectiveC.runtime
         self.hasDisplacementBasedStickPad = CommandManager.displacementBasedStickPads.contains(self.touchPadString)
         self.isDisplacementBasedStickPad = self.hasDisplacementBasedStickPad && widgetType == WidgetTypeEnum.touchPad
         self.hasStickIndicatorOffset = isDisplacementBasedStickPad && touchPointAnchored
-
+        
         self.hasSensitivityX = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.verticalTouchPads.contains(self.touchPadString)
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.stickWheels.contains(self.touchPadString)
         self.hasSlideThreshold = CommandManager.mousePads.contains(self.touchPadString)
@@ -626,7 +628,7 @@ import ObjectiveC.runtime
             self.sensitivityYMin = 0
             self.sensitivityYMax = 16.0
         }
-
+        
         self.hasYawFactor = self.motionControlButtonString == "GYRO" && (oscProfile.mapGyroTo == .mapGyroToMouse || oscProfile.yawPitchToRightStick)
         self.hasPitchFactor = self.hasYawFactor
         self.yawFactorMin = -1.0
@@ -642,10 +644,11 @@ import ObjectiveC.runtime
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasInertia = CommandManager.inertialTouchPads.contains(self.touchPadString)
         self.isFunctionalButton = self.functionalButtonString != "" || self.cmdString.contains("+")
+        self.isMotionControlButton = !self.motionControlButtonString.isEmpty
         self.isTapToToggleException = (self.functionalButtonString == "NOSINGLETOUCH"
                                        || self.functionalButtonString == "PENCILHOVER"
                                        || self.functionalButtonString == "ABSTCHDRAG"
-                                    )
+        )
         self.hasHapticFeedback = !self.comboButtonStrings.isEmpty || CommandManager.directionPads.contains(self.touchPadString)
         self.isDirectionPad = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.directionPads.contains(self.touchPadString)
         self.hasWalkSprintKeys = self.isDirectionPad && (self.touchPadString == "WASDPAD"
@@ -653,19 +656,22 @@ import ObjectiveC.runtime
         self.isStickWheel = self.widgetType == WidgetTypeEnum.touchPad && CommandManager.stickWheels.contains(self.touchPadString)
         self.isFolder = self.cmdString.contains("FOLDER")
         self.containsShortcutAction = self.cmdString.contains("+")
-
+        
         self.hasComponent = self.isStickWheel || (self.isDisplacementBasedStickPad && !self.touchPointAnchored)
         self.hasL3R3Indicator = !self.isStickWheel && !self.isDirectionPad && self.widgetType == WidgetTypeEnum.touchPad
         
         /*
-        self.hasTrackPoint = (CommandManager.vectorTouchPads.contains(self.touchPadString)
-                              || self.isStickWheel
-                              || (self.widgetType == WidgetTypeEnum.button
-                                  && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))*/
+         self.hasTrackPoint = (CommandManager.vectorTouchPads.contains(self.touchPadString)
+         || self.isStickWheel
+         || (self.widgetType == WidgetTypeEnum.button
+         && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))*/
         self.hasTrackPoint = true
         self.hasNonEditableLabel = (self.cmdString == "DISABLETOUCH"
                                     || self.cmdString == "GAMEPADOVERLAY")
-        
+        self.hasTemporaryLabel = CommandManager.velocityBasedTouchPads.contains(self.touchPadString) && (self.isMotionControlButton || self.buttonString == "NULL")
+        || self.cmdString == "RSVPAD"
+        || self.cmdString == "LSVPAD"
+
         self.mouseButtonActionDelay = self.cmdString.contains("ABSMOUSEPAD") ? 0.005 : 0
         
         self.standardFoldingInterval = widgetType == .touchPad ? 0.05 : 0.15;
@@ -1031,7 +1037,7 @@ import ObjectiveC.runtime
     @objc func setupAtrributedText(){
         var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : LocalizationHelper.localizedString(forKey: self.widgetLabel)
         
-        if !OnScreenWidgetView.editMode, self.widgetType == .touchPad {
+        if !OnScreenWidgetView.editMode, self.widgetType == .touchPad, !self.hasTemporaryLabel {
             text = ""
         }
         
@@ -1121,7 +1127,7 @@ import ObjectiveC.runtime
                 if CommandManager.stickWheels.contains(self.touchPadString) {label.isHidden = true}
             }
             else{
-                label.isHidden = self.widgetLabel.uppercased() == self.touchPadString // allow touchPad label to be display if it's different from touchPad cmdString
+                label.isHidden = !self.hasTemporaryLabel
             }
         }
                 
@@ -2053,7 +2059,8 @@ import ObjectiveC.runtime
         self.directionPadTouchBegan = true
         self.firstTouchMoved = false
         self.tickFlag = 0
-        super.touchesBegan(touches, with: event)
+        // super.touchesBegan(touches, with: event)
+        if OnScreenWidgetView.editMode {self.parentViewController?.touchesBegan(touches, with: event)}
         
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
             || CommandManager.mousePadWithButtonActions.contains(self.touchPadString)
@@ -2096,6 +2103,8 @@ import ObjectiveC.runtime
         }
         
         if !OnScreenWidgetView.editMode {
+            if self.hasTemporaryLabel, !self.label.isHidden {self.label.isHidden = true}
+            
             if self.widgetType == WidgetTypeEnum.touchPad && touches.count == 1{ // don't use event?.allTouches?.count here, it will counts all touches including the ones captured by other UIViews
                 switch self.touchPadString {
                 case "LSWHEEL","RSWHEEL":
@@ -2453,7 +2462,8 @@ import ObjectiveC.runtime
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesMoved(touches, with: event)
+        // super.touchesMoved(touches, with: event)
+        if OnScreenWidgetView.editMode {self.parentViewController?.touchesMoved(touches, with: event)}
 
         if !OnScreenWidgetView.editMode {
             
@@ -2831,7 +2841,7 @@ import ObjectiveC.runtime
         switch self.functionalButtonString {
         case "FOLDER":
             if self.buttonMode != .slideAndHold {break}
-            GenericUtils.handleSlideAndHoldFolderButtonTip(in: self.parentViewController)
+            // GenericUtils.handleSlideAndHoldFolderButtonTip(in: self.parentViewController)
             self.folded = false
             OnScreenWidgetView.set(folded: false, for: self)
         case "ABSTCHDRAG":
@@ -3001,7 +3011,8 @@ import ObjectiveC.runtime
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchBegan = false
-        super.touchesEnded(touches, with: event)
+        // super.touchesEnded(touches, with: event)
+        if OnScreenWidgetView.editMode {self.parentViewController?.touchesEnded(touches, with: event)}
                 
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -3754,8 +3765,9 @@ import ObjectiveC.runtime
                 }
                 DispatchQueue.main.async {
                     widget.isUserInteractionEnabled = false
-                    if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
-                        || abs(widget.backgroundAlpha) < 0.1){
+                    if (widget.widgetType == .touchPad
+                        || abs(widget.backgroundAlpha) < 0.1
+                        || widget.hasTemporaryLabel){
                         widget.highlightBorder(highlighted: OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition, color: OnScreenWidgetView.enableFolderAnimation ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor)
                     }
                     let duration = (OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition)
@@ -3767,8 +3779,9 @@ import ObjectiveC.runtime
                         widget.isUserInteractionEnabled = !folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
-                        if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
-                            || abs(widget.backgroundAlpha) < 0.1){
+                        if (widget.widgetType == .touchPad
+                            || abs(widget.backgroundAlpha) < 0.1
+                            || widget.hasTemporaryLabel){
                             widget.highlightBorder(highlighted: false)
                         }
                     })
@@ -3783,8 +3796,9 @@ import ObjectiveC.runtime
                     widget.capturedTouches.removeAllObjects()
                     widget.center = folder.storedCenter
                     widget.isHidden = false
-                    if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
-                        || abs(widget.backgroundAlpha) < 0.1){
+                    if (widget.widgetType == .touchPad
+                        || abs(widget.backgroundAlpha) < 0.1
+                        || widget.hasTemporaryLabel){
                         widget.highlightBorder(highlighted: OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition, color: OnScreenWidgetView.enableFolderAnimation ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor)
                     }
                     UIView.animate(withDuration: (OnScreenWidgetView.enableFolderAnimation && folder.animatesTransition)
@@ -3797,9 +3811,10 @@ import ObjectiveC.runtime
                         widget.isUserInteractionEnabled = !folder.folded
                         widget.center = folder.folded ? folder.storedCenter : widget.storedCenter
                         widget.isHidden = folder.folded
-                        if ((folder.buttonMode != .slideAndHold && widget.widgetType == .touchPad)
-                            || abs(widget.backgroundAlpha) < 0.1){
-                            DispatchQueue.main.asyncAfter(deadline: .now() + (widget.widgetType == .touchPad ? 0.15 : 0)) {
+                        if (widget.widgetType == .touchPad
+                            || abs(widget.backgroundAlpha) < 0.1
+                            || widget.hasTemporaryLabel){
+                            DispatchQueue.main.asyncAfter(deadline: .now() + ((widget.widgetType == .touchPad || widget.hasTemporaryLabel) && folder.animatesTransition ? 0.15 : 0)) {
                                 widget.highlightBorder(highlighted: false)
                             }
                         }

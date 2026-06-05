@@ -213,6 +213,56 @@ import UIKit
         }
     }
     
+    @objc static var hasTappedGamingLayoutFolderInEditMode: Bool = false
+    @objc static func isFirstTappingGamingLayoutFolderInEditMode() -> Bool {
+        guard !hasTappedGamingLayoutFolderInEditMode else { return false }
+        hasTappedGamingLayoutFolderInEditMode = true
+        let key = "hasTappedGamingLayoutFolderInEditMode"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleGamingLayoutFolderTip(in vc: UIViewController?) {
+        if isFirstTappingGamingLayoutFolderInEditMode() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "gamingLayoutFolderTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 5,
+            )
+        }
+    }
+    
+    @objc static func isFirstEnteringLayoutTool() -> Bool {
+        let key = "hasEnteredLayoutTool1"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    @objc static func handleLayoutToolTip(in vc: UIViewController?) {
+        if isFirstEnteringLayoutTool() {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: "\n\(LocalizationHelper.localizedString(forKey: "layoutToolTip"))",
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 7,
+            )
+        }
+    }
+    
+    
     @objc static var hasTappedOnscreenGyroButton = false
     @objc static func isFirstTappingOnscreenGyroButton() -> Bool {
         guard !hasTappedOnscreenGyroButton else { return false }

@@ -1309,7 +1309,7 @@ static NSMutableSet* hostList;
     BOOL shouldEnableFramePacingSelector = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
     [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacingSelector];
     // [settingsViewController.frameTimebaseSwitch setEnabled:shouldEnableFramePacing];
-    [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacingSelector && settingsViewController.framePacingModeSelector.selectedSegmentIndex == FramePacingModeQueue];
+    [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacingSelector];
     [settingsViewController setHidden:_settingsExpandedInStreamView || !(shouldEnableFramePacingSelector && settingsViewController.framePacingModeSelector.selectedSegmentIndex == FramePacingModeQueue) forStack:settingsViewController.frameQueueSizeStack];
 
     // Disable mic switch if sunshine does not support mic redirection

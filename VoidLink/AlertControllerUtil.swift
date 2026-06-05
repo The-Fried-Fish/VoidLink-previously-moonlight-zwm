@@ -29,6 +29,7 @@ import UIKit
     @objc public static var alertController:UIAlertController = UIAlertController()
     @objc public static var cancelButtonString:String = "Cancel"
     @objc public static var autoCompletion:Bool = false
+    @objc public static var isCountingDown:Bool = false
 
     @objc class func showAlert(
         in viewController: UIViewController? = nil,
@@ -76,6 +77,7 @@ import UIKit
         }
 
         viewController.present(alertController, animated: true, completion: action)
+        isCountingDown = !autoCompletion && countdown > 0
         
         if(countdown == 0) {return}
 
@@ -91,6 +93,7 @@ import UIKit
             remainingSeconds -= 1
 
             if remainingSeconds <= 0 {
+                isCountingDown = false
                 isAlertDismissed = true
                 timer.cancel()
                 if autoCompletion {
