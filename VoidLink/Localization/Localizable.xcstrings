@@ -7626,25 +7626,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 2 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side\n\nIf the screen shows large green or purple color artifacts, disable variable display refresh rate (G-Sync, Free-Sync) on the PC and set the display refresh rate to match the streaming frame rate."
+            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 2 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side\n\nIf the screen shows large green or purple color artifacts: \n\n- Disable variable display refresh rate (G-Sync, Free-Sync) on the PC and set the display refresh rate to match the streaming frame rate.\n\n- If the issue still persists switch to “Legacy” frame pacing, or “Metal” rendering (side menu -> experimental section)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 默认状态下，控件菜单按键在闲置2秒后将自动吸附屏幕【右下方边缘】，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n\n若画面出现大片发绿、发紫的颜色异常，请在主机端关闭【可变显示刷新率(G-Sync, Free-Sync)】，并将显示刷新率设定为与串流帧率一致。"
+            "value" : "\n1. 默认状态下，控件菜单按键在闲置2秒后将自动吸附屏幕【右下方边缘】，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n\n若画面出现大片发绿、发紫的颜色异常:\n\n- 请在主机端关闭【可变显示刷新率(G-Sync, Free-Sync)】，并将显示刷新率设定为与串流帧率一致。\n\n- 若问题仍未解决，请在设置菜单中选择“传统” 帧步进，或实验性分区的“Metal” 渲染。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置2秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常，請在主機端關閉「可變顯示更新率(G-Sync, Free-Sync)」，並將顯示更新率設定為與串流幀率一致。"
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常：\n\n- 請在主機端關閉「可變顯示更新率(G-Sync, Free-Sync)」，並將顯示更新率設定為與串流幀率一致。\n\n- 若問題仍未解決，請在設定選單中選擇「傳統」影格步調，或使用實驗性功能中的「Metal」渲染。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常，請在主機端關閉「可變顯示更新率(G-Sync, Free-Sync)」，並將顯示更新率設定為與串流幀率一致。"
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常：\n\n- 請在主機端關閉「可變顯示更新率(G-Sync, Free-Sync)」，並將顯示更新率設定為與串流幀率一致。\n\n- 若問題仍未解決，請在設定選單中選擇「傳統」影格步調，或使用實驗性功能中的「Metal」渲染。"
           }
         }
       }
@@ -7782,25 +7782,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nDrag other widgets (buttons or touchpads). Release when the touch point enters the folder’s bounding frame to complete collecting.\n\n- When the folder is unfolded, the collected widget will snap back to its original position. Otherwise, the collected widget will be hidden\n\n- Drag a sub-widget or a folder over the trash icon (do not release) to detach it from the collection.\n\n- The [Widgets] folder button (you just selected) can be dragged & relocated during streaming by quick double tap and keep holding-down."
+            "value" : "\nCollect widgets into folder: drag other widgets (buttons or touchpads). Release when the touch point enters the folder’s bounding frame.\n\n- When the folder is unfolded, the collected widget will snap back to its original position. Otherwise, the collected widget will be hidden\n\n- Drag a sub-widget or a folder over the trash icon (do not release) to detach it from the collection.\n\n- The [Widgets] folder button (you just selected) can be dragged & relocated during streaming by quick double tap and keep holding-down."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n拖动其他控件(按键或触控板)，当手指触点进入控件夹按键边框时松开，即可完成收纳。\n\n- 当控件夹展开， 被收纳控件将弹回原先的位置，反之则隐藏。\n\n- 拖动子控件或控件夹划过垃圾桶图标(不要松开)，即可解除收纳关系。\n\n- 您刚刚选择的 [控件菜单] 控件夹，在串流时也能通过快速双击并保持长按，拖动改变其位置。\n"
+            "value" : "\n收纳控件：拖动其他控件(按键或触控板)，当手指触点进入控件夹按键边框时松开即可。\n\n- 当控件夹展开时，被收纳控件将弹回原先的位置，反之则隐藏。\n\n- 拖动子控件或控件夹划过垃圾桶图标(不要松开)，即可解除收纳关系。\n\n您刚刚选择的 [控件菜单] 控件夹，在串流时也能通过快速双击并保持长按，拖动改变其位置。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入控制項夾按键邊框時放開，即可完成收納。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。反之被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n\n- 您剛剛選擇的 [控制項選單] 控制項夾，在串流時可透過快速雙擊後持續按住，拖曳變更其位置。"
+            "value" : "\n收納控制項：拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入控制項夾按键邊框時放開即可。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。反之被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n\n您剛剛選擇的 [控制項選單] 控制項夾，在串流時可透過快速雙擊後持續按住，拖曳變更其位置。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入控制項夾按键邊框時放開，即可完成收納。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。反之被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n\n- 您剛剛選擇的 [控制項選單] 控制項夾，在串流時可透過快速雙擊後持續按住，拖曳變更其位置。"
+            "value" : "\n收納控制項：拖動其他螢幕控制項（按鍵或觸控板），當手指觸點進入控制項夾按键邊框時放開即可。\n\n- 當控制項夾處於展開狀態時，被收納的控制項會彈回原本的位置。反之被收納的控制項會隱藏。\n\n- 拖動子控制項或控制項夾按键，劃過垃圾桶圖示（不要放開），即可解除收納關係。\n\n您剛剛選擇的 [控制項選單] 控制項夾，在串流時可透過快速雙擊後持續按住，拖曳變更其位置。"
           }
         }
       }
@@ -8312,25 +8312,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- The on-screen widget layout (including the virtual gamepad, virtual buttons, etc.), as well as the options in the settings menu marked with a [gamepad icon] (such as motion control settings), are all saved in the game profile.\n\n- To switch game profile during streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
+            "value" : "\n- The on-screen widget layout (including the virtual gamepad, virtual buttons, etc.), as well as the options in the settings menu marked with a [gamepad icon] (such as motion control settings), are all saved in the game profile.\n\n- To switch game profile during streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 屏显控件布局(包含虚拟手柄、虚拟按键等)，以及设置菜单中标记 [手柄图标] 的选项(如体感控制参数)，皆保存在游戏配置中。\n\n- 串流过程中, 由屏幕 %@ 边缘向内滑动 %@ 屏宽，即可在工具箱菜单中打开 [切换游戏配置]"
+            "value" : "\n- 屏显控件布局(包含虚拟手柄、虚拟按键等)，以及设置菜单中标记 [手柄图标] 的选项(如体感控制参数)，皆保存在游戏配置中。\n\n- 串流过程中, 由屏幕 %@ 边缘向内滑动 %@ 屏宽，即可在工具箱菜单中打开 [切换游戏配置]"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
+            "value" : "\n- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
+            "value" : "\n- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
           }
         }
       }
@@ -9795,6 +9795,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左扳機觸控板"
+          }
+        }
+      }
+    },
+    "legacyFramePacingTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legacy Frame Pacing and No Frame Pacing modes may reduce streaming performance or cause frequent jitter and stuttering. These modes are intended only for the rare cases where the streamed image exhibits color corruption.\n\nTap OK to continue.\nTap Cancel to return to Queue Buffering mode."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "传统帧步进、无帧步进模式将导致串流性能衰减，或频繁的画面抖动和卡顿，仅适用于串流画面出现颜色异常的极少数情况。\n\n点【确定】以继续。\n点【取消】返回队列缓冲模式。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，僅適用於極少數串流畫面出現色彩異常的情況。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，僅適用於極少數串流畫面出現色彩異常的情況。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
           }
         }
       }

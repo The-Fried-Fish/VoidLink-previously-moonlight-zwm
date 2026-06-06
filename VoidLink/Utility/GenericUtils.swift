@@ -440,6 +440,29 @@ import UIKit
         return false
     }
 
+    @objc static func handleLegacyFramePacingTip(in vc: UIViewController?, with selector: UISegmentedControl, passAlert: Bool = false, uiAction: (() -> Void)? = nil) {
+        if passAlert || selector.selectedSegmentIndex == FramePacingMode.queue.rawValue {
+            uiAction?()
+            return
+        }
+        if selector.previousSelectedSegmentIndex != FramePacingMode.queue.rawValue {
+            uiAction?()
+            return
+        }
+        AlertControllerUtil.cancelButtonString = "Cancel"
+        AlertControllerUtil.showAlert(
+            in: vc,
+            title: LocalizationHelper.localizedString(forKey: "Tips"),
+            message: "\n\(LocalizationHelper.localizedString(forKey: "legacyFramePacingTip"))",
+            withCancel: true,
+            buttonTitle: LocalizationHelper.localizedString(forKey: "Confirm"),
+            countdown: 0,
+            completion: {
+                if AlertControllerUtil.actionCancelled {selector.selectedSegmentIndex = selector.previousSelectedSegmentIndex}
+                uiAction?()
+            }
+        )
+    }
 
     @objc static func gamepadOverlayFeatureTipTitle() -> String {
         LocalizationHelper.localizedString(forKey: "Gamepad Overlay")

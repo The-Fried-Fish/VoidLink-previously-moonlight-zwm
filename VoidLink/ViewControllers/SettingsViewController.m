@@ -2619,19 +2619,21 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)framePacingModeChanged:(UISegmentedControl *)sender {
     // Hide frame queue size for Off and Legacy modes
-    [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
-    // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
-    [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue
-                    || self.renderingBackendSelector.selectedSegmentIndex != 0) forStack:self.asyncFrameDequeueStack];
+    [GenericUtils handleLegacyFramePacingTipIn:self with:sender passAlert:settingsViewJustExpanded uiAction:^{
+        [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.frameQueueSizeStack];
+        // [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue) forStack:self.frameTimebaseStack];
+        [self setHidden:(sender.selectedSegmentIndex != FramePacingModeQueue
+                        || self.renderingBackendSelector.selectedSegmentIndex != 0) forStack:self.asyncFrameDequeueStack];
 
-    if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
-        [self.enableGraphsSwitch setOn:NO];
-        [self findDynamicLabelFromStack:_graphOpacityStack].hidden = YES;
-    }
-    [self.enableGraphsSwitch setEnabled:sender.selectedSegmentIndex == FramePacingModeQueue];
-    [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
-    [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.performanceGraphStack];
-
+        if(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy){
+            [self.enableGraphsSwitch setOn:NO];
+            [self findDynamicLabelFromStack:self->_graphOpacityStack].hidden = YES;
+        }
+        [self.enableGraphsSwitch setEnabled:sender.selectedSegmentIndex == FramePacingModeQueue];
+        [self.graphOpacityStepper setEnabled:self.enableGraphsSwitch.isOn];
+        [self setHidden:(sender.selectedSegmentIndex == FramePacingModeOff || sender.selectedSegmentIndex == FramePacingModeLegacy) forStack:self.performanceGraphStack];
+    }];
+    
     /*
     if (sender.selectedSegmentIndex == FramePacingModeLegacy) {
         // Legacy mode selected - disable frames to buffer and graph settings

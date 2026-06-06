@@ -251,7 +251,6 @@ import StoreKit
             settings?.onscreenControls = 1
             dataMan.saveData()
             let profileMan = OSCProfilesManager.sharedManager(.zero)
-            let profiles = profileMan.getAllProfiles()
             var toolkitProfileIndex = profileMan.getIndex(byName: "Pencil Pro")
             if toolkitProfileIndex == nil {profileMan.importDefaultTemplates()}
             toolkitProfileIndex = profileMan.getIndex(byName: "Pencil Pro")

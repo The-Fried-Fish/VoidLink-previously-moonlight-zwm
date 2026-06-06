@@ -483,6 +483,9 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
                 if widget.isFolder {widget.sequenceSet = Set(widget.sequenceSet.map {importedWidgetSequenceMap[$0] ?? -1})}
                 if !independentWidgetSequencesPriorToImport.contains(widget.sequence) {
                     widget.parentSequence = importedWidgetSequenceMap[widget.parentSequence] ?? folder.sequence
+                    if widget.parentSequence == folder.sequence {
+                        folder.sequenceSet.insert(widget.sequence)
+                    }
                 }
                 // print("label: \(widget.widgetLabel) sequence: \(widget.sequence) set: \(widget.sequenceSet) parent: \(String(describing: OnScreenWidgetView.mapping[widget.parentSequence]?.widgetLabel))")
             }
