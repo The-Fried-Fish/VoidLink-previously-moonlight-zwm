@@ -251,13 +251,11 @@ import StoreKit
             settings?.onscreenControls = 1
             dataMan.saveData()
             let profileMan = OSCProfilesManager.sharedManager(.zero)
-            profileMan.updateDefaultTemplates()
             let profiles = profileMan.getAllProfiles()
-            guard profiles.count > 1 else { break }
-            guard let targetProfile = profiles[1] as? OSCProfile else { break }
-            if targetProfile.name == "Pencil Pro" {
-                profileMan.setProfileToSelected(1)
-            }
+            var toolkitProfileIndex = profileMan.getIndex(byName: "Pencil Pro")
+            if toolkitProfileIndex == nil {profileMan.importDefaultTemplates()}
+            toolkitProfileIndex = profileMan.getIndex(byName: "Pencil Pro")
+            profileMan.setProfileToSelected(toolkitProfileIndex ?? 1)
         default:
             break
         }

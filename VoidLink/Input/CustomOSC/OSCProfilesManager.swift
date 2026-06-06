@@ -14,7 +14,7 @@ import UIKit
 @objcMembers
 class OSCProfilesManager: NSObject {
     private static let profilesDefaultsKey = "OSCProfiles"
-    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260605"
+    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260606"
 
     private static var sharedInstance: OSCProfilesManager?
     private static var onScreenWidgetViews: NSMutableSet?
@@ -184,7 +184,8 @@ class OSCProfilesManager: NSObject {
         
         for case let profile as OSCProfile in profilesDecoded {
             if localProfileNames.contains(profile.name) {
-                profile.name = "\(profile.name)-\(LocalizationHelper.localizedString(forKey:"Restored"))"
+                // profile.name = "\(profile.name)-\(LocalizationHelper.localizedString(forKey:"Restored"))"
+                profile.name = "\(profile.name) - Restored"
             }
         }
         
@@ -201,8 +202,10 @@ class OSCProfilesManager: NSObject {
             localProfiles.remove(profile)
         }
         
+        var indexOffset = 0
         for profile in localProfiles {
-            profilesDecoded.add(profile)
+            profilesDecoded.insert(profile, at: 1+indexOffset)
+            indexOffset += 1
         }
 
         persistEncodedProfiles(encodedProfiles(from: profilesDecoded))
@@ -228,6 +231,7 @@ class OSCProfilesManager: NSObject {
         }
     }
 
+    /*
     func updateDefaultTemplates() {
         guard let filePath = Bundle.main.path(forResource: isIPhone() ? "widgetTemplatesIPhone" : "widgetTemplates", ofType: "bin") else {
             return
@@ -272,6 +276,7 @@ class OSCProfilesManager: NSObject {
             return
         }
     }
+     */
 
     func getAllProfiles() -> NSMutableArray {
         guard
@@ -304,11 +309,7 @@ class OSCProfilesManager: NSObject {
         let needImportDefaultTemplates = defaults.object(forKey: Self.widgetProfileUpdatedKey) == nil
 
         if profiles.count == 0 || needImportDefaultTemplates {
-            if profiles.count == 0 {
-                importDefaultTemplates()
-            } else {
-                updateDefaultTemplates()
-            }
+            importDefaultTemplates()
             defaults.set(true, forKey: Self.widgetProfileUpdatedKey)
             defaults.synchronize()
             profiles = getAllProfiles()
@@ -523,6 +524,14 @@ class OSCProfilesManager: NSObject {
     func findProfile(byName name: String, inProfileArray profiles: NSMutableArray) -> OSCProfile? {
         for case let profile as OSCProfile in profiles where profile.name == name {
             return profile
+        }
+        return nil
+    }
+    
+    func getIndex(byName name: String) -> UInt32? {
+        let profiles = getAllProfiles()
+        for case let profile as OSCProfile in profiles where profile.name == name {
+            return UInt32(profiles.index(of: profile))
         }
         return nil
     }

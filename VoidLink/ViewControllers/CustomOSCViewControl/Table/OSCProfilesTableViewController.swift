@@ -383,7 +383,7 @@ final class OSCProfilesTableViewController: UIViewController, UITableViewDelegat
             return UITableViewCell()
         }
 
-        nameLabel.text = profile.name
+        nameLabel.text = profile.name.localizedProfileName
         nameLabel.backgroundColor = UIColor.clear
         nameLabel.alpha = 1.0
         nameLabel.textColor = UIColor.white.withAlphaComponent(0.9)

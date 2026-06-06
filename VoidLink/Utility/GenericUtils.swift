@@ -700,6 +700,18 @@ extension CGPoint {
     }
 }
 
+extension String {
+    var localized: String {
+        LocalizationHelper.localizedString(forKey: self)
+    }
+    
+    var localizedProfileName: String {
+        let parts = self.components(separatedBy: " - Restored")
+        let isRestored = self.contains(" - Restored")
+        let localized = isRestored ? "\(parts.first?.localized ?? "") - \("Restored".localized)" : self.localized
+        return localized
+    }
+}
 
 private var previousSelectedSegmentIndexKey: UInt8 = 0
 private var lastKnownSelectedSegmentIndexKey: UInt8 = 0

@@ -3394,7 +3394,7 @@ import ObjectiveC.runtime
         
     // MARK: - Auto Dock
     private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 70 : 90
-    private static let autoDockExposedThickness: CGFloat = 22
+    private static let autoDockExposedThickness: CGFloat = 17
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 0
     @objc var storedAutoDockIdleDuration: TimeInterval = 0
@@ -3898,6 +3898,21 @@ import ObjectiveC.runtime
             for unfoldedSubfolder in OnScreenWidgetView.mapping.values.filter({$0.isFolder && !$0.folded && $0 != folder && OnScreenWidgetView.getParentFolders(of: $0).contains(folder)}) {
                 OnScreenWidgetView.setCollection(hidden: !folded, for: unfoldedSubfolder)
             }
+        }
+    }
+    
+    @objc static func clearSubWidgets(for folder:OnScreenWidgetView, recursive:Bool = false){
+        for widget in OnScreenWidgetView.mapping.values where widget.parentSequence == folder.sequence && (!widget.isFolder || widget.sequenceSet.isEmpty) {
+            folder.sequenceSet.remove(widget.sequence)
+            OnScreenWidgetView.mapping.removeValue(forKey: widget.sequence)
+            widget.removeFromSuperview()
+        }
+        guard recursive else {return}
+        for subFolder in OnScreenWidgetView.mapping.values where subFolder.parentSequence == folder.sequence && subFolder.isFolder {
+            OnScreenWidgetView.clearSubWidgets(for: subFolder, recursive: true)
+            folder.sequenceSet.remove(subFolder.sequence)
+            OnScreenWidgetView.mapping.removeValue(forKey: subFolder.sequence)
+            subFolder.removeFromSuperview()
         }
     }
     
