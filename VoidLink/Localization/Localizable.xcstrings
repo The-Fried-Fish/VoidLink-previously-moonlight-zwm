@@ -8376,7 +8376,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为全能型方案编辑游戏布局的最佳方法：\n\n- 当前布局层级较多， 建议从在其他配置文件中编辑游戏布局。\n- 完成后，展开当前控件夹\n- 点“清空” 移除子控件\n- 点“导入”并选择已编辑好的目标配置文件\n- 选中配置的布局将导入到当前控件夹中\n(自动过滤”控件菜单”, “切换布局”, “修改布局”按键)"
+            "value" : "为全能型方案编辑游戏布局的最佳方法：\n\n- 当前布局层级较多， 建议先在其他配置文件中编辑游戏布局。\n- 完成后，展开当前控件夹\n- 点“清空” 移除子控件\n- 点“导入”并选择已编辑好的目标配置文件\n- 选中配置的布局将导入到当前控件夹中\n(App自动过滤”控件菜单”, “切换布局”, “修改布局”按键)"
           }
         },
         "zh-Hant" : {
@@ -9805,19 +9805,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Legacy Frame Pacing and No Frame Pacing modes may reduce streaming performance or cause frequent jitter and stuttering. These modes are intended only for the rare cases where the streamed image exhibits color corruption.\n\nTap OK to continue.\nTap Cancel to return to Queue Buffering mode."
+            "value" : "Legacy Frame Pacing and No Frame Pacing modes may reduce streaming performance or cause frequent jitter and stuttering, and do not support screen-off keep-alive or background streaming without Picture-in-Picture. These modes are intended only for the rare cases where the streamed image exhibits color corruption.\n\nTap [Confirm] to continue.\nTap [Cancel] to return to Queue Buffering mode."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "传统帧步进、无帧步进模式将导致串流性能衰减，或频繁的画面抖动和卡顿，仅适用于串流画面出现颜色异常的极少数情况。\n\n点【确定】以继续。\n点【取消】返回队列缓冲模式。"
+            "state" : "translated",
+            "value" : "传统帧步进、无帧步进模式将导致串流性能衰减，或频繁的画面抖动和卡顿，且不支持熄屏保持以及无画中画的后台串流，仅适用于串流画面出现颜色异常的极少数情况。\n\n点【确定】以继续。\n点【取消】返回队列缓冲模式。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，僅適用於極少數串流畫面出現色彩異常的情況。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
+            "state" : "translated",
+            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，且不支援熄屏保持及無子母畫面的背景串流，僅適用於極少數串流畫面出現色彩異常的情況。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
           }
         },
         "zh-HK" : {

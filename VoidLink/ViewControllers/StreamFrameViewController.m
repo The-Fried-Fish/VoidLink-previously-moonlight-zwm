@@ -1432,7 +1432,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 - (void)applicationWillResignActive:(NSNotification *)notification {
     //[self.pipController startPictureInPicture];
     //sleep(1);
-    appDidEnterBackgroundWithoutPip = true;
+    if(_settings.framePacingMode.intValue == FramePacingModeQueue) appDidEnterBackgroundWithoutPip = true;
     
     NSLog(@"applicationWillResignActive %f", CACurrentMediaTime());
     [_streamView saveStreamingGameProfileChanges];

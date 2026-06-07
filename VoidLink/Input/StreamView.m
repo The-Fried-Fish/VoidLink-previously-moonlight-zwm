@@ -315,6 +315,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [self liftMetalVideoViewIfNeeded:HeightViewLiftedTo];
         
         [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
+        if(keyboardToggleTip.superview && !keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
         [keyboardToggleTip removeFromSuperview];
     }
     NSLog(@"keyboard will show %f", CACurrentMediaTime());
@@ -324,6 +325,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
         if(!self->dockedKeyboardActionDetected){
+            if(self->keyboardToggleTip.superview && !self->keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
             [self->keyboardToggleTip removeFromSuperview];
             if(!self->isInputingText) [self keyboardWillHide];
             [self refreshKeyboardToggleRecognizer:self->settings.keyboardToggleFingers.intValue];
@@ -429,7 +431,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     NSLog(@"change num of fingers required");
     [self refreshKeyboardToggleRecognizer:1];
     keyboardToggleTip.translatesAutoresizingMaskIntoConstraints = NO;
-    NSLog(@"tip obj: %@", keyboardToggleTip);
+    
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC));
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
+        [OnScreenWidgetView temporaryHideAll];
+    });
+
     [self addSubview:keyboardToggleTip];
     [NSLayoutConstraint activateConstraints:@[
         [keyboardToggleTip.centerXAnchor constraintEqualToAnchor:self.centerXAnchor constant:0],
@@ -447,7 +454,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     if (isInputingText) {
         Log(LOG_D, @"Closing the keyboard");
         [keyInputField resignFirstResponder];
+        if(self->keyboardToggleTip.superview && !self->keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
         [keyboardToggleTip removeFromSuperview];
+        [OnScreenWidgetView restoreFromTemporaryHideAll];
     } else {
         Log(LOG_D, @"Opening the keyboard");
         [self addSubview:keyInputField];

@@ -105,6 +105,8 @@ import ObjectiveC.runtime
     @objc public var comboButtonStrings: [String] = []
     private var comboKeyTimeIntervalMs: UInt32 = 0
     
+    @objc public var temporarilyStoredHidden: Bool = false
+    
     @objc public var logicallyDown: Bool = false
     
     @objc public var isOverlappingWithTrashcan: Bool = false
@@ -3934,6 +3936,19 @@ import ObjectiveC.runtime
             current = parent
         }
         return parents
+    }
+    
+    @objc static func temporaryHideAll() {
+        for widget in OnScreenWidgetView.mapping.values where !(widget.isFolder && widget.parentSequence == -1){
+            widget.temporarilyStoredHidden = widget.isHidden
+            widget.isHidden = true
+        }
+    }
+
+    @objc static func restoreFromTemporaryHideAll() {
+        for widget in OnScreenWidgetView.mapping.values where !(widget.isFolder && widget.parentSequence == -1){
+            widget.isHidden = widget.temporarilyStoredHidden
+        }
     }
     
     private func hasUnfoldedSubfolders() -> Bool {
