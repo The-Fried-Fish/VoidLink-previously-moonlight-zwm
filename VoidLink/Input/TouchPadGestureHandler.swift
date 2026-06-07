@@ -49,12 +49,14 @@ import UIKit
         let midPointDeltaX = midPointVector.dx
         let midPointDeltaY = midPointVector.dy
         
-        inertialScroller.vector = CGVector(dx: midPointDeltaX, dy: midPointDeltaY)
+        let sendHorizontalScroll = abs(midPointDeltaX) > 1.2*abs(midPointDeltaY)
+        
+        inertialScroller.vector = CGVector(dx: sendHorizontalScroll ? midPointDeltaX : 0, dy: midPointDeltaY)
         
         let originalPinchDelta = currentDistance-previousDistance;
         let pinchDelta = enablePinch ? originalPinchDelta*7*pinchSensitivity : 0;
         LiSendHighResScrollEvent(Int16(pinchDelta + midPointDeltaY*7*scrollSensitivity))
-        if enableHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*7*scrollSensitivity))}
+        if enableHorizontalScroll, sendHorizontalScroll {LiSendHighResHScrollEvent(Int16(-midPointDeltaX*7*scrollSensitivity))}
         
         if enablePinch, ctrlDownForPinch {
             let midPointDelta = hypot(midPointDeltaX, midPointDeltaY)

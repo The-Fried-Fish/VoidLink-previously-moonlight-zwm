@@ -1252,7 +1252,6 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         newWidget.sequence = widget.sequence
         newWidget.autoDockIdleDuration = widget.autoDockIdleDuration
         newWidget.autoDockSettledAlpha = widget.autoDockSettledAlpha
-        newWidget.folded = widget.folded
         newWidget.revealMode = widget.revealMode
         newWidget.bulkMoveEnabled = widget.bulkMoveEnabled
         newWidget.layoutUpdateDelegate = self
@@ -1283,6 +1282,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         guard newWidget.widgetType == widget.widgetType else { return }
         view.insertSubview(newWidget, belowSubview: widgetPanelStack)
         newWidget.accessWidgetAttributes()
+        newWidget.folded = newWidget.isFolder && widget.folded
         newWidget.buttonMode = (newWidget.widgetType == .button && newWidget.touchPadString != "") ? .regular : widget.buttonMode
         newWidget.sensitivityFactorX = widget.sensitivityFactorX
         newWidget.componentSizeFactor = widget.componentSizeFactor
@@ -1304,7 +1304,7 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
         
         newWidget.adjustTransparency(alpha: widget.originalBackgroundAlpha, tweakBorderAlpha: false)
         newWidget.tweakLabelAlpha(alpha: widget.originalLabelAlpha)
-        if widget.isFolder {newWidget.reverseColorPhase(reversed: !newWidget.folded)}
+        if newWidget.isFolder {newWidget.reverseColorPhase(reversed: !newWidget.folded)}
 
         newWidget.tweakBorderAlpha(alpha: widget.borderAlpha)
         newWidget.tweakHighlightAlpha(alpha: widget.highlightAlpha)

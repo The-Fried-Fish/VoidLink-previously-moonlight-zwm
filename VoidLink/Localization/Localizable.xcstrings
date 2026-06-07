@@ -1220,7 +1220,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter PiP"
+            "value" : "PiP"
           }
         },
         "zh-Hans" : {
@@ -1231,13 +1231,13 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "子母畫面"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "子母畫面"
           }
         }
@@ -1382,7 +1382,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "控制項夾"
           }
         }
@@ -11839,7 +11839,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/nm6l9yixu0idsybg#32535f99"
           }
         },
@@ -12116,6 +12116,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選取版面"
+          }
+        }
+      }
+    },
+    "pipDisabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enable Picture in Picture in both System Settings and the app settings."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在系统设置与 App 设置中启用画中画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在系統設定與 App 設定中啟用子母畫面。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在系統設定與 App 設定中啟用子母畫面。"
+          }
+        }
+      }
+    },
+    "pipNotSupported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picture in Picture is not supported by the system."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系统不支持画中画。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統不支援子母畫面。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統不支援子母畫面。"
           }
         }
       }

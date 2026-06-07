@@ -3280,7 +3280,8 @@ struct WidgetPickerView: View {
     }
 
     private var comboJoiner: String {
-        (isShortcutPickerMode || effectiveWidgetComboMode == .shortcut) ? "+" : "-"
+        (isShortcutPickerMode || effectiveWidgetComboMode == .shortcut)
+        && selectedFunctionalButtonOption?.allowsShortcutCombo != false ? "+" : "-"
     }
 
     private func setCreateWidgetSheetVisible(_ isVisible: Bool) {
