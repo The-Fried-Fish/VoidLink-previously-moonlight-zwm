@@ -401,7 +401,7 @@ import ObjectiveC.runtime
     private var mousePointerMoved: Bool
     private var twoTouchesDetected: Bool
     private var scrollEventSent: Bool = false
-    private var allSpawnedTouchesCount: Int = 0
+    private var activeTouchesCount: Int = 0
     
     // trackball
     private var trackballVelocity: CGPoint = .zero
@@ -2056,10 +2056,6 @@ import ObjectiveC.runtime
     //==============================================================================
     // Touch event handling
     
-    private func getAllSpawnedTouchesCount(with event: UIEvent?)->Int{
-        return UITouchUtil.touches(in: self, from: event).count
-    }
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         self.touchBegan = true
@@ -2101,8 +2097,8 @@ import ObjectiveC.runtime
             self.latestTouchLocation = touchBeganLocation
         }
                 
-        allSpawnedTouchesCount = UITouchUtil.touches(in: self, from: event).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
-        if allSpawnedTouchesCount == 2 {
+        activeTouchesCount = UITouchUtil.touches(in: self, from: event).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
+        if activeTouchesCount == 2 {
             self.twoTouchesDetected = true
         }
         
@@ -2136,7 +2132,7 @@ import ObjectiveC.runtime
                         self.showl3r3Indicator()
                         self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
                 case "DPAD", "WASDPAD", "ARROWPAD":
-                    if allSpawnedTouchesCount == 1 {
+                    if activeTouchesCount == 1 {
                         // showLrudBall(at: touchBeganLocation)
                         CATransaction.begin()
                         CATransaction.setDisableActions(true)
@@ -2160,7 +2156,7 @@ import ObjectiveC.runtime
                     }
                 case "MAGNIFIER":
                     GenericUtils.handleMagnifierTip(in: self.parentViewController)
-                    if quickDoubleTapDetected && allSpawnedTouchesCount == 1 {
+                    if quickDoubleTapDetected && activeTouchesCount == 1 {
                         OnScreenWidgetView.profileChangedDuringStreaming = true
                         self.functionalWidgetDelegate?.resetMagnifierStreamView(animated: self.animatesTransition)
                     }
@@ -2168,7 +2164,7 @@ import ObjectiveC.runtime
                     break
                 }
                 
-                if self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
+                if self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && activeTouchesCount == 1 && !twoTouchesDetected {
                     self.handleMousePadButtonActionDown(touch: touch)
                 }
             }
@@ -2259,7 +2255,7 @@ import ObjectiveC.runtime
         if self.hasTrackPoint, OnScreenWidgetView.trackPointEnabled {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
-            let trackPointGap = allSpawnedTouchesCount - trackPointPool.count
+            let trackPointGap = activeTouchesCount - trackPointPool.count
             if trackPointGap > 0 {
                 for _ in 0..<trackPointGap {
                     trackPointPool.insert(GraphicUtils.makeTouchTrackpoint(in: self))
@@ -2555,7 +2551,7 @@ import ObjectiveC.runtime
     
     private func handleTouchPadMoveEvent (_ touches: Set<UITouch>, with event: UIEvent?){
         guard let touch = touches.first else { return }
-        let activeTouchesCount = UITouchUtil.touches(in: self, from: event).count
+        // let activeTouchesCount = UITouchUtil.touches(in: self, from: event).count
         if activeTouchesCount == 1 { // don't use event.alltouches.count here, it will counts all touches
             self.getVector(touch: touch)
             switch self.touchPadString{
@@ -3044,22 +3040,16 @@ import ObjectiveC.runtime
 
         if !(CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && self.mouseButtonAction != .noClick) {quickDoubleTapDetected = false} //do not reset this flag here in mousePad mode with button actions
 
-        self.allSpawnedTouchesCount = self.getAllSpawnedTouchesCount(with: event) // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
+        self.activeTouchesCount = UITouchUtil.touches(in: self, from: event).count // this will counts all valid touches within the self widgetView, and excludes touches in other widgetViews
         
         
         // deal with pure MOUSPAD first
-        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && allSpawnedTouchesCount == 1 && !twoTouchesDetected {
+        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && activeTouchesCount == 1 && !twoTouchesDetected {
             self.handleMousePadButtonActionUp()
         }
-        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && twoTouchesDetected && touches.count == allSpawnedTouchesCount { // need to enable multi-touch first
+        if !OnScreenWidgetView.editMode && self.widgetType == WidgetTypeEnum.touchPad && CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && twoTouchesDetected && touches.count == activeTouchesCount { // need to enable multi-touch first
             // touches.count == allCapturedTouchesCount means allfingers are lifting
             if self.mouseButtonAction == MouseButtonAction.hovering, !scrollEventSent {self.sendMouseRightButtonClickEvent()}
-        }
-        if touches.count == allSpawnedTouchesCount {
-            firstTouchMoved = false
-            twoTouchesDetected = false
-            scrollEventSent = false
-            twoTouchesDetected = false
         }
         
         // then other types of pads or buttons with touchPad function
@@ -3142,7 +3132,7 @@ import ObjectiveC.runtime
                 }
                 else {self.clearRightStickTouchPadFlag()}
             case "TRACKBALL":
-                if allSpawnedTouchesCount == 1, self.inertiaEnabled() {
+                if activeTouchesCount == 1, self.inertiaEnabled() {
                     if(mousePointerMoved){
                         self.startTrackballMomentum()
                         mousePointerMoved = false //reset flag
@@ -3245,8 +3235,13 @@ import ObjectiveC.runtime
             CATransaction.commit()
         }
         
+        // clear generic bool flags for streaming mode
         self.temporarilyMovable = false
-
+        if touches.count == activeTouchesCount {
+            twoTouchesDetected = false
+            scrollEventSent = false
+        }
+        
         CATransaction.commit()
         
         if OnScreenWidgetView.editMode {
@@ -3313,6 +3308,12 @@ import ObjectiveC.runtime
                 OnScreenWidgetView.isHorizontallyAligned = false
             }
         }
+        
+        // clear bool flags for streaming & edit mode
+        if touches.count == activeTouchesCount {
+            firstTouchMoved = false
+        }
+        
         OnScreenWidgetView.capturer = nil
     }
     
