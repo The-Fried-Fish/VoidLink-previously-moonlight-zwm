@@ -66,12 +66,30 @@ public struct AboutView: View {
                 .font(Font.callout.bold())
                 .lineLimit(nil)
                 .frame(maxWidth: 570) // ✅ 避免 Text 被拉得太宽无法换行
+            
 
             // 链接按钮
             if #available(iOS 14.0, *) {
-                Link(LocalizationHelper.localizedString(forKey: "Learn more & join us"), destination: URL(string: LocalizationHelper.localizedString(forKey: "supportLink"))!)
-                    .padding(.top, 10)
-                Spacer()
+                
+                HStack(spacing: 20) {
+                    Link(LocalizationHelper.localizedString(forKey: "Learn more"), destination: URL(string: LocalizationHelper.localizedString(forKey: "supportLink"))!)
+
+                    if #available(iOS 16, *) {
+                        let languageCode = Locale.current.language.languageCode?.identifier
+                        if languageCode == "zh" {
+                            Link(LocalizationHelper.localizedString(forKey: "加入QQ群"), destination: URL(string: LocalizationHelper.localizedString(forKey: "https://qm.qq.com/q/uM51CYWLS2"))!)
+                        }
+                    }
+                    if GenericUtils.isIPhone() {
+                        Link(LocalizationHelper.localizedString(forKey: "joinCommunity"), destination: URL(string: LocalizationHelper.localizedString(forKey: "communityLink"))!)
+                    }
+                }
+                .padding(.top, 10)
+                
+                if !GenericUtils.isIPhone() {
+                    Link(LocalizationHelper.localizedString(forKey: "joinCommunity"), destination: URL(string: LocalizationHelper.localizedString(forKey: "communityLink"))!)
+                }
+
                 // OK 按钮
                 Button(LocalizationHelper.localizedString(forKey: "OK")) {
                     aboutVC.dismiss(animated:true)
@@ -81,6 +99,7 @@ public struct AboutView: View {
                 .foregroundColor(.white)
                 .frame(height: 46)
                 .cornerRadius(12)
+                .padding(.top, 10)
             } else {
                 HStack(spacing: 20) {
                     Button(LocalizationHelper.localizedString(forKey: "Join us")) {

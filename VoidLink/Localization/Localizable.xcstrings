@@ -5327,6 +5327,35 @@
         }
       }
     },
+    "communityLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://discord.com/invite/Wkj9Az9UmZ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://space.bilibili.com/329885323"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://discord.com/invite/Wkj9Az9UmZ"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://discord.com/invite/Wkj9Az9UmZ"
+          }
+        }
+      }
+    },
     "Component size: %.2f   " : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9252,6 +9281,35 @@
         }
       }
     },
+    "joinCommunity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join our Discord"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开发者动态 True砖家@Bilibili"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入Discord社群"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入Discord社群"
+          }
+        }
+      }
+    },
     "Keyboard / Mouse" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9569,6 +9627,29 @@
         }
       }
     },
+    "Learn more" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "了解更多"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "瞭解更多"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "瞭解更多"
+          }
+        }
+      }
+    },
     "Learn More" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9581,36 +9662,13 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解更多"
+            "value" : "瞭解更多"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解更多"
-          }
-        }
-      }
-    },
-    "Learn more & join us" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "了解并加入社区"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "瞭解並加入社群"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "瞭解並加入社群"
+            "value" : "瞭解更多"
           }
         }
       }
