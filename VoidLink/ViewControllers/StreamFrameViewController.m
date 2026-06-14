@@ -1474,6 +1474,23 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
+    if(!GenericUtils.isIPhone){
+        for(OnScreenWidgetView* widget in OnScreenWidgetView.mapping.allValues){
+            if(widget.parentSequence != -1 && !widget.autoDockEnabled) continue;
+            if(widget.autoDockEnabled){
+                widget.autoDockIdleDuration = fmax(widget.autoDockIdleDuration, 3.0);
+                [widget autoDockStopCountdown];
+            }
+            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
+            dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+                if(widget.autoDockEnabled){
+                    OnScreenWidgetView.autoDockRestoreInitByViewResize = true;
+                    [widget restoreFromAutoDockWithAnimated:true];
+                }
+            });
+        }
+    }
+    
     appDidEnterBackgroundWithoutPip = false;
     [_streamMan setNeedRequeuing:true];
     // dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC));
