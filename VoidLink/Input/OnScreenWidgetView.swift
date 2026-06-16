@@ -3849,8 +3849,10 @@ import ObjectiveC.runtime
                             }
                         }
                         if widget.hasNonEditableLabel {widget.setupAtrributedText()}
-                        if !OnScreenWidgetView.editMode, widget.widgetType == .touchPad, let deepestButton = OnScreenWidgetView.deepestButton {
-                            widget.superview?.insertSubview(widget, belowSubview: deepestButton)
+                        DispatchQueue.main.asyncAfter(deadline: .now()){
+                            if !OnScreenWidgetView.editMode, widget.widgetType == .touchPad, let deepestButton = OnScreenWidgetView.deepestButton {
+                                widget.superview?.insertSubview(widget, belowSubview: deepestButton)
+                            }
                         }
                     })
                 }
@@ -3874,6 +3876,10 @@ import ObjectiveC.runtime
     
     @objc static func set(folded:Bool, for folder:OnScreenWidgetView) { // folder综合逻辑
         guard folder.isFolder else {return}
+        if !folded {
+            OnScreenWidgetView.deepestButton = OnScreenWidgetView.getDeepestButton()
+        }
+        
         OnScreenWidgetView.profileChangedDuringStreaming = true
         setCollection(folded: folded, for: folder, isExclusiveFolderAction: folder.revealMode == .exclusive)
         
