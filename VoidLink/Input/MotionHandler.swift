@@ -177,11 +177,9 @@ import CoreMotion
             
             if useBuiltinGyro {
                 if motionManager.isGyroAvailable {
-                    motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
-                        guard let self = self, let data = gyroData else { return }
-                        self.handleGyroData(x: data.rotationRate.x,
-                                            y: data.rotationRate.y,
-                                            z: data.rotationRate.z)
+                    motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motionData, _ in
+                        guard let self = self, let data = motionData else { return }
+                        self.handleMotionData(deviceMotion: data)
                     }
                 }
             }
@@ -203,9 +201,7 @@ import CoreMotion
                     }
                     if motion.sensorsActive {
                         motion.valueChangedHandler = { [weak self] motion in
-                            self?.handleGyroData(x: motion.rotationRate.x,
-                                                 y: motion.rotationRate.y,
-                                                 z: motion.rotationRate.z)
+                            self?.handleMotionData(gcMotion: motion)
                             }
                         }
                     }
@@ -230,16 +226,16 @@ import CoreMotion
     /// 停止更新
     private var interruptNoneGyroInput:Bool = false
 
-    @objc public func stopGyroUpdate(interruptNoneGyroInput:Bool=false, resetLeftStick:Bool=false) {
+    @objc public func stopMotionUpdate(interruptNoneGyroInput:Bool=false) {
         gyroControlStarted = false
         gyroIsWorking = false
-        if motionManager.isGyroActive{
-            motionManager.stopGyroUpdates()
+        if motionManager.isDeviceMotionActive{
+            motionManager.stopDeviceMotionUpdates()
         }
         if #available(iOS 14.0, *) {
             activeGCController?.motion?.sensorsActive = false
         }
-        self.clearGyroInput(interruptNonGyroInput:interruptNoneGyroInput, resetLeftStick:resetLeftStick)
+        self.clearGyroInput(interruptNonGyroInput:interruptNoneGyroInput)
     }
     
     @objc public func stopAccelUpdate() {
@@ -256,8 +252,27 @@ import CoreMotion
         // 在这里处理加速度数据，比如计算方向、存储或驱动逻辑
     }
 
-    private func handleGyroData(x: Double, y: Double, z: Double) {
+    private func handleMotionData(deviceMotion: CMDeviceMotion? = nil, gcMotion:GCMotion? = nil) {
+        var x:Double = 0
+        var y:Double = 0
+        var z:Double = 0
+        var attitudeRoll:Double = 0
+
+        if let deviceMotion = deviceMotion {
+            x = deviceMotion.rotationRate.x
+            y = deviceMotion.rotationRate.y
+            z = deviceMotion.rotationRate.z
+            attitudeRoll = deviceMotion.attitude.yaw
+        }
         
+        if let gcMotion = gcMotion {
+            x = gcMotion.rotationRate.x
+            y = gcMotion.rotationRate.y
+            z = gcMotion.rotationRate.z
+            attitudeRoll = gcMotion.attitude.z
+        }
+        
+            
         var yawSource:Double = 0
         var pitchSource:Double = 0
         var rollSource:Double = 0
@@ -367,7 +382,8 @@ import CoreMotion
             }
             if rollToLeftStick {
                 roll = gyroInputToStickInput(input:rollSource*sensitvityRoll*widgetRollFactor*0.2)
-                rollIntegral = rollIntegral + roll
+                                
+                rollIntegral = useBuiltinGyro ? -stickMaxOffset*(attitudeRoll/Double.pi)*3*sensitvityRoll*widgetRollFactor :                 rollIntegral + roll
                 
                 let mixedLeftStickOffsetX = self.clampStickInput(input: rollIntegral+leftStickTouchInputX+leftStickPhysicalInputX)
                 let mixedLeftStickOffsetY = self.clampStickInput(input: leftStickTouchInputY+leftStickPhysicalInputY)
@@ -379,17 +395,15 @@ import CoreMotion
         }
 }
     
-    private func clearGyroInput(interruptNonGyroInput:Bool, resetLeftStick:Bool=false){
+    private func clearGyroInput(interruptNonGyroInput:Bool){
         // guard let onScreenControls = onScreenControls else { return }
 
         if yawPitchToRightStick{
             onScreenControls?.sendRightStickTouchPadEvent(rightStickPhysicalInputX+rightStickTouchInputX-yawBias, rightStickPhysicalInputY+rightStickTouchInputY-pitchBias)
         }
         if rollToLeftStick{
-            if resetLeftStick {
-                rollIntegral = 0
-                onScreenControls?.sendLeftStickTouchPadEvent(leftStickPhysicalInputX+leftStickTouchInputX-rollBias,leftStickPhysicalInputY+leftStickTouchInputY)
-            }
+            rollIntegral = 0
+            onScreenControls?.sendLeftStickTouchPadEvent(leftStickPhysicalInputX+leftStickTouchInputX-rollBias,leftStickPhysicalInputY+leftStickTouchInputY)
         }
         if(interruptNonGyroInput){
             onScreenControls?.clearLeftStickTouchPadFlag()
@@ -441,7 +455,7 @@ import CoreMotion
         // 5秒后计算平均值
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             guard let self = self else { return }
-            self.motionManager.stopGyroUpdates()
+            self.motionManager.stopDeviceMotionUpdates()
             if sampleCount > 0 {
                 if useBuiltinGyro {
                     gyroBiasX = sumX / Double(sampleCount)

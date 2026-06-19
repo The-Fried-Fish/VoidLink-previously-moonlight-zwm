@@ -2053,7 +2053,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)stopGyroUpdateWithInterruptNoneGyroInput:(BOOL)interruption{
-    [_motionHandler stopGyroUpdateWithInterruptNoneGyroInput:interruption resetLeftStick:false];
+    [_motionHandler stopMotionUpdateWithInterruptNoneGyroInput:interruption];
 }
 
 - (void)stopAccelUpdate{

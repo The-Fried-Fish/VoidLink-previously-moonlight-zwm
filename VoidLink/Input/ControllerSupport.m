@@ -1063,7 +1063,7 @@ double rc_expo(double x, double expo) {
     self->_gyroEnabledFlag = self->_gyroEnabledFlag && self->_controllerGyroSwitchEnabled;
     if([self useMotionHandler]){
         if(self->_gyroEnabledFlag) [self->motionHandler startGyroByControllerButton];
-        else [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];
+        else [self->motionHandler stopMotionUpdateWithInterruptNoneGyroInput:false];
     }
     else self->_gyroEnabledFlag = self->_gyroEnabledFlag || !self->_controllerGyroSwitchEnabled;
 }
@@ -1789,7 +1789,7 @@ double rc_expo(double x, double expo) {
 
     if(oscProfile.controllerGyroSwitchMode == ControllerGyroSwitchDisabled && ![self useMotionHandler]) _gyroEnabledFlag = true;
 
-    if(![self useMotionHandler]) [self->motionHandler stopGyroUpdateWithInterruptNoneGyroInput:false resetLeftStick:true];
+    if(![self useMotionHandler]) [self->motionHandler stopMotionUpdateWithInterruptNoneGyroInput:false];
 }
 
 - (void)resetGyroInputForController:(VoidController* )voidController{

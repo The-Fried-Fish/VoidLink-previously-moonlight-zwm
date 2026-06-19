@@ -2810,7 +2810,7 @@ import ObjectiveC.runtime
             self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
             if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
         case "GYROPAUSE":
-            self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput:false)
+            self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput:false)
             if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
             break
         case "ACCEL":
@@ -2833,7 +2833,7 @@ import ObjectiveC.runtime
                         widget.tapToToggleFlag = !widget.tapToToggleFlag
                     }
                 }
-                self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput: false, resetLeftStick: true)
+                self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput: false)
                 self.motionHandler?.gyroStarter = nil
             }
             else {
@@ -4118,7 +4118,7 @@ import ObjectiveC.runtime
             label.alpha = 1
             autoDockRestoreOriginalAlpha()
             if self.motionControlButtonString == "GYRO" {
-                if OnScreenWidgetView.gamepadArrivalReported {self.motionHandler?.stopGyroUpdate(interruptNoneGyroInput: true)}
+                if OnScreenWidgetView.gamepadArrivalReported {self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput: true)}
                 self.motionHandler?.gyroStarter = nil
             }
             if self.motionControlButtonString == "ACCEL" {}
