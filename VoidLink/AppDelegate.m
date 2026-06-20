@@ -61,6 +61,7 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     // Override point for command tool customization after application launch (works only when user default is nil)
     [CommandManager presetDefaultCommands];
     [GenericUtils installSegmentedControlPreviousSelectionTracking];
+    [IAPManager shared];
     
     // For iOS 12 and below, we need to manually create the window
     if (@available(iOS 13.0, *)) {
