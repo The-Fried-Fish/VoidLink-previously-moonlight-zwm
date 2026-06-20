@@ -1751,7 +1751,7 @@ static NSMutableSet* hostList;
     DataManager* dataMan = [[DataManager alloc] init];
     Settings* settings = [dataMan retrieveSettings];
     settings.touchMoveEventInterval = @(0);
-    settings.localMousePointerMode = @(2);
+    settings.localMousePointerMode = @(0);
     [dataMan saveData];
 }
 
