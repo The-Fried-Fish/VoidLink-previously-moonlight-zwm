@@ -2807,7 +2807,7 @@ import ObjectiveC.runtime
         GenericUtils.handleGyroButtonTip(in: self.parentViewController)
         switch self.motionControlButtonString {
         case "GYRO":
-            self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
+            self.motionHandler?.startMotionControlByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
             if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
         case "GYROPAUSE":
             self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput:false)
@@ -2825,7 +2825,7 @@ import ObjectiveC.runtime
     private func handleMotionControlButtonUp(){
         switch self.motionControlButtonString {
         case "GYRO":
-            if let gyroStarter = motionHandler?.gyroStarter as? OnScreenWidgetView, self === gyroStarter {
+            if let gyroStarter = motionHandler?.motionStarter as? OnScreenWidgetView, self === gyroStarter {
                 self.forEachWidget{ widget in
                     if widget.motionControlButtonString != "GYRO" || widget === self {return}
                     if(widget.buttonMode == .tapToToggle && widget.logicallyDown) {
@@ -2834,18 +2834,18 @@ import ObjectiveC.runtime
                     }
                 }
                 self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput: false)
-                self.motionHandler?.gyroStarter = nil
+                self.motionHandler?.motionStarter = nil
             }
             else {
-                if self.motionHandler?.gyroStarter != nil {
-                    if let gyroStarter = motionHandler?.gyroStarter as? OnScreenWidgetView {
-                        self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: gyroStarter.yawFactor, pitchFactor: gyroStarter.pitchFactor, rollFactor: gyroStarter.rollFactor)
+                if self.motionHandler?.motionStarter != nil {
+                    if let gyroStarter = motionHandler?.motionStarter as? OnScreenWidgetView {
+                        self.motionHandler?.startMotionControlByOnScreenButton(self, yawFactor: gyroStarter.yawFactor, pitchFactor: gyroStarter.pitchFactor, rollFactor: gyroStarter.rollFactor)
                     }
                 }
             }
         case "GYROPAUSE":
-            if self.motionHandler?.gyroStarter != nil {
-                self.motionHandler?.startGyroByOnScreenButton(self, yawFactor: motionHandler?.widgetYawFactor ?? 0, pitchFactor: motionHandler?.widgetPitchFactor ?? 0, rollFactor: motionHandler?.widgetRollFactor ?? 0)
+            if self.motionHandler?.motionStarter != nil {
+                self.motionHandler?.startMotionControlByOnScreenButton(self, yawFactor: motionHandler?.widgetYawFactor ?? 0, pitchFactor: motionHandler?.widgetPitchFactor ?? 0, rollFactor: motionHandler?.widgetRollFactor ?? 0)
             }
         case "ACCEL":
             break
@@ -4119,7 +4119,7 @@ import ObjectiveC.runtime
             autoDockRestoreOriginalAlpha()
             if self.motionControlButtonString == "GYRO" {
                 if OnScreenWidgetView.gamepadArrivalReported {self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput: true)}
-                self.motionHandler?.gyroStarter = nil
+                self.motionHandler?.motionStarter = nil
             }
             if self.motionControlButtonString == "ACCEL" {}
             if self.motionControlButtonString == "MOTION" {}

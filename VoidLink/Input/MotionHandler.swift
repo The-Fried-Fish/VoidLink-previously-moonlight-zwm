@@ -39,7 +39,7 @@ import CoreMotion
     }
 
     public func gyroMixInputStarted() -> Bool {
-        return gyroIsWorking
+        return motionIsWorking
     }
     
     private static let sharedInstance = MotionHandler()
@@ -61,16 +61,19 @@ import CoreMotion
         return sharedInstance
     }
 
-    @objc public var gyroControlStarted: Bool = false
+    @objc public var motionControlStarted: Bool = false
     @objc var useBuiltinGyro: Bool = true
     @objc var swapYawAndRoll: Bool = false
-    private var gyroIsWorking: Bool = false
+    private var motionIsWorking: Bool = false
     private var accelControlStarted: Bool = false
     private let motionManager = CMMotionManager()
     private weak var activeGCController:GCController?
     private var synthesizePhysicalStick:Bool = false
     private var mapGyroTo:MapGyroTo = .mapGyroToControllerStick
     private var rollToLeftStick:Bool = false
+    private var gravityYAngleRef:Double?
+    private var previousGravityYAngle:Double?
+    private var gravityYUnwrappedAngle:Double = 0
     private var yawPitchToRightStick:Bool = false
     public var sensitvityYaw:CGFloat = 1.0
     public var sensitvityPitch:CGFloat = 1.0
@@ -81,7 +84,7 @@ import CoreMotion
     @objc public var previousWidgetYawFactor:CGFloat = 1.0
     @objc public var previousWidgetPitchFactor:CGFloat = 1.0
     @objc public var previousWidgetRollFactor:CGFloat = 1.0
-    public var gyroStarter:Any?
+    public var motionStarter:Any?
     private var windowScene: Any?
     
     @objc public var onScreenControls: OnScreenControls?
@@ -91,7 +94,7 @@ import CoreMotion
     private var yaw:Double = 0
     private var pitch:Double = 0
     private var roll:Double = 0
-    private var rollIntegral:Double = 0
+    private var leftStickMotion:Double = 0
 
     private var isCalibrating: Bool = false
     private var sumX: Double = 0
@@ -141,7 +144,7 @@ import CoreMotion
         motionManager.gyroUpdateInterval = updateInterval
     }
     
-    public func startGyroByOnScreenButton(_ sender: OnScreenWidgetView, yawFactor:CGFloat, pitchFactor:CGFloat, rollFactor:CGFloat){
+    public func startMotionControlByOnScreenButton(_ sender: OnScreenWidgetView, yawFactor:CGFloat, pitchFactor:CGFloat, rollFactor:CGFloat){
         self.previousWidgetYawFactor = self.widgetYawFactor
         self.previousWidgetPitchFactor = self.widgetPitchFactor
         self.previousWidgetRollFactor = self.widgetRollFactor
@@ -149,31 +152,31 @@ import CoreMotion
         self.widgetPitchFactor = pitchFactor
         self.widgetRollFactor = rollFactor
         print("self.widgetRollFactor \(self.widgetRollFactor)")
-        if self.gyroStarter == nil {
-            self.gyroStarter = sender
-            if sender.motionControlButtonString != "GYROPAUSE" {self.startGyroUpdate()}
+        if self.motionStarter == nil {
+            self.motionStarter = sender
+            if sender.motionControlButtonString != "GYROPAUSE" {self.startMotionUpdate()}
         }
         else if sender.motionControlButtonString == "GYROPAUSE" {
-            self.startGyroUpdate()
+            self.startMotionUpdate()
         }
     }
     
-    @objc public func startGyroByControllerButton(){
+    @objc public func startMotionControlByControllerButton(){
         self.previousWidgetYawFactor = self.widgetYawFactor
         self.previousWidgetPitchFactor = self.widgetPitchFactor
         self.previousWidgetRollFactor = self.widgetRollFactor
         self.widgetYawFactor = 1
         self.widgetPitchFactor = 1
         self.widgetRollFactor = 1
-        self.startGyroUpdate()
+        self.startMotionUpdate()
     }
     
-    @objc public func startGyroUpdate() {
-        if !gyroControlStarted {
-            gyroControlStarted = true
+    @objc public func startMotionUpdate() {
+        if !motionControlStarted {
+            motionControlStarted = true
+            resetGravityYOffsetTracking()
             
-            print("startGyroUpdate useBuiltinGyro \(useBuiltinGyro) \(CACurrentMediaTime())")
-
+            // print("startGyroUpdate useBuiltinGyro \(useBuiltinGyro) \(CACurrentMediaTime())")
             
             if useBuiltinGyro {
                 if motionManager.isGyroAvailable {
@@ -227,8 +230,9 @@ import CoreMotion
     private var interruptNoneGyroInput:Bool = false
 
     @objc public func stopMotionUpdate(interruptNoneGyroInput:Bool=false) {
-        gyroControlStarted = false
-        gyroIsWorking = false
+        motionControlStarted = false
+        motionIsWorking = false
+        resetGravityYOffsetTracking()
         if motionManager.isDeviceMotionActive{
             motionManager.stopDeviceMotionUpdates()
         }
@@ -256,20 +260,25 @@ import CoreMotion
         var x:Double = 0
         var y:Double = 0
         var z:Double = 0
-        var attitudeRoll:Double = 0
+        // var attitudeRoll:Double = 0
+        var gravityYOffset:Double = 0
 
         if let deviceMotion = deviceMotion {
             x = deviceMotion.rotationRate.x
             y = deviceMotion.rotationRate.y
             z = deviceMotion.rotationRate.z
-            attitudeRoll = deviceMotion.attitude.yaw
+            // attitudeRoll = deviceMotion.attitude.yaw
+            gravityYOffset = updateGravityYOffset(
+                gravityX: deviceMotion.gravity.x,
+                gravityY: deviceMotion.gravity.y,
+            )
         }
         
         if let gcMotion = gcMotion {
             x = gcMotion.rotationRate.x
             y = gcMotion.rotationRate.y
             z = gcMotion.rotationRate.z
-            attitudeRoll = gcMotion.attitude.z
+            // attitudeRoll = gcMotion.attitude.z
         }
         
             
@@ -350,13 +359,13 @@ import CoreMotion
             rollSource = (swapYawAndRoll ? -z : y) - rollBias
         }
         
-        if !gyroControlStarted {
+        if !motionControlStarted {
             self.clearGyroInput(interruptNonGyroInput: interruptNoneGyroInput)
             // print("Gyro: stopped")
             return
         }
         
-        gyroIsWorking = true
+        motionIsWorking = true
         
         if mapGyroTo == MapGyroTo.mapGyroToMouse {
             yaw = yawSource*sensitvityYaw*widgetYawFactor*30
@@ -383,9 +392,9 @@ import CoreMotion
             if rollToLeftStick {
                 roll = gyroInputToStickInput(input:rollSource*sensitvityRoll*widgetRollFactor*0.2)
                                 
-                rollIntegral = useBuiltinGyro ? -stickMaxOffset*(attitudeRoll/Double.pi)*3*sensitvityRoll*widgetRollFactor :                 rollIntegral + roll
-                
-                let mixedLeftStickOffsetX = self.clampStickInput(input: rollIntegral+leftStickTouchInputX+leftStickPhysicalInputX)
+                leftStickMotion = useBuiltinGyro ? -stickMaxOffset*(gravityYOffset/Double.pi)*3*sensitvityRoll*widgetRollFactor :                 leftStickMotion + roll
+
+                let mixedLeftStickOffsetX = self.clampStickInput(input: leftStickMotion+leftStickTouchInputX+leftStickPhysicalInputX)
                 let mixedLeftStickOffsetY = self.clampStickInput(input: leftStickTouchInputY+leftStickPhysicalInputY)
 
                 let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: mixedLeftStickOffsetX, dy: mixedLeftStickOffsetY), minOffset: gyroToStickMinOffset)
@@ -402,13 +411,41 @@ import CoreMotion
             onScreenControls?.sendRightStickTouchPadEvent(rightStickPhysicalInputX+rightStickTouchInputX-yawBias, rightStickPhysicalInputY+rightStickTouchInputY-pitchBias)
         }
         if rollToLeftStick{
-            rollIntegral = 0
+            leftStickMotion = 0
             onScreenControls?.sendLeftStickTouchPadEvent(leftStickPhysicalInputX+leftStickTouchInputX-rollBias,leftStickPhysicalInputY+leftStickTouchInputY)
         }
         if(interruptNonGyroInput){
             onScreenControls?.clearLeftStickTouchPadFlag()
             onScreenControls?.clearRightStickTouchPadFlag()
         }
+    }
+    
+    private func resetGravityYOffsetTracking() {
+        gravityYAngleRef = nil
+        previousGravityYAngle = nil
+        gravityYUnwrappedAngle = 0
+    }
+    
+    private func updateGravityYOffset(gravityX: Double, gravityY: Double) -> Double {
+        let gravityYAngle = atan2(gravityX, -gravityY)
+        
+        guard let previousGravityYAngle = previousGravityYAngle else {
+            gravityYAngleRef = gravityYAngle
+            previousGravityYAngle = gravityYAngle
+            gravityYUnwrappedAngle = gravityYAngle
+            return 0
+        }
+        
+        var delta = gravityYAngle - previousGravityYAngle
+        if delta > Double.pi {
+            delta -= 2 * Double.pi
+        } else if delta < -Double.pi {
+            delta += 2 * Double.pi
+        }
+        
+        gravityYUnwrappedAngle += delta
+        self.previousGravityYAngle = gravityYAngle
+        return -(gravityYUnwrappedAngle - (gravityYAngleRef ?? gravityYUnwrappedAngle))
     }
     
     private func clampStickInput(input: CGFloat) -> CGFloat{

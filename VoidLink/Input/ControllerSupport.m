@@ -89,7 +89,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     bool _captureMouse;
     
     bool _controllerGyroSwitchEnabled;
-    bool _gyroEnabledFlag;
+    bool _gyroEnabledFlag; // bool flag for both DS4 gyro & VL motion control
     int _controllerGyroSwitchToggle;
     int _controllerGyroSwitchHold;
     bool _reverseHoldButton;
@@ -1059,10 +1059,10 @@ double rc_expo(double x, double expo) {
            ||self->tempSettings.gyroMode.intValue==GyroModeOff;
 }
 
-- (void)switchGyroOnOffByControllerButton{
+- (void)switchMotionControlOnOffByControllerButton{
     self->_gyroEnabledFlag = self->_gyroEnabledFlag && self->_controllerGyroSwitchEnabled;
     if([self useMotionHandler]){
-        if(self->_gyroEnabledFlag) [self->motionHandler startGyroByControllerButton];
+        if(self->_gyroEnabledFlag) [self->motionHandler startMotionControlByControllerButton];
         else [self->motionHandler stopMotionUpdateWithInterruptNoneGyroInput:false];
     }
     else self->_gyroEnabledFlag = self->_gyroEnabledFlag || !self->_controllerGyroSwitchEnabled;
@@ -1187,14 +1187,14 @@ double rc_expo(double x, double expo) {
                                     self->_controllerGyroSwitchTogglePressed = true;
                                     
                                     self->_gyroEnabledFlag = !self->_gyroEnabledFlag;
-                                    [self switchGyroOnOffByControllerButton];
+                                    [self switchMotionControlOnOffByControllerButton];
                                 }
                                 if (buttonFlagId.intValue == self->_controllerGyroSwitchHold
                                     && !self->_controllerGyroSwitchHoldPressed) {
                                     self->_controllerGyroSwitchHoldPressed = true;
                                     
                                     self->_gyroEnabledFlag = !self->_reverseHoldButton;
-                                    [self switchGyroOnOffByControllerButton];
+                                    [self switchMotionControlOnOffByControllerButton];
                                 }
                             }
                             else{
@@ -1207,7 +1207,7 @@ double rc_expo(double x, double expo) {
                                     self->_controllerGyroSwitchHoldPressed = false;
                                     
                                     self->_gyroEnabledFlag = self->_reverseHoldButton;
-                                    [self switchGyroOnOffByControllerButton];
+                                    [self switchMotionControlOnOffByControllerButton];
                                 }
                             }
                         }
