@@ -3849,6 +3849,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)pencilProPurchaseSucceeded:(NSNotification *)notification{
     self.onScreenWidgetSelector.selectedSegmentIndex = OnScreenControlsLevelCustom;
+    self.pencilTickSelector.selectedSegmentIndex = ManualTick;
 }
 
 - (void)pencilTickIntervalSliderMoved:(UISlider* )sender{

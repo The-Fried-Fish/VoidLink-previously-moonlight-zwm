@@ -702,6 +702,44 @@ import UIKit
         }
         return nil
     }
+
+    @objc static func rootViewController() -> UIViewController? {
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first { $0.activationState == .foregroundActive }?
+                .windows
+                .first { $0.isKeyWindow }?
+                .rootViewController
+        } else {
+            return UIApplication.shared.keyWindow?.rootViewController
+        }
+    }
+
+    @objc static func topViewController() -> UIViewController? {
+        return topViewController(from: rootViewController())
+    }
+
+    private static func topViewController(from rootViewController: UIViewController?) -> UIViewController? {
+        if let navigationController = rootViewController as? UINavigationController {
+            return topViewController(from: navigationController.visibleViewController)
+        }
+
+        if let tabBarController = rootViewController as? UITabBarController {
+            return topViewController(from: tabBarController.selectedViewController)
+        }
+
+        if let splitViewController = rootViewController as? UISplitViewController,
+           let lastViewController = splitViewController.viewControllers.last {
+            return topViewController(from: lastViewController)
+        }
+
+        if let presentedViewController = rootViewController?.presentedViewController {
+            return topViewController(from: presentedViewController)
+        }
+
+        return rootViewController
+    }
 }
 
 extension UIView {

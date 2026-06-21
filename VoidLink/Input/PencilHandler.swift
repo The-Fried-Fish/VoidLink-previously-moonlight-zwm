@@ -260,17 +260,18 @@ import UIKit
 
             
             let strokePhase = getStrokePhase(sampleIndex: self.strokeSampleIndex)
+            let forceMapping = pressureCurveEnabled ? self.strokeLUT.value(at: force) : force
             switch strokePhase {
             case .phase1:
-                targetForce = pencilTickEnabled ? 0 : self.strokeLUT.value(at: force)
+                targetForce = pencilTickEnabled ? 0 : forceMapping
             case .phase2:
-                targetForce = self.strokeLUT.value(at: force)
+                targetForce = forceMapping
                 targetForce = max(targetForce,previousTargetForce)
                 equalizedForce = targetForce*(phase2EqualizationStrength - equalizationStep*Float(strokeSampleIndex-phase1StrokeSampleIndexEnd-1))
             case .phase3:
-                targetForce = self.strokeLUT.value(at: force)
+                targetForce = forceMapping
             }
-            targetForce = self.pressureCurveEnabled ? targetForce : force
+            targetForce = pencilTickEnabled ? targetForce : force
             
             previousForce = force
             previousTargetForce = targetForce
