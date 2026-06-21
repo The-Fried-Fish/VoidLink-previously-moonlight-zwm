@@ -368,9 +368,6 @@ import StoreKit
     
     @objc static public func inAppPurchaseAction(viewController: UIViewController, product: AddOnProduct){
         
-        
-        
-        
         let alert = UIAlertController(title: product.productName(),
                                       message: LocalizationHelper.localizedString(forKey: "No purchase found", product.productName()),
                                       preferredStyle: .alert)

@@ -90,16 +90,47 @@ public struct AboutView: View {
                     Link(LocalizationHelper.localizedString(forKey: "joinCommunity"), destination: URL(string: LocalizationHelper.localizedString(forKey: "communityLink"))!)
                 }
 
-                // OK 按钮
-                Button(LocalizationHelper.localizedString(forKey: "OK")) {
-                    aboutVC.dismiss(animated:true)
+                HStack(spacing: 15) {
+                    if #available(iOS 15.0, *) {
+                        if GenericUtils.isIPad() {
+                            Button(LocalizationHelper.localizedString(forKey: "I'm an artist")) {
+                                IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+                                    if !info.valid {
+                                        IAPManager.inAppPurchaseAction(viewController: self.aboutVC, product: .PencilProPack)
+                                    }
+                                    else {
+                                        AlertControllerUtil.showAlert(
+                                            in: self.aboutVC,
+                                            title: "",
+                                            message: LocalizationHelper.localizedString(forKey:"Drawing Toolkit already purchased"),
+                                            withCancel: false,
+                                            buttonTitle: LocalizationHelper.localizedString(forKey: "OK"),
+                                            countdown: 0)
+                                    }
+                                }
+                            }
+                            .padding()
+                            .background(Color.blue.opacity(1))
+                            .foregroundColor(.white)
+                            .frame(height: 46)
+                            .cornerRadius(12)
+                            .padding(.top, 10)
+                        }
+                    }
+                    
+                    // OK 按钮
+                    Button(LocalizationHelper.localizedString(forKey: "OK")) {
+                        aboutVC.dismiss(animated:true)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .frame(height: 46)
+                    .cornerRadius(12)
+                    .padding(.top, 10)
                 }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .frame(height: 46)
-                .cornerRadius(12)
-                .padding(.top, 10)
+                
+                
             } else {
                 HStack(spacing: 20) {
                     Button(LocalizationHelper.localizedString(forKey: "Join us")) {

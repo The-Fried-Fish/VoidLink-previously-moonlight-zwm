@@ -6612,19 +6612,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "绘画"
+            "value" : "绘画进阶套件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繪畫"
+            "value" : "繪畫進階套件"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繪畫"
+            "value" : "繪畫進階套件"
           }
         }
       }
@@ -6721,7 +6721,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "一塊啥都不幹的擋板區域"
           }
         }
@@ -9081,6 +9081,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
+          }
+        }
+      }
+    },
+    "I'm an artist" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我是画手"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我是畫手"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我是畫手"
           }
         }
       }
