@@ -3004,6 +3004,8 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)mainFrameGameProfileButtonTapped{
+    self.definesPresentationContext = NO;
+    
     [self saveGameProfileConfigs];
     
     self.layoutOnScreenControlsVC = [self instantiateOscLayoutViewController];
