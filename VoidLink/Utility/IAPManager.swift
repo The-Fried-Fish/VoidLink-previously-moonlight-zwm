@@ -259,7 +259,6 @@ import UIKit
                 }
                 await transaction.finish()
                 IAPManager.handlePurchaseSuccess(product)
-                NotificationCenter.default.post(name: product.purchaseSucceededNotification(), object: nil)
             case .unverified(_, let err):
                 NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
                 await MainActor.run {
@@ -279,6 +278,7 @@ import UIKit
             let dataMan = DataManager()
             let settings = dataMan.retrieveSettings()
             settings?.onscreenControls = 1
+            settings?.pencilTickMode = NSNumber(value: PencilTickMode.ManualTick.rawValue)
             dataMan.saveData()
             let profileMan = OSCProfilesManager.sharedManager(.zero)
             var toolkitProfileIndex = profileMan.getIndex(byName: "Pencil Pro")
@@ -288,6 +288,7 @@ import UIKit
         default:
             break
         }
+        NotificationCenter.default.post(name: product.purchaseSucceededNotification(), object: nil)
     }
     
     private func purchaseLegacy(_ product: AddOnProduct) {
@@ -437,8 +438,30 @@ import UIKit
                     do {
                         if #available(iOS 15.0, *) {
                             try await AppStore.sync()
-                        } else {
-                            // Fallback on earlier versions
+                            IAPManager.checkPurchaseInfo(product) { info in
+                                if info.valid {
+                                    IAPManager.handlePurchaseSuccess(product)
+                                    AlertControllerUtil.showAlert(
+                                        in: viewController,
+                                        title: "",
+                                        message: LocalizationHelper.localizedString(forKey:"[%@] has been restored", product.productName()),
+                                        withCancel: false,
+                                        buttonTitle: "OK".localized,
+                                        countdown: 0
+                                        )
+                                }
+                                else {
+                                    NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.restore, userInfo:["interruption": PurchaseInterruption.restore.rawValue])
+                                    AlertControllerUtil.showAlert(
+                                        in: viewController,
+                                        title: "",
+                                        message: LocalizationHelper.localizedString(forKey:"Unable to detect purchased product: %@", product.productName()),
+                                        withCancel: false,
+                                        buttonTitle: "OK".localized,
+                                        countdown: 0
+                                        )
+                                }
+                            }
                         }
                     } catch {
                         NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.restore, userInfo:["interruption": PurchaseInterruption.restore.rawValue])

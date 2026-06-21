@@ -513,6 +513,29 @@
         }
       }
     },
+    "[%@] has been restored" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "【%@】已恢复"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「%@」已恢復"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「%@」已恢復"
+          }
+        }
+      }
+    },
     "%@ is currently running" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -715,7 +738,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "方向鍵"
           }
         }
@@ -6612,19 +6635,42 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "绘画"
+            "value" : "绘画进阶套件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繪畫"
+            "value" : "繪畫進階套件"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繪畫"
+            "value" : "繪畫進階套件"
+          }
+        }
+      }
+    },
+    "Drawing Toolkit already purchased" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您已拥有【绘画进阶套件】"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您已擁有「繪畫進階套件」"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您已擁有「繪畫進階套件」"
           }
         }
       }
@@ -10994,19 +11040,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "购买 [%@] 可解锁：\n- 专业级压力曲线工具。\n- 在远程绘图流程中提升笔触传输效率与响应表现，并支持用户自定义的双击及捏合键盘/鼠标快捷键。\n- 专属绘图相关的屏显按钮。\n以及更多功能..."
+            "value" : "购买 [%@] 可解锁：\n- 专业级笔压曲线工具。\n- 远程绘画笔迹传输、笔触响应性能优化。\n- 支持用户自定义的双击及捏合键盘/鼠标快捷键。\n- 专属绘图相关的屏显按钮。\n以及更多...\n未购买该套件不影响基础绘画功能。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解鎖 [%@] ：\n- 專業級壓力曲線工具。\n- 在遠端繪圖流程中提升筆觸傳輸效率與響應表現，並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n- 以及更多功能..."
+            "value" : "解鎖 [%@] ：\n- 專業級筆壓曲線工具。\n- 最佳化遠端繪畫的筆跡傳輸與筆觸響應效能。\n- 並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n以及更多...\n未購買此套件不影響基礎繪畫功能。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解鎖 [%@] ：\n- 專業級壓力曲線工具。\n- 在遠端繪圖流程中提升筆觸傳輸效率與響應表現，並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n- 以及更多功能...\n基礎繪畫功能無需購買 [%@] 即可使用。"
+            "value" : "解鎖 [%@] ：\n- 專業級筆壓曲線工具。\n- 最佳化遠端繪畫的筆跡傳輸與筆觸響應效能。\n- 並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n以及更多...\n未購買此套件不影響基礎繪畫功能。"
           }
         }
       }
@@ -16372,6 +16418,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看教學"
+          }
+        }
+      }
+    },
+    "Unable to detect purchased product: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未检测到已购产品【%@】"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未偵測到已購產品「%@」"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未偵測到已購產品「%@」"
           }
         }
       }
