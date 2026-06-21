@@ -9131,6 +9131,29 @@
         }
       }
     },
+    "I'm an artist" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我是画手"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我是畫手"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我是畫手"
+          }
+        }
+      }
+    },
     "Import" : {
       "extractionState" : "manual",
       "localizations" : {
