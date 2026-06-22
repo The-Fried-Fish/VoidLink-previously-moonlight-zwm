@@ -275,6 +275,7 @@ import UIKit
     @objc static func handlePurchaseSuccess(_ product: AddOnProduct) {
         switch product {
         case .PencilProPack:
+            if !GenericUtils.isIPad() {return}
             let dataMan = DataManager()
             let settings = dataMan.retrieveSettings()
             settings?.onscreenControls = 1
