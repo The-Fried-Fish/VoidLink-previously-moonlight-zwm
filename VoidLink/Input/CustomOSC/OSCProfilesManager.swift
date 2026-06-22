@@ -15,7 +15,7 @@ import UIKit
 class OSCProfilesManager: NSObject {
     private static let profilesDefaultsKey = "OSCProfiles"
     // private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260606"
-    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260622"
+    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260622-6"
 
     private static var sharedInstance: OSCProfilesManager?
     private static var onScreenWidgetViews: NSMutableSet?
@@ -216,7 +216,7 @@ class OSCProfilesManager: NSObject {
         UIDevice.current.userInterfaceIdiom == .phone
     }
 
-    func importDefaultTemplates() {
+    func importDefaultTemplates(selectedIndex: UInt32? = nil) {
         guard let filePath = Bundle.main.path(forResource: isIPhone() ? "widgetTemplatesIPhone" : "widgetTemplates", ofType: "bin") else {
             return
         }
@@ -225,7 +225,9 @@ class OSCProfilesManager: NSObject {
             let fileData = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
             if let profilesEncoded = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSMutableData.self, NSMutableArray.self], from: fileData) as? NSMutableArray {
                 importEncodedProfiles(profilesEncoded)
-                setProfileToSelected(0)
+                if let selectedIndex = selectedIndex {
+                    setProfileToSelected(selectedIndex)
+                }
             }
         } catch {
             return
@@ -308,17 +310,24 @@ class OSCProfilesManager: NSObject {
         var profiles = getAllProfiles()
         let defaults = UserDefaults.standard
         let needImportDefaultTemplates = defaults.object(forKey: Self.widgetProfileUpdatedKey) == nil
+        
+        var selectedIndex: UInt32 = 0
+        for case let profile as OSCProfile in profiles where profile.isSelected {
+            selectedIndex = UInt32(profiles.index(of: profile))
+        }
+        
+        let currentProfileCount = profiles.count
 
-        if (profiles.count == 0 || needImportDefaultTemplates) && !GenericUtils.pencilProPurchaseProcessedWithImportingWidgetTemplates {
-            importDefaultTemplates()
+        if (currentProfileCount == 0 || needImportDefaultTemplates) && !GenericUtils.pencilProPurchaseProcessedWithImportingWidgetTemplates {
+            selectedIndex = currentProfileCount == 0 ? 0 : selectedIndex
+            importDefaultTemplates(selectedIndex: selectedIndex)
             defaults.set(true, forKey: Self.widgetProfileUpdatedKey)
             defaults.synchronize()
             profiles = getAllProfiles()
         }
 
-        for case let profile as OSCProfile in profiles where profile.isSelected {
-            return profile
-        }
+        
+        return profiles[Int(selectedIndex)] as! OSCProfile
 
         return (profiles.firstObject as? OSCProfile) ?? OSCProfile(name: "", buttonStates: NSMutableArray(), isSelected: false)
     }
