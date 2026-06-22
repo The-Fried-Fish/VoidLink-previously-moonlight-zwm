@@ -1765,7 +1765,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "= FPS Example (Keyboard & Mouse)"
+            "value" : "FPS Example (Keyboard & Mouse)"
           }
         },
         "zh-Hans" : {

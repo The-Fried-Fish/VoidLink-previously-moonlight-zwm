@@ -3848,8 +3848,10 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)pencilProPurchaseSucceeded:(NSNotification *)notification{
-    self.onScreenWidgetSelector.selectedSegmentIndex = OnScreenControlsLevelCustom;
-    self.pencilTickSelector.selectedSegmentIndex = ManualTick;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.onScreenWidgetSelector.selectedSegmentIndex = OnScreenControlsLevelCustom;
+        self.pencilTickSelector.selectedSegmentIndex = ManualTick;
+    });
 }
 
 - (void)pencilTickIntervalSliderMoved:(UISlider* )sender{

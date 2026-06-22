@@ -308,7 +308,7 @@ class OSCProfilesManager: NSObject {
         let defaults = UserDefaults.standard
         let needImportDefaultTemplates = defaults.object(forKey: Self.widgetProfileUpdatedKey) == nil
 
-        if profiles.count == 0 || needImportDefaultTemplates {
+        if (profiles.count == 0 || needImportDefaultTemplates) && !GenericUtils.pencilProPurchaseProcessedWithImportingWidgetTemplates {
             importDefaultTemplates()
             defaults.set(true, forKey: Self.widgetProfileUpdatedKey)
             defaults.synchronize()

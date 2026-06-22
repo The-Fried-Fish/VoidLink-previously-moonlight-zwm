@@ -262,6 +262,20 @@ import UIKit
         }
     }
     
+    @objc static var pencilProPurchaseProcessedWithImportingWidgetTemplates: Bool = false
+    @objc static func handleAddOnProductPurchaseIntent(for product:AddOnProduct) {
+        let key = "addOnProduct_\(product.productId())_purchased"
+        let defaults = UserDefaults.standard
+        let purchased = defaults.bool(forKey: key)
+        if !purchased {
+            IAPManager.checkPurchaseInfo(product) { info in
+                if info.valid {
+                    IAPManager.handlePurchaseSuccess(product)
+                    defaults.set(true, forKey: key)
+                }
+            }
+        }
+    }
     
     @objc static var hasTappedOnscreenGyroButton = false
     @objc static func isFirstTappingOnscreenGyroButton() -> Bool {

@@ -1875,10 +1875,12 @@ static NSMutableSet* hostList;
     
     [self prewarmSoftKeyboard];
         
-    [IAPManager.shared fetchProducts];
-    
     [self changeDefaultSettings];
     [self updatePartialSettings];
+    
+    [IAPManager.shared fetchProducts];
+    [GenericUtils handleAddOnProductPurchaseIntentFor:AddOnProductPencilProPack];
+
     /*
     if (@available(iOS 15.0, *)) {
         [IAPManager checkPurchaseInfo:AddOnProductPencilProPack completion:^(PurchaseInfo* info) {
