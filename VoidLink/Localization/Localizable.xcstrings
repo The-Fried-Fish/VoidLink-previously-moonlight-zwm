@@ -1150,6 +1150,35 @@
         }
       }
     },
+    "=drawingToolkit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drawing Toolkit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "绘画"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "繪畫"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "繪畫"
+          }
+        }
+      }
+    },
     "=dummyPad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6767,7 +6796,7 @@
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "一塊啥都不幹的擋板區域"
           }
         }

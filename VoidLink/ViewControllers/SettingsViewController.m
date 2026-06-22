@@ -1037,7 +1037,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     if ([GenericUtils isIPad] && loadPencilSection) {
         MenuSectionView *pencilSection = [[MenuSectionView alloc] init];
         pencilSection.delegate = self;
-        pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"Drawing Toolkit"];
+        pencilSection.sectionTitle = [LocalizationHelper localizedStringForKey:@"=drawingToolkit"];
         pencilSection.identifier = @"SettingsSectionPencil";
         if (@available(iOS 13.0, *)) {
             [pencilSection setSectionWithIcon:[UIImage systemImageNamed:@"pencil.and.outline"] size:19 weight:UIImageSymbolWeightHeavy sizeConstraint:-16.5];
