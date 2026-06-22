@@ -724,6 +724,8 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     
     [self restorePersistedStreamViewOffsetAndScaleWithProfile:_oscProfile];
     
+    GenericUtils.pencilInStreaming = false;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateContentOffsetAndScale:)
                                                  name:@"GameProfileSelectedNotification"
@@ -1101,7 +1103,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)setMagnifierViewportInteractionEnabled:(BOOL)enabled {
-    _magnifierViewportInteractionActive = enabled || (_oscProfile.touchMode == AbsoluteTouch && !_settings.passthroughGestures);
+    _magnifierViewportInteractionActive = enabled || (_oscProfile.touchMode == AbsoluteTouch && !_settings.passthroughGestures && !GenericUtils.pencilInStreaming);
     [self updateScrollViewInteractionState];
 }
 

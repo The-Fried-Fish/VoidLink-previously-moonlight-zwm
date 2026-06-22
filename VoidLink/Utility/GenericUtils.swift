@@ -490,6 +490,8 @@ import UIKit
         LocalizationHelper.localizedString(forKey: "Got it!")
     }
     
+    @objc static var pencilInStreaming:Bool = false
+    
     @objc static func isIPhone() -> Bool {
         return UIDevice.current.userInterfaceIdiom == .phone
     }

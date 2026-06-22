@@ -93,6 +93,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             streamConfig:(StreamConfiguration*)streamConfig
              gameProfile:(OSCProfile* )profile
  streamFrameTopLayerView:(UIView* )topLayerView{
+    if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[GenericUtils parentViewControllerForView:self];
+    
     self->comboKeyModifierFlags = (UIKeyModifierControl|UIKeyModifierAlternate|UIKeyModifierShift);
 
     self->_streamFrameTopLayerView = topLayerView;
@@ -1055,6 +1057,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     NSMutableSet* nonPencilTouches;
     if(pencilTouches.count>0){
         [_pencilHandler touchesBegan:pencilTouches withEvent:event];
+        GenericUtils.pencilInStreaming = true;
+        if(touchMode == AbsoluteTouch) [_streamFrameVC setMagnifierViewportInteractionEnabled:false];
         nonPencilTouches = [touches mutableCopy];
         [nonPencilTouches minusSet:pencilTouches];
     }
