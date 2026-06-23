@@ -1752,6 +1752,8 @@ static NSMutableSet* hostList;
     Settings* settings = [dataMan retrieveSettings];
     settings.touchMoveEventInterval = @(0);
     settings.localMousePointerMode = @(0);
+    if (@available(iOS 14.0, tvOS 14.0, *)) nil;
+    else settings.appTheme = @(UIUserInterfaceStyleDark);
     [dataMan saveData];
 }
 
