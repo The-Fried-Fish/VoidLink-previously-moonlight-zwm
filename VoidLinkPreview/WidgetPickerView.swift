@@ -1489,7 +1489,10 @@ struct WidgetPickerView: View {
             selectedCmds.append(Self.selectionIdentifier(for: cmd))
             poolItems.append(item)
         } else if let trailingPadIndex = trailingCombinablePadIndex {
-            selectedCmds.insert(Self.selectionIdentifier(for: cmd), at: trailingPadIndex)
+            let selectedInsertIndex = poolItems[..<trailingPadIndex]
+                .filter { !isTriggerIntervalItem($0) }
+                .count
+            selectedCmds.insert(Self.selectionIdentifier(for: cmd), at: selectedInsertIndex)
             poolItems.insert(item, at: trailingPadIndex)
         } else {
             selectedCmds.append(Self.selectionIdentifier(for: cmd))

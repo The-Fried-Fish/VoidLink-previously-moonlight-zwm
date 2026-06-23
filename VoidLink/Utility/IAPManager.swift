@@ -212,7 +212,7 @@ import UIKit
                 message: "In-app-purchase not available on this device.".localized,
                 withCancel: false,
                 buttonTitle: "OK".localized,
-                countdown: 6
+                countdown: 0
                 )
             return
         }

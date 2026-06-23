@@ -464,8 +464,8 @@ import CoreMotion
         var sampleCount = 0
 
         if useBuiltinGyro {
-            motionManager.startGyroUpdates(to: .main) { [weak self] gyroData, _ in
-                guard let self = self, self.isCalibrating, let data = gyroData else { return }
+            motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motionData, _ in
+                guard let self = self, self.isCalibrating, let data = motionData else { return }
                 sumX += data.rotationRate.x
                 sumY += data.rotationRate.y
                 sumZ += data.rotationRate.z
