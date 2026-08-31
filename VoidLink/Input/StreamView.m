@@ -1010,7 +1010,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
     CGPoint originalLocation = [gesture locationInView:self];
     CGPoint location = [self adjustCoordinatesForVideoArea:originalLocation];
-    NSLog(@" location %f, %f", location.x, location.y);
     PencilHandler* handler = PencilHandler.shared;
     location = CGPointApplyAffineTransform(location, CGAffineTransformMakeTranslation(handler.pencilTipOffset.x, handler.pencilTipOffset.y));
     
