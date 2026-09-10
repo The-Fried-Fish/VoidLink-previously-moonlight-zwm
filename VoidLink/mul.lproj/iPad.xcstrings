@@ -45,7 +45,7 @@
     },
     "2Bp-XZ-cCw.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Async Native Touch\"; ObjectID = \"2Bp-XZ-cCw\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1335,7 +1335,7 @@
     },
     "AlL-fp-WCm.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Enable On-Screen Widget & Peripherals\"; ObjectID = \"AlL-fp-WCm\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1437,7 +1437,7 @@
     },
     "AXb-DO-LzB.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; AXb-DO-LzB.segmentTitles[0] = \"No\"; ObjectID = \"AXb-DO-LzB\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1467,7 +1467,7 @@
     },
     "AXb-DO-LzB.segmentTitles[1]" : {
       "comment" : "Class = \"UISegmentedControl\"; AXb-DO-LzB.segmentTitles[1] = \"Yes\"; ObjectID = \"AXb-DO-LzB\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -29,7 +29,7 @@
 @property (strong, nonatomic) IBOutlet UIStackView *fpsStack;
 @property (strong, nonatomic) IBOutlet UIStackView *bitrateStack;
 @property (strong, nonatomic) IBOutlet UIStackView *touchModeStack;
-@property (strong, nonatomic) IBOutlet UIStackView *enableOswSwitchStack;
+// @property (strong, nonatomic) IBOutlet UIStackView *enableOswSwitchStack;
 //@property (strong, nonatomic) IBOutlet UIStackView *asyncTouchStack;
 @property (strong, nonatomic) IBOutlet UISwitch *optimizeGamesSwitch;
 @property (strong, nonatomic) IBOutlet UIStackView *pointerVelocityDividerStack;
@@ -75,7 +75,7 @@
 @property (strong, nonatomic) IBOutlet UISwitch *customResolutionSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *touchModeLabel;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *touchModeSelector1;
-@property (strong, nonatomic) IBOutlet UISwitch *enableOswForNativeTouchSwitch;
+// @property (strong, nonatomic) IBOutlet UISwitch *enableOswForNativeTouchSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *onscreenControllerLabel;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *onScreenWidgetSelector;
 //@property (strong, nonatomic) IBOutlet UISegmentedControl *asyncNativeTouchPrioritySelector;
@@ -337,5 +337,20 @@
 - (void)mainFrameGameProfileButtonTapped:(bool)animated;
 - (void)addSettingToFavorite:(UIStackView* )settingStack;
 - (void)expandGamepadSection;
+
+@end
+
+@interface SettingsViewController (SwiftUISettings)
+- (void)installSwiftUISettingsIfNeeded;
+- (void)refreshSwiftUISettings;
+- (void)refreshSwiftUISettingsGeometry;
+- (void)reloadSwiftUISettings;
+- (void)persistSwiftUISettings;
+- (void)persistSwiftUIGameProfileSettings;
+- (void)applySwiftUIClosingEffects;
+- (void)updateSwiftUISettingsStreamingState:(BOOL)expandedInStream menuIsOpening:(BOOL)menuIsOpening;
+- (void)setSwiftUISettingsMenuMode:(NSInteger)rawValue;
+- (NSInteger)swiftUISettingsMenuModeRawValue;
+@property(nonatomic, readonly) BOOL usesSwiftUISettings;
 
 @end

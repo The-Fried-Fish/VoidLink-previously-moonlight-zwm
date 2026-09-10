@@ -187,7 +187,7 @@
         settingsToSave.resolutionSelected = [NSNumber numberWithInteger:resolutionSelected];
         settingsToSave.externalDisplayMode = [NSNumber numberWithInteger:externalDisplayMode];
         settingsToSave.localMousePointerMode = [NSNumber numberWithInteger:localMousePointerMode];
-        settingsToSave.backroundSessionTimer = [NSNumber numberWithInteger:backgroundSessionTimer];
+        settingsToSave.backgroundSessionTimer = [NSNumber numberWithInteger:backgroundSessionTimer];
 
         settingsToSave.frameQueueSize = [NSNumber numberWithInteger:frameQueueSize];
         settingsToSave.enableFrameTimebase = enableFrameTimebase;

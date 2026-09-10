@@ -1675,7 +1675,7 @@
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="2bi-tR-7sa" userLabel="touchMode Stack">
-                                <rect key="frame" x="16" y="307" width="380" height="96.5"/>
+                                <rect key="frame" x="16" y="307" width="380" height="58.5"/>
                                 <subviews>
                                     <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v5B-5J-veL" userLabel="Touch Mode">
                                         <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
@@ -1700,55 +1700,9 @@
                                         <color key="tintColor" systemColor="systemBrownColor"/>
                                         <color key="selectedSegmentTintColor" systemColor="linkColor"/>
                                     </segmentedControl>
-                                    <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ULn-2e-7se" userLabel="enableOswStack">
-                                        <rect key="frame" x="0.0" y="65.5" width="380" height="31"/>
-                                        <subviews>
-                                            <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable On-Screen Widget &amp; Peripherals" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.64999997615814209" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3av-lc-tcF">
-                                                <rect key="frame" x="0.0" y="0.0" width="240" height="31"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="160" id="q7G-db-RJ7"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <switch verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MaZ-Wu-LNS" userLabel="HDR Switch">
-                                                <rect key="frame" x="250" y="0.0" width="132" height="31"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="130" id="F4I-MO-jR0"/>
-                                                </constraints>
-                                            </switch>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="31" id="ZEi-DY-EA1"/>
-                                        </constraints>
-                                    </stackView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="380" id="vww-J5-XzC"/>
-                                </constraints>
-                            </stackView>
-                            <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8Wh-zM-Ki2" userLabel="asyncTouch stack">
-                                <rect key="frame" x="16" y="594" width="380" height="56.5"/>
-                                <subviews>
-                                    <label verifyAmbiguity="off" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Async Native Touch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MMc-Yp-e6i">
-                                        <rect key="frame" x="0.0" y="0.0" width="380" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.93902439019999995" green="0.9625305918" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <segmentedControl verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="INW-Cp-Ybl" userLabel="asyncNativeTouchPrioritySelector">
-                                        <rect key="frame" x="0.0" y="25.5" width="380" height="32"/>
-                                        <segments>
-                                            <segment title="No"/>
-                                            <segment title="Yes"/>
-                                        </segments>
-                                        <color key="selectedSegmentTintColor" systemColor="linkColor"/>
-                                    </segmentedControl>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="380" id="7Dg-f7-7GS"/>
-                                    <constraint firstAttribute="height" constant="56.5" id="Fqc-Ob-UaL"/>
                                 </constraints>
                             </stackView>
                             <stackView verifyAmbiguity="off" opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="equalCentering" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Jp2-5v-Zr0" userLabel="pointerVelocityDivider Stack">
@@ -3601,8 +3555,6 @@
                         <outlet property="emulatedControllerTypeSelector" destination="q6v-Jb-ysy" id="o1B-2n-vOR"/>
                         <outlet property="emulatedControllerTypeStack" destination="XoT-d0-QUQ" id="dGV-0G-xF9"/>
                         <outlet property="enableGraphsSwitch" destination="Mst-TU-HT2" id="Qpv-pU-8dE"/>
-                        <outlet property="enableOswForNativeTouchSwitch" destination="MaZ-Wu-LNS" id="sYj-e8-eKn"/>
-                        <outlet property="enableOswSwitchStack" destination="ULn-2e-7se" id="0BI-1o-JMp"/>
                         <outlet property="externalDisplayModeSelector" destination="Tue-Qh-8zP" id="YCO-TO-Dda"/>
                         <outlet property="externalDisplayModeStack" destination="1Q7-WA-wrj" id="KLk-cJ-fa3"/>
                         <outlet property="fpsStack" destination="aMv-7Q-yYg" id="JxU-wq-2Za"/>
@@ -3772,19 +3724,19 @@
         <image name="trash.fill" catalog="system" width="117" height="128"/>
         <image name="tray.full.fill" catalog="system" width="128" height="88"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBrownColor">
-            <color red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.67450980392156867" green="0.49803921568627452" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

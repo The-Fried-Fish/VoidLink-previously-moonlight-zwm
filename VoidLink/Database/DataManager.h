@@ -79,6 +79,31 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
     ManualTick
 };
 
+typedef NS_ENUM(NSInteger, ExternalDisplayMode) {
+    ExternalDisplayModeDuplicated,
+    ExternalDisplayModeExtended
+};
+
+typedef NS_ENUM(NSInteger, MousePointerMode) {
+    MousePointerModeCaptured,
+    MousePointerModeHidden,
+    MousePointerModeVisible
+};
+
+typedef NS_ENUM(NSInteger, AudioConfig) {
+    AudioConfigStereo = 2,
+    AudioConfigStereoSDL = 3,
+    AudioConfigSDL51 = 6,
+    AudioConfigSDL71 = 8
+};
+
+typedef NS_ENUM(NSInteger, StatsOverlayLevel) {
+    StatsOverlayOff,
+    StatsOverlaySimplified,
+    StatsOverlayDetailed
+};
+
+
 - (void) saveSettings:(Settings*)settings
                      withBitrate:(NSInteger)bitrate
                        framerate:(NSInteger)framerate

@@ -46,8 +46,13 @@ import UIKit
     }()
     
     @objc public static var iOS18Available: Bool = {
-        if #available(iOS 18.0, *) {return true}
+        if #available(iOS 18.0, tvOS 18.0, *) {return true}
         else {return false}
+    }()
+    
+    @objc public static var pencilSectionAvailable: Bool = {
+        let availableIds = ["com.voidlink.iOS", "com.voidlinkextreme.iOS", "com.voidlink.tf.debug10.iOS"]
+        return availableIds.contains(Bundle.main.bundleIdentifier ?? "") && isIPad
     }()
     
     @objc public static let isGUIWidgetPickerAvailable: Bool = {
@@ -158,6 +163,11 @@ import UIKit
     @objc public static var screenHeight: CGFloat {
         return UIScreen.main.bounds.height
     }
+    
+    @objc public static var refreshRate: CGFloat = {
+        return CGFloat(UIScreen.main.maximumFramesPerSecond)
+    }()
+
         
     @objc(parentViewControllerForView:)
     static func parentViewController(for view: UIView?) -> UIViewController? {

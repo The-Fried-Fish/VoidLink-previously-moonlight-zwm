@@ -195,7 +195,7 @@
     },
     "3av-lc-tcF.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Enable On-Screen Widget & Peripherals\"; ObjectID = \"3av-lc-tcF\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3177,7 +3177,7 @@
     },
     "INW-Cp-Ybl.segmentTitles[0]" : {
       "comment" : "Class = \"UISegmentedControl\"; INW-Cp-Ybl.segmentTitles[0] = \"No\"; ObjectID = \"INW-Cp-Ybl\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3201,7 +3201,7 @@
     },
     "INW-Cp-Ybl.segmentTitles[1]" : {
       "comment" : "Class = \"UISegmentedControl\"; INW-Cp-Ybl.segmentTitles[1] = \"Yes\"; ObjectID = \"INW-Cp-Ybl\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3747,7 +3747,7 @@
     },
     "MMc-Yp-e6i.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Async Native Touch\"; ObjectID = \"MMc-Yp-e6i\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

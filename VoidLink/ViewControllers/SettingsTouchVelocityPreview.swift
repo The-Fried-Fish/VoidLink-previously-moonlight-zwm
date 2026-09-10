@@ -313,20 +313,13 @@ extension SettingsViewController {
             guard let containerView = view.window ?? view else { return }
             containerView.addSubview(previewView)
             let containerSafeArea = containerView.safeAreaLayoutGuide
-            var contraints = [
+            let constraints = [
+                previewView.centerXAnchor.constraint(equalTo: containerSafeArea.centerXAnchor),
                 previewView.centerYAnchor.constraint(equalTo: containerSafeArea.centerYAnchor),
                 previewView.widthAnchor.constraint(equalToConstant: TouchVelocityPreviewView.preferredWidth),
                 previewView.heightAnchor.constraint(equalToConstant: TouchVelocityPreviewView.preferredHeight)
             ]
-            
-            if PublicUtils.isIPhone {
-                contraints.append(previewView.trailingAnchor.constraint(equalTo: containerSafeArea.trailingAnchor, constant: previewView.bounds.width-50))
-            }
-            else {
-                contraints.append(previewView.centerXAnchor.constraint(equalTo: containerSafeArea.centerXAnchor, constant: 80))
-            }
-            
-            NSLayoutConstraint.activate(contraints)
+            NSLayoutConstraint.activate(constraints)
         }
 
         previewView.superview?.bringSubviewToFront(previewView)
@@ -351,18 +344,32 @@ extension SettingsViewController {
         }
     }
 
-    private func scheduleTouchVelocityPreviewDismissOnMain() {
-        guard let previewView = touchVelocityPreviewView else { return }
+    @objc(dismissTouchVelocityPreview)
+    func dismissTouchVelocityPreview() {
+        PublicUtils.runOnMain { [weak self] in
+            self?.dismissTouchVelocityPreviewOnMain()
+        }
+    }
+
+    private func dismissTouchVelocityPreviewOnMain() {
         touchVelocityPreviewDismissWorkItem?.cancel()
-        let workItem = DispatchWorkItem { [weak self, weak previewView] in
-            UIView.animate(withDuration: 0.18, animations: {
-                previewView?.alpha = 0
-            }, completion: { _ in
-                previewView?.removeFromSuperview()
-                if self?.touchVelocityPreviewView === previewView {
-                    self?.touchVelocityPreviewView = nil
-                }
-            })
+        touchVelocityPreviewDismissWorkItem = nil
+        guard let previewView = touchVelocityPreviewView else { return }
+        UIView.animate(withDuration: 0.18, animations: {
+            previewView.alpha = 0
+        }, completion: { [weak self, weak previewView] _ in
+            previewView?.removeFromSuperview()
+            if self?.touchVelocityPreviewView === previewView {
+                self?.touchVelocityPreviewView = nil
+            }
+        })
+    }
+
+    private func scheduleTouchVelocityPreviewDismissOnMain() {
+        guard touchVelocityPreviewView != nil else { return }
+        touchVelocityPreviewDismissWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.dismissTouchVelocityPreviewOnMain()
         }
         touchVelocityPreviewDismissWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)

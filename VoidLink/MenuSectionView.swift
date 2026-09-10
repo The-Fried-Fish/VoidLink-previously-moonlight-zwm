@@ -8,6 +8,26 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
+enum MenuSectionIconPipeline {
+    static func configuredImage(
+        _ icon: UIImage?,
+        pointSize: CGFloat,
+        symbolWeight: UIImage.SymbolWeight
+    ) -> UIImage? {
+        guard var displayIcon = icon else { return nil }
+
+        let configuration: UIImage.SymbolConfiguration
+        if displayIcon.isSymbolImage {
+            configuration = UIImage.SymbolConfiguration(pointSize: pointSize, weight: symbolWeight)
+        } else {
+            configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
+            displayIcon = displayIcon.withRenderingMode(.alwaysTemplate)
+        }
+        return displayIcon.withConfiguration(configuration)
+    }
+}
+
 @objc
 protocol MenuSectionDelegate: NSObjectProtocol {
     func hideOverlappedDynamicLabels()
@@ -186,21 +206,17 @@ class MenuSectionView: UIView {
 
     @objc(setSectionWithIcon:size:sizeConstraint:)
     func setSection(withIcon icon: UIImage?, size: CGFloat, sizeConstraint constant: CGFloat) {
-        var displayIcon = icon
         if #available(iOS 13.0, *) {
-            let config: UIImage.SymbolConfiguration
-            if displayIcon?.isSymbolImage == true {
-                config = UIImage.SymbolConfiguration(pointSize: size, weight: .bold)
-            } else {
-                config = UIImage.SymbolConfiguration(pointSize: size)
-                displayIcon = displayIcon?.withRenderingMode(.alwaysTemplate)
-            }
-            iconImageView.image = displayIcon?.withConfiguration(config)
+            iconImageView.image = MenuSectionIconPipeline.configuredImage(
+                icon,
+                pointSize: size,
+                symbolWeight: .bold
+            )
         } else {
-            iconImageView.image = displayIcon
+            iconImageView.image = icon
         }
         iconImageView.tintColor = ThemeManager.textColor
-        iconImageView.isHidden = displayIcon == nil
+        iconImageView.isHidden = icon == nil
 
         NSLayoutConstraint.activate([
             iconImageView.centerXAnchor.constraint(equalTo: headerView.leadingAnchor, constant: leadingTrailingPadding + headerViewHeight / 2 - 3),
@@ -215,17 +231,13 @@ class MenuSectionView: UIView {
     @available(iOS 13.0, *)
     @objc(setSectionWithIcon:size:weight:sizeConstraint:)
     func setSection(withIcon icon: UIImage?, size: CGFloat, weight: UIImage.SymbolWeight, sizeConstraint constant: CGFloat) {
-        var displayIcon = icon
-        let config: UIImage.SymbolConfiguration
-        if displayIcon?.isSymbolImage == true {
-            config = UIImage.SymbolConfiguration(pointSize: size, weight: weight)
-        } else {
-            config = UIImage.SymbolConfiguration(pointSize: size)
-            displayIcon = displayIcon?.withRenderingMode(.alwaysTemplate)
-        }
-        iconImageView.image = displayIcon?.withConfiguration(config)
+        iconImageView.image = MenuSectionIconPipeline.configuredImage(
+            icon,
+            pointSize: size,
+            symbolWeight: weight
+        )
         iconImageView.tintColor = ThemeManager.textColor
-        iconImageView.isHidden = displayIcon == nil
+        iconImageView.isHidden = icon == nil
 
         NSLayoutConstraint.activate([
             iconImageView.centerXAnchor.constraint(equalTo: headerView.leadingAnchor, constant: leadingTrailingPadding + headerViewHeight / 2 - 3),

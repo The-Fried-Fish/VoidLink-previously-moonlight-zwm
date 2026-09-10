@@ -33,7 +33,7 @@
         <attribute name="asyncNativeTouchPriority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="audioConfig" attributeType="Integer 32" defaultValueString="2" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="audioEngine" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="backroundSessionTimer" optional="YES" attributeType="Integer 32" defaultValueString="32767" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="backgroundSessionTimer" optional="YES" attributeType="Integer 32" defaultValueString="32767" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="bitrate" attributeType="Integer 32" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="btMouseSupport" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="buttonVisualFeedback" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
@@ -109,7 +109,7 @@
         <attribute name="sendDummyEvent" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="settingsMenuMode" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="settingsMenuOffset" optional="YES" attributeType="Float" defaultValueString="22" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="settingsMenuWidth" attributeType="Float" defaultValueString="370" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="settingsMenuWidth" attributeType="Float" defaultValueString="401" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="showKeyboardToolbar" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="singleTapSensitivity" optional="YES" attributeType="Double" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="slideToSettingsDistance" optional="YES" attributeType="Float" defaultValueString="0.2" usesScalarValueType="NO" syncable="YES"/>

@@ -2111,10 +2111,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 - (void)toggleMouseCapture{
     DataManager* dataMan = [[DataManager alloc] init];
     Settings *currentSettings = [dataMan retrieveSettings];
-    if(currentSettings.localMousePointerMode.intValue == 0){
-        currentSettings.localMousePointerMode = @1;
+    if(currentSettings.localMousePointerMode.intValue == MousePointerModeCaptured){
+        currentSettings.localMousePointerMode = @(MousePointerModeHidden);
     }else{
-        currentSettings.localMousePointerMode = @0;
+        currentSettings.localMousePointerMode = @(MousePointerModeCaptured);
     }
     
     
@@ -2126,10 +2126,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     DataManager* dataMan = [[DataManager alloc] init];
     Settings *currentSettings = [dataMan retrieveSettings];
     
-    if(currentSettings.localMousePointerMode.intValue == 2){
-        currentSettings.localMousePointerMode = @1;
+    if(currentSettings.localMousePointerMode.intValue == MousePointerModeVisible){
+        currentSettings.localMousePointerMode = @(MousePointerModeHidden);
     }else{
-        currentSettings.localMousePointerMode = @2;
+        currentSettings.localMousePointerMode = @(MousePointerModeVisible);
     }
     
     [dataMan saveData];
@@ -2261,7 +2261,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     // Pointer lock breaks the UIKit mouse APIs, which is a problem because
     // GCMouse is horribly broken on iOS 14.0 for certain mice. Only lock
     // the cursor if there is a GCMouse present.
-    return ([GCMouse mice].count > 0) && [_settings localMousePointerMode].intValue == 0;
+    return ([GCMouse mice].count > 0) && [_settings localMousePointerMode].intValue == MousePointerModeCaptured;
 }
 #endif
 

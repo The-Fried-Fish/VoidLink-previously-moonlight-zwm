@@ -901,17 +901,17 @@ static NSMutableSet* hostList;
     int numberOfChannels = MIN([streamSettings.audioConfig intValue], physicalOutputChannels);
     
     Log(LOG_I, @"Selected number of audio channels %d", numberOfChannels);
-    if (numberOfChannels >= 8) {
+    if (numberOfChannels >= AudioConfigSDL71) {
         _streamConfig.audioConfiguration = AUDIO_CONFIGURATION_71_SURROUND;
     }
-    else if (numberOfChannels >= 6) {
+    else if (numberOfChannels >= AudioConfigSDL51) {
         _streamConfig.audioConfiguration = AUDIO_CONFIGURATION_51_SURROUND;
     }
     else {
         _streamConfig.audioConfiguration = AUDIO_CONFIGURATION_STEREO;
     }
     
-    Connection.useSystemAudioEngine = streamSettings.audioConfig.intValue == 2;
+    Connection.useSystemAudioEngine = streamSettings.audioConfig.intValue == AudioConfigStereo;
     
     bool sdrPerformanceWorkaround = false;
     switch (streamSettings.preferredCodec) {
@@ -1356,6 +1356,16 @@ static NSMutableSet* hostList;
     // TemporarySettings* currentSettings = [dataMan getSettings];
 
     [streamFrameViewController setUserInteractionEnabledForStreamView:!_settingsExpandedInStreamView || position == FrontViewPositionLeft];
+    if (@available(iOS 14.0, *)) {
+        if (self.settingsViewController.usesSwiftUISettings) {
+            [self.settingsViewController updateSwiftUISettingsStreamingState:revealController.isStreaming
+                                                               menuIsOpening:position != FrontViewPositionLeft];
+            if (position != FrontViewPositionLeft && ControllerUtil.primaryGCController) {
+                [ControllerNavigator restoreUINavigationHighlight];
+            }
+            return;
+        }
+    }
     [self.settingsViewController setHidden:_settingsExpandedInStreamView forStack:self.settingsViewController.resolutionStack];
     [self.settingsViewController setHidden:_settingsExpandedInStreamView forStack:self.settingsViewController.fpsStack];
     // [self.settingsViewController widget:self.settingsViewController.bitrateSlider setEnabled:!self.settingsExpandedInStreamView];
@@ -2255,6 +2265,7 @@ static NSMutableSet* hostList;
 -(void)handleReturnToForeground
 {
     _background = NO;
+    [self applyThemeToNavigationControls];
     
     [self beginForegroundRefresh];
     
@@ -2683,7 +2694,16 @@ static NSMutableSet* hostList;
         [snapshot removeFromSuperview];
         snapshot = nil;
         self.revealViewController.rearViewRevealWidth = limitedWidth;
+        [self.revealViewController.view setNeedsLayout];
+        [self.revealViewController.view layoutIfNeeded];
         [self.revealViewController setupNavigationBar];
+        [self.revealViewController.view setNeedsLayout];
+        [self.revealViewController.view layoutIfNeeded];
+        if (@available(iOS 14.0, *)) {
+            if (self.settingsViewController.usesSwiftUISettings) {
+                [self.settingsViewController refreshSwiftUISettingsGeometry];
+            }
+        }
         if(self.revealViewController.isStreaming) [self.revealViewController buttonsInStreaming];
         else [self.revealViewController buttonsNotInStreaming];
         DataManager* dataMan = [[DataManager alloc] init];
@@ -2692,6 +2712,9 @@ static NSMutableSet* hostList;
         [dataMan saveData];
 
 
+        if (@available(iOS 14.0, *)) {
+            if (self.settingsViewController.usesSwiftUISettings) return;
+        }
         double delayInSeconds = 0.02;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^{

@@ -268,6 +268,12 @@ CMVideoDimensions resolutionTable[RESOLUTION_TABLE_SIZE];
 // This view is rooted at a ScrollView. To make it scrollable,
 // we'll update content size here.
 -(void)viewDidLayoutSubviews {
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self refreshSwiftUISettings];
+            return;
+        }
+    }
     CGFloat highestViewY = 0;
     
     // Enumerate the scroll view's subviews looking for the
@@ -326,7 +332,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (bool)isAirPlayEnabled{
-    return self.externalDisplayModeSelector.selectedSegmentIndex == 1;
+    return self.externalDisplayModeSelector.selectedSegmentIndex == ExternalDisplayModeExtended;
 }
 
 - (void)updateResolutionTable{
@@ -357,6 +363,15 @@ BOOL isCustomResolution(int resolutionSelected) {
 // this will also be called back when device orientation changes
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self stopSwiftUISettingsScrollViewImmediately];
+            [coordinator animateAlongsideTransition:nil completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
+                [self refreshSwiftUISettingsGeometry];
+            }];
+            return;
+        }
+    }
     double delayInSeconds = 0.7;
     // Convert the delay into a dispatch_time_t value
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
@@ -386,8 +401,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self.touchModeSelector2 addTarget:self action:@selector(touchMode2Changed:) forControlEvents:UIControlEventValueChanged];
     self.touchModeSelector2.selectedSegmentIndex = self.touchModeSelector1.selectedSegmentIndex;
     
-    [self.enableOswForNativeTouchSwitch setOn:oscProfile.touchMode != NativeTouchOnly];
-    [self.enableOswForNativeTouchSwitch sendActionsForControlEvents:UIControlEventValueChanged];
+    // [self.enableOswForNativeTouchSwitch setOn:oscProfile.touchMode != NativeTouchOnly];
+    // [self.enableOswForNativeTouchSwitch sendActionsForControlEvents:UIControlEventValueChanged];
 
     [self.pointerVelocityModeDividerSlider setValue: (uint8_t)(oscProfile.pointerVelocityModeDivider * 100) animated:NO]; // Load old setting.
     [self.pointerVelocityModeDividerSlider sendActionsForControlEvents:UIControlEventValueChanged]; // Load old setting.
@@ -457,7 +472,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     CGFloat yawSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.yawSensitivitySlider.value];
     CGFloat pitchSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.pitchSensitivitySlider.value];
     CGFloat rollSensitivityPercent = [self map_velocFactorDisplay_fromSliderValue:self.rollSensitivitySlider.value];
-    TouchMode touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector1.selectedSegmentIndex : NativeTouchOnly;
+    TouchMode touchMode = self.touchModeSelector1.selectedSegmentIndex;
     bool leftStickMinOffsetSliderNotMoved = (int16_t)(oscProfile.physicalLeftStickMinOffset) == (int16_t)self.leftStickMinOffsetSlider.value;
     bool rightStickMinOffsetSliderNotMoved = (int16_t)(oscProfile.physicalRightStickMinOffset) == (int16_t)self.rightStickMinOffsetSlider.value;
 
@@ -535,6 +550,25 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:NO];
+
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(updateTheme)
+                                                         name:ThemeManager.ThemeDidChangeNotification
+                                                       object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(reloadSwiftUISettings)
+                                                         name:@"GameProfileSelectorCloseNotification"
+                                                       object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(reloadSwiftUISettings)
+                                                         name:@"GameProfileSelectedNotification"
+                                                       object:nil];
+            [self reloadSwiftUISettings];
+            return;
+        }
+    }
 
     settingsViewJustExpanded = true;
 
@@ -637,6 +671,14 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:NO];
+
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self refreshSwiftUISettings];
+            if (@available(iOS 13.0, *)) if(ControllerNavigator.radialMenuView.superview) [ControllerNavigator updateRadialMenu];
+            return;
+        }
+    }
     
     [self updateParentStackHorizontalConstraints];
     
@@ -675,6 +717,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SettingsViewClosedNotification" object:self]; // notify other view that settings view just closed
+
+    if (@available(iOS 14.0, *)) if (self.usesSwiftUISettings) {
+        [self applySwiftUIClosingEffects];
+        return;
+    }
     
     bool unlockDisplayOrientationFlipped = tempSettings.unlockDisplayOrientation != (_unlockDisplayOrientationSelector.selectedSegmentIndex == 1);
     if(unlockDisplayOrientationFlipped) [_mainFrameViewController setNeedsUpdateAllowedOrientation]; // handle allow portratit on & off
@@ -690,6 +737,11 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 
 - (SettingsMenuMode)getSettingsMenuMode{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            return (SettingsMenuMode)[self swiftUISettingsMenuModeRawValue];
+        }
+    }
     return self.currentSettingsMenuMode;
 }
 
@@ -725,6 +777,12 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 -(void)deviceOrientationDidChange:(NSNotification *)notification {
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self refreshSwiftUISettingsGeometry];
+            return;
+        }
+    }
     [self updateParentStackHorizontalConstraints];
 }
 
@@ -1937,6 +1995,14 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)layoutSettingsView{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self.view setNeedsLayout];
+            [self.view layoutIfNeeded];
+            [self refreshSwiftUISettingsGeometry];
+            return;
+        }
+    }
     [self.scrollView layoutSubviews];
     
     //switchToAll/Favorite 调用此方法时，这些hiddenStack已身处新的superView中， 可以正常执行hidden = YES
@@ -1970,6 +2036,18 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)switchToFavoriteSettings{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            self.currentSettingsMenuMode = FavoriteSettings;
+            [self setSwiftUISettingsMenuMode:FavoriteSettings];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (ControllerNavigator.radialMenuView.superview) [ControllerNavigator updateRadialMenu];
+                [GamepadNavigationIllustrationHud updateHudWithForceDisplay:false];
+                if (ControllerUtil.primaryGCController) [ControllerNavigator restoreSettingsModeSwitchHighlight];
+            });
+            return;
+        }
+    }
     [self forceRestoreHeightTemporarilyForSettingStackParentView];
     [_parentStack removeFromSuperview];
     self.currentSettingsMenuMode = FavoriteSettings;
@@ -2007,6 +2085,18 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)switchToAllSettings{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            self.currentSettingsMenuMode = AllSettings;
+            [self setSwiftUISettingsMenuMode:AllSettings];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (ControllerNavigator.radialMenuView.superview) [ControllerNavigator updateRadialMenu];
+                [GamepadNavigationIllustrationHud updateHudWithForceDisplay:false];
+                if (ControllerUtil.primaryGCController) [ControllerNavigator restoreSettingsModeSwitchHighlight];
+            });
+            return;
+        }
+    }
     [self forceRestoreHeightTemporarilyForSettingStackParentView];
     self.currentSettingsMenuMode = AllSettings;
     [_parentStack removeFromSuperview];
@@ -2031,6 +2121,13 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)enterRemoveSettingItemMode{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            self.currentSettingsMenuMode = RemoveSettingItem;
+            [self setSwiftUISettingsMenuMode:RemoveSettingItem];
+            return;
+        }
+    }
     self.currentSettingsMenuMode = RemoveSettingItem;
     for(UIStackView* stack in _parentStack.arrangedSubviews){
         for(UIView* view in stack.subviews){
@@ -2043,6 +2140,13 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)doneRemoveSettingItem{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            self.currentSettingsMenuMode = FavoriteSettings;
+            [self setSwiftUISettingsMenuMode:FavoriteSettings];
+            return;
+        }
+    }
     self.currentSettingsMenuMode = FavoriteSettings;
     for(UIStackView* stack in _parentStack.arrangedSubviews){
         //stack.userInteractionEnabled = true;
@@ -2118,6 +2222,23 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)viewDidLoad {
+    self->dataMan = [[DataManager alloc] init];
+    self->tempSettings = [self->dataMan getSettings];
+    
+    self.currentSettingsMenuMode = self->tempSettings.settingsMenuMode.intValue;
+
+    if (@available(iOS 14.0, *)) {
+        self->slideToCloseSettingsViewRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
+        self->slideToCloseSettingsViewRecognizer.edges = UIRectEdgeLeft;
+        self->slideToCloseSettingsViewRecognizer.normalizedThresholdDistance = 0.0;
+        self->slideToCloseSettingsViewRecognizer.edgeTolerance = 10;
+        self->slideToCloseSettingsViewRecognizer.immediateTriggering = true;
+        self->slideToCloseSettingsViewRecognizer.delaysTouchesBegan = NO;
+        self->slideToCloseSettingsViewRecognizer.delaysTouchesEnded = NO;
+        [self.view addGestureRecognizer:self->slideToCloseSettingsViewRecognizer];
+        [self installSwiftUISettingsIfNeeded];
+        return;
+    }
     
     [UIView animateWithDuration:0 animations:^{
     
@@ -2141,14 +2262,11 @@ BOOL isCustomResolution(int resolutionSelected) {
         [self initParentStack];
         
         // load rememberFoldState before section layout
-        self->dataMan = [[DataManager alloc] init];
-        self->tempSettings = [self->dataMan getSettings];
         [self.rememberFoldStateSwitch setOn:self->tempSettings.rememberFoldState];// Load old setting
         MenuSectionView.overridePersistedFoldState = !self->tempSettings.rememberFoldState;
         [self.rememberFoldStateSwitch addTarget:self action:@selector(rememberFoldStateSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
 
         [self layoutSections];
-
 
         // [self swi];
 
@@ -2170,8 +2288,6 @@ BOOL isCustomResolution(int resolutionSelected) {
             self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
         }
 
-
-        self.currentSettingsMenuMode = self->tempSettings.settingsMenuMode.intValue;
         [self loadFavoriteSettingStackIdentifiers];
         if(self->tempSettings.settingsMenuMode.intValue == FavoriteSettings) [self switchToFavoriteSettings];
 
@@ -2575,7 +2691,7 @@ BOOL isCustomResolution(int resolutionSelected) {
         
         // touchMode refactored to game profile system
         [self.touchModeSelector1 addTarget:self action:@selector(touchMode1Changed:) forControlEvents:UIControlEventValueChanged];
-        [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
+        // [self.enableOswForNativeTouchSwitch addTarget:self action:@selector(enableOswForNativeTouchSwitchFlipped:) forControlEvents:UIControlEventValueChanged];
 
         self.externalDisplayModeSelector.selectedSegmentIndex = self->tempSettings.externalDisplayMode.integerValue;
         self.localMousePointerModeSelector.selectedSegmentIndex = self->tempSettings.localMousePointerMode.integerValue;
@@ -2686,7 +2802,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (bool)isOswEnabled{
-    return [self isNotNativeTouchOnly] && self.onScreenWidgetSelector.selectedSegmentIndex != OnScreenControlsLevelOff;
+    return self.onScreenWidgetSelector.selectedSegmentIndex != OnScreenControlsLevelOff;
 }
 
 - (bool)isCustomOswEnabled{
@@ -2695,11 +2811,12 @@ BOOL isCustomResolution(int resolutionSelected) {
     // if(!(settingsViewJustExpanded || settingsViewJustLoaded)) [motionControlSection setExpanded:customOswEnabled];
     return customOswEnabled;
 }
-
+/*
 - (bool)isNotNativeTouchOnly{
     // return (self.enableOswForNativeTouchSwitch.isOn && self.touchModeSelector1.selectedSegmentIndex == NativeTouch) || self.touchModeSelector1.selectedSegmentIndex != NativeTouch;
     return true;
 }
+ */
 
 - (void)handleOswGestureChange{
     if(settingsViewJustLoaded) return;
@@ -3388,8 +3505,18 @@ BOOL isCustomResolution(int resolutionSelected) {
 
 - (void)mainFrameGameProfileButtonTapped:(bool)animated{
     self.definesPresentationContext = NO;
-    
-    [self saveGameProfileConfigs];
+
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self persistSwiftUIGameProfileSettings];
+        }
+        else {
+            [self saveGameProfileConfigs];
+        }
+    }
+    else {
+        [self saveGameProfileConfigs];
+    }
     
     self.layoutOnScreenControlsVC = [self instantiateOscLayoutViewController];
     if (self.layoutOnScreenControlsVC == nil) {
@@ -3610,14 +3737,13 @@ BOOL isCustomResolution(int resolutionSelected) {
     // bool isEgmerging = self.enableOswSwitchStack.hidden != !isNativeTouch && isNativeTouch;
     bool isEgmerging = false;
     // self.enableOswSwitchStack.hidden = !isNativeTouch;
-    self.enableOswSwitchStack.hidden = true;
-    if(isEgmerging) [self highlightEmergingStack:self.enableOswSwitchStack];
+    // self.enableOswSwitchStack.hidden = true;
+    // if(isEgmerging) [self highlightEmergingStack:self.enableOswSwitchStack];
 
     
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityDividerStack];
 
     // [self touchMoveEventIntervalSliderMoved:self.touchMoveEventIntervalSlider];
-    [self setHidden:!isNativeTouch forStack:self.pointerVelocityDividerStack];
     [self setHidden:!isNativeTouch forStack:self.pointerVelocityFactorStack];
     // [self setHidden:!isNativeTouch forStack:self.touchMoveEventIntervalStack];
 
@@ -3646,8 +3772,8 @@ BOOL isCustomResolution(int resolutionSelected) {
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.mousePointerVelocityStack];
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.singleTapSensitivityStack];
     [self setHidden:sender.selectedSegmentIndex!=RelativeTouch forStack:self.relativeTouchSlideThresholdStack];
-    [self setHidden:![self isNotNativeTouchOnly] forStack:self.onScreenWidgetStack];
-    [self setHidden:![self isNotNativeTouchOnly] forStack:self.buttonVisualFeedbackStack];
+    [self setHidden:false forStack:self.onScreenWidgetStack];
+    [self setHidden:false forStack:self.buttonVisualFeedbackStack];
     [self setHidden:sender.selectedSegmentIndex!=AbsoluteTouch forStack:self.delayLeftClickStack];
     
     
@@ -4071,7 +4197,7 @@ BOOL isCustomResolution(int resolutionSelected) {
 - (void) slideToMenuDistanceSliderMoved:(UISlider* )sender{
     UILabel* displayLabel = [self findDynamicLabelFromStack:(UIStackView*)sender.superview];
     // displayLabel.font = [UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
-    NSString* labelText = [LocalizationHelper localizedStringForKey:@"%d%% screen width", (uint8_t)(sender.value * 100)];
+    NSString* labelText = [LocalizationHelper localizedStringForKey:@"    %d%% screen width", (uint8_t)(sender.value * 100)];
     displayLabel.text = [NSString stringWithFormat:@"  %@  ", labelText];
 }
 
@@ -4274,6 +4400,13 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)updateTheme{
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            self.view.backgroundColor = ThemeManager.menuBackgroundColor;
+            [self refreshSwiftUISettingsTheme];
+            return;
+        }
+    }
     self.view.backgroundColor = [UIColor clearColor];
     self.view.backgroundColor = ThemeManager.menuBackgroundColor;
     [self updateThemeForMenuSections:self.view];
@@ -4509,6 +4642,12 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void) saveSettings {
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self persistSwiftUISettings];
+            return;
+        }
+    }
     [self preSavingActions];
 
     Settings* currentSettings = [dataMan retrieveSettings];
@@ -4581,7 +4720,7 @@ BOOL isCustomResolution(int resolutionSelected) {
     BOOL enablePIP = self.pipSwitch.isOn;
     BOOL fullColorRange = self.fullColorRangeSwitch.isOn;
     BOOL btMouseSupport = self.citrixX1MouseSwitch.isOn;
-    NSInteger touchMode = [self isNotNativeTouchOnly] ? self.touchModeSelector1.selectedSegmentIndex : NativeTouchOnly;
+    NSInteger touchMode = self.touchModeSelector1.selectedSegmentIndex;
     NSInteger statsOverlayLevel = self.statsOverlaySelector.selectedSegmentIndex;
     BOOL statsOverlayEnabled = statsOverlayLevel != 0;
     BOOL enableHdr = self.hdrSwitch.isOn;

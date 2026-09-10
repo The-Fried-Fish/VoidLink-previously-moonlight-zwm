@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1D500022FFC000100000001 /* authored_haptics_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D500012FFC000100000001 /* authored_haptics_engine.cpp */; settings = {COMPILER_FLAGS = "-std=c++17"; }; };
-		180345E12E819877004AF36F /* libopus-sim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 180345E02E819877004AF36F /* libopus-sim.a */; };
 		180E6E372E93BFDB0067C73A /* AlertControllerUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180E6E362E93BFDB0067C73A /* AlertControllerUtil.swift */; };
 		1817B61E2E6FD04D000D938D /* SafeTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817B61D2E6FD04D000D938D /* SafeTimer.swift */; };
 		182760F72E83E2EA00EC1C5C /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 182760F62E83E2EA00EC1C5C /* DequeModule */; };
@@ -20,8 +18,6 @@
 		1850C82A2E667E4000845308 /* MicHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1850C8292E667E4000845308 /* MicHandler.swift */; };
 		18729EDE2E8BD68800101194 /* UUIDHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18729EDD2E8BD68800101194 /* UUIDHelper.swift */; };
 		18780CC72F10D66000B90483 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18780CC62F10D66000B90483 /* StoreKit.framework */; };
-		A76B00032FFCC00100000003 /* GameSirG8MFiRumbler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76B00022FFCC00100000002 /* GameSirG8MFiRumbler.swift */; };
-		A76B00052FFCC00100000005 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76B00042FFCC00100000004 /* ExternalAccessory.framework */; };
 		18780CCA2F10D6CC00B90483 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18780CC92F10D6CC00B90483 /* IAPManager.swift */; };
 		187F4B282E04658A00EECC59 /* WidgetPanelStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */; };
 		1888C1922E24C33100108730 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1912E24C33100108730 /* AboutViewController.swift */; };
@@ -115,6 +111,12 @@
 		A1B2C3D42F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D32F90000100ABCDEF /* AbstractGamepadOverlayWidgetView.swift */; };
 		A1C0DE012FBC000100000001 /* ControllerNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE002FBC000100000001 /* ControllerNavigator.swift */; };
 		A1C0DE032FBC000100000001 /* RadialMenuOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE022FBC000100000001 /* RadialMenuOverlayView.swift */; };
+		A1D500022FFC000100000001 /* authored_haptics_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D500012FFC000100000001 /* authored_haptics_engine.cpp */; settings = {COMPILER_FLAGS = "-std=c++17"; }; };
+		A1F100012FFB000100000001 /* FrameInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F100002FFB000100000001 /* FrameInterpolator.swift */; };
+		A5E771022FFF100100000002 /* SettingsSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E771012FFF100100000001 /* SettingsSwiftUI.swift */; };
+		A5E771042FFF100100000004 /* SettingsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E771032FFF100100000003 /* SettingsControls.swift */; };
+		A76B00032FFCC00100000003 /* GameSirG8MFiRumbler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76B00022FFCC00100000002 /* GameSirG8MFiRumbler.swift */; };
+		A76B00052FFCC00100000005 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76B00042FFCC00100000004 /* ExternalAccessory.framework */; };
 		DC1F5A07206436B20037755F /* ConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1F5A06206436B20037755F /* ConnectionHelper.m */; };
 		F74BEF9C2C1A705600224667 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F74BEF9B2C1A705600224667 /* OpenSSL */; };
 		FB1A674D2131E65900507771 /* KeyboardSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1A674C2131E65900507771 /* KeyboardSupport.m */; };
@@ -146,12 +148,10 @@
 		FB89463019F646E200339C8A /* StreamConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461919F646E200339C8A /* StreamConfiguration.m */; };
 		FB89463119F646E200339C8A /* StreamManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461B19F646E200339C8A /* StreamManager.m */; };
 		FB89463219F646E200339C8A /* VideoDecoderRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461D19F646E200339C8A /* VideoDecoderRenderer.m */; };
-		A1F100012FFB000100000001 /* FrameInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F100002FFB000100000001 /* FrameInterpolator.swift */; };
 		FB89463419F646E200339C8A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462219F646E200339C8A /* Utils.m */; };
 		FB89463519F646E200339C8A /* MainFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462519F646E200339C8A /* MainFrameViewController.m */; };
 		FB89463619F646E200339C8A /* StreamFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462719F646E200339C8A /* StreamFrameViewController.m */; };
 		FB89463819F6473800339C8A /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB89463719F6473800339C8A /* Launch Screen.xib */; };
-		FB8946ED19F6AFE800339C8A /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB8946EA19F6AFB800339C8A /* libopus.a */; };
 		FB9AFD281A7C84ED00872C98 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD271A7C84ED00872C98 /* HttpResponse.m */; };
 		FB9AFD321A7D867C00872C98 /* AppAssetRetriever.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD311A7D867C00872C98 /* AppAssetRetriever.m */; };
 		FB9AFD371A7E02DB00872C98 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD361A7E02DB00872C98 /* HttpRequest.m */; };
@@ -190,7 +190,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A1D500012FFC000100000001 /* authored_haptics_engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = authored_haptics_engine.cpp; path = "third_party/moonlight-audio-haptics/src/core/authored_haptics_engine.cpp"; sourceTree = SOURCE_ROOT; };
 		180345E02E819877004AF36F /* libopus-sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopus-sim.a"; sourceTree = "<group>"; };
 		180E6E362E93BFDB0067C73A /* AlertControllerUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertControllerUtil.swift; sourceTree = "<group>"; };
 		1817B61D2E6FD04D000D938D /* SafeTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeTimer.swift; sourceTree = "<group>"; };
@@ -202,8 +201,6 @@
 		1850C8292E667E4000845308 /* MicHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicHandler.swift; sourceTree = "<group>"; };
 		18729EDD2E8BD68800101194 /* UUIDHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDHelper.swift; sourceTree = "<group>"; };
 		18780CC62F10D66000B90483 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		A76B00022FFCC00100000002 /* GameSirG8MFiRumbler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSirG8MFiRumbler.swift; sourceTree = "<group>"; };
-		A76B00042FFCC00100000004 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		18780CC92F10D6CC00B90483 /* IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
 		187F4B232E04633100EECC59 /* WidgetPanelStackView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WidgetPanelStackView.h; sourceTree = "<group>"; };
 		187F4B272E04658A00EECC59 /* WidgetPanelStackView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WidgetPanelStackView.m; sourceTree = "<group>"; };
@@ -340,6 +337,12 @@
 		A1C0DE002FBC000100000001 /* ControllerNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerNavigator.swift; sourceTree = "<group>"; };
 		A1C0DE022FBC000100000001 /* RadialMenuOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadialMenuOverlayView.swift; sourceTree = "<group>"; };
 		A1D4E0A22FBBBBCC00112233 /* OSCProfilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSCProfilesManager.swift; sourceTree = "<group>"; };
+		A1D500012FFC000100000001 /* authored_haptics_engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = authored_haptics_engine.cpp; path = "third_party/moonlight-audio-haptics/src/core/authored_haptics_engine.cpp"; sourceTree = SOURCE_ROOT; };
+		A1F100002FFB000100000001 /* FrameInterpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameInterpolator.swift; sourceTree = "<group>"; };
+		A5E771012FFF100100000001 /* SettingsSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSwiftUI.swift; sourceTree = "<group>"; };
+		A5E771032FFF100100000003 /* SettingsControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControls.swift; sourceTree = "<group>"; };
+		A76B00022FFCC00100000002 /* GameSirG8MFiRumbler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSirG8MFiRumbler.swift; sourceTree = "<group>"; };
+		A76B00042FFCC00100000004 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		DC1F5A05206436B10037755F /* ConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionHelper.h; sourceTree = "<group>"; };
 		DC1F5A06206436B20037755F /* ConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionHelper.m; sourceTree = "<group>"; };
 		FB1A674B2131E65900507771 /* KeyboardSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardSupport.h; sourceTree = "<group>"; };
@@ -400,7 +403,6 @@
 		FB89461B19F646E200339C8A /* StreamManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamManager.m; sourceTree = "<group>"; };
 		FB89461C19F646E200339C8A /* VideoDecoderRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoDecoderRenderer.h; sourceTree = "<group>"; };
 		FB89461D19F646E200339C8A /* VideoDecoderRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoDecoderRenderer.m; sourceTree = "<group>"; };
-		A1F100002FFB000100000001 /* FrameInterpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameInterpolator.swift; sourceTree = "<group>"; };
 		FB89462119F646E200339C8A /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		FB89462219F646E200339C8A /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		FB89462419F646E200339C8A /* MainFrameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainFrameViewController.h; sourceTree = "<group>"; };
@@ -501,6 +503,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A1F80873042688800E78B24 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A1D500012FFC000100000001 /* authored_haptics_engine.cpp */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		84351B052C29ACAF00A77989 /* CustomOSC */ = {
 			isa = PBXGroup;
 			children = (
@@ -638,6 +648,7 @@
 				2A039E572F72892B00546768 /* VoidLinkPreview */,
 				FB290CF019B2C406004C83CF /* Frameworks */,
 				FB290CEF19B2C406004C83CF /* Products */,
+				2A1F80873042688800E78B24 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -877,6 +888,8 @@
 				189AD2992DE7446000E24B88 /* HostCollectionViewController.swift */,
 				FB89462619F646E200339C8A /* StreamFrameViewController.h */,
 				FB89462719F646E200339C8A /* StreamFrameViewController.m */,
+				A5E771012FFF100100000001 /* SettingsSwiftUI.swift */,
+				A5E771032FFF100100000003 /* SettingsControls.swift */,
 				FBD3494E19FF2174002D2A60 /* SettingsViewController.h */,
 				FBD3494F19FF2174002D2A60 /* SettingsViewController.m */,
 				2B7A10012FFB000100000001 /* SettingsTouchVelocityPreview.swift */,
@@ -1148,6 +1161,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5E771022FFF100100000002 /* SettingsSwiftUI.swift in Sources */,
+				A5E771042FFF100100000004 /* SettingsControls.swift in Sources */,
 				A1D500022FFC000100000001 /* authored_haptics_engine.cpp in Sources */,
 				FB290D0719B2C406004C83CF /* Limelight.xcdatamodeld in Sources */,
 				9819CC22254F180F008A7C8E /* AbsoluteTouchHandler.m in Sources */,
@@ -1559,7 +1574,7 @@
 				INFOPLIST_FILE = "VoidLink/Limelight-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = VoidLink;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1630,7 +1645,7 @@
 				INFOPLIST_FILE = "VoidLink/Limelight-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = VoidLink;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

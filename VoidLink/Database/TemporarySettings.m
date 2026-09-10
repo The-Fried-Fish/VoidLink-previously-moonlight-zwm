@@ -150,7 +150,7 @@
     self.controllerGyroBiasY = settings.controllerGyroBiasY;
     self.controllerGyroBiasZ = settings.controllerGyroBiasZ;
     self.singleTapSensitivity = settings.singleTapSensitivity;
-    self.backgroundSessionTimer = settings.backroundSessionTimer;
+    self.backgroundSessionTimer = settings.backgroundSessionTimer;
     self.edgeSlidingSensitivity = settings.edgeSlidingSensitivity;
     self.appTheme = settings.appTheme;
     self.hapticEngine = settings.hapticEngine;
