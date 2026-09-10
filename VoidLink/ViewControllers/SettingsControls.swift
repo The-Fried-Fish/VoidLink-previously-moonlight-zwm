@@ -2,6 +2,9 @@ import SwiftUI
 import UIKit
 
 let usesSwiftUISettingsPicker = false
+let usesSwiftUISettingsSlider = false
+let usesSwiftUISettingsToggle = false
+private let settingsProgressSliderHeight: CGFloat = 34
 
 @available(iOS 14.0, tvOS 14.0, *)
 extension View {
@@ -127,25 +130,50 @@ struct SettingsSlider: View {
     }
 
     var body: some View {
-#if os(tvOS)
-        ProgressView(
-            value: min(max(value, range.lowerBound), range.upperBound) - range.lowerBound,
-            total: max(range.upperBound - range.lowerBound, .leastNonzeroMagnitude)
-        )
-        .progressViewStyle(LinearProgressViewStyle())
-        .accentColor(Color(ThemeManager.appSecondaryColor))
-        .disabled(!isEnabled)
-        .allowsHitTesting(isUserInteractionEnabled)
-#else
-        SettingsIOSSlider(
-            value: $value,
-            in: range,
-            isEnabled: isEnabled,
-            isUserInteractionEnabled: isUserInteractionEnabled,
-            onEditingChanged: onEditingChanged,
-            onControlResolved: onControlResolved
-        )
-#endif
+        if usesSwiftUISettingsSlider {
+            SettingsProgressSlider(
+                value: value,
+                range: range,
+                isEnabled: isEnabled,
+                onControlResolved: onControlResolved
+            )
+        } else {
+            SettingsIOSSlider(
+                value: $value,
+                in: range,
+                isEnabled: isEnabled,
+                isUserInteractionEnabled: isUserInteractionEnabled,
+                onEditingChanged: onEditingChanged,
+                onControlResolved: onControlResolved
+            )
+        }
+    }
+}
+
+@available(iOS 14.0, tvOS 14.0, *)
+private struct SettingsProgressSlider: View {
+    let value: Double
+    let range: ClosedRange<Double>
+    let isEnabled: Bool
+    let onControlResolved: ((UIControl?) -> Void)?
+
+    var body: some View {
+        VStack {
+            ProgressView(
+                value: min(max(value, range.lowerBound), range.upperBound) - range.lowerBound,
+                total: max(range.upperBound - range.lowerBound, .leastNonzeroMagnitude)
+            )
+            .progressViewStyle(LinearProgressViewStyle())
+            .accentColor(Color(ThemeManager.appSecondaryColor))
+        }
+        .frame(height: settingsProgressSliderHeight, alignment: .center)
+        .opacity(isEnabled ? 1 : 0.46)
+        .onAppear {
+            onControlResolved?(nil)
+        }
+        .onDisappear {
+            onControlResolved?(nil)
+        }
     }
 }
 
@@ -339,19 +367,40 @@ struct SettingsToggle: View {
     }
 
     var body: some View {
-#if os(tvOS)
+        if usesSwiftUISettingsToggle {
+            SettingsSwiftUIToggle(
+                isOn: $isOn,
+                isEnabled: isEnabled,
+                onControlResolved: onControlResolved
+            )
+        } else {
+            SettingsIOSButtonSwitch(
+                isOn: $isOn,
+                isEnabled: isEnabled,
+                isUserInteractionEnabled: isUserInteractionEnabled,
+                onControlResolved: onControlResolved
+            )
+        }
+    }
+}
+
+@available(iOS 14.0, tvOS 14.0, *)
+private struct SettingsSwiftUIToggle: View {
+    @Binding var isOn: Bool
+    let isEnabled: Bool
+    let onControlResolved: ((UIControl?) -> Void)?
+
+    var body: some View {
         Toggle("", isOn: $isOn)
             .labelsHidden()
             .disabled(!isEnabled)
-            .allowsHitTesting(isUserInteractionEnabled)
-#else
-        SettingsIOSButtonSwitch(
-            isOn: $isOn,
-            isEnabled: isEnabled,
-            isUserInteractionEnabled: isUserInteractionEnabled,
-            onControlResolved: onControlResolved
-        )
-#endif
+            .opacity(isEnabled ? 1 : 0.46)
+            .onAppear {
+                onControlResolved?(nil)
+            }
+            .onDisappear {
+                onControlResolved?(nil)
+            }
     }
 }
 
