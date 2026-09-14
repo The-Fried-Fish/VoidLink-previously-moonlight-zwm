@@ -16,7 +16,7 @@
 
 #import "DataManager.h"
 #include "Limelight.h"
-#include <stdio.h>
+#include <string.h>
 
 @import GameController;
 #if !TARGET_OS_TV
@@ -27,57 +27,409 @@
 static const double MOUSE_SPEED_DIVISOR = 1.25;
 static __weak ControllerSupport *VLSharedControllerSupport = nil;
 
+// The host forwards the raw bytes a game writes into the DualSense output
+// report, so each effect type is decoded here onto the closest GameController
+// mode. Payloads below exclude the leading type byte, which arrives separately.
+#define VL_TRIGGER_ZONE_COUNT 10  // GCDualSenseAdaptiveTriggerDiscretePositionCount
+
+typedef NS_ENUM(NSInteger, VLAdaptiveTriggerMode) {
+    // Not "could not decode" but "this side was not programmed": the trigger the
+    // event flags left out keeps whatever it is already holding. Decoding never
+    // produces it, so an effect that reaches a trigger always has something to say.
+    VLAdaptiveTriggerModeUnsupported = 0,
+    VLAdaptiveTriggerModeOff,
+    VLAdaptiveTriggerModeFeedback,
+    VLAdaptiveTriggerModePositionalFeedback,
+    VLAdaptiveTriggerModeWeapon,
+    VLAdaptiveTriggerModeSlopeFeedback,
+    VLAdaptiveTriggerModeVibration,
+    VLAdaptiveTriggerModePositionalVibration,
+};
+
 typedef struct _VL_ADAPTIVE_TRIGGER_EFFECT {
-    uint8_t type;
-    float parameter0;
-    float parameter1;
-    float parameter2;
+    VLAdaptiveTriggerMode mode;
+    float startPosition;
+    float endPosition;
+    float startStrength;
+    float endStrength;
+    float frequency;
+    float positionalStrength[VL_TRIGGER_ZONE_COUNT];
 } VL_ADAPTIVE_TRIGGER_EFFECT;
+
+// Space-separated so a payload can be read against the DS5 report layout by eye.
+// Only reachable from Log(), which Logger.h compiles away in release builds.
+__attribute__((unused))
+static NSString* VLPayloadHex(const uint8_t* payload)
+{
+    NSMutableString* hex = [NSMutableString stringWithCapacity:DS_EFFECT_PAYLOAD_SIZE * 3];
+    for (int i = 0; i < DS_EFFECT_PAYLOAD_SIZE; i++) {
+        [hex appendFormat:i ? @" %02X" : @"%02X", payload[i]];
+    }
+    return hex;
+}
+
+static float VLClamp01(float value)
+{
+    return MIN(1.0f, MAX(0.0f, value));
+}
+
+// Positions are a step index over a full-scale span. The two families differ only
+// in how many steps they divide the arm into, so they share one conversion.
+#define VL_BYTE_STEP_COUNT 256
+
+static float VLStepPosition(int step, int stepCount)
+{
+    return VLClamp01(step / (float)(stepCount - 1));
+}
+
+// The trigger arm is addressed as one of 10 discrete zones.
+static float VLZonePosition(int zone)
+{
+    return VLStepPosition(zone, VL_TRIGGER_ZONE_COUNT);
+}
+
+// The simple and limited types skip the zone encoding entirely: their positions
+// and strengths are the firmware's own 0-255 parameters.
+static float VLByteScale(int value)
+{
+    return VLStepPosition(value, VL_BYTE_STEP_COUNT);
+}
+
+// Frequency is its own axis, shared by both families and unrelated to how either
+// divides the arm: the report documents it in Hz, GameController takes a rate
+// normalized against a range Apple does not publish. Dividing by the full byte
+// range is therefore an assumption rather than a conversion. It is what shipped
+// before this commit and a device confirms it is felt, so it stays until someone
+// measures the mapping - kept separate so that revisiting it cannot move a
+// position or a strength.
+static float VLTriggerFrequency(uint8_t hz)
+{
+    return VLClamp01(hz / 255.0f);
+}
+
+// Strengths and amplitudes run 0-8 in the report and are normalized in GameController.
+static float VLZoneStrength(int strength)
+{
+    return VLClamp01(strength / 8.0f);
+}
+
+// The limited types share the simple layout and its byte positions, but their
+// strength is the one field the firmware validates: anything past 10 is refused
+// outright, so 10 is full scale rather than a fortieth of it.
+#define VL_LIMITED_STRENGTH_MAX 10
+
+static float VLLimitedStrength(int strength)
+{
+    return VLClamp01(strength / (float)VL_LIMITED_STRENGTH_MAX);
+}
+
+static uint16_t VLZoneMask(const uint8_t* payload)
+{
+    return (uint16_t)((payload[0] | (payload[1] << 8)) & ((1 << VL_TRIGGER_ZONE_COUNT) - 1));
+}
+
+// Both return -1 for an empty mask.
+static int VLFirstZone(uint16_t mask)
+{
+    return mask ? __builtin_ctz(mask) : -1;
+}
+
+static int VLLastZone(uint16_t mask)
+{
+    return mask ? 31 - __builtin_clz(mask) : -1;
+}
+
+// The zoned effects pack (value - 1) into 3 bits per zone, in the word after the mask.
+static uint32_t VLPackedZoneValues(const uint8_t* payload)
+{
+    return (uint32_t)payload[2] | ((uint32_t)payload[3] << 8) |
+           ((uint32_t)payload[4] << 16) | ((uint32_t)payload[5] << 24);
+}
+
+// GameController rejects an effect whose end does not sit past its start, so a
+// span is pinned to a usable pair of steps before either position is scaled.
+static void VLSetSpan(VL_ADAPTIVE_TRIGGER_EFFECT* effect, int first, int last, int stepCount)
+{
+    first = MIN(MAX(first, 0), stepCount - 2);
+    last = MIN(MAX(last, first + 1), stepCount - 1);
+
+    effect->startPosition = VLStepPosition(first, stepCount);
+    effect->endPosition = VLStepPosition(last, stepCount);
+}
+
+// Where the first zone the game touched sits on the arm.
+static float VLZoneStartPosition(const uint8_t* payload)
+{
+    return VLZonePosition(MAX(VLFirstZone(VLZoneMask(payload)), 0));
+}
+
+// Effects that span the arm carry their start and end as bits in the zone mask.
+static void VLDecodeZoneRange(const uint8_t* payload, VL_ADAPTIVE_TRIGGER_EFFECT* effect)
+{
+    uint16_t mask = VLZoneMask(payload);
+    VLSetSpan(effect, VLFirstZone(mask), VLLastZone(mask), VL_TRIGGER_ZONE_COUNT);
+}
+
+static VL_ADAPTIVE_TRIGGER_EFFECT VLDecodeZonedEffect(const uint8_t* payload, VLAdaptiveTriggerMode mode)
+{
+    VL_ADAPTIVE_TRIGGER_EFFECT effect = { .mode = mode };
+    uint16_t mask = VLZoneMask(payload);
+    uint32_t packed = VLPackedZoneValues(payload);
+
+    for (int zone = 0; zone < VL_TRIGGER_ZONE_COUNT; zone++) {
+        if (mask & (1 << zone)) {
+            effect.positionalStrength[zone] = VLZoneStrength((int)((packed >> (3 * zone)) & 0x07) + 1);
+            // Stands in for the shape on releases without the per-zone API.
+            effect.startStrength = MAX(effect.startStrength, effect.positionalStrength[zone]);
+        }
+    }
+
+    effect.startPosition = VLZonePosition(MAX(VLFirstZone(mask), 0));
+    return effect;
+}
+
+// A mode is only as good as the fields it needs: an effect that asks for no
+// resistance, or vibration at no rate, is the trigger's rest state. The switch
+// only classifies, so adding a mode still fails to compile until it is handled.
+static VL_ADAPTIVE_TRIGGER_EFFECT VLNormalizeEffect(VL_ADAPTIVE_TRIGGER_EFFECT effect)
+{
+    bool needsFrequency = false;
+    bool needsStrength = false;
+
+    switch (effect.mode) {
+        case VLAdaptiveTriggerModeVibration:
+        case VLAdaptiveTriggerModePositionalVibration:
+            needsFrequency = true;
+            needsStrength = true;
+            break;
+
+        case VLAdaptiveTriggerModeFeedback:
+        case VLAdaptiveTriggerModePositionalFeedback:
+        case VLAdaptiveTriggerModeWeapon:
+        case VLAdaptiveTriggerModeSlopeFeedback:
+            needsStrength = true;
+            break;
+
+        case VLAdaptiveTriggerModeOff:
+        case VLAdaptiveTriggerModeUnsupported:
+            break;
+    }
+
+    if ((needsFrequency && effect.frequency <= 0.0f) ||
+        (needsStrength && MAX(effect.startStrength, effect.endStrength) <= 0.0f)) {
+        effect.mode = VLAdaptiveTriggerModeOff;
+    }
+
+    return effect;
+}
+
+// The positional and slope APIs landed in 15.4, so below it each mode becomes the
+// scalar one it approximates. Deciding that here, on data the zoned decode already
+// filled in, keeps the apply switch to one GameController call per mode.
+static VL_ADAPTIVE_TRIGGER_EFFECT VLDegradeEffectForRuntime(VL_ADAPTIVE_TRIGGER_EFFECT effect)
+{
+    if (@available(iOS 15.4, tvOS 15.4, *)) {
+        return effect;
+    }
+
+    switch (effect.mode) {
+        case VLAdaptiveTriggerModePositionalFeedback:
+            effect.mode = VLAdaptiveTriggerModeFeedback;
+            break;
+
+        case VLAdaptiveTriggerModePositionalVibration:
+            effect.mode = VLAdaptiveTriggerModeVibration;
+            break;
+
+        case VLAdaptiveTriggerModeSlopeFeedback:
+            // The closest thing to a bow's snap without the slope API.
+            effect.startStrength = MAX(effect.startStrength, effect.endStrength);
+            effect.mode = VLAdaptiveTriggerModeWeapon;
+            break;
+
+        default:
+            break;
+    }
+
+    return effect;
+}
 
 static VL_ADAPTIVE_TRIGGER_EFFECT DecodeAdaptiveTriggerEffect(uint8_t type, const uint8_t* payload)
 {
-    const float byteScale = 1.0f / 255.0f;
-    VL_ADAPTIVE_TRIGGER_EFFECT effect = {
-        .type = type,
-        .parameter0 = payload[0] * byteScale,
-        .parameter1 = payload[1] * byteScale,
-        .parameter2 = payload[2] * byteScale,
-    };
-    return effect;
+    VL_ADAPTIVE_TRIGGER_EFFECT effect = { .mode = VLAdaptiveTriggerModeUnsupported };
+
+    switch (type) {
+        case 0x00:  // no effect
+        case 0x05:  // Off
+            effect.mode = VLAdaptiveTriggerModeOff;
+            break;
+
+        case 0x01:  // Simple_Feedback
+        case 0x11:  // Limited_Feedback, same layout over a 0-10 strength
+            effect.mode = VLAdaptiveTriggerModeFeedback;
+            effect.startPosition = VLByteScale(payload[0]);
+            effect.startStrength = type == 0x01 ? VLByteScale(payload[1])
+                                                : VLLimitedStrength(payload[1]);
+            break;
+
+        case 0x02:  // Simple_Weapon
+        case 0x12:  // Limited_Weapon, same layout over a 0-10 strength
+            effect.mode = VLAdaptiveTriggerModeWeapon;
+            VLSetSpan(&effect, payload[0], payload[1], VL_BYTE_STEP_COUNT);
+            effect.startStrength = type == 0x02 ? VLByteScale(payload[2])
+                                                : VLLimitedStrength(payload[2]);
+            break;
+
+        case 0x06:  // Simple_Vibration
+            effect.mode = VLAdaptiveTriggerModeVibration;
+            effect.frequency = VLTriggerFrequency(payload[0]);
+            effect.startStrength = VLByteScale(payload[1]);
+            effect.startPosition = VLByteScale(payload[2]);
+            break;
+
+        case 0x21:  // Feedback
+            effect = VLDecodeZonedEffect(payload, VLAdaptiveTriggerModePositionalFeedback);
+            break;
+
+        case 0x26:  // Vibration
+            effect = VLDecodeZonedEffect(payload, VLAdaptiveTriggerModePositionalVibration);
+            effect.frequency = VLTriggerFrequency(payload[8]);
+            break;
+
+        case 0x25:  // Weapon
+            effect.mode = VLAdaptiveTriggerModeWeapon;
+            VLDecodeZoneRange(payload, &effect);
+            effect.startStrength = VLZoneStrength((payload[2] & 0x07) + 1);
+            break;
+
+        case 0x22:  // Bow: resistance that builds to a snap at the end of the pull
+            effect.mode = VLAdaptiveTriggerModeSlopeFeedback;
+            VLDecodeZoneRange(payload, &effect);
+            effect.startStrength = VLZoneStrength((payload[2] & 0x07) + 1);
+            effect.endStrength = VLZoneStrength(((payload[2] >> 3) & 0x07) + 1);
+            break;
+
+        // Neither has a matching mode, and neither carries the zoned value word:
+        // both read the mask as a start and take a frequency byte, so both become
+        // vibration at that rate.
+        case 0x23:  // Galloping: foot timings in payload[2], no amplitude of its own
+        case 0x27:  // Machine: two alternating amplitudes (0-7), approximated by the stronger
+            effect.mode = VLAdaptiveTriggerModeVibration;
+            effect.startPosition = VLZoneStartPosition(payload);
+            effect.startStrength = type == 0x23
+                // Galloping sets a gait, not a level, and the firmware picks its
+                // own amplitude. Half scale stands in: full strength turns every
+                // gallop into the hardest one the trigger can produce.
+                ? 0.5f
+                : VLClamp01(MAX(payload[2] & 0x07, (payload[2] >> 3) & 0x07) / 7.0f);
+            effect.frequency = VLTriggerFrequency(payload[3]);
+            break;
+
+        default:
+            // Holding whatever the last effect armed is the worse failure: a game
+            // that programs a type we cannot reproduce would keep the trigger
+            // resisting for the rest of the session. Release it instead.
+            Log(LOG_W, @"Releasing trigger for unsupported adaptive trigger effect type: 0x%02X", type);
+            effect.mode = VLAdaptiveTriggerModeOff;
+            break;
+    }
+
+    return VLDegradeEffectForRuntime(VLNormalizeEffect(effect));
+}
+
+// What the payload decoded to, logged next to the raw bytes: a report that does
+// not match the felt behaviour is otherwise very hard to tell apart from one the
+// controller simply ignored. Only reachable from Log(), so release builds drop it.
+__attribute__((unused))
+static NSString* VLEffectDescription(VL_ADAPTIVE_TRIGGER_EFFECT effect)
+{
+    NSString* mode = @"?";
+    switch (effect.mode) {
+        case VLAdaptiveTriggerModeUnsupported:         mode = @"unsupported"; break;
+        case VLAdaptiveTriggerModeOff:                 mode = @"off"; break;
+        case VLAdaptiveTriggerModeFeedback:            mode = @"feedback"; break;
+        case VLAdaptiveTriggerModePositionalFeedback:  mode = @"posFeedback"; break;
+        case VLAdaptiveTriggerModeWeapon:              mode = @"weapon"; break;
+        case VLAdaptiveTriggerModeSlopeFeedback:       mode = @"slopeFeedback"; break;
+        case VLAdaptiveTriggerModeVibration:           mode = @"vibration"; break;
+        case VLAdaptiveTriggerModePositionalVibration: mode = @"posVibration"; break;
+    }
+
+    NSMutableString* zones = [NSMutableString string];
+    if (effect.mode == VLAdaptiveTriggerModePositionalFeedback ||
+        effect.mode == VLAdaptiveTriggerModePositionalVibration) {
+        [zones appendString:@" zones=["];
+        for (int zone = 0; zone < VL_TRIGGER_ZONE_COUNT; zone++) {
+            [zones appendFormat:zone ? @" %.2f" : @"%.2f", effect.positionalStrength[zone]];
+        }
+        [zones appendString:@"]"];
+    }
+
+    return [NSString stringWithFormat:@"%@ start=%.3f end=%.3f str=%.3f/%.3f freq=%.3f%@",
+            mode, effect.startPosition, effect.endPosition,
+            effect.startStrength, effect.endStrength, effect.frequency, zones];
 }
 
 static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
                                        VL_ADAPTIVE_TRIGGER_EFFECT effect)
     API_AVAILABLE(ios(14.5), tvos(14.5));
 
+// One GameController call per mode: VLDegradeEffectForRuntime has already replaced
+// anything this OS cannot do, so the availability guards below are a compile-time
+// requirement that decode has made always true by the time a case is reached.
 static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
                                        VL_ADAPTIVE_TRIGGER_EFFECT effect)
 {
-    switch (effect.type) {
-        case 0x00:
+    switch (effect.mode) {
+        case VLAdaptiveTriggerModeOff:
             [trigger setModeOff];
             break;
-        case 0x01:
-            [trigger setModeFeedbackWithStartPosition:effect.parameter0
-                                   resistiveStrength:effect.parameter1];
+
+        case VLAdaptiveTriggerModeFeedback:
+            [trigger setModeFeedbackWithStartPosition:effect.startPosition
+                                    resistiveStrength:effect.startStrength];
             break;
-        case 0x02:
-            if (effect.parameter1 > effect.parameter0) {
-                [trigger setModeWeaponWithStartPosition:effect.parameter0
-                                            endPosition:effect.parameter1
-                                     resistiveStrength:effect.parameter2];
+
+        case VLAdaptiveTriggerModeWeapon:
+            [trigger setModeWeaponWithStartPosition:effect.startPosition
+                                        endPosition:effect.endPosition
+                                  resistiveStrength:effect.startStrength];
+            break;
+
+        case VLAdaptiveTriggerModeVibration:
+            [trigger setModeVibrationWithStartPosition:effect.startPosition
+                                             amplitude:effect.startStrength
+                                             frequency:effect.frequency];
+            break;
+
+        case VLAdaptiveTriggerModePositionalFeedback:
+            if (@available(iOS 15.4, tvOS 15.4, *)) {
+                GCDualSenseAdaptiveTriggerPositionalResistiveStrengths strengths;
+                _Static_assert(VL_TRIGGER_ZONE_COUNT == GCDualSenseAdaptiveTriggerDiscretePositionCount,
+                               "Zone count must match the GameController arrays copied into below");
+                memcpy(strengths.values, effect.positionalStrength, sizeof(strengths.values));
+                [trigger setModeFeedbackWithResistiveStrengths:strengths];
             }
-            else {
-                // Log(LOG_W, @"Ignoring invalid adaptive weapon effect: start=%.3f end=%.3f", effect.parameter0, effect.parameter1);
+            break;
+
+        case VLAdaptiveTriggerModePositionalVibration:
+            if (@available(iOS 15.4, tvOS 15.4, *)) {
+                GCDualSenseAdaptiveTriggerPositionalAmplitudes amplitudes;
+                memcpy(amplitudes.values, effect.positionalStrength, sizeof(amplitudes.values));
+                [trigger setModeVibrationWithAmplitudes:amplitudes frequency:effect.frequency];
             }
             break;
-        case 0x06:
-            [trigger setModeVibrationWithStartPosition:effect.parameter2
-                                             amplitude:effect.parameter1
-                                             frequency:effect.parameter0];
+
+        case VLAdaptiveTriggerModeSlopeFeedback:
+            if (@available(iOS 15.4, tvOS 15.4, *)) {
+                [trigger setModeSlopeFeedbackWithStartPosition:effect.startPosition
+                                                  endPosition:effect.endPosition
+                                                startStrength:effect.startStrength
+                                                  endStrength:effect.endStrength];
+            }
             break;
-        default:
-            // Log(LOG_W, @"Ignoring unsupported adaptive trigger effect type: 0x%02X", effect.type);
+
+        case VLAdaptiveTriggerModeUnsupported:
             break;
     }
 }
@@ -620,7 +972,7 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
             // No LED control supported for this controller
             return;
         }
-        
+
         controller.gamepad.light.color = [[GCColor alloc] initWithRed:(r / 255.0f) green:(g / 255.0f) blue:(b / 255.0f)];
     }
 }
@@ -628,27 +980,26 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
 -(void) setAdaptiveTriggers:(uint16_t)controllerNumber eventFlags:(uint8_t)eventFlags
                     typeLeft:(uint8_t)typeLeft typeRight:(uint8_t)typeRight
                         left:(const uint8_t*)left right:(const uint8_t*)right {
-    char leftPayload[DS_EFFECT_PAYLOAD_SIZE * 3] = {0};
-    char rightPayload[DS_EFFECT_PAYLOAD_SIZE * 3] = {0};
-
-    for (int i = 0; i < DS_EFFECT_PAYLOAD_SIZE; i++) {
-        snprintf(leftPayload + (i * 3), sizeof(leftPayload) - (i * 3),
-                 i == DS_EFFECT_PAYLOAD_SIZE - 1 ? "%02X" : "%02X ", left[i]);
-        snprintf(rightPayload + (i * 3), sizeof(rightPayload) - (i * 3),
-                 i == DS_EFFECT_PAYLOAD_SIZE - 1 ? "%02X" : "%02X ", right[i]);
-    }
-
-
-    Log(LOG_I, @"Adaptive trigger: controller=%u flags=0x%02X "
-                "leftType=0x%02X left=[%s] rightType=0x%02X right=[%s]",
-        controllerNumber, eventFlags,
-        typeLeft, leftPayload, typeRight, rightPayload);
-
-
-    VL_ADAPTIVE_TRIGGER_EFFECT leftEffect = DecodeAdaptiveTriggerEffect(typeLeft, left);
-    VL_ADAPTIVE_TRIGGER_EFFECT rightEffect = DecodeAdaptiveTriggerEffect(typeRight, right);
+    // Only the flagged triggers are being programmed; the other side is stale.
     bool applyLeft = (eventFlags & DS_EFFECT_LEFT_TRIGGER) != 0;
     bool applyRight = (eventFlags & DS_EFFECT_RIGHT_TRIGGER) != 0;
+    if (!applyLeft && !applyRight) {
+        return;
+    }
+
+    VL_ADAPTIVE_TRIGGER_EFFECT leftEffect = {0};
+    VL_ADAPTIVE_TRIGGER_EFFECT rightEffect = {0};
+
+    if (applyLeft) {
+        leftEffect = DecodeAdaptiveTriggerEffect(typeLeft, left);
+        Log(LOG_I, @"Adaptive trigger %u L: type=0x%02X [%@] -> %@",
+            controllerNumber, typeLeft, VLPayloadHex(left), VLEffectDescription(leftEffect));
+    }
+    if (applyRight) {
+        rightEffect = DecodeAdaptiveTriggerEffect(typeRight, right);
+        Log(LOG_I, @"Adaptive trigger %u R: type=0x%02X [%@] -> %@",
+            controllerNumber, typeRight, VLPayloadHex(right), VLEffectDescription(rightEffect));
+    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (@available(iOS 14.5, tvOS 14.5, *)) {
