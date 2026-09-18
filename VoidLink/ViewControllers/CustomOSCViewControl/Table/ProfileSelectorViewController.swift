@@ -1169,7 +1169,7 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
         if PublicUtils.isIPhone {
             height = max(58, min(102, width * 0.58))
         } else {
-            height = max(94, min(126, width * 0.62))
+            height = PublicUtils.isTVOS ? width * 0.63 : max(94, min(126, width * 0.62))
         }
 
         return CGSize(width: width, height: height)

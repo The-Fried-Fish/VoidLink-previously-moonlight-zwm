@@ -1695,7 +1695,7 @@ private final class SettingsWeakSectionHitTestTarget {
 }
 
 @available(iOS 13.0, tvOS 13.0, *)
-fileprivate final class SettingsSectionInteractionState: ObservableObject {
+fileprivate final class SettingsBlockInteractionState: ObservableObject {
     @Published fileprivate var allowsHitTesting = true
 }
 
@@ -1714,6 +1714,10 @@ final class SettingsSession: NSObject, ObservableObject {
     @Published private(set) var menuMode: SettingsMenuMode
     @Published private(set) var favoriteSettingIdentifiers: [String]
     @Published var draggedFavoriteID: SettingsItemID?
+    private var favoriteDragOrderNeedsSaving = false
+    private var favoriteAutoscrollDisplayLink: CADisplayLink?
+    private var favoriteAutoscrollLastTick: TimeInterval = 0
+    private var favoriteAutoscrollShouldScrollUp = false
     @Published private(set) var favoritePromptHighlightedID: SettingsItemID?
     @Published private(set) var emergingHighlightIDs: Set<String> = []
     @Published var themeRevision = 0
@@ -1729,9 +1733,12 @@ final class SettingsSession: NSObject, ObservableObject {
     /// state: they exist solely to replay UIKit's controller-action path.
     private var pickerControls: [SettingsItemID: SettingsWeakSegmentedControl] = [:]
     private var itemControls: [SettingsItemID: SettingsWeakControl] = [:]
+    private var favoriteItemControls: [SettingsItemID: SettingsWeakControl] = [:]
     private var favoriteLongPressTargets: [SettingsItemID: SettingsWeakFavoriteLongPressTarget] = [:]
     private var sectionHitTestTargets: [String: SettingsWeakSectionHitTestTarget] = [:]
-    private var sectionInteractionStates: [String: SettingsSectionInteractionState] = [:]
+    private var sectionInteractionStates: [String: SettingsBlockInteractionState] = [:]
+    private var blockInteractionStates: [String: SettingsBlockInteractionState] = [:]
+    private var favoriteItemInteractionStates: [SettingsItemID: SettingsBlockInteractionState] = [:]
     private var sectionControlInteractionDisabledIDs = Set<String>()
     private var navigationAnchorRects: [String: CGRect] = [:]
 
@@ -1953,6 +1960,7 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     deinit {
+        favoriteAutoscrollDisplayLink?.invalidate()
         pencilPurchaseNotificationTokens.forEach(NotificationCenter.default.removeObserver)
     }
 
@@ -2050,12 +2058,20 @@ final class SettingsSession: NSObject, ObservableObject {
         }
     }
 
-    private func warmUpSectionHitTestStateForCurrentScrollPosition() {
+    fileprivate func warmUpSectionHitTestStateForCurrentScrollPosition() {
         guard let scrollView = navigationScrollView else { return }
-        updateSectionHitTesting(for: scrollView)
+        // updateSectionHitTesting(for: scrollView)
         DispatchQueue.main.async { [weak self, weak scrollView] in
             guard let self, let scrollView else { return }
             self.updateSectionHitTesting(for: scrollView)
+        }
+    }
+    
+    fileprivate func warmUpFavoriteHitTestStateForCurrentScrollPosition() {
+        guard let scrollView = navigationScrollView else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self, weak scrollView] in
+            guard let self, let scrollView else { return }
+            updateSectionHitTesting(for: scrollView)
         }
     }
 
@@ -2151,7 +2167,7 @@ final class SettingsSession: NSObject, ObservableObject {
 
     fileprivate func updateSectionHitTestingForCurrentScrollView() {
         guard let scrollView = navigationScrollView else { return }
-        updateSectionHitTesting(for: scrollView)
+        updateSectionHitTesting(for: scrollView, refresh: false)
     }
 
     var favoriteSettingIDs: [SettingsItemID] {
@@ -3970,19 +3986,26 @@ final class SettingsSession: NSObject, ObservableObject {
         setSectionHitTestingEnabled(true, for: identifier)
         UserDefaults.standard.set(nextValue, forKey: identifier)
         normalizeHighlight()
-        refreshSectionHitTestingAfterGeometryChange()
+        refreshSectionHitTesting()
     }
 
     func isSectionExpanded(_ identifier: String) -> Bool {
         sectionFoldStates[identifier] ?? true
     }
 
-    fileprivate func sectionInteractionState(for identifier: String) -> SettingsSectionInteractionState {
+    fileprivate func sectionInteractionState(for identifier: String) -> SettingsBlockInteractionState {
         if let state = sectionInteractionStates[identifier] {
             return state
         }
-        let state = SettingsSectionInteractionState()
+        let state = SettingsBlockInteractionState()
         sectionInteractionStates[identifier] = state
+        return state
+    }
+
+    fileprivate func blockInteractionState(for identifier: String) -> SettingsBlockInteractionState {
+        if let state = blockInteractionStates[identifier] { return state }
+        let state = SettingsBlockInteractionState()
+        blockInteractionStates[identifier] = state
         return state
     }
 
@@ -4001,7 +4024,34 @@ final class SettingsSession: NSObject, ObservableObject {
         sectionControlInteractionDisabledIDs.remove(identifier)
     }
 
-    fileprivate func updateSectionHitTesting(for scrollView: UIScrollView) {
+    fileprivate func reEnableHitTestingForAllSections() {
+        for descriptor in settingsCatalog {
+            setSectionInteractionEnabled(true, for: descriptor)
+        }
+    }
+    
+    fileprivate func updateSectionHitTesting(for scrollView: UIScrollView, refresh: Bool = false) {
+        if menuMode == .FavoriteSettings {
+            guard enablesSectionHitTestCulling, scrollView.window != nil else { return }
+            let viewport = scrollView.convert(scrollView.bounds, to: nil)
+            for id in favoriteSettingIDs {
+                guard let row = favoriteLongPressTargets[id]?.view,
+                      row.window === scrollView.window else { continue }
+                let isInViewport = isVisible(id) && row.convert(row.bounds, to: nil).intersects(viewport)
+                let state = favoriteItemInteractionState(for: id)
+                if state.allowsHitTesting != isInViewport {
+                    state.allowsHitTesting = isInViewport
+                }
+                if let control = favoriteItemControls[id]?.value {
+                    let shouldEnable = isInViewport && isItemUserInteractionEnabled(id)
+                    if control.isUserInteractionEnabled != shouldEnable {
+                        control.isUserInteractionEnabled = shouldEnable
+                    }
+                }
+            }
+            return
+        }
+        
         guard enablesSectionHitTestCulling,
               isAllSettings,
               scrollView.window != nil else { return }
@@ -4026,25 +4076,23 @@ final class SettingsSession: NSObject, ObservableObject {
                 nextDisabledIDs.insert(identifier)
             }
         }
-
-        guard nextDisabledIDs != sectionControlInteractionDisabledIDs else { return }
-        applySectionControlInteractionDisabledIDs(nextDisabledIDs)
+        
+        applySectionControlInteractionDisabledIDs(nextDisabledIDs, refresh: refresh)
     }
 
-    private func applySectionControlInteractionDisabledIDs(_ disabledIDs: Set<String>) {
-        itemControls = itemControls.filter { _, target in
-            target.value?.window != nil
-        }
-        let newlyDisabled = disabledIDs.subtracting(sectionControlInteractionDisabledIDs)
-        let newlyEnabled = sectionControlInteractionDisabledIDs.subtracting(disabledIDs)
+    private func applySectionControlInteractionDisabledIDs(_ disabledIDs: Set<String>, refresh: Bool = false) {
+        // Do not prune the registry from a viewport pass.  A representable can
+        // temporarily have no window while SwiftUI moves it between the
+        // all-settings and favorites trees (or while a section is rebuilt).
+
+        let newlyDisabled = refresh ? disabledIDs : disabledIDs.subtracting(sectionControlInteractionDisabledIDs)
 
         for descriptor in settingsCatalog where newlyDisabled.contains(descriptor.id.rawValue) {
-            setControlInteractionEnabled(false, for: descriptor)
-            setSectionHitTestingEnabled(false, for: descriptor.id.rawValue)
+            setSectionInteractionEnabled(false, for: descriptor)
         }
-        for descriptor in settingsCatalog where newlyEnabled.contains(descriptor.id.rawValue) {
-            setControlInteractionEnabled(true, for: descriptor)
-            setSectionHitTestingEnabled(true, for: descriptor.id.rawValue)
+        // Rows enter/leave the viewport even while their section stays enabled.
+        for descriptor in settingsCatalog where !disabledIDs.contains(descriptor.id.rawValue) {
+            setSectionInteractionEnabled(true, for: descriptor)
         }
         sectionControlInteractionDisabledIDs = disabledIDs
     }
@@ -4052,18 +4100,72 @@ final class SettingsSession: NSObject, ObservableObject {
     private func setSectionHitTestingEnabled(_ enabled: Bool, for identifier: String) {
         let state = sectionInteractionState(for: identifier)
         guard state.allowsHitTesting != enabled else { return }
-        state.allowsHitTesting = enabled
+        DispatchQueue.main.async {
+            state.allowsHitTesting = enabled
+        }
     }
 
-    private func setControlInteractionEnabled(_ enabled: Bool, for descriptor: SettingsSectionDescriptor) {
+    private func setSectionInteractionEnabled(_ enabled: Bool, for descriptor: SettingsSectionDescriptor) {
+        setSectionHitTestingEnabled(enabled, for: descriptor.id.rawValue)
+        guard enabled else {
+            for item in descriptor.items {
+                if let control = itemControls[item.id]?.value, control.isUserInteractionEnabled {
+                    control.isUserInteractionEnabled = false
+                }
+            }
+            return
+        }
+
+        let scrollView = navigationScrollView
+        let viewport = scrollView.map { $0.convert($0.bounds, to: nil) }
+        let checksViewport = enablesSectionHitTestCulling && scrollView?.window != nil
+        func isInViewport(_ view: UIView?) -> Bool {
+            guard checksViewport else { return true }
+            guard let view, let viewport, view.window === scrollView?.window else { return false }
+            return view.convert(view.bounds, to: nil).intersects(viewport)
+        }
+        func updateState(_ identifier: String, _ value: Bool) {
+            let state = blockInteractionState(for: identifier)
+            DispatchQueue.main.async {
+                if state.allowsHitTesting != value { state.allowsHitTesting = value }
+            }
+        }
+
+        let headerID = "sectionHeader-\(descriptor.id.rawValue)"
+        updateState(headerID, isInViewport(sectionHitTestTargets[headerID]?.view))
         for item in descriptor.items {
-            guard let control = itemControls[item.id]?.value else { continue }
-            let shouldEnable = enabled && isItemUserInteractionEnabled(item.id)
+            let isVisibleInViewport = isSectionExpanded(descriptor.id.rawValue) &&
+                isVisible(item) && isInViewport(favoriteLongPressTargets[item.id]?.view)
+            updateState(item.id.rawValue, isVisibleInViewport)
+            let control = itemControls[item.id]?.value
+            guard let control = control else { continue }
+            // if isVisibleInViewport {print ("checking control \(item.id.id) isInViewport \(CACurrentMediaTime())")}
+            let shouldEnable = isVisibleInViewport && isItemUserInteractionEnabled(item.id)
             if control.isUserInteractionEnabled != shouldEnable {
                 control.isUserInteractionEnabled = shouldEnable
             }
         }
     }
+    
+    fileprivate func favoriteItemInteractionState(for id: SettingsItemID) -> SettingsBlockInteractionState {
+        if let state = favoriteItemInteractionStates[id] { return state }
+        let state = SettingsBlockInteractionState()
+        favoriteItemInteractionStates[id] = state
+        return state
+    }
+
+    /* func setFavoriteItemsInteractionEnabled() {
+        for id in favoriteSettingIDs {
+            let state = favoriteItemInteractionState(for: id)
+            if !state.allowsHitTesting { state.allowsHitTesting = true }
+            guard let item = settingsItem(for: id),
+                  let control = favoriteItemControls[item.id]?.value else { continue }
+            print("control \(id.id) \(CACurrentMediaTime())")
+            if !control.isUserInteractionEnabled {
+                control.isUserInteractionEnabled = true
+            }
+        }
+    } */
 
     func isItemUserInteractionEnabled(_ id: SettingsItemID) -> Bool {
         favoriteLongPressInteractionLockedID != id
@@ -4175,18 +4277,29 @@ final class SettingsSession: NSObject, ObservableObject {
     func refreshGeometry() {
         themeRevision &+= 1
     }
-
-    func refreshSectionHitTestingAfterGeometryChange() {
+    
+    func refreshSectionHitTesting() {
         guard enablesSectionHitTestCulling,
               let scrollView = navigationScrollView else { return }
         DispatchQueue.main.async { [weak self, weak scrollView] in
             guard let self, let scrollView else { return }
-            self.updateSectionHitTesting(for: scrollView)
+            self.updateSectionHitTesting(for: scrollView, refresh: true)
+        }
+    }
+
+    func refreshSectionHitTestingAfterGeometryChange() {
+        guard enablesSectionHitTestCulling,
+              let scrollView = navigationScrollView else { return }
+        refreshSectionHitTesting()
+        /*
+        DispatchQueue.main.async { [weak self, weak scrollView] in
+            guard let self, let scrollView else { return }
+            self.updateSectionHitTesting(for: scrollView, refresh: true)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self, weak scrollView] in
             guard let self, let scrollView else { return }
-            self.updateSectionHitTesting(for: scrollView)
-        }
+            self.updateSectionHitTesting(for: scrollView, refresh: true)
+        } */
     }
 
 #if os(tvOS)
@@ -4984,6 +5097,7 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     func setMenuMode(_ newMode: SettingsMenuMode) {
+        stopFavoriteAutoscroll()
         menuMode = newMode
         if newMode != .RemoveSettingItem {
             let dataManager = DataManager()
@@ -5131,6 +5245,71 @@ final class SettingsSession: NSObject, ObservableObject {
         applyHighlight(identifier, scrollIntoView: false)
     }
 
+    fileprivate func stopFavoriteAutoscroll(reason: String = #function) {
+        if favoriteAutoscrollDisplayLink != nil {
+            // print("[FavoriteAutoscroll] STOP reason=\(reason) time=\(CACurrentMediaTime())")
+        }
+        favoriteAutoscrollDisplayLink?.invalidate()
+        favoriteAutoscrollDisplayLink = nil
+        favoriteAutoscrollLastTick = 0
+        favoriteAutoscrollShouldScrollUp = false
+        guard let scrollView = navigationScrollView else { return }
+        updateSectionHitTesting(for: scrollView)
+    }
+
+    fileprivate func startFavoriteAutoscroll() {
+        guard favoriteAutoscrollDisplayLink == nil else { return }
+        let target = SettingsFavoriteAutoscrollFrameTarget { [weak self] link in
+            self?.favoriteAutoscrollFrame(link)
+        }
+        let link = CADisplayLink(target: target, selector: #selector(SettingsFavoriteAutoscrollFrameTarget.tick(_:)))
+        favoriteAutoscrollDisplayLink = link
+        favoriteAutoscrollLastTick = 0
+        link.add(to: .main, forMode: .common)
+    }
+
+    private func favoriteAutoscrollFrame(_ link: CADisplayLink) {
+        guard menuMode == .FavoriteSettings, draggedFavoriteID != nil,
+              let scrollView = navigationScrollView else {
+            stopFavoriteAutoscroll(reason: "frame: missing active drag/scrollView")
+            return
+        }
+        let elapsed = favoriteAutoscrollLastTick == 0
+            ? link.targetTimestamp - link.timestamp
+            : link.timestamp - favoriteAutoscrollLastTick
+        favoriteAutoscrollLastTick = link.timestamp
+        guard favoriteAutoscrollShouldScrollUp else { return }
+        let y = max(-scrollView.adjustedContentInset.top,
+                    scrollView.contentOffset.y - CGFloat(min(max(elapsed, 0), 1.0 / 30.0)) * 330)
+        if y < scrollView.contentOffset.y {
+            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: y), animated: false)
+            updateSectionHitTesting(for: scrollView)
+        }
+    }
+
+    fileprivate func favoriteDragTarget(at point: CGPoint, in view: UIView) -> (SettingsItemID, UIView)? {
+        guard menuMode == .FavoriteSettings else { return nil }
+        for id in favoriteSettingIDs where isVisible(id) {
+            guard let row = favoriteLongPressTargets[id]?.view, row.window != nil,
+                  row.bounds.contains(view.convert(point, to: row)) else { continue }
+            return (id, row)
+        }
+        return nil
+    }
+
+    fileprivate func updateFavoriteAutoscroll(locationInScrollView location: CGPoint) {
+        guard menuMode == .FavoriteSettings, draggedFavoriteID != nil,
+              let scrollView = navigationScrollView else {
+            stopFavoriteAutoscroll(reason: "missing drag/scrollView")
+            return
+        }
+        let viewportY = location.y - scrollView.bounds.minY
+        let topEdge = max(scrollView.adjustedContentInset.top, GenericUtils.settingsMenuNavigationBarHeight)
+        // Supply the missing upper-edge scroll only. Preserve native bottom autoscroll.
+        // Keep the display link alive for the whole drag, including stationary holds.
+        favoriteAutoscrollShouldScrollUp = scrollView.bounds.contains(location) && viewportY < topEdge + 80
+    }
+
     func moveDraggedFavorite(over destination: SettingsItemID) {
         guard menuMode == .FavoriteSettings,
               let source = draggedFavoriteID,
@@ -5140,6 +5319,12 @@ final class SettingsSession: NSObject, ObservableObject {
 
         favoriteSettingIdentifiers.remove(at: sourceIndex)
         favoriteSettingIdentifiers.insert(source.rawValue, at: min(destinationIndex, favoriteSettingIdentifiers.count))
+        favoriteDragOrderNeedsSaving = true
+    }
+
+    fileprivate func persistDraggedFavoriteOrderIfNeeded() {
+        guard favoriteDragOrderNeedsSaving else { return }
+        favoriteDragOrderNeedsSaving = false
         saveFavoriteIdentifiers()
     }
 
@@ -5170,6 +5355,9 @@ final class SettingsSession: NSObject, ObservableObject {
         mutation()
         let currentlyVisible = conditionallyVisibleSettingIDs
         knownVisibleSettingIDs = currentlyVisible
+        for id in currentlyVisible.subtracting(previouslyVisible) {
+            restoreNewlyVisibleItemInteraction(id)
+        }
         if suppressEmerging {
             resetEmergingHighlights(toVisibleIDs: currentlyVisible)
             return
@@ -5194,6 +5382,9 @@ final class SettingsSession: NSObject, ObservableObject {
             return
         }
         knownVisibleSettingIDs = currentlyVisible
+        for id in currentlyVisible.subtracting(previouslyVisible) {
+            restoreNewlyVisibleItemInteraction(id)
+        }
         if suppressEmerging {
             resetEmergingHighlights(toVisibleIDs: currentlyVisible)
             return
@@ -5205,6 +5396,23 @@ final class SettingsSession: NSObject, ObservableObject {
         }
         for id in currentlyVisible.subtracting(previouslyVisible) {
             highlightEmergingSetting(id)
+        }
+    }
+
+    private func restoreNewlyVisibleItemInteraction(_ identifier: String) {
+        guard let id = SettingsItemID.settingItem(rawValue: identifier) else { return }
+        let states = [blockInteractionState(for: identifier), favoriteItemInteractionState(for: id)]
+        for state in states where !state.allowsHitTesting {
+            state.allowsHitTesting = true
+        }
+        itemControls[id]?.value?.isUserInteractionEnabled = true
+        favoriteItemControls[id]?.value?.isUserInteractionEnabled = true
+
+        // Visibility is observed before SwiftUI mounts the new row's controls.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.knownVisibleSettingIDs.contains(identifier) else { return }
+            self.itemControls[id]?.value?.isUserInteractionEnabled = true
+            self.favoriteItemControls[id]?.value?.isUserInteractionEnabled = true
         }
     }
 
@@ -5454,24 +5662,39 @@ final class SettingsSession: NSObject, ObservableObject {
         applyHighlight(highlightedID)
     }
 
-    fileprivate func registerPickerControl(_ control: UISegmentedControl?, for itemID: SettingsItemID) {
+    fileprivate func registerPickerControl(_ control: UISegmentedControl?, for itemID: SettingsItemID, isFavorite: Bool = false) {
+        registerItemControl(control, for: itemID, isFavorite: isFavorite)
+        // The outgoing mode's teardown must not erase the active picker.
+        guard isFavorite == !isAllSettings else { return }
         guard let control else {
-            pickerControls[itemID] = nil
-            registerItemControl(nil, for: itemID)
+            // SwiftUI may dismantle the outgoing representable after the new
+            // one has already registered.  Never erase the active registry
+            // entry from that late nil callback.
             return
         }
         pickerControls[itemID] = SettingsWeakSegmentedControl(control)
-        registerItemControl(control, for: itemID)
     }
 
-    fileprivate func registerItemControl(_ control: UIControl?, for itemID: SettingsItemID) {
+    fileprivate func registerItemControl(_ control: UIControl?, for itemID: SettingsItemID, isFavorite: Bool = false) {
+        if isFavorite {
+            favoriteItemControls[itemID] = control.map { SettingsWeakControl($0) }
+            // Apply this favorite row's state, never its original section's state.
+            control?.isUserInteractionEnabled = (menuMode != .FavoriteSettings ||
+                favoriteItemInteractionState(for: itemID).allowsHitTesting) && isItemUserInteractionEnabled(itemID)
+            return
+        }
         guard let control else {
-            itemControls[itemID] = nil
+            // A nil callback is a representable teardown notification, not a
+            // statement that this item has no control.  During mode switches
+            // it can arrive after the replacement control was registered, so
+            // erasing the dictionary entry here loses the only lookup path
+            // used by section hit-testing.
             return
         }
         itemControls[itemID] = SettingsWeakControl(control)
         if let sectionID = sectionIdentifier(containing: itemID) {
             let shouldEnable = !sectionControlInteractionDisabledIDs.contains(sectionID) &&
+                (!enablesSectionHitTestCulling || blockInteractionState(for: itemID.rawValue).allowsHitTesting) &&
                 isItemUserInteractionEnabled(itemID)
             if control.isUserInteractionEnabled != shouldEnable {
                 control.isUserInteractionEnabled = shouldEnable
@@ -5530,16 +5753,20 @@ final class SettingsSession: NSObject, ObservableObject {
         guard case let .picker(value, _, options, _) = item.control,
               let control = pickerControls[item.id]?.value else { return false }
 
-        let pickerOptions = options(self)
-        guard !pickerOptions.isEmpty else { return true }
-        let currentIndex = pickerOptions.firstIndex { $0.value == value(self) } ?? 0
-        for distance in 1...pickerOptions.count {
-            let candidate = (currentIndex + (forward ? distance : -distance) + pickerOptions.count) % pickerOptions.count
-            guard pickerOptions[candidate].isEnabled else { continue }
-            control.selectedSegmentIndex = candidate
-            control.sendActions(for: .valueChanged)
-            return true
+        let updateControl = { [weak self, weak control] in
+            guard let self, let control else { return }
+            let pickerOptions = options(self)
+            guard !pickerOptions.isEmpty else { return }
+            let currentIndex = pickerOptions.firstIndex { $0.value == value(self) } ?? 0
+            for distance in 1...pickerOptions.count {
+                let candidate = (currentIndex + (forward ? distance : -distance) + pickerOptions.count) % pickerOptions.count
+                guard pickerOptions[candidate].isEnabled else { continue }
+                control.selectedSegmentIndex = candidate
+                control.sendActions(for: .valueChanged)
+                return
+            }
         }
+        DispatchQueue.main.async(execute: updateControl)
         return true
     }
 
@@ -5765,7 +5992,7 @@ private struct SettingsSectionShell<Content: View>: View {
     let showsNavigationHighlight: Bool
     let registersNavigationAnchors: Bool
     let themeRevision: Int
-    @ObservedObject var interactionState: SettingsSectionInteractionState
+    @ObservedObject var interactionState: SettingsBlockInteractionState
     let toggle: () -> Void
     let content: () -> Content
     private let layout = SettingsSectionLayout()
@@ -5778,7 +6005,7 @@ private struct SettingsSectionShell<Content: View>: View {
         showsNavigationHighlight: Bool,
         registersNavigationAnchors: Bool,
         themeRevision: Int,
-        interactionState: SettingsSectionInteractionState,
+        interactionState: SettingsBlockInteractionState,
         toggle: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -5840,6 +6067,14 @@ private struct SettingsSectionShell<Content: View>: View {
                 id: "sectionHeader-\(descriptor.id.rawValue)",
                 registersAnchor: registersNavigationAnchors
             )
+            .modifier(SettingsBlockInteractionModifier(
+                state: store.blockInteractionState(for: "sectionHeader-\(descriptor.id.rawValue)"),
+                appliesViewportCulling: enablesSectionHitTestCulling
+            ))
+            .background(SettingsSectionHitTestRegistration(
+                sectionID: "sectionHeader-\(descriptor.id.rawValue)",
+                store: store
+            ))
 
             if isExpanded {
                 SettingsSectionDrawer(
@@ -6057,6 +6292,12 @@ private struct SettingsRootView: View {
                             )
                         }
                     }
+                    // The two menu trees have different control registries.
+                    // Give the tree a mode-scoped identity so SwiftUI cannot
+                    // reuse a favorite representable for an all-settings row
+                    // (or vice versa) without running makeUIView and its
+                    // control registration callback again.
+                    .id("settings-menu-tree-\(store.menuMode.rawValue)")
                     // A vertical SwiftUI ScrollView still adopts an oversized
                     // child's intrinsic width. Pin the catalog to the viewport so
                     // long localized labels/segmented controls compress inside the
@@ -6120,6 +6361,7 @@ private struct SettingsCatalogSectionItemsView: View {
                         controlContainerWidth: controlContainerWidth,
                         participatesInControllerNavigation: participatesInControllerNavigation
                     )
+                    .id("allSettings-\(item.id.rawValue)")
                 }
             }
         }
@@ -6134,6 +6376,7 @@ private struct SettingsCatalogItemView: View {
     @ObservedObject var store: SettingsSession
     let controlContainerWidth: CGFloat
     var suppressInfo: Bool = false
+    var isFavorite: Bool = false
     var participatesInControllerNavigation: Bool = true
     private let layout = SettingsSectionLayout()
 
@@ -6175,7 +6418,7 @@ private struct SettingsCatalogItemView: View {
                         )
                     },
                     onControlResolved: { control in
-                        store.registerPickerControl(control, for: item.id)
+                        store.registerPickerControl(control, for: item.id, isFavorite: isFavorite)
                     },
                     containerWidth: controlContainerWidth
                 )
@@ -6213,7 +6456,7 @@ private struct SettingsCatalogItemView: View {
                         store.sliderTouchEditingChanged(item, editing: editing)
                     },
                     onControlResolved: { control in
-                        store.registerItemControl(control, for: item.id)
+                        store.registerItemControl(control, for: item.id, isFavorite: isFavorite)
                     },
                     containerWidth: controlContainerWidth
                 )
@@ -6245,7 +6488,7 @@ private struct SettingsCatalogItemView: View {
                     isEnabled: isEnabled,
                     isUserInteractionEnabled: isUserInteractionEnabled,
                     onControlResolved: { control in
-                        store.registerItemControl(control, for: item.id)
+                        store.registerItemControl(control, for: item.id, isFavorite: isFavorite)
                     })
                         .frame(width: layout.switchColumnWidth, alignment: .leading)
                 }
@@ -6365,8 +6608,10 @@ private struct SettingsFavoriteItemsView: View {
                     item: item,
                     store: store,
                     controlContainerWidth: controlContainerWidth,
-                    suppressInfo: store.isRemovingFavorites
+                    suppressInfo: store.isRemovingFavorites,
+                    isFavorite: true
                 )
+                .id("favoriteSettings-\(id.rawValue)")
             }
 
             if store.isRemovingFavorites {
@@ -6381,13 +6626,39 @@ private struct SettingsFavoriteItemsView: View {
         }
         .accessibilityIdentifier(id.rawValue)
         .modifier(SettingsFavoriteDragModifier(id: id, store: store, enabled: !store.isRemovingFavorites))
+        .modifier(SettingsBlockInteractionModifier(
+            state: store.favoriteItemInteractionState(for: id),
+            appliesViewportCulling: enablesSectionHitTestCulling && store.menuMode == .FavoriteSettings
+        ))
     }
+}
+
+@available(iOS 14.0, tvOS 14.0, *)
+private struct SettingsBlockInteractionModifier: ViewModifier {
+    @ObservedObject var state: SettingsBlockInteractionState
+    let appliesViewportCulling: Bool
+
+    func body(content: Content) -> some View {
+        content.allowsHitTesting(!appliesViewportCulling || state.allowsHitTesting)
+    }
+}
+
+/// CADisplayLink retains this target; its callback captures the session weakly.
+private final class SettingsFavoriteAutoscrollFrameTarget: NSObject {
+    let callback: (CADisplayLink) -> Void
+
+    init(callback: @escaping (CADisplayLink) -> Void) {
+        self.callback = callback
+        super.init()
+    }
+
+    @objc func tick(_ link: CADisplayLink) { callback(link) }
 }
 
 @available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteDragModifier: ViewModifier {
     let id: SettingsItemID
-    let store: SettingsSession
+    @ObservedObject var store: SettingsSession
     let enabled: Bool
 
     @ViewBuilder
@@ -6397,13 +6668,20 @@ private struct SettingsFavoriteDragModifier: ViewModifier {
 #else
         if enabled {
             content
-                .onDrag {
-                    store.draggedFavoriteID = id
-                    return NSItemProvider(object: id.rawValue as NSString)
-                }
-                .onDrop(
-                    of: [UTType.text.identifier],
-                    delegate: SettingsFavoriteDropDelegate(destination: id, store: store)
+                .background(SettingsFavoriteLongPressTarget(id: id, store: store, isEnabled: true))
+                .overlay(
+                    Group {
+                        if store.draggedFavoriteID != nil {
+                            // Reordering targets the whole row, independent of its
+                            // disabled controls, UIKit subviews and empty label space.
+                            Color.clear
+                                .contentShape(Rectangle())
+                                .onDrop(
+                                    of: [UTType.text.identifier],
+                                    delegate: SettingsFavoriteDropDelegate(destination: id, store: store)
+                                )
+                        }
+                    }
                 )
         } else {
             content
@@ -6413,6 +6691,85 @@ private struct SettingsFavoriteDragModifier: ViewModifier {
 }
 
 #if !os(tvOS)
+/// Own only the drag source so UIKit supplies a reliable release/cancel callback.
+/// Favorite rows retain their SwiftUI drop delegates and reorder behavior.
+@available(iOS 14.0, *)
+private final class SettingsFavoriteDragSource: NSObject, UIDragInteractionDelegate {
+    weak var store: SettingsSession?
+    private weak var sourceRow: UIView?
+    lazy var interaction = UIDragInteraction(delegate: self)
+
+    func dragInteraction(_ interaction: UIDragInteraction, itemsForBeginning session: UIDragSession) -> [UIDragItem] {
+        guard let store, let view = interaction.view,
+              let (id, row) = store.favoriteDragTarget(at: session.location(in: view), in: view) else { return [] }
+        store.stopFavoriteAutoscroll()
+        store.draggedFavoriteID = id
+        sourceRow = row
+        return [UIDragItem(itemProvider: NSItemProvider(object: id.rawValue as NSString))]
+    }
+
+    func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
+        guard let view = interaction.view, let row = sourceRow else { return nil }
+        let rect = row.convert(row.bounds, to: view)
+        guard rect.width > 0, rect.height > 0 else { return nil }
+        // Capture rendered pixels rather than a snapshot view of the SwiftUI host.
+        // Account for the scroll view's nonzero bounds origin when cropping the row.
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = view.window?.screen.scale ?? view.contentScaleFactor
+        format.opaque = false
+        var rendered = false
+        let image = UIGraphicsImageRenderer(size: rect.size, format: format).image { context in
+            ThemeManager.menuBackgroundColor.setFill()
+            context.fill(CGRect(origin: .zero, size: rect.size))
+            rendered = view.drawHierarchy(
+                in: CGRect(
+                    x: view.bounds.minX - rect.minX,
+                    y: view.bounds.minY - rect.minY,
+                    width: view.bounds.width,
+                    height: view.bounds.height
+                ),
+                afterScreenUpdates: true
+            )
+        }
+        guard rendered else { return nil }
+        let snapshot = UIImageView(image: image)
+        let parameters = UIDragPreviewParameters()
+        parameters.backgroundColor = .clear
+        parameters.visiblePath = UIBezierPath(roundedRect: snapshot.bounds, cornerRadius: 8)
+        return UITargetedDragPreview(
+            view: snapshot,
+            parameters: parameters,
+            target: UIDragPreviewTarget(container: view, center: CGPoint(x: rect.midX, y: rect.midY))
+        )
+    }
+
+    func dragInteraction(_ interaction: UIDragInteraction, sessionWillBegin session: UIDragSession) {
+        store?.startFavoriteAutoscroll()
+        guard let view = interaction.view else { return }
+        store?.updateFavoriteAutoscroll(locationInScrollView: session.location(in: view))
+    }
+
+    func dragInteraction(_ interaction: UIDragInteraction, sessionDidMove session: UIDragSession) {
+        guard let view = interaction.view else { return }
+        store?.updateFavoriteAutoscroll(locationInScrollView: session.location(in: view))
+    }
+
+    func dragInteraction(_ interaction: UIDragInteraction, session: UIDragSession, willEndWith operation: UIDropOperation) {
+        // Fires on release/cancel, before the ending animation completes.
+        store?.stopFavoriteAutoscroll(reason: "drag session willEnd")
+        store?.persistDraggedFavoriteOrderIfNeeded()
+    }
+
+    func dragInteraction(_ interaction: UIDragInteraction, session: UIDragSession, didEndWith operation: UIDropOperation) {
+        store?.stopFavoriteAutoscroll(reason: "drag session didEnd")
+        store?.draggedFavoriteID = nil
+        sourceRow = nil
+    }
+
+    func dragInteraction(_ interaction: UIDragInteraction, sessionAllowsMoveOperation session: UIDragSession) -> Bool { true }
+    func dragInteraction(_ interaction: UIDragInteraction, sessionIsRestrictedToDraggingApplication session: UIDragSession) -> Bool { true }
+}
+
 @available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteDropDelegate: DropDelegate {
     let destination: SettingsItemID
@@ -6425,13 +6782,16 @@ private struct SettingsFavoriteDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
+        store.stopFavoriteAutoscroll()
+        store.persistDraggedFavoriteOrderIfNeeded()
         store.draggedFavoriteID = nil
         return true
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        DropProposal(operation: .move)
+        return DropProposal(operation: .move)
     }
+
 }
 #endif
 
@@ -6518,6 +6878,7 @@ private struct SettingsScrollViewResolver: UIViewRepresentable {
         context.coordinator.onResolve = onResolve
         context.coordinator.onWillBeginDragging = onWillBeginDragging
         context.coordinator.resolveIfNeeded(from: view)
+        context.coordinator.updateFavoriteDragSource()
     }
 
     static func dismantleUIView(_ view: AttachmentView, coordinator: Coordinator) {
@@ -6547,6 +6908,9 @@ private struct SettingsScrollViewResolver: UIViewRepresentable {
         private var scrollDidScrollTick = 0
         private var retryScheduled = false
         private var retryCount = 0
+#if !os(tvOS)
+        private var favoriteDragSource: SettingsFavoriteDragSource?
+#endif
         private lazy var favoriteLongPressRecognizer: UILongPressGestureRecognizer = {
             let recognizer = UILongPressGestureRecognizer(
                 target: self,
@@ -6603,6 +6967,7 @@ private struct SettingsScrollViewResolver: UIViewRepresentable {
                     resolvedWindow = attachmentView.window
                     retryCount = 0
                     onResolve(scrollView)
+                    updateFavoriteDragSource()
                     return
                 }
                 ancestor = view.superview
@@ -6617,7 +6982,36 @@ private struct SettingsScrollViewResolver: UIViewRepresentable {
             }
         }
 
+        func updateFavoriteDragSource() {
+#if !os(tvOS)
+            guard let scrollView = resolvedScrollView, store?.menuMode == .FavoriteSettings else {
+                if let source = favoriteDragSource {
+                    source.interaction.view?.removeInteraction(source.interaction)
+                    source.store?.stopFavoriteAutoscroll(reason: "drag source detached")
+                }
+                favoriteDragSource = nil
+                return
+            }
+            if let source = favoriteDragSource {
+                source.store = store
+                return
+            }
+            let source = SettingsFavoriteDragSource()
+            source.store = store
+            source.interaction.isEnabled = true
+            scrollView.addInteraction(source.interaction)
+            favoriteDragSource = source
+#endif
+        }
+
         func detach() {
+#if !os(tvOS)
+            if let source = favoriteDragSource {
+                source.interaction.view?.removeInteraction(source.interaction)
+                source.store?.stopFavoriteAutoscroll(reason: "scroll view detached")
+            }
+            favoriteDragSource = nil
+#endif
             resolvedScrollView?.panGestureRecognizer.removeTarget(
                 self,
                 action: #selector(handleScrollPan(_:))
@@ -6640,8 +7034,12 @@ private struct SettingsScrollViewResolver: UIViewRepresentable {
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            // print("didscroll \(CACurrentMediaTime())")
             originalScrollDelegate?.scrollViewDidScroll?(scrollView)
+            if store?.menuMode == .FavoriteSettings {
+                // Native drag autoscroll changes offset through UIScrollView;
+                // update the newly visible drop rows immediately.
+                store?.updateSectionHitTesting(for: scrollView)
+            }
             guard enablesSectionHitTestCulling else { return }
             scrollDidScrollTick += 1
             let scrollIsActive = scrollView.isDragging || scrollView.isDecelerating
@@ -6768,6 +7166,7 @@ private struct SettingsFavoriteLongPressModifier: ViewModifier {
         }
     }
 }
+
 
 /// The row already owns its SettingsItemID. Keep favorite long-press local to
 /// that row instead of asking a global gesture to infer identity from geometry.
@@ -6961,6 +7360,10 @@ private extension View {
         )
             .favoritePromptHighlight(id: id, store: store)
             .modifier(SettingsFavoriteLongPressModifier(id: id, store: store))
+            .modifier(SettingsBlockInteractionModifier(
+                state: store.blockInteractionState(for: id.rawValue),
+                appliesViewportCulling: enablesSectionHitTestCulling && store.isAllSettings
+            ))
     }
 
     func centeredSettingsControl(maxWidth: CGFloat) -> some View {
@@ -6968,6 +7371,7 @@ private extension View {
             .frame(maxWidth: .infinity, alignment: .center)
     }
 }
+
 
 // MARK: - UIKit shell hosting only
 
@@ -7039,6 +7443,10 @@ extension SettingsViewController {
         updateSwiftUIContentInsets()
         swiftUISettingsStore?.refreshSectionHitTestingAfterGeometryChange()
     }
+    
+    @objc func refreshSectionHitTesting() {
+        swiftUISettingsStore?.refreshSectionHitTesting()
+    }
 
     @objc func stopSwiftUISettingsScrollViewImmediately() {
         swiftUISettingsStore?.stopSettingsScrollViewImmediately()
@@ -7063,6 +7471,12 @@ extension SettingsViewController {
     @objc func setSwiftUISettingsMenuMode(_ rawValue: Int) {
         guard let mode = SettingsMenuMode(rawValue: rawValue) else { return }
         swiftUISettingsStore?.setMenuMode(mode)
+        if mode == .AllSettings {
+            swiftUISettingsStore?.refreshSectionHitTesting()
+        }
+        if mode == .FavoriteSettings {
+            self.swiftUISettingsStore?.warmUpFavoriteHitTestStateForCurrentScrollPosition()
+        }
     }
 
     @objc func swiftUISettingsMenuModeRawValue() -> Int {

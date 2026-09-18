@@ -18,7 +18,7 @@ final class RadialMenuOverlayView: UIView {
     }
         
     private enum Metrics {
-        static let diameter: CGFloat = PublicUtils.isIPhone ? 200 : 260
+        static let diameter: CGFloat = PublicUtils.isIPhone ? 200 : (PublicUtils.isTVOS ? 430 : 260)
         static let releaseDistanceEpsilon: CGFloat = 0.015
     }
 

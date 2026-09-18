@@ -207,6 +207,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (BOOL)isFirstStreaming {
+    if(PublicUtils.isTVOS) return false;
     NSString *key = @"hasStreamedBefore";
     BOOL streamedBefore = [[NSUserDefaults standardUserDefaults] boolForKey:key];
 

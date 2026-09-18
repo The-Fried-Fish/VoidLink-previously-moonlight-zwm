@@ -145,7 +145,7 @@
 
     if (@available(iOS 14.0, *)) {
         if (self.usesSwiftUISettings) {
-            [self refreshSwiftUISettings];
+            [self refreshSectionHitTesting];
             if (@available(iOS 13.0, *)) if(ControllerNavigator.radialMenuView.superview) [ControllerNavigator updateRadialMenu];
             return;
         }
@@ -332,7 +332,7 @@
 -(void)deviceOrientationDidChange:(NSNotification *)notification {
     if (@available(iOS 14.0, *)) {
         if (self.usesSwiftUISettings) {
-            [self refreshSwiftUISettingsGeometry];
+            // [self refreshSwiftUISettingsGeometry];
             return;
         }
     }
@@ -512,7 +512,7 @@
         if (self.usesSwiftUISettings) {
             [self.view setNeedsLayout];
             [self.view layoutIfNeeded];
-            [self refreshSwiftUISettingsGeometry];
+            [self refreshSectionHitTesting];
             return;
         }
     }

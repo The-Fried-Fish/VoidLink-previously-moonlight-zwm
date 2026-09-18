@@ -351,11 +351,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
         if(!self->dockedKeyboardActionDetected){
             if(self->keyboardToggleTip.superview && !self->keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
-            [self->keyboardToggleTip removeFromSuperview];
             if(!self->isInputingText) [self keyboardWillHide];
             [self refreshKeyboardToggleRecognizer:self->settings.keyboardToggleFingers.intValue];
             self->dockedKeyboardActionDetected = false;
+            // [self->_streamFrameVC setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
         }
+        [self->keyboardToggleTip removeFromSuperview];
         return;
     });
 
@@ -415,9 +416,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [self liftMetalVideoViewIfNeeded:0];
         
         isInputingText = NO;
-        
-        [keyInputField removeFromSuperview];
     }
+    
+    [keyInputField resignFirstResponder];
+    [keyInputField removeFromSuperview];
 #endif
 }
 
@@ -485,7 +487,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [keyInputField resignFirstResponder];
         if(self->keyboardToggleTip.superview && !self->keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
         [keyboardToggleTip removeFromSuperview];
-        [OnScreenWidgetView restoreFromTemporaryHideAll];
+        // [OnScreenWidgetView restoreFromTemporaryHideAll];
     } else {
         Log(LOG_D, @"Opening the keyboard");
         [self addSubview:keyInputField];

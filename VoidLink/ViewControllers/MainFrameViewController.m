@@ -169,7 +169,7 @@ static NSMutableSet* hostList;
 
 #if TARGET_OS_TV
     self.navigationController.navigationBar.titleTextAttributes = @{
-        NSFontAttributeName: [UIFont systemFontOfSize:20 weight:UIFontWeightMedium],
+        NSFontAttributeName: [UIFont systemFontOfSize:PublicUtils.isTVOS?42:20 weight: PublicUtils.isTVOS?UIFontWeightSemibold:UIFontWeightMedium],
         NSForegroundColorAttributeName: ThemeManager.textColor
     };
 #else
@@ -209,7 +209,10 @@ static NSMutableSet* hostList;
             NSFontAttributeName: [UIFont systemFontOfSize:24 weight:UIFontWeightSemibold],
             NSForegroundColorAttributeName: ThemeManager.textColor // 可选，设置标题颜色
         };*/
-        self.title = [LocalizationHelper localizedStringForKey: @"Hosts" ];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.title = [LocalizationHelper localizedStringForKey:
+                          (PublicUtils.isTVOS && self->_hostCollectionVC.items.count>0) ? @"" : @"Hosts" ];
+        });
         //self.title = nil;
     }
     [self applyNavBarAppearance];
@@ -373,7 +376,9 @@ static NSMutableSet* hostList;
     self.hostCollectionVC.view.hidden = NO;
     self.collectionView.hidden = YES;
     [self updateTitle];
-    self.navigationItem.rightBarButtonItems = VLBarButtonItems(_helpButton, _addHostButton);
+    self.navigationItem.rightBarButtonItems = PublicUtils.isTVOS
+                                            ? VLBarButtonItems(nil, nil)
+                                            : VLBarButtonItems(_helpButton, _addHostButton);
     self.revealViewController.mainFrameIsInHostView = true;  // to allow orientation change only in app view, tell top view controller the mainframe is not in host view
     
     if (@available(iOS 13.0, *)){
@@ -1357,8 +1362,10 @@ static NSMutableSet* hostList;
             _profilesButton.sharesBackground = false;
         }
 #endif
-        self.navigationItem.leftBarButtonItems = VLBarButtonItems(_settingsButton, _profilesButton);
-        
+        self.navigationItem.leftBarButtonItems = PublicUtils.isTVOS
+        ? VLBarButtonItems(_settingsButton, nil)
+        : VLBarButtonItems(_settingsButton, _profilesButton);
+
         if(streamFrameViewController.streamMan){
             // NSLog(@"setNeedRequeuing %f", CACurrentMediaTime());
             double delayInSeconds = 0.1;
@@ -1371,7 +1378,9 @@ static NSMutableSet* hostList;
     else {
         if(self.revealViewController.isStreaming) self.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
         if (@available(iOS 13.0, *)) [ControllerNavigator setUINavigationDelegate:self.settingsViewController];
-        self.navigationItem.leftBarButtonItems = VLBarButtonItems(_profilesButton, nil);
+        self.navigationItem.leftBarButtonItems = PublicUtils.isTVOS
+        ? VLBarButtonItems(nil, nil)
+        : VLBarButtonItems(_profilesButton, nil);
         [self.settingsViewController updateTheme];
     }
 
@@ -1670,11 +1679,13 @@ static NSMutableSet* hostList;
     button.backgroundColor = [UIColor clearColor]; // #0A85FF
     // button.layer.cornerRadius = buttonHeight/2;
     button.clipsToBounds = YES;
-
+    
     // 设置图标（SF Symbol）
     if (@available(iOS 13.0, *)) {
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:
-                                             PublicUtils.liquidGlassEnabled ? buttonHeight*0.73 : buttonHeight*0.85
+        CGFloat symbolSize = PublicUtils.isTVOS
+        ? buttonHeight*0.95
+        : (PublicUtils.liquidGlassEnabled ? buttonHeight*0.73 : buttonHeight*0.85);
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:symbolSize
                                             weight:UIImageSymbolWeightRegular];
         UIImage *image = [UIImage systemImageNamed:@"questionmark.circle" withConfiguration:config];
         [button setImage:image forState:UIControlStateNormal];
@@ -1696,6 +1707,7 @@ static NSMutableSet* hostList;
 
     // 创建 UIBarButtonItem
     UIBarButtonItem *barItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    if(PublicUtils.isTVOS) barItem.style = UIBarButtonItemStyleBordered;
 
 #if !TARGET_OS_TV
     if (@available(iOS 26.0, *)) barItem.sharesBackground = true;
@@ -1717,7 +1729,7 @@ static NSMutableSet* hostList;
 - (void)applyNavBarAppearance{
 #if TARGET_OS_TV
     self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
-    self.navigationController.navigationBar.barTintColor = ThemeManager.hostViewBackgroundColor;
+    self.navigationController.navigationBar.barTintColor = PublicUtils.isTVOS ? UIColor.clearColor : ThemeManager.hostViewBackgroundColor;
     self.navigationController.navigationBar.shadowImage = [UIImage new];
 #else
     if (@available(iOS 13.0, *)) {
@@ -1837,7 +1849,9 @@ static NSMutableSet* hostList;
 
 
 
-    self.navigationItem.rightBarButtonItems = VLBarButtonItems(_helpButton, _addHostButton); // 顺序：右边靠右的是第一个
+    self.navigationItem.rightBarButtonItems = PublicUtils.isTVOS
+    ? VLBarButtonItems(nil, nil)
+    : VLBarButtonItems(_helpButton, _addHostButton); // 顺序：右边靠右的是第一个
 
     // Set the side bar button action. When it's tapped, it'll show the sidebar.
 
@@ -1845,7 +1859,8 @@ static NSMutableSet* hostList;
     [_settingsButton setAction:@selector(revealToggle:)];
     if (@available(iOS 13.0, *)) {
         [_settingsButton setTitle:nil];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:PublicUtils.liquidGlassEnabled ? 18 : 23 weight:UIImageSymbolWeightMedium ];
+        CGFloat symbolSize = PublicUtils.isTVOS ? 34 : (PublicUtils.liquidGlassEnabled ? 18 : 23);
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:symbolSize weight:PublicUtils.isTVOS ? UIImageSymbolWeightRegular : UIImageSymbolWeightMedium ];
         UIImage *image = [[UIImage systemImageNamed:@"sidebar.left" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_settingsButton setImage:image];
         _settingsButton.imageInsets = PublicUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
@@ -1856,7 +1871,7 @@ static NSMutableSet* hostList;
     } else {
         [_settingsButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
     }
-
+    
     [_profilesButton setTarget:self];
     [_profilesButton setAction:@selector(profilesButtonTapped)];
     if (@available(iOS 13.0, *)) {
@@ -1901,7 +1916,8 @@ static NSMutableSet* hostList;
     
     if (@available(iOS 13.0, *)) {
         [_upButton setTitle:@""];
-        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:PublicUtils.liquidGlassEnabled ? 16 : 21.5 weight:UIImageSymbolWeightMedium];
+        CGFloat symbolSize = PublicUtils.isTVOS ? 27.5 : (PublicUtils.liquidGlassEnabled ? 16 : 21.5);
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:symbolSize weight:UIImageSymbolWeightMedium];
         UIImage *image = [[UIImage systemImageNamed:PublicUtils.liquidGlassEnabled ? @"macwindow.on.rectangle" : @"tv" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_upButton setImage:image];
         _upButton.imageInsets = PublicUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 1) : UIEdgeInsetsMake(25, 20, 0, 15);
@@ -2017,6 +2033,8 @@ static NSMutableSet* hostList;
     settings.controllerMouseRightButton = @(ControllerElementDpadUp);
     settings.controllerMouseExpo = @(1.8);
     settings.controllerMousePointerVelocity = @(15.0);
+    
+    settings.asyncFrameDequeue = PublicUtils.isTVOS || PublicUtils.refreshRate > 100.0;
 
     if (@available(iOS 14.0, tvOS 14.0, *)) nil;
     else settings.appTheme = @(UIUserInterfaceStyleDark);

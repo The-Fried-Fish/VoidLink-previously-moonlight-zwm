@@ -244,7 +244,8 @@ class HostCardView: UIView {
             hostSpinner.centerXAnchor.constraint(equalTo: iconBackgroundView.centerXAnchor),
             hostSpinner.centerYAnchor.constraint(equalTo: iconBackgroundView.centerYAnchor, constant: oldIOS ? -5.5 * sizeFactor : computerIconMonitorCenterYOffset),
         ])
-        hostSpinner.transform = CGAffineTransform(scaleX: sizeFactor, y: sizeFactor)
+        let spinnerSizeFactor = sizeFactor * (PublicUtils.isTVOS ? 0.5 : 1)
+        hostSpinner.transform = CGAffineTransform(scaleX: spinnerSizeFactor, y: spinnerSizeFactor)
         hostSpinner.stopAnimating()
 
         lockIconView = UIImageView()
@@ -296,8 +297,14 @@ class HostCardView: UIView {
             statusIcon.leadingAnchor.constraint(equalTo: hostNameLabel.leadingAnchor),
             statusIcon.widthAnchor.constraint(equalToConstant: 16 * sizeFactor),
         ])
+        
+#if !os(tvOS)
+        let defaultButtonType: UIButton.ButtonType = .system
+#else
+        let defaultButtonType: UIButton.ButtonType = .plain
+#endif
 
-        appButton = UIButton(type: .system)
+        appButton = UIButton(type: defaultButtonType)
         appButton.translatesAutoresizingMaskIntoConstraints = false
         appButton.frame = CGRect(x: 20, y: 200, width: 150, height: buttonHeight)
         appButton.setTitle(LocalizationHelper.localizedString(forKey: "Applications"), for: .normal)
@@ -312,7 +319,7 @@ class HostCardView: UIView {
             appButton.heightAnchor.constraint(equalToConstant: buttonHeight),
         ])
 
-        launchButton = UIButton(type: .system)
+        launchButton = UIButton(type: defaultButtonType)
         launchButton.translatesAutoresizingMaskIntoConstraints = false
         launchButton.frame = CGRect(x: 0, y: 0, width: 150, height: 50)
         launchButton.backgroundColor = defaultBlue
@@ -337,7 +344,7 @@ class HostCardView: UIView {
             launchButton.heightAnchor.constraint(equalToConstant: buttonHeight),
         ])
 
-        pairButton = UIButton(type: .system)
+        pairButton = UIButton(type: defaultButtonType)
         pairButton.translatesAutoresizingMaskIntoConstraints = false
         pairButton.frame = CGRect(x: 0, y: 0, width: 150, height: 50)
         pairButton.backgroundColor = ThemeManager.textTintColorWithAlpha
@@ -363,7 +370,7 @@ class HostCardView: UIView {
             pairButton.heightAnchor.constraint(equalToConstant: buttonHeight),
         ])
 
-        wakeupButton = UIButton(type: .system)
+        wakeupButton = UIButton(type: defaultButtonType)
         wakeupButton.translatesAutoresizingMaskIntoConstraints = false
         wakeupButton.frame = CGRect(x: 0, y: 0, width: 150, height: 50)
         wakeupButton.backgroundColor = ThemeManager.textTintColorWithAlpha

@@ -1,3 +1,12 @@
+//
+//  SettingsControls.swift
+//  VoidLink
+//
+//  Created by True砖家 on 2026/9/5.
+//  Copyright © 2026 True砖家 on Bilibili. All rights reserved.
+//
+
+
 import SwiftUI
 import UIKit
 
@@ -5,8 +14,53 @@ let usesSwiftUISettingsPicker = PublicUtils.isTVOS
 let usesSwiftUISettingsSlider = PublicUtils.isTVOS
 let usesSwiftUISettingsToggle = PublicUtils.isTVOS
 private let settingsProgressSliderHeight: CGFloat = 45
+private let settingsIOSSliderHeight: CGFloat = {
+    let height = UISegmentedControl(items: ["", ""]).intrinsicContentSize.height
+    return height > 0 ? height : 32
+}()
 private let settingsTVOSPickerScale: CGFloat = 0.6
 private let settingsTVOSPickerVisualHeight: CGFloat = 56
+
+final class SettingsControlAnimationWake {
+    private static let shared = SettingsControlAnimationWake()
+    private var wakeView: UIView?
+    private var toggled = false
+
+    static func wake(attachedTo view: UIView) {
+        shared.wakeView(attachedTo: view)
+    }
+
+    private func wakeView(attachedTo view: UIView) {
+        let container = view.window ?? view
+        let wakeView = preparedWakeView(in: container)
+
+        toggled.toggle()
+        UIView.animate(
+            withDuration: 0.6,
+            delay: 0,
+            options: [.allowUserInteraction, .beginFromCurrentState],
+            animations: {
+                wakeView.alpha = self.toggled ? 0.002 : 0.001
+            }
+        )
+    }
+
+    private func preparedWakeView(in container: UIView) -> UIView {
+        if let wakeView, wakeView.superview === container {
+            return wakeView
+        }
+
+        wakeView?.removeFromSuperview()
+
+        let wakeView = UIView(frame: CGRect(x: -2, y: -2, width: 1, height: 1))
+        wakeView.isUserInteractionEnabled = false
+        wakeView.backgroundColor = .black
+        wakeView.alpha = 0.001
+        container.addSubview(wakeView)
+        self.wakeView = wakeView
+        return wakeView
+    }
+}
 
 @available(iOS 14.0, tvOS 14.0, *)
 extension View {
@@ -219,6 +273,7 @@ struct SettingsSlider: View {
                 onEditingChanged: onEditingChanged,
                 onControlResolved: onControlResolved
             )
+            .frame(height: settingsIOSSliderHeight, alignment: .center)
         }
 #endif
     }
@@ -286,6 +341,8 @@ private struct SettingsIOSSlider: UIViewRepresentable {
     func makeUIView(context: Context) -> UISlider {
         let slider = UISlider()
         slider.isContinuous = true
+        slider.setContentHuggingPriority(.defaultLow, for: .vertical)
+        slider.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         slider.addTarget(
             context.coordinator,
             action: #selector(Coordinator.valueChanged(_:)),

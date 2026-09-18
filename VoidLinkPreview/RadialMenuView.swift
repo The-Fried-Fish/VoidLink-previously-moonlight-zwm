@@ -63,7 +63,7 @@ struct RadialMenuStyle: Equatable {
     var subtitleColor = Color(white: 0.48)
     var shadowColor = Color.black.opacity(0.18)
     var ringWidthRatio: CGFloat = 0.41
-    var segmentGapWidth: CGFloat = 1
+    var segmentGapWidth: CGFloat = PublicUtils.isTVOS ? 2 : 1
     var centerIconScale: CGFloat = 0.13
     var segmentIconScale: CGFloat = 0.085
 
@@ -82,7 +82,7 @@ struct RadialMenuStyle: Equatable {
                 subtitleColor: Color(UIColor(white: 0.70, alpha: 1)),
                 shadowColor: Color(accentColor.withAlphaComponent(0)),
                 ringWidthRatio: 0.41,
-                segmentGapWidth: 1,
+                // segmentGapWidth: 1,
                 centerIconScale: 0.16,
                 segmentIconScale: 0.085
             )

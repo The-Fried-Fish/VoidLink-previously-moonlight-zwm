@@ -535,17 +535,19 @@ import UIKit
     }
     @objc public static func handleFirstGamepadConnection(in vc: UIViewController?, handler: @escaping () -> Void) {
         if isFirstConnectingGamepad() {
-            AlertControllerUtil.showAlert(
-                in: vc,
-                title: "Tips".localized,
-                message: "controllerNavigationTip".localized,
-                withCancel: false,
-                buttonTitle: "Got it!".localized,
-                countdown: 6,
-                completion: {
-                    handler()
-                }
-            )
+            DispatchQueue.main.asyncAfter(deadline: .now() + (PublicUtils.isTVOS ? 1.2 : 0)) {
+                AlertControllerUtil.showAlert(
+                    in: vc,
+                    title: "Tips".localized,
+                    message: "controllerNavigationTip".localized,
+                    withCancel: false,
+                    buttonTitle: "Got it!".localized,
+                    countdown: 6,
+                    completion: {
+                        handler()
+                    }
+                )
+            }
         }
     }
     

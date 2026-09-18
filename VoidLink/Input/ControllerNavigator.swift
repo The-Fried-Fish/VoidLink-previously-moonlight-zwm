@@ -156,42 +156,6 @@ private final class ControllerMouseCurvePreviewView: UIView {
     }
 }
 
-private final class ControllerDrivenUIKitAnimationWakeToken {
-    private var wakeView: UIView?
-    private var toggled = false
-
-    func wake(attachedTo view: UIView) {
-        let container = view.window ?? view
-        let wakeView = preparedWakeView(in: container)
-
-        toggled.toggle()
-        UIView.animate(
-            withDuration: 0.6,
-            delay: 0,
-            options: [.allowUserInteraction, .beginFromCurrentState],
-            animations: {
-                wakeView.alpha = self.toggled ? 0.002 : 0.001
-            }
-        )
-    }
-
-    private func preparedWakeView(in container: UIView) -> UIView {
-        if let wakeView, wakeView.superview === container {
-            return wakeView
-        }
-
-        wakeView?.removeFromSuperview()
-
-        let wakeView = UIView(frame: CGRect(x: -2, y: -2, width: 1, height: 1))
-        wakeView.isUserInteractionEnabled = false
-        wakeView.backgroundColor = .black
-        wakeView.alpha = 0.001
-        container.addSubview(wakeView)
-        self.wakeView = wakeView
-        return wakeView
-    }
-}
-
 @available(iOS 13.0, *)
 @objc protocol ControllerNavigatorRadialMenuDelegate: AnyObject {
     func controllerNavigatorDidSelect(item: RadialMenuItem)
@@ -321,15 +285,10 @@ final class ControllerNavigator: NSObject {
     static var navigationTimer: SafeTimer?
     private static let navigationInitialRepeatDelay: TimeInterval = 0.23
     private static let navigationContinuousRepeatInterval: TimeInterval = 0.177
-    private static let controllerDrivenUIKitAnimationWakeToken = ControllerDrivenUIKitAnimationWakeToken()
     @objc static weak var controllerNavigationHighlightedView: UIView?
     private static let installAlertControllerNavigationHook: Void = {
         UIAlertController.installControllerNavigationDelegateHook()
     }()
-
-    static func wakeControllerDrivenUIKitAnimationIfNeeded(attachedTo view: UIView) {
-        controllerDrivenUIKitAnimationWakeToken.wake(attachedTo: view)
-    }
 
     @objc static func setRadialMenuDelegate(_ delegate: ControllerNavigatorRadialMenuDelegate?) {
         _ = installAlertControllerNavigationHook
@@ -1306,7 +1265,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
 
         if let highlightedView = ControllerNavigator.controllerNavigationHighlightedView, highlightedView is UIButton {
             if let section = highlightedView.superview as? MenuSectionView {
-                ControllerNavigator.wakeControllerDrivenUIKitAnimationIfNeeded(attachedTo: highlightedView)
+                SettingsControlAnimationWake.wake(attachedTo: highlightedView)
                 DispatchQueue.main.async{
                     section.toggleFold()
                 }
@@ -1325,7 +1284,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
                         } while !selector.isEnabledForSegment(at: targetIndex)
                         selector.sendActions(for: .valueChanged)
                     }
-                    ControllerNavigator.wakeControllerDrivenUIKitAnimationIfNeeded(attachedTo: selector)
+                    SettingsControlAnimationWake.wake(attachedTo: selector)
                     DispatchQueue.main.async(execute: updateSelector)
                 }
 #if !os(tvOS)
