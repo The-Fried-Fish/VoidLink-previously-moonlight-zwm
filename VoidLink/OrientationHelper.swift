@@ -14,6 +14,9 @@ import UIKit
   
 @objc class OrientationHelper: NSObject {
     @objc static func updateOrientationToLandscape() {
+#if os(tvOS)
+        return
+#else
         if #available(iOS 16.0, *) {
             // 调用此方法会使视图控制器重新评估其支持的方向集。
             UIApplication.shared.keyWindow?.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
@@ -40,5 +43,6 @@ import UIKit
                 print("iOS version is less than 16.0, falling back to earlier behavior.")
             }
         }
+#endif
     }
 }

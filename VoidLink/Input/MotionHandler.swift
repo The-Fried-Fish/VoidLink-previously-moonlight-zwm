@@ -7,7 +7,25 @@
 //
 
 import Foundation
+
+#if !os(tvOS)
 import CoreMotion
+#endif
+
+#if os(tvOS)
+private struct VLDeviceMotionVector {
+    let x: Double
+    let y: Double
+    let z: Double
+}
+
+private struct VLDeviceMotion {
+    let rotationRate: VLDeviceMotionVector
+    let gravity: VLDeviceMotionVector
+}
+#else
+private typealias VLDeviceMotion = CMDeviceMotion
+#endif
 
 @objc public protocol OnScreenWidgetStickMixedInputDelegate: AnyObject {
     func mixOnScreenRightStickAndGyroInput(x: CGFloat, y: CGFloat)
@@ -47,7 +65,7 @@ import CoreMotion
     @objc class func shared(profile: OSCProfile?) -> MotionHandler {
         let sharedInstance = MotionHandler.sharedInstance
         guard let profile = profile else { return sharedInstance }
-        sharedInstance.useBuiltinGyro = profile.useBuiltinGyro
+        sharedInstance.useBuiltinGyro = profile.useBuiltinGyro && !PublicUtils.isTVOS
         sharedInstance.swapYawAndRoll = profile.swapYawAndRoll
         sharedInstance.mapGyroTo = profile.mapGyroTo
         sharedInstance.synthesizePhysicalStick = profile.synthesizePhysicalStick
@@ -66,7 +84,9 @@ import CoreMotion
     @objc var swapYawAndRoll: Bool = false
     private var motionIsWorking: Bool = false
     private var accelControlStarted: Bool = false
+#if !os(tvOS)
     private let motionManager = CMMotionManager()
+#endif
     private weak var activeGCController:GCController?
     private var synthesizePhysicalStick:Bool = false
     private var mapGyroTo:MapGyroTo = .mapGyroToControllerStick
@@ -126,8 +146,10 @@ import CoreMotion
 
     var updateInterval: TimeInterval = 1.0 / 120.0 {
         didSet {
+#if !os(tvOS)
             motionManager.accelerometerUpdateInterval = updateInterval
             motionManager.gyroUpdateInterval = updateInterval
+#endif
         }
     }
     
@@ -140,8 +162,10 @@ import CoreMotion
         } else {
             // Fallback on earlier versions
         }
+#if !os(tvOS)
         motionManager.accelerometerUpdateInterval = updateInterval
         motionManager.gyroUpdateInterval = updateInterval
+#endif
     }
     
     public func startMotionControlByOnScreenButton(_ sender: OnScreenWidgetView, yawFactor:CGFloat, pitchFactor:CGFloat, rollFactor:CGFloat){
@@ -176,8 +200,8 @@ import CoreMotion
             resetGravityYOffsetTracking()
             
             // print("startGyroUpdate useBuiltinGyro \(useBuiltinGyro) \(CACurrentMediaTime())")
-            
             if useBuiltinGyro {
+#if !os(tvOS)
                 if motionManager.isGyroAvailable {
                     if rollToLeftStick {
                         leftStickMotion = leftStickTouchInputX
@@ -187,6 +211,7 @@ import CoreMotion
                         self.handleMotionData(deviceMotion: data)
                     }
                 }
+#endif
             }
             else {
                 if #available(iOS 14.0, *) {
@@ -221,6 +246,7 @@ import CoreMotion
 
     @objc public func startAccelUpdate() {
         accelControlStarted = true
+#if !os(tvOS)
         if motionManager.isAccelerometerAvailable {
             motionManager.startAccelerometerUpdates(to: .main) { [weak self] accelData, _ in
                 guard let self = self, let data = accelData else { return }
@@ -229,6 +255,7 @@ import CoreMotion
                                             z: data.acceleration.z)
             }
         }
+#endif
     }
     
     /// 停止更新
@@ -238,9 +265,11 @@ import CoreMotion
         motionControlStarted = false
         motionIsWorking = false
         resetGravityYOffsetTracking()
+#if !os(tvOS)
         if motionManager.isDeviceMotionActive{
             motionManager.stopDeviceMotionUpdates()
         }
+#endif
         if #available(iOS 14.0, *) {
             activeGCController?.motion?.sensorsActive = false
         }
@@ -249,9 +278,11 @@ import CoreMotion
     
     @objc public func stopAccelUpdate() {
         accelControlStarted = false
+#if !os(tvOS)
         if motionManager.isAccelerometerActive {
             motionManager.stopAccelerometerUpdates()
         }
+#endif
         // self.onScreenControls.clearLeftStickTouchPadFlag()
         // self.onScreenControls.clearRightStickTouchPadFlag()
     }
@@ -261,7 +292,7 @@ import CoreMotion
         // 在这里处理加速度数据，比如计算方向、存储或驱动逻辑
     }
 
-    private func handleMotionData(deviceMotion: CMDeviceMotion? = nil, gcMotion:GCMotion? = nil) {
+    private func handleMotionData(deviceMotion: VLDeviceMotion? = nil, gcMotion:GCMotion? = nil) {
         var x:Double = 0
         var y:Double = 0
         var z:Double = 0
@@ -297,6 +328,10 @@ import CoreMotion
         let correctedZ:Double = z - gyroBiasZ */
         
         if useBuiltinGyro {
+#if os(tvOS)
+            self.clearGyroInput(interruptNonGyroInput: false)
+            return
+#else
             if #available(iOS 13.0, *) {
                 let orientation = (windowScene as! UIWindowScene).interfaceOrientation
                 switch orientation {
@@ -354,6 +389,7 @@ import CoreMotion
                     rollSource = -z-rollBias
                 }
             }
+#endif
         }
         else {
             yawBias = swapYawAndRoll ? controllerGyroBiasY : -controllerGyroBiasZ
@@ -470,13 +506,14 @@ import CoreMotion
     }
     
     @objc public func calibrateGyroBias(duration: TimeInterval = 5.0, completion: @escaping () -> Void) {
-        guard motionManager.isGyroAvailable else { return }
 
         isCalibrating = true
         var sumX = 0.0, sumY = 0.0, sumZ = 0.0
         var sampleCount = 0
 
         if useBuiltinGyro {
+#if !os(tvOS)
+            guard motionManager.isGyroAvailable else { return }
             motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motionData, _ in
                 guard let self = self, self.isCalibrating, let data = motionData else { return }
                 sumX += data.rotationRate.x
@@ -484,6 +521,7 @@ import CoreMotion
                 sumZ += data.rotationRate.z
                 sampleCount += 1
             }
+#endif
         }
         else if #available(iOS 14.0, *) {
             if let motion = activeGCController?.motion {
@@ -505,7 +543,9 @@ import CoreMotion
         // 5秒后计算平均值
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             guard let self = self else { return }
+#if !os(tvOS)
             self.motionManager.stopDeviceMotionUpdates()
+#endif
             if sampleCount > 0 {
                 if useBuiltinGyro {
                     gyroBiasX = sumX / Double(sampleCount)

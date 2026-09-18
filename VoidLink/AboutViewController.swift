@@ -49,7 +49,11 @@ import SwiftUI
 
         preferredContentSize = CGSize(width: 530, height: 430)
 
+#if os(tvOS)
+        modalPresentationStyle = .fullScreen
+#else
         modalPresentationStyle = .formSheet
+#endif
     }
     
     override func viewDidAppear(_ animated: Bool) {

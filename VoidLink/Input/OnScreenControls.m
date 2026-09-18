@@ -11,7 +11,9 @@
 
 #import "OnScreenControls.h"
 #import "LayoutOnScreenControls.h"
+#if !TARGET_OS_TV
 #import "CustomTapGestureRecognizer.h"
+#endif
 #import "VoidController.h"
 #include "Limelight.h"
 #if !TARGET_OS_TV
@@ -61,7 +63,9 @@ static NSSet *validPositionButtonNames;
     NSDate* l3TouchStart;
     NSDate* r3TouchStart;
     
+#if !TARGET_OS_TV
     UIImpactFeedbackGenerator* vibrationGenerator;
+#endif
     
     BOOL l3Set;
     BOOL r3Set;
@@ -1299,6 +1303,9 @@ static float L3_Y;
 }
 
 - (void)oscButtonHapticFeedback:(CALayer* )button{
+#if TARGET_OS_TV
+    return;
+#else
     if([button.name isEqualToString:@"upButton"]
        || [button.name isEqualToString:@"downButton"]
        || [button.name isEqualToString:@"leftButton"]
@@ -1321,6 +1328,7 @@ static float L3_Y;
         [vibrationGenerator impactOccurred];
         // NSLog(@"vibration instance: %@",vibrationGenerator);
     }
+#endif
 }
 
 // osc Button capturing here
@@ -1514,6 +1522,7 @@ static float L3_Y;
     
     bool oscTouched = updated || stickTouch;
     if(oscTouched){
+#if !TARGET_OS_TV
         for (UIGestureRecognizer *gesture in _view.gestureRecognizers) { // we'll iterate the streamFrameTopLayerView, which was passed here as _view, where all the custom gestures are added) instead of the streamview, to check if that the osc buttons are pressed
             if ([gesture isKindOfClass:[CustomTapGestureRecognizer class]]) {
                 // This is a CustomTapGestureRecognizer
@@ -1522,6 +1531,7 @@ static float L3_Y;
                 // Perform actions with tapGesture
             }
         }
+#endif
     }
     
     return oscTouched;

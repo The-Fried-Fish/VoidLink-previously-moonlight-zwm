@@ -12,6 +12,15 @@ import ObjectiveC
 import UIKit
 
 @objc public class PublicUtils: NSObject {
+
+    /// True when this build runs on Apple TV (tvOS), rather than iOS/iPadOS.
+    @objc public static let isTVOS: Bool = {
+        #if os(tvOS)
+        return true
+        #else
+        return false
+        #endif
+    }()
     
     @objc public static var isIPhone: Bool = {
         return UIDevice.current.userInterfaceIdiom == .phone
@@ -50,6 +59,10 @@ import UIKit
         else {return false}
     }()
     
+    @objc public static var touchSectionAvailable: Bool = {
+        return !isTVOS
+    }()
+    
     @objc public static var pencilSectionAvailable: Bool = {
         let availableIds = ["com.voidlink.iOS", "com.voidlinkextreme.iOS", "com.voidlink.tf.debug10.iOS"]
         return availableIds.contains(Bundle.main.bundleIdentifier ?? "") && isIPad
@@ -69,6 +82,9 @@ import UIKit
     }()
     
     @objc public static func isLandscape() -> Bool {
+#if os(tvOS)
+        return true
+#else
         if #available(iOS 13.0, *) {
             guard let windowScene = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
@@ -77,6 +93,7 @@ import UIKit
             return windowScene.interfaceOrientation.isLandscape
         }
         else {return PublicUtils.screenWidth > PublicUtils.screenHeight}
+#endif
     }
     
     @objc public static func disconnectSymbol() -> String {

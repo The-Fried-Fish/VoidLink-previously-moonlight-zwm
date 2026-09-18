@@ -120,6 +120,7 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
     OSCProfilesManager* oscProfileMan;
 #if !TARGET_OS_TV
     GameSirG8MFiRumbler *_gameSirG8MFiRumbler;
+    KishiV3ProXLRumbler *_kishiRumbler;
 #endif
 
 #define EMULATING_SELECT     0x1
@@ -161,10 +162,15 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
 -(void) applyPhysicalControllerRumble:(VoidController*)controller lowFreqMotor:(unsigned short)lowFreqMotor highFreqMotor:(unsigned short)highFreqMotor
 {
 #if !TARGET_OS_TV
-    if (controller.hardware == ControllerHardwareG8PlusMFi) {
-        // NSLog(@"[G8Rumble] route native rumble low=%hu high=%hu", lowFreqMotor, highFreqMotor);
-        [_gameSirG8MFiRumbler setLowFrequencyMotor:lowFreqMotor highFrequencyMotor:highFreqMotor];
-        return;
+    switch (controller.hardware) {
+        case ControllerHardwareRazerKishi:
+            [_kishiRumbler setLowFrequencyMotor:lowFreqMotor highFrequencyMotor:highFreqMotor];
+            return;
+        case ControllerHardwareG8PlusMFi:
+            [_gameSirG8MFiRumbler setLowFrequencyMotor:lowFreqMotor highFrequencyMotor:highFreqMotor];
+            return;
+        default:
+            break;
     }
 #endif
 
@@ -300,7 +306,7 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
     if([ControllerUtil hasControllerAccelerometer:voidController.gamepad]) {
         [voidController.motionTypes addObject:@(LI_MOTION_TYPE_ACCEL)];
     }
-    if (@available(iOS 14.0, *)) if(voidController.gamepad.motion.hasRotationRate){
+    if (@available(iOS 14.0, tvOS 14.0, *)) if(voidController.gamepad.motion.hasRotationRate){
         [voidController.motionTypes addObject:@(LI_MOTION_TYPE_GYRO)];
     }
 
@@ -463,11 +469,11 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
                 }
             }
         }
-        
+        else
 #endif
-        else{
+        {
             // NSLog(@"controller obj timer update: controller timer ");
-            if (@available(iOS 14.0, *)) {
+            if (@available(iOS 14.0, tvOS 14.0, *)) {
                 switch (motionType) {
                     case LI_MOTION_TYPE_ACCEL:
                         [voidController.accelTimer invalidate];
@@ -1212,6 +1218,11 @@ static void ApplyAdaptiveTriggerEffect(GCDualSenseAdaptiveTrigger* trigger,
                 }
             }
                         
+#if !TARGET_OS_TV
+            if (voidController.hardware == ControllerHardwareRazerKishi) {
+                capabilities |= LI_CCAP_RUMBLE;
+            }
+#endif
             // Detect supported haptics localities
             if (controller.haptics) {
                 if ([controller.haptics.supportedLocalities containsObject:GCHapticsLocalityHandles]) {
@@ -1775,7 +1786,13 @@ double rc_expo(double x, double expo) {
     voidController.supportedEmulationFlags = EMULATING_SPECIAL | EMULATING_SELECT;
     voidController.gamepad = controller;
 #if !TARGET_OS_TV
-    voidController.hardware = [_gameSirG8MFiRumbler isTargetController:controller] ? ControllerHardwareG8PlusMFi : ControllerHardwareGeneric;
+    if ([_gameSirG8MFiRumbler isTargetController:controller]) {
+        voidController.hardware = ControllerHardwareG8PlusMFi;
+    } else if ([_kishiRumbler isTargetController:controller]) {
+        voidController.hardware = ControllerHardwareRazerKishi;
+    } else {
+        voidController.hardware = ControllerHardwareGeneric;
+    }
 #else
     voidController.hardware = ControllerHardwareGeneric;
 #endif
@@ -2039,6 +2056,7 @@ double rc_expo(double x, double expo) {
     _controllerNumbers = 0;
 #if !TARGET_OS_TV
     _gameSirG8MFiRumbler = [[GameSirG8MFiRumbler alloc] init];
+    _kishiRumbler = [[KishiV3ProXLRumbler alloc] init];
 #endif
     
     _captureMouse = (streamConfig.localMousePointerMode == 0);
@@ -2100,6 +2118,9 @@ double rc_expo(double x, double expo) {
         VoidController* voidController = [self->_voidControllers objectForKey:[NSNumber numberWithInteger:controller.playerIndex]];
         if (voidController) {
 #if !TARGET_OS_TV
+            if ([self->_kishiRumbler isTargetController:controller]) {
+                [self->_kishiRumbler stopAndClose];
+            }
             if ([self->_gameSirG8MFiRumbler isTargetController:controller]) {
                 [self->_gameSirG8MFiRumbler stopAndClose];
             }
@@ -2309,6 +2330,7 @@ double rc_expo(double x, double expo) {
     [ControllerUtil stopAllDualSenseHaptics];
 #if !TARGET_OS_TV
     [_gameSirG8MFiRumbler invalidate];
+    [_kishiRumbler invalidate];
 #endif
 
     if (VLSharedControllerSupport == self) {

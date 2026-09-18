@@ -242,7 +242,7 @@ final class UIAppView: UIButton {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 17.0, *)
 private final class UIAppViewContextMenuDelegate: NSObject, UIContextMenuInteractionDelegate {
     private weak var appView: UIAppView?
 

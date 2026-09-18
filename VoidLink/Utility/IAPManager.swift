@@ -136,11 +136,13 @@ import UIKit
                 await listenForTransactions()
             }
         }
+#if !os(tvOS)
         if #available(iOS 16.4, *) {
             Task {
                 await listenForPurchaseIntents()
             }
         }
+#endif
     }
 
     // MARK: - Fetch Products (StoreKit 2)
@@ -363,6 +365,7 @@ import UIKit
         }
     }
 
+#if !os(tvOS)
     @available(iOS 16.4, *)
     private func listenForPurchaseIntents() async {
         for await intent in PurchaseIntent.intents {
@@ -384,6 +387,7 @@ import UIKit
             }
         }
     }
+#endif
     
     // MARK: Utils
     @objc static public func checkPurchaseInfo(

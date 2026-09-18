@@ -73,6 +73,9 @@ public class MicHandler: NSObject {
     /// 请求麦克风权限
     /// - Parameter completion: 可选 block，如果为 nil 且未授权，会弹窗提示跳转系统设置
     @objc static func requestPermission(_ completion: ((Bool) -> Void)? = nil) {
+#if os(tvOS)
+        completion?(false)
+#else
         let permission = AVAudioSession.sharedInstance().recordPermission
         switch permission {
         case .granted:
@@ -104,6 +107,7 @@ public class MicHandler: NSObject {
                 showSettingsAlert()
             }
         }
+#endif
     }
         
     /// 弹窗提示用户跳转系统设置（英文版）
@@ -130,7 +134,11 @@ public class MicHandler: NSObject {
     
     /// 检查麦克风权限状态（返回 Int，OC 可用）
     @objc static func permissionGranted() -> Bool {
+#if os(tvOS)
+        return false
+#else
         return AVAudioSession.sharedInstance().recordPermission == AVAudioSession.RecordPermission.granted
+#endif
     }
     
     /// 获取最顶层 UIViewController

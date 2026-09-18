@@ -58,8 +58,10 @@
 - (bool)shallDisableGyroHotSwitch;
 - (void)loadGameProfileConfigs:(OSCProfile* )profile;
 - (void)openWidgetProfileTableWithPickProfile:(BOOL)pickProfile;
+#if !TARGET_OS_TV
 - (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0));
 - (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0));
+#endif
 - (void)restorePersistedStreamViewOffsetAndScaleWithProfile:(OSCProfile* )profile;
 - (void)updateMagnifierViewportMetrics;
 - (void)setMagnifierViewportInteractionEnabled:(BOOL)enabled;

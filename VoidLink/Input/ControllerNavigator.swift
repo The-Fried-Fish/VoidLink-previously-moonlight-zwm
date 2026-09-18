@@ -33,6 +33,10 @@ private let settingsExcludedControllerNavigationSectionIdentifiers: Set<String> 
     "SettingsSectionPencil"
 ]
 
+private func isProfileSelectorNavigationDelegate(_ delegate: AnyObject) -> Bool {
+    return delegate is ProfileSelectorViewController
+}
+
 @available(iOS 13.0, *)
 private final class ControllerMouseCurvePreviewView: UIView {
     var expo: CGFloat = 1.0 {
@@ -612,9 +616,12 @@ final class ControllerNavigator: NSObject {
             let targetTheme: UIUserInterfaceStyle = ThemeManager.userInterfaceStyle() == .light ? .dark : .light
             DispatchQueue.main.async {
                 ThemeManager.setUserInterfaceStyle(targetTheme)
+#if !os(tvOS)
                 if let mainFrameVC = radialMenuDelegate as? MainFrameViewController, let settingsViewVC = mainFrameVC.settingsViewController {
                     settingsViewVC.appThemeSelector.selectedSegmentIndex = targetTheme.rawValue
                 }
+                // to be dealt with
+#endif
             }
             let dataMan = DataManager()
             let settings = dataMan.retrieveSettings()
@@ -797,7 +804,7 @@ final class ControllerNavigator: NSObject {
         let leftNavButton: ControllerElement = ControllerNavigator.radialMenuButtonPosition == .right ? .dpadLeft : .x
         let rightNavButton: ControllerElement = ControllerNavigator.radialMenuButtonPosition == .right ? .dpadRight : .b
 
-        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || mainFrameVC.settingsExpandedInStreamView || uiNavigationDelegate is ToolboxViewController || uiNavigationDelegate is ProfileSelectorViewController {
+        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || mainFrameVC.settingsExpandedInStreamView || uiNavigationDelegate is ToolboxViewController || isProfileSelectorNavigationDelegate(uiNavigationDelegate) {
             let verticalNavigationAxis: ControllerElement = ControllerNavigator.radialMenuButtonPosition == .right ? .leftStickY : .rightStickY
             ControllerUtil.listenPrimaryControllerStickAxis(verticalNavigationAxis, threshold: 0.6) {state in
                 GamepadNavigationIllustrationHud.updateActionState(for: verticalNavigationAxis, isInAction: state != .orderedSame)
@@ -844,7 +851,7 @@ final class ControllerNavigator: NSObject {
             }
         }
                 
-        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || uiNavigationDelegate is ToolboxViewController || uiNavigationDelegate is ProfileSelectorViewController {
+        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || uiNavigationDelegate is ToolboxViewController || isProfileSelectorNavigationDelegate(uiNavigationDelegate) {
             let horizontalNavigationAxis: ControllerElement = ControllerNavigator.radialMenuButtonPosition == .right ? .leftStickX : .rightStickX
             ControllerUtil.listenPrimaryControllerStickAxis(horizontalNavigationAxis, threshold: 0.6) {state in
                 GamepadNavigationIllustrationHud.updateActionState(for: horizontalNavigationAxis, isInAction: state != .orderedSame)
@@ -912,7 +919,7 @@ final class ControllerNavigator: NSObject {
             GamepadNavigationIllustrationHud.clearHud()
             return
         }
-                
+                        
         ControllerUtil.stopListeningPrimaryController()
         GamepadNavigationIllustrationHud.resetActionStates()
         
@@ -923,7 +930,7 @@ final class ControllerNavigator: NSObject {
         listenToNavigationCluster()
 
         /*
-        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || mainFrameVC.settingsExpandedInStreamView || uiNavigationDelegate is ToolboxViewController || uiNavigationDelegate is ProfileSelectorViewController {
+        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || mainFrameVC.settingsExpandedInStreamView || uiNavigationDelegate is ToolboxViewController || isProfileSelectorNavigationDelegate(uiNavigationDelegate) {
             let verticalNavigationAxis: ControllerElement = ControllerNavigator.radialMenuButtonPosition == .right ? .leftStickY : .rightStickY
             ControllerUtil.listenPrimaryControllerStickAxis(verticalNavigationAxis, threshold: 0.6) {state in
                 GamepadNavigationIllustrationHud.updateActionState(for: verticalNavigationAxis, isInAction: state != .orderedSame)
@@ -953,7 +960,7 @@ final class ControllerNavigator: NSObject {
             }
         }
         
-        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || uiNavigationDelegate is ToolboxViewController || uiNavigationDelegate is ProfileSelectorViewController {
+        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || uiNavigationDelegate is ToolboxViewController || isProfileSelectorNavigationDelegate(uiNavigationDelegate) {
             let horizontalNavigationAxis: ControllerElement = ControllerNavigator.radialMenuButtonPosition == .right ? .leftStickX : .rightStickX
             ControllerUtil.listenPrimaryControllerStickAxis(horizontalNavigationAxis, threshold: 0.6) {state in
                 GamepadNavigationIllustrationHud.updateActionState(for: horizontalNavigationAxis, isInAction: state != .orderedSame)
@@ -978,7 +985,7 @@ final class ControllerNavigator: NSObject {
         }
          */
 
-        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || mainFrameVC.settingsExpandedInStreamView || uiNavigationDelegate is UIAlertController || uiNavigationDelegate is ProfileSelectorViewController || uiNavigationDelegate is ToolboxViewController {
+        if let uiNavigationDelegate = uiNavigationDelegate, !mainFrameVC.isStreaming() || mainFrameVC.settingsExpandedInStreamView || uiNavigationDelegate is UIAlertController || isProfileSelectorNavigationDelegate(uiNavigationDelegate) || uiNavigationDelegate is ToolboxViewController {
             let navigations = uiNavigationDelegate.getNavigationElements()
             let buttonNavigations = navigations.filter({$0.control.type == .button})
             // let stickNavigations = navigations.filter({$0.control.type == .stick || $0.control.type == .stickAxis})
@@ -1321,6 +1328,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
                     ControllerNavigator.wakeControllerDrivenUIKitAnimationIfNeeded(attachedTo: selector)
                     DispatchQueue.main.async(execute: updateSelector)
                 }
+#if !os(tvOS)
                 if let uiSwitch = view as? UISwitch {
                     guard uiSwitch.isEnabled else {continue}
                     uiSwitch.isOn = !uiSwitch.isOn
@@ -1338,6 +1346,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
                         ControllerNavigator.navigationTimer?.restart()
                     }
                 }
+#endif
             }
         }
     }
@@ -1493,6 +1502,8 @@ extension SettingsViewController: ControllerUINavigationDelegate {
             ControllerNavigator.settingsFavoriteReorderActive = pressed
             return
         }
+        
+#if !os(tvOS)
         guard currentSettingsMenuMode == .FavoriteSettings else {
             ControllerNavigator.settingsFavoriteReorderActive = false
             return
@@ -1506,6 +1517,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
         guard ControllerNavigator.settingsFavoriteReorderActive else { return }
         ControllerNavigator.settingsFavoriteReorderActive = false
         saveFavoriteSettingStackIdentifiers()
+#endif
     }
 
     private func handleControllerNavigationReadTip(pressed: Bool) {
@@ -1539,7 +1551,9 @@ extension SettingsViewController: ControllerUINavigationDelegate {
             if ControllerNavigator.settingsReadTipPressedAgain {
                 if let store = self?.swiftUISettingsStore, store.isActive {
                     store.performFavoriteDoublePress()
-                } else {
+                }
+                else {
+#if !os(tvOS)
                     switch self?.currentSettingsMenuMode {
                     case .FavoriteSettings:
                         self?.removeHighlightedFavoriteSettingStack()
@@ -1563,15 +1577,13 @@ extension SettingsViewController: ControllerUINavigationDelegate {
                     default:
                         break
                     }
+#endif
                 }
-                
                 // print("self?.cancelPendingControllerNavigationReadTip(resetSuppressNextRelease: false)");
 
             } else {
                 self?.performControllerNavigationReadTip()
             }
-            
-
             self?.cancelPendingControllerNavigationReadTip(resetSuppressNextRelease: false)
         }
         ControllerNavigator.settingsReadTipPendingWorkItem = workItem
@@ -1605,6 +1617,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
         }
     }
 
+#if !os(tvOS)
     private func removeHighlightedFavoriteSettingStack() {
         guard currentSettingsMenuMode == .FavoriteSettings,
               let parentStack = parentStack,
@@ -1635,6 +1648,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
         let targetIndex = min(nextVisibleIndex, visibleStacksAfterRemoval.count - 1)
         highlightControllerNavigationView(visibleStacksAfterRemoval[targetIndex])
     }
+    #endif
 
     private func visibleFavoriteSettingStacks(in parentStack: UIStackView) -> [UIStackView] {
         return parentStack.arrangedSubviews.compactMap { $0 as? UIStackView }.filter {
@@ -2031,7 +2045,7 @@ extension ControllerCollectionNavigationDelegate {
     }
 
     func applyControllerNavigationHighlight(to cell: UICollectionViewCell, highlighted: Bool) {
-        if self is ProfileSelectorViewController {
+        if isProfileSelectorNavigationDelegate(self) {
             return
         }
         clearControllerNavigationHighlightBorder(in: cell)

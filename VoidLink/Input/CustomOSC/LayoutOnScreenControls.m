@@ -34,7 +34,9 @@
 - (id) initWithView:(UIView*)view controllerSup:(ControllerSupport*)controllerSupport streamConfig:(StreamConfiguration*)streamConfig oscLevel:(int)oscLevel {
     
     _view = view;
+#if !TARGET_OS_TV
     _view.multipleTouchEnabled = false;
+#endif
     
   
     self = [super initWithView:view controllerSup:controllerSupport streamConfig:streamConfig];

@@ -11,7 +11,9 @@
 
 #import <Foundation/Foundation.h>
 #import "ControllerSupport.h"
+#if !TARGET_OS_TV
 #import "CustomTapGestureRecognizer.h"
+#endif
 #import "OSCProfile.h"
 #define MIN_CONTROLLER_LAYER_ALPHA 0.23
 

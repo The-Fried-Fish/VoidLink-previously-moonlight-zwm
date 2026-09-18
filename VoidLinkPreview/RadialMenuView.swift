@@ -35,7 +35,7 @@ import UIKit
     case moreOptions
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 struct RadialMenuSector: Identifiable, Equatable {
     let id = UUID()
     let title: String
@@ -51,7 +51,7 @@ struct RadialMenuSector: Identifiable, Equatable {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 struct RadialMenuStyle: Equatable {
     var ringColor = Color(white: 0.86)
     var selectedRingColor = Color(red: 0.19, green: 0.72, blue: 0.96)
@@ -94,7 +94,7 @@ struct RadialMenuStyle: Equatable {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 enum RadialMenuSelectionChangeReason {
     case began
     case moved
@@ -102,7 +102,7 @@ enum RadialMenuSelectionChangeReason {
     case unchanged
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 final class RadialMenuSelectionState: ObservableObject {
     @Published private(set) var selectedIndex: Int?
     @Published private(set) var hasReceivedJoystickInput = false
@@ -199,7 +199,7 @@ final class RadialMenuSelectionState: ObservableObject {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 struct RadialMenuView: View {
     let sectors: [RadialMenuSector]
     var selectedIndex: Int?
@@ -304,11 +304,14 @@ struct RadialMenuView: View {
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
             .contentShape(Circle())
+            #if !os(tvOS)
             .gesture(touchSelectionGesture(center: center, innerRadius: innerRadius, outerRadius: outerRadius))
+            #endif
         }
         .aspectRatio(1, contentMode: .fit)
     }
 
+#if !os(tvOS)
     private func touchSelectionGesture(center: CGPoint, innerRadius: CGFloat, outerRadius: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0, coordinateSpace: .local)
             .onChanged { value in
@@ -322,6 +325,7 @@ struct RadialMenuView: View {
                 }
             }
     }
+#endif
 
     private func index(for location: CGPoint, center: CGPoint, innerRadius: CGFloat, outerRadius: CGFloat) -> Int? {
         guard !sectors.isEmpty else { return nil }
@@ -356,7 +360,7 @@ struct RadialMenuView: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private struct RadialMenuCenterView: View {
     let item: RadialMenuSector?
     let style: RadialMenuStyle
@@ -412,7 +416,7 @@ private struct RadialMenuCenterView: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private struct RadialMenuIconView: View {
     let symbolName: String
     let fallbackSystemName: String
@@ -437,7 +441,7 @@ private struct RadialMenuIconView: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private enum RadialMenuIconImageRenderer {
     private static let cache = NSCache<NSString, UIImage>()
     private static let assetCanvasScale: CGFloat = 1.05
@@ -504,7 +508,7 @@ private enum RadialMenuIconImageRenderer {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private struct RadialMenuSegmentShape: Shape {
     let index: Int
     let count: Int
@@ -593,7 +597,8 @@ private struct RadialMenuSegmentShape: Shape {
     }
 }
 
-@available(iOS 13.0, *)
+#if !os(tvOS)
+@available(iOS 13.0, tvOS 13.0, *)
 struct RadialMenuDemoView: View {
     @SwiftUI.State private var itemCount = 8
     @SwiftUI.State private var isTouchSelectionEnabled = true
@@ -634,7 +639,7 @@ struct RadialMenuDemoView: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 struct RadialMenuView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -652,3 +657,4 @@ struct RadialMenuView_Previews: PreviewProvider {
         }
     }
 }
+#endif

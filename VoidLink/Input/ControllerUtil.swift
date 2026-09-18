@@ -270,6 +270,7 @@ import UIKit
 @objc enum ControllerHardware: UInt8 {
     case generic
     case g8PlusMFi
+    case razerKishi
 }
 
 @objc protocol ControllerUtilDelegate: AnyObject {
@@ -1152,12 +1153,14 @@ import UIKit
                 
         gamepad.valueChangedHandler = { gamepad, element in
             handler(elementDict, gamepad, element)
+#if !os(tvOS)
             if #available(iOS 13.0, *) {
                 // print("controller.playerIndex \(controller.playerIndex)")
                 if controller.playerIndex == .index1 {
                     GamepadOverlayStateCenter.shared.publish(snapshot: GamepadOverlaySnapshot(gamepad: gamepad))
                 }
             }
+#endif
         }
     }
     
@@ -1333,7 +1336,13 @@ import UIKit
             return
         }
         
-        guard GCController.controllers().count == 1 else { return }
+        if PublicUtils.isTVOS {
+            guard GCController.controllers().count == 1
+                    || GCController.controllers().count == 2 else { return }
+        }
+        else {
+            guard GCController.controllers().count == 1 else { return }
+        }
         
         if let mainFrameVC = delegate as? MainFrameViewController {
             let vc = mainFrameVC.isStreaming() ? StreamFrameViewController.sharedInstance() : mainFrameVC
@@ -1660,6 +1669,7 @@ private struct DualSenseHapticsEQView: View {
 }
 #endif
 
+#if !os(tvOS)
 // MARK: - realtime overlay
 
 @available(iOS 13.0, *)
@@ -1728,3 +1738,4 @@ final class GamepadOverlayStateCenter: NSObject, ObservableObject {
         shared.publish(snapshot: .idle)
     }
 }
+#endif

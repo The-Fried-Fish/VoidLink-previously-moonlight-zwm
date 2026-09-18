@@ -18,12 +18,14 @@
 #import "KeyboardSupport.h"
 #import "VoidLink-Swift.h"
 #import "NativeTouchPointer.h"
+#if !TARGET_OS_TV
 #import "NativeTouchHandler.h"
 #import "PureNativeTouchHandler.h"
 #import "RelativeTouchHandler.h"
 #import "AbsoluteTouchHandler.h"
-#import "KeyboardInputField.h"
 #import "CustomTapGestureRecognizer.h"
+#endif
+#import "KeyboardInputField.h"
 #import "LocalizationHelper.h"
 #import "StreamFrameViewController.h"
 
@@ -75,10 +77,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     BOOL hasUserInteracted;
 
     NSDictionary<NSString *, NSNumber *> *dictCodes;
+#if !TARGET_OS_TV
     CustomTapGestureRecognizer *keyboardToggleRecognizer;
+#endif
     UIPanGestureRecognizer *discreteMouseWheelRecognizer;
     UIPanGestureRecognizer *continuousMouseWheelRecognizer;
-#if defined(__IPHONE_16_1) || defined(__TVOS_16_1)
+#if !TARGET_OS_TV && (defined(__IPHONE_16_1) || defined(__TVOS_16_1))
     UIHoverGestureRecognizer *stylusHoverRecognizer;
 #endif
     CGFloat designatedSoftKeyboardHeight;
@@ -142,8 +146,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // [self->streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer]; //add to the superview in other modes
     
 #if TARGET_OS_TV
-    // tvOS requires RelativeTouchHandler to manage Apple Remote input
-    self->touchHandler = [[RelativeTouchHandler alloc] initWithView:self];
+    self->touchHandler = nil;
 #else
     
     PencilHandler.shared = [[PencilHandler alloc] initWithStreamView:self settings:settings];
@@ -231,6 +234,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void)updateTouchHandlerWithProfile:(OSCProfile* )profile{
+#if TARGET_OS_TV
+    touchMode = TouchDisabled;
+    self->touchHandler = nil;
+    sessionTouchHandler = nil;
+    (void)profile;
+#else
     touchMode = profile.touchMode;
     switch (touchMode) {
         case NativeTouch:
@@ -260,9 +269,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     }
     sessionTouchHandler = touchHandler;
     if(_streamFrameVC.touchDisabled) touchHandler = nil;
+#endif
 }
 
 - (void)refreshKeyboardToggleRecognizer:(uint8_t)numberOfTouches{
+#if TARGET_OS_TV
+    (void)numberOfTouches;
+#else
     [self->_streamFrameTopLayerView removeGestureRecognizer:keyboardToggleRecognizer];
     keyboardToggleRecognizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleKeyboard)];
     keyboardToggleRecognizer.numberOfTouchesRequired = numberOfTouches; //will be changed accordinly by touch modes.
@@ -271,9 +284,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleRecognizer.delaysTouchesEnded = NO;
     [self->_streamFrameTopLayerView addGestureRecognizer:keyboardToggleRecognizer];
     keyboardToggleRecognizer.touchCapturingView = self;
+#endif
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
+#if TARGET_OS_TV
+    (void)notification;
+#else
     // NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
     dockedKeyboardActionDetected = true;
     NSLog(@"keyboard will show markmark %d", isInputingText);
@@ -326,6 +343,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [keyboardToggleTip removeFromSuperview];
     }
     NSLog(@"keyboard will show %f", CACurrentMediaTime());
+#endif
 }
 
 - (void)handleNonStandardKeyboard:(NSNotification *)notification{
@@ -378,6 +396,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 // this method also deals with recovering streamview when local keyboard is turned off
 - (void)keyboardWillHide{
+#if TARGET_OS_TV
+    return;
+#else
     if (@available(iOS 13.0, *)) {
         InputAccessoryBar* bar = (InputAccessoryBar* ) keyInputField.inputAccessoryView;
         if(bar) [bar releasePressedKeys];
@@ -397,6 +418,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         [keyInputField removeFromSuperview];
     }
+#endif
 }
 
 - (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight {
@@ -679,7 +701,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
     newProfile.unfoldedExclusiveFolderSequence = OnScreenWidgetView.unfoldedExclusiveFolderSequence;
     newProfile.postExclusiveUnfoldedSequences = OnScreenWidgetView.postExclusiveUnfoldedSequences;
+#if TARGET_OS_TV
+    newProfile.gamepadOverlayEnabled = false;
+#else
     newProfile.gamepadOverlayEnabled = _streamFrameVC.virtualGamepadOverlay != nil;
+#endif
 
     newProfile.normalizedStreamViewOffset = CGPointMake(_streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, _streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
     newProfile.streamViewScale = _streamFrameVC.streamViewMagnifierZoomScale;
@@ -723,8 +749,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             
             self->_streamFrameVC.touchDisabled = false;
             self->_streamFrameVC.singleTouchDisabled = false;
+#if !TARGET_OS_TV
             PencilHandler* pencilHandler = [PencilHandler shared];
             if(pencilHandler) pencilHandler.disableTilt = false;
+#endif
 
             bool sequenceGenerated = false;
             bool hasMovableWidget = false;
@@ -734,6 +762,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 OnScreenButtonState* buttonState = [self->oscProfileMan unarchiveButtonStateEncoded:buttonStateEncoded];
                 if(buttonState.widgetType == CustomOnScreenWidget){
                     OnScreenWidgetView* widgetView = [OnScreenWidgetView widgetWithCmdString:buttonState.name buttonLabel:buttonState.alias shape:buttonState.widgetShape profile:profile]; //reconstruct widgetView
+                    
+                    if(PublicUtils.isTVOS && widgetView.widgetType == WidgetTypeEnumTouchPad) continue;
                     
                     widgetView.functionalWidgetDelegate = (id<OnScreenFunctionalWidgetDelegate>)self->_streamFrameVC;
                     widgetView.motionHandler = motionHandler;
@@ -859,7 +889,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         }
         
         if(reloadWidgets && !OnScreenWidgetView.editMode){
+#if !TARGET_OS_TV
             [PencilHandler.shared setupPressureLUTWithProfile:profile];
+#endif
         }
         
         [self.streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
@@ -1057,7 +1089,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #endif
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-#if !TARGET_OS_TV
+#if TARGET_OS_TV
+    return;
+#else
     // if (@available(iOS 13.4, *)) {
     // cancel restriction of native touch for iOS13.3 & lower
     if (touchMode == NativeTouchOnly) {
@@ -1081,7 +1115,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [nonPencilTouches minusSet:pencilTouches];
     }
     
-#endif
     if ([self handleMouseButtonEvent:BUTTON_ACTION_PRESS
                           forTouches:touches
                            withEvent:event]) {
@@ -1100,6 +1133,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [self->touchHandler touchesBegan:targetTouches withEvent:event];
     }
     else if(![_onScreenControls handleTouchDownEvent:targetTouches]) [touchHandler touchesBegan:targetTouches withEvent:event];
+#endif
 }
 
 - (UIBarButtonItem *)createButtonWithImageNamed:(NSString *)imageName backgroundColor:(UIColor *)backgroundColor target:(id)target action:(SEL)action keyCode:(NSInteger)keyCode isToggleable:(BOOL)isToggleable isDoneButton:(bool)isDoneButton {
@@ -1260,7 +1294,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                 return;
             }
         }
-#endif
     }
     NSMutableSet* nonPencilTouches;
     if(pencilTouches.count>0){
@@ -1277,6 +1310,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchMovedEvent:targetTouches];
     }
     else if(![self->_onScreenControls handleTouchMovedEvent:targetTouches]) [self->touchHandler touchesMoved:targetTouches withEvent:event];
+#endif
 }
 
 - (void) handleKeyCombos:(UIPress*) press{
@@ -1391,7 +1425,9 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-#if !TARGET_OS_TV
+#if TARGET_OS_TV
+    return;
+#else
 
     if (touchMode == NativeTouchOnly) {
         [touchHandler touchesEnded:touches withEvent:event];
@@ -1411,7 +1447,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [nonPencilTouches minusSet:pencilTouches];
     }
 
-#endif
     if ([self handleMouseButtonEvent:BUTTON_ACTION_RELEASE
                           forTouches:nonPencilTouches ? nonPencilTouches : touches
                            withEvent:event]) {
@@ -1429,6 +1464,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchUpEvent:targetTouches];
     }
     else if(![_onScreenControls handleTouchUpEvent:targetTouches]) [touchHandler touchesEnded:targetTouches withEvent:event];
+#endif
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -1610,10 +1646,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     [keysDown removeAllObjects];
 }
 
+#if !TARGET_OS_TV
 - (void)inputAccessoryBarDidTapClose:(InputAccessoryBar *)bar  API_AVAILABLE(ios(13.0)){
     [keyInputField resignFirstResponder];
     isInputingText = false;
 }
+#endif
 
 - (void)onKeyboardPressed:(UITextField *)textField {
 
@@ -1782,13 +1820,17 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton{
+#if !TARGET_OS_TV
     if([touchHandler isKindOfClass:[AbsoluteTouchHandler class]]){
         AbsoluteTouchHandler* handler = (AbsoluteTouchHandler* )touchHandler;
         AbsoluteTouchHandler.mouseButtonForCursorMove = mouseButton;
         [handler pauseLeftButtonDrag];
     }
     else return;
+#endif
 }
+
+#if !TARGET_OS_TV
 
 - (void)switchPencilHover{
     [_pencilHandler switchPencilHover];
@@ -1813,6 +1855,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     touchHandler = disabled ? nil : sessionTouchHandler;
 }
 
+- (BOOL)isMultipleTouchEnabled {
+    return YES;
+}
+
+#endif
+
 - (void)cleanUp{
     [keyInputField resignFirstResponder];
     keyInputField.delegate = nil;
@@ -1821,11 +1869,5 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 - (void)dealloc{
     NSLog(@"dealloc streamView %f", CACurrentMediaTime());
 }
-
-#if !TARGET_OS_TV
-- (BOOL)isMultipleTouchEnabled {
-    return YES;
-}
-#endif
 
 @end

@@ -455,7 +455,11 @@ class OSCProfilesManager: NSObject {
             if let style = OnScreenControls.layerVibrationStyleDic()?.object(forKey: layerName) as? NSNumber {
                 buttonState.vibrationStyle = style.uint8Value
             } else {
+#if os(tvOS)
+                buttonState.vibrationStyle = 0
+#else
                 buttonState.vibrationStyle = UInt8(UIImpactFeedbackGenerator.FeedbackStyle.light.rawValue)
+#endif
             }
 
             if let buttonStateEncoded = try? NSKeyedArchiver.archivedData(withRootObject: buttonState, requiringSecureCoding: true) {

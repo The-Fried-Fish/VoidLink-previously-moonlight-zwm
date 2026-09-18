@@ -1,10 +1,12 @@
 import SwiftUI
 import UIKit
 
-let usesSwiftUISettingsPicker = false
-let usesSwiftUISettingsSlider = false
-let usesSwiftUISettingsToggle = false
-private let settingsProgressSliderHeight: CGFloat = 34
+let usesSwiftUISettingsPicker = PublicUtils.isTVOS
+let usesSwiftUISettingsSlider = PublicUtils.isTVOS
+let usesSwiftUISettingsToggle = PublicUtils.isTVOS
+private let settingsProgressSliderHeight: CGFloat = 45
+private let settingsTVOSPickerScale: CGFloat = 0.6
+private let settingsTVOSPickerVisualHeight: CGFloat = 56
 
 @available(iOS 14.0, tvOS 14.0, *)
 extension View {
@@ -21,6 +23,60 @@ struct SettingsPickerOption<Value: Hashable>: Identifiable {
     var isEnabled = true
 
     var id: Value { value }
+}
+
+/// Runtime picker selection semantics shared by every SettingsPicker backend.
+/// Callers can operate by selected index without knowing how an option maps to
+/// the stored value or whether the rendered control is UIKit or SwiftUI.
+struct SettingsPickerSelectionModel<Value: Hashable> {
+    let selection: Binding<Value>
+    let previousSelectedIndexBinding: Binding<Int>?
+    let options: [SettingsPickerOption<Value>]
+
+    var selectedIndex: Int {
+        options.firstIndex { $0.value == selection.wrappedValue } ?? UISegmentedControl.noSegment
+    }
+
+    var previousSelectedIndex: Int {
+        previousSelectedIndexBinding?.wrappedValue ?? UISegmentedControl.noSegment
+    }
+
+    var maximumSelectableIndex: Int? {
+        options.lastIndex { $0.isEnabled }
+    }
+
+    func option(for value: Value) -> SettingsPickerOption<Value>? {
+        options.first { $0.value == value }
+    }
+
+    func publishPreviousSelectedIndex(_ index: Int) {
+        guard index != UISegmentedControl.noSegment else { return }
+        previousSelectedIndexBinding?.wrappedValue = index
+    }
+
+    @discardableResult
+    func setSelectedIndex(_ index: Int, publishPreviousSelection: Bool = false) -> Bool {
+        guard options.indices.contains(index),
+              options[index].isEnabled else { return false }
+        if publishPreviousSelection {
+            publishPreviousSelectedIndex(selectedIndex)
+        }
+        selection.wrappedValue = options[index].value
+        return true
+    }
+}
+
+extension Array {
+    func setEnabled<Value: Hashable>(_ isEnabled: Bool, forIndex index: Int) -> [SettingsPickerOption<Value>]
+    where Element == SettingsPickerOption<Value> {
+        enumerated().map { optionIndex, option in
+            var option = option
+            if optionIndex == index {
+                option.isEnabled = isEnabled
+            }
+            return option
+        }
+    }
 }
 
 enum SettingsPickerWidthDistribution: Equatable {
@@ -46,6 +102,7 @@ struct SettingsPicker<Value: Hashable>: View {
     /// Gives an iOS owner the backing control when it must reproduce UIKit's
     /// selected-index + `sendActions(for: .valueChanged)` behavior.
     var onControlResolved: ((UISegmentedControl?) -> Void)?
+    var containerWidth: CGFloat?
 
     init(
         selection: Binding<Value>,
@@ -56,7 +113,8 @@ struct SettingsPicker<Value: Hashable>: View {
         widthDistribution: SettingsPickerWidthDistribution = .equal,
         onDisabledOptionTapped: ((Value) -> Void)? = nil,
         onSelectionChanging: ((Int, Value) -> Void)? = nil,
-        onControlResolved: ((UISegmentedControl?) -> Void)? = nil
+        onControlResolved: ((UISegmentedControl?) -> Void)? = nil,
+        containerWidth: CGFloat? = nil
     ) {
         _selection = selection
         self.previousSelectedIndex = previousSelectedIndex
@@ -67,6 +125,7 @@ struct SettingsPicker<Value: Hashable>: View {
         self.onDisabledOptionTapped = onDisabledOptionTapped
         self.onSelectionChanging = onSelectionChanging
         self.onControlResolved = onControlResolved
+        self.containerWidth = containerWidth
     }
 
     var body: some View {
@@ -78,7 +137,8 @@ struct SettingsPicker<Value: Hashable>: View {
                 isEnabled: isEnabled,
                 isUserInteractionEnabled: isUserInteractionEnabled,
                 onDisabledOptionTapped: onDisabledOptionTapped,
-                onSelectionChanging: onSelectionChanging
+                onSelectionChanging: onSelectionChanging,
+                containerWidth: containerWidth
             )
             .onAppear {
                 onControlResolved?(nil)
@@ -112,6 +172,7 @@ struct SettingsSlider: View {
     var isUserInteractionEnabled: Bool
     var onEditingChanged: (Bool) -> Void
     var onControlResolved: ((UIControl?) -> Void)?
+    var containerWidth: CGFloat?
 
     init(
         value: Binding<Double>,
@@ -119,7 +180,8 @@ struct SettingsSlider: View {
         isEnabled: Bool = true,
         isUserInteractionEnabled: Bool = true,
         onEditingChanged: @escaping (Bool) -> Void = { _ in },
-        onControlResolved: ((UIControl?) -> Void)? = nil
+        onControlResolved: ((UIControl?) -> Void)? = nil,
+        containerWidth: CGFloat? = nil
     ) {
         _value = value
         self.range = range
@@ -127,15 +189,26 @@ struct SettingsSlider: View {
         self.isUserInteractionEnabled = isUserInteractionEnabled
         self.onEditingChanged = onEditingChanged
         self.onControlResolved = onControlResolved
+        self.containerWidth = containerWidth
     }
 
     var body: some View {
+#if os(tvOS)
+        SettingsProgressSlider(
+            value: value,
+            range: range,
+            isEnabled: isEnabled,
+            onControlResolved: onControlResolved,
+            containerWidth: containerWidth
+        )
+#else
         if usesSwiftUISettingsSlider {
             SettingsProgressSlider(
                 value: value,
                 range: range,
                 isEnabled: isEnabled,
-                onControlResolved: onControlResolved
+                onControlResolved: onControlResolved,
+                containerWidth: containerWidth
             )
         } else {
             SettingsIOSSlider(
@@ -147,6 +220,7 @@ struct SettingsSlider: View {
                 onControlResolved: onControlResolved
             )
         }
+#endif
     }
 }
 
@@ -156,6 +230,7 @@ private struct SettingsProgressSlider: View {
     let range: ClosedRange<Double>
     let isEnabled: Bool
     let onControlResolved: ((UIControl?) -> Void)?
+    let containerWidth: CGFloat?
 
     var body: some View {
         VStack {
@@ -166,6 +241,7 @@ private struct SettingsProgressSlider: View {
             .progressViewStyle(LinearProgressViewStyle())
             .accentColor(Color(ThemeManager.appSecondaryColor))
         }
+        .frame(width: containerWidth, alignment: .center)
         .frame(height: settingsProgressSliderHeight, alignment: .center)
         .opacity(isEnabled ? 1 : 0.46)
         .onAppear {
@@ -293,16 +369,22 @@ private struct SettingsSwiftUISegmentedPicker<Value: Hashable>: View {
     let isUserInteractionEnabled: Bool
     let onDisabledOptionTapped: ((Value) -> Void)?
     let onSelectionChanging: ((Int, Value) -> Void)?
+    let containerWidth: CGFloat?
 
     var body: some View {
+        let visualWidth = containerWidth ?? 700
+        let sourceWidth = visualWidth / settingsTVOSPickerScale
+        let sourceHeight = settingsTVOSPickerVisualHeight / settingsTVOSPickerScale
+        let pickerSelection = pickerSelectionModel
+
         Picker(
             "",
             selection: Binding(
                 get: { selection },
                 set: { newValue in
                     guard isEnabled, isUserInteractionEnabled else { return }
-                    let previousIndex = selectedIndex
-                    guard option(for: newValue)?.isEnabled == true else {
+                    let previousIndex = pickerSelection.selectedIndex
+                    guard pickerSelection.option(for: newValue)?.isEnabled == true else {
                         onDisabledOptionTapped?(newValue)
                         return
                     }
@@ -310,7 +392,7 @@ private struct SettingsSwiftUISegmentedPicker<Value: Hashable>: View {
                     if let onSelectionChanging {
                         onSelectionChanging(previousIndex, newValue)
                     } else {
-                        publishPreviousSelectedIndex(previousIndex)
+                        pickerSelection.publishPreviousSelectedIndex(previousIndex)
                         selection = newValue
                     }
                 }
@@ -327,19 +409,17 @@ private struct SettingsSwiftUISegmentedPicker<Value: Hashable>: View {
         .labelsHidden()
         .disabled(!isEnabled)
         .allowsHitTesting(isUserInteractionEnabled)
+        .frame(width: sourceWidth, height: sourceHeight)
+        .scaleEffect(settingsTVOSPickerScale)
+        .frame(width: visualWidth, height: settingsTVOSPickerVisualHeight)
     }
 
-    private var selectedIndex: Int {
-        options.firstIndex { $0.value == selection } ?? UISegmentedControl.noSegment
-    }
-
-    private func option(for value: Value) -> SettingsPickerOption<Value>? {
-        options.first { $0.value == value }
-    }
-
-    private func publishPreviousSelectedIndex(_ index: Int) {
-        guard index != UISegmentedControl.noSegment else { return }
-        previousSelectedIndex?.wrappedValue = index
+    private var pickerSelectionModel: SettingsPickerSelectionModel<Value> {
+        SettingsPickerSelectionModel(
+            selection: $selection,
+            previousSelectedIndexBinding: previousSelectedIndex,
+            options: options
+        )
     }
 }
 
@@ -367,6 +447,13 @@ struct SettingsToggle: View {
     }
 
     var body: some View {
+#if os(tvOS)
+        SettingsSwiftUIToggle(
+            isOn: $isOn,
+            isEnabled: isEnabled,
+            onControlResolved: onControlResolved
+        )
+#else
         if usesSwiftUISettingsToggle {
             SettingsSwiftUIToggle(
                 isOn: $isOn,
@@ -381,6 +468,7 @@ struct SettingsToggle: View {
                 onControlResolved: onControlResolved
             )
         }
+#endif
     }
 }
 
@@ -395,6 +483,7 @@ private struct SettingsSwiftUIToggle: View {
             .labelsHidden()
             .disabled(!isEnabled)
             .opacity(isEnabled ? 1 : 0.46)
+            .scaleEffect(0.7)
             .onAppear {
                 onControlResolved?(nil)
             }
@@ -646,17 +735,12 @@ private struct SettingsIOSSegmentedPicker<Value: Hashable>: UIViewRepresentable 
             if let onSelectionChanging = parent.onSelectionChanging {
                 onSelectionChanging(previousIndex, value)
             } else {
-                publishPreviousSelectedIndex(previousIndex)
+                parent.pickerSelectionModel.publishPreviousSelectedIndex(previousIndex)
                 parent.selection = value
             }
             if parent.selection != value {
                 restoreBindingSelection(in: sender)
             }
-        }
-
-        private func publishPreviousSelectedIndex(_ index: Int) {
-            guard index != UISegmentedControl.noSegment else { return }
-            parent.previousSelectedIndex?.wrappedValue = index
         }
 
         @objc func segmentTapped(_ recognizer: UITapGestureRecognizer) {
@@ -680,5 +764,13 @@ private struct SettingsIOSSegmentedPicker<Value: Hashable>: UIViewRepresentable 
                 ?? UISegmentedControl.noSegment
             segmentedControl.selectedSegmentIndex = selectedIndex
         }
+    }
+
+    private var pickerSelectionModel: SettingsPickerSelectionModel<Value> {
+        SettingsPickerSelectionModel(
+            selection: $selection,
+            previousSelectedIndexBinding: previousSelectedIndex,
+            options: options
+        )
     }
 }

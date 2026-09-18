@@ -17,7 +17,13 @@ import UIKit
     @objc optional func disconnectAndQuitApp()
 }
 
-@objc public class ToolboxViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, WidgetPickerViewControllerDelegate {
+#if os(tvOS)
+private protocol ToolboxWidgetPickerDelegateConformance {}
+#else
+private typealias ToolboxWidgetPickerDelegateConformance = WidgetPickerViewControllerDelegate
+#endif
+
+@objc public class ToolboxViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, ToolboxWidgetPickerDelegateConformance {
 
     private enum ToolboxEntry {
         case special(id: String, title: String)
@@ -506,10 +512,12 @@ import UIKit
         updateToolbarColors()
     }
 
+#if !os(tvOS)
     @available(iOS 13.0, *)
     public func widgetPickerViewController(_ controller: WidgetPickerViewController, didCreateWidget payload: NSDictionary) {
         createEntry(cmdString: payload["cmdString"] as? String, alias: payload["buttonLabel"] as? String)
     }
+#endif
 
     private func createEntry(cmdString: String?, alias: String?) {
         let cmdString = cmdString ?? ""
@@ -541,6 +549,7 @@ import UIKit
     }
 
     @objc private func addButtonTapped() {
+#if !os(tvOS)
         if #available(iOS 13.0, *) {
             let pickerViewController = WidgetPickerViewController()
             pickerViewController.delegate = self
@@ -551,6 +560,7 @@ import UIKit
             pickerViewController.presentOverFullScreen(from: self)
             return
         }
+#endif
 
         let alert = UIAlertController(title: "New Command".localized, message: "Enter a new command and alias".localized, preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Command".localized }

@@ -114,6 +114,7 @@ final class GamepadNavigationIllustrationHud: UIView {
         for element in elements {
             print("element \(element.action)")
         } */
+        
         updateNavigationElements(elements, forceDisplay: forceDisplay)
     }
 

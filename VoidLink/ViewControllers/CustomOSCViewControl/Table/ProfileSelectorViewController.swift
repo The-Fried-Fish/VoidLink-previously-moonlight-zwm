@@ -9,6 +9,18 @@
 import Compression
 import UIKit
 
+#if os(tvOS)
+private final class ProfileSelectorNoFocusWindow: UIWindow {
+    override var canBecomeFocused: Bool {
+        false
+    }
+
+    override func shouldUpdateFocus(in context: UIFocusUpdateContext) -> Bool {
+        context.nextFocusedItem == nil
+    }
+}
+#endif
+
 private final class ProfileCollectionViewCell: UICollectionViewCell, ControllerNavigationHighlightTargetProviding {
     static let reuseIdentifier = "ProfileCollectionViewCell"
 
@@ -282,7 +294,7 @@ private extension UInt64 {
 }
 
 @objcMembers
-final class ProfileSelectorViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIDocumentPickerDelegate, UIGestureRecognizerDelegate, ControllerUINavigationDelegate {
+final class ProfileSelectorViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, ControllerUINavigationDelegate {
 
     var currentFileOperation: FileOperation = .importOperation
     private var currentExportScope: ProfileExportScope = .allProfiles
@@ -336,6 +348,7 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
         return PublicUtils.viewIsLandscape(view)
     }
 
+#if !os(tvOS)
     private func getCurrentOrientation() -> UIInterfaceOrientationMask {
         let bounds = UIScreen.main.bounds
         if bounds.width > bounds.height {
@@ -348,13 +361,15 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         getCurrentOrientation()
     }
+#endif
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if isBeingDismissed || navigationController?.isBeingDismissed == true {
             persistProfileOrderIfNeeded(notify: false)
         }
-        NotificationCenter.default.post(name: Notification.Name("ProfileSelectorCloseNotification"), object: self)
+        NotificationCenter.default.post(name: Notification.Name(PublicUtils.isTVOS ? "GameProfileSelectorCloseNotification" : "ProfileSelectorCloseNotification"), object: self)
+        // tvOS launches profileSelector without layout editor
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -426,7 +441,11 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
             return
         }
 
+#if os(tvOS)
+        let window = ProfileSelectorNoFocusWindow(windowScene: windowScene)
+#else
         let window = UIWindow(windowScene: windowScene)
+#endif
         let rootViewController = UIViewController()
         rootViewController.view.backgroundColor = .clear
         window.rootViewController = rootViewController
@@ -893,6 +912,9 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
     }
 
     private func beginExport(scope: ProfileExportScope) {
+#if os(tvOS)
+        _ = scope
+#else
         currentFileOperation = .exportOperation
         currentExportScope = scope
         let tempPath = NSTemporaryDirectory().appending(exportFileName(for: scope))
@@ -901,14 +923,19 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
         let picker = UIDocumentPickerViewController(url: URL(fileURLWithPath: tempPath), in: .exportToService)
         picker.delegate = self
         present(picker, animated: true)
+#endif
     }
 
     @IBAction func importDataTapped(_ sender: Any?) {
+#if os(tvOS)
+        _ = sender
+#else
         currentFileOperation = .importOperation
         let picker = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .open)
         picker.delegate = self
         picker.allowsMultipleSelection = false
         present(picker, animated: true)
+#endif
     }
 
     @IBAction func restoreTapped(_ sender: Any?) {
@@ -916,6 +943,7 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
         profileViewRefresh()
     }
 
+#if !os(tvOS)
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
         switch currentFileOperation {
@@ -925,6 +953,7 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
             fileToProfiles(url)
         }
     }
+#endif
 
     private func profilesToFile(_ destinationURL: URL) {
         do {
@@ -1271,6 +1300,10 @@ final class ProfileSelectorViewController: UIViewController, UICollectionViewDat
         }
     }
 }
+
+#if !os(tvOS)
+extension ProfileSelectorViewController: UIDocumentPickerDelegate {}
+#endif
 
 @available(iOS 13.0, *)
 extension ProfileSelectorViewController: ControllerCollectionNavigationDelegate {

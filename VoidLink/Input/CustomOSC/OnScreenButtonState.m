@@ -96,7 +96,12 @@
         self.alias = [decoder decodeObjectForKey:@"alias"];
         self.widgetType = [decoder decodeIntForKey:@"buttonType"];
         self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;
-        self.vibrationStyle = [decoder containsValueForKey:@"vibrationStyle"] ? [decoder decodeIntForKey:@"vibrationStyle"] : UIImpactFeedbackStyleLight;
+        self.vibrationStyle = [decoder containsValueForKey:@"vibrationStyle"] ? [decoder decodeIntForKey:@"vibrationStyle"] :
+#if TARGET_OS_TV
+        0;
+#else
+        UIImpactFeedbackStyleLight;
+#endif
         self.mouseButtonAction = [decoder decodeIntForKey:@"mouseButtonAction"];
         self.animatesTransition = [decoder containsValueForKey:@"animatesTransition"] ? [decoder decodeBoolForKey:@"animatesTransition"] : true;
         self.buttonMode = [decoder containsValueForKey:@"slideMode"] ? [decoder decodeIntForKey:@"slideMode"] : 0;

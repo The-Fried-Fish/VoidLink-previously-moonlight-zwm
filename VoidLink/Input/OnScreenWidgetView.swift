@@ -211,7 +211,9 @@ import ObjectiveC.runtime
     
     private let appWindow: UIView
     
+#if !os(tvOS)
     private var vibrationGenerator = UIImpactFeedbackGenerator(style: .light)
+#endif
     private var vibrationOn: Bool = false
     
     private var inertialScroller:InertialScroller
@@ -508,7 +510,7 @@ import ObjectiveC.runtime
         // for comboButtonString in comboButtonStrings {
             // print("comboButtonString: \(comboButtonString)")
         // }
-        
+                
         self.widgetLabel = buttonLabel
         self.shape = shape
         self.label = UILabel()
@@ -611,13 +613,14 @@ import ObjectiveC.runtime
                 self.heightFactor = PublicUtils.isIPhone ? 0.56 : 0.77
             }
         }
-                
+        
+        if self.widgetType == .touchPad && PublicUtils.isTVOS {return}
+        
         self.tweakBorderAlpha(alpha: self.borderAlpha) // fix default borderAlpha offset
         
         self.onScreenControls = OnScreenControls.shared()
 
         setupView()
-        
     }
     
     required init?(coder: NSCoder) {
@@ -703,10 +706,12 @@ import ObjectiveC.runtime
         
         self.hasAnchorMode = isDisplacementBasedStickPad || isDirectionPad
         
+#if !os(tvOS)
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
             || CommandManager.mousePadWithButtonActions.contains(self.touchPadString)
             || self.touchPadString == "MAGNIFIER"
             || self.touchPadString == "DS4TOUCH"
+#endif
     }
     
     // ======================================================================================================
@@ -739,6 +744,10 @@ import ObjectiveC.runtime
     }
 
     @objc public func setVibration(style: Int) {
+#if os(tvOS)
+        vibrationOn = false
+        vibrationStyle = style
+#else
         if #available(iOS 13.0, *) {
             vibrationOn = style < UIImpactFeedbackGenerator.FeedbackStyle.rigid.rawValue + 1
         } else {
@@ -753,6 +762,14 @@ import ObjectiveC.runtime
         if vibrationOn {
             vibrationGenerator = UIImpactFeedbackGenerator(style: UIImpactFeedbackGenerator.FeedbackStyle(rawValue: style) ?? UIImpactFeedbackGenerator.FeedbackStyle.light)
         }
+#endif
+    }
+
+    private func performVibrationFeedback() {
+#if !os(tvOS)
+        vibrationGenerator.prepare()
+        vibrationGenerator.impactOccurred()
+#endif
     }
     
     @objc public func setLocation(position: CGPoint) {
@@ -1105,6 +1122,7 @@ import ObjectiveC.runtime
         
         if self.hasNonEditableLabel {
             
+#if !os(tvOS)
             switch cmdString {
             case "GAMEPADOVERLAY":
                 self.nonEditableWidgetLabel =  OnScreenWidgetView.gamepadOverlayFLag ? "=GamepadOverlayOn".localized : "=GamepadOverlayOff".localized
@@ -1119,6 +1137,7 @@ import ObjectiveC.runtime
                 }
                 else {self.nonEditableWidgetLabel = "=DisableSingleTouch".localized}
             case "DISABLETILT":
+                self.nonEditableWidgetLabel = "=disableTilt".localized
                 if let pencilHandler = PencilHandler.shared {
                     self.nonEditableWidgetLabel = pencilHandler.disableTilt ? "=enableTilt".localized : "=disableTilt".localized
                 }
@@ -1126,6 +1145,7 @@ import ObjectiveC.runtime
             default:
                 nonEditableWidgetLabel = ""
             }
+#endif
 
             text = self.nonEditableWidgetLabel
         }
@@ -1501,8 +1521,7 @@ import ObjectiveC.runtime
         if indicatorLayer.isHidden {
             indicatorLayer.isHidden = false
             if vibrationOn {
-                vibrationGenerator.prepare()
-                vibrationGenerator.impactOccurred()
+                performVibrationFeedback()
             }
         }
     }
@@ -1537,8 +1556,7 @@ import ObjectiveC.runtime
                 }
                 self.sprintSign.isHidden = !isInSprintMode
                 if !directionPadTouchBegan, isInSprintMode, vibrationOn {
-                    vibrationGenerator.prepare()
-                    vibrationGenerator.impactOccurred()
+                    performVibrationFeedback()
                 }
             }
             
@@ -1557,8 +1575,7 @@ import ObjectiveC.runtime
                 }
                 self.walkSign.isHidden = !isInWalkMode
                 if !directionPadTouchBegan, isInWalkMode, vibrationOn {
-                    vibrationGenerator.prepare()
-                    vibrationGenerator.impactOccurred()
+                    performVibrationFeedback()
                 }
             }
             
@@ -1777,8 +1794,7 @@ import ObjectiveC.runtime
         self.buttonDownVisualEffect()
         
         if vibrationOn {
-            vibrationGenerator.prepare()
-            vibrationGenerator.impactOccurred()
+            performVibrationFeedback()
         }
     }
     
@@ -3101,10 +3117,10 @@ import ObjectiveC.runtime
             self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
         case "GAMEPADOVERLAY":
             self.gamepadOverlayButtonUp()
+#if !os(tvOS)
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}
             self.functionalWidgetDelegate?.disablePencilHover()
-
         case "DISABLETOUCH":
             if let streamFrameVC = StreamFrameViewController.sharedInstance() {
                 streamFrameVC.touchDisabled = !streamFrameVC.touchDisabled
@@ -3138,6 +3154,7 @@ import ObjectiveC.runtime
             ].contains(Bundle.main.bundleIdentifier) && PublicUtils.isIPad {
                 self.functionalWidgetDelegate?.presentPressureCurveVC()
             }
+#endif
         default:
             break
         }
@@ -3149,12 +3166,16 @@ import ObjectiveC.runtime
         
     @objc static var gamepadOverlayFLag:Bool = false
     private func gamepadOverlayButtonUp(){
+#if os(tvOS)
+        OnScreenWidgetView.gamepadOverlayFLag = false
+#else
         self.relocatedDuringStreaming = true
         OnScreenWidgetView.gamepadOverlayFLag = !OnScreenWidgetView.gamepadOverlayFLag
         self.setupAtrributedText()
         if #available(iOS 13.0, *) {
             self.functionalWidgetDelegate?.toggleGamepadOverlay(overlayEnabled: OnScreenWidgetView.gamepadOverlayFLag)
         }
+#endif
     }
 
     private func temporaryDisableFolderButtonAnimation(){
@@ -3578,11 +3599,15 @@ import ObjectiveC.runtime
     }
     
     private func isPencilProEnabled() -> Bool {
+#if os(tvOS)
+        return false
+#else
         if !(PencilHandler.shared?.pencilProEnabled ?? false) {
             IAPManager.shared.purchase(AddOnProduct.PencilProPack)
             return false
         }
         return true
+#endif
     }
         
     // MARK: - Auto Dock
@@ -3832,7 +3857,9 @@ import ObjectiveC.runtime
             self.transform = CGAffineTransform(scaleX: 0.985, y: 0.985)
             
             if ControllerUtil.activeStreamingGCControllers.count > 0, !PublicUtils.iOS26Available {
+#if !os(tvOS)
                 self.parentViewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
+#endif
             }
             
         } completion: { _ in
@@ -3848,7 +3875,7 @@ import ObjectiveC.runtime
                     guard let self, self.autoDockIsDocked else { return }
                     UIView.animate(withDuration: 0.17, delay: 0, options: [.allowUserInteraction, .curveEaseOut]) {
                         self.isUserInteractionEnabled = true
-                        self.alpha = self.autoDockSettledAlpha
+                        self.alpha = PublicUtils.isTVOS ? 0 : self.autoDockSettledAlpha
                     }
                 }
             }
@@ -3857,7 +3884,9 @@ import ObjectiveC.runtime
     
     private func autoDockRestoreWidget(animated: Bool) {
         OnScreenWidgetView.deferScreenEdgeSysGesturesDueToOnScreenWidgets = true
+#if !os(tvOS)
         self.parentViewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
+#endif
         guard autoDockIsDocked else {
             restartAutoDockCountdown()
             return
@@ -4506,8 +4535,7 @@ extension OnScreenWidgetView {
         }
 
         if vibrationOn {
-            vibrationGenerator.prepare()
-            vibrationGenerator.impactOccurred()
+            performVibrationFeedback()
         }
     }
 

@@ -25,16 +25,17 @@
 
 
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *settingsButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *profilesButton;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem *profilesButton;
 @property (weak, nonatomic) SettingsViewController *settingsViewController;
 @property (nonatomic, strong) HostCollectionViewController *hostCollectionVC;
 @property (nonatomic, strong, readonly) NSArray<TemporaryApp *> *sortedAppList;
 
-#if !TARGET_OS_TV
 @property (nonatomic, assign) bool settingsExpandedInStreamView;
 @property (nonatomic, readonly) bool settingsViewExpanded;
-@property (weak, nonatomic) IBOutlet UINavigationItem *navigationItem;
 
+#if !TARGET_OS_TV
+@property (weak, nonatomic) IBOutlet UINavigationItem *navigationItem;
+#endif
 
 - (void)expandSettingsView;
 - (void)closeSettingViewAnimated:(BOOL)anaimated;
@@ -47,9 +48,8 @@
 - (void)quitLaunchedApp;
 - (void)launchApp:(TemporaryApp *)app;
 - (void)quitRunningAppAndStart:(TemporaryApp *)app;
-
 - (NSInteger)requestForBitrate:(NSInteger)bitrateKbps;
-#endif
+
 - (void)fillResolutionTable:(CMVideoDimensions *)resolutionTable externalDisplayMode:(NSInteger)externalDisplayMode;
 - (void)setNeedsUpdateAllowedOrientation;
 

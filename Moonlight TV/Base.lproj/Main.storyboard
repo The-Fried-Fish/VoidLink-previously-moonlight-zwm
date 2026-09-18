@@ -11,7 +11,7 @@
         <!--Navigation Controller-->
         <scene sceneID="7NP-T1-Ygj">
             <objects>
-                <navigationController id="pui-7y-JNH" sceneMemberID="viewController">
+                <navigationController id="pui-7y-JNH" customClass="VoidLinkNoFocusNavigationController" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="Lgd-OS-TqA">
                         <rect key="frame" x="0.0" y="60" width="1920" height="145"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -34,7 +34,7 @@
         <scene sceneID="duv-ef-Eeh">
             <objects>
                 <collectionViewController id="vKn-MI-uG7" customClass="MainFrameViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" prefetchingEnabled="YES" id="8P0-wP-bDe">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" prefetchingEnabled="YES" id="8P0-wP-bDe" customClass="AppCollectionView">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="875"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="75" minimumInteritemSpacing="50" id="m6l-TM-5FZ">

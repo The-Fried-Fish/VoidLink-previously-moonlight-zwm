@@ -76,6 +76,7 @@ public extension UIFont {
     }
 }
 
+#if !os(tvOS)
 public extension UISlider {
     func step(forward: Bool, visualStepRatio: Float) {
         let range = self.maximumValue - self.minimumValue
@@ -91,6 +92,7 @@ public extension UISlider {
         }
     }
 }
+#endif
 
 private var previousSelectedSegmentIndexKey: UInt8 = 0
 private var lastKnownSelectedSegmentIndexKey: UInt8 = 0

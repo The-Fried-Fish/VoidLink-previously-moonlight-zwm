@@ -745,11 +745,16 @@ import UIKit
                     .foregroundColor: UIColor.placeholderText
                 ])
         } else {
+#if os(tvOS)
+            let foregroundColor = UIColor(white: 1, alpha: 0.6)
+#else
+            let foregroundColor = UIColor.lightText
+#endif
             return NSAttributedString(
                 string: text,
                 attributes: [
                     .font: UIFont.systemFont(ofSize: 15),
-                    .foregroundColor: UIColor.lightText
+                    .foregroundColor: foregroundColor
                 ])
         }
     }

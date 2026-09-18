@@ -7,7 +7,9 @@
 //
 
 import Combine
+#if !os(tvOS)
 import CoreMotion
+#endif
 import GameController
 import SwiftUI
 import UIKit
@@ -89,7 +91,7 @@ private enum SettingsRenderingBackend: Int {
     case metal = 1
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private var settingsSectionFoldAnimation: Animation {
     .timingCurve(
         0.32, 0,
@@ -103,7 +105,7 @@ private struct SettingsLegacyHelpContent {
     let learnMoreURLKey: String?
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsInfoButtonControl: UIViewRepresentable {
     let isGameProfileSetting: Bool
     let action: () -> Void
@@ -556,7 +558,7 @@ struct SettingsContinuousInteractionDescriptor {
 
 /// Observable state owned by one setting item. The session only coordinates
 /// cross-item context; item-local value and UI state live here.
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 final class SettingsItemModel<Value>: ObservableObject, Identifiable {
     let id: SettingsItemID
     var titleKey: String { id.titleKey }
@@ -590,7 +592,7 @@ final class SettingsItemModel<Value>: ObservableObject, Identifiable {
 /// Declarative description consumed by the renderer and runtime navigation.
 /// Visibility/enabled values are evaluated from the current session so this
 /// object never becomes a second, stale copy of the UI state.
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 struct SettingsItemDescriptor: Identifiable {
     let id: SettingsItemID
     let control: SettingsControlDescriptor
@@ -598,6 +600,7 @@ struct SettingsItemDescriptor: Identifiable {
     /// this straight into `SettingsPicker`; item actions can read the same
     /// model property without reaching into a rendered UIView.
     let previousSelectedIndex: ((SettingsSession) -> Binding<Int>?)?
+    let isAvailable: Bool
     let isVisible: (SettingsSession) -> Bool
     let isEnabled: (SettingsSession) -> Bool
     let dynamicText: ((SettingsSession) -> String)?
@@ -612,6 +615,7 @@ struct SettingsItemDescriptor: Identifiable {
         id: SettingsItemID,
         control: SettingsControlDescriptor,
         previousSelectedIndex: ((SettingsSession) -> Binding<Int>?)? = nil,
+        isAvailable: Bool = true,
         isVisible: @escaping (SettingsSession) -> Bool = { _ in true },
         isEnabled: @escaping (SettingsSession) -> Bool = { _ in true },
         dynamicText: ((SettingsSession) -> String)? = nil,
@@ -625,6 +629,7 @@ struct SettingsItemDescriptor: Identifiable {
         self.id = id
         self.control = control
         self.previousSelectedIndex = previousSelectedIndex
+        self.isAvailable = isAvailable
         self.isVisible = isVisible
         self.isEnabled = isEnabled
         self.dynamicText = dynamicText
@@ -637,7 +642,29 @@ struct SettingsItemDescriptor: Identifiable {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
+extension SettingsItemDescriptor {
+    func pickerSelectionModel(in session: SettingsSession) -> SettingsPickerSelectionModel<Int>? {
+        guard case let .picker(value, setValue, options, _) = control else { return nil }
+        return SettingsPickerSelectionModel(
+            selection: Binding(
+                get: { value(session) },
+                set: { newValue in setValue(session, newValue) }
+            ),
+            previousSelectedIndexBinding: previousSelectedIndex?(session),
+            options: options(session)
+        )
+    }
+}
+
+@available(iOS 13.0, tvOS 13.0, *)
+extension SettingsSession {
+    func pickerSelectionModel(for id: SettingsItemID) -> SettingsPickerSelectionModel<Int>? {
+        settingsItem(for: id)?.pickerSelectionModel(in: self)
+    }
+}
+
+@available(iOS 13.0, tvOS 13.0, *)
 struct SettingsSectionDescriptor: Identifiable {
     let id: SettingsSectionID
     let titleKey: String
@@ -669,7 +696,7 @@ struct SettingsSectionDescriptor: Identifiable {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 extension SettingsSession {
     private func pickerItem(
         _ itemKeyPath: KeyPath<SettingsItemRegistry, SettingsItemModel<Int>>,
@@ -678,6 +705,7 @@ extension SettingsSession {
         options: @escaping (SettingsSession) -> [SettingsPickerOption<Int>],
         distribution: SettingsPickerWidthDistribution,
         previousSelectedIndex: ((SettingsSession) -> Binding<Int>?)? = nil,
+        isAvailable: Bool = true,
         isVisible: @escaping (SettingsSession) -> Bool = { _ in true },
         isEnabled: @escaping (SettingsSession) -> Bool = { _ in true },
         dynamicText: ((SettingsSession) -> String)? = nil,
@@ -713,6 +741,7 @@ extension SettingsSession {
                 distribution: distribution
             ),
             previousSelectedIndex: previousSelectedIndex ?? itemPreviousSelectedIndex,
+            isAvailable: isAvailable,
             isVisible: isVisible,
             isEnabled: isEnabled,
             dynamicText: dynamicText,
@@ -729,6 +758,7 @@ extension SettingsSession {
         _ itemKeyPath: KeyPath<SettingsItemRegistry, SettingsItemModel<Bool>>,
         idOverride: SettingsItemID? = nil,
         setValue: ((SettingsSession, SettingsItemModel<Bool>, Bool) -> Void)? = nil,
+        isAvailable: Bool = true,
         isVisible: @escaping (SettingsSession) -> Bool = { _ in true },
         isEnabled: @escaping (SettingsSession) -> Bool = { _ in true },
         dynamicText: ((SettingsSession) -> String)? = nil,
@@ -752,6 +782,7 @@ extension SettingsSession {
                     }
                 }
             ),
+            isAvailable: isAvailable,
             isVisible: isVisible,
             isEnabled: isEnabled,
             dynamicText: dynamicText,
@@ -770,6 +801,7 @@ extension SettingsSession {
         range: ClosedRange<Double>,
         clampedTo clampRange: ClosedRange<Double>? = nil,
         valueText: @escaping (SettingsSession, SettingsItemModel<Double>) -> String,
+        isAvailable: Bool = true,
         isVisible: @escaping (SettingsSession) -> Bool = { _ in true },
         isEnabled: @escaping (SettingsSession) -> Bool = { _ in true },
         dynamicText: ((SettingsSession) -> String)? = nil,
@@ -797,6 +829,7 @@ extension SettingsSession {
                 range: range,
                 valueText: { session in valueText(session, session.itemRegistry[keyPath: itemKeyPath]) }
             ),
+            isAvailable: isAvailable,
             isVisible: isVisible,
             isEnabled: isEnabled,
             dynamicText: dynamicText,
@@ -813,6 +846,7 @@ extension SettingsSession {
         idOverride: SettingsItemID? = nil,
         isOn: @escaping (Double) -> Bool = { $0 != 0 },
         setValue: @escaping (SettingsSession, SettingsItemModel<Double>, Bool) -> Void,
+        isAvailable: Bool = true,
         isVisible: @escaping (SettingsSession) -> Bool = { _ in true },
         isEnabled: @escaping (SettingsSession) -> Bool = { _ in true },
         dynamicText: ((SettingsSession) -> String)? = nil,
@@ -833,6 +867,7 @@ extension SettingsSession {
                     setValue(session, session.itemRegistry[keyPath: itemKeyPath], newValue)
                 }
             ),
+            isAvailable: isAvailable,
             isVisible: isVisible,
             isEnabled: isEnabled,
             dynamicText: dynamicText,
@@ -851,7 +886,7 @@ extension SettingsItemID {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 fileprivate final class SettingsNavigationState: ObservableObject {
     let objectWillChange = ObservableObjectPublisher()
     let highlightedIDDidChange = PassthroughSubject<String?, Never>()
@@ -906,7 +941,7 @@ private func settingsRectMapApproximatelyEqual<Key: Hashable>(
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private extension EnvironmentValues {
     var settingsNavigationRowsHidden: Bool {
         get { self[SettingsNavigationRowsHiddenKey.self] }
@@ -914,7 +949,7 @@ private extension EnvironmentValues {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private struct SettingsNavigationRegistration: ViewModifier {
     let id: String
     let isHidden: Bool
@@ -1112,7 +1147,7 @@ private func settingsMaximumMicVolumeForCurrentDevice() -> Double {
 /// The single source of truth for item-local values.  Keeping these values on
 /// the item models means adding a row does not require another parallel set of
 /// `SettingsSession` properties.
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 final class SettingsItemRegistry: ObservableObject {
     // MARK: Video
 
@@ -1371,7 +1406,7 @@ final class SettingsItemRegistry: ObservableObject {
 /// Swift counterpart of `controllerNavigationSwitchFlipped:`. The row action
 /// owns only the decision to begin setup; this coordinator owns the multi-step
 /// controller capture workflow so the catalog and renderer stay generic.
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private final class ControllerNavigationSetupCoordinator {
     private enum Phase {
         case localRadialButton
@@ -1618,7 +1653,7 @@ private final class ControllerNavigationSetupCoordinator {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 /// Shared settings-session coordinator. Section-specific state is being
 /// migrated behind this object; new section code must not add navigation or
 /// persistence responsibilities here.
@@ -1630,7 +1665,7 @@ private final class SettingsWeakSegmentedControl {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private final class SettingsWeakControl {
     weak var value: UIControl?
 
@@ -1639,7 +1674,7 @@ private final class SettingsWeakControl {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private final class SettingsWeakFavoriteLongPressTarget {
     weak var view: UIView?
     var isEnabled: Bool
@@ -1650,7 +1685,7 @@ private final class SettingsWeakFavoriteLongPressTarget {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private final class SettingsWeakSectionHitTestTarget {
     weak var view: UIView?
 
@@ -1659,12 +1694,12 @@ private final class SettingsWeakSectionHitTestTarget {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 fileprivate final class SettingsSectionInteractionState: ObservableObject {
     @Published fileprivate var allowsHitTesting = true
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 final class SettingsSession: NSObject, ObservableObject {
     @Published var isStreaming = false
     @Published private(set) var isGameProfileModified = false
@@ -2130,13 +2165,17 @@ final class SettingsSession: NSObject, ObservableObject {
     // MARK: - Video
 
     var resolutionOptions: [SettingsPickerOption<Int>] {
-        return [
+        var options: [SettingsPickerOption<Int>] = [
             .init(value: 0, title: "720p".localized),
             .init(value: 1, title: "1080p".localized),
             .init(value: 2, title: "4K".localized, isEnabled: supportsHEVC),
-            .init(value: 3, title: "Safe Area".localized),
-            .init(value: 4, title: "FullScr/Window".localized)
+            // .init(value: 3, title: "Safe Area".localized),
+            .init(value: 4, title: PublicUtils.isTVOS ? "Full-Screen".localized : "FullScr/Window".localized)
         ]
+        if !PublicUtils.isTVOS {
+            options.insert(.init(value: 3, title: "Safe Area".localized), at: 3)
+        }
+        return options
     }
 
     var frameRateOptions: [SettingsPickerOption<Int>] {
@@ -2147,7 +2186,9 @@ final class SettingsSession: NSObject, ObservableObject {
         if UIScreen.main.maximumFramesPerSecond > 62 {
             options.append(.init(value: 120, title: "120 FPS".localized))
         }
-        return options
+        guard itemRegistry.framePacing.value == FramePacingMode.interpolation.rawValue,
+              let lastIndex = options.indices.last else { return options }
+        return options.setEnabled(false, forIndex: lastIndex)
     }
 
     var codecOptions: [SettingsPickerOption<Int>] {
@@ -2228,13 +2269,13 @@ final class SettingsSession: NSObject, ObservableObject {
                 setValue: { session, _, newValue in
                     session.setCustomResolution(newValue)
                 },
+                isAvailable: !PublicUtils.isTVOS,
                 isVisible: { !$0.isStreaming }
             ),
             pickerItem(
                 \.frameRate,
                 setValue: { session, model, newValue in
-                        guard session.frameRateOptions.contains(where: { $0.value == newValue }),
-                              !(newValue == 120 && session.itemRegistry.framePacing.value == FramePacingMode.interpolation.rawValue) else { return }
+                        guard session.frameRateOptions.first(where: { $0.value == newValue })?.isEnabled == true else { return }
                         model.value = newValue
                         session.updateBitrateForCurrentResolutionAndFrameRate()
                 },
@@ -2342,6 +2383,7 @@ final class SettingsSession: NSObject, ObservableObject {
             ),
             toggleItem(
                 \.pictureInPicture,
+                isAvailable: !PublicUtils.isTVOS,
                 isVisible: { !$0.isStreaming },
                 isEnabled: { $0.pipEnabled },
                 hasInfo: true
@@ -2552,16 +2594,15 @@ final class SettingsSession: NSObject, ObservableObject {
     // MARK: - Controller
 
     private var hapticEngineOptions: [SettingsPickerOption<Int>] {
-        [
+        var options: [SettingsPickerOption<Int>] = [
             .init(value: HapticEnginePreference.HapticEngineAuto.rawValue, title: "Auto".localized),
-            .init(
-                value: HapticEnginePreference.RumbleDevice.rawValue,
-                title: "Built-in".localized,
-                isEnabled: UIDevice.current.userInterfaceIdiom == .phone
-            ),
             .init(value: HapticEnginePreference.LeftRightSwapped.rawValue, title: "L/R Swapped".localized),
             .init(value: HapticEnginePreference.RumbleOff.rawValue, title: "Disabled".localized)
         ]
+        if PublicUtils.isIPhone {
+            options.insert(.init(value: HapticEnginePreference.RumbleDevice.rawValue, title: "Built-in".localized), at: 1)
+        }
+        return options
     }
 
     private var emulatedControllerTypeOptions: [SettingsPickerOption<Int>] {
@@ -2580,12 +2621,19 @@ final class SettingsSession: NSObject, ObservableObject {
         } else {
             supportsControllerGyro = false
         }
-        return [
+        var options:[SettingsPickerOption<Int>] = [
             .init(value: GyroMode.GyroModeOff.rawValue, title: "Off".localized),
             .init(value: GyroMode.GyroModeAuto.rawValue, title: "Auto".localized, isEnabled: supportsControllerGyro),
-            .init(value: GyroMode.AlwaysDevice.rawValue, title: "Built-in".localized, isEnabled: CMMotionManager().isGyroAvailable),
             .init(value: GyroMode.AlwaysController.rawValue, title: "Controller".localized, isEnabled: supportsControllerGyro)
         ]
+        
+#if !os(tvOS)
+        if !PublicUtils.isTVOS {
+            options.insert(.init(value: GyroMode.AlwaysDevice.rawValue, title: "Built-in".localized, isEnabled: CMMotionManager().isGyroAvailable), at: 2)
+        }
+#endif
+        
+        return options
     }
 
     fileprivate var controllerSettingsCatalog: [SettingsItemDescriptor] {
@@ -2773,10 +2821,12 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.gyroSource,
                 options: { $0.gyroSourceOptions },
                 distribution: .equal,
+                isAvailable: !PublicUtils.isTVOS,
                 isGameProfileSetting: true
             ),
             toggleItem(
                 \.swapYawAndRoll,
+                isAvailable: !PublicUtils.isTVOS,
                 isVisible: { $0.itemRegistry.gyroSource.value == SettingsGyroSource.controller.rawValue },
                 hasInfo: true,
                 isGameProfileSetting: true
@@ -3046,6 +3096,7 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.externalDisplayMode,
                 options: { $0.externalDisplayModeOptions },
                 distribution: .equal,
+                isAvailable: !PublicUtils.isTVOS,
                 isVisible: { !$0.isStreaming },
                 hasInfo: true
             ),
@@ -3129,6 +3180,7 @@ final class SettingsSession: NSObject, ObservableObject {
             ),
             toggleItem(
                 \.useBuiltinMic,
+                isAvailable: !PublicUtils.isTVOS,
                 isVisible: { session in
                     session.itemRegistry.redirectMic.value && !self.isStreaming
                 },
@@ -3233,6 +3285,7 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.unlockDisplayOrientation,
                 options: { $0.unlockDisplayOrientationOptions },
                 distribution: .equal,
+                isAvailable: !PublicUtils.isTVOS,
                 isEnabled: { $0.unlockDisplayOrientationSelectorEnabled }
             ),
             sliderItem(
@@ -3268,13 +3321,15 @@ final class SettingsSession: NSObject, ObservableObject {
                  },
             ),
             toggleItem(
-                \.softKeyboardToolbar
+                \.softKeyboardToolbar,
+                isAvailable: !PublicUtils.isTVOS
             ),
             doubleBackedToggleItem(
                 \.softKeyboardHeight,
                 setValue: { session, model, newValue in
                     session.softKeyboardHeightToggleChanged(isOn: newValue, model: model)
                 },
+                isAvailable: !PublicUtils.isTVOS,
                 hasInfo: true
             ),
             toggleItem(
@@ -3348,6 +3403,7 @@ final class SettingsSession: NSObject, ObservableObject {
                 idOverride: .touchModeExperimental,
                 options: { $0.touchModeOptions },
                 distribution: .proportionalToContent,
+                isAvailable: !PublicUtils.isTVOS,
                 hasInfo: true,
                 isGameProfileSetting: true,
                 onValueChanged: { session in
@@ -3535,7 +3591,7 @@ final class SettingsSession: NSObject, ObservableObject {
     lazy var settingsCatalog: [SettingsSectionDescriptor] = makeSettingsCatalog()
 
     private func makeSettingsCatalog() -> [SettingsSectionDescriptor] {
-        var sections = [
+        var sections: [SettingsSectionDescriptor] = [
             // Video
             SettingsSectionDescriptor(
                 id: .video,
@@ -3545,18 +3601,6 @@ final class SettingsSession: NSObject, ObservableObject {
                 iconWeight: .bold,
                 iconSizeConstraint: -15,
                 items: videoSettingsCatalog
-            ),
-
-            // Touch Control
-            SettingsSectionDescriptor(
-                id: .touchController,
-                titleKey: "Touch Control",
-                icon: UIImage(named: "arcade.stick.console"),
-                iconPointSize: 22,
-                iconWeight: .regular,
-                iconSizeConstraint: -13,
-                itemsParticipateInControllerNavigation: false,
-                items: touchSettingsCatalog
             ),
 
             // Controller
@@ -3582,17 +3626,6 @@ final class SettingsSession: NSObject, ObservableObject {
             ),
 
             // Drawing Toolkit is inserted here on iPad.
-
-            // Gestures
-            SettingsSectionDescriptor(
-                id: .gestures,
-                titleKey: "Gestures",
-                icon: UIImage(systemName: "hand.draw"),
-                iconPointSize: 23,
-                iconWeight: .bold,
-                iconSizeConstraint: -11.3,
-                items: gesturesSettingsCatalog
-            ),
 
             // Peripherals
             SettingsSectionDescriptor(
@@ -3638,6 +3671,36 @@ final class SettingsSession: NSObject, ObservableObject {
                 items: experimentalSettingsCatalog
             )
         ]
+
+        if !PublicUtils.isTVOS {
+            sections.insert(
+                SettingsSectionDescriptor(
+                    id: .touchController,
+                    titleKey: "Touch Control",
+                    icon: UIImage(named: "arcade.stick.console"),
+                    iconPointSize: 22,
+                    iconWeight: .regular,
+                    iconSizeConstraint: -13,
+                    itemsParticipateInControllerNavigation: false,
+                    items: touchSettingsCatalog
+                ),
+                at: 1
+            )
+
+            sections.insert(
+                SettingsSectionDescriptor(
+                    id: .gestures,
+                    titleKey: "Gestures",
+                    icon: UIImage(systemName: "hand.draw"),
+                    iconPointSize: 23,
+                    iconWeight: .bold,
+                    iconSizeConstraint: -11.3,
+                    items: gesturesSettingsCatalog
+                ),
+                at: 4
+            )
+        }
+
         if PublicUtils.pencilSectionAvailable {
             sections.insert(
                 SettingsSectionDescriptor(
@@ -3812,15 +3875,19 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     private func applyFramePacing(_ value: Int) {
-        // UIKit performs the inverse transition here: entering interpolation
-        // from 120 FPS first brings FPS down to 60.
-        if value == FramePacingMode.interpolation.rawValue && itemRegistry.frameRate.value == 120 {
-            itemRegistry.frameRate.value = 60
-        }
         itemRegistry.framePacing.value = value
         if value == FramePacingMode.interpolation.rawValue {
+            retreatFrameRateFromDisabledLastOptionIfNeeded()
             GenericUtils.handleFrameInterpolationPixelFormatTip(in: presentingController)
         }
+    }
+
+    private func retreatFrameRateFromDisabledLastOptionIfNeeded() {
+        guard let frameRatePicker = pickerSelectionModel(for: .frameRate),
+              let maximumSelectableIndex = frameRatePicker.maximumSelectableIndex,
+              frameRatePicker.selectedIndex > maximumSelectableIndex else { return }
+        _ = frameRatePicker.setSelectedIndex(maximumSelectableIndex)
+        updateBitrateForCurrentResolutionAndFrameRate()
     }
 
     func handleFramePacingDisabledOptionTap(_ value: Int) {
@@ -4052,9 +4119,15 @@ final class SettingsSession: NSObject, ObservableObject {
     fileprivate func isExcludedFavoriteControlTouch(_ view: UIView?) -> Bool {
         var current = view
         while let candidate = current {
+#if os(tvOS)
+            if candidate is UIButton {
+                return true
+            }
+#else
             if candidate is UIButton || candidate is UISwitch {
                 return true
             }
+#endif
             current = candidate.superview
         }
         return false
@@ -4116,6 +4189,25 @@ final class SettingsSession: NSObject, ObservableObject {
         }
     }
 
+#if os(tvOS)
+    func updateContentInsets(
+        safeAreaInsets: UIEdgeInsets,
+        viewBounds: CGRect,
+        safeAreaLayoutFrame: CGRect
+    ) {
+        let leading: CGFloat = 10
+        let trailing: CGFloat = 0
+        let width: CGFloat = max(0, viewBounds.width - 20)
+
+        guard abs(contentLeadingInset - leading) > 0.5 ||
+                abs(contentTrailingInset - trailing) > 0.5 ||
+                abs(contentWidth - width) > 0.5 else { return }
+        contentLeadingInset = leading
+        contentTrailingInset = trailing
+        contentWidth = width
+        restoreInitialSettingsMenuOffsetIfNeeded()
+    }
+#else
     func updateContentInsets(
         safeAreaInsets: UIEdgeInsets,
         interfaceOrientation: UIInterfaceOrientation,
@@ -4146,6 +4238,7 @@ final class SettingsSession: NSObject, ObservableObject {
         contentWidth = width
         restoreInitialSettingsMenuOffsetIfNeeded()
     }
+#endif
 
     func reloadFromPersistence() {
         guard Thread.isMainThread else {
@@ -4639,8 +4732,14 @@ final class SettingsSession: NSObject, ObservableObject {
               let presenter = presentingController else { return }
         
         let profile = OSCProfilesManager.sharedManager(CGRect.zero).getSelectedProfile()
-        let previousIndex = itemRegistry.mapGyroTo.previousSelectedIndex
-        guard mapGyroToOptions.indices.contains(previousIndex) else {
+        guard let mapGyroToPicker = pickerSelectionModel(for: .mapGyroTo) else {
+            assertionFailure("Map Gyro to picker model is missing")
+            return
+        }
+        let previousIndex = mapGyroToPicker.previousSelectedIndex
+        guard let maximumSelectableIndex = mapGyroToPicker.maximumSelectableIndex,
+              previousIndex >= 0,
+              previousIndex <= maximumSelectableIndex else {
             // Drift Correction is entered through this picker, whose UIKit
             // bridge records the old segment before publishing the new one.
             // Do not fall back to persisted profile data as a second rollback
@@ -4648,7 +4747,13 @@ final class SettingsSession: NSObject, ObservableObject {
             assertionFailure("Map Gyro to is missing its previous selected index")
             return
         }
-        let previousMapping = mapGyroToOptions[previousIndex].value
+
+        func restorePreviousMapGyroSelection() {
+            guard mapGyroToPicker.setSelectedIndex(previousIndex) else {
+                assertionFailure("Map Gyro to failed to restore previous selected index")
+                return
+            }
+        }
         
         AlertControllerUtil.showAlert(
             in: presenter,
@@ -4659,7 +4764,7 @@ final class SettingsSession: NSObject, ObservableObject {
             countdown: 0,
             completion: {
                 if AlertControllerUtil.actionCancelled {
-                    self.itemRegistry.mapGyroTo.value = previousMapping
+                    restorePreviousMapGyroSelection()
                 }
                 else {
                     let calibrationProfile = (profile.mutableCopy() as? OSCProfile) ?? profile
@@ -4683,7 +4788,7 @@ final class SettingsSession: NSObject, ObservableObject {
                                                       buttonTitle: "Finished!".localized,
                                                       countdown: 6,
                                                       completion: {
-                            self.itemRegistry.mapGyroTo.value = previousMapping
+                            restorePreviousMapGyroSelection()
                         })
                     })
                 }
@@ -4698,24 +4803,38 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     fileprivate func pencilTipOffsetChanged() {
+#if os(tvOS)
+        itemRegistry.pencilTipOffset.value = false
+        return
+#else
         guard itemRegistry.pencilTipOffset.value,
               let presenter = presentingController else { return }
         let calibrationController = PencilTipOffsetCalibrationViewController()
         calibrationController.modalPresentationStyle = .overFullScreen
         presenter.definesPresentationContext = true
         presenter.present(calibrationController, animated: true)
+#endif
     }
 
     fileprivate func pressureCurveChanged() {
+#if os(tvOS)
+        itemRegistry.pressureCurve.value = false
+        return
+#else
         guard itemRegistry.pressureCurve.value,
               let presenter = presentingController else { return }
         let curveController = PressureCurveViewController()
         curveController.modalPresentationStyle = .overFullScreen
         presenter.definesPresentationContext = true
         presenter.present(curveController, animated: true)
+#endif
     }
 
     fileprivate func doubleTapShortcutChanged() {
+#if os(tvOS)
+        itemRegistry.doubleTapShortcut.value = false
+        return
+#else
         guard itemRegistry.doubleTapShortcut.value else { return }
         requirePencilPro(rollback: { [weak self] in
             self?.itemRegistry.doubleTapShortcut.value = false
@@ -4723,9 +4842,14 @@ final class SettingsSession: NSObject, ObservableObject {
             guard let presenter = self?.presentingController else { return }
             PencilHandler.enterDoubleTapShortcuts(in: presenter)
         })
+#endif
     }
 
     fileprivate func squeezeShortcutChanged() {
+#if os(tvOS)
+        itemRegistry.squeezeShortcut.value = false
+        return
+#else
         guard itemRegistry.squeezeShortcut.value else { return }
         requirePencilPro(rollback: { [weak self] in
             self?.itemRegistry.squeezeShortcut.value = false
@@ -4733,6 +4857,7 @@ final class SettingsSession: NSObject, ObservableObject {
             guard let presenter = self?.presentingController else { return }
             PencilHandler.enterSqueezeShortcuts(in: presenter)
         })
+#endif
     }
 
     fileprivate func pencilProToggleChanged(_ itemID: SettingsItemID) {
@@ -4827,15 +4952,23 @@ final class SettingsSession: NSObject, ObservableObject {
             itemRegistry.pictureInPicture.value = false
         }
         if !pipEnabled { itemRegistry.pictureInPicture.value = false }
-        if itemRegistry.frameRate.value == 120 && itemRegistry.framePacing.value == FramePacingMode.interpolation.rawValue {
-            itemRegistry.frameRate.value = 60
+        if itemRegistry.framePacing.value == FramePacingMode.interpolation.rawValue {
+            retreatFrameRateFromDisabledLastOptionIfNeeded()
         }
     }
 
     private var conditionallyVisibleSettingIDs: Set<String> {
         Set(allItemDescriptors.compactMap { item in
-            item.isVisible(self) ? item.id.rawValue : nil
+            isVisible(item) ? item.id.rawValue : nil
         })
+    }
+
+    fileprivate func isVisible(_ item: SettingsItemDescriptor) -> Bool {
+        item.isAvailable && item.isVisible(self)
+    }
+
+    fileprivate func hasVisibleItems(_ descriptor: SettingsSectionDescriptor) -> Bool {
+        descriptor.items.contains { isVisible($0) }
     }
 
     func isVisible(_ id: SettingsItemID) -> Bool {
@@ -5155,6 +5288,7 @@ final class SettingsSession: NSObject, ObservableObject {
 
     private var allSettingsNavigationIDs: [String] {
         settingsCatalog.flatMap { descriptor -> [String] in
+            guard hasVisibleItems(descriptor) else { return [] }
             var ids = ["sectionHeader-\(descriptor.id.rawValue)"]
             guard isSectionExpanded(descriptor.id.rawValue),
                   descriptor.itemsParticipateInControllerNavigation else {
@@ -5162,7 +5296,7 @@ final class SettingsSession: NSObject, ObservableObject {
             }
             ids.append(
                 contentsOf: descriptor.items.compactMap { item in
-                    guard item.isVisible(self), item.isEnabled(self) else { return nil }
+                    guard isVisible(item), item.isEnabled(self) else { return nil }
                     return item.id.rawValue
                 }
             )
@@ -5184,9 +5318,10 @@ final class SettingsSession: NSObject, ObservableObject {
         }
 
         return settingsCatalog.flatMap { descriptor -> [String] in
+            guard hasVisibleItems(descriptor) else { return [] }
             var ids = ["sectionHeader-\(descriptor.id.rawValue)"]
             if descriptor.itemsParticipateInControllerNavigation {
-                ids.append(contentsOf: descriptor.items.map { $0.id.rawValue })
+                ids.append(contentsOf: descriptor.items.compactMap { isVisible($0) ? $0.id.rawValue : nil })
             }
             return ids
         }
@@ -5415,11 +5550,11 @@ final class SettingsSession: NSObject, ObservableObject {
         for item: SettingsItemDescriptor,
         previousSelectedIndex: Int? = nil
     ) {
-        guard case let .picker(value, setValue, options, _) = item.control else { return }
+        guard case let .picker(value, setValue, _, _) = item.control else { return }
 
         let oldValue = value(self)
         let previousIndex = previousSelectedIndex
-            ?? options(self).firstIndex(where: { $0.value == oldValue })
+            ?? item.pickerSelectionModel(in: self)?.selectedIndex
         if oldValue != newValue,
            let previousIndex {
             item.previousSelectedIndex?(self)?.wrappedValue = previousIndex
@@ -5450,8 +5585,10 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     func performReadTip() {
-        guard let highlightedID, let id = SettingsItemID.settingItem(rawValue: highlightedID) else { return }
-        showInfo(for: id)
+        guard let highlightedID,
+              let id = SettingsItemID.settingItem(rawValue: highlightedID),
+              let item = settingsItem(for: id) else { return }
+        showInfo(for: id, isGameProfileSetting: item.isGameProfileSetting)
     }
 
     func persistHighlight() {
@@ -5544,7 +5681,7 @@ final class SettingsSession: NSObject, ObservableObject {
 
 // MARK: - Shared settings views
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsSectionHeaderIcon: UIViewRepresentable {
     let icon: UIImage?
     let pointSize: CGFloat
@@ -5619,7 +5756,7 @@ private struct SettingsSectionHeaderIcon: UIViewRepresentable {
 /// SwiftUI counterpart of MenuSectionView's outer structure.  Every section
 /// uses this shell: a 37pt header, then its separate 25pt header-to-content
 /// gap, the bottom-anchored drawer and exactly one separator.
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsSectionShell<Content: View>: View {
     let descriptor: SettingsSectionDescriptor
     @ObservedObject var store: SettingsSession
@@ -5662,7 +5799,7 @@ private struct SettingsSectionShell<Content: View>: View {
             Button(action: toggle) {
                 // Keep the verified 08af578a geometry exactly.  The shell is
                 // reusable, but this visual contract must not be re-derived.
-                HStack(spacing: 0) {
+                HStack(spacing: layout.sectionHeaderTitleIconSpacing) {
                     SettingsSectionHeaderIcon(
                         icon: descriptor.icon,
                         pointSize: descriptor.iconPointSize,
@@ -5677,7 +5814,7 @@ private struct SettingsSectionShell<Content: View>: View {
                     .frame(width: 41.5)
 
                     Text(descriptor.titleKey.localized)
-                        .font(.system(size: 19.5, weight: .medium))
+                        .font(.system(size: layout.sectionHeaderTitleFontSize, weight: .medium))
                     Spacer(minLength: 8)
                     Image(systemName: "chevron.right")
                         .font(.system(size: 11.47, weight: .bold))
@@ -5687,6 +5824,7 @@ private struct SettingsSectionShell<Content: View>: View {
                         .padding(.trailing, 5)
                 }
                 .foregroundColor(Color(ThemeManager.sectionLabelTextColor))
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: layout.headerContainerHeight, alignment: .center)
                 .contentShape(Rectangle())
                 .navigationHighlight(
@@ -5727,7 +5865,7 @@ private struct SettingsSectionShell<Content: View>: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsSectionDrawer<Content: View>: View {
     let sectionID: String
     weak var store: SettingsSession?
@@ -5755,7 +5893,7 @@ private struct SettingsSectionDrawer<Content: View>: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsSectionHitTestRegistration: UIViewRepresentable {
     let sectionID: String
     weak var store: SettingsSession?
@@ -5833,21 +5971,33 @@ private struct SettingsSectionHitTestRegistration: UIViewRepresentable {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsSectionLayout {
-    let headerHeight: CGFloat = 37
-    let headerVerticalSpacing: CGFloat = 24
-    let rowSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 10 : 12
+    let headerHeight: CGFloat = PublicUtils.isTVOS ? 50: 37
+    let headerVerticalSpacing: CGFloat = PublicUtils.isTVOS ? 32: 24
+    var sectionHeaderTitleIconSpacing: CGFloat { PublicUtils.isTVOS ? 12 : 0 }
+    var sectionHeaderTitleFontSize: CGFloat { PublicUtils.isTVOS ? 25 : 19.5 }
+    
+    let rowSpacing: CGFloat = PublicUtils.isIPhone ? 10 : (PublicUtils.isTVOS ? 15.5: 12)
     // MenuSectionView.rootStackViewSpacing between sibling sections.
-    let sectionSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 10 : 12
+    let sectionSpacing: CGFloat = PublicUtils.isIPhone ? 10 : 12
     let controlSpacing: CGFloat = 5
     let switchSpacing: CGFloat = 20
     let switchColumnWidth: CGFloat = 130
-    let pickerHeight: CGFloat = 32
+    let controlMaxWidth: CGFloat = PublicUtils.isTVOS ? 500 : .infinity
+    let itemHorizontalPadding: CGFloat = 5
+    
+    var itemVerticalSpacing: CGFloat { PublicUtils.isTVOS ? 8 : controlSpacing }
+    var itemMainLabelFontSize: CGFloat { PublicUtils.isTVOS ? 23 : 17 }
+    var itemDynamicLabelFontSize: CGFloat { PublicUtils.isTVOS ? 21 : 16 }
 
     // This is deliberately retained as the verified shared header container
     // from 08af578a; do not replace it with padding around a 37pt HStack.
     var headerContainerHeight: CGFloat { headerHeight + headerVerticalSpacing }
+
+    func itemContainerWidth(for contentWidth: CGFloat) -> CGFloat {
+        return max(0, contentWidth - itemHorizontalPadding * 2)
+    }
 }
 
 private enum SettingsItemDecorationMetrics {
@@ -5863,42 +6013,48 @@ private enum SettingsItemDecorationMetrics {
     static let estimatedInfoWidth: CGFloat = 16
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsRootView: View {
     @ObservedObject var store: SettingsSession
 
     var body: some View {
         GeometryReader { viewport in
             ScrollViewReader { scrollProxy in
+                let layout = SettingsSectionLayout()
                 let contentWidth = store.contentWidth > 0
                     ? store.contentWidth
                     : max(0, viewport.size.width - store.contentLeadingInset - store.contentTrailingInset)
+                let controlContainerWidth = layout.itemContainerWidth(for: contentWidth)
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
                         if store.isAllSettings {
                             ForEach(store.settingsCatalog) { descriptor in
-                                SettingsSectionShell(
-                                    descriptor: descriptor,
-                                    store: store,
-                                    isExpanded: store.isSectionExpanded(descriptor.id.rawValue),
-                                    navigationState: store.navigationState,
-                                    showsNavigationHighlight: store.showsNavigationHighlight,
-                                    registersNavigationAnchors: store.registersNavigationAnchors,
-                                    themeRevision: store.themeRevision,
-                                    interactionState: store.sectionInteractionState(for: descriptor.id.rawValue),
-                                    toggle: { store.toggleSection(identifier: descriptor.id.rawValue) }
-                                ) {
-                                    if !descriptor.items.isEmpty {
+                                if store.hasVisibleItems(descriptor) {
+                                    SettingsSectionShell(
+                                        descriptor: descriptor,
+                                        store: store,
+                                        isExpanded: store.isSectionExpanded(descriptor.id.rawValue),
+                                        navigationState: store.navigationState,
+                                        showsNavigationHighlight: store.showsNavigationHighlight,
+                                        registersNavigationAnchors: store.registersNavigationAnchors,
+                                        themeRevision: store.themeRevision,
+                                        interactionState: store.sectionInteractionState(for: descriptor.id.rawValue),
+                                        toggle: { store.toggleSection(identifier: descriptor.id.rawValue) }
+                                    ) {
                                         SettingsCatalogSectionItemsView(
                                             items: descriptor.items,
                                             store: store,
+                                            controlContainerWidth: controlContainerWidth,
                                             participatesInControllerNavigation: descriptor.itemsParticipateInControllerNavigation
                                         )
                                     }
                                 }
                             }
                         } else {
-                            SettingsFavoriteItemsView(store: store)
+                            SettingsFavoriteItemsView(
+                                store: store,
+                                controlContainerWidth: controlContainerWidth
+                            )
                         }
                     }
                     // A vertical SwiftUI ScrollView still adopts an oversized
@@ -5908,7 +6064,7 @@ private struct SettingsRootView: View {
                     .frame(width: contentWidth, alignment: .leading)
                     .padding(.leading, store.contentLeadingInset)
                     .padding(.trailing, store.contentTrailingInset)
-                    .padding(.top, GenericUtils.settingsMenuNavigationBarHeight)
+                    .padding(.top, PublicUtils.isTVOS ? 0 : GenericUtils.settingsMenuNavigationBarHeight)
                     .padding(.bottom, 20)
                     .coordinateSpace(name: settingsNavigationCoordinateSpaceName)
                     .background(
@@ -5946,34 +6102,37 @@ private struct SettingsRootView: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsCatalogSectionItemsView: View {
     let items: [SettingsItemDescriptor]
     @ObservedObject var store: SettingsSession
+    let controlContainerWidth: CGFloat
     let participatesInControllerNavigation: Bool
     private let layout = SettingsSectionLayout()
 
     var body: some View {
         VStack(spacing: layout.rowSpacing) {
             ForEach(items) { item in
-                if item.isVisible(store) {
+                if store.isVisible(item) {
                     SettingsCatalogItemView(
                         item: item,
                         store: store,
+                        controlContainerWidth: controlContainerWidth,
                         participatesInControllerNavigation: participatesInControllerNavigation
                     )
                 }
             }
         }
-        .padding(.horizontal, 5)
+        .padding(.horizontal, layout.itemHorizontalPadding)
         .padding(.bottom, 40)
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsCatalogItemView: View {
     let item: SettingsItemDescriptor
     @ObservedObject var store: SettingsSession
+    let controlContainerWidth: CGFloat
     var suppressInfo: Bool = false
     var participatesInControllerNavigation: Bool = true
     private let layout = SettingsSectionLayout()
@@ -5983,15 +6142,16 @@ private struct SettingsCatalogItemView: View {
         let isEnabled = item.isEnabled(store)
         let isUserInteractionEnabled = store.isItemUserInteractionEnabled(item.id)
         let showsInfo = (item.hasInfo || item.isGameProfileSetting) && !suppressInfo
+        let controlLayoutWidth = min(max(0, controlContainerWidth), layout.controlMaxWidth)
         switch item.control {
         case let .picker(value, _, options, distribution):
-            VStack(alignment: .leading, spacing: layout.controlSpacing) {
+            VStack(alignment: .leading, spacing: layout.itemVerticalSpacing) {
                 itemTitleLine(
                     dynamicText: item.dynamicText?(store),
                     showsInfo: showsInfo
                 ) {
                     Text(item.id.titleKey.localized)
-                        .font(.system(size: 17))
+                        .font(.system(size: layout.itemMainLabelFontSize))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                 }
@@ -6016,10 +6176,10 @@ private struct SettingsCatalogItemView: View {
                     },
                     onControlResolved: { control in
                         store.registerPickerControl(control, for: item.id)
-                    }
+                    },
+                    containerWidth: controlContainerWidth
                 )
-                .frame(maxWidth: .infinity)
-                .frame(height: layout.pickerHeight)
+                .centeredSettingsControl(maxWidth: controlLayoutWidth)
             }
             .settingRow(
                 id: item.id,
@@ -6029,13 +6189,13 @@ private struct SettingsCatalogItemView: View {
                 participatesInControllerNavigation: participatesInControllerNavigation
             )
         case let .slider(value, setValue, range, valueText):
-            VStack(alignment: .leading, spacing: layout.controlSpacing) {
+            VStack(alignment: .leading, spacing: layout.itemVerticalSpacing) {
                 itemTitleLine(
                     dynamicText: valueText(store),
                     showsInfo: showsInfo
                 ) {
                     Text(item.id.titleKey.localized)
-                        .font(.system(size: 17))
+                        .font(.system(size: layout.itemMainLabelFontSize))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                 }
@@ -6054,8 +6214,10 @@ private struct SettingsCatalogItemView: View {
                     },
                     onControlResolved: { control in
                         store.registerItemControl(control, for: item.id)
-                    }
+                    },
+                    containerWidth: controlContainerWidth
                 )
+                // .centeredSettingsControl(maxWidth: controlLayoutWidth)
             }
             .settingRow(
                 id: item.id,
@@ -6071,7 +6233,7 @@ private struct SettingsCatalogItemView: View {
             ) {
                 HStack(spacing: layout.switchSpacing) {
                     Text(item.id.titleKey.localized)
-                        .font(.system(size: 17))
+                        .font(.system(size: layout.itemMainLabelFontSize))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                     Spacer(minLength: 0)
@@ -6117,7 +6279,7 @@ private struct SettingsCatalogItemView: View {
                            !dynamicText.isEmpty,
                            let dynamicWidth {
                             Text(dynamicText)
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: layout.itemDynamicLabelFontSize, weight: .medium))
                                 .foregroundColor(Color(ThemeManager.appPrimaryColor))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.5)
@@ -6172,9 +6334,10 @@ private struct SettingsCatalogItemView: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteItemsView: View {
     @ObservedObject var store: SettingsSession
+    let controlContainerWidth: CGFloat
     private let layout = SettingsSectionLayout()
 
     var body: some View {
@@ -6189,7 +6352,7 @@ private struct SettingsFavoriteItemsView: View {
                 .frame(height: GenericUtils.menuSectionSeparatorWidth)
                 .padding(.horizontal, 2.5)
         }
-        .padding(.horizontal, 5)
+        .padding(.horizontal, layout.itemHorizontalPadding)
         .padding(.top, 10)
         .padding(.bottom, 40)
     }
@@ -6201,6 +6364,7 @@ private struct SettingsFavoriteItemsView: View {
                 SettingsCatalogItemView(
                     item: item,
                     store: store,
+                    controlContainerWidth: controlContainerWidth,
                     suppressInfo: store.isRemovingFavorites
                 )
             }
@@ -6220,7 +6384,7 @@ private struct SettingsFavoriteItemsView: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteDragModifier: ViewModifier {
     let id: SettingsItemID
     let store: SettingsSession
@@ -6228,6 +6392,9 @@ private struct SettingsFavoriteDragModifier: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
+#if os(tvOS)
+        content
+#else
         if enabled {
             content
                 .onDrag {
@@ -6241,10 +6408,12 @@ private struct SettingsFavoriteDragModifier: ViewModifier {
         } else {
             content
         }
+#endif
     }
 }
 
-@available(iOS 14.0, *)
+#if !os(tvOS)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteDropDelegate: DropDelegate {
     let destination: SettingsItemID
     let store: SettingsSession
@@ -6264,8 +6433,9 @@ private struct SettingsFavoriteDropDelegate: DropDelegate {
         DropProposal(operation: .move)
     }
 }
+#endif
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsEmergingHighlightBackground: UIViewRepresentable {
     let isHighlighted: Bool
 
@@ -6293,7 +6463,7 @@ private struct SettingsEmergingHighlightBackground: UIViewRepresentable {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private struct SettingsNavigationHighlightBackground: View {
     @ObservedObject var state: SettingsNavigationState
     let identifier: String
@@ -6309,7 +6479,7 @@ private struct SettingsNavigationHighlightBackground: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 private struct SettingsFavoritePromptHighlightBackground: View {
     let isHighlighted: Bool
 
@@ -6320,7 +6490,7 @@ private struct SettingsFavoritePromptHighlightBackground: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsScrollViewResolver: UIViewRepresentable {
     weak var store: SettingsSession?
     let onResolve: (UIScrollView?) -> Void
@@ -6576,7 +6746,7 @@ private struct SettingsScrollViewResolver: UIViewRepresentable {
 }
 
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteLongPressModifier: ViewModifier {
     let id: SettingsItemID
     @ObservedObject var store: SettingsSession
@@ -6601,7 +6771,7 @@ private struct SettingsFavoriteLongPressModifier: ViewModifier {
 
 /// The row already owns its SettingsItemID. Keep favorite long-press local to
 /// that row instead of asking a global gesture to infer identity from geometry.
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private struct SettingsFavoriteLongPressTarget: UIViewRepresentable {
     let id: SettingsItemID
     @ObservedObject var store: SettingsSession
@@ -6683,7 +6853,7 @@ private struct SettingsFavoriteLongPressTarget: UIViewRepresentable {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, *)
 private extension View {
     @ViewBuilder
     func settingsNavigationAnchorPreferenceHandler(store: SettingsSession) -> some View {
@@ -6792,11 +6962,16 @@ private extension View {
             .favoritePromptHighlight(id: id, store: store)
             .modifier(SettingsFavoriteLongPressModifier(id: id, store: store))
     }
+
+    func centeredSettingsControl(maxWidth: CGFloat) -> some View {
+        frame(maxWidth: maxWidth, alignment: .center)
+            .frame(maxWidth: .infinity, alignment: .center)
+    }
 }
 
 // MARK: - UIKit shell hosting only
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 extension SettingsViewController {
     var swiftUISettingsStore: SettingsSession? {
         get { objc_getAssociatedObject(self, &settingsSwiftUIStoreAssociationKey) as? SettingsSession }
@@ -6808,7 +6983,7 @@ extension SettingsViewController {
         set { objc_setAssociatedObject(self, &settingsSwiftUIHostAssociationKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 
-    @available(iOS 14.0, *)
+    @available(iOS 14.0, tvOS 14.0, *)
     @objc func installSwiftUISettingsIfNeeded() {
         guard swiftUISettingsHost == nil else { return }
 
@@ -6898,6 +7073,13 @@ extension SettingsViewController {
 
     private func updateSwiftUIContentInsets() {
         view.layoutIfNeeded()
+#if os(tvOS)
+        swiftUISettingsStore?.updateContentInsets(
+            safeAreaInsets: view.safeAreaInsets,
+            viewBounds: view.bounds,
+            safeAreaLayoutFrame: view.safeAreaLayoutGuide.layoutFrame
+        )
+#else
         let orientation = view.window?.windowScene?.interfaceOrientation ?? .unknown
         swiftUISettingsStore?.updateContentInsets(
             safeAreaInsets: view.safeAreaInsets,
@@ -6905,5 +7087,6 @@ extension SettingsViewController {
             viewBounds: view.bounds,
             safeAreaLayoutFrame: view.safeAreaLayoutGuide.layoutFrame
         )
+#endif
     }
 }
