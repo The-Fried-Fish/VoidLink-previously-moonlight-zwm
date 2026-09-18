@@ -5242,7 +5242,12 @@ final class SettingsSession: NSObject, ObservableObject {
         favoriteSettingIdentifiers.remove(at: sourceIndex)
         favoriteSettingIdentifiers.insert(identifier, at: destinationIndex)
         saveFavoriteIdentifiers()
+        forceMoveNavigationHighlightTo(identifier: identifier)
+    }
+    
+    func forceMoveNavigationHighlightTo(identifier: String) {
         applyHighlight(identifier, scrollIntoView: false)
+        navigationState.highlightedIDDidChange.send(identifier)
     }
 
     fileprivate func stopFavoriteAutoscroll(reason: String = #function) {
@@ -7481,6 +7486,14 @@ extension SettingsViewController {
 
     @objc func swiftUISettingsMenuModeRawValue() -> Int {
         swiftUISettingsStore?.menuMode.rawValue ?? SettingsMenuMode.AllSettings.rawValue
+    }
+    
+    @objc func expandSection(identifier: String) {
+        if swiftUISettingsStore?.isSectionExpanded(identifier) == false {
+            DispatchQueue.main.async {
+                self.swiftUISettingsStore?.toggleSection(identifier: identifier)
+            }
+        }
     }
 
     @objc var usesSwiftUISettings: Bool { swiftUISettingsStore != nil }

@@ -595,7 +595,9 @@ final class ControllerNavigator: NSObject {
                     DispatchQueue.main.asyncAfter(deadline: .now()+0.3) {
                         if let settingViewVC = uiNavigationDelegate as? SettingsViewController {
                             settingViewVC.expandGamepadSection()
-                            settingViewVC.highlightViewForControllerNavigator(by: "controllerNavigationStack")
+                            DispatchQueue.main.asyncAfter(deadline: .now()+0.22) {
+                                settingViewVC.highlightViewForControllerNavigator(by: "controllerNavigationStack")
+                            }
                         }
                     }
                 }
@@ -1324,7 +1326,7 @@ extension SettingsViewController: ControllerUINavigationDelegate {
     
     func highlightViewForControllerNavigator(by identifer: String?){
         if let store = swiftUISettingsStore, store.isActive {
-            store.applyHighlight(identifer)
+            store.applyHighlight(identifer, scrollIntoView: true)
             return
         }
         let targets = controllerNavigationRestorableTargets()

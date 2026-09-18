@@ -251,6 +251,11 @@
 - (void)expandGamepadSection {
     if(_currentSettingsMenuMode == FavoriteSettings) [self switchToAllSettings];
     
+    if (@available(iOS 14.0, *)) {
+        if (self.usesSwiftUISettings) {
+            [self expandSectionWithIdentifier:@"SettingsSectionController"];
+        }
+    }
 #if !TARGET_OS_TV
     [controllerSection setExpanded:true];
 #endif
