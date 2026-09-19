@@ -21,7 +21,7 @@ private var settingsSwiftUIHostAssociationKey: UInt8 = 0
 private let settingsSectionFoldIdentifiers = SettingsSectionID.allCases.map(\.rawValue)
 private let settingsNavigationSelectionKey = "SettingsControllerNavigationHighlightedIdentifier"
 private let settingsFavoriteIdentifiersKey = "FavoriteSettingStackIdentifiers"
-private let settingsSectionFoldAnimationDuration = 0.2
+private let settingsSectionFoldAnimationDuration = PublicUtils.iOS26Available ? 0.2 : 0
 private let settingsEmergingHighlightPhaseDuration = 0.2
 
 /// Purchase results can arrive after SettingsViewController has been dismissed.
