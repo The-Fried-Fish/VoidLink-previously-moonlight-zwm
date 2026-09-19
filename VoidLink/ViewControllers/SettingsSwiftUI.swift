@@ -23,6 +23,40 @@ private let settingsNavigationSelectionKey = "SettingsControllerNavigationHighli
 private let settingsFavoriteIdentifiersKey = "FavoriteSettingStackIdentifiers"
 private let settingsSectionFoldAnimationDuration = 0.2
 private let settingsEmergingHighlightPhaseDuration = 0.2
+
+/// Purchase results can arrive after SettingsViewController has been dismissed.
+/// Keep this observer independent from a settings session so an interrupted
+/// purchase cannot leave Pencil Pro-only values persisted while the menu is
+/// closed.
+private enum PencilProInterruptedPurchaseReset {
+    private static let observer: NSObjectProtocol = NotificationCenter.default.addObserver(
+        forName: AddOnProduct.PencilProPack.purchaseAbortedNotification(),
+        object: nil,
+        queue: .main
+    ) { _ in
+        let dataManager = DataManager()
+        if let settings = dataManager.retrieveSettings() {
+            settings.pencilTickMode = NSNumber(value: PencilTickMode.PencilTickDisabled.rawValue)
+            settings.pencilTipOffsetX = 0
+            settings.pencilTipOffsetY = 0
+            dataManager.saveData()
+        }
+
+        let profileManager = OSCProfilesManager.sharedManager(CGRect.zero)
+        let profile = profileManager.getSelectedProfile()
+        profile.pressureCurveEnabled = false
+        profile.doubleTapShorcutEnabled = false
+        profile.squeezeShorcutEnabled = false
+        profile.pencilPausesNativeTouch = false
+        profile.disablePencilSlideGestures = false
+        profileManager.replaceSelectedProfile(with: profile, overwriteDefault: true)
+    }
+
+    static func install() {
+        _ = observer
+    }
+}
+
 private let settingsBitrateTable: [Double] = [
     500, 1_000, 1_500, 2_000, 2_500, 3_000, 4_000, 5_000, 6_000, 7_000,
     8_000, 9_000, 10_000, 11_000, 12_000, 13_000, 14_000, 15_000, 16_000, 17_000,
@@ -1926,6 +1960,7 @@ final class SettingsSession: NSObject, ObservableObject {
                 self.refreshConditionalVisibility()
                 self.objectWillChange.send()
             }
+        PencilProInterruptedPurchaseReset.install()
         pencilPurchaseNotificationTokens = [
             NotificationCenter.default.addObserver(
                 forName: AddOnProduct.PencilProPack.purchaseAbortedNotification(),
@@ -2314,6 +2349,9 @@ final class SettingsSession: NSObject, ObservableObject {
                 setValue: { session, model, newValue in
                         guard session.codecOptions.contains(where: { $0.value == newValue }) else { return }
                         model.value = newValue
+                        if model.value != VideoCodec.av1.rawValue {
+                        self.itemRegistry.fullColorRange.value = true
+                    }
                 },
                 options: { $0.codecOptions },
                 distribution: .equal,
@@ -2341,6 +2379,9 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.framePacing,
                 setValue: { session, _, newValue in
                     session.setFramePacing(newValue)
+                    if newValue != FramePacingMode.queue.rawValue {
+                        session.itemRegistry.enableGraphs.value = false
+                    }
                 },
                 options: { $0.framePacingOptions },
                 distribution: .proportionalToContent,
@@ -3158,11 +3199,13 @@ final class SettingsSession: NSObject, ObservableObject {
             options.append(contentsOf: [
                 SettingsPickerOption(
                     value: AudioConfig.SDL51.rawValue,
-                    title: "5.1-channel".localized
+                    title: "5.1-channel".localized,
+                    isEnabled: !isStreaming
                 ),
                 SettingsPickerOption(
                     value: AudioConfig.SDL71.rawValue,
-                    title: "7.1-channel".localized
+                    title: "7.1-channel".localized,
+                    isEnabled: !isStreaming
                 )
             ])
         }
@@ -3188,7 +3231,7 @@ final class SettingsSession: NSObject, ObservableObject {
             ),
             toggleItem(
                 \.redirectMic,
-                isEnabled: { _ in !self.isStreaming },
+                // isEnabled: { _ in !self.isStreaming },
                 hasInfo: true,
                 onValueChanged: { session in
                     session.redirectMicChanged()
@@ -3468,8 +3511,8 @@ final class SettingsSession: NSObject, ObservableObject {
             toggleItem(
                 \.enableGraphs,
                 isVisible: {
-                    $0.itemRegistry.framePacing.value != FramePacingMode.off.rawValue &&
-                    $0.itemRegistry.framePacing.value != FramePacingMode.legacy.rawValue
+                    $0.itemRegistry.framePacing.value == FramePacingMode.queue.rawValue
+                    || $0.itemRegistry.renderingBackend.value == SettingsRenderingBackend.metal.rawValue
                 },
                 isEnabled: { $0.itemRegistry.framePacing.value == FramePacingMode.queue.rawValue },
                 hasInfo: true,
@@ -5057,8 +5100,6 @@ final class SettingsSession: NSObject, ObservableObject {
         if itemRegistry.codec.value == VideoCodec.av1.rawValue {
             itemRegistry.yuv444.value = false
             itemRegistry.fullColorRange.value = false
-        } else {
-            itemRegistry.fullColorRange.value = true
         }
         if usesMetal {
             itemRegistry.framePacing.value = FramePacingMode.queue.rawValue
