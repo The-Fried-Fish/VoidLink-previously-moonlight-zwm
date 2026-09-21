@@ -2697,6 +2697,10 @@ final class SettingsSession: NSObject, ObservableObject {
         [
             toggleItem(
                 \.controllerNavigation,
+                setValue: { session, model, newValue in
+                    if !PublicUtils.isTVOS {model.value = newValue}
+                    else {model.value = true}
+                },
                 hasInfo: true,
                 onValueChanged: { session in
                     session.controllerNavigationValueChanged()
