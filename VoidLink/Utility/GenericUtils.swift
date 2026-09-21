@@ -682,7 +682,7 @@ import UIKit
     @objc public static var pencilInStreaming:Bool = false
     
     @objc public static let menuSeparatorWidth: CGFloat = 0.7
-    @objc public static let menuSectionSeparatorWidth: CGFloat = PublicUtils.isIPhone ? 0.65 : 0.5
+    @objc public static let menuSectionSeparatorWidth: CGFloat = PublicUtils.isIPhone ? 0.65 : (PublicUtils.isTVOS ? 1 : 0.5)
     
     @objc public static var legacyToolbarHeight: CGFloat {
         return 44

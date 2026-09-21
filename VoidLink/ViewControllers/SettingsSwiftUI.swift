@@ -6264,7 +6264,7 @@ private struct SettingsSectionLayout {
     let sectionSpacing: CGFloat = PublicUtils.isIPhone ? 10 : 12
     let controlSpacing: CGFloat = 5
     let switchSpacing: CGFloat = 20
-    let switchColumnWidth: CGFloat = 130
+    let switchColumnWidth: CGFloat = PublicUtils.tvOS26Aavailable ? 140 : 150
     let controlMaxWidth: CGFloat = PublicUtils.isTVOS ? 500 : .infinity
     let itemHorizontalPadding: CGFloat = 5
     
@@ -6870,18 +6870,77 @@ private struct SettingsEmergingHighlightBackground: UIViewRepresentable {
 }
 
 @available(iOS 13.0, tvOS 13.0, *)
+private struct SettingsLegacyTVOSNavigationHighlightBorder: View {
+    let isHighlighted: Bool
+    let expandsHorizontally: Bool
+    let expandsVertically: Bool
+    // Settings rows already sit 5pt inside the menu's scroll viewport. Keep a
+    // small 2pt clearance so the expanded stroke and its rounded corners are
+    // not clipped by that viewport.
+    private let outwardInset: CGFloat = 6
+
+    private var borderColor: Color {
+        let alpha: CGFloat = ThemeManager.userInterfaceStyle() == .dark ? 0.85 : 0.93
+        return Color(ThemeManager.appPrimaryColor.withAlphaComponent(alpha))
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            // Rows need the legacy left-side compensation for their 5pt
+            // content inset, but must not expand into the menu's right edge.
+            let leftHorizontalOutset = expandsHorizontally ? outwardInset : 0
+            let verticalOutset = expandsVertically ? outwardInset : 0
+            Group {
+                if expandsHorizontally {
+                    // Item rows have their own 5pt horizontal inset. Keep
+                    // the legacy outward stroke so it aligns with the row
+                    // highlight geometry.
+                    RoundedRectangle(cornerRadius: 8 + outwardInset)
+                        .stroke(isHighlighted ? borderColor : .clear, lineWidth: 4)
+                } else {
+                    // Section headers have no comparable inset. A centered
+                    // stroke would be clipped at the hosting scroll edge.
+                    RoundedRectangle(cornerRadius: 8 + outwardInset)
+                        .strokeBorder(isHighlighted ? borderColor : .clear, lineWidth: 4)
+                }
+            }
+                .frame(
+                    width: geometry.size.width + leftHorizontalOutset,
+                    height: geometry.size.height + verticalOutset * 2
+                )
+                .position(
+                    x: geometry.size.width / 2 - leftHorizontalOutset / 2,
+                    y: geometry.size.height / 2
+                )
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+@available(iOS 13.0, tvOS 13.0, *)
 private struct SettingsNavigationHighlightBackground: View {
     @ObservedObject var state: SettingsNavigationState
     let identifier: String
 
+    private var usesLegacyTVOSBorderHighlight: Bool {
+        PublicUtils.isTVOS && !PublicUtils.tvOS26Aavailable
+    }
+
     var body: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(
-                state.highlightedID == identifier
-                    ? Color(ThemeManager.appPrimaryColorWithAlpha)
-                    : .clear
-            )
-            .allowsHitTesting(false)
+        let isHighlighted = state.highlightedID == identifier
+        Group {
+            if usesLegacyTVOSBorderHighlight {
+                SettingsLegacyTVOSNavigationHighlightBorder(
+                    isHighlighted: isHighlighted,
+                    expandsHorizontally: !identifier.hasPrefix("sectionHeader-"),
+                    expandsVertically: !identifier.hasPrefix("sectionHeader-")
+                )
+            } else {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isHighlighted ? Color(ThemeManager.appPrimaryColorWithAlpha) : .clear)
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
 
@@ -7331,7 +7390,16 @@ private extension View {
         isEnabled: Bool = true
     ) -> some View {
         if isEnabled && state.highlightedID != nil {
-            background(SettingsNavigationHighlightBackground(state: state, identifier: identifier))
+            // The legacy tvOS treatment is a stroke which extends beyond the
+            // row bounds.  It must be composited above the section drawer and
+            // later sibling rows; putting it in `background` lets those views
+            // cover the right edge of the stroke.
+            if PublicUtils.isTVOS && !PublicUtils.tvOS26Aavailable {
+                overlay(SettingsNavigationHighlightBackground(state: state, identifier: identifier))
+                    .zIndex(state.highlightedID == identifier ? 1 : 0)
+            } else {
+                background(SettingsNavigationHighlightBackground(state: state, identifier: identifier))
+            }
         } else {
             self
         }

@@ -21,7 +21,18 @@ import UIKit
         return false
         #endif
     }()
-    
+    @objc public static let tvOS26Aavailable: Bool = {
+        if !PublicUtils.isTVOS {
+            return false
+        }
+        if #available(tvOS 26.0, *) {
+            return true
+        }
+        else {
+            return false
+        }
+    }()
+
     @objc public static var isIPhone: Bool = {
         return UIDevice.current.userInterfaceIdiom == .phone
     }()

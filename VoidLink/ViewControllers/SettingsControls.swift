@@ -21,6 +21,8 @@ private let settingsIOSSliderHeight: CGFloat = {
 private let settingsTVOSPickerScale: CGFloat = 0.6
 private let settingsTVOSPickerVisualHeight: CGFloat = 56
 
+private let settingsTVOSToggleScale: CGFloat = PublicUtils.tvOS26Aavailable ? 0.7 : 0.475
+
 final class SettingsControlAnimationWake {
     private static let shared = SettingsControlAnimationWake()
     private var wakeView: UIView?
@@ -540,7 +542,7 @@ private struct SettingsSwiftUIToggle: View {
             .labelsHidden()
             .disabled(!isEnabled)
             .opacity(isEnabled ? 1 : 0.46)
-            .scaleEffect(0.7)
+            .scaleEffect(settingsTVOSToggleScale)
             .onAppear {
                 onControlResolved?(nil)
             }

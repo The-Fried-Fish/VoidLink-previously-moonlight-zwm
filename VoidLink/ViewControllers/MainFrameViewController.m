@@ -1863,7 +1863,9 @@ static NSMutableSet* hostList;
         UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:symbolSize weight:PublicUtils.isTVOS ? UIImageSymbolWeightRegular : UIImageSymbolWeightMedium ];
         UIImage *image = [[UIImage systemImageNamed:@"sidebar.left" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_settingsButton setImage:image];
-        _settingsButton.imageInsets = PublicUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
+        _settingsButton.imageInsets = PublicUtils.liquidGlassEnabled
+        ? UIEdgeInsetsMake(0, 0, 0, 0.55)
+        : (PublicUtils.tvOS26Aavailable ? UIEdgeInsetsMake(10, 10, 0, 0) : UIEdgeInsetsMake(0, 0, 0, 0));
         if(PublicUtils.liquidGlassEnabled){
             // if(@available(iOS 26.0, *)) _settingsButton.hidesSharedBackground = YES;
             _settingsButton.tintColor = ThemeManager.appPrimaryColor;
