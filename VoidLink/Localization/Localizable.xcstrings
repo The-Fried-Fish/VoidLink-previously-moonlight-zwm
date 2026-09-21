@@ -10599,29 +10599,6 @@
         }
       }
     },
-    "FullScr/Window" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全屏/窗口"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全螢幕/視窗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全螢幕/視窗"
-          }
-        }
-      }
-    },
     "Full-Screen" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10641,6 +10618,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全螢幕"
+          }
+        }
+      }
+    },
+    "FullScr/Window" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全屏/窗口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全螢幕/視窗"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全螢幕/視窗"
           }
         }
       }
@@ -11926,6 +11926,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按壓直至鬆開"
+          }
+        }
+      }
+    },
+    "holdToNavSection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold for Section Navigation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住导航分区"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住導航分區"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住導航分區"
           }
         }
       }

@@ -277,6 +277,7 @@ final class ControllerNavigator: NSObject {
     }
     
     static var settingsFavoriteReorderActive: Bool = false
+    static var settingsSectionNavigationHoldActive: Bool = false
     static var settingsReadTipPendingToken = 0
     static var settingsReadTipPendingWorkItem: DispatchWorkItem?
     static var settingsReadTipPressedAgain = false
@@ -516,6 +517,7 @@ final class ControllerNavigator: NSObject {
 
     @objc static func stop() {
         ControllerUtil.stopListeningPrimaryController(stopListenToRadialMenuButton: true)
+        settingsSectionNavigationHoldActive = false
         radialMenuView?.dismiss()
         radialMenuView = nil
         GamepadNavigationIllustrationHud.clearHud()
@@ -1123,6 +1125,10 @@ extension SettingsViewController: ControllerUINavigationDelegate {
     
     @objc func uiButtonActionForControllerNavigator(pressed: Bool, from navigation: ControllerNavigationElement) {
         if let store = swiftUISettingsStore, store.isActive {
+            if navigation.action == "holdToNavSection" {
+                store.setSectionNavigationHoldActive(pressed)
+                return
+            }
             if navigation.action == "holdToReorder" {
                 handleControllerNavigationReorderHold(pressed: pressed)
                 return
@@ -1156,6 +1162,11 @@ extension SettingsViewController: ControllerUINavigationDelegate {
                 default: break
                 }
             }
+            return
+        }
+
+        if navigation.action == "holdToNavSection" {
+            ControllerNavigator.settingsSectionNavigationHoldActive = pressed && currentSettingsMenuMode == .AllSettings
             return
         }
         let isHighlightingUIStack = ControllerNavigator.controllerNavigationHighlightedView is UIStackView
@@ -1216,17 +1227,22 @@ extension SettingsViewController: ControllerUINavigationDelegate {
             return store.navigationElements()
         }
         var elements: [ControllerNavigationElement] = []
-        elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadUp : .a, action: "readTip"))
+        elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadDown : .y, action: "readTip"))
         if self.currentSettingsMenuMode == .AllSettings {
-            elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadUp : .a, action: "doublePressToAddFavorite"))
+            elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadDown : .y, action: "doublePressToAddFavorite"))
         }
         if self.currentSettingsMenuMode == .FavoriteSettings {
-            elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadUp : .a, action: "doublePressToDelete"))
-            elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadDown : .y, action: "holdToReorder"))
+            elements.append(ControllerNavigationElement(control: ControllerNavigator.radialMenuButtonPosition == .left ? .dpadDown : .y, action: "doublePressToDelete"))
+            elements.append(ControllerNavigationElement(control: ControllerNavigator.radialMenuButtonPosition == .left ? .dpadUp : .a, action: "holdToReorder"))
         }
+        
         elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButton, action: "radialMenu"))
         elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .rightStickY : .leftStickY, action: "menuNavigation"))
         elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .abxy : .dpad, action: "menuNavigation"))
+        
+        if self.currentSettingsMenuMode == .AllSettings {
+            elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadUp : .a, action: "holdToNavSection"))
+        }
 
         elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadLeft : .x, action: "widgetOperationBackward"))
         elements.append(ControllerNavigationElement(control:ControllerNavigator.radialMenuButtonPosition == .left ? .dpadRight : .b, action: "widgetOperationForward"))
@@ -1674,6 +1690,36 @@ extension SettingsViewController: ControllerUINavigationDelegate {
 
     private func moveControllerNavigationSelection(by offset: Int) {
         let allTargets = controllerNavigationTargets(skippingDisabledStacks: false)
+        if ControllerNavigator.settingsSectionNavigationHoldActive,
+           currentSettingsMenuMode == .AllSettings {
+            let sectionHeaders = allTargets.filter(isControllerNavigationSectionHeader)
+            guard !sectionHeaders.isEmpty else {
+                clearControllerNavigationHighlight()
+                return
+            }
+
+            let nextHeaderIndex: Int
+            if let highlightedView = ControllerNavigator.controllerNavigationHighlightedView,
+               let currentHeaderIndex = sectionHeaders.firstIndex(where: { $0 === highlightedView }) {
+                nextHeaderIndex = (currentHeaderIndex + offset + sectionHeaders.count) % sectionHeaders.count
+            } else if let highlightedView = ControllerNavigator.controllerNavigationHighlightedView,
+                      let currentLayoutIndex = allTargets.firstIndex(where: { $0 === highlightedView }) {
+                let headerLayoutIndices = sectionHeaders.compactMap { header in
+                    allTargets.firstIndex(where: { $0 === header })
+                }
+                if offset >= 0 {
+                    nextHeaderIndex = headerLayoutIndices.firstIndex(where: { $0 > currentLayoutIndex }) ?? 0
+                } else {
+                    nextHeaderIndex = headerLayoutIndices.lastIndex(where: { $0 < currentLayoutIndex }) ?? (sectionHeaders.count - 1)
+                }
+            } else {
+                nextHeaderIndex = offset >= 0 ? 0 : sectionHeaders.count - 1
+            }
+
+            highlightControllerNavigationView(sectionHeaders[nextHeaderIndex])
+            return
+        }
+
         let targets = allTargets.filter { isControllerNavigationSelectableTarget($0) }
         guard !targets.isEmpty else {
             clearControllerNavigationHighlight()
