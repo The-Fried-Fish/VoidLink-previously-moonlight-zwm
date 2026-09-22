@@ -1976,6 +1976,17 @@ static NSMutableSet* hostList;
     if (@available(iOS 13.0, *)) [GamepadNavigationIllustrationHud updateCurrentTheme];
 
     [self.hostCollectionVC updateTheme];
+    [self updateAppCollectionTheme];
+}
+
+- (void)updateAppCollectionTheme {
+    for (UICollectionViewCell *cell in self.collectionView.visibleCells) {
+        for (UIView *view in cell.subviews) {
+            if ([view isKindOfClass:[UIAppView class]]) {
+                [(UIAppView *)view updateTheme];
+            }
+        }
+    }
 }
 
 // Called when the system's theme (light/dark mode) changes
