@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "tv",
-      "filename" : "Wedges.png",
+      "filename" : "voidlink-logo.png",
       "scale" : "1x"
     },
     {
       "idiom" : "tv",
-      "filename" : "Wedges@2.png",
+      "filename" : "voidlink-logo@2.png",
       "scale" : "2x"
     }
   ],
