@@ -301,7 +301,7 @@ class HostCardView: UIView {
 #if !os(tvOS)
         let defaultButtonType: UIButton.ButtonType = .system
 #else
-        let defaultButtonType: UIButton.ButtonType = .plain
+        let defaultButtonType: UIButton.ButtonType = .custom
 #endif
 
         appButton = UIButton(type: defaultButtonType)

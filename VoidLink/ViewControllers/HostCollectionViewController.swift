@@ -188,6 +188,11 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
         } else {
             collectionViewHeightConstraint?.constant = contentHeight
         }
+        
+        if PublicUtils.isTVOS {
+            flowLayout.sectionInset = UIEdgeInsets(top: PublicUtils.tvOS26Aavailable ? 43 : 30, left: horizontalPadding, bottom: 0, right: horizontalPadding)
+            return
+        }
 
         switch numberOfRowsInCollectionView() {
         case 1:

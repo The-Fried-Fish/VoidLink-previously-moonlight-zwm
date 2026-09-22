@@ -428,8 +428,8 @@ static NSMutableSet* hostList;
     // [self.collectionView setContentOffset:CGPointZero animated:NO];
     
     [self attachWaterMark];
-    self.navigationItem.rightBarButtonItems = VLBarButtonItems(_upButton, nil);
-    self.revealViewController.mainFrameIsInHostView = false;  
+    self.navigationItem.rightBarButtonItems = VLBarButtonItems(PublicUtils.tvOS26Aavailable ? _upButton : nil, nil);
+    self.revealViewController.mainFrameIsInHostView = false;
     // [self disableNavigation];
     [self updateTitle];
     [self alreadyPaired];
@@ -2927,7 +2927,7 @@ static NSMutableSet* hostList;
     self.hostCollectionVC = [[HostCollectionViewController alloc] init];
     self.hostCollectionVC.cellSize = [self getHostCardSize];
     self.hostCollectionVC.interItemMinimumSpacing = 25;
-    self.hostCollectionVC.minimumLineSpacing = 25;
+    self.hostCollectionVC.minimumLineSpacing = PublicUtils.isTVOS ? 49 : 25;
     // 添加为子控制器
     [self addChildViewController:self.hostCollectionVC];
     
