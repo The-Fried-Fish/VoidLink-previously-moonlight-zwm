@@ -1731,9 +1731,12 @@ static NSMutableSet* hostList;
 
 - (void)applyNavBarAppearance{
 #if TARGET_OS_TV
-    self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
-    self.navigationController.navigationBar.barTintColor = PublicUtils.isTVOS ? UIColor.clearColor : ThemeManager.hostViewBackgroundColor;
-    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    UIColor *backgroundColor = ThemeManager.hostViewBackgroundColor;
+    navigationBar.backgroundColor = backgroundColor;
+    navigationBar.barTintColor = backgroundColor;
+    navigationBar.translucent = NO;
+    navigationBar.shadowImage = [UIImage new];
 #else
     if (@available(iOS 13.0, *)) {
         self.navigationController.navigationBar.standardAppearance.backgroundColor = [UIColor clearColor]; // old ios depend on this, do not remove
@@ -2447,9 +2450,15 @@ static NSMutableSet* hostList;
 {
     [super viewWillAppear:NO];
 
+#if TARGET_OS_TV
+    // StreamFrameViewController hides the navigation bar. Restore it before
+    // rebuilding the collection views so their first layout uses final safe-area geometry.
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+#endif
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateTheme)
-                                                 name:ThemeManager.ThemeDidChangeNotification
+                                             name:ThemeManager.ThemeDidChangeNotification
                                                object:nil];
 
     /* this makes background color works*/
