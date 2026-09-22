@@ -178,7 +178,7 @@ final class UIAppView: UIButton {
 
         let label = UILabel()
         label.backgroundColor = UIColor.black.withAlphaComponent(0.55)
-        label.textColor = ThemeManager.userInterfaceStyle() == .dark ? .white.withAlphaComponent(0.8) : .white
+        label.textColor = .white.withAlphaComponent(UIAppView.appLabelAlpha)
         label.text = app.name == "Steam Big Picture" ? "Steam" : app.name
         let baseFont = UIFont.systemFont(ofSize: PublicUtils.isTVOS ? 18 : 15)
         if let desc = baseFont.fontDescriptor.withDesign(.rounded) {
@@ -205,8 +205,12 @@ final class UIAppView: UIButton {
         #endif
     }
     
+    static var appLabelAlpha: CGFloat {
+        return ThemeManager.userInterfaceStyle() == .dark ? (PublicUtils.isTVOS ? 0.97 : 0.8) : 1.0
+    }
+    
     func updateTheme() {
-        appLabel?.textColor = ThemeManager.userInterfaceStyle() == .dark ? .white.withAlphaComponent(0.8) : .white
+        appLabel?.textColor = .white.withAlphaComponent(UIAppView.appLabelAlpha)
     }
 
     @objc private func buttonSelected(_ sender: Any) {
