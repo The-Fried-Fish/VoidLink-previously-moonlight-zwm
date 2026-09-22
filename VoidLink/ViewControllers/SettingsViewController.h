@@ -21,7 +21,10 @@
 
 @interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, UITextFieldDelegate>
 
+#if TARGET_OS_TV
 - (TemporarySettings *)initialSettingsSnapshotForSwiftUI;
+- (void)consumeTvOSInitialSettingsSnapshotForMenuPresentation;
+#endif
 
 #if !TARGET_OS_TV
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;

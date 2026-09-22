@@ -28,6 +28,7 @@
 #if TARGET_OS_TV
 // The first settings menu uses this launch-time snapshot, then falls back to
 // normal Core Data reads for every later settings session.
+- (TemporarySettings *)peekTvOSInitialSettingsSnapshot;
 - (TemporarySettings *)consumeTvOSInitialSettingsSnapshot;
 - (void)refreshTvOSInitialSettingsSnapshot:(TemporarySettings *)snapshot;
 #endif

@@ -122,6 +122,10 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     return snapshot;
 }
 
+- (TemporarySettings *)peekTvOSInitialSettingsSnapshot {
+    return self.tvOSInitialSettingsSnapshot;
+}
+
 - (void)refreshTvOSInitialSettingsSnapshot:(TemporarySettings *)snapshot {
     if (self.tvOSInitialSettingsSnapshot != nil) {
         self.tvOSInitialSettingsSnapshot = snapshot;

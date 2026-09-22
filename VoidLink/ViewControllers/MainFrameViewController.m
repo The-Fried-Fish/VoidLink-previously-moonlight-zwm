@@ -1376,6 +1376,9 @@ static NSMutableSet* hostList;
         }
     }
     else {
+#if TARGET_OS_TV
+        [self.settingsViewController consumeTvOSInitialSettingsSnapshotForMenuPresentation];
+#endif
         if(self.revealViewController.isStreaming) self.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
         if (@available(iOS 13.0, *)) [ControllerNavigator setUINavigationDelegate:self.settingsViewController];
         self.navigationItem.leftBarButtonItems = PublicUtils.isTVOS

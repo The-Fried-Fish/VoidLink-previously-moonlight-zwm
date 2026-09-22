@@ -2065,7 +2065,12 @@ extension ControllerCollectionNavigationDelegate {
         }
         else {
             highlightedView.layer.borderColor = ThemeManager.appPrimaryColor.withAlphaComponent(isDarkTheme ? 0.85 : 0.93).cgColor
-            highlightedView.layer.borderWidth = (self is HostCollectionViewController) ? 3 : 5
+            if PublicUtils.isTVOS {
+                highlightedView.layer.borderWidth = (self is HostCollectionViewController) ? 6 : 6.5
+            }
+            else {
+                highlightedView.layer.borderWidth = (self is HostCollectionViewController) ? 3 : 5
+            }
         }
         (cell as? ControllerNavigationHighlightTargetProviding)?.controllerNavigationHighlightDidApply()
     }

@@ -219,9 +219,9 @@ static UIWindow *_externalSceneWindow = nil;
 #endif
         [self.window makeKeyAndVisible];
 #if TARGET_OS_TV
-        // SWReveal intentionally keeps its rear controller unloaded until the
-        // first reveal. Build and lay out the SwiftUI settings tree now so
-        // opening the menu later does not pay that one-time UI cost.
+        // SWReveal keeps the rear controller unloaded until it is revealed.
+        // Preheat the SwiftUI settings hierarchy without consuming its
+        // launch-time settings snapshot; the first real reveal consumes it.
         [tvOSSettingsViewController loadViewIfNeeded];
         tvOSSettingsViewController.view.frame = self.window.bounds;
         [tvOSSettingsViewController.view setNeedsLayout];
