@@ -1307,6 +1307,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     hasUserInteracted = YES;
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
+    
+    if(!touchHandler) {
+        [sessionTouchHandler touchesMoved:targetTouches withEvent:event];
+        return;
+    }
+    
     if(self->touchMode != AbsoluteTouch){
         [self->touchHandler touchesMoved:targetTouches withEvent:event];
         if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchMovedEvent:targetTouches];
@@ -1461,6 +1467,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     hasUserInteracted = YES;
     
     NSSet* targetTouches = nonPencilTouches ? nonPencilTouches : touches;
+    
+    if(!touchHandler) {
+        [sessionTouchHandler touchesEnded:targetTouches withEvent:event];
+        return;
+    }
+    
     if(touchMode != AbsoluteTouch){
         [self->touchHandler touchesEnded:targetTouches withEvent:event]; // when touches ended, must call the native touchhandler before onScreenControls, since the NSSet of touches captured by on screen button shall be updated later
         if([self isOnScreenWidgetEnabled]) [self->_onScreenControls handleTouchUpEvent:targetTouches];
