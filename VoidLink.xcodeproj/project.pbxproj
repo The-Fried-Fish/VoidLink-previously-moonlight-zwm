@@ -803,7 +803,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FB1A67542132419700507771 /* Moonlight TV */ = {
+		FB1A67542132419700507771 /* VoidLink TV */ = {
 			isa = PBXGroup;
 			children = (
 				FB1A675E2132419700507771 /* Main.storyboard */,
@@ -812,7 +812,7 @@
 				FB1A67642132419A00507771 /* main.m */,
 				693B3A9A218638CD00982F7B /* Settings.bundle */,
 			);
-			path = "Moonlight TV";
+			path = "VoidLink TV";
 			sourceTree = "<group>";
 		};
 		FB290CE519B2C406004C83CF = {
@@ -822,7 +822,7 @@
 				9896219423D15C2900211983 /* X1Kit */,
 				98AB2E7F1CAD46830089BB98 /* moonlight-common.xcodeproj */,
 				FB290CF919B2C406004C83CF /* VoidLink */,
-				FB1A67542132419700507771 /* Moonlight TV */,
+				FB1A67542132419700507771 /* VoidLink TV */,
 				2A039E572F72892B00546768 /* VoidLinkPreview */,
 				FB290CF019B2C406004C83CF /* Frameworks */,
 				FB290CEF19B2C406004C83CF /* Products */,
@@ -1812,7 +1812,7 @@
 					"$(PROJECT_DIR)/third_party/imgui",
 					"$(PROJECT_DIR)/VoidLink/Database",
 				);
-				INFOPLIST_FILE = "Moonlight TV/Info.plist";
+				INFOPLIST_FILE = "VoidLink TV/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = VoidLink;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1884,7 +1884,7 @@
 					"$(PROJECT_DIR)/third_party/imgui",
 					"$(PROJECT_DIR)/VoidLink/Database",
 				);
-				INFOPLIST_FILE = "Moonlight TV/Info.plist";
+				INFOPLIST_FILE = "VoidLink TV/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = VoidLink;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
