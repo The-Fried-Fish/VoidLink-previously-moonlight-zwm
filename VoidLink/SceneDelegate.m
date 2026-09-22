@@ -175,6 +175,9 @@ static UIWindow *_externalSceneWindow = nil;
     UIWindowScene *windowScene = (UIWindowScene *)scene;
     if ([session.role isEqualToString:UIWindowSceneSessionRoleApplication]) {
 #if TARGET_OS_TV
+        SettingsViewController *tvOSSettingsViewController = nil;
+#endif
+#if TARGET_OS_TV
         self.window = [[VoidLinkNoFocusWindow alloc] initWithWindowScene:windowScene];
 #else
         self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
@@ -195,6 +198,7 @@ static UIWindow *_externalSceneWindow = nil;
         if ([initialViewController isKindOfClass:[UINavigationController class]]) {
             UINavigationController *frontNavigationController = (UINavigationController *)initialViewController;
             SettingsViewController *settingsViewController = [[SettingsViewController alloc] init];
+            tvOSSettingsViewController = settingsViewController;
             SWRevealViewController *revealViewController = [[SWRevealViewController alloc] initWithRearViewController:settingsViewController
                                                                                                    frontViewController:frontNavigationController];
             UIViewController *topViewController = frontNavigationController.topViewController;
@@ -214,6 +218,18 @@ static UIWindow *_externalSceneWindow = nil;
         self.window.rootViewController = initialViewController;
 #endif
         [self.window makeKeyAndVisible];
+#if TARGET_OS_TV
+        // SWReveal intentionally keeps its rear controller unloaded until the
+        // first reveal. Build and lay out the SwiftUI settings tree now so
+        // opening the menu later does not pay that one-time UI cost.
+        [tvOSSettingsViewController loadViewIfNeeded];
+        tvOSSettingsViewController.view.frame = self.window.bounds;
+        [tvOSSettingsViewController.view setNeedsLayout];
+        [tvOSSettingsViewController.view layoutIfNeeded];
+        if (@available(tvOS 14.0, *)) {
+            [tvOSSettingsViewController refreshSwiftUISettingsGeometry];
+        }
+#endif
         Log(LOG_I, @"SceneDelegate: Main app scene connected.");
 
     } else if ([session.role isEqualToString:UIWindowSceneSessionRoleExternalDisplay]) {

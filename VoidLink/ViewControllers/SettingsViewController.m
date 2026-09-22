@@ -88,7 +88,13 @@
 
 - (void)viewDidLoad {
     self->dataMan = [[DataManager alloc] init];
-    self->tempSettings = [self->dataMan getSettings];
+#if TARGET_OS_TV
+    AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+    self->tempSettings = [appDelegate consumeTvOSInitialSettingsSnapshot];
+#endif
+    if (self->tempSettings == nil) {
+        self->tempSettings = [self->dataMan getSettings];
+    }
     self.currentSettingsMenuMode = self->tempSettings.settingsMenuMode.intValue;
 
     if (@available(iOS 14.0, tvOS 14.0, *)) {
@@ -111,6 +117,10 @@
 #if !TARGET_OS_TV
     [self restoreCoreDataSettingsForUIKitMenu:tempSettings];
 #endif
+}
+
+- (TemporarySettings *)initialSettingsSnapshotForSwiftUI {
+    return self->tempSettings;
 }
 
 - (void)viewWillAppear:(BOOL)animated{

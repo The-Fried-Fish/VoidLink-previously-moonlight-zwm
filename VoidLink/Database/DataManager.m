@@ -321,6 +321,13 @@
         Log(LOG_E, @"Unable to save hosts to database: %@", error);
     }
 
+#if TARGET_OS_TV
+    // Keep the one-shot startup snapshot current until Settings consumes it.
+    // After consumption AppDelegate intentionally ignores these refreshes.
+    TemporarySettings *settingsSnapshot = [[TemporarySettings alloc] initFromSettings:[self retrieveSettings]];
+    [_appDelegate refreshTvOSInitialSettingsSnapshot:settingsSnapshot];
+#endif
+
     [_appDelegate saveContext];
 }
 

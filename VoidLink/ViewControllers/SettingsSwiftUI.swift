@@ -1806,7 +1806,13 @@ final class SettingsSession: NSObject, ObservableObject {
     private var pendingHighlightMoveScheduled = false
 
     init(presentingController: UIViewController) {
-        guard let snapshot = DataManager().getSettings() else {
+#if os(tvOS)
+        let initialSnapshot = (presentingController as? SettingsViewController)?
+            .initialSettingsSnapshotForSwiftUI()
+#else
+        let initialSnapshot: TemporarySettings? = nil
+#endif
+        guard let snapshot = initialSnapshot ?? DataManager().getSettings() else {
             preconditionFailure("SettingsSession requires an initialized TemporarySettings snapshot")
         }
         let persistedResolution = snapshot.resolutionSelected.intValue
@@ -4297,7 +4303,11 @@ final class SettingsSession: NSObject, ObservableObject {
         }
         updateConditionalVisibility(suppressEmerging: menuIsOpening) {
             isStreaming = streaming
+#if os(tvOS)
+            let remembersFoldState = itemRegistry.rememberFoldState.value
+#else
             let remembersFoldState = DataManager().getSettings()?.rememberFoldState ?? false
+#endif
             if menuIsOpening, !remembersFoldState {
                 settingsSectionFoldIdentifiers.forEach { sectionFoldStates[$0] = true }
             }

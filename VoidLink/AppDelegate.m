@@ -13,6 +13,13 @@
 #import "MainFrameViewController.h"
 #import "SceneDelegate.h"
 #import "VoidLink-Swift.h"
+#import "DataManager.h"
+
+#if TARGET_OS_TV
+@interface AppDelegate ()
+@property (nonatomic, strong) TemporarySettings *tvOSInitialSettingsSnapshot;
+@end
+#endif
 
 @implementation AppDelegate
 
@@ -101,7 +108,24 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     [CommandManager presetDefaultCommands];
     [GenericUtils installSegmentedControlPreviousSelectionTracking];
     [IAPManager shared];
+
+    // tvOS mounts the settings view lazily when its reveal menu first opens.
+    // Read its Core Data snapshot now so that first presentation is RAM-only.
+    DataManager *dataManager = [[DataManager alloc] init];
+    self.tvOSInitialSettingsSnapshot = [dataManager getSettings];
     return YES;
+}
+
+- (TemporarySettings *)consumeTvOSInitialSettingsSnapshot {
+    TemporarySettings *snapshot = self.tvOSInitialSettingsSnapshot;
+    self.tvOSInitialSettingsSnapshot = nil;
+    return snapshot;
+}
+
+- (void)refreshTvOSInitialSettingsSnapshot:(TemporarySettings *)snapshot {
+    if (self.tvOSInitialSettingsSnapshot != nil) {
+        self.tvOSInitialSettingsSnapshot = snapshot;
+    }
 }
 #endif
 

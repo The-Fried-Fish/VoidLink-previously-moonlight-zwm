@@ -14,11 +14,14 @@
 
 @class LayoutOnScreenControlsViewController;
 @class MainFrameViewController;
+@class TemporarySettings;
 @class MenuSectionView;
 @class MicHandler;
 @class WidgetPickerViewController;
 
 @interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, UITextFieldDelegate>
+
+- (TemporarySettings *)initialSettingsSnapshotForSwiftUI;
 
 #if !TARGET_OS_TV
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
