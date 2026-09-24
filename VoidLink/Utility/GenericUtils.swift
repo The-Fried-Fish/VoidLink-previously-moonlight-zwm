@@ -558,9 +558,12 @@ import UIKit
                 countdown: 20,
                 completion: {
                     PublicUtils.openUrl("")
-                    handleFirstGamepadConnection(in: vc, with: controller) {
-                        ControllerUtil.setGCControllerToPrimary(controller)
-                        return
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        handleFirstGamepadConnection(in: vc, with: controller) {
+                            ControllerUtil.setGCControllerToPrimary(controller)
+                            return
+                        }
                     }
                 }
             )
