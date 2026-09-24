@@ -428,7 +428,7 @@ static NSMutableSet* hostList;
     // [self.collectionView setContentOffset:CGPointZero animated:NO];
     
     [self attachWaterMark];
-    self.navigationItem.rightBarButtonItems = VLBarButtonItems(PublicUtils.tvOS26Aavailable ? _upButton : nil, nil);
+    self.navigationItem.rightBarButtonItems = VLBarButtonItems(PublicUtils.tvOS26Aavailable || !PublicUtils.isTVOS ? _upButton : nil, nil);
     self.revealViewController.mainFrameIsInHostView = false;
     // [self disableNavigation];
     [self updateTitle];
