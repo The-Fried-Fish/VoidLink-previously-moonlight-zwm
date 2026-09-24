@@ -9382,6 +9382,35 @@
         }
       }
     },
+    "Enter host IP for VoidLink TV from iPhone/iPad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter host IP for VoidLink TV from iPhone/iPad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 iPhone/iPad 为 VoidLink TV 输入主机 IP 地址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 iPhone/iPad 為 VoidLink TV 輸入主機 IP 位址"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 iPhone/iPad 為 VoidLink TV 輸入主機 IP 位址"
+          }
+        }
+      }
+    },
     "Enter IP address to add host manually" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10714,6 +10743,64 @@
         }
       }
     },
+    "G8PlusMFiRegressionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dear G8+ MFi controller user, due to Apple App Review requirements, VoidLink updates have had to remove the MFi-protocol vibration feature for this controller. We sincerely apologize. As a temporary workaround, you may install the TestFlight version where this functionality remains unaffected. Whether this feature can be restored in a future version depends on VoidLink obtaining MFi authorization from the controller manufacturer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尊敬的 G8+ MFi 手柄用户，应 Apple app 审核要求，VoidLink版本更新不得不移除此手柄的 MFi 协议振动功能。 开发者对此深表歉意！您可以安装功能不受影响的TestFlight版本，作为临时解决方案。后续版本是否恢复该功能，取决于 VoidLink 能否获得手柄厂商的 MFi 许可。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尊敬的 G8+ MFi 手把使用者，因應 Apple app 審核要求，VoidLink 版本更新不得不移除此手把的 MFi 協議震動功能。開發者對此深表歉意！您可以安裝功能不受影響的 TestFlight 版本，作為臨時解決方案。後續版本是否恢復此功能，取決於 VoidLink 能否取得手把廠商的 MFi 授權。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尊敬的 G8+ MFi 手把使用者，因應 Apple app 審核要求，VoidLink 版本更新不得不移除此手把的 MFi 協議震動功能。開發者對此深表歉意！您可以安裝功能不受影響的 TestFlight 版本，作為臨時解決方案。後續版本是否恢復此功能，取決於 VoidLink 能否取得手把廠商的 MFi 授權。"
+          }
+        }
+      }
+    },
+    "G8+ MFi Regression" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "G8+ MFi Regression"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "G8+ MFi 功能回撤"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "G8+ MFi 功能回撤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "G8+ MFi 功能回撤"
+          }
+        }
+      }
+    },
     "Game Profile" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -11200,6 +11287,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "如果外接鍵盤自帶 Esc 鍵，可以關閉此選項。"
+          }
+        }
+      }
+    },
+    "Go for TestFlight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go for TestFlight"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往 TestFlight"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往 TestFlight"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往 TestFlight"
           }
         }
       }
@@ -22212,35 +22328,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看教學"
-          }
-        }
-      }
-    },
-    "Enter host IP for VoidLink TV from iPhone/iPad" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter host IP for VoidLink TV from iPhone/iPad"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通过 iPhone/iPad 为 VoidLink TV 输入主机 IP 地址"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "透過 iPhone/iPad 為 VoidLink TV 輸入主機 IP 位址"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "透過 iPhone/iPad 為 VoidLink TV 輸入主機 IP 位址"
           }
         }
       }

@@ -1346,7 +1346,7 @@ import UIKit
         
         if let mainFrameVC = delegate as? MainFrameViewController {
             let vc = mainFrameVC.isStreaming() ? StreamFrameViewController.sharedInstance() : mainFrameVC
-            GenericUtils.handleFirstGamepadConnection(in: vc) {
+            GenericUtils.handleFirstGamepadConnection(in: vc, with: controller) {
                 setGCControllerToPrimary(controller)
                 return
             }
@@ -1355,7 +1355,7 @@ import UIKit
         setGCControllerToPrimary(controller)
     }
     
-    private static func setGCControllerToPrimary(_ controller: GCController) {
+    static func setGCControllerToPrimary(_ controller: GCController) {
         primaryGCController = controller
         _ = buildMapping(for: controller, swapABXY: false)
         disableSysGestures(controller)

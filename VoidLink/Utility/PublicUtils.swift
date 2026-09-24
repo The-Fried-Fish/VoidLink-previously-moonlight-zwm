@@ -12,6 +12,13 @@ import ObjectiveC
 import UIKit
 
 @objc public class PublicUtils: NSObject {
+    
+    @objc public static let isProductionBuild: Bool = {
+        return ["com.voidlink.iOS"
+            , "com.voidlinkextreme.iOS"
+            , "com.voidlink.tf.debug10.iOS"
+        ].contains(Bundle.main.bundleIdentifier)
+    }()
 
     /// True when this build runs on Apple TV (tvOS), rather than iOS/iPadOS.
     @objc public static let isTVOS: Bool = {

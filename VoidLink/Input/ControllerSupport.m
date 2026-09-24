@@ -1725,7 +1725,7 @@ double rc_expo(double x, double expo) {
     voidController.supportedEmulationFlags = EMULATING_SPECIAL | EMULATING_SELECT;
     voidController.gamepad = controller;
 #if !TARGET_OS_TV
-    if ([_gameSirG8MFiRumbler isTargetController:controller]) {
+    if ([GameSirG8MFiRumbler isTargetController:controller]) {
         voidController.hardware = ControllerHardwareG8PlusMFi;
     } else if ([_kishiRumbler isTargetController:controller]) {
         voidController.hardware = ControllerHardwareRazerKishi;
@@ -2060,7 +2060,7 @@ double rc_expo(double x, double expo) {
             if ([self->_kishiRumbler isTargetController:controller]) {
                 [self->_kishiRumbler stopAndClose];
             }
-            if ([self->_gameSirG8MFiRumbler isTargetController:controller]) {
+            if ([GameSirG8MFiRumbler isTargetController:controller]) {
                 [self->_gameSirG8MFiRumbler stopAndClose];
             }
 #endif

@@ -533,7 +533,40 @@ import UIKit
         }
         return false
     }
-    @objc public static func handleFirstGamepadConnection(in vc: UIViewController?, handler: @escaping () -> Void) {
+    
+    @objc public static func isFirstConnectingG8PlusMFi(_ controller: GCController) -> Bool {
+        guard GameSirG8MFiRumbler.isTargetController(controller) && PublicUtils.isProductionBuild else {return false}
+        let key = "isFirstConnectingG8PlusMFi"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    
+    @objc public static func handleFirstGamepadConnection(in vc: UIViewController?,with controller: GCController, handler: @escaping () -> Void) {
+        
+        if isFirstConnectingG8PlusMFi(controller) {
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "G8+ MFi Regression"),
+                message: LocalizationHelper.localizedString(forKey: "G8PlusMFiRegressionTip"),
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Go for TestFlight"),
+                countdown: 20,
+                completion: {
+                    PublicUtils.openUrl("")
+                    handleFirstGamepadConnection(in: vc, with: controller) {
+                        ControllerUtil.setGCControllerToPrimary(controller)
+                        return
+                    }
+                }
+            )
+            return
+        }
+        
         if isFirstConnectingGamepad() {
             DispatchQueue.main.asyncAfter(deadline: .now() + (PublicUtils.isTVOS ? 1.2 : 0)) {
                 AlertControllerUtil.showAlert(

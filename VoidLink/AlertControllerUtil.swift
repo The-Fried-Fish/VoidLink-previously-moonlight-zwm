@@ -21,6 +21,10 @@ import UIKit
         return "\(baseMessage)\n\n\(countdownText)"
     }
 
+    private static func makeCountdownButtonTitle(baseButtonTitle: String, remainingSeconds: Int) -> String {
+        "\(baseButtonTitle) (\(remainingSeconds))"
+    }
+
     @available(iOS 13.0, *)
     private static func makeLeftAlignedAttributedText(_ text: String, role: AlertTextRole) -> NSAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
@@ -69,7 +73,7 @@ import UIKit
     ///   - viewController: 要显示弹窗的控制器
     ///   - title: 弹窗标题
     ///   - message: 弹窗内容
-    ///   - buttonTitle: 按钮初始文字（倒计时结束后显示）
+    ///   - buttonTitle: 按钮文字；非 Mac-as-iPad 环境会在倒计时期间一同显示剩余秒数
     ///   - countdown: 倒计时秒数
     ///   - completion: 点击确认或倒计时结束的回调
     
@@ -92,6 +96,11 @@ import UIKit
     ) {
         var remainingSeconds = countdown
         let originalMessage = message
+        let showsCountdownInButton = countdown > 0 &&
+            !autoCompletion &&
+            !PublicUtils.isRunningOnMacAsiPadApp &&
+            !buttonTitle.isEmpty
+        let showsCountdownInMessage = countdown > 0 && !autoCompletion && !showsCountdownInButton
         var isAlertDismissed = false
         
         AlertControllerUtil.completion = completion
@@ -100,15 +109,18 @@ import UIKit
 
         alertController = UIAlertController(
             title: title,
-            message: (countdown > 0 && !autoCompletion) ? makeCountdownMessage(baseMessage: originalMessage, remainingSeconds: remainingSeconds) : message,
+            message: showsCountdownInMessage ? makeCountdownMessage(baseMessage: originalMessage, remainingSeconds: remainingSeconds) : message,
             preferredStyle: .alert
         )
         applyLeftAlignment(
             title: title,
-            message: (countdown > 0 && !autoCompletion) ? makeCountdownMessage(baseMessage: originalMessage, remainingSeconds: remainingSeconds) : message
+            message: showsCountdownInMessage ? makeCountdownMessage(baseMessage: originalMessage, remainingSeconds: remainingSeconds) : message
         )
 
-        let confirmAction = UIAlertAction(title: buttonTitle, style: .default) { _ in
+        let confirmAction = UIAlertAction(
+            title: showsCountdownInButton ? makeCountdownButtonTitle(baseButtonTitle: buttonTitle, remainingSeconds: remainingSeconds) : buttonTitle,
+            style: .default
+        ) { _ in
             isAlertDismissed = true
             actionCancelled = false
             completion?()
@@ -180,6 +192,7 @@ import UIKit
                 }
 
                 confirmAction.isEnabled = true
+                confirmAction.setValue(buttonTitle, forKey: "title")
                 alertController.message = originalMessage
                 applyLeftAlignment(title: title, message: originalMessage)
                 
@@ -188,9 +201,16 @@ import UIKit
                 }
             } else {
                 if !autoCompletion {
-                    let countdownMessage = makeCountdownMessage(baseMessage: originalMessage, remainingSeconds: remainingSeconds)
-                    alertController.message = countdownMessage
-                    applyLeftAlignment(title: title, message: countdownMessage)
+                    if showsCountdownInButton {
+                        confirmAction.setValue(
+                            makeCountdownButtonTitle(baseButtonTitle: buttonTitle, remainingSeconds: remainingSeconds),
+                            forKey: "title"
+                        )
+                    } else {
+                        let countdownMessage = makeCountdownMessage(baseMessage: originalMessage, remainingSeconds: remainingSeconds)
+                        alertController.message = countdownMessage
+                        applyLeftAlignment(title: title, message: countdownMessage)
+                    }
                 }
             }
         }

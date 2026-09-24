@@ -58,10 +58,10 @@ final class GameSirG8MFiRumbler: NSObject, StreamDelegate {
     }
 
     func canHandleController(_ controller: GCController) -> Bool {
-        return isTargetController(controller) && connectedAccessory() != nil
+        return GameSirG8MFiRumbler.isTargetController(controller) && connectedAccessory() != nil
     }
 
-    func isTargetController(_ controller: GCController) -> Bool {
+    static func isTargetController(_ controller: GCController) -> Bool {
         guard let vendorName = controller.vendorName, !vendorName.isEmpty else {
             return false
         }
