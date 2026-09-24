@@ -28,6 +28,7 @@
 #import "KeyboardInputField.h"
 #import "LocalizationHelper.h"
 #import "StreamFrameViewController.h"
+#import "SceneDelegate.h"
 
 
 #if TARGET_OS_TV
@@ -40,6 +41,9 @@
 
 
 static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
+// Keeps the input field nonempty so we can distinguish Backspace from ordinary input
+// without showing a character in the tvOS system keyboard.
+static NSString * const KeyboardInputSentinel = @"\u200B";
 
 /*
  Stream Video has been moved out of this class to _renderView in StreamFrameViewController.
@@ -51,6 +55,10 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     KeyboardInputField* keyInputField;
     BOOL isInputingText;
     bool dockedKeyboardActionDetected;
+#if TARGET_OS_TV
+    BOOL tvOSRemoteTextInputLoopActive;
+    UILabel* tvOSRemoteTextInputTip;
+#endif
     
     bool isPencilHovering;
     NSMutableSet* keysDown;
@@ -102,6 +110,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
              gameProfile:(OSCProfile* )profile
  streamFrameTopLayerView:(UIView* )topLayerView{
     if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[PublicUtils parentViewControllerForView:self];
+
+#if TARGET_OS_TV
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:VoidLinkTvOSRemoteMenuTappedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:VoidLinkTvOSRemotePlayPauseTappedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tvOSRemoteMenuTapped:) name:VoidLinkTvOSRemoteMenuTappedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tvOSRemotePlayPauseTapped:) name:VoidLinkTvOSRemotePlayPauseTappedNotification object:nil];
+#endif
     
     self->comboKeyModifierFlags = (UIKeyModifierControl|UIKeyModifierAlternate|UIKeyModifierShift);
 
@@ -117,6 +132,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     keysDown = [[NSMutableSet alloc] init];
     keyInputField = [[KeyboardInputField alloc] initWithFrame:CGRectZero];
+#if TARGET_OS_TV
+    __weak typeof(self) weakSelf = self;
+    keyInputField.backspaceHandler = ^{
+        [weakSelf sendTvOSRemoteBackspace];
+    };
+#endif
     [keyInputField setKeyboardType:UIKeyboardTypeDefault];
     [keyInputField setAutocorrectionType:UITextAutocorrectionTypeNo];
     [keyInputField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -476,8 +497,78 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
         // reserve height for navigation bar
     ]];
-
 }
+
+#if TARGET_OS_TV
+
+- (void)remoteTextInputForTvOS {
+    if(PublicUtils.isTVOS){
+        if(tvOSRemoteTextInputLoopActive) return;
+        
+        keyInputField.placeholder = [LocalizationHelper localizedStringForKey:@"tvOSRemoteTextInputPlaceholder"];
+        keyInputField.inputView.hidden = true;
+        if (!tvOSRemoteTextInputTip) {
+            tvOSRemoteTextInputTip = [[UILabel alloc] init];
+            tvOSRemoteTextInputTip.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+            tvOSRemoteTextInputTip.font = [UIFont systemFontOfSize:36];
+            tvOSRemoteTextInputTip.textAlignment = NSTextAlignmentCenter;
+            tvOSRemoteTextInputTip.textColor = [[UIColor whiteColor] colorWithAlphaComponent:0.9];
+            tvOSRemoteTextInputTip.numberOfLines = 1;
+            tvOSRemoteTextInputTip.layer.cornerRadius = 10;
+            tvOSRemoteTextInputTip.clipsToBounds = YES;
+            tvOSRemoteTextInputTip.translatesAutoresizingMaskIntoConstraints = NO;
+        }
+        tvOSRemoteTextInputTip.text = keyInputField.placeholder;
+        if (!tvOSRemoteTextInputTip.superview) {
+            [self addSubview:tvOSRemoteTextInputTip];
+            [NSLayoutConstraint activateConstraints:@[
+                [tvOSRemoteTextInputTip.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:16],
+                [tvOSRemoteTextInputTip.topAnchor constraintEqualToAnchor:self.topAnchor constant:16],
+                [tvOSRemoteTextInputTip.heightAnchor constraintEqualToConstant:64],
+            ]];
+        }
+        tvOSRemoteTextInputLoopActive = YES;
+        [self restartTVOSTextInputSession];
+    }
+}
+
+- (void)restartTVOSTextInputSession {
+    [self addSubview:keyInputField];
+    keyInputField.delegate = self;
+    keyInputField.text = KeyboardInputSentinel;
+    [keyInputField becomeFirstResponder];
+    [keyInputField removeTarget:self action:@selector(onKeyboardPressed:) forControlEvents:UIControlEventEditingChanged];
+    [keyInputField addTarget:self action:@selector(onKeyboardPressed:) forControlEvents:UIControlEventEditingChanged];
+    [keyInputField.undoManager disableUndoRegistration];
+}
+
+- (void)tvOSRemoteMenuTapped:(NSNotification *)notification {
+    NSLog(@"StreamView received Menu tap");
+    [keyInputField resignFirstResponder];
+    [keyInputField removeFromSuperview];
+    LiSendKeyboardEvent(0x0d, KEY_ACTION_DOWN, 0);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(50 * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
+        LiSendKeyboardEvent(0x0d, KEY_ACTION_UP, 0);
+        if(self->tvOSRemoteTextInputLoopActive) [self restartTVOSTextInputSession];
+    });
+}
+
+- (void)tvOSRemotePlayPauseTapped:(NSNotification *)notification {
+    NSLog(@"StreamView received Play/Pause tap");
+    tvOSRemoteTextInputLoopActive = NO;
+    [keyInputField resignFirstResponder];
+    [keyInputField removeFromSuperview];
+    [tvOSRemoteTextInputTip removeFromSuperview];
+}
+
+- (void)sendTvOSRemoteBackspace {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        LiSendKeyboardEvent(0x08, KEY_ACTION_DOWN, 0);
+        usleep(50 * 1000);
+        LiSendKeyboardEvent(0x08, KEY_ACTION_UP, 0);
+    });
+}
+#endif
 
 
 - (void)toggleKeyboard{
@@ -493,7 +584,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         [self addSubview:keyInputField];
         // Prepare the textbox used to capture keyboard events.
         keyInputField.delegate = self;
-        keyInputField.text = @"0";
+        keyInputField.text = KeyboardInputSentinel;
     #if !TARGET_OS_TV
     // Prepare the toolbar above the keyboard for more options
         if(settings.showKeyboardToolbar){
@@ -1647,9 +1738,17 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     // This method is called when the "Return" key is pressed.
+    
+    if(PublicUtils.isTVOS) {
+        [keyInputField resignFirstResponder];
+        [keyInputField removeFromSuperview];
+        return false;
+    }
+    
     LiSendKeyboardEvent(0x0d, KEY_ACTION_DOWN, 0);
     usleep(50 * 1000);
     LiSendKeyboardEvent(0x0d, KEY_ACTION_UP, 0);
+    
     return NO;
 }
 
@@ -1675,27 +1774,33 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         // If the text became empty, we know the user pressed the backspace key.
         if ([inputText isEqual:@""]) {
+#if TARGET_OS_TV
+            // tvOS can emit an empty editing change when it ends or starts an
+            // iPhone Remote text-input session. Backspace is handled by the
+            // delegate method above, where an actual deletion is explicit.
+            return;
+#else
             LiSendKeyboardEvent(0x08, KEY_ACTION_DOWN, 0);
             usleep(50 * 1000);
             LiSendKeyboardEvent(0x08, KEY_ACTION_UP, 0);
+#endif
         } else {
-            // Character 0 will be our known sentinel value
+            NSUInteger sentinelLength = KeyboardInputSentinel.length;
             
             // Check if any characters exist which can't be represented in a basic key event
-            for (int i = 1; i < [inputText length]; i++) {
+            for (NSUInteger i = sentinelLength; i < inputText.length; i++) {
                 struct KeyEvent event = [KeyboardSupport translateKeyEvent:[inputText characterAtIndex:i] withModifierFlags:0];
                 if (event.keycode == 0) {
                     // We found an unknown key, so send the entire string as UTF-8
-                    const char* utf8String = [inputText UTF8String];
-                    
-                    // Skip the first character which is our sentinel
-                    LiSendUtf8TextEvent(utf8String + 1, (int)strlen(utf8String) - 1);
+                    NSString *textToSend = [inputText substringFromIndex:sentinelLength];
+                    const char* utf8String = textToSend.UTF8String;
+                    LiSendUtf8TextEvent(utf8String, (int)strlen(utf8String));
                     return;
                 }
             }
             
             // We didn't find any unknown characters, so send them all as basic key events
-            for (int i = 1; i < [inputText length]; i++) {
+            for (NSUInteger i = sentinelLength; i < inputText.length; i++) {
                 struct KeyEvent event = [KeyboardSupport translateKeyEvent:[inputText characterAtIndex:i] withModifierFlags:0];
                 assert(event.keycode != 0);
                 [self sendLowLevelEvent:event];
@@ -1704,7 +1809,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     });
     
     // Reset text field back to known state
-    textField.text = @"0";
+    textField.text = KeyboardInputSentinel;
     
     // Move the insertion point back to the end of the text box
     UITextRange *textRange = [textField textRangeFromPosition:textField.endOfDocument toPosition:textField.endOfDocument];
@@ -1876,7 +1981,13 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 #endif
 
 - (void)cleanUp{
+#if TARGET_OS_TV
+    tvOSRemoteTextInputLoopActive = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:VoidLinkTvOSRemoteMenuTappedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:VoidLinkTvOSRemotePlayPauseTappedNotification object:nil];
+#endif
     [keyInputField resignFirstResponder];
+    keyInputField.backspaceHandler = nil;
     keyInputField.delegate = nil;
 }
 

@@ -68,6 +68,7 @@
 - (OnScreenControlsLevel) getCurrentOscState;
 
 - (void)readyToBringUpSoftKeyboardByToolbox;
+- (void)remoteTextInputForTvOS;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
 - (void)handleNonStandardKeyboard:(NSNotification *)notification;

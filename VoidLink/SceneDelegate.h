@@ -1,5 +1,8 @@
 #import <UIKit/UIKit.h>
 
+FOUNDATION_EXPORT NSNotificationName const VoidLinkTvOSRemoteMenuTappedNotification;
+FOUNDATION_EXPORT NSNotificationName const VoidLinkTvOSRemotePlayPauseTappedNotification;
+
 API_AVAILABLE(ios(13.0), tvos(13.0))
 @interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
 

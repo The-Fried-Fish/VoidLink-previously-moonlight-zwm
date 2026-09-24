@@ -573,6 +573,8 @@ final class ControllerNavigator: NSObject {
                 radialMenuState = .main
                 updateRadialMenu()
             }
+        case .textInput:
+            StreamFrameViewController.sharedInstance().remoteTextInputForTvOS()
         case .theme:
             let targetTheme: UIUserInterfaceStyle = ThemeManager.userInterfaceStyle() == .light ? .dark : .light
             DispatchQueue.main.async {
@@ -643,6 +645,9 @@ final class ControllerNavigator: NSObject {
                 if radialMenuState == .moreOptions {
                     if mainFrameVC.isStreaming() {
                         RadialMenuOverlayView.menuSectors.append(RadialMenuSector(title: "Game Profiles".localized, subtitle: "", symbol:PublicUtils.iOS18Available ? "gamecontroller.circle" : "gamecontroller.fill", item: .gameProfiles))
+                        if PublicUtils.isTVOS {
+                            RadialMenuOverlayView.menuSectors.append(RadialMenuSector(title: "Text Input".localized, subtitle: "", symbol:"keyboard.badge.ellipsis", item: .textInput))
+                        }
                         RadialMenuOverlayView.menuSectors.append(RadialMenuSector(title: "=toolbox".localized, subtitle: "", symbol: "apple.terminal", item: .toolbox))
                     }
                     else {

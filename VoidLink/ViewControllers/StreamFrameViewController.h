@@ -23,14 +23,7 @@
 
 @class LayoutOnScreenControlsViewController;
 
-#if TARGET_OS_TV
-@import GameController;
-
-@interface StreamFrameViewController : GCEventViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, AVPictureInPictureControllerDelegate>
-#else
 @interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, AVPictureInPictureControllerDelegate>
-
-#endif
 @property (nonatomic, strong) StreamManager* streamMan;
 @property (nonatomic) StreamConfiguration* streamConfig;
 @property (nonatomic, strong) AVPictureInPictureController *pipController API_AVAILABLE(ios(9.0));
@@ -69,6 +62,7 @@
 - (void)returnToMainFrame;
 - (void)bringUpToolboxMenu;
 - (void)bringUpToolboxMenuWithoutWidgetLayoutTool;
+- (void)remoteTextInputForTvOS;
 - (void)updateOverlayText:(NSString*)text;
 - (void)updateTransientHUDText:(NSString*)text;
 

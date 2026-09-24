@@ -22216,6 +22216,93 @@
         }
       }
     },
+    "Enter host IP for VoidLink TV from iPhone/iPad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter host IP for VoidLink TV from iPhone/iPad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 iPhone/iPad 为 VoidLink TV 输入主机 IP 地址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 iPhone/iPad 為 VoidLink TV 輸入主機 IP 位址"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 iPhone/iPad 為 VoidLink TV 輸入主機 IP 位址"
+          }
+        }
+      }
+    },
+    "tvOSManualIpTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the touch surface in the iPhone/iPad Apple TV Remote, then enter the IP address on your iPhone/iPad."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请点击 iPhone/iPad 的 Apple TV 遥控界面触控板，从 iPhone/iPad 输入 IP 地址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請點擊 iPhone/iPad Apple TV 遙控介面觸控板，從 iPhone/iPad 輸入 IP 位址"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請點擊 iPhone/iPad Apple TV 遙控介面觸控板，從 iPhone/iPad 輸入 IP 位址"
+          }
+        }
+      }
+    },
+    "tvOSRemoteTextInputPlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter text from iPhone/iPad · ❮ New line · ⏯︎ End text input"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从 iPhone/iPad 输入文本 · ❮ 换行 · ⏯︎ 结束文本输入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從 iPhone/iPad 輸入文字 · ❮ 換行 · ⏯︎ 結束文字輸入"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從 iPhone/iPad 輸入文字 · ❮ 換行 · ⏯︎ 結束文字輸入"
+          }
+        }
+      }
+    },
     "Unable to detect purchased product: %@" : {
       "extractionState" : "manual",
       "localizations" : {

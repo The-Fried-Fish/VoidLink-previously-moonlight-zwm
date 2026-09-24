@@ -769,15 +769,20 @@ static NSMutableSet* hostList;
     Log(LOG_D, @"Tapped add host");
     GenericUtils.autoPopSoftKeyboard = !PublicUtils.isIPhone;
     UIAlertController* alertController = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Add Host Manually"]
-                                                                             message:[LocalizationHelper localizedStringForKey:@"Enter IP address to add host manually"]
+                                                                             message:[LocalizationHelper localizedStringForKey:PublicUtils.isTVOS ? @"tvOSManualIpTip" : @"Enter IP address to add host manually"]
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"192.168.0.100 or [2001:db8::1]";
+        textField.placeholder = PublicUtils.isTVOS ? @"Enter host IP for VoidLink TV from iPhone/iPad" : @"192.168.0.100 or [2001:db8::1]";
         textField.keyboardType = UIKeyboardTypeASCIICapable;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;
         textField.spellCheckingType = UITextSpellCheckingTypeNo;
         textField.delegate = self;
+        if(PublicUtils.isTVOS){
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [textField becomeFirstResponder];
+            });
+        }
     }];
 
     [alertController addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
@@ -2155,7 +2160,7 @@ static NSMutableSet* hostList;
     _controllerConnectObserver = [[NSNotificationCenter defaultCenter] addObserverForName:GCControllerDidConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         Log(LOG_I, @"Controller connected!");
         GCController* controller = note.object;
-        if(controller){
+        if (controller.extendedGamepad != nil) {
             if (@available(iOS 14.0, tvOS 14.0, *)) {
                 for (GCControllerElement* element in controller.physicalInputProfile.allElements) {
                     element.preferredSystemGestureState = GCSystemGestureStateDisabled;

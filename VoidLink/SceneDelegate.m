@@ -1,11 +1,13 @@
 #import "SceneDelegate.h"
 #import "StreamFrameViewController.h"
 #if TARGET_OS_TV
-#import <GameController/GameController.h>
 #import "MainFrameViewController.h"
 #import "SettingsViewController.h"
 #import "SWRevealViewController.h"
 #endif
+
+NSNotificationName const VoidLinkTvOSRemoteMenuTappedNotification = @"VoidLinkTvOSRemoteMenuTappedNotification";
+NSNotificationName const VoidLinkTvOSRemotePlayPauseTappedNotification = @"VoidLinkTvOSRemotePlayPauseTappedNotification";
 
 #if TARGET_OS_TV
 static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
@@ -18,10 +20,37 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 @interface VoidLinkFocusSinkView : UIView
 @end
 
-@implementation VoidLinkFocusSinkView
+@implementation VoidLinkFocusSinkView {
+    UITapGestureRecognizer *_menuTapGestureRecognizer;
+    UITapGestureRecognizer *_playPauseTapGestureRecognizer;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        _menuTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemoteMenuTapped:)];
+        _menuTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+        [self addGestureRecognizer:_menuTapGestureRecognizer];
+
+        _playPauseTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemotePlayPauseTapped:)];
+        _playPauseTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypePlayPause)];
+        [self addGestureRecognizer:_playPauseTapGestureRecognizer];
+    }
+    return self;
+}
 
 - (BOOL)canBecomeFocused {
     return YES;
+}
+
+- (void)tvOSRemoteMenuTapped:(UITapGestureRecognizer *)recognizer {
+    NSLog(@"VoidLinkFocusSinkView received Menu tap");
+    [[NSNotificationCenter defaultCenter] postNotificationName:VoidLinkTvOSRemoteMenuTappedNotification object:self];
+}
+
+- (void)tvOSRemotePlayPauseTapped:(UITapGestureRecognizer *)recognizer {
+    NSLog(@"VoidLinkFocusSinkView received Play/Pause tap");
+    [[NSNotificationCenter defaultCenter] postNotificationName:VoidLinkTvOSRemotePlayPauseTappedNotification object:self];
 }
 
 @end
@@ -54,7 +83,7 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 
 @end
 
-@interface VoidLinkControllerRootViewController : GCEventViewController
+@interface VoidLinkControllerRootViewController : UIViewController
 
 - (instancetype)initWithContentViewController:(UIViewController *)contentViewController;
 - (void)forceFocusSinkUpdate;
@@ -70,7 +99,6 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _contentViewController = contentViewController;
-        self.controllerUserInteractionEnabled = NO;
     }
     return self;
 }
@@ -78,15 +106,12 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 - (instancetype)initWithCoder:(NSCoder *)coder {
     self = [super initWithCoder:coder];
     if (self) {
-        self.controllerUserInteractionEnabled = NO;
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.controllerUserInteractionEnabled = NO;
-
     if (!_contentViewController || _contentViewController.parentViewController == self) {
         return;
     }

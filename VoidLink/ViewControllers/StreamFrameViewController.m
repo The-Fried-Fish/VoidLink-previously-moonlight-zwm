@@ -1102,6 +1102,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     [self->_streamView readyToBringUpSoftKeyboardByToolbox];
 }
 
+- (void)remoteTextInputForTvOS {
+    [self->_streamView remoteTextInputForTvOS];
+}
+
 - (void)enterPip{
     if (@available(iOS 15.0, tvOS 15.0, *)) {
         if(!_settings.enablePIP){

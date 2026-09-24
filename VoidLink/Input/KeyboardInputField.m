@@ -15,4 +15,13 @@
     return UIEditingInteractionConfigurationNone;
 }
 
+- (void)deleteBackward {
+    if (self.backspaceHandler) {
+        self.backspaceHandler();
+        return;
+    }
+
+    [super deleteBackward];
+}
+
 @end

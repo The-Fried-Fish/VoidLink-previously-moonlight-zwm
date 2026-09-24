@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface KeyboardInputField : UITextField
 
+@property (nonatomic, copy, nullable) void (^backspaceHandler)(void);
 
 @end
 
