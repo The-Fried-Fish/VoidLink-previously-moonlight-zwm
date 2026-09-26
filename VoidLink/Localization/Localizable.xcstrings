@@ -21820,6 +21820,29 @@
         }
       }
     },
+    "Text Input" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本输入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文字輸入"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文字輸入"
+          }
+        }
+      }
+    },
     "Toolbox" : {
       "extractionState" : "manual",
       "localizations" : {

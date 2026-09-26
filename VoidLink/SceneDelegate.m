@@ -22,14 +22,21 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 
 @implementation VoidLinkFocusSinkView {
     UITapGestureRecognizer *_menuTapGestureRecognizer;
+    UILongPressGestureRecognizer *_menuLongPressGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        _menuLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemoteMenuLongPressed:)];
+        _menuLongPressGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+        _menuLongPressGestureRecognizer.minimumPressDuration = 0.45;
+        [self addGestureRecognizer:_menuLongPressGestureRecognizer];
+
         _menuTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemoteMenuTapped:)];
         _menuTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+        [_menuTapGestureRecognizer requireGestureRecognizerToFail:_menuLongPressGestureRecognizer];
         [self addGestureRecognizer:_menuTapGestureRecognizer];
 
         _playPauseTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemotePlayPauseTapped:)];
@@ -46,6 +53,11 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 - (void)tvOSRemoteMenuTapped:(UITapGestureRecognizer *)recognizer {
     NSLog(@"VoidLinkFocusSinkView received Menu tap");
     [[NSNotificationCenter defaultCenter] postNotificationName:VoidLinkTvOSRemoteMenuTappedNotification object:self];
+}
+
+- (void)tvOSRemoteMenuLongPressed:(UILongPressGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+    }
 }
 
 - (void)tvOSRemotePlayPauseTapped:(UITapGestureRecognizer *)recognizer {
