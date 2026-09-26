@@ -28,6 +28,14 @@
 #import "VoidLink-Swift.h"
 #import "NativeTouchPointer.h"
 
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST && !TARGET_OS_VISION && __has_include(<UIKit/UISceneAccessory.h>)
+#import <UIKit/UISceneAccessory.h>
+#import <UIKit/UISceneAccessoryRegistration.h>
+#define VL_HAS_SCENE_ACCESSORIES 1
+#else
+#define VL_HAS_SCENE_ACCESSORIES 0
+#endif
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -84,6 +92,9 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 , AbstractGamepadOverlayCloseButtonDelegate
 #endif
 >
+#if VL_HAS_SCENE_ACCESSORIES
+@property (strong, nonatomic) UISceneAccessoryRegistration *externalDisplayRegistration API_AVAILABLE(ios(27.0));
+#endif
 @end
 
 static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil;
@@ -112,6 +123,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     PlotMetrics _frameQueueMetrics;
     UIWindow *_extWindow;
     UIView *_streamVideoRenderView;
+    BOOL _externalDisplayRoutingActive;
     /*
      * View architecture of this viewController:
      * self.view (named `streamFrameTopLayerView` in StreamView.m, where slide & tap gestures, and onScreenControls & OnScreenWidgetView buttons are registered)
@@ -663,7 +675,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
     // Ensure views are layered correctly
     // Metal view should be at the bottom for video rendering
-    if (self.metalViewController && self.metalViewController.view.superview) {
+    if (self.metalViewController.view.superview == self.view) {
         [self.view sendSubviewToBack:self.metalViewController.view];
     }
     // StreamView should also be at the back so OSC CALayers on self.view show
@@ -725,30 +737,8 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     _deviceWindow = self.view.window;
     previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
     
-#if !TARGET_OS_TV
-    if (@available(iOS 13.0, *)) {
-        UIScreen *currentScreen = self.view.window.windowScene.screen;
-        if (UIScreen.screens.count > 1 && [self isAirPlayEnabled] && currentScreen == UIScreen.mainScreen) {
-            [SceneDelegate setExternalDisplayRenderView:self->_streamVideoRenderView];
-        }
-        else {
-            /*
-             _settings.externalDisplayMode.intValue:
-             0 - stage manager
-             1 - airplay
-             2 - disabled
-             */
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self->_streamView insertSubview:self->_streamVideoRenderView atIndex:0];
-            });
-        }
-    } else {
-        [self->_streamView insertSubview:self->_streamVideoRenderView atIndex:0];
-        // Fallback on earlier versions
-    }
-#else
-    [self->_streamView insertSubview:self->_streamVideoRenderView atIndex:0];
-#endif
+    _externalDisplayRoutingActive = YES;
+    [self reloadAirPlayConfig];
 
     self->_streamView.originalFrame = self->_streamView.frame;
     
@@ -939,6 +929,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     _streamVideoRenderView = (StreamView*)[[UIView alloc] initWithFrame:self.view.frame];
     _streamVideoRenderView.bounds = _streamView.bounds;
     _streamVideoRenderView.userInteractionEnabled = false;
+    [_streamView insertSubview:_streamVideoRenderView atIndex:0];
     
     //[_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig];
     [self reConfigStreamViewRealtime]; // call this method again to make sure all gestures are configured & added to the superview(self.view), including the gestures added from inside the streamview.
@@ -1263,6 +1254,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 - (void)willMoveToParentViewController:(UIViewController *)parent {
     // Only cleanup when we're being destroyed
     if (parent == nil) {
+        [self stopExternalDisplayRouting];
         [_streamView cleanUp];
         _streamView = nil;
         [_controllerSupport cleanup];
@@ -1468,9 +1460,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
-    if (@available(iOS 13.0, *)) {
-        [SceneDelegate clearExternalDisplayRenderView];
-    }
+    [self stopExternalDisplayRouting];
     
     if (_settings.enablePIP) {
         [self cleanupPiPController];
@@ -1494,41 +1484,14 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 // External Screen connected
 - (void)extScreenDidConnect:(NSNotification *)notification {
-    Log(LOG_I, @"External Screen Connected");
-    if ([self isAirPlayEnabled] && [notification.object isKindOfClass:[UIScreen class]]) {
-        // UIScreen *extScreen = (UIScreen *)notification.object;
-        if (_streamVideoRenderView) {
-             // Remove from current superview before passing it
-             [_streamVideoRenderView removeFromSuperview];
-             if (@available(iOS 13.0, *)) {
-                 [SceneDelegate setExternalDisplayRenderView:_streamVideoRenderView];
-             }
-             NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-             [nc postNotificationName:@"ScreenChanged" object:self];
-        } else {
-             Log(LOG_W, @"_streamVideoRenderView is nil when external screen connected.");
-        }
-    }
+    // Legacy notification: the scene delegate performs the actual view transfer.
+    [self reloadAirPlayConfig];
 }
 
 // External Screen disconnected
 - (void)extScreenDidDisconnect:(NSNotification *)notification {
-    Log(LOG_I, @"External Screen Disconnected");
-    if(UIScreen.screens.count < 2) {
-        if (@available(iOS 13.0, *)) {
-            [SceneDelegate clearExternalDisplayRenderView];
-        }
-        // Add the render view back to the local StreamView if AirPlay was active
-        if ([self isAirPlayEnabled]) {
-            if (_streamVideoRenderView && _streamView) {
-                [_streamView insertSubview:_streamVideoRenderView atIndex:0];
-                [self handleViewResize]; // Adjust frames as needed
-                [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:YES];
-            }
-        }
-        NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-        [nc postNotificationName:@"ScreenChanged" object:self]; // Your existing notification
-    }
+    // Do not cancel the request: it must survive a disconnect/reconnect cycle.
+    [self reloadAirPlayConfig];
 }
 
 - (bool)shallDisableGyroHotSwitch{
@@ -1536,8 +1499,8 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (BOOL) isAirPlaying{
-    if (_settings.externalDisplayMode.intValue == 1 && _streamVideoRenderView) {
-        return _streamVideoRenderView.hidden;
+    if (@available(iOS 13.0, *)) {
+        return [SceneDelegate isExternalDisplayRenderView:[self externalDisplayRenderView]];
     }
     return NO;
 }
@@ -1546,17 +1509,50 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     return _settings.externalDisplayMode.intValue == 1;
 }
 
+- (UIView *)externalDisplayRenderView {
+    // Metal renders in its child controller rather than the AVSampleBuffer container.
+    return self.metalViewController ? self.metalViewController.view : _streamVideoRenderView;
+}
+
 - (void) reloadAirPlayConfig{
-    if (UIScreen.screens.count == 1){return;}
-    if (![self isAirPlaying] && [self isAirPlayEnabled]){
-        if (@available(iOS 13.0, *)) {
-            [SceneDelegate setExternalDisplayRenderView:_streamVideoRenderView];
+    NSAssert(NSThread.isMainThread, @"External display routing must run on the main thread");
+#if !TARGET_OS_TV
+    if (@available(iOS 13.0, *)) {
+        UIView *renderView = [self externalDisplayRenderView];
+        BOOL shouldRoute = _externalDisplayRoutingActive && [self isAirPlayEnabled] &&
+            renderView && self.view.window.windowScene.screen == UIScreen.mainScreen;
+        if (shouldRoute) {
+            UIView *localContainer = self.metalViewController ? self.view : _streamView;
+            [SceneDelegate setExternalDisplayRenderView:renderView localContainer:localContainer];
+        } else {
+            [SceneDelegate clearExternalDisplayRenderView:renderView];
         }
-    }else if ([self isAirPlaying] && ![self isAirPlayEnabled]){
-        if (@available(iOS 13.0, *)) {
-            [SceneDelegate clearExternalDisplayRenderView];
+#if VL_HAS_SCENE_ACCESSORIES
+        if (@available(iOS 27.0, *)) {
+            if (shouldRoute && !self.externalDisplayRegistration) {
+                UISceneConfiguration *configuration = [[UISceneConfiguration alloc]
+                    initWithName:@"External Display Configuration"
+                    sessionRole:UIWindowSceneSessionRoleExternalDisplay];
+                configuration.delegateClass = SceneDelegate.class;
+                UISceneAccessory *accessory = [UISceneAccessory externalNonInteractiveSceneAccessoryWithConfiguration:configuration];
+                self.externalDisplayRegistration = [self registerSceneAccessory:accessory];
+                self.externalDisplayRegistration.enabled = YES;
+                Log(LOG_I, @"External display: Registered iOS 27 streaming scene accessory.");
+            } else if (!shouldRoute && self.externalDisplayRegistration) {
+                self.externalDisplayRegistration.enabled = NO;
+                [self unregisterSceneAccessory:self.externalDisplayRegistration];
+                self.externalDisplayRegistration = nil;
+                Log(LOG_I, @"External display: Unregistered streaming scene accessory.");
+            }
         }
+#endif
     }
+#endif
+}
+
+- (void)stopExternalDisplayRouting {
+    _externalDisplayRoutingActive = NO;
+    [self reloadAirPlayConfig];
 }
 
 - (void) handleViewResize{
@@ -1735,7 +1731,8 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
         self->_spinner.hidden = YES;
         
         // Ensure correct view hierarchy before showing OSC
-        if ([self->_settings.renderingBackend intValue] == RENDER_METAL && self.metalViewController) {
+        if ([self->_settings.renderingBackend intValue] == RENDER_METAL &&
+            self.metalViewController.view.superview == self.view) {
             [self.view sendSubviewToBack:self.metalViewController.view];
         }
         // For AVSB renderer, ensure streamView is at the back so OSC layers show

@@ -202,7 +202,10 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 API_AVAILABLE(ios(13.0), tvos(13.0))
 @implementation SceneDelegate
 
-static UIView *_sharedStreamVideoRenderView = nil;
+// Routing is main-thread-only. The streaming controller owns these views.
+static __weak UIView *_sharedStreamVideoRenderView = nil;
+static __weak UIView *_localRenderContainer = nil;
+static UIViewAutoresizing _localRenderAutoresizingMask;
 static UIWindow *_externalSceneWindow = nil;
 
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
@@ -281,40 +284,74 @@ static UIWindow *_externalSceneWindow = nil;
         externalVC.view.backgroundColor = [UIColor blackColor]; // Set a default background
         _externalSceneWindow.rootViewController = externalVC;
 
-        if (_sharedStreamVideoRenderView) {
-            _sharedStreamVideoRenderView.frame = _externalSceneWindow.bounds;
-            [_externalSceneWindow.rootViewController.view addSubview:_sharedStreamVideoRenderView];
-            Log(LOG_I, @"SceneDelegate: External display scene connected.");
-        }
+        self.window = _externalSceneWindow;
+        [SceneDelegate attachExternalDisplayRenderViewIfReady];
     }
 }
 
 
-// Method for StreamFrameViewController to provide its render view
-+ (void)setExternalDisplayRenderView:(UIView *)renderView {
++ (void)attachExternalDisplayRenderViewIfReady {
+    NSAssert(NSThread.isMainThread, @"External display routing must run on the main thread");
+    UIView *renderView = _sharedStreamVideoRenderView;
+    UIView *container = _externalSceneWindow.rootViewController.view;
+    if (!renderView || !container || renderView.superview == container) {
+        return;
+    }
+    renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    renderView.frame = container.bounds;
+    [container addSubview:renderView];
+    // A scene can arrive after the stream has already supplied its view.
+    _externalSceneWindow.hidden = NO;
+    [_externalSceneWindow layoutIfNeeded];
+    [container layoutIfNeeded];
+    Log(LOG_I, @"SceneDelegate: Stream attached to external display.");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ScreenChanged" object:renderView];
+}
+
++ (void)restoreLocalRenderView {
+    UIView *renderView = _sharedStreamVideoRenderView;
+    UIView *container = _localRenderContainer;
+    if (renderView && container && renderView.superview != container) {
+        renderView.autoresizingMask = _localRenderAutoresizingMask;
+        renderView.frame = container.bounds;
+        [container insertSubview:renderView atIndex:0];
+        [container layoutIfNeeded];
+        Log(LOG_I, @"SceneDelegate: Stream restored to local display.");
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ScreenChanged" object:renderView];
+    }
+    _externalSceneWindow.hidden = YES;
+}
+
++ (void)setExternalDisplayRenderView:(UIView *)renderView localContainer:(UIView *)localContainer {
+    NSAssert(NSThread.isMainThread, @"External display routing must run on the main thread");
+    if (!renderView || !localContainer) {
+        return;
+    }
+    if (_sharedStreamVideoRenderView != renderView) {
+        [self restoreLocalRenderView];
+        _localRenderAutoresizingMask = renderView.autoresizingMask;
+    }
     _sharedStreamVideoRenderView = renderView;
-    if (_externalSceneWindow && _externalSceneWindow.rootViewController && _sharedStreamVideoRenderView) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Ensure it's removed from any previous parent (should have been done by StreamFrameVC)
-            [_sharedStreamVideoRenderView removeFromSuperview];
-            _sharedStreamVideoRenderView.frame = _externalSceneWindow.bounds; // Set frame for external window
-            [_externalSceneWindow.rootViewController.view addSubview:_sharedStreamVideoRenderView];
-            _externalSceneWindow.hidden = NO;
-            Log(LOG_I, @"SceneDelegate: Added render view to external window's root view.");
-        });
-    } else {
-        Log(LOG_E, @"SceneDelegate: External display window or root view controller not available.");
-    }
+    _localRenderContainer = localContainer;
+    // Do not detach from the phone while waiting for UIKit to create the scene.
+    [self attachExternalDisplayRenderViewIfReady];
 }
 
-+ (void)clearExternalDisplayRenderView {
-    if (_sharedStreamVideoRenderView) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_sharedStreamVideoRenderView removeFromSuperview];
-            Log(LOG_I, @"SceneDelegate: Removed render view from external display.");
-        });
++ (void)clearExternalDisplayRenderView:(UIView *)renderView {
+    NSAssert(NSThread.isMainThread, @"External display routing must run on the main thread");
+    // A delayed teardown from an older stream must not clear a newer stream.
+    if (!renderView || _sharedStreamVideoRenderView != renderView) {
+        return;
     }
+    [self restoreLocalRenderView];
     _sharedStreamVideoRenderView = nil;
+    _localRenderContainer = nil;
+}
+
++ (BOOL)isExternalDisplayRenderView:(UIView *)renderView {
+    return renderView && renderView == _sharedStreamVideoRenderView &&
+        _externalSceneWindow && !_externalSceneWindow.hidden &&
+        renderView.superview == _externalSceneWindow.rootViewController.view;
 }
 
 - (void)sceneDidBecomeActive:(UIScene *)scene {
@@ -332,9 +369,11 @@ static UIWindow *_externalSceneWindow = nil;
     if ([scene.session.role isEqualToString:UIWindowSceneSessionRoleExternalDisplay]) {
         if ([scene isKindOfClass:[UIWindowScene class]]) {
             UIWindowScene *windowScene = (UIWindowScene *)scene;
-            if (_externalSceneWindow == windowScene.windows.firstObject) { // Compare with the window from the disconnecting scene
-                [SceneDelegate clearExternalDisplayRenderView]; // Clears the shared view
+            if (_externalSceneWindow.windowScene == windowScene) {
+                // Keep the routing request so a later scene connection can resume it.
+                [SceneDelegate restoreLocalRenderView];
                 _externalSceneWindow = nil;
+                self.window = nil;
                 Log(LOG_I, @"SceneDelegate: External display scene fully disconnected and cleaned up.");
             } else {
                 Log(LOG_W, @"SceneDelegate: Disconnecting scene is not the one holding our _externalSceneWindow.");
