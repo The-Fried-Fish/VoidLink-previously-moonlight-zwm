@@ -1291,8 +1291,15 @@ import UIKit
             object: nil,
             queue: .main
         ) { notification in
-            guard (notification.object as? GCController)?.extendedGamepad != nil else { return }
-            preparePrimaryController()
+            guard let controller = notification.object as? GCController else {return}
+            
+            if controller.extendedGamepad != nil {
+                preparePrimaryController()
+            }
+            
+            if PublicUtils.isTVOS {
+                prepareSideController()
+            }
         }
 
         disconnectObserver = NotificationCenter.default.addObserver(
@@ -1353,6 +1360,41 @@ import UIKit
         }
         
         setGCControllerToPrimary(controller)
+    }
+    
+    private static func prepareSideController() {
+#if os(tvOS)
+        
+        for controller in GCController.controllers() {
+            if let gamepad = controller.microGamepad, controller.extendedGamepad == nil {
+                disableSysGestures(controller)
+                
+                gamepad.buttonMenu.pressedChangedHandler = { [weak controller] _, _, pressed in
+                    guard !pressed, let controller else { return }
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(
+                            name: .VoidLinkTvOSRemoteMenuTapped,
+                            object: controller
+                        )
+                    }
+                }
+
+                gamepad.buttonX.pressedChangedHandler = { [weak controller] _, _, pressed in
+                    guard !pressed, let controller else { return }
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(
+                            name: .VoidLinkTvOSRemotePlayPauseTapped,
+                            object: controller
+                        )
+                    }
+                }
+                
+                return
+            }
+        }
+        
+
+#endif
     }
     
     static func setGCControllerToPrimary(_ controller: GCController) {

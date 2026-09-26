@@ -35,6 +35,7 @@ final class GamepadNavigationIllustrationHud: UIView {
     private static var actionStateMinimumEndTimes: [ControllerElement: CFTimeInterval] = [:]
     private static var pendingActionStateWorkItems: [ControllerElement: DispatchWorkItem] = [:]
     private static var pendingClearHudWorkItem: DispatchWorkItem?
+    private static var presentationSuspendedForTvOSSystemTextInput = false
     private static let minimumActionStateDuration: CFTimeInterval = 0.09
     private static let hudScale: CGFloat = PublicUtils.isIPhone ? 0.74 : (PublicUtils.isTVOS ? 1.3 : 1)
     private static let hudWidth: CGFloat = {
@@ -73,7 +74,9 @@ final class GamepadNavigationIllustrationHud: UIView {
 
     @discardableResult
     static func showInKeyWindow() -> GamepadNavigationIllustrationHud? {
-        guard let window = keyWindow(), ControllerUtil.primaryGCController != nil else {
+        guard !presentationSuspendedForTvOSSystemTextInput,
+              let window = keyWindow(),
+              ControllerUtil.primaryGCController != nil else {
             return nil
         }
         
@@ -99,6 +102,7 @@ final class GamepadNavigationIllustrationHud: UIView {
 
 
     @objc static func updateNavigationElements(_ elements: [ControllerNavigationElement], forceDisplay: Bool = false) {
+        guard !presentationSuspendedForTvOSSystemTextInput else { return }
         if !forceDisplay {
             guard ControllerNavigator.enabled, ControllerUtil.primaryGCController != nil else {return}
             guard !ControllerNavigator.stickReleasedInRadialMenu else {return}
@@ -152,6 +156,19 @@ final class GamepadNavigationIllustrationHud: UIView {
             }
             requestHudDetachKeepingMinimumActionDuration()
         }
+    }
+
+    @objc static func setTvOSSystemTextInputActive(_ active: Bool) {
+#if os(tvOS)
+        PublicUtils.runOnMain {
+            presentationSuspendedForTvOSSystemTextInput = active
+            if active {
+                finishHudDetach()
+            } else {
+                updateHud()
+            }
+        }
+#endif
     }
     
     func updateTheme() {
@@ -516,7 +533,7 @@ final class GamepadNavigationIllustrationHud: UIView {
         DispatchQueue.main.asyncAfter(deadline: .now() + remainingDuration, execute: workItem)
     }
 
-    private static func finishHudDetach() {
+    static func finishHudDetach() {
         pendingClearHudWorkItem?.cancel()
         pendingClearHudWorkItem = nil
         pendingActionStateWorkItems.values.forEach { $0.cancel() }

@@ -887,6 +887,12 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     _singleTouchDisabled = false;
     
     [super viewDidLoad];
+
+#if TARGET_OS_TV
+    self.controllerUserInteractionEnabled = NO;
+#else
+    self.controllerUserInteractionEnabled = NO;
+#endif
     
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     

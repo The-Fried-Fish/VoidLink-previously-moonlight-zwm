@@ -1,5 +1,6 @@
 #import "SceneDelegate.h"
 #import "StreamFrameViewController.h"
+#import <GameController/GameController.h>
 #if TARGET_OS_TV
 #import "MainFrameViewController.h"
 #import "SettingsViewController.h"
@@ -20,37 +21,10 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 @interface VoidLinkFocusSinkView : UIView
 @end
 
-@implementation VoidLinkFocusSinkView {
-    UITapGestureRecognizer *_menuTapGestureRecognizer;
-    UITapGestureRecognizer *_playPauseTapGestureRecognizer;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        _menuTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemoteMenuTapped:)];
-        _menuTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
-        [self addGestureRecognizer:_menuTapGestureRecognizer];
-
-        _playPauseTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvOSRemotePlayPauseTapped:)];
-        _playPauseTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypePlayPause)];
-        [self addGestureRecognizer:_playPauseTapGestureRecognizer];
-    }
-    return self;
-}
+@implementation VoidLinkFocusSinkView
 
 - (BOOL)canBecomeFocused {
     return YES;
-}
-
-- (void)tvOSRemoteMenuTapped:(UITapGestureRecognizer *)recognizer {
-    NSLog(@"VoidLinkFocusSinkView received Menu tap");
-    [[NSNotificationCenter defaultCenter] postNotificationName:VoidLinkTvOSRemoteMenuTappedNotification object:self];
-}
-
-- (void)tvOSRemotePlayPauseTapped:(UITapGestureRecognizer *)recognizer {
-    NSLog(@"VoidLinkFocusSinkView received Play/Pause tap");
-    [[NSNotificationCenter defaultCenter] postNotificationName:VoidLinkTvOSRemotePlayPauseTappedNotification object:self];
 }
 
 @end
@@ -83,22 +57,29 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 
 @end
 
-@interface VoidLinkControllerRootViewController : UIViewController
+#endif
+
+@interface VoidLinkControllerRootViewController : GCEventViewController
 
 - (instancetype)initWithContentViewController:(UIViewController *)contentViewController;
+#if TARGET_OS_TV
 - (void)forceFocusSinkUpdate;
+#endif
 
 @end
 
 @implementation VoidLinkControllerRootViewController {
     UIViewController *_contentViewController;
+#if TARGET_OS_TV
     VoidLinkFocusSinkView *_focusSinkView;
+#endif
 }
 
 - (instancetype)initWithContentViewController:(UIViewController *)contentViewController {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _contentViewController = contentViewController;
+        self.controllerUserInteractionEnabled = NO;
     }
     return self;
 }
@@ -106,12 +87,14 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 - (instancetype)initWithCoder:(NSCoder *)coder {
     self = [super initWithCoder:coder];
     if (self) {
+        self.controllerUserInteractionEnabled = NO;
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.controllerUserInteractionEnabled = NO;
     if (!_contentViewController || _contentViewController.parentViewController == self) {
         return;
     }
@@ -127,9 +110,12 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
     ]];
     [_contentViewController didMoveToParentViewController:self];
 
+#if TARGET_OS_TV
     [self installFocusSinkIfNeeded];
+#endif
 }
 
+#if TARGET_OS_TV
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self forceFocusSinkUpdate];
@@ -183,9 +169,37 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
     NSLog(@"shouldUpdateFocusInContext .........");
     return context.nextFocusedItem == nil || VoidLinkTvOSFocusItemIsSink(context.nextFocusedItem);
 }
+#endif
+
+- (UIViewController *)childViewControllerForStatusBarStyle {
+    return _contentViewController;
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden {
+    return _contentViewController;
+}
+
+- (UIViewController *)childViewControllerForHomeIndicatorAutoHidden {
+    return _contentViewController;
+}
+
+- (UIViewController *)childViewControllerForScreenEdgesDeferringSystemGestures {
+    return _contentViewController;
+}
+
+- (BOOL)shouldAutorotate {
+    return _contentViewController.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return _contentViewController.supportedInterfaceOrientations;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return _contentViewController.preferredInterfaceOrientationForPresentation;
+}
 
 @end
-#endif
 
 API_AVAILABLE(ios(13.0), tvos(13.0))
 @implementation SceneDelegate
@@ -237,11 +251,7 @@ static UIWindow *_externalSceneWindow = nil;
             initialViewController = revealViewController;
         }
 #endif
-#if TARGET_OS_TV
         self.window.rootViewController = [[VoidLinkControllerRootViewController alloc] initWithContentViewController:initialViewController];
-#else
-        self.window.rootViewController = initialViewController;
-#endif
         [self.window makeKeyAndVisible];
 #if TARGET_OS_TV
         // SWReveal keeps the rear controller unloaded until it is revealed.

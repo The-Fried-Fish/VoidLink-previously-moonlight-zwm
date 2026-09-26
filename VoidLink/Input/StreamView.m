@@ -505,6 +505,8 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     if(PublicUtils.isTVOS){
         if(tvOSRemoteTextInputLoopActive) return;
         
+        [GamepadNavigationIllustrationHud setTvOSSystemTextInputActive:YES];
+        
         keyInputField.placeholder = [LocalizationHelper localizedStringForKey:@"tvOSRemoteTextInputPlaceholder"];
         keyInputField.inputView.hidden = true;
         if (!tvOSRemoteTextInputTip) {
@@ -556,6 +558,7 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 - (void)tvOSRemotePlayPauseTapped:(NSNotification *)notification {
     NSLog(@"StreamView received Play/Pause tap");
     tvOSRemoteTextInputLoopActive = NO;
+    [GamepadNavigationIllustrationHud setTvOSSystemTextInputActive:NO];
     [keyInputField resignFirstResponder];
     [keyInputField removeFromSuperview];
     [tvOSRemoteTextInputTip removeFromSuperview];
@@ -1983,6 +1986,7 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 - (void)cleanUp{
 #if TARGET_OS_TV
     tvOSRemoteTextInputLoopActive = NO;
+    [GamepadNavigationIllustrationHud setTvOSSystemTextInputActive:NO];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:VoidLinkTvOSRemoteMenuTappedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:VoidLinkTvOSRemotePlayPauseTappedNotification object:nil];
 #endif
