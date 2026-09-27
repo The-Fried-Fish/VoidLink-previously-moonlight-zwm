@@ -325,6 +325,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
     case onScreenWidget = "onScreenWidgetStack"
     case buttonVisualFeedback = "buttonVisualFeedbackStack"
     case trackTouchPoint = "trackTouchPointStack"
+    case floatingKeyboardButton = "floatingKeyboardButtonStack"
 
     // MARK: Controller
 
@@ -408,7 +409,6 @@ enum SettingsItemID: String, Hashable, Identifiable {
 
     case softKeyboardToolbar = "softKeyboardToolbarStack"
     case softKeyboardHeight = "softKeyboardHeightStack"
-    case floatingKeyboardButton = "floatingKeyboardButtonStack"
     case rememberFoldState = "rememberFoldStateStack"
 
     // MARK: Experimental
@@ -2654,7 +2654,11 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.buttonVisualFeedback,
                 isVisible: { _ in true }
             ),
-            toggleItem(\.trackTouchPoint)
+            toggleItem(\.trackTouchPoint),
+            toggleItem(
+                \.floatingKeyboardButton,
+                isAvailable: !PublicUtils.isTVOS
+            )
         ]
     }
 
@@ -3462,10 +3466,6 @@ final class SettingsSession: NSObject, ObservableObject {
                 },
                 isAvailable: !PublicUtils.isTVOS,
                 hasInfo: true
-            ),
-            toggleItem(
-                \.floatingKeyboardButton,
-                isAvailable: !PublicUtils.isTVOS
             ),
             toggleItem(
                 \.rememberFoldState,
