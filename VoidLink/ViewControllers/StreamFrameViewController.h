@@ -47,9 +47,6 @@
 
 @property (nonatomic, assign) CGPoint streamViewMagnifierContentOffset;
 @property (nonatomic, assign) CGFloat streamViewMagnifierZoomScale;
-/// YES while the stream view has been moved/zoomed by the magnifier (widget, profile restore or scroll gestures)
-/// rather than by touchpad pinch zoom. Touchpad pinch then only zooms, keeping that position.
-@property (nonatomic, assign) BOOL streamViewPositionedByMagnifier;
 
 @property(nonatomic, assign) bool touchDisabled;
 @property(nonatomic, assign) bool singleTouchDisabled;
@@ -70,7 +67,6 @@
 - (void)updateMagnifierViewportMetrics;
 - (void)setMagnifierViewportInteractionEnabled:(BOOL)enabled;
 - (void)resetMagnifierStreamViewWithAnimated:(BOOL)animated;
-- (void)zoomMagnifierStreamViewByScaleRatio:(CGFloat)ratio;
 - (void)returnToMainFrame;
 - (void)bringUpToolboxMenu;
 - (void)bringUpToolboxMenuWithoutWidgetLayoutTool;
