@@ -194,33 +194,39 @@ import UIKit
         let cursorInContent = streamView.convert(target, to: scrollView)
         let videoInContent = streamView.convert(videoRect, to: scrollView)
 
+        // Where the video sits in its spare room while it's smaller than the usable viewport: 0 = leading edge at the
+        // viewport's leading edge, 1 = trailing edge at the trailing edge. Taken from the 1x layout (videoRect is the
+        // unzoomed geometry) and the resting offset (Portrait Stream Position), so the zoomed position matches 1x
+        // exactly and slides continuously into cursor following once the room runs out. Centered above the keyboard.
+        let restingOffset = StreamFrameViewController.sharedInstance()?.restingStreamViewOffset() ?? .zero
+        func roomFraction(videoMin1x: CGFloat, videoLength1x: CGFloat, leadingInset: CGFloat, viewport: CGFloat, resting: CGFloat) -> CGFloat {
+            if TouchpadZoomHandler.keyboardOcclusion > 0 { return 0.5 }
+            let room1x = viewport - videoLength1x
+            guard room1x > 0.5 else { return 0.5 }
+            return min(max((videoMin1x - leadingInset - resting) / room1x, 0), 1)
+        }
+        let fractionX = roomFraction(videoMin1x: videoRect.minX, videoLength1x: videoRect.width,
+                                     leadingInset: insets.left, viewport: viewport.width, resting: restingOffset.x)
+        let fractionY = roomFraction(videoMin1x: videoRect.minY, videoLength1x: videoRect.height,
+                                     leadingInset: insets.top, viewport: viewport.height, resting: restingOffset.y)
+
         // Returns the content offset along one axis. `leadingInset` is the distance from the scroll view's
         // visible edge to the usable viewport's edge.
-        func axisOffset(target: CGFloat, leadingInset: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat) -> CGFloat {
+        func axisOffset(target: CGFloat, leadingInset: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat, roomFraction: CGFloat) -> CGFloat {
             let lower = minEdge - leadingInset
             let upper = maxEdge - viewport - leadingInset
-            if upper < lower { return (minEdge + maxEdge) / 2 - viewport / 2 - leadingInset } // video smaller than viewport: center it
+            if upper < lower { // video smaller than viewport: place it in the spare room
+                let room = viewport - (maxEdge - minEdge)
+                return lower - roomFraction * room
+            }
             return min(max(target - viewport / 2 - leadingInset, lower), upper)
         }
 
-        var offset = CGPoint(
+        let offset = CGPoint(
             x: axisOffset(target: cursorInContent.x, leadingInset: insets.left, viewport: viewport.width,
-                          minEdge: videoInContent.minX, maxEdge: videoInContent.maxX),
+                          minEdge: videoInContent.minX, maxEdge: videoInContent.maxX, roomFraction: fractionX),
             y: axisOffset(target: cursorInContent.y, leadingInset: insets.top, viewport: viewport.height,
-                          minEdge: videoInContent.minY, maxEdge: videoInContent.maxY))
-
-        // Portrait Stream Position: while the (letterboxed) video is still shorter than the viewport, place it
-        // vertically by the same percentage as at 1x instead of centering it. Not while the keyboard is open,
-        // where it's centered above the keyboard.
-        let percent = StreamFrameViewController.sharedInstance()?.portraitStreamOffsetPercent() ?? 0
-        if percent != 0, TouchpadZoomHandler.keyboardOcclusion == 0,
-           videoInContent.height < viewport.height {
-            let centeredOnScreen = videoInContent.midY - scrollView.bounds.height / 2
-            let topAtSafeArea = videoInContent.minY - insets.top
-            let bottomAtSafeArea = videoInContent.maxY - insets.top - viewport.height
-            let fraction = abs(percent) / 100
-            offset.y = centeredOnScreen + fraction * ((percent > 0 ? topAtSafeArea : bottomAtSafeArea) - centeredOnScreen)
-        }
+                          minEdge: videoInContent.minY, maxEdge: videoInContent.maxY, roomFraction: fractionY))
         appliedContentOffset = offset
         scrollView.contentOffset = offset
     }
