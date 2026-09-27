@@ -19,6 +19,7 @@ static NSString * const CursorInertiaDecelerationDefaultsKey = @"touchpadCursorI
 static const float CursorInertiaDecelerationDefault = 5.0f;
 static NSString * const OpenKeyboardAtCursorDefaultsKey = @"touchpadOpenKeyboardAtCursor";
 static NSString * const FloatingKeyboardButtonDefaultsKey = @"floatingKeyboardButton";
+static NSString * const PortraitStreamOffsetDefaultsKey = @"portraitStreamVerticalOffset";
 
 
 @interface TemporarySettings : NSObject
@@ -138,6 +139,7 @@ static NSString * const FloatingKeyboardButtonDefaultsKey = @"floatingKeyboardBu
 @property (nonatomic, retain) NSNumber * cursorInertiaDeceleration;
 @property (nonatomic) BOOL openKeyboardAtCursor; // only takes effect in touchpad mode with Pinch Gesture set to Zoom
 @property (nonatomic) BOOL floatingKeyboardButton;
+@property (nonatomic, retain) NSNumber * portraitStreamOffset; // -100...100 %: vertical stream position in portrait, + moves it up
 
 
 - (id) initFromSettings:(Settings*)settings;

@@ -400,6 +400,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
 
     case statsOverlay = "statsOverlayStack"
     case unlockDisplayOrientation = "unlockDisplayOrientationStack"
+    case portraitStreamOffset = "portraitStreamOffsetStack"
     case backgroundSessionTimer = "backgroundSessionTimerStack"
     case appTheme = "appThemeStack"
     case optimizeGames = "optimizeGamesStack"
@@ -509,6 +510,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .audioConfig: return "Audio Configuration"
         case .statsOverlay: return "Statistics Overlay"
         case .unlockDisplayOrientation: return "90° Display Rotation"
+        case .portraitStreamOffset: return "Portrait Stream Position"
         case .backgroundSessionTimer: return "Background Session"
         case .appTheme: return "Theme"
         case .optimizeGames: return "Optimize Game Settings"
@@ -1316,6 +1318,7 @@ final class SettingsItemRegistry: ObservableObject {
 
     let statsOverlay = SettingsItemModel<Int>(id: .statsOverlay, value: StatsOverlayLevel.off.rawValue)
     let unlockDisplayOrientation = SettingsItemModel<Int>(id: .unlockDisplayOrientation, value: 1)
+    let portraitStreamOffset = SettingsItemModel<Double>(id: .portraitStreamOffset, value: 0)
     let backgroundSessionTimer = SettingsItemModel<Double>(id: .backgroundSessionTimer, value: 0)
     let appTheme = SettingsItemModel<Int>(id: .appTheme, value: UIUserInterfaceStyle.light.rawValue)
     let optimizeGames = SettingsItemModel<Bool>(id: .optimizeGames, value:true)
@@ -1440,6 +1443,7 @@ final class SettingsItemRegistry: ObservableObject {
             // Others
             statsOverlay.objectWillChange,
             unlockDisplayOrientation.objectWillChange,
+            portraitStreamOffset.objectWillChange,
             backgroundSessionTimer.objectWillChange,
             appTheme.objectWillChange,
             optimizeGames.objectWillChange,
@@ -1956,6 +1960,7 @@ final class SettingsSession: NSObject, ObservableObject {
 
         itemRegistry.statsOverlay.value = snapshot.statsOverlayLevel.intValue
         itemRegistry.unlockDisplayOrientation.value = snapshot.unlockDisplayOrientation ? 1 : 0
+        itemRegistry.portraitStreamOffset.value = min(100, max(-100, snapshot.portraitStreamOffset.doubleValue))
         itemRegistry.backgroundSessionTimer.value = Double(snapshot.backgroundSessionTimer.intValue)
         itemRegistry.appTheme.value = snapshot.appTheme.intValue
         itemRegistry.optimizeGames.value = snapshot.optimizeGames
@@ -3424,6 +3429,18 @@ final class SettingsSession: NSObject, ObservableObject {
                 isEnabled: { $0.unlockDisplayOrientationSelectorEnabled }
             ),
             sliderItem(
+                \.portraitStreamOffset,
+                // % of the room between the stream's edge and the camera island (+) / home indicator (-)
+                range: -100...100,
+                clampedTo: -100...100,
+                valueText: { _, model in
+                    let percent = Int(model.value.rounded())
+                    if percent == 0 { return "Centered".localized }
+                    return percent > 0 ? "+\(percent)%" : "\(percent)%"
+                },
+                isAvailable: !PublicUtils.isTVOS
+            ),
+            sliderItem(
                 \.backgroundSessionTimer,
                 range: 0...61,
                 valueText: { _, model in
@@ -4605,6 +4622,7 @@ final class SettingsSession: NSObject, ObservableObject {
         UserDefaults.standard.set(itemRegistry.cursorInertiaDeceleration.value.rounded(), forKey: CursorInertiaDecelerationDefaultsKey)
         UserDefaults.standard.set(itemRegistry.openKeyboardAtCursor.value, forKey: OpenKeyboardAtCursorDefaultsKey)
         UserDefaults.standard.set(itemRegistry.floatingKeyboardButton.value, forKey: FloatingKeyboardButtonDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.portraitStreamOffset.value.rounded(), forKey: PortraitStreamOffsetDefaultsKey)
 
         // MARK: Controller
 

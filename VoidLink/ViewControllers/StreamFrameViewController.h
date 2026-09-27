@@ -67,6 +67,9 @@
 - (void)updateMagnifierViewportMetrics;
 - (void)setMagnifierViewportInteractionEnabled:(BOOL)enabled;
 - (void)resetMagnifierStreamViewWithAnimated:(BOOL)animated;
+- (CGPoint)restingStreamViewOffset;
+- (CGPoint)persistableMagnifierContentOffset;
+- (void)bringFloatingKeyboardButtonToFront;
 - (void)returnToMainFrame;
 - (void)bringUpToolboxMenu;
 - (void)bringUpToolboxMenuWithoutWidgetLayoutTool;

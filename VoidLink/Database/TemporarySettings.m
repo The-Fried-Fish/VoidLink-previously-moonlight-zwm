@@ -229,6 +229,7 @@
     self.cursorInertiaDeceleration = [defaults objectForKey:CursorInertiaDecelerationDefaultsKey] ?: @(CursorInertiaDecelerationDefault);
     self.openKeyboardAtCursor = [defaults boolForKey:OpenKeyboardAtCursorDefaultsKey];
     self.floatingKeyboardButton = [defaults boolForKey:FloatingKeyboardButtonDefaultsKey];
+    self.portraitStreamOffset = @([defaults floatForKey:PortraitStreamOffsetDefaultsKey]);
     
     return self;
 }

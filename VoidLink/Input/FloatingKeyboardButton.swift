@@ -31,6 +31,7 @@ import UIKit
         layer.borderWidth = 1
         layer.borderColor = UIColor(white: 0.9, alpha: 0.25).cgColor
         isExclusiveTouch = true
+        layer.zPosition = 1000 // drawn above on-screen widgets
 
         if #available(iOS 13.0, tvOS 13.0, *) {
             iconView.image = UIImage(systemName: "keyboard",

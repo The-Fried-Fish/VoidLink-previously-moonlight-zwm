@@ -880,7 +880,8 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     newProfile.gamepadOverlayEnabled = _streamFrameVC.virtualGamepadOverlay != nil;
 #endif
 
-    newProfile.normalizedStreamViewOffset = CGPointMake(_streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, _streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
+    CGPoint magnifierOffset = [_streamFrameVC persistableMagnifierContentOffset];
+    newProfile.normalizedStreamViewOffset = CGPointMake(magnifierOffset.x/self.bounds.size.width, magnifierOffset.y/self.bounds.size.height);
     newProfile.streamViewScale = _streamFrameVC.streamViewMagnifierZoomScale;
     
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
@@ -1068,6 +1069,9 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
         }
         
         [self.streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
+#if !TARGET_OS_TV
+        [self.streamFrameVC bringFloatingKeyboardButtonToFront];
+#endif
         [self updateTouchHandlerWithProfile:profile];
         OnScreenWidgetView.profileChangedDuringStreaming = false;
     });

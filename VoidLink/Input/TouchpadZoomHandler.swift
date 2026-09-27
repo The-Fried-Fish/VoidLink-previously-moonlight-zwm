@@ -240,8 +240,10 @@ import UIKit
         }
         guard let scrollView = scrollView else { return }
         scrollView.zoomScale = 1.0
-        appliedContentOffset = .zero
-        scrollView.contentOffset = .zero
+        // back to the resting position (portrait stream position, if set)
+        let restingOffset = StreamFrameViewController.sharedInstance()?.restingStreamViewOffset() ?? .zero
+        appliedContentOffset = restingOffset
+        scrollView.contentOffset = restingOffset
         StreamFrameViewController.sharedInstance()?.updateMagnifierViewportMetrics()
         if keyboardOpen { followCursor() }
     }
