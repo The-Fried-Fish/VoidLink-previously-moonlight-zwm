@@ -311,6 +311,8 @@ enum SettingsItemID: String, Hashable, Identifiable {
 
     case touchMode = "touchModeStack"
     case mousePointerVelocity = "mousePointerVelocityStack"
+    case cursorInertia = "cursorInertiaStack"
+    case cursorInertiaDeceleration = "cursorInertiaDecelerationStack"
     case pointerVelocityDivider = "pointerVelocityDividerStack"
     case pointerVelocityFactor = "pointerVelocityFactorStack"
     case delayLeftClick = "delayLeftClickStack"
@@ -437,6 +439,8 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .pictureInPicture: return "Enable PiP"
         case .touchMode: return "Touch Mode"
         case .mousePointerVelocity: return "Mouse Pointer Velocity"
+        case .cursorInertia: return "Cursor Inertia"
+        case .cursorInertiaDeceleration: return "Deceleration"
         case .pointerVelocityDivider: return "Divider Position"
         case .pointerVelocityFactor: return "Touch Pointer Velocity"
         case .delayLeftClick: return "Delay Left Click"
@@ -1117,6 +1121,19 @@ private enum SettingsSoftKeyboardGesture: Int {
     case disabled = 20
 }
 
+/// Pinch Gesture picker. Persisted as `enablePinch` (Core Data) plus `pinchZoom` (NSUserDefaults),
+/// so existing installs with pinch enabled keep the Ctrl +/- behavior.
+private enum SettingsPinchGestureMode: Int {
+    case disabled = 0
+    case zoom = 1
+    case ctrlPlusMinus = 2
+
+    init(enablePinch: Bool, pinchZoom: Bool) {
+        if !enablePinch { self = .disabled }
+        else { self = pinchZoom ? .zoom : .ctrlPlusMinus }
+    }
+}
+
 /// UIKit persists the streaming-settings edge as a UIRectEdge bitmask.  The
 /// picker only offers the two single-edge cases used by the original UI.
 private enum GestureScreenEdge {
@@ -1207,7 +1224,9 @@ final class SettingsItemRegistry: ObservableObject {
     let pointerVelocityFactor = SettingsItemModel<Double>(id: .pointerVelocityFactor, value: 100)
     let delayLeftClick = SettingsItemModel<Bool>(id: .delayLeftClick, value: true)
     let passthroughGestures = SettingsItemModel<Bool>(id: .passthroughGestures, value: true)
-    let pinchGesture = SettingsItemModel<Bool>(id: .pinchGesture, value: true)
+    let cursorInertia = SettingsItemModel<Bool>(id: .cursorInertia, value: false)
+    let cursorInertiaDeceleration = SettingsItemModel<Double>(id: .cursorInertiaDeceleration, value: Double(CursorInertiaDecelerationDefault))
+    let pinchGesture = SettingsItemModel<Int>(id: .pinchGesture, value: SettingsPinchGestureMode.ctrlPlusMinus.rawValue)
     let ctrlDownForPinch = SettingsItemModel<Bool>(id: .ctrlDownForPinch, value: true)
     let scrollSensitivity = SettingsItemModel<Double>(id: .scrollSensitivity, value: 1)
     let pinchSensitivity = SettingsItemModel<Double>(id: .pinchSensitivity, value: 1)
@@ -1337,6 +1356,8 @@ final class SettingsItemRegistry: ObservableObject {
             pointerVelocityFactor.objectWillChange,
             delayLeftClick.objectWillChange,
             passthroughGestures.objectWillChange,
+            cursorInertia.objectWillChange,
+            cursorInertiaDeceleration.objectWillChange,
             pinchGesture.objectWillChange,
             ctrlDownForPinch.objectWillChange,
             scrollSensitivity.objectWillChange,
@@ -1861,7 +1882,9 @@ final class SettingsSession: NSObject, ObservableObject {
         )
         itemRegistry.delayLeftClick.value = snapshot.delayLeftClick
         itemRegistry.passthroughGestures.value = snapshot.passthroughGestures
-        itemRegistry.pinchGesture.value = snapshot.enablePinch
+        itemRegistry.pinchGesture.value = SettingsPinchGestureMode(enablePinch: snapshot.enablePinch, pinchZoom: snapshot.pinchZoom).rawValue
+        itemRegistry.cursorInertia.value = snapshot.cursorInertia
+        itemRegistry.cursorInertiaDeceleration.value = min(10, max(1, snapshot.cursorInertiaDeceleration.doubleValue))
         itemRegistry.ctrlDownForPinch.value = snapshot.ctrlDownForPinch
         itemRegistry.scrollSensitivity.value = snapshot.scrollSensitivity.doubleValue
         itemRegistry.pinchSensitivity.value = snapshot.pinchSensitivity.doubleValue
@@ -2465,6 +2488,14 @@ final class SettingsSession: NSObject, ObservableObject {
         ]
     }
 
+    var pinchGestureOptions: [SettingsPickerOption<Int>] {
+        [
+            .init(value: SettingsPinchGestureMode.disabled.rawValue, title: "Disabled".localized),
+            .init(value: SettingsPinchGestureMode.zoom.rawValue, title: "Zoom".localized),
+            .init(value: SettingsPinchGestureMode.ctrlPlusMinus.rawValue, title: "Ctrl +/-")
+        ]
+    }
+
     var onScreenWidgetOptions: [SettingsPickerOption<Int>] {
         [
             .init(value: 0, title: "Off".localized),
@@ -2493,6 +2524,18 @@ final class SettingsSession: NSObject, ObservableObject {
                     return "\(Int(display))%"
                 },
                 isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue }
+            ),
+            toggleItem(
+                \.cursorInertia,
+                isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue }
+            ),
+            sliderItem(
+                \.cursorInertiaDeceleration,
+                range: 1...10,
+                clampedTo: 1...10,
+                valueText: { _, model in "\(Int(model.value.rounded()))" },
+                isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
+                             && $0.itemRegistry.cursorInertia.value }
             ),
             sliderItem(
                 \.pointerVelocityDivider,
@@ -2543,20 +2586,23 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.passthroughGestures,
                 isVisible: {$0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue}
             ),
-            toggleItem(
+            pickerItem(
                 \.pinchGesture,
+                options: { $0.pinchGestureOptions },
+                distribution: .proportionalToContent,
                 // UIKit reveals this row with passthroughGesturesSwitchFlipped:
                 // derive the same relationship directly from the source item.
+                // Zoom only works in touchpad mode; with absolute touch passthrough it sends no pinch input.
                 isVisible: {$0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                     && $0.itemRegistry.passthroughGestures.value)}
             ),
             toggleItem(
                 \.ctrlDownForPinch,
                 isVisible: {($0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
-                             && $0.itemRegistry.pinchGesture.value)
+                             && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)
                             || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                             && $0.itemRegistry.passthroughGestures.value
-                            && $0.itemRegistry.pinchGesture.value)},
+                            && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)},
                 hasInfo: true
             ),
             sliderItem(
@@ -2573,10 +2619,10 @@ final class SettingsSession: NSObject, ObservableObject {
                 clampedTo: 0...3,
                 valueText: { _, model in "\(Int((model.value * 100).rounded()))%" },
                 isVisible: {($0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
-                             && $0.itemRegistry.pinchGesture.value)
+                             && $0.itemRegistry.pinchGesture.value != SettingsPinchGestureMode.disabled.rawValue)
                             || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                             && $0.itemRegistry.passthroughGestures.value
-                            && $0.itemRegistry.pinchGesture.value)},
+                            && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)},
             ),
             pickerItem(
                 \.onScreenWidget,
@@ -4527,13 +4573,16 @@ final class SettingsSession: NSObject, ObservableObject {
         settings.touchPointerVelocityFactor = NSNumber(value: settingsVelocityFactor(for: itemRegistry.pointerVelocityFactor.value))
         settings.delayLeftClick = itemRegistry.delayLeftClick.value
         settings.passthroughGestures = itemRegistry.passthroughGestures.value
-        settings.enablePinch = itemRegistry.pinchGesture.value
+        settings.enablePinch = itemRegistry.pinchGesture.value != SettingsPinchGestureMode.disabled.rawValue
         settings.ctrlDownForPinch = itemRegistry.ctrlDownForPinch.value
         settings.scrollSensitivity = NSNumber(value: itemRegistry.scrollSensitivity.value)
         settings.pinchSensitivity = NSNumber(value: itemRegistry.pinchSensitivity.value)
         settings.onscreenControls = NSNumber(value: itemRegistry.onScreenWidget.value)
         settings.buttonVisualFeedback = itemRegistry.buttonVisualFeedback.value
         settings.touchPointTracking = itemRegistry.trackTouchPoint.value
+        UserDefaults.standard.set(itemRegistry.pinchGesture.value == SettingsPinchGestureMode.zoom.rawValue, forKey: PinchZoomDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.cursorInertia.value, forKey: CursorInertiaDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.cursorInertiaDeceleration.value.rounded(), forKey: CursorInertiaDecelerationDefaultsKey)
 
         // MARK: Controller
 

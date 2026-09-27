@@ -24,6 +24,8 @@
 		1888C1932E24C41000108730 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1902E24C2C800108730 /* AboutView.swift */; };
 		188973D32E386A670025E48C /* widgetTemplatesIPhone.bin in Resources */ = {isa = PBXBuildFile; fileRef = 188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */; };
 		18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */; };
+		C0DE5A1E2F80000100000012 /* CursorInertia.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000011 /* CursorInertia.swift */; };
+		C0DE5A1E2F80000100000002 /* TouchpadZoomHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */; };
 		189AD29A2DE7446000E24B88 /* HostCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189AD2992DE7446000E24B88 /* HostCollectionViewController.swift */; };
 		18A0EE252EFB9B5A00BA853A /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 18A0EE242EFB9B5A00BA853A /* SVGKit */; };
 		18A0EE272EFB9B5A00BA853A /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 18A0EE262EFB9B5A00BA853A /* SVGKitSwift */; };
@@ -124,6 +126,8 @@
 		A70100000000000000000006 /* Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DD92E2164A9000D5DCA /* Frame.m */; };
 		A70100000000000000000007 /* FrameQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DDB2E2164A9000D5DCA /* FrameQueue.m */; };
 		A70100000000000000000008 /* TouchPadGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */; };
+		C0DE5A1E2F80000100000013 /* CursorInertia.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000011 /* CursorInertia.swift */; };
+		C0DE5A1E2F80000100000003 /* TouchpadZoomHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */; };
 		A70100000000000000000009 /* FloatBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DD72E2164A9000D5DCA /* FloatBuffer.m */; };
 		A7010000000000000000000A /* PaddedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DDD2E2164A9000D5DCA /* PaddedLabel.m */; };
 		A7010000000000000000000B /* BandwidthTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DD52E2164A9000D5DCA /* BandwidthTracker.m */; };
@@ -352,6 +356,8 @@
 		1888C1912E24C33100108730 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = widgetTemplatesIPhone.bin; path = PresetConfigs/widgetTemplatesIPhone.bin; sourceTree = "<group>"; };
 		18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadGestureHandler.swift; sourceTree = "<group>"; };
+		C0DE5A1E2F80000100000011 /* CursorInertia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorInertia.swift; sourceTree = "<group>"; };
+		C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchpadZoomHandler.swift; sourceTree = "<group>"; };
 		189AD2992DE7446000E24B88 /* HostCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostCollectionViewController.swift; sourceTree = "<group>"; };
 		18A0EE2B2EFBCCFD00BA853A /* GraphicUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphicUtils.swift; sourceTree = "<group>"; };
 		18A765BC2ECD51FB004784AA /* ControllerUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerUtil.swift; sourceTree = "<group>"; };
@@ -980,6 +986,8 @@
 				18416EA32EBB3DCE00AE0124 /* UITouchUtil.swift */,
 				18B317022EE67A39009B62C2 /* InertialScroller.swift */,
 				18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */,
+				C0DE5A1E2F80000100000011 /* CursorInertia.swift */,
+				C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */,
 				18A765BC2ECD51FB004784AA /* ControllerUtil.swift */,
 				A1C0DE002FBC000100000001 /* ControllerNavigator.swift */,
 				A1C0DE022FBC000100000001 /* RadialMenuOverlayView.swift */,
@@ -1393,6 +1401,8 @@
 				A70100000000000000000006 /* Frame.m in Sources */,
 				A70100000000000000000007 /* FrameQueue.m in Sources */,
 				A70100000000000000000008 /* TouchPadGestureHandler.swift in Sources */,
+				C0DE5A1E2F80000100000013 /* CursorInertia.swift in Sources */,
+				C0DE5A1E2F80000100000003 /* TouchpadZoomHandler.swift in Sources */,
 				A70100000000000000000009 /* FloatBuffer.m in Sources */,
 				A7010000000000000000000A /* PaddedLabel.m in Sources */,
 				A7010000000000000000000B /* BandwidthTracker.m in Sources */,
@@ -1512,6 +1522,8 @@
 				97E20DDF2E2164A9000D5DCA /* Frame.m in Sources */,
 				97E20DE02E2164A9000D5DCA /* FrameQueue.m in Sources */,
 				18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */,
+				C0DE5A1E2F80000100000012 /* CursorInertia.swift in Sources */,
+				C0DE5A1E2F80000100000002 /* TouchpadZoomHandler.swift in Sources */,
 				97E20DE12E2164A9000D5DCA /* FloatBuffer.m in Sources */,
 				18FCADAF2ECAC23200787A96 /* PencilHandler.swift in Sources */,
 				97E20DE22E2164A9000D5DCA /* PaddedLabel.m in Sources */,

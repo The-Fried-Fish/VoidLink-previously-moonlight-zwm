@@ -223,6 +223,11 @@
 
 #endif
     
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    self.pinchZoom = [defaults boolForKey:PinchZoomDefaultsKey];
+    self.cursorInertia = [defaults boolForKey:CursorInertiaDefaultsKey];
+    self.cursorInertiaDeceleration = [defaults objectForKey:CursorInertiaDecelerationDefaultsKey] ?: @(CursorInertiaDecelerationDefault);
+    
     return self;
 }
 

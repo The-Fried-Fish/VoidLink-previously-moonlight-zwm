@@ -692,6 +692,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
     TouchPadGestureHandler.enablePinch = _settings.enablePinch;
     TouchPadGestureHandler.ctrlDownForPinch = _settings.ctrlDownForPinch;
+    TouchPadGestureHandler.pinchZoom = _settings.pinchZoom;
     TouchPadGestureHandler.scrollSensitivity = _settings.scrollSensitivity.floatValue;
     TouchPadGestureHandler.pinchSensitivity = _settings.pinchSensitivity.floatValue;
     TouchPadGestureHandler.displayLinkRate = _settings.framerate.intValue;
