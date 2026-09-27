@@ -74,10 +74,20 @@ import UIKit
         return pinchZoomEnabled && (currentZoomScale > 1.001 || TouchpadZoomHandler.keyboardOcclusion > 0)
     }
 
-    /// Visible height of the scroll view that isn't covered by the keyboard.
-    private var unoccludedViewportHeight: CGFloat {
-        guard let scrollView = scrollView else { return 0 }
-        return max(scrollView.bounds.height - TouchpadZoomHandler.keyboardOcclusion, 1)
+    /// Insets of the scroll view's visible area that the viewport should keep clear of: the safe area (camera
+    /// island / notch, home indicator) and the keyboard when it's open.
+    private var viewportInsets: UIEdgeInsets {
+        guard let scrollView = scrollView else { return .zero }
+        let safeArea = scrollView.superview?.safeAreaInsets ?? scrollView.safeAreaInsets
+        return UIEdgeInsets(top: safeArea.top, left: safeArea.left,
+                            bottom: max(safeArea.bottom, TouchpadZoomHandler.keyboardOcclusion), right: safeArea.right)
+    }
+
+    /// The clear part of the visible area, in scroll view content coordinates.
+    private var usableViewport: CGRect {
+        guard let scrollView = scrollView else { return .zero }
+        let rect = scrollView.bounds.inset(by: viewportInsets)
+        return CGRect(x: rect.minX, y: rect.minY, width: max(rect.width, 1), height: max(rect.height, 1))
     }
 
     // MARK: - Video area geometry (streamView coordinates)
@@ -101,8 +111,8 @@ import UIKit
     /// Center of the currently visible area (above the keyboard, if open), in streamView coordinates.
     private var visibleCenter: CGPoint {
         guard let streamView = streamView, let scrollView = scrollView else { return .zero }
-        let center = CGPoint(x: scrollView.bounds.midX, y: scrollView.bounds.minY + unoccludedViewportHeight / 2)
-        return scrollView.convert(center, to: streamView)
+        let viewport = usableViewport
+        return scrollView.convert(CGPoint(x: viewport.midX, y: viewport.midY), to: streamView)
     }
 
     // MARK: - Cursor output
@@ -154,25 +164,29 @@ import UIKit
                                  Int16(clamping: Int(referenceWidth)), Int16(clamping: Int(referenceHeight)))
     }
 
-    /// Pans the visible area so the cursor sits at its center, stopping at the edges of the video.
+    /// Pans the visible area so the cursor sits at the center of the usable viewport, stopping when an edge of the
+    /// video reaches the edge of the usable viewport (just clear of the camera island, home indicator or keyboard).
     private func followCursor() {
         guard let streamView = streamView, let scrollView = scrollView else { return }
         let target = cursorLocationInitialized ? cursorLocation : (keyboardAnchor ?? visibleCenter)
-        let viewportSize = CGSize(width: scrollView.bounds.width, height: unoccludedViewportHeight)
+        let insets = viewportInsets
+        let viewport = usableViewport
         let cursorInContent = streamView.convert(target, to: scrollView)
         let videoInContent = streamView.convert(videoRect, to: scrollView)
 
-        func axisOffset(target: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat) -> CGFloat {
-            let lower = minEdge
-            let upper = maxEdge - viewport
-            if upper < lower { return (minEdge + maxEdge) / 2 - viewport / 2 } // video smaller than viewport: center it
-            return min(max(target - viewport / 2, lower), upper)
+        // Returns the content offset along one axis. `leadingInset` is the distance from the scroll view's
+        // visible edge to the usable viewport's edge.
+        func axisOffset(target: CGFloat, leadingInset: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat) -> CGFloat {
+            let lower = minEdge - leadingInset
+            let upper = maxEdge - viewport - leadingInset
+            if upper < lower { return (minEdge + maxEdge) / 2 - viewport / 2 - leadingInset } // video smaller than viewport: center it
+            return min(max(target - viewport / 2 - leadingInset, lower), upper)
         }
 
         let offset = CGPoint(
-            x: axisOffset(target: cursorInContent.x, viewport: viewportSize.width,
+            x: axisOffset(target: cursorInContent.x, leadingInset: insets.left, viewport: viewport.width,
                           minEdge: videoInContent.minX, maxEdge: videoInContent.maxX),
-            y: axisOffset(target: cursorInContent.y, viewport: viewportSize.height,
+            y: axisOffset(target: cursorInContent.y, leadingInset: insets.top, viewport: viewport.height,
                           minEdge: videoInContent.minY, maxEdge: videoInContent.maxY))
         appliedContentOffset = offset
         scrollView.contentOffset = offset
