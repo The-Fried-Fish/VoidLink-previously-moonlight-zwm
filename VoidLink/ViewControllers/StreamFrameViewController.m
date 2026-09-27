@@ -487,13 +487,25 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 // "Portrait Stream Position" (Others): in portrait, the unzoomed stream is moved up (+) or down (-) by a percentage
 // of how far it can go before its edge reaches the safe area (camera island / home indicator).
+// The Portrait Stream Position percentage in effect now: 0 in landscape.
+- (CGFloat)portraitStreamOffsetPercent {
+#if TARGET_OS_TV
+    return 0;
+#else
+    CGFloat percent = MIN(MAX(_settings.portraitStreamOffset.floatValue, -100.0f), 100.0f);
+    CGSize size = self.view.bounds.size;
+    if (fabs(percent) < 0.5f || size.height <= size.width) return 0;
+    return percent;
+#endif
+}
+
 - (CGPoint)restingStreamViewOffset {
 #if TARGET_OS_TV
     return CGPointZero;
 #else
-    CGFloat percent = MIN(MAX(_settings.portraitStreamOffset.floatValue, -100.0f), 100.0f);
+    CGFloat percent = [self portraitStreamOffsetPercent];
     CGSize size = self.view.bounds.size;
-    if (fabs(percent) < 0.5f || size.height <= size.width || !_streamView) return CGPointZero;
+    if (percent == 0 || !_streamView) return CGPointZero;
     CGFloat aspectRatio = _streamView.streamAspectRatio;
     CGFloat videoHeight = aspectRatio > 0 ? MIN(size.height, size.width / aspectRatio) : [_streamView getVideoAreaSize].height;
     CGFloat gap = (size.height - videoHeight) / 2;

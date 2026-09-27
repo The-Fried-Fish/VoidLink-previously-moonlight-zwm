@@ -183,11 +183,24 @@ import UIKit
             return min(max(target - viewport / 2 - leadingInset, lower), upper)
         }
 
-        let offset = CGPoint(
+        var offset = CGPoint(
             x: axisOffset(target: cursorInContent.x, leadingInset: insets.left, viewport: viewport.width,
                           minEdge: videoInContent.minX, maxEdge: videoInContent.maxX),
             y: axisOffset(target: cursorInContent.y, leadingInset: insets.top, viewport: viewport.height,
                           minEdge: videoInContent.minY, maxEdge: videoInContent.maxY))
+
+        // Portrait Stream Position: while the (letterboxed) video is still shorter than the viewport, place it
+        // vertically by the same percentage as at 1x instead of centering it. Not while the keyboard is open,
+        // where it's centered above the keyboard.
+        let percent = StreamFrameViewController.sharedInstance()?.portraitStreamOffsetPercent() ?? 0
+        if percent != 0, TouchpadZoomHandler.keyboardOcclusion == 0,
+           videoInContent.height < viewport.height {
+            let centeredOnScreen = videoInContent.midY - scrollView.bounds.height / 2
+            let topAtSafeArea = videoInContent.minY - insets.top
+            let bottomAtSafeArea = videoInContent.maxY - insets.top - viewport.height
+            let fraction = abs(percent) / 100
+            offset.y = centeredOnScreen + fraction * ((percent > 0 ? topAtSafeArea : bottomAtSafeArea) - centeredOnScreen)
+        }
         appliedContentOffset = offset
         scrollView.contentOffset = offset
     }
