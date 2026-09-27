@@ -69,20 +69,16 @@ import UIKit
         return pinchZoomEnabled && currentZoomScale > 1.001
     }
 
-    /// True while the magnifier widget (or a restored profile) has positioned the stream. Following the cursor
-    /// then keeps that position reachable instead of snapping back to the video edges (see magnifierExtension).
+    /// True while the magnifier widget (or a restored profile) has positioned the stream. Pinch then only zooms,
+    /// keeping that position, and the cursor stays relative so the view doesn't jump to follow it.
     private var positionedByMagnifier: Bool {
         return StreamFrameViewController.sharedInstance()?.streamViewPositionedByMagnifier ?? false
     }
 
-    /// How far (screen points, per axis) the magnifier had moved the view beyond the range cursor following allows.
-    /// The follow range is widened by this on that side, so the view doesn't jump when zoom/following starts and
-    /// the magnifier's position is kept, while following otherwise works as usual.
-    private var magnifierExtension: CGVector?
-
     /// True while the cursor is driven with absolute positions: zoomed in, or the keyboard is open in Zoom mode.
     private var tracksCursor: Bool {
-        return pinchZoomEnabled && (currentZoomScale > 1.001 || TouchpadZoomHandler.keyboardOcclusion > 0)
+        return pinchZoomEnabled && !positionedByMagnifier
+            && (currentZoomScale > 1.001 || TouchpadZoomHandler.keyboardOcclusion > 0)
     }
 
     /// Insets of the scroll view's visible area that the viewport should keep clear of: the safe area (camera
@@ -134,10 +130,10 @@ import UIKit
         // Screen points -> streamView points. This keeps the cursor moving at the
         // same on-screen speed as the finger regardless of the zoom level.
         let streamDelta = CGVector(dx: delta.dx / zoomScale, dy: delta.dy / zoomScale)
+        if positionedByMagnifier { cursorLocationInitialized = false } // re-placed at the center if tracking resumes
 
         if tracksCursor {
             if !cursorLocationInitialized { beginAbsoluteCursor() }
-            captureMagnifierExtensionIfNeeded()
             cursorLocation = clampToVideoRect(CGPoint(x: cursorLocation.x + streamDelta.dx,
                                                       y: cursorLocation.y + streamDelta.dy))
             sendAbsoluteCursorPosition()
@@ -176,67 +172,30 @@ import UIKit
                                  Int16(clamping: Int(referenceWidth)), Int16(clamping: Int(referenceHeight)))
     }
 
-    private struct AxisRange {
-        var lower: CGFloat
-        var upper: CGFloat
-        func clamp(_ value: CGFloat) -> CGFloat { min(max(value, lower), upper) }
-    }
-
-    /// Content offsets that keep the video's edges at or beyond the usable viewport's edges (just clear of the camera
-    /// island, home indicator or keyboard), per axis, before any magnifier extension.
-    private func followRanges() -> (x: AxisRange, y: AxisRange)? {
-        guard let streamView = streamView, let scrollView = scrollView else { return nil }
+    /// Pans the visible area so the cursor sits at the center of the usable viewport, stopping when an edge of the
+    /// video reaches the edge of the usable viewport (just clear of the camera island, home indicator or keyboard).
+    private func followCursor() {
+        guard let streamView = streamView, let scrollView = scrollView else { return }
+        let target = cursorLocationInitialized ? cursorLocation : (keyboardAnchor ?? visibleCenter)
         let insets = viewportInsets
         let viewport = usableViewport
-        let video = streamView.convert(videoRect, to: scrollView)
+        let cursorInContent = streamView.convert(target, to: scrollView)
+        let videoInContent = streamView.convert(videoRect, to: scrollView)
 
-        // `leadingInset` is the distance from the scroll view's visible edge to the usable viewport's edge.
-        func axis(leadingInset: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat) -> AxisRange {
+        // Returns the content offset along one axis. `leadingInset` is the distance from the scroll view's
+        // visible edge to the usable viewport's edge.
+        func axisOffset(target: CGFloat, leadingInset: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat) -> CGFloat {
             let lower = minEdge - leadingInset
             let upper = maxEdge - viewport - leadingInset
-            if upper < lower { // video smaller than the viewport: center it
-                let centered = (minEdge + maxEdge) / 2 - viewport / 2 - leadingInset
-                return AxisRange(lower: centered, upper: centered)
-            }
-            return AxisRange(lower: lower, upper: upper)
-        }
-        return (axis(leadingInset: insets.left, viewport: viewport.width, minEdge: video.minX, maxEdge: video.maxX),
-                axis(leadingInset: insets.top, viewport: viewport.height, minEdge: video.minY, maxEdge: video.maxY))
-    }
-
-    /// Records how far the magnifier's current position lies outside the follow range. Call before changing the
-    /// zoom or viewport. Recaptured if the magnifier moved the view since the last follow.
-    private func captureMagnifierExtensionIfNeeded() {
-        guard positionedByMagnifier else {
-            magnifierExtension = nil
-            return
-        }
-        guard let scrollView = scrollView, let ranges = followRanges() else { return }
-        let current = scrollView.contentOffset
-        if magnifierExtension != nil, let applied = appliedContentOffset,
-           abs(applied.x - current.x) <= 0.5, abs(applied.y - current.y) <= 0.5 {
-            return // the view is where we left it
-        }
-        magnifierExtension = CGVector(dx: current.x - ranges.x.clamp(current.x),
-                                      dy: current.y - ranges.y.clamp(current.y))
-    }
-
-    /// Pans the visible area so `target` (default: the cursor) sits at the center of the usable viewport, stopping
-    /// when an edge of the video reaches the edge of the usable viewport, widened by any magnifier extension.
-    private func followCursor(target explicitTarget: CGPoint? = nil) {
-        guard let streamView = streamView, let scrollView = scrollView, var ranges = followRanges() else { return }
-        let target = explicitTarget ?? (cursorLocationInitialized ? cursorLocation : (keyboardAnchor ?? visibleCenter))
-        if !positionedByMagnifier { magnifierExtension = nil }
-        if let ext = magnifierExtension {
-            ranges.x.lower += min(0, ext.dx); ranges.x.upper += max(0, ext.dx)
-            ranges.y.lower += min(0, ext.dy); ranges.y.upper += max(0, ext.dy)
+            if upper < lower { return (minEdge + maxEdge) / 2 - viewport / 2 - leadingInset } // video smaller than viewport: center it
+            return min(max(target - viewport / 2 - leadingInset, lower), upper)
         }
 
-        let insets = viewportInsets
-        let viewport = usableViewport
-        let targetInContent = streamView.convert(target, to: scrollView)
-        let offset = CGPoint(x: ranges.x.clamp(targetInContent.x - viewport.width / 2 - insets.left),
-                             y: ranges.y.clamp(targetInContent.y - viewport.height / 2 - insets.top))
+        let offset = CGPoint(
+            x: axisOffset(target: cursorInContent.x, leadingInset: insets.left, viewport: viewport.width,
+                          minEdge: videoInContent.minX, maxEdge: videoInContent.maxX),
+            y: axisOffset(target: cursorInContent.y, leadingInset: insets.top, viewport: viewport.height,
+                          minEdge: videoInContent.minY, maxEdge: videoInContent.maxY))
         appliedContentOffset = offset
         scrollView.contentOffset = offset
     }
@@ -244,7 +203,7 @@ import UIKit
     /// Called from the scroll view delegate. The hidden text field that receives keyboard input lives inside the
     /// scroll view, and UIKit scrolls text fields into view while typing; undo that while the keyboard is open.
     @objc static func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard keyboardOcclusion > 0, let handler = active, handler.pinchZoomEnabled,
+        guard keyboardOcclusion > 0, let handler = active, handler.pinchZoomEnabled, !handler.positionedByMagnifier,
               handler.scrollView === scrollView, let offset = handler.appliedContentOffset else { return }
         if abs(scrollView.contentOffset.x - offset.x) > 0.5 || abs(scrollView.contentOffset.y - offset.y) > 0.5 {
             scrollView.contentOffset = offset
@@ -258,24 +217,20 @@ import UIKit
         guard pinchZoomEnabled, let scrollView = scrollView, ratio.isFinite, ratio > 0 else { return }
 
         let sensitivity = max(TouchPadGestureHandler.pinchSensitivity, 0.05)
-        let positioned = positionedByMagnifier
+        if positionedByMagnifier {
+            // keep the magnifier's position: zoom around the visible center only
+            StreamFrameViewController.sharedInstance()?.zoomMagnifierStreamView(byScaleRatio: pow(ratio, sensitivity))
+            return
+        }
+
         let oldScale = currentZoomScale
-        // The magnifier may have zoomed below 1x or beyond our maximum; don't snap its zoom level.
-        let minScale = positioned ? min(1.0, max(oldScale, scrollView.minimumZoomScale)) : 1.0
-        var maxScale = min(TouchpadZoomHandler.maximumZoomScale, scrollView.maximumZoomScale)
-        if positioned { maxScale = max(maxScale, oldScale) }
+        let maxScale = min(TouchpadZoomHandler.maximumZoomScale, scrollView.maximumZoomScale)
         var newScale = oldScale * pow(ratio, sensitivity)
-        newScale = min(max(newScale, minScale), maxScale)
+        newScale = min(max(newScale, 1.0), maxScale)
         guard abs(newScale - oldScale) > 0.0001 else { return }
 
         if newScale <= 1.001 {
-            if positioned && oldScale <= 1.001 {
-                // below 1x (magnifier-shrunk stream): nothing to follow, zoom around the visible center
-                cursorLocationInitialized = false
-                StreamFrameViewController.sharedInstance()?.zoomMagnifierStreamView(byScaleRatio: newScale / oldScale)
-            } else {
-                endZoom()
-            }
+            endZoom()
             return
         }
 
@@ -283,7 +238,6 @@ import UIKit
         if !cursorLocationInitialized {
             beginAbsoluteCursor()
         }
-        captureMagnifierExtensionIfNeeded()
 
         scrollView.zoomScale = newScale
         followCursor()
@@ -293,9 +247,6 @@ import UIKit
     /// While the keyboard is open, the cursor stays tracked so the view keeps following it above the keyboard.
     @objc func endZoom() {
         let keyboardOpen = TouchpadZoomHandler.keyboardOcclusion > 0
-        let positioned = positionedByMagnifier
-        if positioned { captureMagnifierExtensionIfNeeded() }
-        let centerBeforeZoomOut = visibleCenter
         if !keyboardOpen {
             cursorLocationInitialized = false
             keyboardAnchor = nil
@@ -306,12 +257,7 @@ import UIKit
         appliedContentOffset = .zero
         scrollView.contentOffset = .zero
         StreamFrameViewController.sharedInstance()?.updateMagnifierViewportMetrics()
-        if keyboardOpen {
-            followCursor()
-        } else if positioned {
-            // keep the magnifier's position instead of resetting: zoom out around the center, within its extension
-            followCursor(target: centerBeforeZoomOut)
-        }
+        if keyboardOpen { followCursor() }
     }
 
     // MARK: - Keyboard
@@ -330,9 +276,8 @@ import UIKit
     private func keyboardOcclusionChanged(to newHeight: CGFloat) {
         // Measured before the viewport shrinks, so it's what the user was looking at.
         let anchor = cursorLocationInitialized ? cursorLocation : visibleCenter
-        if pinchZoomEnabled { captureMagnifierExtensionIfNeeded() }
         TouchpadZoomHandler.keyboardOcclusion = newHeight
-        guard pinchZoomEnabled, scrollView != nil else { return }
+        guard pinchZoomEnabled, !positionedByMagnifier, scrollView != nil else { return }
 
         if newHeight > 0 {
             if !cursorLocationInitialized && keyboardAnchor == nil { keyboardAnchor = anchor }
