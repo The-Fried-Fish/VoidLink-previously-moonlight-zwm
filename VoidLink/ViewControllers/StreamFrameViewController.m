@@ -1062,6 +1062,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void)keyboardDidHide{
+    // Never reset the frame of a zoomed stream view: with a scale transform, setting bounds/frame shrinks its
+    // coordinate space, which leaves the view stuck in a corner and only part of the screen responding to touches.
+    if (!CGAffineTransformIsIdentity(_streamView.transform)) return;
     _streamView.bounds = _deviceWindow.bounds;
     _streamView.frame = _deviceWindow.frame;
 }
@@ -1290,6 +1293,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView == _scrollView) {
+#if !TARGET_OS_TV
+        [TouchpadZoomHandler scrollViewDidScroll:scrollView];
+#endif
         [self syncMagnifierStateFromScrollView];
     }
 }

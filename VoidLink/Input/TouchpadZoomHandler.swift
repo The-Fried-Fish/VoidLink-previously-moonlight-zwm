@@ -39,6 +39,8 @@ import UIKit
     private var cursorLocationInitialized = false
     /// Point kept centered while the keyboard is open before the cursor has been moved (the cursor isn't tracked yet).
     private var keyboardAnchor: CGPoint?
+    /// Last content offset set by followCursor; restored if UIKit scrolls the view while the keyboard is open.
+    private var appliedContentOffset: CGPoint?
 
     /// Sub-unit remainder carried between relative mouse move events.
     private var relativeRemainder: CGVector = .zero
@@ -172,7 +174,18 @@ import UIKit
                           minEdge: videoInContent.minX, maxEdge: videoInContent.maxX),
             y: axisOffset(target: cursorInContent.y, viewport: viewportSize.height,
                           minEdge: videoInContent.minY, maxEdge: videoInContent.maxY))
+        appliedContentOffset = offset
         scrollView.contentOffset = offset
+    }
+
+    /// Called from the scroll view delegate. The hidden text field that receives keyboard input lives inside the
+    /// scroll view, and UIKit scrolls text fields into view while typing; undo that while the keyboard is open.
+    @objc static func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard keyboardOcclusion > 0, let handler = active, handler.pinchZoomEnabled,
+              handler.scrollView === scrollView, let offset = handler.appliedContentOffset else { return }
+        if abs(scrollView.contentOffset.x - offset.x) > 0.5 || abs(scrollView.contentOffset.y - offset.y) > 0.5 {
+            scrollView.contentOffset = offset
+        }
     }
 
     // MARK: - Pinch
@@ -213,6 +226,7 @@ import UIKit
         }
         guard let scrollView = scrollView else { return }
         scrollView.zoomScale = 1.0
+        appliedContentOffset = .zero
         scrollView.contentOffset = .zero
         StreamFrameViewController.sharedInstance()?.updateMagnifierViewportMetrics()
         if keyboardOpen { followCursor() }

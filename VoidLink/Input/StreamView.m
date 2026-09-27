@@ -334,6 +334,16 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
         if (CGRectIntersectsRect(keyboardInContainer, scrollFrame)) {
             occlusion = CGRectGetMaxY(scrollFrame) - MAX(CGRectGetMinY(keyboardInContainer), CGRectGetMinY(scrollFrame));
         }
+        // Honor the user's designated landscape keyboard height (Others > Soft Keyboard Height), which exists because
+        // iOS doesn't always report the real keyboard height.
+        BOOL useDesignatedKeyboardHeight = keyboardHeightDesignatedForLandscape;
+        if (@available(iOS 13.0, *)) useDesignatedKeyboardHeight = useDesignatedKeyboardHeight && PublicUtils.isLandscape;
+        if (occlusion > 0 && useDesignatedKeyboardHeight) {
+            CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.inputAccessoryBarHeight : 0;
+            occlusion = MAX(occlusion, designatedSoftKeyboardHeight + toolbarHeight);
+        }
+        // small margin so the bottom of the video isn't tucked under the keyboard bar's edge
+        if (occlusion > 0) occlusion += 8;
         occlusion = MIN(MAX(occlusion, 0), CGRectGetHeight(scrollFrame) * 0.85);
     }
     [TouchpadZoomHandler updateKeyboardOcclusion:occlusion];
