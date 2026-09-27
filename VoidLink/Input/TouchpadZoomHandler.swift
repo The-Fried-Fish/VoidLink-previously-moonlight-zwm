@@ -42,6 +42,16 @@ import UIKit
     /// Last content offset set by followCursor; restored if UIKit scrolls the view while the keyboard is open.
     private var appliedContentOffset: CGPoint?
 
+    /// Estimated cursor position (streamView coordinates) while it moves relatively at 1x: the last tracked position
+    /// when zooming out, advanced by the relative moves sent since. Zooming in / opening the keyboard starts there.
+    /// Assumes host pointer movement of one pixel per relative unit, so it can drift with pointer acceleration.
+    /// Kept on the type so it survives the touch handler being recreated when settings change.
+    private static var sharedEstimatedCursorLocation: CGPoint?
+    private var estimatedCursorLocation: CGPoint? {
+        get { TouchpadZoomHandler.sharedEstimatedCursorLocation }
+        set { TouchpadZoomHandler.sharedEstimatedCursorLocation = newValue }
+    }
+
     /// Sub-unit remainder carried between relative mouse move events.
     private var relativeRemainder: CGVector = .zero
 
@@ -141,11 +151,21 @@ import UIKit
         relativeRemainder.dx -= deltaX
         relativeRemainder.dy -= deltaY
         LiSendMouseMoveEvent(Int16(clamping: Int(deltaX)), Int16(clamping: Int(deltaY)))
+        advanceEstimatedCursor(byHostPixels: CGVector(dx: deltaX, dy: deltaY))
+    }
+
+    private func advanceEstimatedCursor(byHostPixels delta: CGVector) {
+        guard pinchZoomEnabled, let estimate = estimatedCursorLocation,
+              let config = StreamFrameViewController.sharedInstance()?.streamConfig,
+              config.width > 0, config.height > 0 else { return }
+        let rect = videoRect
+        estimatedCursorLocation = clampToVideoRect(CGPoint(x: estimate.x + delta.dx * rect.width / CGFloat(config.width),
+                                                           y: estimate.y + delta.dy * rect.height / CGFloat(config.height)))
     }
 
     /// Places the cursor at the center of the visible area.
     private func beginAbsoluteCursor() {
-        cursorLocation = clampToVideoRect(keyboardAnchor ?? visibleCenter)
+        cursorLocation = clampToVideoRect(keyboardAnchor ?? estimatedCursorLocation ?? visibleCenter)
         keyboardAnchor = nil
         cursorLocationInitialized = true
         sendAbsoluteCursorPosition()
@@ -247,6 +267,7 @@ import UIKit
     @objc func endZoom() {
         let keyboardOpen = TouchpadZoomHandler.keyboardOcclusion > 0
         if !keyboardOpen {
+            if cursorLocationInitialized { estimatedCursorLocation = cursorLocation }
             cursorLocationInitialized = false
             keyboardAnchor = nil
             relativeRemainder = .zero
@@ -276,7 +297,7 @@ import UIKit
 
     private func keyboardOcclusionChanged(to newHeight: CGFloat) {
         // Measured before the viewport shrinks, so it's what the user was looking at.
-        let anchor = cursorLocationInitialized ? cursorLocation : visibleCenter
+        let anchor = cursorLocationInitialized ? cursorLocation : (estimatedCursorLocation ?? visibleCenter)
         TouchpadZoomHandler.keyboardOcclusion = newHeight
         guard pinchZoomEnabled, scrollView != nil else { return }
 
