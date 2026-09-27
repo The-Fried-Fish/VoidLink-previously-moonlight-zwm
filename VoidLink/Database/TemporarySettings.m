@@ -227,6 +227,8 @@
     self.pinchZoom = [defaults boolForKey:PinchZoomDefaultsKey];
     self.cursorInertia = [defaults boolForKey:CursorInertiaDefaultsKey];
     self.cursorInertiaDeceleration = [defaults objectForKey:CursorInertiaDecelerationDefaultsKey] ?: @(CursorInertiaDecelerationDefault);
+    self.openKeyboardAtCursor = [defaults boolForKey:OpenKeyboardAtCursorDefaultsKey];
+    self.floatingKeyboardButton = [defaults boolForKey:FloatingKeyboardButtonDefaultsKey];
     
     return self;
 }

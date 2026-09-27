@@ -96,6 +96,7 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     CGFloat designatedSoftKeyboardHeight;
     bool keyboardHeightDesignatedForLandscape;
     CGFloat HeightViewLiftedTo;
+    BOOL keyboardLiftedByCursorMode; // the soft keyboard is open in "Open Keyboard Where Cursor Is" mode
     UILabel* keyboardToggleTip;
     
     UIKeyModifierFlags comboKeyModifierFlags;
@@ -308,6 +309,37 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 #endif
 }
 
+// "Open Keyboard Where Cursor Is": touchpad mode with Pinch Gesture set to Zoom. The keyboard opens immediately and,
+// instead of moving the stream view's frame, the zoom handler pans the (possibly zoomed) view so the cursor stays
+// centered in the area above the keyboard.
+- (BOOL)cursorKeyboardModeActive {
+#if TARGET_OS_TV
+    return NO;
+#else
+    return touchMode == RelativeTouch && settings.enablePinch && settings.pinchZoom && settings.openKeyboardAtCursor
+        && [self.superview isKindOfClass:[UIScrollView class]];
+#endif
+}
+
+#if !TARGET_OS_TV
+- (void)updateCursorKeyboardOcclusionWithNotification:(NSNotification *)notification {
+    UIScrollView* scrollView = (UIScrollView*)self.superview;
+    UIView* container = scrollView.superview;
+    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat occlusion = 0;
+    if (container && !CGRectIsEmpty(keyboardFrame)) {
+        UIScreen* screen = self.window.screen ?: UIScreen.mainScreen;
+        CGRect keyboardInContainer = [screen.coordinateSpace convertRect:keyboardFrame toCoordinateSpace:container];
+        CGRect scrollFrame = scrollView.frame;
+        if (CGRectIntersectsRect(keyboardInContainer, scrollFrame)) {
+            occlusion = CGRectGetMaxY(scrollFrame) - MAX(CGRectGetMinY(keyboardInContainer), CGRectGetMinY(scrollFrame));
+        }
+        occlusion = MIN(MAX(occlusion, 0), CGRectGetHeight(scrollFrame) * 0.85);
+    }
+    [TouchpadZoomHandler updateKeyboardOcclusion:occlusion];
+}
+#endif
+
 - (void)keyboardWillShow:(NSNotification *)notification{
 #if TARGET_OS_TV
     (void)notification;
@@ -315,6 +347,20 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     // NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
     dockedKeyboardActionDetected = true;
     NSLog(@"keyboard will show markmark %d", isInputingText);
+    
+    // Also called for keyboard frame changes; only handle our own input field while it's active.
+    if([self cursorKeyboardModeActive] && keyInputField.isFirstResponder){
+        BOOL justOpened = !keyboardLiftedByCursorMode;
+        keyboardLiftedByCursorMode = YES;
+        isInputingText = true;
+        [self updateCursorKeyboardOcclusionWithNotification:notification];
+        if(justOpened){
+            [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
+            if(keyboardToggleTip.superview && !keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
+            [keyboardToggleTip removeFromSuperview];
+        }
+        return;
+    }
 
     if(settings.liftStreamViewForKeyboard && !isInputingText){
         isInputingText = true;
@@ -368,6 +414,10 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 }
 
 - (void)handleNonStandardKeyboard:(NSNotification *)notification{
+#if !TARGET_OS_TV
+    // keyboard height changes (predictive bar, keyboard switch) while open in cursor mode
+    if(keyboardLiftedByCursorMode && keyInputField.isFirstResponder) [self updateCursorKeyboardOcclusionWithNotification:notification];
+#endif
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
         if(!self->dockedKeyboardActionDetected){
@@ -430,7 +480,13 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     // NSLog(@"keyboard will hide markmark %f", CACurrentMediaTime());
 
     keyboardToggleRecognizer.numberOfTouchesRequired = settings.keyboardToggleFingers.intValue; // reset this number
-    if(isInputingText){
+    if(keyboardLiftedByCursorMode){
+        // the stream view's frame was never moved in this mode; give the full viewport back to the zoom handler
+        keyboardLiftedByCursorMode = NO;
+        isInputingText = NO;
+        [TouchpadZoomHandler updateKeyboardOcclusion:0];
+    }
+    else if(isInputingText){
         self.frame = _originalFrame;
         
         // Also restore Metal video view if using Metal rendering backend
@@ -480,6 +536,11 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 }
 
 -(void)readyToBringUpSoftKeyboardByToolbox{
+    // The cursor is already where the user wants to type: open right away, the view is lifted around the cursor.
+    if([self cursorKeyboardModeActive]){
+        if(!isInputingText) [self toggleKeyboard];
+        return;
+    }
     NSLog(@"change num of fingers required");
     [self refreshKeyboardToggleRecognizer:1];
     keyboardToggleTip.translatesAutoresizingMaskIntoConstraints = NO;
@@ -573,6 +634,12 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 }
 #endif
 
+
+// Floating keyboard button: closes the keyboard if it's open, otherwise opens it like the other keyboard buttons.
+- (void)toggleSoftKeyboardFromButton{
+    if(isInputingText) [self toggleKeyboard];
+    else [self readyToBringUpSoftKeyboardByToolbox];
+}
 
 - (void)toggleKeyboard{
     // NSLog(@"toggleKeyboard markmark, %d", isInputingText);

@@ -321,6 +321,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
     case ctrlDownForPinch = "ctrlDownForPinchStack"
     case scrollSensitivity = "scrollSensitivityStack"
     case pinchSensitivity = "pinchSensitivityStack"
+    case openKeyboardAtCursor = "openKeyboardAtCursorStack"
     case onScreenWidget = "onScreenWidgetStack"
     case buttonVisualFeedback = "buttonVisualFeedbackStack"
     case trackTouchPoint = "trackTouchPointStack"
@@ -407,6 +408,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
 
     case softKeyboardToolbar = "softKeyboardToolbarStack"
     case softKeyboardHeight = "softKeyboardHeightStack"
+    case floatingKeyboardButton = "floatingKeyboardButtonStack"
     case rememberFoldState = "rememberFoldStateStack"
 
     // MARK: Experimental
@@ -449,6 +451,8 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .ctrlDownForPinch: return "Ctrl Down for Pinch"
         case .scrollSensitivity: return "Scroll Sensitivity"
         case .pinchSensitivity: return "Pinch Sensitivity"
+        case .openKeyboardAtCursor: return "Open Keyboard Where Cursor Is"
+        case .floatingKeyboardButton: return "Keyboard Button"
         case .onScreenWidget: return "On-Screen Widgets"
         case .buttonVisualFeedback: return "Button Visual Feedback"
         case .trackTouchPoint: return "Touch Point Tracking"
@@ -1230,6 +1234,8 @@ final class SettingsItemRegistry: ObservableObject {
     let ctrlDownForPinch = SettingsItemModel<Bool>(id: .ctrlDownForPinch, value: true)
     let scrollSensitivity = SettingsItemModel<Double>(id: .scrollSensitivity, value: 1)
     let pinchSensitivity = SettingsItemModel<Double>(id: .pinchSensitivity, value: 1)
+    let openKeyboardAtCursor = SettingsItemModel<Bool>(id: .openKeyboardAtCursor, value: false)
+    let floatingKeyboardButton = SettingsItemModel<Bool>(id: .floatingKeyboardButton, value: false)
     let onScreenWidget = SettingsItemModel<Int>(id: .onScreenWidget, value: 0)
     let buttonVisualFeedback = SettingsItemModel<Bool>(id: .buttonVisualFeedback, value: true)
     let trackTouchPoint = SettingsItemModel<Bool>(id: .trackTouchPoint, value: false)
@@ -1362,6 +1368,8 @@ final class SettingsItemRegistry: ObservableObject {
             ctrlDownForPinch.objectWillChange,
             scrollSensitivity.objectWillChange,
             pinchSensitivity.objectWillChange,
+            openKeyboardAtCursor.objectWillChange,
+            floatingKeyboardButton.objectWillChange,
             onScreenWidget.objectWillChange,
             buttonVisualFeedback.objectWillChange,
             trackTouchPoint.objectWillChange,
@@ -1888,6 +1896,8 @@ final class SettingsSession: NSObject, ObservableObject {
         itemRegistry.ctrlDownForPinch.value = snapshot.ctrlDownForPinch
         itemRegistry.scrollSensitivity.value = snapshot.scrollSensitivity.doubleValue
         itemRegistry.pinchSensitivity.value = snapshot.pinchSensitivity.doubleValue
+        itemRegistry.openKeyboardAtCursor.value = snapshot.openKeyboardAtCursor
+        itemRegistry.floatingKeyboardButton.value = snapshot.floatingKeyboardButton
         itemRegistry.onScreenWidget.value = snapshot.onscreenControls.intValue
         itemRegistry.buttonVisualFeedback.value = snapshot.buttonVisualFeedback
         itemRegistry.trackTouchPoint.value = snapshot.touchPointTracking
@@ -2623,6 +2633,12 @@ final class SettingsSession: NSObject, ObservableObject {
                             || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                             && $0.itemRegistry.passthroughGestures.value
                             && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)},
+            ),
+            toggleItem(
+                \.openKeyboardAtCursor,
+                // relies on the cursor position tracked by pinch zoom
+                isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
+                             && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.zoom.rawValue }
             ),
             pickerItem(
                 \.onScreenWidget,
@@ -3446,6 +3462,10 @@ final class SettingsSession: NSObject, ObservableObject {
                 },
                 isAvailable: !PublicUtils.isTVOS,
                 hasInfo: true
+            ),
+            toggleItem(
+                \.floatingKeyboardButton,
+                isAvailable: !PublicUtils.isTVOS
             ),
             toggleItem(
                 \.rememberFoldState,
@@ -4583,6 +4603,8 @@ final class SettingsSession: NSObject, ObservableObject {
         UserDefaults.standard.set(itemRegistry.pinchGesture.value == SettingsPinchGestureMode.zoom.rawValue, forKey: PinchZoomDefaultsKey)
         UserDefaults.standard.set(itemRegistry.cursorInertia.value, forKey: CursorInertiaDefaultsKey)
         UserDefaults.standard.set(itemRegistry.cursorInertiaDeceleration.value.rounded(), forKey: CursorInertiaDecelerationDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.openKeyboardAtCursor.value, forKey: OpenKeyboardAtCursorDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.floatingKeyboardButton.value, forKey: FloatingKeyboardButtonDefaultsKey)
 
         // MARK: Controller
 

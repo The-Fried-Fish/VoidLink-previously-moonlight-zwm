@@ -97,6 +97,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     PaddedLabel *_overlayView;
     PaddedLabel *_transientHUDView;
     ToolboxViewController* toolBoxViewController;
+#if !TARGET_OS_TV
+    FloatingKeyboardButton* _floatingKeyboardButton;
+#endif
     uint16_t overlayLevel;
     UILabel *_stageLabel;
     UILabel *_tipLabel;
@@ -675,6 +678,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
     
+#if !TARGET_OS_TV
+    [self updateFloatingKeyboardButton];
+#endif
+    
     // [self pauseTimer];
     if(_settings.sendDummyEvent){
         if(!safeTimer) [self setupTimer];
@@ -1104,6 +1111,33 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     }];
 #endif
 }
+
+#if !TARGET_OS_TV
+// Optional on-screen keyboard button (Others > Keyboard Button), independent of custom on-screen widgets.
+- (void)updateFloatingKeyboardButton {
+    if (!_settings.floatingKeyboardButton) {
+        [_floatingKeyboardButton removeFromSuperview];
+        _floatingKeyboardButton = nil;
+        return;
+    }
+    if (!_floatingKeyboardButton) {
+        _floatingKeyboardButton = [[FloatingKeyboardButton alloc] init];
+        __weak StreamFrameViewController* weakSelf = self;
+        _floatingKeyboardButton.onTap = ^{
+            StreamFrameViewController* strongSelf = weakSelf;
+            if (strongSelf) [strongSelf->_streamView toggleSoftKeyboardFromButton];
+        };
+    }
+    [self.view addSubview:_floatingKeyboardButton];
+    [self.view bringSubviewToFront:_floatingKeyboardButton];
+    [_floatingKeyboardButton restorePosition];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [_floatingKeyboardButton restorePosition];
+}
+#endif
 
 - (void)bringUpSoftKeyboard{
     [self->_streamView readyToBringUpSoftKeyboardByToolbox];

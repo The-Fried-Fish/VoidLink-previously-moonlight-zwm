@@ -24,6 +24,7 @@
 		1888C1932E24C41000108730 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888C1902E24C2C800108730 /* AboutView.swift */; };
 		188973D32E386A670025E48C /* widgetTemplatesIPhone.bin in Resources */ = {isa = PBXBuildFile; fileRef = 188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */; };
 		18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */; };
+		C0DE5A1E2F80000100000022 /* FloatingKeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000021 /* FloatingKeyboardButton.swift */; };
 		C0DE5A1E2F80000100000012 /* CursorInertia.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000011 /* CursorInertia.swift */; };
 		C0DE5A1E2F80000100000002 /* TouchpadZoomHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */; };
 		189AD29A2DE7446000E24B88 /* HostCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189AD2992DE7446000E24B88 /* HostCollectionViewController.swift */; };
@@ -126,6 +127,7 @@
 		A70100000000000000000006 /* Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DD92E2164A9000D5DCA /* Frame.m */; };
 		A70100000000000000000007 /* FrameQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DDB2E2164A9000D5DCA /* FrameQueue.m */; };
 		A70100000000000000000008 /* TouchPadGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */; };
+		C0DE5A1E2F80000100000023 /* FloatingKeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000021 /* FloatingKeyboardButton.swift */; };
 		C0DE5A1E2F80000100000013 /* CursorInertia.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000011 /* CursorInertia.swift */; };
 		C0DE5A1E2F80000100000003 /* TouchpadZoomHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */; };
 		A70100000000000000000009 /* FloatBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E20DD72E2164A9000D5DCA /* FloatBuffer.m */; };
@@ -356,6 +358,7 @@
 		1888C1912E24C33100108730 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		188973D22E386A670025E48C /* widgetTemplatesIPhone.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = widgetTemplatesIPhone.bin; path = PresetConfigs/widgetTemplatesIPhone.bin; sourceTree = "<group>"; };
 		18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadGestureHandler.swift; sourceTree = "<group>"; };
+		C0DE5A1E2F80000100000021 /* FloatingKeyboardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingKeyboardButton.swift; sourceTree = "<group>"; };
 		C0DE5A1E2F80000100000011 /* CursorInertia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorInertia.swift; sourceTree = "<group>"; };
 		C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchpadZoomHandler.swift; sourceTree = "<group>"; };
 		189AD2992DE7446000E24B88 /* HostCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostCollectionViewController.swift; sourceTree = "<group>"; };
@@ -986,6 +989,7 @@
 				18416EA32EBB3DCE00AE0124 /* UITouchUtil.swift */,
 				18B317022EE67A39009B62C2 /* InertialScroller.swift */,
 				18951D1C2EBB6D2300A86E12 /* TouchPadGestureHandler.swift */,
+				C0DE5A1E2F80000100000021 /* FloatingKeyboardButton.swift */,
 				C0DE5A1E2F80000100000011 /* CursorInertia.swift */,
 				C0DE5A1E2F80000100000001 /* TouchpadZoomHandler.swift */,
 				18A765BC2ECD51FB004784AA /* ControllerUtil.swift */,
@@ -1401,6 +1405,7 @@
 				A70100000000000000000006 /* Frame.m in Sources */,
 				A70100000000000000000007 /* FrameQueue.m in Sources */,
 				A70100000000000000000008 /* TouchPadGestureHandler.swift in Sources */,
+				C0DE5A1E2F80000100000023 /* FloatingKeyboardButton.swift in Sources */,
 				C0DE5A1E2F80000100000013 /* CursorInertia.swift in Sources */,
 				C0DE5A1E2F80000100000003 /* TouchpadZoomHandler.swift in Sources */,
 				A70100000000000000000009 /* FloatBuffer.m in Sources */,
@@ -1522,6 +1527,7 @@
 				97E20DDF2E2164A9000D5DCA /* Frame.m in Sources */,
 				97E20DE02E2164A9000D5DCA /* FrameQueue.m in Sources */,
 				18951D1D2EBB6D2300A86E12 /* TouchPadGestureHandler.swift in Sources */,
+				C0DE5A1E2F80000100000022 /* FloatingKeyboardButton.swift in Sources */,
 				C0DE5A1E2F80000100000012 /* CursorInertia.swift in Sources */,
 				C0DE5A1E2F80000100000002 /* TouchpadZoomHandler.swift in Sources */,
 				97E20DE12E2164A9000D5DCA /* FloatBuffer.m in Sources */,

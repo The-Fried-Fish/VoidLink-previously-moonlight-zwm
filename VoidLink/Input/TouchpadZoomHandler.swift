@@ -10,6 +10,11 @@
 //  follow it. Once the zoom returns to 1x, cursor motion goes back to plain
 //  relative mouse events.
 //
+//  With "Open Keyboard Where Cursor Is", the soft keyboard shrinks the usable
+//  viewport to the area above it: the view is panned so the cursor stays
+//  centered above the keyboard, and the bottom of the video can be scrolled up
+//  to the keyboard's top edge.
+//
 //  All methods must be called on the main thread.
 //
 
@@ -22,11 +27,18 @@ import UIKit
 
     @objc static let maximumZoomScale: CGFloat = 6.0
 
+    /// Height of the stream area covered by the soft keyboard (including its accessory bar), 0 when closed.
+    private static var keyboardOcclusion: CGFloat = 0
+    /// The handler of the current touchpad session, which receives keyboard occlusion changes.
+    private static weak var active: TouchpadZoomHandler?
+
     private weak var streamView: StreamView?
 
     /// Cursor position in the (unzoomed) streamView coordinate space, only valid while zoomed.
     private var cursorLocation: CGPoint = .zero
     private var cursorLocationInitialized = false
+    /// Point kept centered while the keyboard is open before the cursor has been moved (the cursor isn't tracked yet).
+    private var keyboardAnchor: CGPoint?
 
     /// Sub-unit remainder carried between relative mouse move events.
     private var relativeRemainder: CGVector = .zero
@@ -34,6 +46,7 @@ import UIKit
     @objc init(streamView: StreamView) {
         self.streamView = streamView
         super.init()
+        TouchpadZoomHandler.active = self
     }
 
     private var scrollView: UIScrollView? {
@@ -54,6 +67,17 @@ import UIKit
         return pinchZoomEnabled && currentZoomScale > 1.001
     }
 
+    /// True while the cursor is driven with absolute positions: zoomed in, or the keyboard is open in Zoom mode.
+    private var tracksCursor: Bool {
+        return pinchZoomEnabled && (currentZoomScale > 1.001 || TouchpadZoomHandler.keyboardOcclusion > 0)
+    }
+
+    /// Visible height of the scroll view that isn't covered by the keyboard.
+    private var unoccludedViewportHeight: CGFloat {
+        guard let scrollView = scrollView else { return 0 }
+        return max(scrollView.bounds.height - TouchpadZoomHandler.keyboardOcclusion, 1)
+    }
+
     // MARK: - Video area geometry (streamView coordinates)
 
     private var videoRect: CGRect {
@@ -72,10 +96,10 @@ import UIKit
                        y: min(max(point.y, rect.minY), rect.maxY))
     }
 
-    /// Center of the currently visible area, in streamView coordinates.
+    /// Center of the currently visible area (above the keyboard, if open), in streamView coordinates.
     private var visibleCenter: CGPoint {
         guard let streamView = streamView, let scrollView = scrollView else { return .zero }
-        let center = CGPoint(x: scrollView.bounds.midX, y: scrollView.bounds.midY)
+        let center = CGPoint(x: scrollView.bounds.midX, y: scrollView.bounds.minY + unoccludedViewportHeight / 2)
         return scrollView.convert(center, to: streamView)
     }
 
@@ -88,7 +112,7 @@ import UIKit
         // same on-screen speed as the finger regardless of the zoom level.
         let streamDelta = CGVector(dx: delta.dx / zoomScale, dy: delta.dy / zoomScale)
 
-        if isZoomed {
+        if tracksCursor {
             if !cursorLocationInitialized { beginAbsoluteCursor() }
             cursorLocation = clampToVideoRect(CGPoint(x: cursorLocation.x + streamDelta.dx,
                                                       y: cursorLocation.y + streamDelta.dy))
@@ -109,7 +133,8 @@ import UIKit
 
     /// Places the cursor at the center of the visible area.
     private func beginAbsoluteCursor() {
-        cursorLocation = clampToVideoRect(visibleCenter)
+        cursorLocation = clampToVideoRect(keyboardAnchor ?? visibleCenter)
+        keyboardAnchor = nil
         cursorLocationInitialized = true
         sendAbsoluteCursorPosition()
     }
@@ -130,8 +155,9 @@ import UIKit
     /// Pans the visible area so the cursor sits at its center, stopping at the edges of the video.
     private func followCursor() {
         guard let streamView = streamView, let scrollView = scrollView else { return }
-        let viewportSize = scrollView.bounds.size
-        let cursorInContent = streamView.convert(cursorLocation, to: scrollView)
+        let target = cursorLocationInitialized ? cursorLocation : (keyboardAnchor ?? visibleCenter)
+        let viewportSize = CGSize(width: scrollView.bounds.width, height: unoccludedViewportHeight)
+        let cursorInContent = streamView.convert(target, to: scrollView)
         let videoInContent = streamView.convert(videoRect, to: scrollView)
 
         func axisOffset(target: CGFloat, viewport: CGFloat, minEdge: CGFloat, maxEdge: CGFloat) -> CGFloat {
@@ -168,7 +194,7 @@ import UIKit
         }
 
         // Zooming in from 1x: put the cursor at the center of the visible area.
-        if oldScale <= 1.001 || !cursorLocationInitialized {
+        if !cursorLocationInitialized {
             beginAbsoluteCursor()
         }
 
@@ -177,12 +203,46 @@ import UIKit
     }
 
     /// Returns to 1x and hands the cursor back to relative movement.
+    /// While the keyboard is open, the cursor stays tracked so the view keeps following it above the keyboard.
     @objc func endZoom() {
-        cursorLocationInitialized = false
-        relativeRemainder = .zero
+        let keyboardOpen = TouchpadZoomHandler.keyboardOcclusion > 0
+        if !keyboardOpen {
+            cursorLocationInitialized = false
+            keyboardAnchor = nil
+            relativeRemainder = .zero
+        }
         guard let scrollView = scrollView else { return }
         scrollView.zoomScale = 1.0
         scrollView.contentOffset = .zero
         StreamFrameViewController.sharedInstance()?.updateMagnifierViewportMetrics()
+        if keyboardOpen { followCursor() }
+    }
+
+    // MARK: - Keyboard
+
+    /// Called by StreamView when the soft keyboard opens, changes height, or closes (height 0).
+    @objc static func updateKeyboardOcclusion(_ height: CGFloat) {
+        let newHeight = max(height, 0)
+        guard abs(newHeight - keyboardOcclusion) > 0.5 else { return }
+        guard let handler = active else {
+            keyboardOcclusion = newHeight
+            return
+        }
+        handler.keyboardOcclusionChanged(to: newHeight)
+    }
+
+    private func keyboardOcclusionChanged(to newHeight: CGFloat) {
+        // Measured before the viewport shrinks, so it's what the user was looking at.
+        let anchor = cursorLocationInitialized ? cursorLocation : visibleCenter
+        TouchpadZoomHandler.keyboardOcclusion = newHeight
+        guard pinchZoomEnabled, scrollView != nil else { return }
+
+        if newHeight > 0 {
+            if !cursorLocationInitialized && keyboardAnchor == nil { keyboardAnchor = anchor }
+            followCursor()
+        } else {
+            keyboardAnchor = nil
+            if isZoomed { followCursor() } else { endZoom() }
+        }
     }
 }
