@@ -475,6 +475,16 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     _streamViewMagnifierContentOffset = CGPointZero;
     _streamViewMagnifierZoomScale = 1.0f;
     _magnifierViewportInteractionActive = NO;
+    _streamViewPositionedByMagnifier = NO;
+}
+
+// Touchpad pinch while the magnifier has positioned the stream: zoom around the visible center like the magnifier
+// does, keeping its position (no scroll gestures get enabled).
+- (void)zoomMagnifierStreamViewByScaleRatio:(CGFloat)ratio {
+    if (!_scrollView || !isfinite(ratio) || ratio <= 0) return;
+    CGFloat currentScale = MAX(_scrollView.zoomScale, _scrollView.minimumZoomScale);
+    // applyMagnifierTranslation adds pinchDelta / 240 to the zoom scale
+    [self applyMagnifierTranslation:CGVectorMake(0, 0) pinchDelta:(currentScale * ratio - currentScale) * 240.0f];
 }
 
 - (void)applyMagnifierTranslation:(CGVector)translation pinchDelta:(CGFloat)pinchDelta {
@@ -1183,12 +1193,14 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void)magnifierMoveStreamViewWithTranslation:(CGVector)translation {
+    _streamViewPositionedByMagnifier = YES;
     _magnifierViewportInteractionActive = YES;
     [self updateScrollViewInteractionState];
     [self applyMagnifierTranslation:translation pinchDelta:0.0f];
 }
 
 - (void)magnifierMoveStreamViewWithTranslation:(CGVector)translation pinchDelta:(CGFloat)pinchDelta {
+    _streamViewPositionedByMagnifier = YES;
     _magnifierViewportInteractionActive = YES;
     [self updateScrollViewInteractionState];
     [self applyMagnifierTranslation:translation pinchDelta:pinchDelta];
@@ -1233,6 +1245,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     }
 
     CGFloat targetScale = MIN(MAX(scale, _scrollView.minimumZoomScale), _scrollView.maximumZoomScale);
+    _streamViewPositionedByMagnifier = fabs(targetScale - 1.0f) > 0.001f || fabs(offset.x) > 0.5f || fabs(offset.y) > 0.5f;
     [_scrollView setZoomScale:targetScale animated:animated];
     [self updateMagnifierViewportMetrics];
     CGPoint clampedOffset = [self clampedMagnifierContentOffset:offset];
@@ -1293,6 +1306,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView == _scrollView) {
+        UIGestureRecognizerState panState = scrollView.panGestureRecognizer.state;
+        if (scrollView.panGestureRecognizer.enabled && (panState == UIGestureRecognizerStateBegan || panState == UIGestureRecognizerStateChanged)) {
+            _streamViewPositionedByMagnifier = YES; // moved by the scroll view's own pan gesture
+        }
 #if !TARGET_OS_TV
         [TouchpadZoomHandler scrollViewDidScroll:scrollView];
 #endif
@@ -1302,6 +1319,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     if (scrollView == _scrollView) {
+        if (scrollView.isZooming) _streamViewPositionedByMagnifier = YES; // zoomed by the scroll view's own pinch
         [self updateMagnifierViewportMetrics];
         [self syncMagnifierStateFromScrollView];
     }
