@@ -17,7 +17,6 @@ static NSString * const PinchZoomDefaultsKey = @"touchpadPinchZoom";
 static NSString * const CursorInertiaDefaultsKey = @"touchpadCursorInertia";
 static NSString * const CursorInertiaDecelerationDefaultsKey = @"touchpadCursorInertiaDeceleration";
 static const float CursorInertiaDecelerationDefault = 5.0f;
-static NSString * const OpenKeyboardAtCursorDefaultsKey = @"touchpadOpenKeyboardAtCursor";
 static NSString * const FloatingKeyboardButtonDefaultsKey = @"floatingKeyboardButton";
 static NSString * const PortraitStreamOffsetDefaultsKey = @"portraitStreamVerticalOffset";
 
@@ -137,7 +136,6 @@ static NSString * const PortraitStreamOffsetDefaultsKey = @"portraitStreamVertic
 @property (nonatomic) BOOL pinchZoom; // Pinch Gesture is "Zoom" when enablePinch && pinchZoom, "Ctrl +/-" when enablePinch && !pinchZoom
 @property (nonatomic) BOOL cursorInertia;
 @property (nonatomic, retain) NSNumber * cursorInertiaDeceleration;
-@property (nonatomic) BOOL openKeyboardAtCursor; // only takes effect in touchpad mode with Pinch Gesture set to Zoom
 @property (nonatomic) BOOL floatingKeyboardButton;
 @property (nonatomic, retain) NSNumber * portraitStreamOffset; // -100...100 %: vertical stream position in portrait, + moves it up
 

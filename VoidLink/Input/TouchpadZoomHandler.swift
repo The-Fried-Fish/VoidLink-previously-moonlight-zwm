@@ -10,7 +10,7 @@
 //  follow it. Once the zoom returns to 1x, cursor motion goes back to plain
 //  relative mouse events.
 //
-//  With "Open Keyboard Where Cursor Is", the soft keyboard shrinks the usable
+//  The soft keyboard opens where the cursor is and shrinks the usable
 //  viewport to the area above it: the view is panned so the cursor stays
 //  centered above the keyboard, and the bottom of the video can be scrolled up
 //  to the keyboard's top edge.

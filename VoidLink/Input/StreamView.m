@@ -96,7 +96,7 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     CGFloat designatedSoftKeyboardHeight;
     bool keyboardHeightDesignatedForLandscape;
     CGFloat HeightViewLiftedTo;
-    BOOL keyboardLiftedByCursorMode; // the soft keyboard is open in "Open Keyboard Where Cursor Is" mode
+    BOOL keyboardLiftedByCursorMode; // the soft keyboard is open in touchpad Zoom mode, placed around the cursor
     CGRect cursorKeyboardFrame; // latest keyboard end frame (screen coordinates) seen in that mode
     UILabel* keyboardToggleTip;
     
@@ -310,14 +310,14 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 #endif
 }
 
-// "Open Keyboard Where Cursor Is": touchpad mode with Pinch Gesture set to Zoom. The keyboard opens immediately and,
+// Touchpad mode with Pinch Gesture set to Zoom opens the keyboard where the cursor is: it opens immediately and,
 // instead of moving the stream view's frame, the zoom handler pans the (possibly zoomed) view so the cursor stays
 // centered in the area above the keyboard.
 - (BOOL)cursorKeyboardModeActive {
 #if TARGET_OS_TV
     return NO;
 #else
-    return touchMode == RelativeTouch && settings.enablePinch && settings.pinchZoom && settings.openKeyboardAtCursor
+    return touchMode == RelativeTouch && settings.enablePinch && settings.pinchZoom
         && [self.superview isKindOfClass:[UIScrollView class]];
 #endif
 }
