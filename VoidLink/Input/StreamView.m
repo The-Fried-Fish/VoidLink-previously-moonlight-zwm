@@ -97,6 +97,7 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     bool keyboardHeightDesignatedForLandscape;
     CGFloat HeightViewLiftedTo;
     BOOL keyboardLiftedByCursorMode; // the soft keyboard is open in "Open Keyboard Where Cursor Is" mode
+    CGRect cursorKeyboardFrame; // latest keyboard end frame (screen coordinates) seen in that mode
     UILabel* keyboardToggleTip;
     
     UIKeyModifierFlags comboKeyModifierFlags;
@@ -323,9 +324,30 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 
 #if !TARGET_OS_TV
 - (void)updateCursorKeyboardOcclusionWithNotification:(NSNotification *)notification {
+    cursorKeyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    [self updateCursorKeyboardOcclusion];
+}
+
+// Distance from the scroll view's bottom to the top of the soft keyboard toolbar's buttons, measured where the bar
+// actually is on screen, or 0 if it can't be measured (no toolbar, or not moved into place yet). The reported keyboard
+// frame isn't enough on its own: on iPadOS it starts above the toolbar, which left a gap above the bar.
+- (CGFloat)measuredKeyboardToolbarOcclusionIn:(UIView *)container scrollFrame:(CGRect)scrollFrame {
+    if (@available(iOS 13.0, *)) {
+        UIView* accessoryView = keyInputField.inputAccessoryView;
+        if (![accessoryView isKindOfClass:[InputAccessoryBar class]] || !accessoryView.window) return 0;
+        InputAccessoryBar* bar = (InputAccessoryBar*)accessoryView;
+        CGRect barInContainer = [bar convertRect:bar.bounds toCoordinateSpace:container];
+        CGFloat visibleTop = CGRectGetMinY(barInContainer) + bar.visibleContentTopInset;
+        if (visibleTop <= CGRectGetMinY(scrollFrame) || visibleTop >= CGRectGetMaxY(scrollFrame) - 1) return 0;
+        return CGRectGetMaxY(scrollFrame) - visibleTop;
+    }
+    return 0;
+}
+
+- (void)updateCursorKeyboardOcclusion {
     UIScrollView* scrollView = (UIScrollView*)self.superview;
     UIView* container = scrollView.superview;
-    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect keyboardFrame = cursorKeyboardFrame;
     CGFloat occlusion = 0;
     if (container && !CGRectIsEmpty(keyboardFrame)) {
         UIScreen* screen = self.window.screen ?: UIScreen.mainScreen;
@@ -342,8 +364,10 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
             CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.inputAccessoryBarHeight : 0;
             occlusion = MAX(occlusion, designatedSoftKeyboardHeight + toolbarHeight);
         }
+        CGFloat toolbarOcclusion = occlusion > 0 ? [self measuredKeyboardToolbarOcclusionIn:container scrollFrame:scrollFrame] : 0;
+        if (toolbarOcclusion > 0) occlusion = toolbarOcclusion; // flush with the toolbar's buttons
         // small margin so the bottom of the video isn't tucked under the keyboard bar's edge
-        if (occlusion > 0) occlusion += 8;
+        else if (occlusion > 0) occlusion += 8;
         occlusion = MIN(MAX(occlusion, 0), CGRectGetHeight(scrollFrame) * 0.85);
     }
     [TouchpadZoomHandler updateKeyboardOcclusion:occlusion];
@@ -364,6 +388,10 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
         keyboardLiftedByCursorMode = YES;
         isInputingText = true;
         [self updateCursorKeyboardOcclusionWithNotification:notification];
+        // the toolbar is moved into place during this notification; measure it once it has been
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(self->keyboardLiftedByCursorMode && self->keyInputField.isFirstResponder) [self updateCursorKeyboardOcclusion];
+        });
         if(justOpened){
             [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
             if(keyboardToggleTip.superview && !keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
@@ -420,6 +448,13 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
         [keyboardToggleTip removeFromSuperview];
     }
     NSLog(@"keyboard will show %f", CACurrentMediaTime());
+#endif
+}
+
+- (void)keyboardDidChangeFrame{
+#if !TARGET_OS_TV
+    // re-measure with the keyboard and toolbar at rest (after opening or changing height)
+    if(keyboardLiftedByCursorMode && keyInputField.isFirstResponder) [self updateCursorKeyboardOcclusion];
 #endif
 }
 

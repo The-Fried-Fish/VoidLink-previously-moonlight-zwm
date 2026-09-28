@@ -72,6 +72,7 @@
 - (void)remoteTextInputForTvOS;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide;
+- (void)keyboardDidChangeFrame;
 - (void)handleNonStandardKeyboard:(NSNotification *)notification;
 - (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight;
 

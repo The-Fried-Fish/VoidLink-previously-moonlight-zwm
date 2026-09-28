@@ -882,6 +882,11 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidChangeFrame)
+                                                 name:UIKeyboardDidChangeFrameNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleNonStandardKeyboard:)
                                                  name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
@@ -1130,6 +1135,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 - (void)keyboardWillHide{
     [_streamView keyboardWillHide];
+}
+
+- (void)keyboardDidChangeFrame{
+    [_streamView keyboardDidChangeFrame];
 }
 
 - (void)keyboardDidHide{
