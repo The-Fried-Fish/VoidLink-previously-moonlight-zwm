@@ -311,6 +311,8 @@ enum SettingsItemID: String, Hashable, Identifiable {
 
     case touchMode = "touchModeStack"
     case mousePointerVelocity = "mousePointerVelocityStack"
+    case cursorInertia = "cursorInertiaStack"
+    case cursorInertiaDeceleration = "cursorInertiaDecelerationStack"
     case pointerVelocityDivider = "pointerVelocityDividerStack"
     case pointerVelocityFactor = "pointerVelocityFactorStack"
     case delayLeftClick = "delayLeftClickStack"
@@ -322,6 +324,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
     case onScreenWidget = "onScreenWidgetStack"
     case buttonVisualFeedback = "buttonVisualFeedbackStack"
     case trackTouchPoint = "trackTouchPointStack"
+    case floatingKeyboardButton = "floatingKeyboardButtonStack"
 
     // MARK: Controller
 
@@ -396,6 +399,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
 
     case statsOverlay = "statsOverlayStack"
     case unlockDisplayOrientation = "unlockDisplayOrientationStack"
+    case portraitStreamOffset = "portraitStreamOffsetStack"
     case backgroundSessionTimer = "backgroundSessionTimerStack"
     case appTheme = "appThemeStack"
     case optimizeGames = "optimizeGamesStack"
@@ -437,6 +441,8 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .pictureInPicture: return "Enable PiP"
         case .touchMode: return "Touch Mode"
         case .mousePointerVelocity: return "Mouse Pointer Velocity"
+        case .cursorInertia: return "Cursor Inertia"
+        case .cursorInertiaDeceleration: return "Deceleration"
         case .pointerVelocityDivider: return "Divider Position"
         case .pointerVelocityFactor: return "Touch Pointer Velocity"
         case .delayLeftClick: return "Delay Left Click"
@@ -445,6 +451,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .ctrlDownForPinch: return "Ctrl Down for Pinch"
         case .scrollSensitivity: return "Scroll Sensitivity"
         case .pinchSensitivity: return "Pinch Sensitivity"
+        case .floatingKeyboardButton: return "Keyboard Button"
         case .onScreenWidget: return "On-Screen Widgets"
         case .buttonVisualFeedback: return "Button Visual Feedback"
         case .trackTouchPoint: return "Touch Point Tracking"
@@ -501,6 +508,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .audioConfig: return "Audio Configuration"
         case .statsOverlay: return "Statistics Overlay"
         case .unlockDisplayOrientation: return "90° Display Rotation"
+        case .portraitStreamOffset: return "Portrait Stream Position"
         case .backgroundSessionTimer: return "Background Session"
         case .appTheme: return "Theme"
         case .optimizeGames: return "Optimize Game Settings"
@@ -1117,6 +1125,19 @@ private enum SettingsSoftKeyboardGesture: Int {
     case disabled = 20
 }
 
+/// Pinch Gesture picker. Persisted as `enablePinch` (Core Data) plus `pinchZoom` (NSUserDefaults),
+/// so existing installs with pinch enabled keep the Ctrl +/- behavior.
+private enum SettingsPinchGestureMode: Int {
+    case disabled = 0
+    case zoom = 1
+    case ctrlPlusMinus = 2
+
+    init(enablePinch: Bool, pinchZoom: Bool) {
+        if !enablePinch { self = .disabled }
+        else { self = pinchZoom ? .zoom : .ctrlPlusMinus }
+    }
+}
+
 /// UIKit persists the streaming-settings edge as a UIRectEdge bitmask.  The
 /// picker only offers the two single-edge cases used by the original UI.
 private enum GestureScreenEdge {
@@ -1207,10 +1228,13 @@ final class SettingsItemRegistry: ObservableObject {
     let pointerVelocityFactor = SettingsItemModel<Double>(id: .pointerVelocityFactor, value: 100)
     let delayLeftClick = SettingsItemModel<Bool>(id: .delayLeftClick, value: true)
     let passthroughGestures = SettingsItemModel<Bool>(id: .passthroughGestures, value: true)
-    let pinchGesture = SettingsItemModel<Bool>(id: .pinchGesture, value: true)
+    let cursorInertia = SettingsItemModel<Bool>(id: .cursorInertia, value: false)
+    let cursorInertiaDeceleration = SettingsItemModel<Double>(id: .cursorInertiaDeceleration, value: Double(CursorInertiaDecelerationDefault))
+    let pinchGesture = SettingsItemModel<Int>(id: .pinchGesture, value: SettingsPinchGestureMode.ctrlPlusMinus.rawValue)
     let ctrlDownForPinch = SettingsItemModel<Bool>(id: .ctrlDownForPinch, value: true)
     let scrollSensitivity = SettingsItemModel<Double>(id: .scrollSensitivity, value: 1)
     let pinchSensitivity = SettingsItemModel<Double>(id: .pinchSensitivity, value: 1)
+    let floatingKeyboardButton = SettingsItemModel<Bool>(id: .floatingKeyboardButton, value: false)
     let onScreenWidget = SettingsItemModel<Int>(id: .onScreenWidget, value: 0)
     let buttonVisualFeedback = SettingsItemModel<Bool>(id: .buttonVisualFeedback, value: true)
     let trackTouchPoint = SettingsItemModel<Bool>(id: .trackTouchPoint, value: false)
@@ -1291,6 +1315,7 @@ final class SettingsItemRegistry: ObservableObject {
 
     let statsOverlay = SettingsItemModel<Int>(id: .statsOverlay, value: StatsOverlayLevel.off.rawValue)
     let unlockDisplayOrientation = SettingsItemModel<Int>(id: .unlockDisplayOrientation, value: 1)
+    let portraitStreamOffset = SettingsItemModel<Double>(id: .portraitStreamOffset, value: 0)
     let backgroundSessionTimer = SettingsItemModel<Double>(id: .backgroundSessionTimer, value: 0)
     let appTheme = SettingsItemModel<Int>(id: .appTheme, value: UIUserInterfaceStyle.light.rawValue)
     let optimizeGames = SettingsItemModel<Bool>(id: .optimizeGames, value:true)
@@ -1337,10 +1362,13 @@ final class SettingsItemRegistry: ObservableObject {
             pointerVelocityFactor.objectWillChange,
             delayLeftClick.objectWillChange,
             passthroughGestures.objectWillChange,
+            cursorInertia.objectWillChange,
+            cursorInertiaDeceleration.objectWillChange,
             pinchGesture.objectWillChange,
             ctrlDownForPinch.objectWillChange,
             scrollSensitivity.objectWillChange,
             pinchSensitivity.objectWillChange,
+            floatingKeyboardButton.objectWillChange,
             onScreenWidget.objectWillChange,
             buttonVisualFeedback.objectWillChange,
             trackTouchPoint.objectWillChange,
@@ -1411,6 +1439,7 @@ final class SettingsItemRegistry: ObservableObject {
             // Others
             statsOverlay.objectWillChange,
             unlockDisplayOrientation.objectWillChange,
+            portraitStreamOffset.objectWillChange,
             backgroundSessionTimer.objectWillChange,
             appTheme.objectWillChange,
             optimizeGames.objectWillChange,
@@ -1866,10 +1895,13 @@ final class SettingsSession: NSObject, ObservableObject {
         )
         itemRegistry.delayLeftClick.value = snapshot.delayLeftClick
         itemRegistry.passthroughGestures.value = snapshot.passthroughGestures
-        itemRegistry.pinchGesture.value = snapshot.enablePinch
+        itemRegistry.pinchGesture.value = SettingsPinchGestureMode(enablePinch: snapshot.enablePinch, pinchZoom: snapshot.pinchZoom).rawValue
+        itemRegistry.cursorInertia.value = snapshot.cursorInertia
+        itemRegistry.cursorInertiaDeceleration.value = min(10, max(1, snapshot.cursorInertiaDeceleration.doubleValue))
         itemRegistry.ctrlDownForPinch.value = snapshot.ctrlDownForPinch
         itemRegistry.scrollSensitivity.value = snapshot.scrollSensitivity.doubleValue
         itemRegistry.pinchSensitivity.value = snapshot.pinchSensitivity.doubleValue
+        itemRegistry.floatingKeyboardButton.value = snapshot.floatingKeyboardButton
         itemRegistry.onScreenWidget.value = snapshot.onscreenControls.intValue
         itemRegistry.buttonVisualFeedback.value = snapshot.buttonVisualFeedback
         itemRegistry.trackTouchPoint.value = snapshot.touchPointTracking
@@ -1928,6 +1960,7 @@ final class SettingsSession: NSObject, ObservableObject {
 
         itemRegistry.statsOverlay.value = snapshot.statsOverlayLevel.intValue
         itemRegistry.unlockDisplayOrientation.value = snapshot.unlockDisplayOrientation ? 1 : 0
+        itemRegistry.portraitStreamOffset.value = min(100, max(-100, snapshot.portraitStreamOffset.doubleValue))
         itemRegistry.backgroundSessionTimer.value = Double(snapshot.backgroundSessionTimer.intValue)
         itemRegistry.appTheme.value = snapshot.appTheme.intValue
         itemRegistry.optimizeGames.value = snapshot.optimizeGames
@@ -2502,6 +2535,14 @@ final class SettingsSession: NSObject, ObservableObject {
         ]
     }
 
+    var pinchGestureOptions: [SettingsPickerOption<Int>] {
+        [
+            .init(value: SettingsPinchGestureMode.disabled.rawValue, title: "Disabled".localized),
+            .init(value: SettingsPinchGestureMode.zoom.rawValue, title: "Zoom".localized),
+            .init(value: SettingsPinchGestureMode.ctrlPlusMinus.rawValue, title: "Ctrl +/-")
+        ]
+    }
+
     var onScreenWidgetOptions: [SettingsPickerOption<Int>] {
         [
             .init(value: 0, title: "Off".localized),
@@ -2530,6 +2571,18 @@ final class SettingsSession: NSObject, ObservableObject {
                     return "\(Int(display))%"
                 },
                 isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue }
+            ),
+            toggleItem(
+                \.cursorInertia,
+                isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue }
+            ),
+            sliderItem(
+                \.cursorInertiaDeceleration,
+                range: 1...10,
+                clampedTo: 1...10,
+                valueText: { _, model in "\(Int(model.value.rounded()))" },
+                isVisible: { $0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
+                             && $0.itemRegistry.cursorInertia.value }
             ),
             sliderItem(
                 \.pointerVelocityDivider,
@@ -2580,20 +2633,23 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.passthroughGestures,
                 isVisible: {$0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue}
             ),
-            toggleItem(
+            pickerItem(
                 \.pinchGesture,
+                options: { $0.pinchGestureOptions },
+                distribution: .proportionalToContent,
                 // UIKit reveals this row with passthroughGesturesSwitchFlipped:
                 // derive the same relationship directly from the source item.
+                // Zoom only works in touchpad mode; with absolute touch passthrough it sends no pinch input.
                 isVisible: {$0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                     && $0.itemRegistry.passthroughGestures.value)}
             ),
             toggleItem(
                 \.ctrlDownForPinch,
                 isVisible: {($0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
-                             && $0.itemRegistry.pinchGesture.value)
+                             && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)
                             || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                             && $0.itemRegistry.passthroughGestures.value
-                            && $0.itemRegistry.pinchGesture.value)},
+                            && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)},
                 hasInfo: true
             ),
             sliderItem(
@@ -2610,10 +2666,10 @@ final class SettingsSession: NSObject, ObservableObject {
                 clampedTo: 0...3,
                 valueText: { _, model in "\(Int((model.value * 100).rounded()))%" },
                 isVisible: {($0.itemRegistry.touchMode.value == TouchMode.RelativeTouch.rawValue
-                             && $0.itemRegistry.pinchGesture.value)
+                             && $0.itemRegistry.pinchGesture.value != SettingsPinchGestureMode.disabled.rawValue)
                             || ($0.itemRegistry.touchMode.value == TouchMode.AbsoluteTouch.rawValue
                             && $0.itemRegistry.passthroughGestures.value
-                            && $0.itemRegistry.pinchGesture.value)},
+                            && $0.itemRegistry.pinchGesture.value == SettingsPinchGestureMode.ctrlPlusMinus.rawValue)},
             ),
             pickerItem(
                 \.onScreenWidget,
@@ -2629,7 +2685,11 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.buttonVisualFeedback,
                 isVisible: { _ in true }
             ),
-            toggleItem(\.trackTouchPoint)
+            toggleItem(\.trackTouchPoint),
+            toggleItem(
+                \.floatingKeyboardButton,
+                isAvailable: !PublicUtils.isTVOS
+            )
         ]
     }
 
@@ -3393,6 +3453,18 @@ final class SettingsSession: NSObject, ObservableObject {
                 distribution: .equal,
                 isAvailable: !PublicUtils.isTVOS,
                 isEnabled: { $0.unlockDisplayOrientationSelectorEnabled }
+            ),
+            sliderItem(
+                \.portraitStreamOffset,
+                // % of the room between the stream's edge and the camera island (+) / home indicator (-)
+                range: -100...100,
+                clampedTo: -100...100,
+                valueText: { _, model in
+                    let percent = Int(model.value.rounded())
+                    if percent == 0 { return "Centered".localized }
+                    return percent > 0 ? "+\(percent)%" : "\(percent)%"
+                },
+                isAvailable: !PublicUtils.isTVOS
             ),
             sliderItem(
                 \.backgroundSessionTimer,
@@ -4622,13 +4694,18 @@ final class SettingsSession: NSObject, ObservableObject {
         settings.touchPointerVelocityFactor = NSNumber(value: settingsVelocityFactor(for: itemRegistry.pointerVelocityFactor.value))
         settings.delayLeftClick = itemRegistry.delayLeftClick.value
         settings.passthroughGestures = itemRegistry.passthroughGestures.value
-        settings.enablePinch = itemRegistry.pinchGesture.value
+        settings.enablePinch = itemRegistry.pinchGesture.value != SettingsPinchGestureMode.disabled.rawValue
         settings.ctrlDownForPinch = itemRegistry.ctrlDownForPinch.value
         settings.scrollSensitivity = NSNumber(value: itemRegistry.scrollSensitivity.value)
         settings.pinchSensitivity = NSNumber(value: itemRegistry.pinchSensitivity.value)
         settings.onscreenControls = NSNumber(value: itemRegistry.onScreenWidget.value)
         settings.buttonVisualFeedback = itemRegistry.buttonVisualFeedback.value
         settings.touchPointTracking = itemRegistry.trackTouchPoint.value
+        UserDefaults.standard.set(itemRegistry.pinchGesture.value == SettingsPinchGestureMode.zoom.rawValue, forKey: PinchZoomDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.cursorInertia.value, forKey: CursorInertiaDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.cursorInertiaDeceleration.value.rounded(), forKey: CursorInertiaDecelerationDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.floatingKeyboardButton.value, forKey: FloatingKeyboardButtonDefaultsKey)
+        UserDefaults.standard.set(itemRegistry.portraitStreamOffset.value.rounded(), forKey: PortraitStreamOffsetDefaultsKey)
 
         // MARK: Controller
 
