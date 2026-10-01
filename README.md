@@ -8,6 +8,43 @@
 - 代码提交在`Integration`分支。
 - For latest coding commits, go to branch `Integration`.
 
+### Local iOS development
+
+After cloning, initialize all dependencies, including nested submodules:
+
+```sh
+git submodule sync --recursive
+git submodule update --init --recursive
+```
+
+Open `VoidLink.xcodeproj`, select the **VoidLink** scheme and your iPhone, and
+choose your development team under **Signing & Capabilities**. Xcode resolves
+the Swift package dependencies automatically.
+
+If the build reports a missing Metal toolchain, install the component for the
+selected Xcode version:
+
+```sh
+xcodebuild -downloadComponent MetalToolchain
+```
+
+To build from the command line (replace `<device-udid>` with your device ID):
+
+```sh
+xcodebuild -project VoidLink.xcodeproj -scheme VoidLink \
+  -configuration Debug -destination 'id=<device-udid>' \
+  -allowProvisioningUpdates build
+```
+
+With Xcode 27, append `IPHONEOS_DEPLOYMENT_TARGET=15.0` to this command while
+the project retains deployment targets below iOS 15. This overrides the target
+for the local build without changing the checked-in project settings.
+
+iOS 27 external-display development requires Xcode 27. Apple now requires apps
+to register a scene accessory before the system creates a noninteractive
+external-display scene. See Apple's
+[connected-display documentation](https://developer.apple.com/documentation/uikit/presenting-content-on-a-connected-display).
+
 <br>
 
 # 关于VoidLink. About VoidLink
