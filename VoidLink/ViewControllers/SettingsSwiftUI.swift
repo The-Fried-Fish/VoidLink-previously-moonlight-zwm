@@ -2728,7 +2728,7 @@ final class SettingsSession: NSObject, ObservableObject {
         ]
         
 #if !os(tvOS)
-        if !PublicUtils.isTVOS {
+        if !PublicUtils.isTVOS && !PublicUtils.isRunningOnMacAsiPadApp {
             options.insert(.init(value: GyroMode.AlwaysDevice.rawValue, title: "Built-in".localized, isEnabled: CMMotionManager().isGyroAvailable), at: 2)
         }
 #endif
@@ -2925,7 +2925,7 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.gyroSource,
                 options: { $0.gyroSourceOptions },
                 distribution: .equal,
-                isAvailable: !PublicUtils.isTVOS,
+                isAvailable: !PublicUtils.isTVOS && !PublicUtils.isRunningOnMacAsiPadApp,
                 isGameProfileSetting: true
             ),
             toggleItem(

@@ -65,7 +65,7 @@ private typealias VLDeviceMotion = CMDeviceMotion
     @objc class func shared(profile: OSCProfile?) -> MotionHandler {
         let sharedInstance = MotionHandler.sharedInstance
         guard let profile = profile else { return sharedInstance }
-        sharedInstance.useBuiltinGyro = profile.useBuiltinGyro && !PublicUtils.isTVOS
+        sharedInstance.useBuiltinGyro = profile.useBuiltinGyro && !PublicUtils.isTVOS && !PublicUtils.isRunningOnMacAsiPadApp
         sharedInstance.swapYawAndRoll = profile.swapYawAndRoll
         sharedInstance.mapGyroTo = profile.mapGyroTo
         sharedInstance.synthesizePhysicalStick = profile.synthesizePhysicalStick
