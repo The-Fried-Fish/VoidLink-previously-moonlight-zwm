@@ -701,7 +701,52 @@ import UIKit
         }
     }
     
+    @objc public static var barrelRollActive: Bool {
+        if UserDefaults.standard.bool(forKey: "barrelRollHasBeenActiveKey") {
+            return true
+        }
+
+        let active = PublicUtils.iOS17_5Available && PublicUtils.isIPad && PencilHandler.barrelRollChanged
+        if active {
+            UserDefaults.standard.set(true, forKey: "barrelRollHasBeenActiveKey")
+        }
+        return active
+    }
     
+    @objc public static func isFirstLaunchingBarrelRollReminder() -> Bool {
+        let key = "isFirstLaunchingBarrelRollReminder"
+        let defaults = UserDefaults.standard
+        let launchedBefore = defaults.bool(forKey: key)
+        if !launchedBefore {
+            defaults.set(true, forKey: key)
+            return true
+        }
+        return false
+    }
+    
+    @objc public static func handleBarrelRollRedminder(in vc: UIViewController?) {
+        guard barrelRollActive, !AddOnProduct.PencilProPack.didInitiateInAppPurchaseAction, PublicUtils.isProductionBuild else {return}
+        
+        if isFirstLaunchingBarrelRollReminder() {
+        IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+            AlertControllerUtil.cancelButtonString = "Learn more".localized
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: "Barrel Roll Support".localized,
+                message: (info.valid ? "barrelRollReminderTipValidIAP" : "barrelRollReminderTip").localized,
+                withCancel: true,
+                buttonTitle: "Not interested".localized,
+                countdown: 5,
+                completion:  {
+                    if AlertControllerUtil.actionCancelled {
+                        PublicUtils.openUrl(AddOnProduct.PencilProPack.productURL())
+                    }
+                })
+            }
+        }
+    }
+
+
 
     @objc public static func gamepadOverlayFeatureTipTitle() -> String {
         LocalizationHelper.localizedString(forKey: "Gamepad Overlay")

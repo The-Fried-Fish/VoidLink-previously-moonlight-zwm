@@ -980,7 +980,7 @@ const int FrontViewPositionNone = 0xff;
 
 
 - (void)setupNavigationBar {
-    CGFloat trailingInset = (PublicUtils.isIPhone && PublicUtils.iOS272Available) ? 16.0 : 0.0;
+    CGFloat trailingInset = (PublicUtils.isIPhone && PublicUtils.iOS27_2Available) ? 16.0 : 0.0;
     CGFloat dockedNavBarWidth = _rearViewRevealWidth - trailingInset;
 
     // 创建导航栏

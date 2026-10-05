@@ -2466,7 +2466,10 @@ static NSMutableSet* hostList;
         ControllerNavigator.controllerMouseRightButton = (ControllerElement)settings.controllerMouseRightButton.intValue;
         ControllerNavigator.controllerMouseExpo = settings.controllerMouseExpo.floatValue;
         if(ControllerNavigator.enabled) [ControllerNavigator start];
-
+    }
+    
+    if(!self.presentedViewController) {
+        [GenericUtils handleBarrelRollRedminderIn:self];
     }
 }
 

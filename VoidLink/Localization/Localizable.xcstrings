@@ -5782,6 +5782,12 @@
         }
       }
     },
+    "barrelRollReminderTip" : {
+      "extractionState" : "manual"
+    },
+    "barrelRollReminderTipValidIAP" : {
+      "extractionState" : "manual"
+    },
     "Batch edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10743,35 +10749,6 @@
         }
       }
     },
-    "G8PlusMFiRegressionTip" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dear G8+ MFi controller user, due to Apple App Review requirements, VoidLink updates have had to remove the MFi-protocol vibration feature for this controller. We sincerely apologize. As a temporary workaround, you may install the TestFlight version where this functionality remains unaffected. Whether this feature can be restored in a future version depends on VoidLink obtaining MFi authorization from the controller manufacturer."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尊敬的 G8+ MFi 手柄用户，应 Apple app 审核要求，VoidLink版本更新不得不移除此手柄的 MFi 协议振动功能。 开发者对此深表歉意！您可以安装功能不受影响的TestFlight版本，作为临时解决方案。后续版本是否恢复该功能，取决于 VoidLink 能否获得手柄厂商的 MFi 许可。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尊敬的 G8+ MFi 手把使用者，因應 Apple app 審核要求，VoidLink 版本更新不得不移除此手把的 MFi 協議震動功能。開發者對此深表歉意！您可以安裝功能不受影響的 TestFlight 版本，作為臨時解決方案。後續版本是否恢復此功能，取決於 VoidLink 能否取得手把廠商的 MFi 授權。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尊敬的 G8+ MFi 手把使用者，因應 Apple app 審核要求，VoidLink 版本更新不得不移除此手把的 MFi 協議震動功能。開發者對此深表歉意！您可以安裝功能不受影響的 TestFlight 版本，作為臨時解決方案。後續版本是否恢復此功能，取決於 VoidLink 能否取得手把廠商的 MFi 授權。"
-          }
-        }
-      }
-    },
     "G8+ MFi Regression" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10797,6 +10774,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "G8+ MFi 功能回撤"
+          }
+        }
+      }
+    },
+    "G8PlusMFiRegressionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dear G8+ MFi controller user, due to Apple App Review requirements, VoidLink updates have had to remove the MFi-protocol vibration feature for this controller. We sincerely apologize. As a temporary workaround, you may install the TestFlight version where this functionality remains unaffected. Whether this feature can be restored in a future version depends on VoidLink obtaining MFi authorization from the controller manufacturer."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尊敬的 G8+ MFi 手柄用户，应 Apple app 审核要求，VoidLink版本更新不得不移除此手柄的 MFi 协议振动功能。 开发者对此深表歉意！您可以安装功能不受影响的TestFlight版本，作为临时解决方案。后续版本是否恢复该功能，取决于 VoidLink 能否获得手柄厂商的 MFi 许可。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尊敬的 G8+ MFi 手把使用者，因應 Apple app 審核要求，VoidLink 版本更新不得不移除此手把的 MFi 協議震動功能。開發者對此深表歉意！您可以安裝功能不受影響的 TestFlight 版本，作為臨時解決方案。後續版本是否恢復此功能，取決於 VoidLink 能否取得手把廠商的 MFi 授權。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尊敬的 G8+ MFi 手把使用者，因應 Apple app 審核要求，VoidLink 版本更新不得不移除此手把的 MFi 協議震動功能。開發者對此深表歉意！您可以安裝功能不受影響的 TestFlight 版本，作為臨時解決方案。後續版本是否恢復此功能，取決於 VoidLink 能否取得手把廠商的 MFi 授權。"
           }
         }
       }
@@ -14894,35 +14900,6 @@
         }
       }
     },
-    "No purchase found" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Purchase [%@] for:\n-  Pro-level pencil pressure curve tool.\n- Improved stroke transmission & responsiveness,  and user-defined keyboard/mouse shortcut for double tap & squeeze, in the remote drawing workflow.\n- Exclusive drawing-related on-screen buttons.\n- And more …\nNote: basic pencil function remains available without purchasing this add-on component."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "基础Pencil功能之上，购买 [%@] 可解锁：\n- 专业级笔压曲线工具。\n- 远程绘画笔迹传输优化、笔触响应性能优化。\n- 支持用户自定义的双击及捏合键盘/鼠标快捷键。\n- 专属绘图相关的屏显按钮。\n..."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在基礎Pencil功能之上，購買 [%@] 可解鎖：\n- 專業級筆壓曲線工具。\n- 最佳化遠端繪畫的筆跡傳輸與筆觸響應效能。\n- 並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n..."
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在基礎Pencil功能之上，購買 [%@] 可解鎖：\n- 專業級筆壓曲線工具。\n- 最佳化遠端繪畫的筆跡傳輸與筆觸響應效能。\n- 並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n..."
-          }
-        }
-      }
-    },
     "No video received from host." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15011,6 +14988,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有足夠空間插入觸發間隔格"
+          }
+        }
+      }
+    },
+    "Not interested" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂不感兴趣"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫不感興趣"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫不感興趣"
           }
         }
       }
@@ -16209,7 +16209,33 @@
       }
     },
     "PencilProPackDescription" : {
-      "extractionState" : "manual"
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase [%@] for:\n-  Pro-level pencil pressure curve tool.\n- Improved stroke transmission & responsiveness,  and user-defined keyboard/mouse shortcut for double tap & squeeze, in the remote drawing workflow.\n- Exclusive drawing-related on-screen buttons.\n- And more …\nNote: basic pencil function remains available without purchasing this add-on component."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "基础Pencil功能之上，购买 [%@] 可解锁：\n- 专业级笔压曲线工具。\n- 远程绘画笔迹传输优化、笔触响应性能优化。\n- 支持用户自定义的双击及捏合键盘/鼠标快捷键。\n- 专属绘图相关的屏显按钮。\n..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在基礎Pencil功能之上，購買 [%@] 可解鎖：\n- 專業級筆壓曲線工具。\n- 最佳化遠端繪畫的筆跡傳輸與筆觸響應效能。\n- 並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n..."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在基礎Pencil功能之上，購買 [%@] 可解鎖：\n- 專業級筆壓曲線工具。\n- 最佳化遠端繪畫的筆跡傳輸與筆觸響應效能。\n- 並支援使用者自訂的雙擊及捏合鍵盤/滑鼠快捷鍵。\n- 專屬繪圖相關的螢幕顯示按鈕。\n..."
+          }
+        }
+      }
     },
     "PencilProPackLowOSVersionTip" : {
       "extractionState" : "manual",

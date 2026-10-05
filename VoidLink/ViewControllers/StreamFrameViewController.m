@@ -1023,6 +1023,8 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     ControllerUtil.gamepadArrivalReported = false;
     
     [OnScreenWidgetView disableFolderAnimationFor:2];
+    
+    PublicUtils.sessionStartTimestamp = CACurrentMediaTime();
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
