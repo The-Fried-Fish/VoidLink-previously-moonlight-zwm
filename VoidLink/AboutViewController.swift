@@ -55,7 +55,7 @@ import SwiftUI
             hostingVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
-        preferredContentSize = CGSize(width: 530, height: 430)
+        preferredContentSize = PublicUtils.isTVOS ? CGSize(width: 770, height: PublicUtils.isZhHans ? 486 : 450) : CGSize(width: 530, height: 430)
 
 #if os(tvOS)
         modalPresentationStyle = .fullScreen

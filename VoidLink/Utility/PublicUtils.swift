@@ -86,6 +86,11 @@ import UIKit
         if #available(iOS 17.5, *) {return true}
         else {return false}
     }()
+    
+    @objc public static var isZhHans: Bool = {
+        if Locale.preferredLanguages.first!.hasPrefix("zh-Hans") { return true }
+        else { return false }
+    }()
         
     @objc public static var sessionStartTimestamp: TimeInterval = 0
     
