@@ -10853,6 +10853,35 @@
         }
       }
     },
+    "gameControllerRequiredTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please connect a game controller to use this app. If you have not paired a controller yet, quit the app to complete pairing."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请连接游戏手柄以使用此 app。如果您尚未配对游戏手柄，可以先退出此 app 以完成配对。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請連接遊戲控制器以使用此 app。如果您尚未配對遊戲控制器，可以先退出此 app 以完成配對。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請連接遊戲控制器以使用此 app。如果您尚未配對遊戲控制器，可以先退出此 app 以完成配對。"
+          }
+        }
+      }
+    },
     "Gamepad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -16999,6 +17028,35 @@
         }
       }
     },
+    "Press ‹ to quit app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press ‹ to quit app"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按 ‹ 退出 app"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按 ‹ 退出 app"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按 ‹ 退出 app"
+          }
+        }
+      }
+    },
     "Press a button for keeping gyro active by holding down.\nYou can have 2 buttons for both press-toggle & hold-down switch." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -22905,6 +22963,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "等待控制器接入……"
+          }
+        }
+      }
+    },
+    "Waiting for Game Controller ..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for Game Controller ..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待手柄接入 ..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待遊戲控制器連接 ..."
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待遊戲控制器連接 ..."
           }
         }
       }

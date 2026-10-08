@@ -1599,6 +1599,7 @@ static NSMutableSet* hostList;
 }
 
 - (BOOL)needPopupAboutView {
+    if(PublicUtils.isTVOS) return false;
     // NSString *key = @"appHasLaunchedBefore";
     NSString *key = @"needPopupAboutView20260215";
     BOOL keyExists = [[NSUserDefaults standardUserDefaults] boolForKey:key];
@@ -2210,6 +2211,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)prewarmSoftKeyboard {
+    if(PublicUtils.isTVOS) return;
     dispatch_async(dispatch_get_main_queue(), ^{
         UITextField *tf = [[UITextField alloc] initWithFrame:CGRectZero];
         tf.hidden = YES;
@@ -2468,9 +2470,13 @@ static NSMutableSet* hostList;
         if(ControllerNavigator.enabled) [ControllerNavigator start];
     }
     
+#if !TARGET_OS_TV
     if(!self.presentedViewController) {
         [GenericUtils handleBarrelRollRedminderIn:self];
     }
+#else
+    [ControllerUtil handleGameControllerRequiredTipIn:self];
+#endif
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

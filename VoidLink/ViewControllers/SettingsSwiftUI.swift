@@ -160,7 +160,13 @@ private struct SettingsInfoButtonControl: UIViewRepresentable {
 
     private var configuredImage: UIImage? {
         if isGameProfileSetting {
-            if #available(iOS 18.0, *) {
+            if PublicUtils.isTVOS {
+                return UIImage(
+                    systemName: "gamecontroller.circle",
+                    withConfiguration: UIImage.SymbolConfiguration(pointSize: 18.3, weight: .regular)
+                )
+            }
+            if PublicUtils.iOS18Available {
                 return UIImage(
                     systemName: "gamecontroller.circle",
                     withConfiguration: UIImage.SymbolConfiguration(pointSize: 16.5, weight: .medium)
@@ -168,7 +174,13 @@ private struct SettingsInfoButtonControl: UIViewRepresentable {
             }
             return UIImage(named: "gamecontroller.circle.17")?.withRenderingMode(.alwaysTemplate)
         }
-        if #available(iOS 18.0, *) {
+        if PublicUtils.isTVOS {
+            return UIImage(
+                systemName: "info.circle",
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 18.3, weight: .regular)
+            )
+        }
+        if PublicUtils.iOS18Available {
             return UIImage(
                 systemName: "info.circle",
                 withConfiguration: UIImage.SymbolConfiguration(pointSize: 16.4, weight: .medium)
@@ -3208,18 +3220,22 @@ final class SettingsSession: NSObject, ObservableObject {
                 \.localMousePointerMode,
                 options: { $0.localMousePointerModeOptions },
                 distribution: .equal,
+                isAvailable: !PublicUtils.isTVOS,
                 hasInfo: true
             ),
             pickerItem(
                 \.reverseMouseWheelDirection,
                 options: { $0.reverseMouseWheelDirectionOptions },
-                distribution: .equal
+                distribution: .equal,
+                isAvailable: !PublicUtils.isTVOS,
             ),
             toggleItem(
-                \.citrixX1Mouse
+                \.citrixX1Mouse,
+                isAvailable: !PublicUtils.isTVOS,
             ),
             toggleItem(
                 \.globeAsEscape,
+                isAvailable: PublicUtils.isIPad || PublicUtils.isRunningOnMacAsiPadApp,
                 hasInfo: true
             )
         ]
@@ -6411,7 +6427,7 @@ private struct SettingsSectionLayout {
     let sectionSpacing: CGFloat = PublicUtils.isIPhone ? 10 : 12
     let controlSpacing: CGFloat = 5
     let switchSpacing: CGFloat = 20
-    let switchColumnWidth: CGFloat = PublicUtils.tvOS26Aavailable ? 140 : 150
+    let switchColumnWidth: CGFloat = PublicUtils.tvOS26Aavailable ? 175 : (PublicUtils.isTVOS ? 170 : 150)
     let controlMaxWidth: CGFloat = PublicUtils.isTVOS ? 500 : .infinity
     let itemHorizontalPadding: CGFloat = 5
     

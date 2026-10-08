@@ -1680,7 +1680,37 @@ import UIKit
         let circulatedY = targetHypot*(offsetVector.dy/vectorHypot)
         return CGVector(dx: circulatedX, dy: circulatedY)
     }
+    
+    // MARK: - tvOS controller tip
+    @objc public static func handleGameControllerRequiredTip(in vc: UIViewController?) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            let controllers = GCController.controllers().filter({ $0.extendedGamepad != nil })
+            if controllers.count == 0 {
+                AlertControllerUtil.showAlert(
+                    in: vc,
+                    title: "Waiting for Game Controller ...".localized,
+                    message: "gameControllerRequiredTip".localized,
+                    withCancel: false,
+                    buttonTitle: LocalizationHelper.localizedString(forKey: "Press ‹ to quit app"),
+                    countdown: 0,
+                    action: {
+                        for controller in GCController.controllers() {
+                            if let gamepad = controller.microGamepad, controller.extendedGamepad == nil {
+                                disableSysGestures(controller)
+                                gamepad.buttonMenu.pressedChangedHandler = { _, _, pressed in // will be replace by prepareSideController
+                                    guard !pressed else { return }
+                                    exit(0)
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
 }
+
+
 
 #if os(iOS) && !VOIDLINK_PREVIEW
 @available(iOS 14.0, *)

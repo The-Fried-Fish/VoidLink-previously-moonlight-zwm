@@ -547,7 +547,10 @@ import UIKit
     }
     
     @objc public static func handleFirstGamepadConnection(in vc: UIViewController?,with controller: GCController, handler: @escaping () -> Void) {
-        
+        if PublicUtils.isTVOS {
+            AlertControllerUtil.alertController.dismiss(animated: true)
+        }
+
         if isFirstConnectingG8PlusMFi(controller) {
             AlertControllerUtil.showAlert(
                 in: vc,
@@ -701,6 +704,7 @@ import UIKit
         }
     }
     
+#if !os(tvOS)
     @objc public static var barrelRollActive: Bool {
         if UserDefaults.standard.bool(forKey: "barrelRollHasBeenActiveKey") {
             return true
@@ -745,7 +749,7 @@ import UIKit
             }
         }
     }
-
+#endif
 
 
     @objc public static func gamepadOverlayFeatureTipTitle() -> String {
