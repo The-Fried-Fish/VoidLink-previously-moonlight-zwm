@@ -3290,6 +3290,35 @@
         }
       }
     },
+    "=pushToTalk" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🎙️ Talk"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🎙️ 对讲机"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🎙️ 對講機"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🎙️ 對講機"
+          }
+        }
+      }
+    },
     "=quitApp" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8937,6 +8966,29 @@
         }
       }
     },
+    "EarPhone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "耳机"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "耳機"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "耳機"
+          }
+        }
+      }
+    },
     "Edge Trigger Sensitivity" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9907,6 +9959,29 @@
         }
       }
     },
+    "External Audio Output" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外置音频输出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外置音訊輸出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外置音訊輸出"
+          }
+        }
+      }
+    },
     "External Display Mode" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9949,6 +10024,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "僅外螢幕"
+          }
+        }
+      }
+    },
+    "externalAudioSelectionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Is audio playing through a speaker or earphones? Speaker enables voice processing to reduce echo. EarPhone disables voice processing to preserve playback quality."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前声音通过扬声器还是耳机播放？选择扬声器将启用语音处理以减少回声；选择耳机将关闭语音处理以保留播放音质。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前聲音透過揚聲器還是耳機播放？選擇揚聲器將啟用語音處理以減少回音；選擇耳機將關閉語音處理以保留播放音質。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前聲音透過揚聲器還是耳機播放？選擇揚聲器將啟用語音處理以減少回音；選擇耳機將關閉語音處理以保留播放音質。"
           }
         }
       }
@@ -17005,6 +17109,29 @@
         }
       }
     },
+    "Prefer iPhone/iPad Mic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "优先使用 iPhone/iPad 麦克风"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "優先使用 iPhone/iPad 麥克風"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "優先使用 iPhone/iPad 麥克風"
+          }
+        }
+      }
+    },
     "Preferred Codec" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17653,6 +17780,64 @@
         }
       }
     },
+    "pushToTalkExternalAudioTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push to Talk cannot be activated directly while external earphones are connected. Please disconnect first, then enable “Redirect Mic” in Settings → Audio."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外接耳机时无法直接激活对讲机，请先断开连接，在 设置菜单 → 音频分区 中打开“重定向麦克风”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外接耳機時無法直接啟用對講機，請先中斷連線，在 設定選單 → 音訊區 中開啟「重新導向麥克風」。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外接耳機時無法直接啟用對講機，請先中斷連線，在 設定選單 → 音訊區 中開啟「重新導向麥克風」。"
+          }
+        }
+      }
+    },
+    "pushToTalkTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold to send mic audio; release to stop. With “redirect mic” off, speaker playback retains high quality while not talking."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "按住发送麦克风声音，松开停止。关闭麦克风重定向时，外放可在未对讲时保持高音质。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "按住傳送麥克風聲音，放開停止。關閉麥克風重新導向時，揚聲器可在未對講時保持高音質。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "按住傳送麥克風聲音，放開停止。關閉麥克風重新導向時，揚聲器可在未對講時保持高音質。"
+          }
+        }
+      }
+    },
     "Queue Buffering" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -18041,6 +18226,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新導向麥克風"
+          }
+        }
+      }
+    },
+    "redirectMicPushToTalkTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When using the speaker, turn this option off and use the “Push to Talk” button directly to preserve high audio quality when you are not talking."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外放模式下，关闭该选项并直接使用“对讲机”按键，可保持非语音状态下的高音质。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "揚聲器模式下，關閉此選項並直接使用「對講機」按鍵，可保持非語音狀態下的高音質。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "揚聲器模式下，關閉此選項並直接使用「對講機」按鍵，可保持非語音狀態下的高音質。"
           }
         }
       }
@@ -20500,6 +20714,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "透過系統自動取得的軟鍵盤高度可能不可靠（尤其是第三方輸入法），可能導致串流畫面無法正確抬升，指定軟鍵盤高度可解決此問題。"
+          }
+        }
+      }
+    },
+    "Speaker" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扬声器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "揚聲器"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "揚聲器"
           }
         }
       }

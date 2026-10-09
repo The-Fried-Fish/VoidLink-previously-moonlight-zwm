@@ -1789,7 +1789,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/third_party/moonlight-audio-haptics/include",
-						"$(TOOLCHAIN_DIR)/usr/include",
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(PROJECT_DIR)/moonlight-common/moonlight-common-c/src",
 					"$(SDKROOT)/usr/include/libxml2/**",
 					"$(PROJECT_DIR)/libs/FFmpeg/include",
@@ -1861,7 +1861,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/third_party/moonlight-audio-haptics/include",
-						"$(TOOLCHAIN_DIR)/usr/include",
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(PROJECT_DIR)/moonlight-common/moonlight-common-c/src",
 					"$(SDKROOT)/usr/include/libxml2/**",
 					"$(PROJECT_DIR)/libs/FFmpeg/include",
@@ -2042,7 +2042,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/third_party/moonlight-audio-haptics/include",
-						"$(TOOLCHAIN_DIR)/usr/include",
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(PROJECT_DIR)/moonlight-common/moonlight-common-c/src",
 					"$(SDKROOT)/usr/include/libxml2/**",
 					"$(PROJECT_DIR)/libs/FFmpeg/include",
@@ -2113,7 +2113,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/third_party/moonlight-audio-haptics/include",
-						"$(TOOLCHAIN_DIR)/usr/include",
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(PROJECT_DIR)/moonlight-common/moonlight-common-c/src",
 					"$(SDKROOT)/usr/include/libxml2/**",
 					"$(PROJECT_DIR)/libs/FFmpeg/include",

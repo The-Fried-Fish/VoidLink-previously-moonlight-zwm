@@ -10,6 +10,7 @@
 import Foundation
 import ObjectiveC
 import UIKit
+import AVFoundation
 
 @objc public class PublicUtils: NSObject {
     

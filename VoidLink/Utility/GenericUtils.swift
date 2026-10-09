@@ -704,6 +704,88 @@ import UIKit
         }
     }
     
+    /// Returns false when external audio requires enabling redirection first.
+    @objc public static func canActivatePushToTalk(in vc: UIViewController?, redirectMic: Bool) -> Bool {
+#if !os(tvOS)
+        if !redirectMic && hasExternalAudioOutput() {
+            AlertControllerUtil.autoCompletion = false
+            AlertControllerUtil.showAlert(in: vc, title: "Tips".localized,
+                message: "pushToTalkExternalAudioTip".localized, withCancel: false,
+                buttonTitle: "OK".localized, countdown: 0)
+            return false
+        }
+#endif
+        return true
+    }
+
+    @objc public static func handleRedirectMicEnabledTip(in vc: UIViewController?) {
+#if !os(tvOS)
+        MicHandler.requestPermission { [weak vc] granted in
+            guard granted else {
+                // Preserve the existing Settings prompt when permission is denied.
+                MicHandler.requestPermission(nil)
+                return
+            }
+            AlertControllerUtil.autoCompletion = false
+            AlertControllerUtil.showAlert(in: vc, title: "Tips".localized,
+                message: "redirectMicPushToTalkTip".localized, withCancel: false,
+                buttonTitle: "OK".localized, countdown: 0)
+        }
+#endif
+    }
+
+    /// Completion receives true for Speaker (voice processing), false for EarPhone.
+    @objc public static func handleExternalAudioSelection(in vc: UIViewController?, completion: @escaping (Bool) -> Void) {
+        let select = {
+            guard hasExternalAudioOutput(), let vc else {
+                completion(true)
+                return
+            }
+            AlertControllerUtil.autoCompletion = false
+            AlertControllerUtil.cancelButtonString = "EarPhone".localized
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: "External Audio Output".localized,
+                message: "externalAudioSelectionTip".localized,
+                withCancel: true,
+                buttonTitle: "Speaker".localized,
+                countdown: 0,
+                completion: {
+                    completion(!AlertControllerUtil.actionCancelled)
+                })
+        }
+        if Thread.isMainThread { select() }
+        else { DispatchQueue.main.async(execute: select) }
+    }
+
+    /// Checks Bluetooth microphone inputs exposed by the current audio session.
+    /// Playback-only/A2DP sessions may hide microphones; this does not change the session.
+    @objc public static func hasBluetoothMic() -> Bool {
+        let session = AVAudioSession.sharedInstance()
+        let inputs = (session.availableInputs ?? []) + session.currentRoute.inputs
+        return inputs.contains { $0.portType == .bluetoothHFP || $0.portType == .bluetoothLE }
+    }
+
+    @objc public static func hasExternalAudioOutput() -> Bool {
+        return AVAudioSession.sharedInstance().currentRoute.outputs.contains(where: { output in
+            switch output.portType {
+#if os(tvOS)
+            case .bluetoothA2DP, .bluetoothHFP, .bluetoothLE:
+                return true
+#else
+            case .headphones, .lineOut, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE,
+                 .usbAudio, .HDMI, .airPlay:
+                return true
+#endif
+            default:
+                return false
+            }
+        })
+    }
+
+    
+    
+    
 #if !os(tvOS)
     @objc public static var barrelRollActive: Bool {
         if UserDefaults.standard.bool(forKey: "barrelRollHasBeenActiveKey") {

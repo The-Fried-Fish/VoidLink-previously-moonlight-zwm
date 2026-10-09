@@ -2297,11 +2297,11 @@ final class LayoutOnScreenControlsViewController: UIViewController, OnScreenWidg
     @objc private func buttonModeChanged(_ sender: UISegmentedControl) {
         if let selectedWidget {
             switch sender.selectedSegmentIndex {
-            case ButtonMode.slideToToggle.rawValue where selectedWidget.isFunctionalButton:
+            case ButtonMode.slideToToggle.rawValue where selectedWidget.isRegularFunctionalButton:
                 self.handleInvalidButtonModeTipsFor(widget: selectedWidget, sender: sender)
-            case ButtonMode.slideAndHold.rawValue where (selectedWidget.isFunctionalButton && !selectedWidget.isFolder) || selectedWidget.containsShortcutAction:
+            case ButtonMode.slideAndHold.rawValue where (selectedWidget.isRegularFunctionalButton && !selectedWidget.isFolder) || selectedWidget.containsShortcutAction:
                 self.handleInvalidButtonModeTipsFor(widget: selectedWidget, sender: sender)
-            case ButtonMode.tapToToggle.rawValue where selectedWidget.isFunctionalButton && !selectedWidget.isTapToToggleException:
+            case ButtonMode.tapToToggle.rawValue where selectedWidget.isRegularFunctionalButton && !selectedWidget.isTapToToggleException:
                 self.handleInvalidButtonModeTipsFor(widget: selectedWidget, sender: sender)
             default:
                 GenericUtils.handleButtonModeTip(in: self)

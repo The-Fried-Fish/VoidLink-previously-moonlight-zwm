@@ -180,6 +180,11 @@ import UIKit
         "DISABLETILT",
         "DISABLETOUCH",
         "GAMEPADOVERLAY",
+        "PUSHTOTALK"
+    ]
+    
+    @objc public static let freeModeFunctionalButtons: [String] = [
+        "PUSHTOTALK"
     ]
     
     @objc public static let functionalTouchPadCmds: [String] = [
@@ -205,8 +210,11 @@ import UIKit
     ]
     
     @objc public static let keyboardButtonMappings: [String: Int16] = [
-        // Windows Key Codes
+        
         "NULL": 0xFF,
+        
+        
+        // Windows Key Codes
         "CTRL": 0x11,        // VK_CONTROL
         "RCTRL": 0xA3,        // VK_RCONTROL
         "SHIFT": 0x10,       // VK_SHIFT

@@ -695,6 +695,16 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
+            localizationKey: "=pushToTalk",
+            cmd: "PUSHTOTALK",
+            tip: LocalizationHelper.localizedString(forKey: "pushToTalkTip"),
+            allowsKeyboardCombination: true,
+            allowsGamepadCombination: true,
+            allowsSkillCombo: true,
+            allowsShortcutCombo: true,
+            forcedComboMode: nil
+        ),
+        FunctionalButtonOption(
             localizationKey: "=gamepadOverlaySwitch",
             cmd: "GAMEPADOVERLAY",
             tip: LocalizationHelper.localizedString(forKey: "Switch on/off a floating gamepad overlay with live input feedback"),

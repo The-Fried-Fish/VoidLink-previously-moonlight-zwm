@@ -131,8 +131,11 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     CustomEdgeSlideGestureRecognizer *_slideToToolboxRecognizer;
     CustomTapGestureRecognizer *_oscLayoutTapRecoginizer;
     LayoutOnScreenControlsViewController *_layoutOnScreenControlsVC;
-    MicHandler* micHandler;
 
+#endif
+    MicHandler* micHandler;
+#if TARGET_OS_TV
+    BOOL _tvMicStopped;
 #endif
 
 }
@@ -606,7 +609,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     [self->_streamView disableOnScreenControls]; //don't know why but this must be called outside the streamview class, just put it here. execute in streamview class cause hang
     [self.mainFrameViewcontroller reloadStreamConfig]; // reload streamconfig
     
-#if !TARGET_OS_TV
+#if TARGET_OS_TV
+    if (_micStreamInitialized && !_tvMicStopped && _settings.redirectMic) [micHandler startTapping];
+    else [micHandler stopTappingWithStopEngine:YES];
+#else
     if([MicHandler permissionGranted] && _settings.redirectMic){
         [micHandler startTapping];
     }
@@ -1258,6 +1264,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
         [_controllerSupport cleanup];
 
         [UIApplication sharedApplication].idleTimerDisabled = NO;
+#if TARGET_OS_TV
+        _tvMicStopped = YES;
+        [micHandler clean];
+#endif
         [_streamMan stopStream];
         if (_inactivityTimer != nil) {
             [_inactivityTimer invalidate];
@@ -1449,9 +1459,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     
     [_streamView saveStreamingGameProfileChanges];
     [_streamView clearOnScreenWidgets];
-#if !TARGET_OS_TV
     if(micHandler) [micHandler clean];
-#endif
 #if !TARGET_OS_TV
     PencilHandler.shared = nil;
 #endif
@@ -1472,9 +1480,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     
     _extWindow = nil;
     
-#if !TARGET_OS_TV
-    if(_streamConfig.redirectMic) [micHandler stopTappingWithStopEngine:true];
-#endif
+    [micHandler stopTappingWithStopEngine:true];
     
     self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
         
@@ -1592,7 +1598,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     [_streamMan setNeedRequeuing:true];
     // dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC));
     // dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [Connection resetSysAudioPlayback];
+        // [Connection resetSysAudioPlayback];
     // });
     
     // Stop the background timer, since we're foregrounded again
@@ -1724,6 +1730,15 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void)connectionTerminated:(int)errorCode {
+#if TARGET_OS_TV
+    void (^stopMic)(void) = ^{
+        self->_tvMicStopped = YES;
+        [self->micHandler clean];
+    };
+    if ([NSThread isMainThread]) stopMic();
+    else dispatch_sync(dispatch_get_main_queue(), stopMic);
+#endif
+
     Log(LOG_I, @"Connection terminated: %d", errorCode);
     
     unsigned int portFlags = LiGetPortFlagsFromTerminationErrorCode(errorCode);
@@ -1821,50 +1836,94 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     });
 }
 
+// Called on the main queue after the microphone channel's startup delay.
+- (void)initializeMicrophoneForStream {
+#if TARGET_OS_TV
+    // Pairing UI and input discovery require the main thread. Ignore a cancelled stream.
+    if (_tvMicStopped) return;
+#endif
+    if (!self.view.window || micHandler) return;
+    BOOL useBuiltinMic = _settings.useBuiltinMic;
+
+    if (!_streamConfig.redirectMic) {
+        [self scheduleMicInitializationWithUseBuiltinMic:useBuiltinMic
+                                          deferCapture:YES
+                               voiceProcessingProvider:^BOOL{ return NO; }];
+        return;
+    }
+
+    if (useBuiltinMic || PublicUtils.isTVOS) {
+        [self scheduleMicInitializationWithUseBuiltinMic:true
+                                          deferCapture:NO
+                               voiceProcessingProvider:^BOOL{ return !GenericUtils.hasExternalAudioOutput; }];
+        return;
+    }
+
+    __weak StreamFrameViewController *weakSelf = self;
+    [GenericUtils handleExternalAudioSelectionIn:self completion:^(BOOL voiceProcessing) {
+        StreamFrameViewController *self = weakSelf;
+        if (!self || !self->_streamConfig.redirectMic || !self.view.window || self->micHandler) return;
+        [self scheduleMicInitializationWithUseBuiltinMic:useBuiltinMic
+                                          deferCapture:NO
+                               voiceProcessingProvider:^BOOL{ return voiceProcessing; }];
+    }];
+}
+
+// Evaluate automatic voice processing on the same background queue as before.
+- (void)scheduleMicInitializationWithUseBuiltinMic:(BOOL)useBuiltinMic
+                                    deferCapture:(BOOL)deferCapture
+                         voiceProcessingProvider:(BOOL (^)(void))voiceProcessingProvider {
+    _micStreamInitialized = true;
+    __weak StreamFrameViewController *weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        StreamFrameViewController *self = weakSelf;
+        if (!self) return;
+        BOOL voiceProcessing = voiceProcessingProvider();
+        self->micHandler = deferCapture
+            ? [[MicHandler alloc] initWithUseBuiltinMic:useBuiltinMic voiceProcessing:voiceProcessing deferCapture:YES]
+            : [[MicHandler alloc] initWithUseBuiltinMic:useBuiltinMic voiceProcessing:voiceProcessing];
+        // Dormant initialization originally applies mic volume before preparing UI.
+        if (deferCapture) [MicHandler setVolume:self->_settings.micVolume.floatValue];
+#if !TARGET_OS_TV
+        MicHandler *handler = self->micHandler;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->micHandler == handler) [handler prepareSystemVolumeRestoreInView:self.view];
+        });
+#endif
+        if (!deferCapture) {
+            [MicHandler setVolume:self->_settings.micVolume.floatValue];
+            [self->micHandler startTapping];
+        }
+    });
+}
+
 - (void) stageComplete:(const char*)stageName {
     _micStreamInitialized = false;
-    if(strcmp(stageName, "mic stream establishment")==0){
-#if !TARGET_OS_TV
-        if(self->_streamConfig.redirectMic){
-            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
-            dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                self->_micStreamInitialized = true;
-                self->micHandler = [[MicHandler alloc] initWithUseBuiltinMic:self->_settings.useBuiltinMic];
-                [MicHandler setVolume:self->_settings.micVolume.floatValue];
-                [self->micHandler startTapping];
-            });
-        }
+    if (strcmp(stageName, "mic stream establishment") == 0) {
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
+        dispatch_after(delay, dispatch_get_main_queue(), ^{
+            [self initializeMicrophoneForStream];
+        });
+    }
+
+    if (strcmp(stageName, "mic stream unsupported or unintialized") == 0) {
+        _micStreamInitialized = false;
+#if TARGET_OS_TV
+        NSLog(@"[TVMic] host microphone channel unavailable");
 #endif
     }
-    
-    if(strcmp(stageName, "mic stream unsupported or unintialized")==0){
-        _micStreamInitialized = false;
-    }
-    
-    /*
-    if(strcmp(stageName, "video stream establishment")==0){
-        NSLog(@"sendAutoReleaseComboCommandWithCmdStrings %f", CACurrentMediaTime());
-        if(!_settings.enableHdr
-           && _settings.sdrPerformanceWorkaround
-           && [Utils hdrSupported]
-           ){
-            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC));
-            dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if(LiGetCurrentHostDisplayHdrMode()){
-                    NSArray* hdrCommand = [CommandManager.shared extractAutoReleaseButtonStringsFrom:@"WIN+ALT+B"];
-                    [CommandManager.shared sendAutoReleaseComboCommandWithCmdStrings:hdrCommand delay:0.15 index:0 pressOnly:false releaseOnly:false];
-                    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC));
-                    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        [self->_streamMan setNeedRequeuing:true];
-                    });
-                }
-            });
-        }
-    }
-    */
 }
 
 - (void) stageFailed:(const char*)stageName withError:(int)errorCode portTestFlags:(int)portTestFlags {
+#if TARGET_OS_TV
+    void (^stopMic)(void) = ^{
+        self->_tvMicStopped = YES;
+        [self->micHandler clean];
+    };
+    if ([NSThread isMainThread]) stopMic();
+    else dispatch_sync(dispatch_get_main_queue(), stopMic);
+#endif
+
     Log(LOG_I, @"Stage %s failed: %d", stageName, errorCode);
     
     unsigned int portTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portTestFlags);

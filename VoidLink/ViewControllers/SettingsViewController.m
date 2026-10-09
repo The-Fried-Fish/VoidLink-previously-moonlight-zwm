@@ -4305,7 +4305,14 @@ BOOL isCustomResolution(int resolutionSelected) {
 }
 
 - (void)redirectMicSwitchFlipped:(UISwitch* )sender{
-    if(sender.isOn) [self checkAndRequestMicPermission];
+    if(sender.isOn) {
+#if TARGET_OS_TV
+        [self checkAndRequestMicPermission];
+#else
+        if (settingsViewJustLoaded) [self checkAndRequestMicPermission];
+        else [GenericUtils handleRedirectMicEnabledTipIn:self];
+#endif
+    }
     [self setHidden:!sender.isOn forStack:_useBuiltinMicStack];
     [self setHidden:!sender.isOn forStack:_micVolumeStack];
 }

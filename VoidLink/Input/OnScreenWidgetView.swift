@@ -263,7 +263,7 @@ import ObjectiveC.runtime
     @objc public var hasAutoTap: Bool = false
     @objc public var isMousePadWithButtonActions: Bool = false
     @objc public var hasInertia: Bool = false
-    @objc public var isFunctionalButton: Bool = false
+    @objc public var isRegularFunctionalButton: Bool = false
     @objc public var isMotionControlButton: Bool = false
     @objc public var isTapToToggleException: Bool = false
     @objc public var hasHapticFeedback: Bool = false
@@ -571,9 +571,14 @@ import ObjectiveC.runtime
             if self.cmdString.contains("FOLDER") || self.cmdString.contains("LABELEDFOLDER") {
                 self.functionalButtonString = "FOLDER"
             }
-            if self.isFunctionalButton {
+            if self.isRegularFunctionalButton {
                 self.buttonMode = .movable
                 if self.functionalButtonString == "PENCILHOVER" {self.buttonMode = .regular}
+            }
+            if self.functionalButtonString == "PUSHTOTALK" {
+                self.buttonMode = .tapToToggle
+                self.highlightAlpha = 0.5
+                self.highlightSizeFactor = 0.56
             }
         }
         
@@ -608,7 +613,7 @@ import ObjectiveC.runtime
             }
         }
         if self.widgetType == .button {
-            if self.isFolder || self.isFunctionalButton {
+            if self.isFolder || self.isRegularFunctionalButton {
                 self.widthFactor = PublicUtils.isIPhone ? 0.88 : 1.17
                 self.heightFactor = PublicUtils.isIPhone ? 0.56 : 0.77
             }
@@ -667,7 +672,7 @@ import ObjectiveC.runtime
         self.hasAutoTap = self.widgetType == WidgetTypeEnum.button && self.functionalButtonString == "" && self.motionControlButtonString == ""
         self.isMousePadWithButtonActions = CommandManager.mousePadWithButtonActions.contains(self.touchPadString) && widgetType == WidgetTypeEnum.touchPad
         self.hasInertia = CommandManager.inertialTouchPads.contains(self.touchPadString)
-        self.isFunctionalButton = self.functionalButtonString != "" || self.cmdString.contains("+")
+        self.isRegularFunctionalButton = (self.functionalButtonString != "" || self.cmdString.contains("+")) && !CommandManager.freeModeFunctionalButtons.contains(self.functionalButtonString)
         self.isMotionControlButton = !self.motionControlButtonString.isEmpty
         self.isTapToToggleException = (self.functionalButtonString == "NOSINGLETOUCH"
                                        || self.functionalButtonString == "PENCILHOVER"
@@ -2615,7 +2620,7 @@ import ObjectiveC.runtime
                     if !captured || !isSlidableButton {continue}
                     // print("UIButton: \(widget.buttonLabel) out test, \(widget.touchPadString), \(CACurrentMediaTime())")
                     if(widget.buttonMode == .slideToToggle || widget.buttonMode == .movable || widget.buttonMode == .regular){
-                        widget.handleFingerUpOrSlideout(leaveNonSkillButtonAlone: widget.isFunctionalButton || widget.containsShortcutAction)
+                        widget.handleFingerUpOrSlideout(leaveNonSkillButtonAlone: widget.isRegularFunctionalButton || widget.containsShortcutAction)
                         setLock.lock()
                         widget.capturedTouches.remove(touch)
                         setLock.unlock()
@@ -3049,11 +3054,21 @@ import ObjectiveC.runtime
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}
             self.functionalWidgetDelegate?.enablePencilHover()
+        case "PUSHTOTALK":
+#if !os(tvOS)
+            let redirectMic = DataManager().getSettings()?.redirectMic ?? false
+            guard GenericUtils.canActivatePushToTalk(in: self.parentViewController, redirectMic: redirectMic) else { return }
+            pushToTalkActivated = true
+#endif
+            MicHandler.sharedInstance?.setMicMuted(false)
         default:
             break
         }
     }
     
+#if !os(tvOS)
+    private var pushToTalkActivated = false
+#endif
     private var movableButtonReleased:Bool = true
     private func moveableButtonLongPressed() -> Bool{
         return !movableButtonReleased && CACurrentMediaTime() - self.touchTapTimeStamp > 0.05
@@ -3117,6 +3132,12 @@ import ObjectiveC.runtime
             self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
         case "GAMEPADOVERLAY":
             self.gamepadOverlayButtonUp()
+        case "PUSHTOTALK":
+#if !os(tvOS)
+            guard pushToTalkActivated else { return }
+            pushToTalkActivated = false
+#endif
+            MicHandler.sharedInstance?.setMicMuted(true)
 #if !os(tvOS)
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}

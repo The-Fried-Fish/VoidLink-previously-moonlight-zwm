@@ -506,7 +506,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .audioOnPC: return "Play Audio on PC"
         case .localVolume: return "Local Volume"
         case .redirectMic: return "Redirect Mic"
-        case .useBuiltinMic: return "Use Built-in Mic"
+        case .useBuiltinMic: return PublicUtils.isTVOS ? "Prefer iPhone/iPad Mic" : "Use Built-in Mic"
         case .micVolume: return "Mic Volume"
         case .duckOtherApps: return "Duck Other Apps"
         case .muteInBackground: return "Mute in Background"
@@ -3294,7 +3294,22 @@ final class SettingsSession: NSObject, ObservableObject {
             ),
             toggleItem(
                 \.redirectMic,
-                // isEnabled: { _ in !self.isStreaming },
+                isAvailable: {
+#if os(tvOS)
+                    if #available(tvOS 17.0, *) { return true }
+                    return false
+#else
+                    return true
+#endif
+                }(),
+                isEnabled: { _ in
+#if os(tvOS)
+                    // A stream started without a host mic channel must reconnect to negotiate one.
+                    return !self.isStreaming || StreamFrameViewController.sharedInstance()?.micStreamInitialized == true
+#else
+                    return true
+#endif
+                },
                 hasInfo: true,
                 onValueChanged: { session in
                     session.redirectMicChanged()
@@ -4752,9 +4767,17 @@ final class SettingsSession: NSObject, ObservableObject {
 
     fileprivate func redirectMicChanged() {
         guard itemRegistry.redirectMic.value else { return }
+#if os(tvOS)
         if !MicHandler.permissionGranted() {
-            MicHandler.requestPermission(nil)
+            // Keep the toggle off until the asynchronous permission request succeeds.
+            itemRegistry.redirectMic.value = false
+            MicHandler.requestPermission { [weak self] granted in
+                self?.itemRegistry.redirectMic.value = granted
+            }
         }
+#else
+        GenericUtils.handleRedirectMicEnabledTip(in: presentingController)
+#endif
     }
 
     fileprivate func muteInBackgroundChanged() {
