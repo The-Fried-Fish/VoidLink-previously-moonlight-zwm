@@ -172,7 +172,9 @@ final class GamepadNavigationIllustrationHud: UIView {
     }
     
     func updateTheme() {
-        let isDark = ThemeManager.userInterfaceStyle() == .dark
+        let isStreaming = (ControllerNavigator.radialMenuDelegate as? MainFrameViewController)?.isStreaming() == true
+        let isDark = !isStreaming && ThemeManager.userInterfaceStyle() == .dark
+        let textColor = isStreaming ? UIColor.black : ThemeManager.textColor
 
         backgroundColor = isDark
             ? UIColor(red: 28.0 / 255.0, green: 28.0 / 255.0, blue: 30.0 / 255.0, alpha: 0.62)
@@ -208,7 +210,7 @@ final class GamepadNavigationIllustrationHud: UIView {
                     imageView.tintColor = isInAction ? ThemeManager.appPrimaryColor.withAlphaComponent(isDark ? 1 : 1) : ThemeManager.appPrimaryColor.withAlphaComponent(isDark ? 0.83 : 0.83)
                 }
             }
-            updateTitleColors(in: titleView, color: ThemeManager.textColor.withAlphaComponent(isDark ? 0.69 : 0.6))
+            updateTitleColors(in: titleView, color: textColor.withAlphaComponent(isDark ? 0.69 : 0.6))
         }
     }
 
