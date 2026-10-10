@@ -96,6 +96,8 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     CGFloat designatedSoftKeyboardHeight;
     bool keyboardHeightDesignatedForLandscape;
     CGFloat HeightViewLiftedTo;
+    BOOL keyboardLiftedByCursorMode; // the soft keyboard is open in touchpad Zoom mode, placed around the cursor
+    CGRect cursorKeyboardFrame; // latest keyboard end frame (screen coordinates) seen in that mode
     UILabel* keyboardToggleTip;
     
     UIKeyModifierFlags comboKeyModifierFlags;
@@ -308,6 +310,70 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 #endif
 }
 
+// Touchpad mode with Pinch Gesture set to Zoom opens the keyboard where the cursor is: it opens immediately and,
+// instead of moving the stream view's frame, the zoom handler pans the (possibly zoomed) view so the cursor stays
+// centered in the area above the keyboard.
+- (BOOL)cursorKeyboardModeActive {
+#if TARGET_OS_TV
+    return NO;
+#else
+    return touchMode == RelativeTouch && settings.enablePinch && settings.pinchZoom
+        && [self.superview isKindOfClass:[UIScrollView class]];
+#endif
+}
+
+#if !TARGET_OS_TV
+- (void)updateCursorKeyboardOcclusionWithNotification:(NSNotification *)notification {
+    cursorKeyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    [self updateCursorKeyboardOcclusion];
+}
+
+// Distance from the scroll view's bottom to the top of the soft keyboard toolbar's buttons, measured where the bar
+// actually is on screen, or 0 if it can't be measured (no toolbar, or not moved into place yet). The reported keyboard
+// frame isn't enough on its own: on iPadOS it starts above the toolbar, which left a gap above the bar.
+- (CGFloat)measuredKeyboardToolbarOcclusionIn:(UIView *)container scrollFrame:(CGRect)scrollFrame {
+    if (@available(iOS 13.0, *)) {
+        UIView* accessoryView = keyInputField.inputAccessoryView;
+        if (![accessoryView isKindOfClass:[InputAccessoryBar class]] || !accessoryView.window) return 0;
+        InputAccessoryBar* bar = (InputAccessoryBar*)accessoryView;
+        CGRect barInContainer = [bar convertRect:bar.bounds toCoordinateSpace:container];
+        CGFloat visibleTop = CGRectGetMinY(barInContainer) + bar.visibleContentTopInset;
+        if (visibleTop <= CGRectGetMinY(scrollFrame) || visibleTop >= CGRectGetMaxY(scrollFrame) - 1) return 0;
+        return CGRectGetMaxY(scrollFrame) - visibleTop;
+    }
+    return 0;
+}
+
+- (void)updateCursorKeyboardOcclusion {
+    UIScrollView* scrollView = (UIScrollView*)self.superview;
+    UIView* container = scrollView.superview;
+    CGRect keyboardFrame = cursorKeyboardFrame;
+    CGFloat occlusion = 0;
+    if (container && !CGRectIsEmpty(keyboardFrame)) {
+        UIScreen* screen = self.window.screen ?: UIScreen.mainScreen;
+        CGRect keyboardInContainer = [screen.coordinateSpace convertRect:keyboardFrame toCoordinateSpace:container];
+        CGRect scrollFrame = scrollView.frame;
+        if (CGRectIntersectsRect(keyboardInContainer, scrollFrame)) {
+            occlusion = CGRectGetMaxY(scrollFrame) - MAX(CGRectGetMinY(keyboardInContainer), CGRectGetMinY(scrollFrame));
+        }
+        // Honor the user's designated landscape keyboard height (Others > Soft Keyboard Height), which exists because
+        // iOS doesn't always report the real keyboard height.
+        BOOL useDesignatedKeyboardHeight = keyboardHeightDesignatedForLandscape;
+        if (@available(iOS 13.0, *)) useDesignatedKeyboardHeight = useDesignatedKeyboardHeight && PublicUtils.isLandscape;
+        if (occlusion > 0 && useDesignatedKeyboardHeight) {
+            CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.inputAccessoryBarHeight : 0;
+            occlusion = MAX(occlusion, designatedSoftKeyboardHeight + toolbarHeight);
+        }
+        CGFloat toolbarOcclusion = occlusion > 0 ? [self measuredKeyboardToolbarOcclusionIn:container scrollFrame:scrollFrame] : 0;
+        if (toolbarOcclusion > 0) occlusion = toolbarOcclusion; // flush with the toolbar's buttons
+        // small margin so the bottom of the video isn't tucked under the keyboard bar's edge
+        else if (occlusion > 0) occlusion += 8;
+        occlusion = MIN(MAX(occlusion, 0), CGRectGetHeight(scrollFrame) * 0.85);
+    }
+    [TouchpadZoomHandler updateKeyboardOcclusion:occlusion];
+}
+#endif
+
 - (void)keyboardWillShow:(NSNotification *)notification{
 #if TARGET_OS_TV
     (void)notification;
@@ -315,6 +381,24 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     // NSLog(@"keyboard will show markmark %f", CACurrentMediaTime());
     dockedKeyboardActionDetected = true;
     NSLog(@"keyboard will show markmark %d", isInputingText);
+    
+    // Also called for keyboard frame changes; only handle our own input field while it's active.
+    if([self cursorKeyboardModeActive] && keyInputField.isFirstResponder){
+        BOOL justOpened = !keyboardLiftedByCursorMode;
+        keyboardLiftedByCursorMode = YES;
+        isInputingText = true;
+        [self updateCursorKeyboardOcclusionWithNotification:notification];
+        // the toolbar is moved into place during this notification; measure it once it has been
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(self->keyboardLiftedByCursorMode && self->keyInputField.isFirstResponder) [self updateCursorKeyboardOcclusion];
+        });
+        if(justOpened){
+            [self refreshKeyboardToggleRecognizer:settings.keyboardToggleFingers.intValue];
+            if(keyboardToggleTip.superview && !keyboardToggleTip.hidden) [OnScreenWidgetView restoreFromTemporaryHideAll];
+            [keyboardToggleTip removeFromSuperview];
+        }
+        return;
+    }
 
     if(settings.liftStreamViewForKeyboard && !isInputingText){
         isInputingText = true;
@@ -367,7 +451,18 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 #endif
 }
 
+- (void)keyboardDidChangeFrame{
+#if !TARGET_OS_TV
+    // re-measure with the keyboard and toolbar at rest (after opening or changing height)
+    if(keyboardLiftedByCursorMode && keyInputField.isFirstResponder) [self updateCursorKeyboardOcclusion];
+#endif
+}
+
 - (void)handleNonStandardKeyboard:(NSNotification *)notification{
+#if !TARGET_OS_TV
+    // keyboard height changes (predictive bar, keyboard switch) while open in cursor mode
+    if(keyboardLiftedByCursorMode && keyInputField.isFirstResponder) [self updateCursorKeyboardOcclusionWithNotification:notification];
+#endif
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC));
     dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
         if(!self->dockedKeyboardActionDetected){
@@ -430,7 +525,13 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     // NSLog(@"keyboard will hide markmark %f", CACurrentMediaTime());
 
     keyboardToggleRecognizer.numberOfTouchesRequired = settings.keyboardToggleFingers.intValue; // reset this number
-    if(isInputingText){
+    if(keyboardLiftedByCursorMode){
+        // the stream view's frame was never moved in this mode; give the full viewport back to the zoom handler
+        keyboardLiftedByCursorMode = NO;
+        isInputingText = NO;
+        [TouchpadZoomHandler updateKeyboardOcclusion:0];
+    }
+    else if(isInputingText){
         self.frame = _originalFrame;
         
         // Also restore Metal video view if using Metal rendering backend
@@ -480,6 +581,11 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 }
 
 -(void)readyToBringUpSoftKeyboardByToolbox{
+    // The cursor is already where the user wants to type: open right away, the view is lifted around the cursor.
+    if([self cursorKeyboardModeActive]){
+        if(!isInputingText) [self toggleKeyboard];
+        return;
+    }
     NSLog(@"change num of fingers required");
     [self refreshKeyboardToggleRecognizer:1];
     keyboardToggleTip.translatesAutoresizingMaskIntoConstraints = NO;
@@ -573,6 +679,12 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
 }
 #endif
 
+
+// Floating keyboard button: closes the keyboard if it's open, otherwise opens it like the other keyboard buttons.
+- (void)toggleSoftKeyboardFromButton{
+    if(isInputingText) [self toggleKeyboard];
+    else [self readyToBringUpSoftKeyboardByToolbox];
+}
 
 - (void)toggleKeyboard{
     // NSLog(@"toggleKeyboard markmark, %d", isInputingText);
@@ -803,7 +915,8 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     newProfile.gamepadOverlayEnabled = _streamFrameVC.virtualGamepadOverlay != nil;
 #endif
 
-    newProfile.normalizedStreamViewOffset = CGPointMake(_streamFrameVC.streamViewMagnifierContentOffset.x/self.bounds.size.width, _streamFrameVC.streamViewMagnifierContentOffset.y/self.bounds.size.height);
+    CGPoint magnifierOffset = [_streamFrameVC persistableMagnifierContentOffset];
+    newProfile.normalizedStreamViewOffset = CGPointMake(magnifierOffset.x/self.bounds.size.width, magnifierOffset.y/self.bounds.size.height);
     newProfile.streamViewScale = _streamFrameVC.streamViewMagnifierZoomScale;
     
     [oscProfileMan replaceSelectedProfileWith:newProfile overwriteDefault:YES];
@@ -991,6 +1104,9 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
         }
         
         [self.streamFrameVC restorePersistedStreamViewOffsetAndScaleWithProfile:profile];
+#if !TARGET_OS_TV
+        [self.streamFrameVC bringFloatingKeyboardButtonToFront];
+#endif
         [self updateTouchHandlerWithProfile:profile];
         OnScreenWidgetView.profileChangedDuringStreaming = false;
     });

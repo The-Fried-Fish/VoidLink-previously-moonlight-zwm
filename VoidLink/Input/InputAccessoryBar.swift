@@ -566,6 +566,13 @@ final class InputAccessoryBar: UIView, UIScrollViewDelegate, WidgetPickerViewCon
         syncSelectionState()
     }
 
+    /// Distance from the bar's top to the top of its buttons. The bar's background is clear, so this is where it
+    /// visibly starts.
+    @objc var visibleContentTopInset: CGFloat {
+        let boundsHeight = bounds.height > 0 ? bounds.height : InputAccessoryBarMetrics.barHeight
+        return max(round((boundsHeight - InputAccessoryBarMetrics.sideButtonSize) * 0.5), 0)
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
