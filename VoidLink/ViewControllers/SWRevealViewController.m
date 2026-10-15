@@ -30,6 +30,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "SWRevealViewController.h"
+#import "SceneDelegate.h"
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
 
@@ -673,9 +674,7 @@ const int FrontViewPositionNone = 0xff;
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
-    NSLog(@"shouldUpdateFocusInContext .........");
-    return context.nextFocusedItem == nil ||
-        [NSStringFromClass([context.nextFocusedItem class]) containsString:@"VoidLinkFocusSinkView"];
+    return VoidLinkTvOSShouldUpdateFocus(context, self.view.window);
 }
 #endif
 

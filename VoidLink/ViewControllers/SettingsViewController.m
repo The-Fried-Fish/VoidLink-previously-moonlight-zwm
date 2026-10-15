@@ -10,6 +10,7 @@
 //
 
 #import "SettingsViewController.h"
+#import "SceneDelegate.h"
 #import "MainFrameViewController.h"
 #if !TARGET_OS_TV
 #import "CustomEdgeSlideGestureRecognizer.h"
@@ -528,9 +529,7 @@
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
-    NSLog(@"shouldUpdateFocusInContext .........");
-    return context.nextFocusedItem == nil ||
-        [NSStringFromClass([context.nextFocusedItem class]) containsString:@"VoidLinkFocusSinkView"];
+    return VoidLinkTvOSShouldUpdateFocus(context, self.view.window);
 }
 
 #endif

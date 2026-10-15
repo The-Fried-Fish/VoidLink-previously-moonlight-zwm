@@ -11,6 +11,7 @@
 @import ImageIO;
 
 #import "MainFrameViewController.h"
+#import "SceneDelegate.h"
 #import "CryptoManager.h"
 #import "HttpManager.h"
 #import "Connection.h"
@@ -836,6 +837,10 @@ static NSMutableSet* hostList;
             });
         }];
     }]];
+#if TARGET_OS_TV
+    // Hand off navigation before the text field can open the system keyboard.
+    [ControllerNavigator setUINavigationDelegate:alertController];
+#endif
     [[self activeViewController] presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -2922,9 +2927,7 @@ static NSMutableSet* hostList;
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
-    NSLog(@"shouldUpdateFocusInContext .........");
-    return context.nextFocusedItem == nil ||
-        [NSStringFromClass([context.nextFocusedItem class]) containsString:@"VoidLinkFocusSinkView"];
+    return VoidLinkTvOSShouldUpdateFocus(context, self.view.window);
 }
 #endif
 

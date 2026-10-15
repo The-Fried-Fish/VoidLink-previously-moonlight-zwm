@@ -291,6 +291,12 @@ final class ControllerNavigator: NSObject {
         UIAlertController.installControllerNavigationDelegateHook()
     }()
 
+#if os(tvOS)
+    private static var nativeTextInputActive: Bool {
+        (uiNavigationDelegate as? UIAlertController)?.textFields?.isEmpty == false
+    }
+#endif
+
     @objc static func setRadialMenuDelegate(_ delegate: ControllerNavigatorRadialMenuDelegate?) {
         _ = installAlertControllerNavigationHook
         radialMenuDelegate = delegate
@@ -337,6 +343,17 @@ final class ControllerNavigator: NSObject {
     }
 
     static func updateUINavigationDelegateState() {
+#if os(tvOS)
+        // Text-entry alerts use UIKit's keyboard navigation instead of our action mappings.
+        let window = (radialMenuDelegate as? UIViewController)?.viewIfLoaded?.window
+        (window?.rootViewController as? GCEventViewController)?.controllerUserInteractionEnabled = nativeTextInputActive
+        if nativeTextInputActive {
+            radialMenuDelayTimer?.clean()
+            radialMenuButtonPressed = false
+            restartListening()
+            return
+        }
+#endif
         ControllerUtil.disableSysGestures(ControllerUtil.primaryGCController)
         if uiNavigationDelegate is StreamFrameViewController {
             if radialMenuState == .mouseModeEnabled {
@@ -620,6 +637,9 @@ final class ControllerNavigator: NSObject {
     }
     
     @objc static func updateRadialMenu() {
+#if os(tvOS)
+        guard !nativeTextInputActive else { return }
+#endif
         controllerMouseInputX = 0
         controllerMouseInputY = 0
         navigationTimer?.clean()
@@ -882,7 +902,13 @@ final class ControllerNavigator: NSObject {
     }
     
     @objc static func restartListening() {
-        guard enabled else {
+#if os(tvOS)
+        let shouldListen = enabled && !nativeTextInputActive
+#else
+        let shouldListen = enabled
+#endif
+        guard shouldListen else {
+            navigationTimer?.clean()
             ControllerUtil.stopListeningPrimaryController(stopListenToRadialMenuButton: true)
             GamepadNavigationIllustrationHud.clearHud()
             return
@@ -2616,10 +2642,19 @@ extension UIAlertController: ControllerUINavigationDelegate {
 
     @objc private func vl_controllerNavigationViewDidDisappear(_ animated: Bool) {
         vl_controllerNavigationViewDidDisappear(animated)
+#if os(tvOS)
+        // A fullscreen system keyboard can cover the alert without dismissing it.
+        if textFields?.isEmpty == false {
+            guard isBeingDismissed || presentingViewController == nil else { return }
+        }
+#endif
         ControllerNavigator.restorePreviousUINavigationDelegate(ifCurrentDelegateIs: self)
     }
 
     func getNavigationElements() -> [ControllerNavigationElement] {
+#if os(tvOS)
+        if textFields?.isEmpty == false { return [] }
+#endif
         let enabledActions = actions.filter { $0.isEnabled }
         guard let firstAction = enabledActions.first else { return [] }
 
@@ -2658,6 +2693,9 @@ extension UIAlertController: ControllerUINavigationDelegate {
     func uiWidgetActionForControllerNavigator(forward: Bool, from navigation: ControllerNavigationElement) {}
     
     func uiButtonActionForControllerNavigator(pressed: Bool, from navigation: ControllerNavigationElement) {
+#if os(tvOS)
+        if textFields?.isEmpty == false { return }
+#endif
         guard pressed,
               let action = actions.first(where: { $0.title == navigation.action && $0.isEnabled }) else {
             return

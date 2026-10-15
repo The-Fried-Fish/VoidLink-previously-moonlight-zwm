@@ -42,8 +42,7 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 @implementation VoidLinkNoFocusWindow
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
-    NSLog(@"shouldUpdateFocusInContext .........");
-    return context.nextFocusedItem == nil || VoidLinkTvOSFocusItemIsSink(context.nextFocusedItem);
+    return VoidLinkTvOSShouldUpdateFocus(context, self);
 }
 
 @end
@@ -58,8 +57,7 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
-    NSLog(@"shouldUpdateFocusInContext .........");
-    return context.nextFocusedItem == nil || VoidLinkTvOSFocusItemIsSink(context.nextFocusedItem);
+    return VoidLinkTvOSShouldUpdateFocus(context, self.view.window);
 }
 
 @end
@@ -123,6 +121,15 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 }
 
 #if TARGET_OS_TV
+- (void)setControllerUserInteractionEnabled:(BOOL)enabled {
+    BOOL changed = self.controllerUserInteractionEnabled != enabled;
+    [super setControllerUserInteractionEnabled:enabled];
+    _focusSinkView.hidden = enabled;
+    if (_focusSinkView && changed && !enabled) {
+        [self forceFocusSinkUpdate];
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self forceFocusSinkUpdate];
@@ -151,10 +158,16 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 }
 
 - (void)forceFocusSinkUpdate {
+    if (self.controllerUserInteractionEnabled) {
+        return;
+    }
     [self installFocusSinkIfNeeded];
     [self setNeedsFocusUpdate];
     [self updateFocusIfNeeded];
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.controllerUserInteractionEnabled) {
+            return;
+        }
         [self.view bringSubviewToFront:self->_focusSinkView];
         [self setNeedsFocusUpdate];
         [self updateFocusIfNeeded];
@@ -162,7 +175,7 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 }
 
 - (NSArray<id<UIFocusEnvironment>> *)preferredFocusEnvironments {
-    if (_focusSinkView) {
+    if (_focusSinkView && !self.controllerUserInteractionEnabled) {
         return @[_focusSinkView];
     }
     return [super preferredFocusEnvironments];
@@ -173,8 +186,7 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
-    NSLog(@"shouldUpdateFocusInContext .........");
-    return context.nextFocusedItem == nil || VoidLinkTvOSFocusItemIsSink(context.nextFocusedItem);
+    return VoidLinkTvOSShouldUpdateFocus(context, self.view.window);
 }
 #endif
 
@@ -213,6 +225,17 @@ static BOOL VoidLinkTvOSFocusItemIsSink(id item) {
 }
 
 @end
+
+#if TARGET_OS_TV
+BOOL VoidLinkTvOSShouldUpdateFocus(UIFocusUpdateContext *context, UIWindow *window) {
+    UIViewController *root = window.rootViewController;
+    if ([root isKindOfClass:[VoidLinkControllerRootViewController class]] &&
+        ((VoidLinkControllerRootViewController *)root).controllerUserInteractionEnabled) {
+        return YES;
+    }
+    return context.nextFocusedItem == nil || VoidLinkTvOSFocusItemIsSink(context.nextFocusedItem);
+}
+#endif
 
 API_AVAILABLE(ios(13.0), tvos(13.0))
 @implementation SceneDelegate
