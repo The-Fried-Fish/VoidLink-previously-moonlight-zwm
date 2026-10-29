@@ -81,6 +81,7 @@ typedef NS_ENUM(NSInteger, PencilAndHoverMode) {
 @property (nonatomic, assign) bool squeezeShorcutEnabled;
 @property NSString *squeezeStartShortcut;
 @property NSString *squeezeEndShortcut;
+@property (nonatomic, assign) bool reverseBarrelRoll;
 @property (nonatomic, assign) bool pencilPausesNativeTouch;
 @property (nonatomic, assign) bool disablePencilSlideGestures;
 @property (nonatomic, assign) PencilAndHoverMode pencilAndHoverMode;

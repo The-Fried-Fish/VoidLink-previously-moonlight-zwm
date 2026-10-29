@@ -153,6 +153,25 @@ import UIKit
             )
         }
     }
+    
+    @objc public static func handleFirstReversingBarrelRoll(in vc: UIViewController?) {
+        DispatchQueue.main.async {
+            let key = "isFirstReversingBarrelRoll"
+            guard !UserDefaults.standard.bool(forKey: key) else {
+                return
+            }
+            UserDefaults.standard.set(true, forKey: key)
+
+            AlertControllerUtil.showAlert(
+                in: vc,
+                title: LocalizationHelper.localizedString(forKey: "Tips"),
+                message: LocalizationHelper.localizedString(forKey: "reverseBarrelRollStackTip"),
+                withCancel: false,
+                buttonTitle: LocalizationHelper.localizedString(forKey: "Got it!"),
+                countdown: 6
+            )
+        }
+    }
         
     @objc public static func needUpdateDefaultSettings() -> Bool {
         // let key = "needUpdateDefaultSettings20260226-1"

@@ -31,6 +31,7 @@ import UIKit
     private var strokeSampleIndex: Int32 = 0
     private var initialMoveEventIndexLimit: Int64
     private var touchBeganForce: Float = 0
+    @objc private(set) var reverseBarrelRoll: Bool = false
     @objc static private(set) var isDrawing: Bool = false
     @objc static private(set) var pencilPausesNativeTouch: Bool = false
     
@@ -112,6 +113,7 @@ import UIKit
         PencilHandler.pencilAndHoverMode = selectedProfile.pencilAndHoverMode
         
         pressureCurveEnabled = selectedProfile.pressureCurveEnabled
+        reverseBarrelRoll = selectedProfile.reverseBarrelRoll
         
         if #available(iOS 15.0, *) {
             IAPManager.checkPurchaseInfo(.PencilProPack) { info in
@@ -316,7 +318,8 @@ import UIKit
         let degrees = rollAngle * 180.0 / .pi
         let uiKitRoll = (degrees.truncatingRemainder(dividingBy: 360.0) + 360.0)
             .truncatingRemainder(dividingBy: 360.0)
-        let twist = (360.0 - uiKitRoll).truncatingRemainder(dividingBy: 360.0)
+        let twist = reverseBarrelRoll ? uiKitRoll
+            : (360.0 - uiKitRoll).truncatingRemainder(dividingBy: 360.0)
         return UInt16(twist.rounded()) % 360
     }
     

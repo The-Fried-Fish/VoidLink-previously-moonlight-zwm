@@ -71,6 +71,7 @@
     [encoder encodeObject:self.brushShortcut forKey:@"brushShortcut"];
     [encoder encodeObject:self.eraserShortcut forKey:@"eraserShortcut"];
     [encoder encodeBool:self.squeezeShorcutEnabled forKey:@"squeezeShorcutEnabled"];
+    [encoder encodeBool:self.reverseBarrelRoll forKey:@"reverseBarrelRoll"];
     [encoder encodeObject:self.squeezeStartShortcut forKey:@"squeezeStartShortcut"];
     [encoder encodeObject:self.squeezeEndShortcut forKey:@"squeezeEndShortcut"];
     [encoder encodeBool:self.pencilPausesNativeTouch forKey:@"pencilPausesNativeTouch"];
@@ -201,6 +202,7 @@
                                        forKey:@"squeezeEndShortcut"]
         : @"";
 
+        self.reverseBarrelRoll = [decoder containsValueForKey:@"reverseBarrelRoll"] ? [decoder decodeBoolForKey:@"reverseBarrelRoll"] : false;
         self.pencilPausesNativeTouch = [decoder containsValueForKey:@"pencilPausesNativeTouch"] ? [decoder decodeBoolForKey:@"pencilPausesNativeTouch"] : false;
         self.disablePencilSlideGestures = [decoder containsValueForKey:@"disablePencilSlideGestures"] ? [decoder decodeBoolForKey:@"disablePencilSlideGestures"] : false;
         self.pencilAndHoverMode = [decoder containsValueForKey:@"pencilHoverMode"] ? [decoder decodeInt64ForKey:@"pencilHoverMode"] : pencilOnly;
@@ -253,6 +255,7 @@
     copy.squeezeShorcutEnabled = self.squeezeShorcutEnabled;
     copy.squeezeStartShortcut = [self.squeezeStartShortcut mutableCopy]; // NSString → NSMutableString
     copy.squeezeEndShortcut = [self.squeezeEndShortcut mutableCopy]; // NSString → NSMutableString
+    copy.reverseBarrelRoll = self.reverseBarrelRoll;
     copy.pencilPausesNativeTouch = self.pencilPausesNativeTouch;
     copy.disablePencilSlideGestures = self.disablePencilSlideGestures;
     copy.pencilAndHoverMode = self.pencilAndHoverMode;

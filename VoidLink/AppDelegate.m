@@ -68,6 +68,7 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     [CommandManager presetDefaultCommands];
     [GenericUtils installSegmentedControlPreviousSelectionTracking];
     [IAPManager shared];
+    [IAPManager refreshPurchaseCache];
     
     // For iOS 12 and below, we need to manually create the window
     if (@available(iOS 13.0, *)) {
@@ -105,6 +106,7 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     [GenericUtils installSegmentedControlPreviousSelectionTracking];
     [PublicUtils installTextFieldControllerUserInteractionTracking];
     [IAPManager shared];
+    [IAPManager refreshPurchaseCache];
 
     // tvOS mounts the settings view lazily when its reveal menu first opens.
     // Read its Core Data snapshot now so that first presentation is RAM-only.

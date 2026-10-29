@@ -265,10 +265,11 @@ import UIKit
             switch verification {
             case .verified(let transaction):
                 await MainActor.run {
+                    IAPManager.purchaseCache[product] = true
                     self.delegate?.iapManagerDidPurchase(product)
+                    IAPManager.handlePurchaseSuccess(product)
                 }
                 await transaction.finish()
-                IAPManager.handlePurchaseSuccess(product)
             case .unverified(_, let err):
                 NotificationCenter.default.post(name: product.purchaseAbortedNotification(), object: PurchaseInterruption.unlockNow, userInfo:["interruption": PurchaseInterruption.unlockNow.rawValue])
                 await MainActor.run {
@@ -326,6 +327,7 @@ import UIKit
                     try await AppStore.sync()
                     IAPManager.checkPurchaseInfo(product) { info in
                         if info.valid {
+                            IAPManager.purchaseCache[product] = true
                             IAPManager.handlePurchaseSuccess(product)
                             AlertControllerUtil.showAlert(
                                 in: viewController,
@@ -443,7 +445,25 @@ import UIKit
             }
         }
     }
-    
+    // MARK: - In-memory purchase cache
+
+    private static var purchaseCache: [AddOnProduct: Bool] = [:]
+
+    /// Refreshes all add-on entitlements asynchronously. Nothing is persisted.
+    @objc public static func refreshPurchaseCache() {
+        guard #available(iOS 15.0, *) else { return }
+        for product in AddOnProduct.allCases {
+            checkPurchaseInfo(product) { info in
+                purchaseCache[product] = info.valid
+            }
+        }
+    }
+
+    /// RAM-only query; returns false while the purchase status is unknown.
+    @objc public static func isValid(_ product: AddOnProduct) -> Bool {
+        return purchaseCache[product] ?? false
+    }
+
     @objc static public func inAppPurchaseAction(viewController: UIViewController, product: AddOnProduct){
         
         let alert = UIAlertController(title: product.productName(),

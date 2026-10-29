@@ -19110,6 +19110,29 @@
         }
       }
     },
+    "Reverse Barrel Roll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反转笔轴旋转"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉筆軸旋轉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉筆軸旋轉"
+          }
+        }
+      }
+    },
     "Reverse Hold Button" : {
       "extractionState" : "manual",
       "localizations" : {

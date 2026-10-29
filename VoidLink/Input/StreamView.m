@@ -1228,7 +1228,7 @@ static CGFloat previousRollAngle = 0;
     
     CGFloat degrees = rollAngle * (180.0 / M_PI);
     CGFloat uiKitRoll = fmod(fmod(degrees, 360.0) + 360.0, 360.0);
-    CGFloat twist = fmod(360.0 - uiKitRoll, 360.0);
+    CGFloat twist = PencilHandler.shared.reverseBarrelRoll ? uiKitRoll : fmod(360.0 - uiKitRoll, 360.0);
     return ((uint16_t)lround(twist)) % 360;
 }
 
