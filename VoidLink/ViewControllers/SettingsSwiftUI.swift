@@ -4133,6 +4133,29 @@ final class SettingsSession: NSObject, ObservableObject {
         return resolutionWindow?.screen ?? PublicUtils.currentScreen
     }
 
+    private func nativeResolution(for pointSize: CGSize, on screen: UIScreen) -> CGSize {
+        if pointSize == screen.bounds.size {
+            let nativeSize = screen.nativeBounds.size
+            if (pointSize.width > pointSize.height) != (nativeSize.width > nativeSize.height) {
+                return CGSize(width: nativeSize.height, height: nativeSize.width)
+            }
+            return nativeSize
+        }
+        return CGSize(
+            width: pointSize.width * screen.nativeScale,
+            height: pointSize.height * screen.nativeScale
+        )
+    }
+
+    private func nativeSafeAreaResolution(for window: UIWindow) -> CGSize {
+        let size = nativeResolution(for: window.bounds.size, on: window.screen)
+        let insets = window.safeAreaInsets
+        return CGSize(
+            width: size.width - (insets.left + insets.right) * window.screen.nativeScale,
+            height: size.height
+        )
+    }
+
     /// Mirrors UIKit's resolution-table inputs while Settings is attached to
     /// a window. Persistence happens after dismissal, when that window may no
     /// longer exist, so retain the last measured pixel sizes per display mode.
@@ -4148,16 +4171,9 @@ final class SettingsSession: NSObject, ObservableObject {
             ? (externalScreen ?? PublicUtils.currentScreen)
             : window.screen
         let displayBounds = usesExternalDisplay ? displayScreen.bounds : window.bounds
-        cachedDisplaySizes[displayMode] = CGSize(
-            width: displayBounds.width * displayScreen.nativeScale,
-            height: displayBounds.height * displayScreen.nativeScale
-        )
+        cachedDisplaySizes[displayMode] = nativeResolution(for: displayBounds.size, on: displayScreen)
 
-        let insets = window.safeAreaInsets
-        cachedSafeAreaSizes[displayMode] = CGSize(
-            width: (window.bounds.width - insets.left - insets.right) * window.screen.nativeScale,
-            height: window.bounds.height * window.screen.nativeScale
-        )
+        cachedSafeAreaSizes[displayMode] = nativeSafeAreaResolution(for: window)
     }
 
     private var availableDisplaySize: CGSize {
@@ -4170,7 +4186,7 @@ final class SettingsSession: NSObject, ObservableObject {
         let bounds = displayMode == ExternalDisplayMode.extended.rawValue
             ? screen.bounds
             : (resolutionWindow?.bounds ?? screen.bounds)
-        return CGSize(width: bounds.width * screen.nativeScale, height: bounds.height * screen.nativeScale)
+        return nativeResolution(for: bounds.size, on: screen)
     }
 
     private var availableSafeAreaSize: CGSize {
@@ -4182,11 +4198,7 @@ final class SettingsSession: NSObject, ObservableObject {
         guard let window = resolutionWindow else {
             return availableDisplaySize
         }
-        let insets = window.safeAreaInsets
-        return CGSize(
-            width: (window.bounds.width - insets.left - insets.right) * window.screen.nativeScale,
-            height: window.bounds.height * window.screen.nativeScale
-        )
+        return nativeSafeAreaResolution(for: window)
     }
 
     private var chosenDimensions: CMVideoDimensions {
@@ -4727,8 +4739,9 @@ final class SettingsSession: NSObject, ObservableObject {
             ? PublicUtils.externalScreen : nil
         let screen = externalScreen ?? window.screen
         let bounds = externalScreen?.bounds ?? window.bounds
-        let width = (bounds.width * screen.nativeScale).rounded()
-        let height = (bounds.height * screen.nativeScale).rounded()
+        let size = nativeResolution(for: bounds.size, on: screen)
+        let width = size.width.rounded()
+        let height = size.height.rounded()
         guard width > 0, height > 0,
               width <= Double(Int32.max), height <= Double(Int32.max) else { return false }
         let preset = CMVideoDimensions(width: Int32(width), height: Int32(height))
