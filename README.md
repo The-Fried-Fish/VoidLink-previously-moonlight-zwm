@@ -1,3 +1,7 @@
+# 代码 Coding
+- 代码提交在`Integration`分支。如果发现 tvOS target 无法构建，前往`tvOS-Buildable`分支
+- For latest coding commits, go to branch `Integration`. If you get building error with tvOS target, go to brandch `tvOS-Buildable`
+
 # VoidLink 已上架App Store.
 # VoidLink is available on App Store
 
@@ -8,10 +12,6 @@
 ## VoidLink 中国大陆、韩国、越南 App Store 保留分类为工具的版本:
 ## Original VoidLink for Mainland China, South Korea & Vietnam App Stores:
 ### [https://apps.apple.com/app/voidlink/id6747717070](https://apps.apple.com/cn/app/voidlink/id6747717070)
-
-# 代码 Coding
-- 代码提交在`Integration`分支。
-- For latest coding commits, go to branch `Integration`.
 
 <br>
 
