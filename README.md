@@ -1,6 +1,6 @@
 # 代码 Coding
 - 代码提交在`Integration`分支。如果发现 tvOS target 无法构建，前往`tvOS-Buildable`分支
-- For latest coding commits, go to branch `Integration`. If you get building error with tvOS target, go to brandch `tvOS-Buildable`
+- For latest coding commits, go to branch `Integration`. If you get building error with tvOS target, go to branch `tvOS-Buildable`
 
 # VoidLink 已上架App Store.
 # VoidLink is available on App Store
