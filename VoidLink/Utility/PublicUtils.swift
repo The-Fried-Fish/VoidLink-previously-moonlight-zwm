@@ -12,6 +12,7 @@ import ObjectiveC
 import UIKit
 import AVFoundation
 import GameController
+import VideoToolbox
 
 @objc public class PublicUtils: NSObject {
     
@@ -473,6 +474,63 @@ import GameController
         // In a multi-window app, a geometry callback from an inactive window
         // must not displace the foreground key scene's default screen.
         _ = currentScreen
+    }
+
+    @objc(changeDefaultSettingsForView:)
+    public static func changeDefaultSettings(for view: UIView?) {
+        guard GenericUtils.needUpdateDefaultSettings() else {
+            NSLog("[Settings startup] changeDefaultSettings skipped by upgrade marker")
+            return
+        }
+        let dataManager = DataManager()
+        let settings = dataManager.retrieveSettings()!
+        let codec: TemporarySettingsCodecPreference =
+            VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) ? .hevc : .h264
+        let maximumFPS = UIScreen.main.maximumFramesPerSecond
+
+        settings.preferredCodec = Int32(codec.rawValue)
+        settings.sdrPerformanceWorkaround = true
+        settings.framePacingMode = NSNumber(value: FramePacingMode.queue.rawValue)
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            settings.asyncFrameDequeue = false
+            settings.touchMoveEventInterval = 0
+        } else if maximumFPS > 110 || maximumFPS < 65 {
+            settings.asyncFrameDequeue = false
+        }
+
+        if maximumFPS > 110 {
+            settings.framerate = 120
+        } else if maximumFPS < 65 {
+            settings.framerate = 60
+        }
+
+        settings.onscreenControls = NSNumber(value: OnScreenControlsLevel.custom.rawValue)
+        settings.pencilTickIntervalUs = 1750
+        settings.pencilTipOffsetX = 0
+        settings.pencilTipOffsetY = 0
+        settings.oscLayoutToolFingers = 99
+        settings.keyboardToggleFingers = 99
+        dataManager.saveDataSynchronously()
+    }
+
+    @objc public static func updatePartialSettings() {
+        guard GenericUtils.needUpdatePartialSettings() else { return }
+        let dataManager = DataManager()
+        let settings = dataManager.retrieveSettings()!
+        settings.touchMoveEventInterval = 0
+        settings.localMousePointerMode = 0
+
+        settings.controllerMouseStick = NSNumber(value: ControllerElement.rightStick.rawValue)
+        settings.controllerMouseLeftButton = NSNumber(value: ControllerElement.dpadRight.rawValue)
+        settings.controllerMouseRightButton = NSNumber(value: ControllerElement.dpadUp.rawValue)
+        settings.controllerMouseExpo = 1.8
+        settings.controllerMousePointerVelocity = 15.0
+
+        settings.asyncFrameDequeue = isTVOS || refreshRate > 100.0
+        if #unavailable(iOS 14.0, tvOS 14.0) {
+            settings.appTheme = NSNumber(value: UIUserInterfaceStyle.dark.rawValue)
+        }
+        dataManager.saveDataSynchronously()
     }
 
     /// Prefer the caller's window, including an explicitly external render view.

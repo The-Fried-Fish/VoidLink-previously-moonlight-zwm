@@ -137,7 +137,11 @@ final class DataManager: NSObject {
     func getUniqueId() -> String! {
         var uniqueId: String?
         managedObjectContext.performAndWait {
-            uniqueId = retrieveSettings().uniqueId
+            let settings = retrieveSettings()!
+            uniqueId = settings.uniqueId
+            if settings.isInserted {
+                saveData()
+            }
         }
         return uniqueId
     }
@@ -173,7 +177,8 @@ final class DataManager: NSObject {
     func getSettings() -> TemporarySettings! {
         var settings: TemporarySettings?
         managedObjectContext.performAndWait {
-            settings = TemporarySettings(from: retrieveSettings())
+            let record = retrieveSettings()!
+            settings = TemporarySettings(from: record)
         }
         return settings
     }
@@ -181,9 +186,13 @@ final class DataManager: NSObject {
     // Callers edit this managed object on its main queue, then call saveData().
     func retrieveSettings() -> Settings! {
         let records: [Settings] = fetchRecords("Settings")
-        return records.first ?? Settings(
+        if let settings = records.first { return settings }
+
+        let settings = Settings(
             entity: NSEntityDescription.entity(forEntityName: "Settings", in: managedObjectContext)!,
             insertInto: managedObjectContext)
+        settings.uniqueId = IdManager.generateUniqueId()
+        return settings
     }
 
     func removeApp(_ app: TemporaryApp) {
@@ -205,6 +214,14 @@ final class DataManager: NSObject {
     }
 
     func saveData() {
+        saveData(waitForPersistentStore: false)
+    }
+
+    func saveDataSynchronously() {
+        saveData(waitForPersistentStore: true)
+    }
+
+    private func saveData(waitForPersistentStore: Bool) {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()
@@ -216,7 +233,11 @@ final class DataManager: NSObject {
         // Keep the startup snapshot current only until Settings consumes it.
         appDelegate.refreshTvOSInitialSettingsSnapshot(TemporarySettings(from: retrieveSettings()))
 #endif
-        appDelegate.saveContext()
+        if waitForPersistentStore {
+            appDelegate.saveContextSynchronously()
+        } else {
+            appDelegate.saveContext()
+        }
     }
 
     func getHosts() -> [TemporaryHost] {

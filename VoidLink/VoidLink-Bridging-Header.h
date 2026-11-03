@@ -17,6 +17,7 @@
 #import "NativeTouchPointer.h"
 #import "OnScreenButtonState.h"
 #import "AppDelegate.h"
+#import "Crypto/IdManager.h"
 #import "TemporaryHost.h"
 #import "TemporaryApp.h"
 #import "Settings+CoreDataClass.h"

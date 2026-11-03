@@ -2115,63 +2115,6 @@ static NSMutableSet* hostList;
     }
 }
 
-- (void)changeDefaultSettings{
-    if(![GenericUtils needUpdateDefaultSettings]) return;
-    DataManager* dataMan = [[DataManager alloc] init];
-    Settings* settings = [dataMan retrieveSettings];
-    
-    settings.preferredCodec = VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) ? TemporarySettingsCodecPreferenceHevc : TemporarySettingsCodecPreferenceH264;
-    
-    switch ([UIDevice currentDevice].userInterfaceIdiom) {
-        case UIUserInterfaceIdiomPhone:
-            settings.sdrPerformanceWorkaround = true;
-            settings.framePacingMode = @(FramePacingModeQueue);
-            settings.asyncFrameDequeue = false;
-            settings.touchMoveEventInterval = @(0);
-            break;
-        case UIUserInterfaceIdiomPad:
-        default:
-            settings.sdrPerformanceWorkaround = true;
-            settings.framePacingMode = @(FramePacingModeQueue);
-            if([PublicUtils screenForView:self.viewIfLoaded].maximumFramesPerSecond > 110) settings.asyncFrameDequeue = false;
-            if([PublicUtils screenForView:self.viewIfLoaded].maximumFramesPerSecond < 65) settings.asyncFrameDequeue = false;
-            break;
-    }
-    
-    if([PublicUtils screenForView:self.viewIfLoaded].maximumFramesPerSecond > 110) settings.framerate = @(120);
-    if([PublicUtils screenForView:self.viewIfLoaded].maximumFramesPerSecond < 65) settings.framerate = @(60);
-
-    // if([PublicUtils screenForView:self.viewIfLoaded].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
-    settings.onscreenControls = @(OnScreenControlsLevelCustom);
-    settings.pencilTickIntervalUs = @(1750);
-    settings.pencilTipOffsetX = @(0);
-    settings.pencilTipOffsetY = @(0);
-    settings.oscLayoutToolFingers = @(99);
-    settings.keyboardToggleFingers = @(99);
-
-    [dataMan saveData];
-}
-
-- (void)updatePartialSettings{
-    if(![GenericUtils needUpdatePartialSettings]) return;
-    DataManager* dataMan = [[DataManager alloc] init];
-    Settings* settings = [dataMan retrieveSettings];
-    settings.touchMoveEventInterval = @(0);
-    settings.localMousePointerMode = @(0);
-    
-    settings.controllerMouseStick = @(ControllerElementRightStick);
-    settings.controllerMouseLeftButton = @(ControllerElementDpadRight);
-    settings.controllerMouseRightButton = @(ControllerElementDpadUp);
-    settings.controllerMouseExpo = @(1.8);
-    settings.controllerMousePointerVelocity = @(15.0);
-    
-    settings.asyncFrameDequeue = PublicUtils.isTVOS || PublicUtils.refreshRate > 100.0;
-
-    if (@available(iOS 14.0, tvOS 14.0, *)) nil;
-    else settings.appTheme = @(UIUserInterfaceStyleDark);
-    [dataMan saveData];
-}
-
 - (void)viewDidLoad{
     [super viewDidLoad];
     
@@ -2285,8 +2228,6 @@ static NSMutableSet* hostList;
     
     [self prewarmSoftKeyboard];
         
-    [self changeDefaultSettings];
-    [self updatePartialSettings];
     
     [IAPManager.shared fetchProducts];
     [GenericUtils handleAddOnProductPurchaseIntentFor:AddOnProductPencilProPack];

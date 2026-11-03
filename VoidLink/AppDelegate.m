@@ -162,9 +162,19 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
 
 - (void)saveContext
 {
+    [self saveContextWaiting:NO];
+}
+
+- (void)saveContextSynchronously
+{
+    [self saveContextWaiting:YES];
+}
+
+- (void)saveContextWaiting:(BOOL)wait
+{
     NSManagedObjectContext *managedObjectContext = [self managedObjectContext];
     if (managedObjectContext != nil) {
-        [managedObjectContext performBlock:^{
+        void (^save)(void) = ^{
             if (![managedObjectContext hasChanges]) {
                 return;
             }
@@ -177,7 +187,12 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
             NSData* dbData = [NSData dataWithContentsOfURL:[[[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent:DB_NAME]];
             [[NSUserDefaults standardUserDefaults] setObject:dbData forKey:DB_NAME];
 #endif
-        }];
+        };
+        if (wait) {
+            [managedObjectContext performBlockAndWait:save];
+        } else {
+            [managedObjectContext performBlock:save];
+        }
     }
 }
 
