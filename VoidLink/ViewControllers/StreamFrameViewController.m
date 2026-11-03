@@ -2484,7 +2484,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     // Pointer lock breaks the UIKit mouse APIs, which is a problem because
     // GCMouse is horribly broken on iOS 14.0 for certain mice. Only lock
     // the cursor if there is a GCMouse present.
-    return ([GCMouse mice].count > 0) && [_settings localMousePointerMode].intValue == MousePointerModeCaptured;
+    return ([GCMouse mice].count > 0) && [_settings localMousePointerMode].intValue == MousePointerModeCaptured && !PencilHandler.isDrawing;
 }
 
 #endif

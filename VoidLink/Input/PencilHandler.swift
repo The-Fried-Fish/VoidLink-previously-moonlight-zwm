@@ -33,6 +33,7 @@ import UIKit
     private var touchBeganForce: Float = 0
     @objc private(set) var reverseBarrelRoll: Bool = false
     @objc static private(set) var isDrawing: Bool = false
+    @objc static var isTurningToHover:Bool = false
     @objc static private(set) var pencilPausesNativeTouch: Bool = false
     
     @objc static var barrelRollChanged: Bool = false
@@ -155,6 +156,8 @@ import UIKit
         previousForce = 0
         previousTargetForce = 0
         PencilHandler.isDrawing = true
+        StreamFrameViewController.sharedInstance().setNeedsUpdateOfPrefersPointerLocked()
+        PencilHandler.isTurningToHover = false
         // isFirstMove = true
         strokeSampleIndex = 0
         strokePhase = .phase1
@@ -333,6 +336,7 @@ import UIKit
     var previousForce: Float = 0
     var previousTargetForce: Float = 0
     var phase2IndexCount: Int32 = 0
+    @objc var latestNormalizedLocation: CGPoint = .zero
     private func sendStylusEvent(touchBatch: [UITouch], with event: UIEvent? = nil) -> DispatchTime {
         guard let streamView = streamView, touchBatch.count>0 else { return .now() }
         
@@ -354,7 +358,7 @@ import UIKit
             } else {
                 barrelRoll = UInt16(LI_BARREL_ROLL_UNKNOWN)
             }
-            let normalizedLocation = self.getNormalizedLocation(point: point)
+            var normalizedLocation = self.getNormalizedLocation(point: point)
             var force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
             force  = (self.pencilTickEnabled && force == 0) ? previousForce : force
             
@@ -390,13 +394,16 @@ import UIKit
             switch touch.phase {
             case .began:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_DOWN)
+                latestNormalizedLocation = normalizedLocation
             case .moved:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER : LI_TOUCH_EVENT_MOVE)
+                latestNormalizedLocation = normalizedLocation
             case .ended:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
                 targetForce = 0
                 previousForce = 0
                 previousTargetForce = 0
+                normalizedLocation = latestNormalizedLocation
             case .cancelled:
                 eventType = UInt8(manualHoverFlag ? LI_TOUCH_EVENT_HOVER_LEAVE : LI_TOUCH_EVENT_UP)
                 targetForce = 0
@@ -419,6 +426,7 @@ import UIKit
             }
             
             let sendableForce = strokePhase == .phase2 ? equalizedForce : targetForce
+            let sendableNormalizedLocation = normalizedLocation
 
             DispatchQueue.global().asyncAfter(deadline: dispatchMoment + tickMoment + delay) {
                 /*
@@ -427,18 +435,19 @@ import UIKit
                 }
                 */
                 
-                if self.strokePhase != .phase1 || !self.pencilTickEnabled {LiSendPenEventWithBarrelRoll(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), sendableForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)}
+                if self.strokePhase != .phase1 || !self.pencilTickEnabled {LiSendPenEventWithBarrelRoll(eventType, UInt8(LI_TOOL_TYPE_PEN), 0, Float(sendableNormalizedLocation.x), Float(sendableNormalizedLocation.y), sendableForce, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)}
                 else {
-                    LiSendPenEventWithBarrelRoll(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)
+                    LiSendPenEventWithBarrelRoll(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(sendableNormalizedLocation.x), Float(sendableNormalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)
                 }
                 
                 if eventType == UInt8(LI_TOUCH_EVENT_UP) {
                     PencilHandler.isDrawing = false
+                    PencilHandler.isTurningToHover = true
                     if PencilHandler.pencilAndHoverMode == .hoverDisabled || !PencilHandler.hoverSupported {
-                        LiSendPenEventWithBarrelRoll(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)
+                        LiSendPenEventWithBarrelRoll(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(self.latestNormalizedLocation.x), Float(self.latestNormalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)
                         DispatchQueue.global().asyncAfter(deadline: .now() + 0.0086){
                             if !PencilHandler.isDrawing {
-                                LiSendPenEventWithBarrelRoll(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)
+                                LiSendPenEventWithBarrelRoll(UInt8(LI_TOUCH_EVENT_HOVER_LEAVE), UInt8(LI_TOOL_TYPE_PEN), 0, Float(self.latestNormalizedLocation.x), Float(self.latestNormalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)), barrelRoll)
                             }
                         }
                     }

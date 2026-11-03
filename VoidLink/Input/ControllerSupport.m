@@ -1620,6 +1620,12 @@ double rc_expo(double x, double expo) {
 -(void) registerMouseCallbacks:(GCMouse*) mouse API_AVAILABLE(ios(14.0)) {
     if (_captureMouse){
         mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
+#if !TARGET_OS_TV
+            dispatch_async(dispatch_get_main_queue(), ^{
+                BOOL locked = StreamFrameViewController.sharedInstance.streamView.window.windowScene.pointerLockState.locked;
+                if(!locked) [StreamFrameViewController.sharedInstance setNeedsUpdateOfPrefersPointerLocked];
+            });
+#endif
             self->accumulatedDeltaX += deltaX / MOUSE_SPEED_DIVISOR;
             self->accumulatedDeltaY += -deltaY / MOUSE_SPEED_DIVISOR;
             

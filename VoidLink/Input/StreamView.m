@@ -1332,12 +1332,16 @@ static CGFloat previousRollAngle = 0;
         barrelRoll = [self getBarrelRollFromRollAngle:gesture.rollAngle];
     }
     
-    
+    __block CGPoint normalizedHoverLocation = CGPointMake(location.x/videoSize.width, location.y/videoSize.height);
     dispatch_after(0, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE,0), ^{// Code to execute after the delay
         if(PencilHandler.isDrawing && PencilHandler.pencilAndHoverMode == pencilOnly && PencilHandler.pencilAndHoverMode == hoverDisabled) return;
         switch (PencilHandler.pencilAndHoverMode) {
             case pencilOnly:
-                LiSendPenEventWithBarrelRoll(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height, distance, 0.0f, 0.0f, rotationAngle, tiltAngle, barrelRoll);
+                if(PencilHandler.isTurningToHover) {
+                     normalizedHoverLocation = PencilHandler.shared.latestNormalizedLocation;
+                    PencilHandler.isTurningToHover = false;
+                }
+                if(!PencilHandler.isDrawing) LiSendPenEventWithBarrelRoll(type, LI_TOOL_TYPE_PEN, 0, normalizedHoverLocation.x, normalizedHoverLocation.y, distance, 0.0f, 0.0f, rotationAngle, tiltAngle, barrelRoll) ;
                 break;
             case pencilToMouse:
                 if(gesture.state != UIGestureRecognizerStateEnded) [self updateCursorLocation:originalLocation isMouse:NO];
@@ -1808,7 +1812,9 @@ static CGFloat previousRollAngle = 0;
     if (lastMouseButtonMask == 0) {
         dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC));
         dispatch_after(delayTime, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE,0), ^{
-            if(!self->isPencilHovering) [self updateCursorLocation:request.location isMouse:YES];
+            if(!self->isPencilHovering) {
+                [self updateCursorLocation:request.location isMouse:YES];
+            }
         });
     }
     
