@@ -2636,12 +2636,16 @@ final class SettingsSession: NSObject, ObservableObject {
         ]
     }
 
+    private var usesMacTrackpadSimulation: Bool {
+        isStreaming && LiGetHostMacTrackpadSimulation()
+    }
+
     var trackpadGestureOptions: [SettingsPickerOption<Int>] {
         [
-            .init(value: TrackpadGestureMode.pinchDisabled.rawValue, title: "No Pinch".localized),
+            .init(value: TrackpadGestureMode.pinchDisabled.rawValue, title: "No Pinch".localized, isEnabled: !usesMacTrackpadSimulation),
             .init(value: TrackpadGestureMode.zoomViewport.rawValue, title: "View Zoom".localized),
             .init(value: TrackpadGestureMode.nativeTrackpad.rawValue, title: "Native Mode".localized),
-            .init(value: TrackpadGestureMode.ctrlAndScroll.rawValue, title: "Ctrl+Scroll".localized)
+            .init(value: TrackpadGestureMode.ctrlAndScroll.rawValue, title: "Ctrl+Scroll".localized, isEnabled: !usesMacTrackpadSimulation)
         ]
     }
 
@@ -5616,6 +5620,12 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     private func sanitizeState() {
+        if usesMacTrackpadSimulation && itemRegistry.touchMode.value == TouchMode.relative.rawValue {
+            let mode = itemRegistry.trackpadGestures.value
+            if mode == TrackpadGestureMode.pinchDisabled.rawValue || mode == TrackpadGestureMode.ctrlAndScroll.rawValue {
+                itemRegistry.trackpadGestures.value = TrackpadGestureMode.nativeTrackpad.rawValue
+            }
+        }
         if itemRegistry.codec.value == VideoCodec.h264.rawValue || !Utils.hdrSupported() { itemRegistry.hdr.value = false }
         if itemRegistry.codec.value == VideoCodec.av1.rawValue {
             itemRegistry.yuv444.value = false

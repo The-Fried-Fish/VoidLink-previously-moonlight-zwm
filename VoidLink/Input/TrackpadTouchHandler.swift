@@ -9,10 +9,30 @@ import UIKit
     private var pointers: [ObjectIdentifier: NativeTouchPointer] = [:]
     private var normalizationBounds: CGRect?
     private var stoppedUntilReset = false
+    private enum MacGestureMode { case magnify, horizontal, vertical }
+    private struct MacPairSample {
+        let ids: Set<ObjectIdentifier>
+        let midpoint: CGPoint
+        let distance: CGFloat
+        let time: TimeInterval
+    }
+
+    private let macPinchSpeedDifference: CGFloat = 25
+    private let macDecisionIntervals: Int
+    private var macPreviousSample: MacPairSample?
+    private var macDecisionStart: MacPairSample?
+    private var macIntervalCount = 0
+    private var macSeparationSpeedSum: CGFloat = 0
+    private var macMidpointSpeedSum: CGFloat = 0
+    private var macAxisSpeedSum = CGVector.zero
+    private var macGestureMode: MacGestureMode?
+    private var macMagnifying = false
+    private var macScrollRemainder = CGVector.zero
 
     @objc init(view: StreamView, settings: TemporarySettings) {
         streamView = view
         gestureSensitivity = max(0.05, CGFloat(settings.trackpadGestureSensitivity.floatValue))
+        macDecisionIntervals = PublicUtils.refreshRate >= 120 ? 4 : 2
         sender = TrackpadTouchSender(interpolateMoves: PublicUtils.refreshRate == 60)
         super.init()
     }
@@ -22,19 +42,157 @@ import UIKit
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if LiGetHostMacTrackpadSimulation() {
+            resetMacSampling()
+            macPreviousSample = macPairSample(with: event)
+            return
+        }
         enqueue(touches, with: event, eventType: UInt8(LI_TOUCH_EVENT_DOWN))
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if LiGetHostMacTrackpadSimulation() {
+            handleMacTrackpad(with: event)
+            return
+        }
         enqueue(touches, with: event, eventType: UInt8(LI_TOUCH_EVENT_MOVE))
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if LiGetHostMacTrackpadSimulation() {
+            endMacTrackpad(touches, with: event, cancelled: false)
+            return
+        }
         endTouches(touches, with: event, eventType: UInt8(LI_TOUCH_EVENT_UP))
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if LiGetHostMacTrackpadSimulation() {
+            endMacTrackpad(touches, with: event, cancelled: true)
+            return
+        }
         endTouches(touches, with: event, eventType: UInt8(LI_TOUCH_EVENT_CANCEL))
+    }
+
+    private func macPairSample(with event: UIEvent?) -> MacPairSample? {
+        guard let view = streamView, let event else { return nil }
+        let captured = OnScreenControls.touchesCapturedByOnScreenControls()
+        let touches = (event.touches(for: view) ?? []).filter {
+            $0.type == .direct && $0.phase != .ended && $0.phase != .cancelled &&
+            captured?.contains($0) != true
+        }
+        guard touches.count == 2, let first = touches.first,
+              let second = touches.first(where: { $0 !== first }) else { return nil }
+        let a = first.location(in: view)
+        let b = second.location(in: view)
+        return MacPairSample(
+            ids: [ObjectIdentifier(first), ObjectIdentifier(second)],
+            midpoint: CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2),
+            distance: hypot(a.x - b.x, a.y - b.y),
+            time: event.timestamp
+        )
+    }
+
+    private func resetMacSampling() {
+        macPreviousSample = nil
+        macDecisionStart = nil
+        macIntervalCount = 0
+        macSeparationSpeedSum = 0
+        macMidpointSpeedSum = 0
+        macAxisSpeedSum = .zero
+    }
+
+    private func handleMacTrackpad(with event: UIEvent?) {
+        guard let sample = macPairSample(with: event) else {
+            resetMacSampling()
+            return
+        }
+        guard let previous = macPreviousSample, previous.ids == sample.ids else {
+            resetMacSampling()
+            macPreviousSample = sample
+            return
+        }
+        let elapsed = CGFloat(sample.time - previous.time)
+        guard elapsed > 0 else { return }
+        macPreviousSample = sample
+
+        var outputBaseline = previous
+        if macGestureMode == nil {
+            let dx = (sample.midpoint.x - previous.midpoint.x) / elapsed
+            let dy = (sample.midpoint.y - previous.midpoint.y) / elapsed
+            macSeparationSpeedSum += abs(sample.distance - previous.distance) / elapsed
+            macMidpointSpeedSum += hypot(dx, dy)
+            macAxisSpeedSum.dx += abs(dx)
+            macAxisSpeedSum.dy += abs(dy)
+            macIntervalCount += 1
+            let start = macDecisionStart ?? previous
+            macDecisionStart = start
+            guard macIntervalCount == macDecisionIntervals else { return }
+
+            // Comparing the sums against the threshold times the sample count
+            // is equivalent to comparing the average speeds in points per second.
+            if start.distance > 0 &&
+                macSeparationSpeedSum - macMidpointSpeedSum >= macPinchSpeedDifference * CGFloat(macIntervalCount) {
+                macGestureMode = .magnify
+            } else if macMidpointSpeedSum > 0 {
+                macGestureMode = macAxisSpeedSum.dx > macAxisSpeedSum.dy ? .horizontal : .vertical
+            }
+            outputBaseline = start
+            resetMacSampling()
+            macPreviousSample = sample
+        }
+
+        let previousDistance = outputBaseline.distance
+        let separationDelta = sample.distance - previousDistance
+        let midpointDelta = CGVector(dx: sample.midpoint.x - outputBaseline.midpoint.x,
+                                     dy: sample.midpoint.y - outputBaseline.midpoint.y)
+        switch macGestureMode {
+        case .magnify:
+            guard previousDistance > 0, separationDelta != 0 else { return }
+            if !macMagnifying {
+                macMagnifying = LiSendMacMagnifyEvent(UInt8(LI_MAC_MAGNIFY_BEGIN), 0) == 0
+            }
+            if macMagnifying {
+                let amount = (separationDelta / previousDistance) * gestureSensitivity * 0.7
+                _ = LiSendMacMagnifyEvent(UInt8(LI_MAC_MAGNIFY_CHANGE), Float(max(amount, -0.99)))
+            }
+        case .horizontal:
+            let amount = macScrollRemainder.dx + midpointDelta.dx * gestureSensitivity * 5.5
+            let delta = scrollUnits(amount)
+            macScrollRemainder.dx = amount - CGFloat(delta)
+            if delta != 0 { LiSendHighResHScrollEvent(delta) }
+        case .vertical:
+            let amount = macScrollRemainder.dy + midpointDelta.dy * gestureSensitivity * 5.5
+            let delta = scrollUnits(amount)
+            macScrollRemainder.dy = amount - CGFloat(delta)
+            if delta != 0 { LiSendHighResScrollEvent(delta) }
+        case nil:
+            break
+        }
+    }
+
+    private func endMacTrackpad(_ touches: Set<UITouch>, with event: UIEvent?, cancelled: Bool) {
+        resetMacSampling()
+        if let view = streamView, (event?.touches(for: view) ?? []).subtracting(touches).contains(where: {
+            $0.type == .direct && $0.phase != .ended && $0.phase != .cancelled
+        }) {
+            return
+        }
+        finishMacMagnify(cancelled: cancelled)
+        macGestureMode = nil
+        macScrollRemainder = .zero
+    }
+
+    private func scrollUnits(_ amount: CGFloat) -> Int16 {
+        Int16(min(max(amount.rounded(.towardZero), CGFloat(Int16.min)), CGFloat(Int16.max)))
+    }
+
+    private func finishMacMagnify(cancelled: Bool) {
+        guard macMagnifying else { return }
+        let phase = cancelled ? LI_MAC_MAGNIFY_CANCEL : LI_MAC_MAGNIFY_END
+        if LiSendMacMagnifyEvent(UInt8(phase), 0) == 0 {
+            macMagnifying = false
+        }
     }
 
     private func endTouches(_ touches: Set<UITouch>, with event: UIEvent?, eventType: UInt8) {
@@ -195,6 +353,10 @@ import UIKit
 
     /// Release remote contacts when replacing the handler or ending the session.
     @objc func reset() {
+        finishMacMagnify(cancelled: true)
+        macGestureMode = nil
+        resetMacSampling()
+        macScrollRemainder = .zero
         stoppedUntilReset = false
         pointers.removeAll()
         normalizationBounds = nil
@@ -202,6 +364,9 @@ import UIKit
     }
 
     deinit {
+        if macMagnifying {
+            _ = LiSendMacMagnifyEvent(UInt8(LI_MAC_MAGNIFY_CANCEL), 0)
+        }
         sender.reset()
     }
 }

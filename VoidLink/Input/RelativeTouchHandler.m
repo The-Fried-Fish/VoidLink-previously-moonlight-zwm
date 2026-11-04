@@ -17,6 +17,9 @@
 
 static const float QUICK_TAP_TIME_INTERVAL = 0.2;
 
+@interface RelativeTouchHandler () <UIGestureRecognizerDelegate>
+@end
+
 @implementation RelativeTouchHandler {
     TemporarySettings* currentSettings;
     CGPoint latestMousePointerLocation, initialMousePointerLocation;
@@ -68,8 +71,7 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     _mouseRightClickTapRecognizer.delaysTouchesEnded = NO;
     [self->streamView.streamFrameTopLayerView addGestureRecognizer:_mouseRightClickTapRecognizer]; // add all additional gestures to the streamFrameTopLayerView instead of the streamview.
     _mouseRightClickTapRecognizer.touchCapturingView = streamView;
-    // Native multi-touch taps are interpreted by the host.
-    _mouseRightClickTapRecognizer.enabled = trackpadTouchHandler == nil;
+    _mouseRightClickTapRecognizer.delegate = self;
     
     firstTouchMoved = false;
     mousePointerMoved = false;
@@ -119,7 +121,15 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     return false;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    // The Mac Native branch sends scroll and magnify, so it needs the client-side right tap.
+    return trackpadTouchHandler == nil || LiGetHostMacTrackpadSimulation();
+}
+
 - (void)mouseRightClick {
+    if (trackpadTouchHandler && LiGetHostMacTrackpadSimulation()) {
+        [trackpadTouchHandler reset];
+    }
     multiTouchesDetected = false;
     dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{

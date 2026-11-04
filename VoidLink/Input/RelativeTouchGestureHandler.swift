@@ -322,8 +322,9 @@ import UIKit
             return
         }
 
-        relativeRemainder.dx += streamDelta.dx
-        relativeRemainder.dy += streamDelta.dy
+        let relativePointerGain = LiGetHostMacTrackpadSimulation() ? 1.5 : 1.0
+        relativeRemainder.dx += streamDelta.dx * relativePointerGain
+        relativeRemainder.dy += streamDelta.dy * relativePointerGain
         let deltaX = relativeRemainder.dx.rounded(.towardZero)
         let deltaY = relativeRemainder.dy.rounded(.towardZero)
         guard deltaX != 0 || deltaY != 0 else { return }
