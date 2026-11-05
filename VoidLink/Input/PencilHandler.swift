@@ -16,6 +16,14 @@ import UIKit
     weak var streamView: UIView?
     // private var tickTimer: SafeTimer
     private var pencilInteraction: Any?
+    private var doubleTapShortcutEnabled = false
+    private var squeezeShortcutEnabled = false
+    private enum SqueezeRoute {
+        case native
+        case shortcut(releaseKeys: [String]? = nil, releaseOnly: Bool = false)
+    }
+    private var activeSqueeze: SqueezeRoute?
+    private var sideButtonPosition: CGPoint?
     @objc var streamAspectRatio: Float
     private var tickInterval: TimeInterval
     private var manualTick: Bool
@@ -78,6 +86,9 @@ import UIKit
         // initialMoveEventIndexLimit = PublicUtils.currentScreen.maximumFramesPerSecond > 60 ? 4 : 2
         initialMoveEventIndexLimit = 0
         super.init()
+        if #available(iOS 12.1, *) {
+            setupPencilInteraction(view: streamView)
+        }
         setupPressureLUT()
         PencilHandler.shared = self
     }
@@ -92,8 +103,10 @@ import UIKit
             selectedProfile = profile!
         }
         
+        doubleTapShortcutEnabled = selectedProfile.doubleTapShorcutEnabled
+        squeezeShortcutEnabled = selectedProfile.squeezeShorcutEnabled
         doubleTapShorcuts.removeAll()
-        if selectedProfile.doubleTapShorcutEnabled {
+        if doubleTapShortcutEnabled {
             if selectedProfile.eraserShortcut != "" {
                 doubleTapShorcuts.append(selectedProfile.eraserShortcut)
             }
@@ -102,9 +115,13 @@ import UIKit
             }
         }
         
+        if shortcutIndex >= doubleTapShorcuts.count {
+            shortcutIndex = 0
+        }
+
         PencilHandler.squeezeStartShortcut = ""
         PencilHandler.squeezeEndShortcut = ""
-        if selectedProfile.squeezeShorcutEnabled {
+        if squeezeShortcutEnabled {
             PencilHandler.squeezeStartShortcut = selectedProfile.squeezeStartShortcut
             PencilHandler.squeezeEndShortcut = selectedProfile.squeezeEndShortcut
             print("squeezeShorcutEnabled \(CACurrentMediaTime())")
@@ -123,9 +140,6 @@ import UIKit
                 self.pencilTipOffset = info.valid ? self.pencilTipOffset : .zero
                 self.pencilProEnabled = info.valid
                 PencilHandler.pencilPausesNativeTouch = selectedProfile.pencilPausesNativeTouch && info.valid
-                if info.valid {
-                    self.setupPencilInteraction(view: self.streamView)
-                }
             }
         }
         
@@ -226,6 +240,7 @@ import UIKit
         guard let touch = touches.first else { return }
         let location = touch.location(in: streamView)
         let normalizedLocation = self.getNormalizedLocation(point: location)
+        sideButtonPosition = normalizedLocation
         if let streamView = streamView as? StreamView {
             switch touch.phase {
             case .began where PencilHandler.pencilAndHoverMode == .pencilToMouse:
@@ -359,6 +374,7 @@ import UIKit
                 barrelRoll = UInt16(LI_BARREL_ROLL_UNKNOWN)
             }
             var normalizedLocation = self.getNormalizedLocation(point: point)
+            sideButtonPosition = normalizedLocation
             var force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
             force  = (self.pencilTickEnabled && force == 0) ? previousForce : force
             
@@ -486,8 +502,26 @@ import UIKit
 
     @available(iOS 12.1, *)
     func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        if !pencilProEnabled {return}
-        if doubleTapShorcuts.isEmpty {return}
+        handleDoubleTap(at: nil)
+    }
+
+    @available(iOS 17.5, *)
+    func pencilInteraction(_ interaction: UIPencilInteraction, didReceiveTap tap: UIPencilInteraction.Tap) {
+        handleDoubleTap(at: tap.hoverPose?.location)
+    }
+
+    private func sendSideButton(_ event: Int32, at hoverPoint: CGPoint?) -> Bool {
+        let position = hoverPoint.map { getNormalizedLocation(point: $0) }
+            ?? sideButtonPosition ?? CGPoint(x: 0.5, y: 0.5)
+        return LiSendApplePencilSideButtonEvent(UInt8(event), Float(position.x), Float(position.y)) == 0
+    }
+
+    private func handleDoubleTap(at hoverPoint: CGPoint?) {
+        if !doubleTapShortcutEnabled {
+            _ = sendSideButton(LI_APPLE_PENCIL_DOUBLE_TAP, at: hoverPoint)
+            return
+        }
+        guard pencilProEnabled, !doubleTapShorcuts.isEmpty else { return }
         let keyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: doubleTapShorcuts[shortcutIndex])
         print("pencilInteractionDidTap \(CACurrentMediaTime())")
         CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: keyStrings, delay: 0.1)
@@ -499,26 +533,67 @@ import UIKit
         _ interaction: UIPencilInteraction,
         didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze
     ) {
-        if !pencilProEnabled {return}
-        if PencilHandler.squeezeStartShortcut == "", PencilHandler.squeezeEndShortcut == "" {return}
-        
-        let keepPressedUntilRelease = PencilHandler.squeezeEndShortcut.uppercased() == "NULL"
-        let squeezePressKeyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: PencilHandler.squeezeStartShortcut)
-        let squeezeReleaseKeyStrings = CommandManager.shared.extractAutoReleaseButtonStrings(from: PencilHandler.squeezeEndShortcut)
-        
-        guard let squeezePressKeyStrings = squeezePressKeyStrings else {return}
-        guard squeezePressKeyStrings.count>0 else {return}
+        let route: SqueezeRoute?
+        if squeeze.phase == .began {
+            guard activeSqueeze == nil else { return }
+            route = squeezeShortcutEnabled ? .shortcut() : .native
+        } else {
+            route = activeSqueeze
+        }
 
+        switch route {
+        case .native:
+            handleNativeSqueeze(squeeze)
+        case .shortcut(let releaseKeys, let releaseOnly):
+            handleShortcutSqueeze(squeeze, releaseKeys: releaseKeys, releaseOnly: releaseOnly)
+        case nil:
+            break
+        }
+    }
+
+    @available(iOS 17.5, *)
+    private func handleNativeSqueeze(_ squeeze: UIPencilInteraction.Squeeze) {
+        let hoverPoint = squeeze.hoverPose?.location
         switch squeeze.phase {
         case .began:
-            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezePressKeyStrings, delay: 0.1, pressOnly: true)}
-            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezePressKeyStrings, delay: 0.1)}
+            if sendSideButton(LI_APPLE_PENCIL_SQUEEZE_BEGIN, at: hoverPoint) {
+                activeSqueeze = .native
+            }
+        case .changed:
+            _ = sendSideButton(LI_APPLE_PENCIL_SQUEEZE_CHANGE, at: hoverPoint)
+        case .ended, .cancelled:
+            activeSqueeze = nil
+            let event = squeeze.phase == .ended ? LI_APPLE_PENCIL_SQUEEZE_END : LI_APPLE_PENCIL_SQUEEZE_CANCEL
+            _ = sendSideButton(event, at: hoverPoint)
+        @unknown default:
+            break
+        }
+    }
+
+    @available(iOS 17.5, *)
+    private func handleShortcutSqueeze(
+        _ squeeze: UIPencilInteraction.Squeeze,
+        releaseKeys: [String]?,
+        releaseOnly: Bool
+    ) {
+        let commands = CommandManager.shared
+        switch squeeze.phase {
+        case .began:
+            guard pencilProEnabled,
+                  let pressKeys = commands.extractAutoReleaseButtonStrings(from: Self.squeezeStartShortcut),
+                  !pressKeys.isEmpty else { return }
+
+            let releaseShortcut = Self.squeezeEndShortcut
+            let holdUntilRelease = releaseShortcut.uppercased() == "NULL"
+            let keys = holdUntilRelease ? pressKeys : commands.extractAutoReleaseButtonStrings(from: releaseShortcut)
+            activeSqueeze = .shortcut(releaseKeys: keys, releaseOnly: holdUntilRelease)
+            commands.sendAutoReleaseComboCommand(cmdStrings: pressKeys, delay: 0.1, pressOnly: holdUntilRelease)
+        case .changed:
             break
         case .ended, .cancelled:
-            if keepPressedUntilRelease {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezePressKeyStrings, releaseOnly: true)}
-            else {CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: squeezeReleaseKeyStrings, delay: 0.1)}
-            break
-        default:
+            activeSqueeze = nil
+            commands.sendAutoReleaseComboCommand(cmdStrings: releaseKeys, delay: 0.1, releaseOnly: releaseOnly)
+        @unknown default:
             break
         }
     }
