@@ -12,11 +12,14 @@
 #import "TemporaryHost.h"
 #import "TemporaryApp.h"
 
-@implementation TemporaryHost
+@implementation TemporaryHost {
+    NSMutableSet<NSString *> *_activeAddressPool;
+}
 
 - (id) init {
     self = [super init];
     self.appList = [[NSMutableSet alloc] init];
+    _activeAddressPool = [NSMutableSet set];
     self.currentGame = @"0";
     self.state = StateUnknown;
     
@@ -30,14 +33,15 @@
     
     NSSet *classes = [NSSet setWithObjects: [NSMutableSet class], [NSString class], nil];
     NSError *error = nil;
-    self.activeAddressPool = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:host.activeAddressPool error:&error];
-    if(self.activeAddressPool){
-        for(NSString* address in _activeAddressPool){
-            NSLog(@"%@, persisted addr: %@", host.name, address);
+    if (host.activeAddressPool) {
+        NSSet<NSString *> *savedAddresses = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
+                                                                              fromData:host.activeAddressPool
+                                                                                 error:&error];
+        if (savedAddresses) {
+            [_activeAddressPool unionSet:savedAddresses];
         }
     }
-    else self.activeAddressPool = [[NSMutableSet alloc] init];
-    
+
     self.externalAddress = host.externalAddress;
     self.localAddress = host.localAddress;
     self.ipv6Address = host.ipv6Address;
@@ -68,6 +72,20 @@
     return self;
 }
 
+- (void)rememberAddress:(NSString *)address {
+    if (address.length > 0) {
+        @synchronized (_activeAddressPool) {
+            [_activeAddressPool addObject:address];
+        }
+    }
+}
+
+- (NSSet<NSString *> *)addressPoolSnapshot {
+    @synchronized (_activeAddressPool) {
+        return [_activeAddressPool copy];
+    }
+}
+
 - (void) propagateChangesToParent:(Host*)parentHost { // update persisted host data
     // Avoid overwriting existing data with nil if
     // we don't have everything populated in the temporary
@@ -85,14 +103,17 @@
         parentHost.ipv6Address = self.ipv6Address;
     }
     
-    if(self.activeAddressPool.count>0){
+    [self rememberAddress:self.activeAddress];
+    NSSet<NSString *> *addresses = [self addressPoolSnapshot];
+    if (addresses.count > 0) {
         NSError *error;
-        parentHost.activeAddressPool = [NSKeyedArchiver archivedDataWithRootObject:self.activeAddressPool requiringSecureCoding:YES error:&error];
+        NSData *archivedAddresses = [NSKeyedArchiver archivedDataWithRootObject:[addresses mutableCopy]
+                                                        requiringSecureCoding:YES error:&error];
+        if (archivedAddresses) {
+            parentHost.activeAddressPool = archivedAddresses;
+        }
     }
-    else if(self.activeAddress) [self.activeAddressPool addObject:self.activeAddress];
-    
-    // NSLog(@"Persisting activeAddressPool, pool count %lu ... %f, host: %@", (unsigned long)self.activeAddressPool.count, CACurrentMediaTime(), self.name);
-    
+
     // try to fix invalid mac happens in some cases
     // 添加主机crash问题重点关注
     if (!(self.mac == nil || [self.mac isEqualToString:@"00:00:00:00:00:00"])) parentHost.mac = self.mac;

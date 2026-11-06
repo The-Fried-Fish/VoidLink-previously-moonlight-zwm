@@ -10,7 +10,9 @@
 
 @interface DiscoveryWorker : NSOperation
 
-- (id) initWithHost:(TemporaryHost*)host uniqueId:(NSString*)uniqueId;
+- (id) initWithHost:(TemporaryHost*)host
+           uniqueId:(NSString*)uniqueId
+     onHostChanged:(void (^)(TemporaryHost*))onHostChanged;
 - (void) discoverHost;
 - (TemporaryHost*) getHost;
 

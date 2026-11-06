@@ -1596,15 +1596,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
             if(ControllerNavigator.radialMenuView) [ControllerNavigator updateRadialMenu];
         });
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [ControllerNavigator restoreUINavigationHighlight];
-            // ControllerNavigator.radialMenuButtonPressed = false;
             if(ControllerNavigator.streamingRadialMenuButton == ControllerElementSpecial)  [GamepadNavigationIllustrationHud updateHudWithForceDisplay:true];
-        });
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [ControllerNavigator restoreUINavigationHighlight];
-        });
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [ControllerNavigator restoreUINavigationHighlight];
         });
     }
     

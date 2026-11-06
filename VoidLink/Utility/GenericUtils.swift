@@ -588,6 +588,9 @@ import UIKit
     @objc public static func handleFirstGamepadConnection(in vc: UIViewController?,with controller: GCController, handler: @escaping () -> Void) {
         if PublicUtils.isTVOS {
             AlertControllerUtil.alertController.dismiss(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                ControllerNavigator.uiNavigationDelegate?.restoreControllerNavigationHighlight()
+            }
         }
 
         if isFirstConnectingG8PlusMFi(controller) {

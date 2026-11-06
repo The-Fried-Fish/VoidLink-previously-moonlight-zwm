@@ -106,7 +106,15 @@ NSString *const deviceName = @"roth";
         *address = NSMakeRange(locationOfOpeningBracket + 1, locationOfClosingBracket - locationOfOpeningBracket - 1);
     }
     else {
-        // It's an IPv4 address, so just cut at the port separator
+        // A bare IPv6 literal uses the default port. A custom port needs brackets.
+        NSRange scope = [addressPort rangeOfString:@"%"];
+        NSString *literal = scope.location == NSNotFound ? addressPort : [addressPort substringToIndex:scope.location];
+        struct in6_addr ipv6;
+        if (inet_pton(AF_INET6, literal.UTF8String, &ipv6) == 1) {
+            *address = NSMakeRange(0, addressPort.length);
+            *port = NSMakeRange(NSNotFound, 0);
+            return TRUE;
+        }
         *address = NSMakeRange(0, [addressPort rangeOfString:@":"].location);
     }
     

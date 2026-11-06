@@ -12,6 +12,8 @@
 @protocol DiscoveryCallback <NSObject>
 
 - (void) updateAllHosts:(NSArray*)hosts;
+// May be called from a discovery worker thread.
+- (void) hostCardContentsDidChange:(TemporaryHost*)host;
 
 @end
 

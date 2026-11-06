@@ -144,8 +144,7 @@
     if ([serverInfoResponse isStatusOk]) {
         host = [[TemporaryHost alloc] init];
         host.activeAddress = host.address = hostAddress;
-        if(!host.activeAddressPool) host.activeAddressPool = [[NSMutableSet alloc] init];
-        if(host.activeAddress) [host.activeAddressPool addObject:host.activeAddress];
+        [host rememberAddress:hostAddress];
         host.state = StateOnline;
         [serverInfoResponse populateHost:host];
         
@@ -291,8 +290,11 @@
             existingHost.externalAddress = host.externalAddress;
         }
         existingHost.activeAddress = host.activeAddress;
-        if(host.activeAddress) [existingHost.activeAddressPool addObject:host.activeAddress];
-        existingHost.state = host.state;
+        [existingHost rememberAddress:host.activeAddress];
+        if (existingHost.state != host.state) {
+            existingHost.state = host.state;
+            [_callback hostCardContentsDidChange:existingHost];
+        }
         return NO; // returning a "NO" here means Updating addresses of existing host
     }
     else {
@@ -350,7 +352,7 @@
     // Discover the hosts before adding to eliminate duplicates
     Log(LOG_D, @"Found host through MDNS: %@:", host.name);
     // Since this is on a background thread, we do not need to use the opQueue
-    DiscoveryWorker* worker = (DiscoveryWorker*)[self createWorkerForHost:host];
+    DiscoveryWorker* worker = [[DiscoveryWorker alloc] initWithHost:host uniqueId:_uniqueId onHostChanged:nil];
     [worker discoverHost];
     if ([self addHostToDiscovery:host]) {
         Log(LOG_I, @"Found new host through MDNS: %@:", host.name);
@@ -374,8 +376,10 @@
 }
 
 - (NSOperation*) createWorkerForHost:(TemporaryHost*)host {
-    DiscoveryWorker* worker = [[DiscoveryWorker alloc] initWithHost:host uniqueId:_uniqueId];
-    return worker;
+    __weak id<DiscoveryCallback> callback = _callback;
+    return [[DiscoveryWorker alloc] initWithHost:host uniqueId:_uniqueId onHostChanged:^(TemporaryHost* changedHost) {
+        [callback hostCardContentsDidChange:changedHost];
+    }];
 }
 
 @end

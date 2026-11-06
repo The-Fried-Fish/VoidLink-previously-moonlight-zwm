@@ -46,7 +46,7 @@
         // If we reached this host through this port, store our port there
         if (host.activeAddress && [lanAddr isEqualToString:[Utils addressPortStringToAddress:host.activeAddress]]) {
             localPort = [Utils addressPortStringToPort:host.activeAddress];
-            if(host.activeAddress) [host.activeAddressPool addObject:host.activeAddress];
+            [host rememberAddress:host.activeAddress];
         }
         else if (host.localAddress) {
             // If there's an existing local address, use the port from that
@@ -58,7 +58,7 @@
         }
         
         host.localAddress = [Utils addressAndPortToAddressPortString:lanAddr port:localPort];
-        if(lanAddr) [host.activeAddressPool addObject:lanAddr];
+        [host rememberAddress:lanAddr];
     }
     
     // This is a Sunshine extension for WAN port remapping

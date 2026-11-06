@@ -20,8 +20,6 @@ protocol HostCardActionDelegate: NSObjectProtocol {
     func pairButtonTapped(for host: TemporaryHost)
     @objc(hostCardLongPressed:view:)
     func hostCardLongPressed(_ host: TemporaryHost, view: UIView)
-    @objc(isStreaming)
-    func isStreaming() -> Bool
 }
 
 @objcMembers
@@ -57,7 +55,6 @@ class HostCardView: UIView {
     private var backgroundLayer: CAGradientLayer!
     private var longPressFired = false
 
-    private static let refreshCycle: TimeInterval = 2
     private let stateUnknown = State(rawValue: 0)!
     private let stateOffline = State(rawValue: 1)!
     private let stateOnline = State(rawValue: 2)!
@@ -449,7 +446,6 @@ class HostCardView: UIView {
         super.layoutSubviews()
         backgroundLayer.bounds = bounds.insetBy(dx: -0.5 * bounds.size.width, dy: -0.5 * bounds.size.height)
         backgroundLayer.position = CGPoint(x: bounds.midX, y: bounds.midY)
-        updateContents(for: host)
     }
 
     func tintAdjustmentModeDidChange() {
@@ -464,14 +460,12 @@ class HostCardView: UIView {
 
         backgroundLayer?.isHidden = false
         updateBackgroundLayerTheme()
-        updateContents(for: host)
+        refreshHostContents()
     }
 
-    override func didMoveToSuperview() {
-        if superview != nil && host != nil {
-            NSLog("start update loop")
-            updateLoop()
-        }
+    func refreshHostContents(for changedHost: TemporaryHost) {
+        guard host === changedHost else { return }
+        refreshHostContents()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -481,19 +475,7 @@ class HostCardView: UIView {
         ThemeManager.userInterfaceStyle() == .dark
     }
 
-    @objc func updateLoop() {
-        if superview == nil || delegate?.isStreaming() == true {
-            return
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now()+0.36) { [weak self] in
-            self?.updateContents(for: self?.host)
-        }
-        
-        perform(#selector(updateLoop), with: self, afterDelay: Self.refreshCycle)
-    }
-
-    private func updateContents(for host: TemporaryHost?) {
+    func refreshHostContents() {
         guard let host else { return }
 
         hostNameLabel.text = host.name

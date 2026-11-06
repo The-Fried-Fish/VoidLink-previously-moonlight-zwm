@@ -273,6 +273,7 @@ static NSMutableSet* hostList;
                     [[self activeViewController] presentViewController:applistAlert animated:YES completion:nil];
                 }];
                 host.state = StateOffline;
+                [self hostCardContentsDidChange:host];
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -379,6 +380,9 @@ static NSMutableSet* hostList;
     
     // [self.collectionView removeFromSuperview]; // necessary for new scroll host view reloading mechanism
     self.hostCollectionVC.view.hidden = NO;
+    if (![self isStreaming]) {
+        [self.hostCollectionVC refreshVisibleHostCards];
+    }
     self.collectionView.hidden = YES;
     [self updateTitle];
     self.navigationItem.rightBarButtonItems = PublicUtils.isTVOS
@@ -391,7 +395,9 @@ static NSMutableSet* hostList;
         [ControllerNavigator setUINavigationDelegate:self.isInAppView ? self.hostCollectionVC : self.hostCollectionVC];
         if(ControllerNavigator.radialMenuView.superview) [ControllerNavigator updateRadialMenu];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [ControllerNavigator restoreUINavigationHighlight];
+            if (ControllerNavigator.uiNavigationDelegate == self.hostCollectionVC && ![self isStreaming]) {
+                [ControllerNavigator restoreUINavigationHighlight];
+            }
         });
     }
 }
@@ -402,7 +408,18 @@ static NSMutableSet* hostList;
     [self updateBoxArtCacheForApp:app];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.collectionView reloadData];
+        if (![self isInAppView] || app.host != self->_selectedHost) return;
+        for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
+            for (UIView* view in cell.subviews) {
+                if ([view isKindOfClass:[UIAppView class]]) {
+                    UIAppView* appView = (UIAppView*)view;
+                    if (appView.app.host == app.host && [appView.app.id isEqualToString:app.id]) {
+                        [appView updateAppImage];
+                        return;
+                    }
+                }
+            }
+        }
     });
 }
 
@@ -443,10 +460,7 @@ static NSMutableSet* hostList;
     // self.navigationController.navigationBar.translucent = NO;
     //[self applyNavBarAppearance:navBarAppearance];
     
-    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-    dispatch_after(delayTime, dispatch_get_main_queue(), ^{
-        if(@available(iOS 13.0, *)) if(ControllerUtil.primaryGCController) [ControllerNavigator restoreUINavigationHighlight];
-    });
+    [self refreshAppNavigationHighlight];
 }
 
 - (void)appButtonTappedForHost:(TemporaryHost *)host{
@@ -541,10 +555,12 @@ static NSMutableSet* hostList;
                     }];
 
                     host.state = StateOffline;
+                    [self hostCardContentsDidChange:host];
                 });
             } else {
                 // Update the host object with this data
                 [serverInfoResp populateHost:host];
+                [self hostCardContentsDidChange:host];
                 // Only pair when this was the result of explicit user action
                     Log(LOG_I, @"Trying to pairTrying to pair");
                     // Polling the server while pairing causes the server to screw up
@@ -566,6 +582,7 @@ static NSMutableSet* hostList;
     [self.collectionView reloadData]; //for new scroll host view reloading mechanism
     [self.view addSubview:self.collectionView]; //for new scroll host view reloading mechanism
     [self constrainIPhoneAppViewToSafeArea];
+    [self refreshAppNavigationHighlight];
     
     // 若未在线或未配对, 有以下:
     
@@ -615,10 +632,12 @@ static NSMutableSet* hostList;
                         [self switchToHostView];
                     }];
                     host.state = StateOffline;
+                    [self hostCardContentsDidChange:host];
                 });
             } else {
                 // Update the host object with this data
                 [serverInfoResp populateHost:host];
+                [self hostCardContentsDidChange:host];
                 if (host.pairState == PairStatePaired) {
                     Log(LOG_I, @"Already Paired");
                     [self alreadyPaired];
@@ -1045,6 +1064,7 @@ static NSMutableSet* hostList;
         else if ([serverInfoResp isStatusOk]) {
             // Update the host object with this info
             [serverInfoResp populateHost:app.host];
+            [self hostCardContentsDidChange:app.host];
         }
     }
     [self->_discMan resumeDiscoveryForHost:app.host];
@@ -2464,6 +2484,13 @@ static NSMutableSet* hostList;
     
     [[self revealViewController] setPrimaryViewController:self];
     self.revealViewController.isStreaming = false; // tell the revealViewController streaming is finished
+    [self.hostCollectionVC refreshVisibleHostCards];
+    if (@available(iOS 13.0, *)) {
+        if (ControllerNavigator.uiNavigationDelegate == self ||
+            ControllerNavigator.uiNavigationDelegate == self.hostCollectionVC) {
+            [ControllerNavigator restoreUINavigationHighlight];
+        }
+    }
     //[self.settingsButton setEnabled:![self isIPhonePortrait]]; //make sure settings button is disabled in iphone portrait mode.
     //recordedScreenWidth = CGRectGetWidth([[PublicUtils screenForView:self.viewIfLoaded] bounds]); // Get the screen's bounds (in points), update recorded screen width
 // #endif
@@ -2614,6 +2641,14 @@ static NSMutableSet* hostList;
     }
 }
 
+- (void) hostCardContentsDidChange:(TemporaryHost*)host {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (![self isStreaming]) {
+            [self.hostCollectionVC refreshHostCardForHost:host];
+        }
+    });
+}
+
 - (void) updateAllHosts:(NSArray *)hosts {
     // We must copy the array here because it could be modified
     // before our main thread dispatch happens.
@@ -2750,6 +2785,15 @@ static NSMutableSet* hostList;
 
     [self.collectionView reloadData];
     [self refreshAppCollectionLayout];
+    [self refreshAppNavigationHighlight];
+}
+
+- (void)refreshAppNavigationHighlight {
+    if (@available(iOS 13.0, *)) {
+        if (ControllerNavigator.uiNavigationDelegate == self) {
+            [ControllerNavigator restoreUINavigationHighlight];
+        }
+    }
 }
 
 - (bool)isInAppView{
@@ -2791,6 +2835,12 @@ static NSMutableSet* hostList;
 #endif
 
     return cell;
+}
+
+- (void)collectionView:(UICollectionView*)collectionView willDisplayCell:(UICollectionViewCell*)cell forItemAtIndexPath:(NSIndexPath*)indexPath {
+    if (@available(iOS 13.0, *)) {
+        [self applyAppNavigationHighlightToCell:cell atIndexPath:indexPath];
+    }
 }
 
 - (CGSize)appCollectionCellSize {

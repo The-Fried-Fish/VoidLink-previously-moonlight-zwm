@@ -116,6 +116,21 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
         }
     }
 
+    @objc(refreshHostCardForHost:)
+    func refreshHostCard(for host: TemporaryHost) {
+        guard isViewLoaded else { return }
+        for case let cell as HostCell in collectionView.visibleCells {
+            cell.cardView?.refreshHostContents(for: host)
+        }
+    }
+
+    func refreshVisibleHostCards() {
+        guard isViewLoaded else { return }
+        for case let cell as HostCell in collectionView.visibleCells {
+            cell.cardView?.refreshHostContents()
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.register(HostCell.self, forCellWithReuseIdentifier: "HostCell")
@@ -224,6 +239,10 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
             applyControllerNavigationHighlight(to: cell, highlighted: indexPath == controllerNavigationSelectedIndexPath)
         }
         return cell
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        (cell as? HostCell)?.cardView?.refreshHostContents()
     }
 
     func collectionView(_ collectionView: UICollectionView,
