@@ -70,6 +70,7 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
     var minimumLineSpacing: CGFloat = 10
     var cellSize: CGSize = .zero
     private(set) var items = NSMutableArray()
+    weak var deeplinkCoordinator: DeeplinkCoordinator?
 
     private var collectionViewHeightConstraint: NSLayoutConstraint?
     private var superViewBottomConstraint: NSLayoutConstraint?
@@ -122,6 +123,25 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
         for case let cell as HostCell in collectionView.visibleCells {
             cell.cardView?.refreshHostContents(for: host)
         }
+        deeplinkCoordinator?.reportOnlineHost(host)
+        refreshHostNavigationHudIfActive(for: host)
+    }
+
+    @available(iOS 13.0, *)
+    func refreshHostNavigationHudIfActive(for host: TemporaryHost? = nil) {
+        guard ControllerNavigator.uiNavigationDelegate === self,
+              ControllerNavigator.radialMenuView == nil else { return }
+        if let host {
+            guard let index = controllerNavigationSelectedIndexPath?.item,
+                  index >= 0, index < items.count, (items[index] as? TemporaryHost) === host else { return }
+        }
+        GamepadNavigationIllustrationHud.updateHud()
+    }
+
+    func reportOnlineHostsForDeeplink() {
+        for case let host as TemporaryHost in items {
+            deeplinkCoordinator?.reportOnlineHost(host)
+        }
     }
 
     func refreshVisibleHostCards() {
@@ -129,6 +149,7 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
         for case let cell as HostCell in collectionView.visibleCells {
             cell.cardView?.refreshHostContents()
         }
+        refreshHostNavigationHudIfActive()
     }
 
     override func viewDidLoad() {
@@ -152,12 +173,14 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
             items.add(host)
             collectionView.reloadData()
         }
+        deeplinkCoordinator?.reportOnlineHost(host)
     }
 
     func removeHost(_ host: TemporaryHost) {
         if items.contains(host) {
             items.remove(host)
             collectionView.reloadData()
+            refreshHostNavigationHudIfActive()
         }
     }
 
@@ -165,6 +188,7 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
         if items.count > 0 {
             items.removeLastObject()
             collectionView.reloadData()
+            refreshHostNavigationHudIfActive()
         }
     }
 
@@ -243,6 +267,9 @@ class HostCollectionViewController: UICollectionViewController, UICollectionView
 
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         (cell as? HostCell)?.cardView?.refreshHostContents()
+        if indexPath == controllerNavigationSelectedIndexPath {
+            refreshHostNavigationHudIfActive()
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView,

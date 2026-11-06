@@ -247,7 +247,10 @@ BOOL VoidLinkTvOSShouldUpdateFocus(UIFocusUpdateContext *context, UIWindow *wind
 #endif
 
 API_AVAILABLE(ios(13.0), tvos(13.0))
-@implementation SceneDelegate
+@implementation SceneDelegate {
+    __weak MainFrameViewController *_deeplinkMainFrame;
+    NSURL *_pendingDeeplinkURL;
+}
 
 static __weak UIView *_sharedStreamVideoRenderView = nil;
 static __weak UIView *_localRenderContainer = nil;
@@ -272,6 +275,7 @@ static BOOL VLIsExternalDisplaySession(UISceneSession *session) {
     }
     UIWindowScene *windowScene = (UIWindowScene *)scene;
     if ([session.role isEqualToString:UIWindowSceneSessionRoleApplication]) {
+        [self scene:scene openURLContexts:connectionOptions.URLContexts];
 #if TARGET_OS_TV
         self.window = [[VoidLinkNoFocusWindow alloc] initWithWindowScene:windowScene];
 #else
@@ -299,6 +303,19 @@ static BOOL VLIsExternalDisplaySession(UISceneSession *session) {
     }
 }
 
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
+    if (![scene.session.role isEqualToString:UIWindowSceneSessionRoleApplication]) return;
+    for (UIOpenURLContext *context in URLContexts) {
+        if (![DeeplinkCoordinator canHandleURL:context.URL]) continue;
+        if (_deeplinkMainFrame) {
+            [_deeplinkMainFrame.deeplinkCoordinator open:context.URL];
+        } else {
+            _pendingDeeplinkURL = context.URL;
+        }
+        break;
+    }
+}
 
 // Construct every business view only after the shared device cache is ready.
 - (void)finishConnectingMainAppScene {
@@ -346,7 +363,24 @@ static BOOL VLIsExternalDisplaySession(UISceneSession *session) {
         initialViewController = revealViewController;
     }
 #endif
-    self.window.rootViewController = [[VoidLinkControllerRootViewController alloc] initWithContentViewController:initialViewController];
+    UIViewController *root = [[VoidLinkControllerRootViewController alloc] initWithContentViewController:initialViewController];
+    self.window.rootViewController = root;
+    // On iOS the storyboard creates the reveal controller's front controller in loadView.
+    [root loadViewIfNeeded];
+    UIViewController *deeplinkFront = initialViewController;
+    if ([deeplinkFront isKindOfClass:SWRevealViewController.class]) {
+        deeplinkFront = ((SWRevealViewController *)deeplinkFront).frontViewController;
+    }
+    if ([deeplinkFront isKindOfClass:UINavigationController.class]) {
+        deeplinkFront = ((UINavigationController *)deeplinkFront).viewControllers.firstObject;
+    }
+    if ([deeplinkFront isKindOfClass:MainFrameViewController.class]) {
+        _deeplinkMainFrame = (MainFrameViewController *)deeplinkFront;
+        if (_pendingDeeplinkURL) {
+            [_deeplinkMainFrame.deeplinkCoordinator open:_pendingDeeplinkURL];
+            _pendingDeeplinkURL = nil;
+        }
+    }
     [self.window makeKeyAndVisible];
 #if !TARGET_OS_TV
     // Keep the actual menu's geometry listener alive even before its first reveal.

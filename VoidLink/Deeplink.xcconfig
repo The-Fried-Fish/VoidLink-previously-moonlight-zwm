@@ -1,0 +1,13 @@
+// Keep the registered URL scheme tied to the effective bundle identifier.
+VOIDLINK_SCHEME_com_voidlink_iOS = voidlink
+VOIDLINK_SCHEME_com_voidlinkextreme_iOS = voidlikex
+VOIDLINK_SCHEME_com_voidlink_tf_iOS = voidlinktf
+VOIDLINK_SCHEME_com_voidlink_tf_debug10_iOS = voidlinktf2
+VOIDLINK_SCHEME_com_voidlink_tvOS = voidlink
+VOIDLINK_SCHEME_com_voidlinkextreme_tvOS = voidlikex
+VOIDLINK_SCHEME_com_voidlink_tf_tvOS = voidlinktf
+VOIDLINK_SCHEME_com_voidlink_tf_debug10_tvOS = voidlinktf2
+VOIDLINK_DEEPLINK_SCHEME = $(VOIDLINK_SCHEME_$(PRODUCT_BUNDLE_IDENTIFIER:identifier):default=voidlinkwild)
+
+// The tvOS app and its Top Shelf extension use the same project-level host ID.
+TOP_SHELF_APP_GROUP = group.$(VOIDLINK_TV_BUNDLE_ID)

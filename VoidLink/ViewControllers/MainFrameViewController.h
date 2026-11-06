@@ -20,6 +20,7 @@
 @class SettingsViewController;
 @class TemporaryApp;
 @class HostCollectionViewController;
+@class DeeplinkCoordinator;
 
 @interface MainFrameViewController : UICollectionViewController <DiscoveryCallback, PairCallback, AppAssetCallback, NSURLConnectionDelegate, SWRevealViewControllerDelegate, UITextFieldDelegate>
 
@@ -36,6 +37,10 @@
 #if !TARGET_OS_TV
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigationItem;
 #endif
+
+@property (nonatomic, strong, readonly) DeeplinkCoordinator *deeplinkCoordinator;
+- (void)prepareDeeplinkHostView;
+- (void)openDeeplinkHost:(TemporaryHost *)host showHiddenApps:(BOOL)showHiddenApps NS_SWIFT_NAME(openDeeplinkHost(_:showHiddenApps:));
 
 - (void)expandSettingsView;
 - (void)closeSettingViewAnimated:(BOOL)anaimated;

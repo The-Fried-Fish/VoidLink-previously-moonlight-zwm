@@ -8,6 +8,15 @@
 import UIKit
 
 @objc class AlertControllerUtil: NSObject {
+    static func showAutoDismissNotice(in presenter: UIViewController, message: String, seconds: TimeInterval) {
+        let notice = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        presenter.present(notice, animated: true) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { [weak notice] in
+                notice?.dismiss(animated: true)
+            }
+        }
+    }
+
     private enum AlertTextRole {
         case title
         case message

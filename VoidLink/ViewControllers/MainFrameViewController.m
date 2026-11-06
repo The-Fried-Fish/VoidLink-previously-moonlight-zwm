@@ -51,6 +51,7 @@
 #endif
 @property (nonatomic, strong, readwrite) NSArray<TemporaryApp *> *sortedAppList;
 @property (nonatomic, assign) bool settingsViewExpanded;
+@property (nonatomic, strong, readwrite) DeeplinkCoordinator *deeplinkCoordinator;
 @end
 
 #if TARGET_OS_TV
@@ -111,6 +112,32 @@ static NSArray<UIBarButtonItem *> *VLBarButtonItems(UIBarButtonItem *first, UIBa
 }
 static NSMutableSet* hostList;
 
+- (DeeplinkCoordinator *)deeplinkCoordinator {
+    if (!_deeplinkCoordinator) {
+        _deeplinkCoordinator = [[DeeplinkCoordinator alloc] initWithMainFrame:self];
+    }
+    return _deeplinkCoordinator;
+}
+
+- (void)prepareDeeplinkHostView {
+    [self closeSettingViewAnimated:NO];
+    [self switchToHostView];
+    [_discMan startDiscovery];
+    [self.hostCollectionVC reportOnlineHostsForDeeplink];
+}
+
+- (void)openDeeplinkHost:(TemporaryHost *)host showHiddenApps:(BOOL)showHiddenApps {
+    if ([self isStreaming]) return;
+    _selectedHost = host;
+    _showHiddenApps = showHiddenApps;
+    if (host.pairState == PairStatePaired) {
+        [self switchToAppView];
+    } else {
+        [self pairButtonTappedForHost:host];
+    }
+}
+
+
 - (void)startPairing:(NSString *)PIN {
     // Needs to be synchronous to ensure the alert is shown before any potential
     // failure callback could be invoked.
@@ -166,7 +193,11 @@ static NSMutableSet* hostList;
         self->_pairAlert = nil;
         
         [self->_discMan startDiscovery];
-        [self alreadyPaired];
+        if ([self->_deeplinkCoordinator isWaitingForAppsForHost:self->_selectedHost]) {
+            [self switchToAppView];
+        } else {
+            [self alreadyPaired];
+        }
     });
 }
 
@@ -287,7 +318,9 @@ static NSMutableSet* hostList;
                 [self updateAppsForHost:host];
                 [self->_appManager stopRetrieving];
                 [self->_appManager retrieveAssetsFromHost:host];
-                [self hideLoadingFrame: nil];
+                [self hideLoadingFrame:^{
+                    [self->_deeplinkCoordinator appsDidRefreshFor:host];
+                }];
             });
         }
     });
@@ -372,6 +405,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)switchToHostView {
+    [_deeplinkCoordinator didReturnToHostView];
     _enteredAppView = false;
     [_appManager stopRetrieving];
     _showHiddenApps = NO;
@@ -770,6 +804,9 @@ static NSMutableSet* hostList;
         }]];
     }*/
 #endif
+    if (host.pairState == PairStatePaired) {
+        [DeeplinkCoordinator addLinkActionTo:longClickAlert presenter:self host:host appID:nil];
+    }
     [longClickAlert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Remove Host"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction* action) {   // host removed here
         [self->_discMan removeHostFromDiscovery:host];
         [self.hostCollectionVC removeHost:host];
@@ -1232,6 +1269,10 @@ static NSMutableSet* hostList;
                                         }];
                                         
                                     }]];
+    }
+
+    if (app.host && app.id.length > 0) {
+        [DeeplinkCoordinator addLinkActionTo:alertController presenter:self host:app.host appID:app.id];
     }
 
     if (currentApp == nil || ![app.id isEqualToString:currentApp.id] || app.hidden) {
@@ -2550,10 +2591,12 @@ static NSMutableSet* hostList;
 #else
     [ControllerUtil handleGameControllerRequiredTipIn:self delay:1];
 #endif
+    [_deeplinkCoordinator viewDidBecomeReady];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    [_deeplinkCoordinator viewWillLeave];
     [_foregroundHostUpdateTimer invalidate];
     _foregroundHostUpdateTimer = nil;
 }
@@ -3041,6 +3084,7 @@ static NSMutableSet* hostList;
 - (void)initHostCollection{
     // 初始化 HostCollectionViewController
     self.hostCollectionVC = [[HostCollectionViewController alloc] init];
+    self.hostCollectionVC.deeplinkCoordinator = self.deeplinkCoordinator;
     self.hostCollectionVC.cellSize = [self getHostCardSize];
     self.hostCollectionVC.interItemMinimumSpacing = 25;
     self.hostCollectionVC.minimumLineSpacing = PublicUtils.isTVOS ? 49 : 25;

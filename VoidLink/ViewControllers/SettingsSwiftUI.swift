@@ -1874,10 +1874,11 @@ final class SettingsSession: NSObject, ObservableObject {
     private var highlightMoveCancellationGeneration: UInt64 = 0
 
     init(presentingController: UIViewController) {
-        
+#if !os(tvOS)
         PublicUtils.changeDefaultSettings(for: nil)
         PublicUtils.updatePartialSettings()
-        
+#endif
+
 #if os(tvOS)
         let initialSnapshot = (presentingController as? SettingsViewController)?
             .initialSettingsSnapshotForSwiftUI()

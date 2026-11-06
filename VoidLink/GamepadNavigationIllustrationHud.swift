@@ -145,13 +145,10 @@ final class GamepadNavigationIllustrationHud: UIView {
     }
     
     @objc static func updateHud(forceDisplay: Bool = false) {
-        let elements = ControllerNavigator.uiNavigationDelegate?.getNavigationElements() ?? []
-        /*
-        for element in elements {
-            print("element \(element.action)")
-        } */
-        
-        updateNavigationElements(elements, forceDisplay: forceDisplay)
+        PublicUtils.runOnMain {
+            let elements = ControllerNavigator.uiNavigationDelegate?.getNavigationElements() ?? []
+            updateNavigationElements(elements, forceDisplay: forceDisplay)
+        }
     }
 
     static func updateActionState(for control: ControllerElement, isInAction: Bool) {

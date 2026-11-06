@@ -105,11 +105,13 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     [CommandManager presetDefaultCommands];
     [GenericUtils installSegmentedControlPreviousSelectionTracking];
     [PublicUtils installTextFieldControllerUserInteractionTracking];
+    [PublicUtils changeDefaultSettingsForView:nil];
+    [PublicUtils updatePartialSettings];
     [IAPManager shared];
     [IAPManager refreshPurchaseCache];
 
     // tvOS mounts the settings view lazily when its reveal menu first opens.
-    // Read its Core Data snapshot now so that first presentation is RAM-only.
+    // Capture the persisted defaults so the first presentation can use the snapshot.
     DataManager *dataManager = [[DataManager alloc] init];
     self.tvOSInitialSettingsSnapshot = [dataManager getSettings];
     return YES;

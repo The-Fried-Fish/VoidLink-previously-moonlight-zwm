@@ -22,6 +22,34 @@ protocol HostCardActionDelegate: NSObjectProtocol {
     func hostCardLongPressed(_ host: TemporaryHost, view: UIView)
 }
 
+@available(iOS 13.0, *)
+enum HostCardNavigationAction: String, CaseIterable {
+    case applications
+    case launch
+    case pair = "Pair"
+    case wake = "Wake PC"
+#if os(tvOS)
+    case addToTopShelf = "Add to Top Shelf"
+    case removeFromTopShelf = "Remove from Top Shelf"
+#endif
+
+    var element: ControllerNavigationElement {
+        let isLeft = ControllerNavigator.radialMenuButtonPosition == .left
+        let control: ControllerElement
+        switch self {
+        case .applications:
+            control = isLeft ? .dpadRight : .a
+        case .launch, .pair, .wake:
+            control = isLeft ? .dpadUp : .x
+#if os(tvOS)
+        case .addToTopShelf, .removeFromTopShelf:
+            control = isLeft ? .dpadDown : .y
+#endif
+        }
+        return ControllerNavigationElement(control: control, action: rawValue)
+    }
+}
+
 @objcMembers
 class HostCardView: UIView {
     var sizeFactor: CGFloat = 1
@@ -43,7 +71,7 @@ class HostCardView: UIView {
     private var separatorLine: UIView!
     private var cardContentpadding: CGFloat = 0
 
-    private var host: TemporaryHost?
+    private(set) var host: TemporaryHost?
     private var hostSpinner: UIActivityIndicatorView!
     private var lockIconView: UIImageView!
     private var computerIconMonitorCenterYOffset: CGFloat = 0
@@ -101,6 +129,57 @@ class HostCardView: UIView {
 
     private func isIPhone() -> Bool {
         UIDevice.current.userInterfaceIdiom == .phone
+    }
+
+    private var hasValidWakeAddress: Bool {
+        guard let mac = host?.mac else { return false }
+        return !mac.isEmpty && mac != "00:00:00:00:00:00"
+    }
+
+    @available(iOS 13.0, *)
+    func getNavElements() -> [ControllerNavigationElement] {
+        guard let host else { return [] }
+        let isPaired = host.pairState == pairStatePaired
+        var actions: [HostCardNavigationAction] = []
+        if host.state == .online, isPaired {
+            actions.append(.applications)
+        }
+#if os(tvOS)
+        if DeeplinkCoordinator.isOnTopShelf(host: host, app: nil) {
+            actions.append(.removeFromTopShelf)
+        } else if isPaired, host.uuid.count >= 8 {
+            actions.append(.addToTopShelf)
+        }
+#endif
+        switch host.state {
+        case .online:
+            actions.append(isPaired ? .launch : .pair)
+        case .offline where hasValidWakeAddress:
+            actions.append(.wake)
+        default:
+            break
+        }
+        return actions.map(\.element)
+    }
+
+    @available(iOS 13.0, *)
+    func performNavigationAction(for control: ControllerElement) {
+        guard parentViewController?.hasNoPresentedVC == true,
+              let element = getNavElements().first(where: { $0.control == control }),
+              let action = HostCardNavigationAction(rawValue: element.action) else { return }
+        longPressFired = false
+        switch action {
+        case .applications: appButtonTapped()
+        case .launch: launchButtonTapped()
+        case .pair: pairButtonTapped()
+        case .wake: wakeupButtonTapped()
+#if os(tvOS)
+        case .addToTopShelf, .removeFromTopShelf:
+            if let host, let presenter = delegate as? MainFrameViewController {
+                DeeplinkCoordinator.toggleTopShelf(host: host, app: nil, presenter: presenter)
+            }
+#endif
+        }
     }
 
     @objc func appButtonTapped() {
@@ -482,7 +561,7 @@ class HostCardView: UIView {
         backgroundLayer.isHidden = !(host.state == stateOnline && host.pairState == pairStatePaired)
 
         let hostPaired = host.pairState == pairStatePaired
-        let hasValidMac = host.mac != nil && host.mac != "00:00:00:00:00:00"
+        let hasValidMac = hasValidWakeAddress
 
         switch host.state {
         case stateOnline:
