@@ -1032,19 +1032,51 @@ static NSMutableSet* hostList;
     // Exempt this host from discovery while handling the quit operation
     [self->_discMan pauseDiscoveryForHost:app.host];
     [hMan executeRequestSynchronously:quitRequest];
+    if (quitResponse.statusCode == 200 && [[[quitResponse getStringTag:@"cancel"] trim] isEqualToString:@"0"]) {
+        quitResponse.statusCode = 599;
+    }
     if (quitResponse.statusCode == 200) {
-        ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
-        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
-                                                            fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
-        if (![serverInfoResp isStatusOk] || [[serverInfoResp getStringTag:@"state"] hasSuffix:@"_SERVER_BUSY"]) {
-            // On newer GFE versions, the quit request succeeds even though the app doesn't
-            // really quit if another client tries to kill your app. We'll patch the response
-            // to look like the old error in that case, so the UI behaves.
-            quitResponse.statusCode = 599;
-        }
-        else if ([serverInfoResp isStatusOk]) {
-            // Update the host object with this info
-            [serverInfoResp populateHost:app.host];
+        // Sunshine Foundation acknowledges /cancel before the app has stopped.
+        const NSTimeInterval confirmationTimeout = 12.0;
+        const NSTimeInterval pollInterval = 0.75;
+        const dispatch_time_t requestDeadline = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(confirmationTimeout * NSEC_PER_SEC));
+        const NSTimeInterval pollDeadline = [NSProcessInfo processInfo].systemUptime + confirmationTimeout;
+        bool fastFail = false;
+
+        for (;;) {
+            ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
+            HttpRequest* serverInfoRequest = [HttpRequest requestForResponse:serverInfoResp
+                                                             withUrlRequest:[hMan newServerInfoRequest:fastFail]
+                                                               fallbackError:401
+                                                             fallbackRequest:[hMan newHttpServerInfoRequest:fastFail]];
+            [hMan executeRequestSynchronously:serverInfoRequest deadline:requestDeadline];
+
+            NSString* state = [[serverInfoResp getStringTag:@"state"] trim];
+            const bool statusOk = [serverInfoResp isStatusOk];
+            if (statusOk && state.length > @"_SERVER_FREE".length && [state hasSuffix:@"_SERVER_FREE"]) {
+                [serverInfoResp populateHost:app.host];
+                break;
+            }
+
+            // Keep the immediate GFE denial behavior when its server is still busy.
+            const bool sunshineBusy = statusOk && [state isEqualToString:@"SUNSHINE_SERVER_BUSY"];
+            const bool otherServerBusy = statusOk && [state hasSuffix:@"_SERVER_BUSY"] && !sunshineBusy;
+            const bool requestDenied = serverInfoResp.statusCode >= 400 && serverInfoResp.statusCode < 500;
+            if (otherServerBusy || requestDenied || (!sunshineBusy && app.host.isNvidiaServerSoftware)) {
+                quitResponse.statusCode = statusOk ? 599 : serverInfoResp.statusCode;
+                quitResponse.statusMessage = serverInfoResp.statusMessage;
+                break;
+            }
+            if ([NSProcessInfo processInfo].systemUptime + pollInterval >= pollDeadline) {
+                quitResponse.statusCode = statusOk ? NSURLErrorTimedOut : serverInfoResp.statusCode;
+                quitResponse.statusMessage = statusOk
+                    ? [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil].localizedDescription
+                    : serverInfoResp.statusMessage;
+                break;
+            }
+
+            [NSThread sleepForTimeInterval:pollInterval];
+            fastFail = true;
         }
     }
     [self->_discMan resumeDiscoveryForHost:app.host];
@@ -1060,7 +1092,7 @@ static NSMutableSet* hostList;
             // If it fails, display an error and stop the current operation
             if (quitResponse.statusCode != 200) {
                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
-                                                                               message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
+                                                                               message:(quitResponse.statusCode == NSURLErrorTimedOut ? quitResponse.statusMessage : [LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."])
                                                      preferredStyle:UIAlertControllerStyleAlert];
                 [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -1087,7 +1119,7 @@ static NSMutableSet* hostList;
             // If it fails, display an error and stop the current operation
             if (quitResponse.statusCode != 200) {
                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
-                                                                               message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
+                                                                               message:(quitResponse.statusCode == NSURLErrorTimedOut ? quitResponse.statusMessage : [LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."])
                                                      preferredStyle:UIAlertControllerStyleAlert];
                 [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -1182,7 +1214,7 @@ static NSMutableSet* hostList;
                                                 // If it fails, display an error and stop the current operation
                                                 if (quitResponse.statusCode != 200) {
                                                     UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
-                                                                                                                   message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
+                                                                                                                   message:(quitResponse.statusCode == NSURLErrorTimedOut ? quitResponse.statusMessage : [LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."])
                                                                                          preferredStyle:UIAlertControllerStyleAlert];
                                                     [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
                                                     dispatch_async(dispatch_get_main_queue(), ^{
