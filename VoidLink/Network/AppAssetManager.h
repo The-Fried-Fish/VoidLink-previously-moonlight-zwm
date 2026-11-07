@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import "TemporaryApp.h"
 #import "HttpManager.h"
 #import "TemporaryHost.h"
@@ -22,5 +23,6 @@
 - (void) retrieveAssetsFromHost:(TemporaryHost*)host;
 - (void) stopRetrieving;
 + (NSString*) boxArtPathForApp:(TemporaryApp*)app;
++ (nullable UIImage*)loadBoxArtForApp:(TemporaryApp*)app NS_SWIFT_NAME(loadBoxArt(for:));
 
 @end

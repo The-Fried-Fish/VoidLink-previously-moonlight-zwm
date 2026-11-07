@@ -137,23 +137,18 @@ final class UIAppView: UIButton {
         appLabel = nil
 
         var noAppImage = false
-        var loadedAppImage: UIImage?
-
-        if let boxArtPath = AppAssetManager.boxArtPath(for: app) {
-            loadedAppImage = UIImage(contentsOfFile: boxArtPath)
-            if let loadedAppImage {
-                artCache.setObject(loadedAppImage, forKey: app)
+        var loadedAppImage = artCache.object(forKey: app) as? UIImage
+        if loadedAppImage == nil {
+            loadedAppImage = AppAssetManager.loadBoxArt(for: app)
+            if let loadedAppImage, let bitmap = loadedAppImage.cgImage {
+                artCache.setObject(loadedAppImage, forKey: app,
+                                   cost: bitmap.bytesPerRow * bitmap.height)
             }
         }
+        appImage.image = UIAppView.noImage
 
         if let loadedAppImage {
-            let isGFE2BlankImage = loadedAppImage.size.width == 130.0 && loadedAppImage.size.height == 180.0
-            let isGFE3BlankImage = loadedAppImage.size.width == 628.0 && loadedAppImage.size.height == 888.0
-            if !isGFE2BlankImage && !isGFE3BlankImage {
-                appImage.image = loadedAppImage
-            } else {
-                noAppImage = true
-            }
+            appImage.image = loadedAppImage
         } else {
             noAppImage = true
         }

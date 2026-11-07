@@ -1,4 +1,5 @@
 import UIKit
+import ImageIO
 import TVServices
 
 enum TopShelfStore {
@@ -48,7 +49,7 @@ enum TopShelfStore {
         var items = try read(from: container)
         let imageName = items.first(where: { $0.url == url })?.imageName ?? UUID().uuidString + ".jpg"
         let item = Item(title: title, url: url, imageName: imageName)
-        let artwork = artworkPath.flatMap { UIImage(contentsOfFile: $0) }
+        let artwork = artworkPath.flatMap { loadArtwork(at: $0) }
         guard let imageData = makeImage(title: title, isApp: isApp, artwork: artwork).jpegData(compressionQuality: 0.9) else {
             throw CocoaError(.fileWriteUnknown)
         }
@@ -92,6 +93,31 @@ enum TopShelfStore {
             }
         }
         return []
+    }
+
+    // Decode a bounded thumbnail before the poster renderer performs aspect-fill
+    // cropping. Drawing the original image here would still decode its full bitmap.
+    private static func loadArtwork(at path: String) -> UIImage? {
+        let maxFileBytes: UInt64 = 6 * 1024 * 1024
+        let maxPixelSize = 600
+        let maxBitmapBytes = maxPixelSize * maxPixelSize * 4
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: path),
+              let fileSize = attributes[.size] as? NSNumber,
+              fileSize.uint64Value > 0, fileSize.uint64Value <= maxFileBytes,
+              let source = CGImageSourceCreateWithURL(URL(fileURLWithPath: path) as CFURL,
+                  [kCGImageSourceShouldCache: false] as CFDictionary) else { return nil }
+
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true
+        ]
+        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary),
+              image.width > 0, image.height > 0,
+              image.width <= maxPixelSize, image.height <= maxPixelSize,
+              image.bytesPerRow > 0, image.bytesPerRow <= maxBitmapBytes / image.height else { return nil }
+        return UIImage(cgImage: image)
     }
 
     private static func makeImage(title: String, isApp: Bool, artwork: UIImage?) -> UIImage {

@@ -29,7 +29,7 @@ static const int MAX_ATTEMPTS = 5;
             NSLog(@"appImage from host not nil for app: %@", boxArtPath);
 
             [[NSFileManager defaultManager] createDirectoryAtPath:[boxArtPath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
-            [appAssetResp.data writeToFile:boxArtPath atomically:NO];
+            [appAssetResp.data writeToFile:boxArtPath atomically:YES];
             break;
         }
         

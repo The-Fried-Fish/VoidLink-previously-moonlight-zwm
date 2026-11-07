@@ -94,6 +94,7 @@ static NSArray<UIBarButtonItem *> *VLBarButtonItems(UIBarButtonItem *first, UIBa
     LoadingFrameViewController* _loadingFrame;
     FrontViewPosition currentPosition;
     NSCache* _boxArtCache;
+    NSOperationQueue* _boxArtQueue;
     bool _background;
     bool _enteredAppView;
     UIView* menuSeparator;
@@ -437,24 +438,28 @@ static NSMutableSet* hostList;
 }
 
 - (void) receivedAssetForApp:(TemporaryApp*)app {
-    // Update the box art cache now so we don't have to do it
-    // on the main thread
-    [self updateBoxArtCacheForApp:app];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (![self isInAppView] || app.host != self->_selectedHost) return;
-        for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
-            for (UIView* view in cell.subviews) {
-                if ([view isKindOfClass:[UIAppView class]]) {
-                    UIAppView* appView = (UIAppView*)view;
-                    if (appView.app.host == app.host && [appView.app.id isEqualToString:app.id]) {
-                        [appView updateAppImage];
-                        return;
+    // Refresh downloaded assets on the same bounded queue as cache prefetches.
+    [_boxArtQueue addOperationWithBlock:^{
+        @autoreleasepool {
+            [self->_boxArtCache removeObjectForKey:app];
+            [self updateBoxArtCacheForApp:app];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (![self isInAppView] || app.host != self->_selectedHost) return;
+                for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
+                    for (UIView* view in cell.subviews) {
+                        if ([view isKindOfClass:[UIAppView class]]) {
+                            UIAppView* appView = (UIAppView*)view;
+                            if (appView.app.host == app.host && [appView.app.id isEqualToString:app.id]) {
+                                [appView updateAppImage];
+                                return;
+                            }
+                        }
                     }
                 }
-            }
+            });
         }
-    });
+    }];
 }
 
 - (void)displayDnsFailedDialog {
@@ -2225,6 +2230,10 @@ static NSMutableSet* hostList;
     }
     
     _boxArtCache = [[NSCache alloc] init];
+    _boxArtCache.totalCostLimit = 32 * 1024 * 1024;
+    _boxArtQueue = [[NSOperationQueue alloc] init];
+    _boxArtQueue.maxConcurrentOperationCount = 2;
+    _boxArtQueue.qualityOfService = NSQualityOfServiceUtility;
 
 
     self.collectionView.delaysContentTouches = NO;
@@ -2745,9 +2754,11 @@ static NSMutableSet* hostList;
 
             // Start jobs to decode the box art in advance
             for (TemporaryApp* app in comp.appList) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                    [self updateBoxArtCacheForApp:app];
-                });
+                [_boxArtQueue addOperationWithBlock:^{
+                    @autoreleasepool {
+                        [self updateBoxArtCacheForApp:app];
+                    }
+                }];
             }
         }
     }
@@ -2762,47 +2773,13 @@ static NSMutableSet* hostList;
     [_discMan resetDiscoveryState];
 }
 
-+ (UIImage*) loadBoxArtForCaching:(TemporaryApp*)app {
-    UIImage* boxArt;
-    
-    NSData* imageData = [NSData dataWithContentsOfFile:[AppAssetManager boxArtPathForApp:app]];
-    if (imageData == nil) {
-        // No box art on disk
-        return nil;
-    }
-    
-    CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-    CGImageRef cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil);
-    
-    size_t width = CGImageGetWidth(cgImage);
-    size_t height = CGImageGetHeight(cgImage);
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef imageContext =  CGBitmapContextCreate(NULL, width, height, 8, width * 4, colorSpace,
-                                                       kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
-    CGColorSpaceRelease(colorSpace);
-
-    CGContextDrawImage(imageContext, CGRectMake(0, 0, width, height), cgImage);
-    
-    CGImageRef outputImage = CGBitmapContextCreateImage(imageContext);
-
-    boxArt = [UIImage imageWithCGImage:outputImage];
-    
-    CGImageRelease(outputImage);
-    CGContextRelease(imageContext);
-    
-    CGImageRelease(cgImage);
-    CFRelease(source);
-    
-    return boxArt;
-}
-
 - (void) updateBoxArtCacheForApp:(TemporaryApp*)app {
     if ([_boxArtCache objectForKey:app] == nil) {
-        UIImage* image = [MainFrameViewController loadBoxArtForCaching:app];
+        UIImage* image = [AppAssetManager loadBoxArtForApp:app];
         if (image != nil) {
             // Add the image to our cache if it was present
-            [_boxArtCache setObject:image forKey:app];
+            [_boxArtCache setObject:image forKey:app
+                               cost:CGImageGetBytesPerRow(image.CGImage) * CGImageGetHeight(image.CGImage)];
         }
     }
 }

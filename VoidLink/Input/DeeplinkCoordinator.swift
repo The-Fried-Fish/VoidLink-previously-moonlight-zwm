@@ -124,7 +124,7 @@ final class DeeplinkCoordinator: NSObject {
         }
 
         stage = .waitingForHost
-        let deadline = DispatchTime.now() + 5
+        let deadline = DispatchTime.now() + 15
         hostDeadline = deadline
         let token = generation
         mainFrame.prepareDeeplinkHostView()
