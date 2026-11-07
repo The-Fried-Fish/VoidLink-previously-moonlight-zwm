@@ -16,7 +16,8 @@ class OSCProfilesManager: NSObject {
     private static let profilesDefaultsKey = "OSCProfiles"
     // private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260606"
     // private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260801"
-    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20261016"
+    // private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20261016"
+    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20261107"
 
     private static var sharedInstance: OSCProfilesManager?
     private static var onScreenWidgetViews: NSMutableSet?

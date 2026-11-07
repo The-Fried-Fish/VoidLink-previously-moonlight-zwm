@@ -912,6 +912,35 @@
         }
       }
     },
+    "=canvasDrag" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canvas (Space)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空格 (移画布)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空白鍵 (移畫布)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空白鍵 (移畫布)"
+          }
+        }
+      }
+    },
     "=closeTab" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15239,25 +15268,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Touchpad Native Mode: Passes through native touchpad gestures. Requires Foundation-Sunshine, or Canvas Host (VoidLink macOS host made for art & gaming)"
+            "value" : "Touchpad Native Mode: Passes through native touchpad gestures. Requires Foundation-Sunshine, or Canvas Host (VoidLink macOS host made for digital art)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "触控板 - 原生模式：透传原生触控板手势。仅支持 Sunshine 基地版 或 [Canvas Host] (VoidLink macOS 主机端)"
+            "value" : "触控板 - 原生模式：透传原生触控板手势。仅支持 Sunshine 基地版 或 [Canvas Host] (VoidLink macOS 绘画服务端)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控板 - 原生模式：透傳原生觸控板手勢。僅支援 Sunshine 基地版 或 [Canvas Host]（VoidLink macOS 主機端）"
+            "value" : "觸控板 - 原生模式：透傳原生觸控板手勢。僅支援 Sunshine 基地版 或 [Canvas Host]（VoidLink macOS 繪畫伺服端）"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "觸控板 - 原生模式：透傳原生觸控板手勢。僅支援 Sunshine 基地版 或 [Canvas Host]（VoidLink macOS 主機端）"
+            "value" : "觸控板 - 原生模式：透傳原生觸控板手勢。僅支援 Sunshine 基地版 或 [Canvas Host]（VoidLink macOS 繪畫伺服端）"
           }
         }
       }
