@@ -60,9 +60,15 @@ static const float QUICK_TAP_TIME_INTERVAL = 0.2;
     self->streamView = view;
     self->streamViewBounds = view.bounds;
     self->currentSettings = settings;
-    if (settings.trackpadGestureMode.intValue == TrackpadGestureModeNativeTrackpad) {
-        trackpadTouchHandler = [[TrackpadTouchHandler alloc] initWithView:view settings:settings];
-    }
+    
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)); // delay for LiGetHostMacTrackpadSimulation
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{// Code to execute after the delay
+        if (settings.trackpadGestureMode.intValue == TrackpadGestureModeNativeTrackpad
+            || LiGetHostMacTrackpadSimulation()) {
+            self->trackpadTouchHandler = [[TrackpadTouchHandler alloc] initWithView:view settings:settings];
+        }
+    });
+    
     // replace righclick recoginizing with my CustomTapGestureRecognizer for better experience, higher recoginizing rate.
     _mouseRightClickTapRecognizer = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(mouseRightClick)];
     _mouseRightClickTapRecognizer.numberOfTouchesRequired = 2;
