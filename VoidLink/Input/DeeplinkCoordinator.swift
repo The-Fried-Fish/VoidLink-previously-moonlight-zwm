@@ -176,7 +176,7 @@ final class DeeplinkCoordinator: NSObject {
             self?.reset()
             guard let mainFrame, mainFrame.isInAppView(),
                   let app = mainFrame.sortedAppList?.first(where: { $0.host === host && $0.id == appID }) else { return }
-            mainFrame.launch(app)
+            mainFrame.quitRunningAppAndStart(app)
         }
     }
 
