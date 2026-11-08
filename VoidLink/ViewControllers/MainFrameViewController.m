@@ -107,6 +107,7 @@ static NSArray<UIBarButtonItem *> *VLBarButtonItems(UIBarButtonItem *first, UIBa
     NSTimer *_foregroundHostUpdateTimer;
     
     id _controllerConnectObserver;
+    BOOL _openingDeeplinkHost;
     id _controllerDisconnectObserver;
     UIView* _debugGamepadOverlay;
 
@@ -118,6 +119,14 @@ static NSMutableSet* hostList;
         _deeplinkCoordinator = [[DeeplinkCoordinator alloc] initWithMainFrame:self];
     }
     return _deeplinkCoordinator;
+}
+
+- (BOOL)wakeDeeplinkHost:(TemporaryHost *)host {
+    if (host.mac.length == 0 || [host.mac isEqualToString:@"00:00:00:00:00:00"]) return NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [WakeOnLanManager wakeHost:host];
+    });
+    return YES;
 }
 
 - (void)prepareDeeplinkHostView {
@@ -132,7 +141,9 @@ static NSMutableSet* hostList;
     _selectedHost = host;
     _showHiddenApps = showHiddenApps;
     if (host.pairState == PairStatePaired) {
+        _openingDeeplinkHost = YES;
         [self switchToAppView];
+        _openingDeeplinkHost = NO;
     } else {
         [self pairButtonTappedForHost:host];
     }
@@ -187,20 +198,24 @@ static NSMutableSet* hostList;
 
 - (void)pairSuccessful:(NSData*)serverCert {
     dispatch_async(dispatch_get_main_queue(), ^{
-        // Store the cert from pairing with the host
         self->_selectedHost.serverCert = serverCert;
-        
-        [self->_pairAlert dismissViewControllerAnimated:YES completion:nil];
+        UIAlertController *pairAlert = self->_pairAlert;
         self->_pairAlert = nil;
-        
-        [self->_discMan startDiscovery];
-        if ([self->_deeplinkCoordinator isWaitingForAppsForHost:self->_selectedHost]) {
-            [self switchToAppView];
-        } else {
-            [self alreadyPaired];
-        }
+        void (^continueToApps)(void) = ^{
+            [self->_discMan startDiscovery];
+            if ([self->_deeplinkCoordinator isWaitingForAppsForHost:self->_selectedHost]) {
+                self->_openingDeeplinkHost = YES;
+                [self switchToAppView];
+                self->_openingDeeplinkHost = NO;
+            } else {
+                [self alreadyPaired];
+            }
+        };
+        if (pairAlert) [pairAlert dismissViewControllerAnimated:YES completion:continueToApps];
+        else continueToApps();
     });
 }
+
 
 - (void)updateTitle {
 
@@ -472,6 +487,7 @@ static NSMutableSet* hostList;
 }
 
 - (void)switchToAppView{
+    if (!_openingDeeplinkHost) [_deeplinkCoordinator userWillEnterAppView];
     if (@available(iOS 13.0, *)) {
         [ControllerNavigator setUINavigationDelegate:self];
     }
@@ -493,6 +509,9 @@ static NSMutableSet* hostList;
     self.revealViewController.mainFrameIsInHostView = false;
     // [self disableNavigation];
     [self updateTitle];
+    if (_openingDeeplinkHost) {
+        [self hideLoadingFrame:^{ [self->_deeplinkCoordinator didEnterDeeplinkAppView]; }];
+    }
     [self alreadyPaired];
     [self refreshAppCollectionLayout];
     // self.navigationController.navigationBar.backgroundColor = [ThemeManager appBackgroundColor];
@@ -1093,46 +1112,71 @@ static NSMutableSet* hostList;
     // Exempt this host from discovery while handling the quit operation
     [self->_discMan pauseDiscoveryForHost:app.host];
     [hMan executeRequestSynchronously:quitRequest];
+    if (quitResponse.statusCode == 200 && [[[quitResponse getStringTag:@"cancel"] trim] isEqualToString:@"0"]) {
+        quitResponse.statusCode = 599;
+    }
     if (quitResponse.statusCode == 200) {
-        ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
-        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
-                                                            fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
-        if (![serverInfoResp isStatusOk] || [[serverInfoResp getStringTag:@"state"] hasSuffix:@"_SERVER_BUSY"]) {
-            // On newer GFE versions, the quit request succeeds even though the app doesn't
-            // really quit if another client tries to kill your app. We'll patch the response
-            // to look like the old error in that case, so the UI behaves.
-            quitResponse.statusCode = 599;
-        }
-        else if ([serverInfoResp isStatusOk]) {
-            // Update the host object with this info
-            [serverInfoResp populateHost:app.host];
-            [self hostCardContentsDidChange:app.host];
+        // /cancel acknowledges the request before Sunshine finishes shutting down.
+        const dispatch_time_t deadline = dispatch_time(DISPATCH_TIME_NOW, 12 * NSEC_PER_SEC);
+        const NSTimeInterval end = NSProcessInfo.processInfo.systemUptime + 12;
+        BOOL fastFail = NO;
+        for (;;) {
+            ServerInfoResponse *info = [[ServerInfoResponse alloc] init];
+            HttpRequest *request = [HttpRequest requestForResponse:info
+                                                  withUrlRequest:[hMan newServerInfoRequest:fastFail]
+                                                   fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest:fastFail]];
+            [hMan executeRequestSynchronously:request deadline:deadline];
+            NSString *state = [[info getStringTag:@"state"] trim];
+            if ([info isStatusOk] && state.length > @"_SERVER_FREE".length && [state hasSuffix:@"_SERVER_FREE"]) {
+                [info populateHost:app.host];
+                [self hostCardContentsDidChange:app.host];
+                break;
+            }
+            BOOL sunshineBusy = [info isStatusOk] && [state isEqualToString:@"SUNSHINE_SERVER_BUSY"];
+            if (([info isStatusOk] && [state hasSuffix:@"_SERVER_BUSY"] && !sunshineBusy) ||
+                (info.statusCode >= 400 && info.statusCode < 500) ||
+                (!sunshineBusy && app.host.isNvidiaServerSoftware)) {
+                quitResponse.statusCode = [info isStatusOk] ? 599 : info.statusCode;
+                quitResponse.statusMessage = info.statusMessage;
+                break;
+            }
+            if (NSProcessInfo.processInfo.systemUptime + 1 >= end) {
+                quitResponse.statusCode = NSURLErrorTimedOut;
+                quitResponse.statusMessage = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil].localizedDescription;
+                break;
+            }
+            [NSThread sleepForTimeInterval:1];
+            fastFail = YES;
         }
     }
     [self->_discMan resumeDiscoveryForHost:app.host];
     return quitResponse;
 }
 
-- (void)quitApp:(TemporaryApp* )app{
-    if(!app) return;
-    if(![PublicUtils hasNoPresentedVC:self]) return;
-    [self showLoadingFrame: ^{
+- (void)quitApp:(TemporaryApp *)app {
+    if (!app || ![PublicUtils hasNoPresentedVC:self]) return;
+    [self quitApp:app completion:^(BOOL success) {}];
+}
+
+- (void)quitApp:(TemporaryApp *)app completion:(void (^)(BOOL))completion {
+    if (!app) { completion(NO); return; }
+    [self showLoadingFrame:^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            HttpResponse* quitResponse = [self requestToQuitApp:app];
-            // If it fails, display an error and stop the current operation
-            if (quitResponse.statusCode != 200) {
-                UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
-                                                                               message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
-                                                     preferredStyle:UIAlertControllerStyleAlert];
-                [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self updateAppsForHost:app.host];
-                    [self hideLoadingFrame: ^{
+            HttpResponse *response = [self requestToQuitApp:app];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                BOOL success = response.statusCode == 200;
+                [self hideLoadingFrame:^{
+                    if (!success) {
+                        [self updateAppsForHost:app.host];
+                        NSString *message = response.statusCode == NSURLErrorTimedOut ? response.statusMessage :
+                            [LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."];
+                        UIAlertController *alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"] message:message preferredStyle:UIAlertControllerStyleAlert];
+                        [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
                         [[self activeViewController] presentViewController:alert animated:YES completion:nil];
-                    }];
-                });
-            }
-            else dispatch_async(dispatch_get_main_queue(), ^{[self hideLoadingFrame:nil];});
+                    }
+                    completion(success);
+                }];
+            });
         });
     }];
 }
@@ -1142,40 +1186,9 @@ static NSMutableSet* hostList;
 }
 
 - (void)quitRunningAppAndStart:(TemporaryApp *)app {
-    TemporaryApp* currentRunningApp = [self findRunningApp:app.host];
-    [self showLoadingFrame: ^{
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            HttpResponse* quitResponse = [self requestToQuitApp:app];
-            // If it fails, display an error and stop the current operation
-            if (quitResponse.statusCode != 200) {
-                UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
-                                                                               message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
-                                                     preferredStyle:UIAlertControllerStyleAlert];
-                [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self updateAppsForHost:app.host];
-                    [self hideLoadingFrame: ^{
-                        [[self activeViewController] presentViewController:alert animated:YES completion:nil];
-                    }];
-                });
-            }
-            else {
-                app.host.currentGame = @"0";
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    // If it succeeds and we're to start streaming, segue to the stream
-                    if (![app.id isEqualToString:currentRunningApp.id]) {
-                        [self prepareToStreamApp:app];
-                        [self hideLoadingFrame: ^{
-                            [self performSegueWithIdentifier:@"createStreamFrame" sender:nil];
-                        }];
-                    }
-                    else {
-                        // Otherwise, just hide the loading icon
-                        [self hideLoadingFrame:nil];
-                    }
-                });
-            }
-        });
+    TemporaryApp *current = [self findRunningApp:app.host];
+    [self quitApp:app completion:^(BOOL success) {
+        if (success && ![app.id isEqualToString:current.id]) [self launchApp:app];
     }];
 }
 
@@ -1238,41 +1251,7 @@ static NSMutableSet* hostList;
         [alertController addAction:[UIAlertAction actionWithTitle:
                                     [app.id isEqualToString:currentApp.id] ? [LocalizationHelper localizedStringForKey:@"Quit App"] : [LocalizationHelper localizedStringForKey:@"Quit Running App and Start"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction* action){
                                         Log(LOG_I, @"Quitting application: %@", currentApp.name);
-                                        [self showLoadingFrame: ^{
-                                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                                HttpResponse* quitResponse = [self requestToQuitApp:app];
-                                                // If it fails, display an error and stop the current operation
-                                                if (quitResponse.statusCode != 200) {
-                                                    UIAlertController* alert = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"Quitting App Failed"]
-                                                                                                                   message:[LocalizationHelper localizedStringForKey:@"Failed to quit app. If this app was started by another device, you'll need to quit from that device."]
-                                                                                         preferredStyle:UIAlertControllerStyleAlert];
-                                                    [alert addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Ok"] style:UIAlertActionStyleDefault handler:nil]];
-                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                        [self updateAppsForHost:app.host];
-                                                        [self hideLoadingFrame: ^{
-                                                            [[self activeViewController] presentViewController:alert animated:YES completion:nil];
-                                                        }];
-                                                    });
-                                                }
-                                                else {
-                                                    app.host.currentGame = @"0";
-                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                        // If it succeeds and we're to start streaming, segue to the stream
-                                                        if (![app.id isEqualToString:currentApp.id]) {
-                                                            [self prepareToStreamApp:app];
-                                                            [self hideLoadingFrame: ^{
-                                                                [self performSegueWithIdentifier:@"createStreamFrame" sender:nil];
-                                                            }];
-                                                        }
-                                                        else {
-                                                            // Otherwise, just hide the loading icon
-                                                            [self hideLoadingFrame:nil];
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                        }];
-                                        
+                                        [self quitRunningAppAndStart:app];
                                     }]];
     }
 
@@ -2593,6 +2572,8 @@ static NSMutableSet* hostList;
         if(ControllerNavigator.enabled) [ControllerNavigator start];
     }
     
+    [self.deeplinkCoordinator mainFrameDidAppear];
+    
 #if !TARGET_OS_TV
     if(!self.presentedViewController) {
         [GenericUtils handleBarrelRollRedminderIn:self];
@@ -2600,7 +2581,6 @@ static NSMutableSet* hostList;
 #else
     [ControllerUtil handleGameControllerRequiredTipIn:self delay:1];
 #endif
-    [_deeplinkCoordinator viewDidBecomeReady];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

@@ -17,6 +17,47 @@ import UIKit
         }
     }
 
+    /// A self-contained countdown: expiry and Launch Now both continue after dismissal.
+    /// Returning the alert lets the caller cancel its own automation without global state.
+    @nonobjc static func showContinuingCountdown(in presenter: UIViewController, message: String,
+                                                seconds: Int, completion: @escaping () -> Void) -> UIAlertController {
+        let alert = UIAlertController(title: nil, message: "\(message)\n\n\(seconds)", preferredStyle: .alert)
+        var remaining = seconds
+        var finished = false
+        let timer = DispatchSource.makeTimerSource(queue: .main)
+        let finish = { [weak alert] in
+            guard !finished else { return }
+            finished = true
+            timer.cancel()
+            alert?.dismiss(animated: true, completion: completion)
+        }
+        alert.addAction(UIAlertAction(title: "Launch Now".localized, style: .cancel) { [weak alert] _ in
+            // UIAlertAction dismisses the alert itself; wait for that transition.
+            guard !finished else { return }
+            finished = true
+            timer.cancel()
+            DispatchQueue.main.async {
+                if let transition = alert?.transitionCoordinator {
+                    transition.animate(alongsideTransition: nil) { _ in completion() }
+                } else {
+                    completion()
+                }
+            }
+        })
+        timer.schedule(deadline: .now() + 1, repeating: 1)
+        timer.setEventHandler { [weak alert] in
+            guard let alert, alert.presentingViewController != nil else {
+                timer.cancel()
+                return
+            }
+            remaining -= 1
+            if remaining <= 0 { finish() }
+            else { alert.message = "\(message)\n\n\(remaining)" }
+        }
+        presenter.present(alert, animated: true) { timer.resume() }
+        return alert
+    }
+
     private enum AlertTextRole {
         case title
         case message

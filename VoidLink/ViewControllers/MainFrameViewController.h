@@ -40,6 +40,7 @@
 
 @property (nonatomic, strong, readonly) DeeplinkCoordinator *deeplinkCoordinator;
 - (void)prepareDeeplinkHostView;
+- (BOOL)wakeDeeplinkHost:(TemporaryHost *)host;
 - (void)openDeeplinkHost:(TemporaryHost *)host showHiddenApps:(BOOL)showHiddenApps NS_SWIFT_NAME(openDeeplinkHost(_:showHiddenApps:));
 
 - (void)expandSettingsView;
@@ -51,6 +52,8 @@
 - (TemporaryApp*)findRunningApp:(TemporaryHost*)host;
 - (void)quitApp:(TemporaryApp* )app;
 - (void)quitLaunchedApp;
+// Completion is delivered on the main queue after exit is confirmed or fails.
+- (void)quitApp:(TemporaryApp *)app completion:(void (^)(BOOL success))completion NS_SWIFT_NAME(quitApp(_:completion:));
 - (void)launchApp:(TemporaryApp *)app;
 - (void)quitRunningAppAndStart:(TemporaryApp *)app;
 - (NSInteger)requestForBitrate:(NSInteger)bitrateKbps;

@@ -31,6 +31,7 @@
 - (NSURLRequest*) newAppAssetRequestWithAppId:(NSString*)appId;
 - (NSURLRequest*) newBirateRequest:(NSInteger)bitrateKbps forClient:(NSString* )clientName;
 - (void) executeRequestSynchronously:(HttpRequest*)request;
+- (void) executeRequestSynchronously:(HttpRequest*)request deadline:(dispatch_time_t)deadline;
 // Cancels active requests and prevents this manager from starting another request.
 - (void)cancelRequests;
 

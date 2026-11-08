@@ -66,6 +66,7 @@ final class DeeplinkCoordinator: NSObject {
         case highlightingHost
         case waitingForApps(TemporaryHost)
         case highlightingApp
+        case quittingApp
     }
 
     private weak var mainFrame: MainFrameViewController?
@@ -75,6 +76,13 @@ final class DeeplinkCoordinator: NSObject {
     private var hostDeadline: DispatchTime?
     private var clearHighlight: (() -> Void)?
     private var viewReady = false
+    private var hostViewWaitStartedAt: DispatchTime?
+    private var needsInitialization = false
+    private var hasRefreshedApps = false
+    private var didAttemptWake = false
+    private var didSendWake = false
+    private var fallbackReady = false
+    private weak var initializationAlert: UIAlertController?
     var hasPendingLink: Bool { target != nil }
 
     init(mainFrame: MainFrameViewController) {
@@ -91,27 +99,37 @@ final class DeeplinkCoordinator: NSObject {
         reset()
         self.target = target
         stage = .waitingForView
+        // An already-visible MainFrame will not receive another viewDidAppear.
+        if viewReady { hostViewWaitStartedAt = .now() }
         beginIfReady()
     }
 
-    func viewDidBecomeReady() {
+    // Called only from MainFrame.viewDidAppear, after its setup has completed.
+    func mainFrameDidAppear() {
         viewReady = true
+        if case .waitingForView = stage, hostViewWaitStartedAt == nil {
+            hostViewWaitStartedAt = .now()
+        }
         beginIfReady()
     }
 
     func viewWillLeave() {
         viewReady = false
         switch stage {
-        case .waitingForHost, .highlightingHost, .highlightingApp: reset()
+        case .waitingForHost, .highlightingHost, .highlightingApp, .quittingApp: reset()
         default: break
         }
     }
 
     func didReturnToHostView() {
         switch stage {
-        case .highlightingHost, .waitingForApps, .highlightingApp: reset()
+        case .highlightingHost, .waitingForApps, .highlightingApp, .quittingApp: reset()
         default: break
         }
+    }
+
+    func userWillEnterAppView() {
+        reset()
     }
 
     private func beginIfReady() {
@@ -124,10 +142,16 @@ final class DeeplinkCoordinator: NSObject {
         }
 
         stage = .waitingForHost
-        let deadline = DispatchTime.now() + 15
+        guard let waitStartedAt = hostViewWaitStartedAt else { return }
+        let deadline = waitStartedAt + 120
         hostDeadline = deadline
         let token = generation
         mainFrame.prepareDeeplinkHostView()
+        DispatchQueue.main.asyncAfter(deadline: waitStartedAt + 2.6) { [weak self] in
+            guard let self, self.generation == token, case .waitingForHost = self.stage else { return }
+            self.fallbackReady = true
+            self.matchStoredHost()
+        }
         DispatchQueue.main.asyncAfter(deadline: deadline) { [weak self] in
             guard let self, self.generation == token, case .waitingForHost = self.stage else { return }
             self.reset()
@@ -135,21 +159,58 @@ final class DeeplinkCoordinator: NSObject {
         }
     }
 
+    private func matchStoredHost() {
+        guard case .waitingForHost = stage, let target, let mainFrame,
+              let collection = mainFrame.hostCollectionVC,
+              let hosts = collection.items as? [TemporaryHost],
+              let index = hosts.firstIndex(where: { $0.uuid.lowercased().hasSuffix(target.hostSuffix) }) else { return }
+        let host = hosts[index]
+        if host.state == State(rawValue: 2) {
+            reportOnlineHost(host)
+            return
+        }
+        collection.showDeeplinkNavigationHighlight(at: IndexPath(item: index, section: 0))
+        clearHighlight = { [weak collection] in collection?.finishDeeplinkNavigationHighlight() }
+        guard !didAttemptWake else { return }
+        didAttemptWake = true
+        didSendWake = mainFrame.wakeDeeplinkHost(host)
+        // Discovery can initially report an online PC as unknown/offline. Only a
+        // WOL request accepted for sending by this flow requires initialization.
+        needsInitialization = didSendWake
+        if didSendWake {
+            showNotice("Sent Wake-on-LAN".localized)
+        } else {
+            showNotice("Host MAC unknown, unable to send WOL Packet".localized)
+        }
+    }
+
     func reportOnlineHost(_ host: TemporaryHost) {
         guard case .waitingForHost = stage, viewReady, let target, let hostDeadline,
               DispatchTime.now() < hostDeadline,
-              host.state == State(rawValue: 2),
-              host.uuid.lowercased().hasSuffix(target.hostSuffix),
-              let mainFrame, let collection = mainFrame.hostCollectionVC,
+              host.uuid.lowercased().hasSuffix(target.hostSuffix) else { return }
+        guard host.state == State(rawValue: 2) else {
+            if fallbackReady { matchStoredHost() }
+            return
+        }
+        guard let mainFrame, let collection = mainFrame.hostCollectionVC,
               let index = (collection.items as? [TemporaryHost])?.firstIndex(where: { $0 === host }) else { return }
         stage = .highlightingHost
+        clearHighlight?()
         highlight(collection, index: index) { [weak self, weak mainFrame] in
             guard let self, let mainFrame, !mainFrame.isInAppView(), !mainFrame.isStreaming() else {
                 self?.reset()
                 return
             }
             self.stage = .waitingForApps(host)
-            mainFrame.openDeeplinkHost(host, showHiddenApps: target.appID != nil)
+            // An auto-dismiss WOL notice can still be visible when the host comes online.
+            let token = self.generation
+            let open = { [weak self, weak mainFrame] in
+                guard let self, self.generation == token, case .waitingForApps = self.stage else { return }
+                mainFrame?.openDeeplinkHost(host, showHiddenApps: target.appID != nil)
+            }
+            if let alert = mainFrame.presentedViewController as? UIAlertController {
+                alert.dismiss(animated: false, completion: open)
+            } else { open() }
         }
     }
 
@@ -159,12 +220,33 @@ final class DeeplinkCoordinator: NSObject {
         return expectedHost === host
     }
 
+    func didEnterDeeplinkAppView() {
+        guard case .waitingForApps(let host) = stage, didSendWake, needsInitialization, initializationAlert == nil,
+              target?.appID != nil, let mainFrame else { return }
+        let token = generation
+        initializationAlert = AlertControllerUtil.showContinuingCountdown(
+            in: mainFrame, message: "Waiting for host system initialization".localized, seconds: 10
+        ) { [weak self] in
+            guard let self, self.generation == token, self.isWaitingForApps(for: host) else { return }
+            self.initializationAlert = nil
+            self.needsInitialization = false
+            if self.hasRefreshedApps { self.appsDidRefresh(for: host) }
+        }
+    }
+
     func appsDidRefresh(for host: TemporaryHost) {
         guard isWaitingForApps(for: host), let mainFrame, mainFrame.isInAppView() else { return }
         guard let appID = target?.appID else {
             reset()
             return
         }
+        hasRefreshedApps = true
+        guard !needsInitialization else { return }
+        startApp(host: host, appID: appID)
+    }
+
+    private func startApp(host: TemporaryHost, appID: String) {
+        guard let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming() else { reset(); return }
         let apps = mainFrame.sortedAppList ?? []
         guard let index = apps.firstIndex(where: { $0.id == appID }) else {
             reset()
@@ -173,10 +255,40 @@ final class DeeplinkCoordinator: NSObject {
         }
         stage = .highlightingApp
         highlight(mainFrame, index: index) { [weak self, weak mainFrame] in
-            self?.reset()
-            guard let mainFrame, mainFrame.isInAppView(),
+            guard let self, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming(),
                   let app = mainFrame.sortedAppList?.first(where: { $0.host === host && $0.id == appID }) else { return }
-            mainFrame.quitRunningAppAndStart(app)
+            if host.currentGame == nil || host.currentGame == "0" || host.currentGame == appID {
+                self.reset()
+                mainFrame.launch(app)
+            } else {
+                self.stage = .quittingApp
+                let token = self.generation
+                mainFrame.quitApp(app) { [weak self, weak mainFrame] success in
+                    guard let self, self.generation == token, case .quittingApp = self.stage else { return }
+                    guard success, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming() else {
+                        self.reset()
+                        return
+                    }
+                    // Quit may refresh/reorder the app grid. Resolve the target again
+                    // and show its highlight after the loading overlay has gone away.
+                    self.highlightAndLaunchApp(host: host, appID: appID)
+                }
+            }
+        }
+    }
+
+    private func highlightAndLaunchApp(host: TemporaryHost, appID: String) {
+        guard let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming(),
+              let index = mainFrame.sortedAppList?.firstIndex(where: { $0.host === host && $0.id == appID }) else {
+            reset()
+            return
+        }
+        stage = .highlightingApp
+        highlight(mainFrame, index: index) { [weak self, weak mainFrame] in
+            guard let self, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming(),
+                  let app = mainFrame.sortedAppList?.first(where: { $0.host === host && $0.id == appID }) else { return }
+            self.reset()
+            mainFrame.launch(app)
         }
     }
 
@@ -194,9 +306,17 @@ final class DeeplinkCoordinator: NSObject {
 
     private func reset() {
         generation += 1
+        initializationAlert?.dismiss(animated: false)
+        initializationAlert = nil
+        needsInitialization = false
+        hasRefreshedApps = false
+        didAttemptWake = false
+        didSendWake = false
+        fallbackReady = false
         clearHighlight?()
         clearHighlight = nil
         hostDeadline = nil
+        hostViewWaitStartedAt = nil
         target = nil
         stage = .idle
     }
