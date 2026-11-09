@@ -53,19 +53,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已发送 Wake-on-LAN"
+            "value" : "已尝试唤醒主机"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已傳送 Wake-on-LAN"
+            "value" : "已嘗試喚醒電腦"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已傳送 Wake-on-LAN"
+            "value" : "已嘗試喚醒電腦"
           }
         }
       }

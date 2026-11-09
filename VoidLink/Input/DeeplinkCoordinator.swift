@@ -1,3 +1,12 @@
+//
+//  DeeplinkCoordinator.swift
+//  VoidLink
+//
+//  Created by True砖家 on 2026/11/7.
+//  Copyright © 2026 True砖家@Bilibili. All rights reserved.
+//
+
+
 import UIKit
 #if os(tvOS)
 import TVServices
@@ -66,6 +75,7 @@ final class DeeplinkCoordinator: NSObject {
         case highlightingHost
         case waitingForApps(TemporaryHost)
         case highlightingApp
+        case checkingRunningApp
         case quittingApp
     }
 
@@ -116,14 +126,14 @@ final class DeeplinkCoordinator: NSObject {
     func viewWillLeave() {
         viewReady = false
         switch stage {
-        case .waitingForHost, .highlightingHost, .highlightingApp, .quittingApp: reset()
+        case .waitingForHost, .highlightingHost, .highlightingApp, .checkingRunningApp, .quittingApp: reset()
         default: break
         }
     }
 
     func didReturnToHostView() {
         switch stage {
-        case .highlightingHost, .waitingForApps, .highlightingApp, .quittingApp: reset()
+        case .highlightingHost, .waitingForApps, .highlightingApp, .checkingRunningApp, .quittingApp: reset()
         default: break
         }
     }
@@ -248,30 +258,45 @@ final class DeeplinkCoordinator: NSObject {
     private func startApp(host: TemporaryHost, appID: String) {
         guard let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming() else { reset(); return }
         let apps = mainFrame.sortedAppList ?? []
-        guard let index = apps.firstIndex(where: { $0.id == appID }) else {
+        guard apps.contains(where: { $0.host === host && $0.id == appID }) else {
             reset()
             showNotice("DeepLink app was not found.".localized)
             return
         }
-        stage = .highlightingApp
-        highlight(mainFrame, index: index) { [weak self, weak mainFrame] in
-            guard let self, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming(),
-                  let app = mainFrame.sortedAppList?.first(where: { $0.host === host && $0.id == appID }) else { return }
-            if host.currentGame == nil || host.currentGame == "0" || host.currentGame == appID {
+        stage = .checkingRunningApp
+        let token = generation
+        mainFrame.queryDeeplinkHost(host) { [weak self, weak mainFrame] success, busy, runningAppID in
+            guard let self, self.generation == token, case .checkingRunningApp = self.stage else { return }
+            guard success, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming() else {
                 self.reset()
-                mainFrame.launch(app)
-            } else {
-                self.stage = .quittingApp
-                let token = self.generation
-                mainFrame.quitApp(app) { [weak self, weak mainFrame] success in
-                    guard let self, self.generation == token, case .quittingApp = self.stage else { return }
-                    guard success, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming() else {
-                        self.reset()
-                        return
+                self.showNotice("Failed to connect to PC".localized)
+                return
+            }
+            guard let index = mainFrame.sortedAppList?.firstIndex(where: { $0.host === host && $0.id == appID }) else {
+                self.reset()
+                self.showNotice("DeepLink app was not found.".localized)
+                return
+            }
+            // Use the live response, not host.currentGame, which discovery can
+            // overwrite and which /applist does not refresh.
+            self.stage = .highlightingApp
+            self.highlight(mainFrame, index: index) { [weak self, weak mainFrame] in
+                guard let self, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming(),
+                      let app = mainFrame.sortedAppList?.first(where: { $0.host === host && $0.id == appID }) else { return }
+                if !busy || runningAppID == appID {
+                    self.reset()
+                    mainFrame.launch(app)
+                } else {
+                    self.stage = .quittingApp
+                    let token = self.generation
+                    mainFrame.quitApp(app) { [weak self, weak mainFrame] success in
+                        guard let self, self.generation == token, case .quittingApp = self.stage else { return }
+                        guard success, let mainFrame, mainFrame.isInAppView(), !mainFrame.isStreaming() else {
+                            self.reset()
+                            return
+                        }
+                        self.highlightAndLaunchApp(host: host, appID: appID)
                     }
-                    // Quit may refresh/reorder the app grid. Resolve the target again
-                    // and show its highlight after the loading overlay has gone away.
-                    self.highlightAndLaunchApp(host: host, appID: appID)
                 }
             }
         }

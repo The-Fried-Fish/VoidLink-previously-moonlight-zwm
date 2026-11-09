@@ -41,6 +41,8 @@
 @property (nonatomic, strong, readonly) DeeplinkCoordinator *deeplinkCoordinator;
 - (void)prepareDeeplinkHostView;
 - (BOOL)wakeDeeplinkHost:(TemporaryHost *)host;
+// Query a live authenticated snapshot; discovery may overwrite cached currentGame.
+- (void)queryDeeplinkHost:(TemporaryHost *)host completion:(void (^)(BOOL success, BOOL busy, NSString *appID))completion NS_SWIFT_NAME(queryDeeplinkHost(_:completion:));
 - (void)openDeeplinkHost:(TemporaryHost *)host showHiddenApps:(BOOL)showHiddenApps NS_SWIFT_NAME(openDeeplinkHost(_:showHiddenApps:));
 
 - (void)expandSettingsView;

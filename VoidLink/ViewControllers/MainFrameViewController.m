@@ -121,6 +121,32 @@ static NSMutableSet* hostList;
     return _deeplinkCoordinator;
 }
 
+- (void)queryDeeplinkHost:(TemporaryHost *)host completion:(void (^)(BOOL, BOOL, NSString *))completion {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        HttpManager *manager = [[HttpManager alloc] initWithHost:host];
+        ServerInfoResponse *info = [[ServerInfoResponse alloc] init];
+        // Do not fall back to unauthenticated HTTP for an app-switch decision.
+        // An unknown running app must never be interpreted as an idle host.
+        if (host.serverCert != nil) {
+            [manager executeRequestSynchronously:[HttpRequest requestForResponse:info
+                withUrlRequest:[manager newServerInfoRequest:false]]
+                deadline:dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC)];
+        }
+        NSString *state = [[info getStringTag:TAG_STATE] trim];
+        NSString *uuid = [[info getStringTag:TAG_UNIQUE_ID] trim];
+        NSString *runningAppID = [[info getStringTag:TAG_CURRENT_GAME] trim] ?: @"";
+        BOOL busy = [state hasSuffix:@"_SERVER_BUSY"];
+        BOOL free = [state hasSuffix:@"_SERVER_FREE"];
+        BOOL valid = [info isStatusOk] && uuid.length > 0 &&
+            [uuid caseInsensitiveCompare:host.uuid] == NSOrderedSame &&
+            [[[info getStringTag:@"PairStatus"] trim] isEqualToString:@"1"] && (busy || free);
+        Log(LOG_I, @"DeepLink live host status: valid=%d busy=%d currentGame=%@ state=%@", valid, busy, runningAppID, state);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(valid, busy, runningAppID);
+        });
+    });
+}
+
 - (BOOL)wakeDeeplinkHost:(TemporaryHost *)host {
     if (host.mac.length == 0 || [host.mac isEqualToString:@"00:00:00:00:00:00"]) return NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
