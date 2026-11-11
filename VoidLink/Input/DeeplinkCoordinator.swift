@@ -8,6 +8,9 @@
 
 
 import UIKit
+#if os(iOS)
+import AppIntents
+#endif
 #if os(tvOS)
 import TVServices
 #endif
@@ -115,12 +118,19 @@ final class DeeplinkCoordinator: NSObject {
     }
 
     // Called only from MainFrame.viewDidAppear, after its setup has completed.
-    func mainFrameDidAppear() {
+    @MainActor func mainFrameDidAppear() {
         viewReady = true
         if case .waitingForView = stage, hostViewWaitStartedAt == nil {
             hostViewWaitStartedAt = .now()
         }
         beginIfReady()
+#if os(iOS)
+        if #available(iOS 16.0, *), Self.shortcutCoordinators.allObjects.isEmpty {
+            VoidLinkAppShortcuts.updateAppShortcutParameters()
+        }
+        Self.shortcutCoordinators.add(self)
+        Self.deliverPendingShortcut()
+#endif
     }
 
     func viewWillLeave() {
@@ -355,37 +365,121 @@ final class DeeplinkCoordinator: NSObject {
         AlertControllerUtil.showAutoDismissNotice(in: presenter, message: message, seconds: 1)
     }
 
-    static func addLinkAction(to alert: UIAlertController, presenter: UIViewController,
-                              host: TemporaryHost, appID: String?) {
+    @MainActor static func addLinkAction(to alert: UIAlertController, presenter: UIViewController,
+                                         host: TemporaryHost, appID: String?) {
         guard let url = Target(hostID: host.uuid, appID: appID)?.url else { return }
 #if os(tvOS)
         let label = "Show DeepLink".localized
 #else
-        let label = "Copy DeepLink".localized
+        let label = "Shortcuts".localized
 #endif
         alert.addAction(UIAlertAction(title: label, style: .default) { [weak alert, weak presenter] _ in
-            guard let presenter else { return }
-            let showLink = {
+            AlertControllerUtil.afterActionDismissal(of: alert) {
+                guard let presenter else { return }
 #if os(tvOS)
                 AlertControllerUtil.showAlert(in: presenter, title: "DeepLink", message: url.absoluteString,
                                               withCancel: false, buttonTitle: "Ok".localized, countdown: 0)
-#else
-                UIPasteboard.general.string = url.absoluteString
-                Self.showNotice("DeepLink copied to clipboard".localized, in: presenter)
+#elseif os(iOS)
+                showShortcutChoices(in: presenter, host: host, appID: appID, url: url)
 #endif
-            }
-            DispatchQueue.main.async {
-                if let alert, let transition = alert.transitionCoordinator, alert.isBeingDismissed {
-                    if transition.animate(alongsideTransition: nil, completion: { _ in showLink() }) { return }
-                }
-                if let alert, alert.presentingViewController != nil {
-                    alert.dismiss(animated: true, completion: showLink)
-                } else {
-                    showLink()
-                }
             }
         })
     }
+
+#if os(iOS)
+    @MainActor private static func showShortcutChoices(in presenter: UIViewController, host: TemporaryHost,
+                                                       appID: String?, url: URL) {
+        let choices = UIAlertController(title: "Shortcuts".localized, message: nil, preferredStyle: .alert)
+        choices.addAction(UIAlertAction(title: "Copy DeepLink".localized, style: .default) { [weak choices, weak presenter] _ in
+            UIPasteboard.general.string = url.absoluteString
+            AlertControllerUtil.afterActionDismissal(of: choices) {
+                if let presenter { showNotice("DeepLink copied to clipboard".localized, in: presenter) }
+            }
+        })
+        if #available(iOS 16.0, *) {
+            let hostID = host.uuid.lowercased()
+            let existing = ShortcutCatalog.entries.first { $0.hostID == hostID && $0.appID == appID }
+            let label = existing == nil ? "Add to Shortcuts" : "Remove from Shortcuts"
+            choices.addAction(UIAlertAction(title: label.localized, style: .default) { [weak choices, weak presenter] _ in
+                if let existing {
+                    ShortcutCatalog.update { $0.removeAll { $0.id == existing.id } }
+                } else {
+                    let appName = appID.flatMap { id in
+                        (host.appList as? Set<TemporaryApp>)?.first { $0.id == id }.map { $0.name ?? id }
+                    }
+                    guard appID == nil || appName != nil else {
+                        AlertControllerUtil.afterActionDismissal(of: choices) {
+                            if let presenter { showNotice("DeepLink app was not found.".localized, in: presenter) }
+                        }
+                        return
+                    }
+                    ShortcutCatalog.update { entries in
+                        guard !entries.contains(where: { $0.hostID == hostID && $0.appID == appID }) else { return }
+                        entries.append(ShortcutCatalog.Entry(id: UUID().uuidString, hostID: hostID,
+                            hostName: host.name, appID: appID, appName: appName))
+                    }
+                }
+                AlertControllerUtil.afterActionDismissal(of: choices) {
+                    guard let presenter else { return }
+                    let message = existing == nil ? "Added to Shortcuts List" : "Removed from Shortcuts List"
+                    showNotice(message.localized, in: presenter)
+                }
+            })
+        }
+        choices.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel))
+        presenter.present(choices, animated: true)
+    }
+
+    @MainActor static func removeShortcutTargets(forHost host: TemporaryHost) {
+        ShortcutCatalog.update { entries in
+            entries.removeAll { $0.hostID == host.uuid.lowercased() }
+        }
+    }
+
+    // Called only with the full, successfully refreshed app list, including hidden apps.
+    @MainActor static func reconcileShortcutTargets(forHost host: TemporaryHost) {
+        let apps = host.appList as? Set<TemporaryApp> ?? []
+        let names = Dictionary(apps.compactMap { app -> (String, String)? in
+            guard let id = app.id else { return nil }
+            return (id, app.name ?? id)
+        }, uniquingKeysWith: { first, _ in first })
+        let hostID = host.uuid.lowercased()
+        ShortcutCatalog.update { entries in
+            entries = entries.compactMap { entry in
+                guard entry.hostID == hostID else { return entry }
+                var updated = entry
+                updated.hostName = host.name
+                if let appID = entry.appID {
+                    guard let name = names[appID] else { return nil }
+                    updated.appName = name
+                }
+                return updated
+            }
+        }
+    }
+
+    @MainActor private static let shortcutCoordinators = NSHashTable<DeeplinkCoordinator>.weakObjects()
+    @MainActor private static var pendingShortcutURL: URL?
+
+    @MainActor @nonobjc fileprivate static func openShortcut(_ entry: ShortcutCatalog.Entry) throws {
+        guard let url = Target(hostID: entry.hostID, appID: entry.appID)?.url else {
+            throw ShortcutTargetUnavailable()
+        }
+        pendingShortcutURL = url
+        deliverPendingShortcut()
+    }
+
+    @MainActor static func deliverPendingShortcut() {
+        guard let url = pendingShortcutURL else { return }
+        let active = shortcutCoordinators.allObjects.filter {
+            $0.mainFrame?.viewIfLoaded?.window?.windowScene?.activationState == .foregroundActive
+        }
+        guard let coordinator = active.first(where: { $0.mainFrame?.viewIfLoaded?.window?.isKeyWindow == true })
+            ?? active.first else { return }
+        pendingShortcutURL = nil
+        coordinator.open(url)
+    }
+#endif
 
 #if os(tvOS)
     private static func topShelfURL(host: TemporaryHost, app: TemporaryApp?) -> URL? {
@@ -420,3 +514,102 @@ final class DeeplinkCoordinator: NSObject {
     }
 #endif
 }
+
+#if os(iOS)
+@MainActor
+private enum ShortcutCatalog {
+    struct Entry: Codable, Equatable {
+        let id: String
+        let hostID: String
+        var hostName: String
+        let appID: String?
+        var appName: String?
+    }
+
+    private static let defaultsKey = "VoidLinkShortcutTargets"
+
+    static var entries: [Entry] {
+        guard let data = UserDefaults.standard.data(forKey: defaultsKey) else { return [] }
+        return (try? JSONDecoder().decode([Entry].self, from: data)) ?? []
+    }
+
+    static func update(_ edit: (inout [Entry]) -> Void) {
+        let previous = entries
+        var updated = previous
+        edit(&updated)
+        guard updated != previous, let data = try? JSONEncoder().encode(updated) else { return }
+        UserDefaults.standard.set(data, forKey: defaultsKey)
+        if #available(iOS 16.0, *) {
+            VoidLinkAppShortcuts.updateAppShortcutParameters()
+        }
+    }
+}
+
+private struct ShortcutTargetUnavailable: LocalizedError {
+    var errorDescription: String? { "This VoidLink shortcut target is no longer available.".localized }
+}
+
+@available(iOS 16.0, *)
+struct VoidLinkShortcutTarget: AppEntity {
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Streaming Target"
+    static let defaultQuery = VoidLinkShortcutTargetQuery()
+
+    let id: String
+    let name: String
+    let hostName: String?
+
+    fileprivate init(_ entry: ShortcutCatalog.Entry) {
+        id = entry.id
+        name = entry.appName ?? entry.hostName
+        hostName = entry.appID == nil ? nil : entry.hostName
+    }
+
+    var displayRepresentation: DisplayRepresentation {
+        if let hostName {
+            return DisplayRepresentation(title: "\(name)", subtitle: "\(hostName)", image: .init(systemName: "play.rectangle"))
+        }
+        return DisplayRepresentation(title: "\(name)", image: .init(systemName: "desktopcomputer"))
+    }
+}
+
+@available(iOS 16.0, *)
+struct VoidLinkShortcutTargetQuery: EntityQuery {
+    @MainActor func suggestedEntities() async throws -> [VoidLinkShortcutTarget] {
+        ShortcutCatalog.entries.map(VoidLinkShortcutTarget.init)
+    }
+
+    @MainActor func entities(for identifiers: [String]) async throws -> [VoidLinkShortcutTarget] {
+        let entries = ShortcutCatalog.entries
+        return identifiers.compactMap { id in
+            entries.first { $0.id == id }.map(VoidLinkShortcutTarget.init)
+        }
+    }
+}
+
+@available(iOS 16.0, *)
+struct OpenVoidLinkShortcutTarget: OpenIntent {
+    static let title: LocalizedStringResource = "Open VoidLink Target"
+    static var openAppWhenRun: Bool { true }
+
+    @Parameter(title: "Streaming Target")
+    var target: VoidLinkShortcutTarget
+
+    @MainActor func perform() async throws -> some IntentResult {
+        guard let entry = ShortcutCatalog.entries.first(where: { $0.id == target.id }) else {
+            throw ShortcutTargetUnavailable()
+        }
+        try DeeplinkCoordinator.openShortcut(entry)
+        return .result()
+    }
+}
+
+@available(iOS 16.0, *)
+struct VoidLinkAppShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(intent: OpenVoidLinkShortcutTarget(),
+                    phrases: ["Open \(\.$target) in \(.applicationName)"],
+                    shortTitle: "Open VoidLink Target",
+                    systemImageName: "play.rectangle")
+    }
+}
+#endif

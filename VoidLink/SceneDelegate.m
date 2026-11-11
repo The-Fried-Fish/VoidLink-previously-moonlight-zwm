@@ -483,6 +483,11 @@ static BOOL VLIsExternalDisplaySession(UISceneSession *session) {
 }
 
 - (void)sceneDidBecomeActive:(UIScene *)scene {
+#if !TARGET_OS_TV
+    if ([scene.session.role isEqualToString:UIWindowSceneSessionRoleApplication]) {
+        [DeeplinkCoordinator deliverPendingShortcut];
+    }
+#endif
     [PublicUtils refreshCurrentScreenForWindow:self.window];
     if ([ThemeManager pinsSystemStyleForFoldable] && scene == self.window.windowScene) {
         [ThemeManager systemUserInterfaceStyleDidChange:self.window.windowScene.traitCollection.userInterfaceStyle];

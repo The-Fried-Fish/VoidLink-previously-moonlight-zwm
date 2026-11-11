@@ -17,6 +17,20 @@ import UIKit
         }
     }
 
+    @MainActor static func afterActionDismissal(of alert: UIAlertController?, then action: @escaping () -> Void) {
+        DispatchQueue.main.async { [weak alert] in
+            if let alert, let transition = alert.transitionCoordinator, alert.isBeingDismissed,
+               transition.animate(alongsideTransition: nil, completion: { _ in action() }) {
+                return
+            }
+            if let alert, alert.presentingViewController != nil {
+                alert.dismiss(animated: true, completion: action)
+            } else {
+                action()
+            }
+        }
+    }
+
     /// A self-contained countdown: expiry and Launch Now both continue after dismissal.
     /// Returning the alert lets the caller cancel its own automation without global state.
     @nonobjc static func showContinuingCountdown(in presenter: UIViewController, message: String,

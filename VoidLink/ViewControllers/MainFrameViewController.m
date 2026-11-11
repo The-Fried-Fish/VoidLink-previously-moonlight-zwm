@@ -440,6 +440,9 @@ static NSMutableSet* hostList;
     host.appList = newHostAppList;
     
     [database updateAppsForExistingHost:host];
+#if !TARGET_OS_TV
+    [DeeplinkCoordinator reconcileShortcutTargetsForHost:host];
+#endif
     
     // This host may be eligible for a shortcut now that the app list
     // has been populated
@@ -862,6 +865,9 @@ static NSMutableSet* hostList;
         [self.hostCollectionVC removeHost:host];
         DataManager* dataMan = [[DataManager alloc] init];
         [dataMan removeHost:host];
+#if !TARGET_OS_TV
+        [DeeplinkCoordinator removeShortcutTargetsForHost:host];
+#endif
         @synchronized(hostList) {
             [hostList removeObject:host];
             [self updateAllHosts:[hostList allObjects]];
