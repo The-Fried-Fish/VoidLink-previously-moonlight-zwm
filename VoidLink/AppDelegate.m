@@ -11,6 +11,7 @@
 
 #import "AppDelegate.h"
 #import "MainFrameViewController.h"
+#import "StreamFrameViewController.h"
 #import "SceneDelegate.h"
 #import "VoidLink-Swift.h"
 #import "TemporaryHost.h"
@@ -55,6 +56,10 @@ static NSString* DB_NAME = @"Limelight_iOS.sqlite";
     Settings *currentSettings = [dataMan retrieveSettings];
 
     if (currentSettings.unlockDisplayOrientation) {
+        if (PublicUtils.isIPhone) {
+            UIInterfaceOrientationMask streamMask = [StreamFrameViewController sharedInstance].streamOrientationMask;
+            if (streamMask != 0) return streamMask;
+        }
         return UIInterfaceOrientationMaskAll;
     }
 

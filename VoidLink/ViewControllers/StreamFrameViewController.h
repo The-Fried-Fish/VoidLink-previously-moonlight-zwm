@@ -55,6 +55,11 @@
 
 + (StreamFrameViewController *)sharedInstance;
 
+#if !TARGET_OS_TV
+// Zero when this stream has no active orientation lock.
+@property (nonatomic, readonly) UIInterfaceOrientationMask streamOrientationMask;
+#endif
+
 - (void)updatePreferredDisplayMode:(BOOL)streamActive;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 - (bool)shallDisableGyroHotSwitch;

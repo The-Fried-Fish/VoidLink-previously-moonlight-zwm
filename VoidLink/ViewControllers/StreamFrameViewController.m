@@ -118,6 +118,7 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     ToolboxViewController* toolBoxViewController;
 #if !TARGET_OS_TV
     FloatingKeyboardButton* _floatingKeyboardButton;
+    BOOL _streamOrientationLockEnded;
 #endif
     CGPoint _appliedRestingOffset; // last portrait stream position applied at 1x
     uint16_t overlayLevel;
@@ -802,6 +803,10 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+#if !TARGET_OS_TV
+    [self captureStreamOrientationIfNeeded];
+#endif
     // if(_settings.sendDummyEvent) [self startTimer];
 }
 
@@ -814,6 +819,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     [super viewDidAppear:animated];
     _viewJustLoaded = false;
     _deviceWindow = self.view.window;
+#if !TARGET_OS_TV
+    [self captureStreamOrientationIfNeeded];
+#endif
     previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
     
     _externalDisplayRoutingActive = YES;
@@ -1405,6 +1413,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 - (void)willMoveToParentViewController:(UIViewController *)parent {
     // Only cleanup when we're being destroyed
     if (parent == nil) {
+#if !TARGET_OS_TV
+        [self endStreamOrientationLock];
+#endif
         [_motionHandler stopMotionUpdateWithInterruptNoneGyroInput:YES];
         [_motionHandler stopAccelUpdate];
         _motionHandler.motionReferenceView = nil;
@@ -1589,6 +1600,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void)returnToMainFrame {
+#if !TARGET_OS_TV
+    [self endStreamOrientationLock];
+#endif
     if (@available(iOS 13.0, *)) {
         // [ControllerNavigator setUINavigationDelegate:[_mainFrameViewcontroller isInAppView] ? _mainFrameViewcontroller : _mainFrameViewcontroller.hostCollectionVC];
         [ControllerNavigator restorePreviousUINavigationDelegateWithIfCurrentDelegateIs:self];
@@ -1891,6 +1905,11 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void)connectionTerminated:(int)errorCode {
+#if !TARGET_OS_TV
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self endStreamOrientationLock];
+    });
+#endif
 #if TARGET_OS_TV
     void (^stopMic)(void) = ^{
         self->_tvMicStopped = YES;
@@ -2076,6 +2095,11 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 }
 
 - (void) stageFailed:(const char*)stageName withError:(int)errorCode portTestFlags:(int)portTestFlags {
+#if !TARGET_OS_TV
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self endStreamOrientationLock];
+    });
+#endif
 #if TARGET_OS_TV
     void (^stopMic)(void) = ^{
         self->_tvMicStopped = YES;
@@ -2120,6 +2144,9 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     Log(LOG_I, @"Launch failed: %@", message);
     
     dispatch_async(dispatch_get_main_queue(), ^{
+#if !TARGET_OS_TV
+        [self endStreamOrientationLock];
+#endif
         // Allow the display to go to sleep now
         [UIApplication sharedApplication].idleTimerDisabled = NO;
         
@@ -2470,6 +2497,37 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
 - (BOOL)shouldAutorotate {
     return YES;
+}
+
+- (void)refreshStreamOrientationPolicyForWindow:(UIWindow *)window {
+    if (@available(iOS 16.0, *)) {
+        NSArray<UIWindow *> *windows = window.windowScene.windows;
+        if (!windows && window) windows = @[window];
+        for (UIWindow *sceneWindow in windows) {
+            for (UIViewController *controller = sceneWindow.rootViewController;
+                 controller != nil; controller = controller.presentedViewController) {
+                [controller setNeedsUpdateOfSupportedInterfaceOrientations];
+            }
+        }
+    }
+}
+
+- (void)captureStreamOrientationIfNeeded {
+    if (!PublicUtils.isIPhone || _streamOrientationLockEnded || _streamOrientationMask != 0) return;
+
+    UIWindow *window = self.viewIfLoaded.window ?: self.navigationController.viewIfLoaded.window;
+    if (!window) return;
+
+    _streamOrientationMask = [PublicUtils getCurrentOrientationForWindow:window];
+    [self refreshStreamOrientationPolicyForWindow:window];
+}
+
+- (void)endStreamOrientationLock {
+    _streamOrientationLockEnded = YES;
+    if (_streamOrientationMask == 0) return;
+
+    _streamOrientationMask = 0;
+    [self refreshStreamOrientationPolicyForWindow:_deviceWindow ?: self.viewIfLoaded.window ?: self.navigationController.viewIfLoaded.window];
 }
 
 - (BOOL)prefersPointerLocked {
