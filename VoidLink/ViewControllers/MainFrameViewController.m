@@ -60,6 +60,8 @@
 @end
 #endif
 
+static const int USBStreamMaxBitrateKbps = 240000;
+
 static NSArray<UIBarButtonItem *> *VLBarButtonItems(UIBarButtonItem *first, UIBarButtonItem *second) {
     NSMutableArray<UIBarButtonItem *> *items = [NSMutableArray arrayWithCapacity:2];
     if (first) [items addObject:first];
@@ -71,6 +73,10 @@ static NSArray<UIBarButtonItem *> *VLBarButtonItems(UIBarButtonItem *first, UIBa
     UILabel* waterMark;
     UIBarButtonItem* _addHostButton;
     UIBarButtonItem* _helpButton;
+#if !TARGET_OS_TV
+    UIBarButtonItem *_usbHostsButton;
+    BOOL _wiredStreamingTipVisible;
+#endif
     UIBarButtonItem* _upButton;
     NSArray<NSLayoutConstraint *> *_appCollectionSafeAreaConstraints;
     UIViewAutoresizing _appCollectionOriginalAutoresizingMask;
@@ -225,6 +231,10 @@ static NSMutableSet* hostList;
 - (void)pairSuccessful:(NSData*)serverCert {
     dispatch_async(dispatch_get_main_queue(), ^{
         self->_selectedHost.serverCert = serverCert;
+        if (self->_selectedHost.usesUSBStreamTunnel) {
+            self->_selectedHost.pairState = PairStatePaired;
+            [[[DataManager alloc] init] updateHost:self->_selectedHost];
+        }
         UIAlertController *pairAlert = self->_pairAlert;
         self->_pairAlert = nil;
         void (^continueToApps)(void) = ^{
@@ -233,6 +243,8 @@ static NSMutableSet* hostList;
                 self->_openingDeeplinkHost = YES;
                 [self switchToAppView];
                 self->_openingDeeplinkHost = NO;
+            } else if (self->_selectedHost.usesUSBStreamTunnel) {
+                [self switchToAppView];
             } else {
                 [self alreadyPaired];
             }
@@ -464,9 +476,7 @@ static NSMutableSet* hostList;
     }
     self.collectionView.hidden = YES;
     [self updateTitle];
-    self.navigationItem.rightBarButtonItems = PublicUtils.isTVOS
-                                            ? VLBarButtonItems(nil, nil)
-                                            : VLBarButtonItems(_helpButton, _addHostButton);
+    self.navigationItem.rightBarButtonItems = [self hostPageRightBarButtonItems];
     self.revealViewController.mainFrameIsInHostView = true;  // to allow orientation change only in app view, tell top view controller the mainframe is not in host view
     
     if (@available(iOS 13.0, *)){
@@ -516,6 +526,13 @@ static NSMutableSet* hostList;
 }
 
 - (void)switchToAppView{
+#if !TARGET_OS_TV
+    if (_selectedHost.usesUSBStreamTunnel && ![USBStreamTunnel isActiveForHostID:_selectedHost.uuid]) {
+        [self switchToHostView];
+        [self hideLoadingFrame:nil];
+        return;
+    }
+#endif
     if (!_openingDeeplinkHost) [_deeplinkCoordinator userWillEnterAppView];
     if (@available(iOS 13.0, *)) {
         [ControllerNavigator setUINavigationDelegate:self];
@@ -620,6 +637,12 @@ static NSMutableSet* hostList;
                                                                 fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
             [self->_discMan resumeDiscoveryForHost:host];
 
+            NSString *replyID = [serverInfoResp getStringTag:@"uniqueid"];
+            if (host.usesUSBStreamTunnel && [serverInfoResp isStatusOk] &&
+                (!replyID.length || [replyID caseInsensitiveCompare:host.uuid] != NSOrderedSame)) {
+                serverInfoResp.statusCode = 400;
+                serverInfoResp.statusMessage = @"The USB host identity changed.";
+            }
             if (![serverInfoResp isStatusOk]) {
                 Log(LOG_W, @"Failed to get server info: %@", serverInfoResp.statusMessage);
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -648,6 +671,12 @@ static NSMutableSet* hostList;
                 // Update the host object with this data
                 [serverInfoResp populateHost:host];
                 [self hostCardContentsDidChange:host];
+                if (host.usesUSBStreamTunnel && host.serverCert.length && host.pairState == PairStatePaired) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (self->_selectedHost == host) [self switchToAppView];
+                    });
+                    return;
+                }
                 // Only pair when this was the result of explicit user action
                     Log(LOG_I, @"Trying to pairTrying to pair");
                     // Polling the server while pairing causes the server to screw up
@@ -969,6 +998,8 @@ static NSMutableSet* hostList;
     self.revealViewController.isStreaming = true; // tell the revealViewController streaming is started.
     _streamConfig = [[StreamConfiguration alloc] init];
     _streamConfig.host = app.host.activeAddress;
+    _streamConfig.hostUUID = app.host.uuid;
+    _streamConfig.usesUSBStreamTunnel = app.host.usesUSBStreamTunnel;
     _streamConfig.httpsPort = app.host.httpsPort;
     _streamConfig.appID = app.id;
     _streamConfig.appName = app.name;
@@ -1010,7 +1041,8 @@ static NSMutableSet* hostList;
     }
 #endif
     
-    _streamConfig.bitRate = [streamSettings.bitrate intValue];
+    int bitrateKbps = streamSettings.bitrate.intValue;
+    _streamConfig.bitRate = _streamConfig.usesUSBStreamTunnel ? MIN(bitrateKbps, USBStreamMaxBitrateKbps) : bitrateKbps;
     _streamConfig.optimizeGameSettings = streamSettings.optimizeGames;
     _streamConfig.playAudioOnPC = streamSettings.playAudioOnPC;
     _streamConfig.redirectMic = streamSettings.redirectMic;
@@ -1128,7 +1160,11 @@ static NSMutableSet* hostList;
 }
 
 - (NSInteger)requestForBitrate:(NSInteger)bitrateKbps{
-    HttpManager* hMan = [[HttpManager alloc] initWithHost:launchedApp.host];
+    TemporaryHost *host = launchedApp.host;
+    if (host.usesUSBStreamTunnel) {
+        bitrateKbps = MIN(bitrateKbps, (NSInteger)USBStreamMaxBitrateKbps);
+    }
+    HttpManager* hMan = [[HttpManager alloc] initWithHost:host];
     HttpResponse* bitrateResponse = [[HttpResponse alloc] init];
     HttpRequest* bitrateRequest = [HttpRequest requestForResponse: bitrateResponse withUrlRequest:[hMan newBirateRequest:bitrateKbps forClient:@"unknown"]];
     [hMan executeRequestSynchronously:bitrateRequest];
@@ -2023,9 +2059,7 @@ static NSMutableSet* hostList;
 
 
 
-    self.navigationItem.rightBarButtonItems = PublicUtils.isTVOS
-    ? VLBarButtonItems(nil, nil)
-    : VLBarButtonItems(_helpButton, _addHostButton); // 顺序：右边靠右的是第一个
+    self.navigationItem.rightBarButtonItems = [self hostPageRightBarButtonItems];
 
     // Set the side bar button action. When it's tapped, it'll show the sidebar.
 
@@ -2194,6 +2228,9 @@ static NSMutableSet* hostList;
 
 - (void)viewDidLoad{
     [super viewDidLoad];
+#if !TARGET_OS_TV
+    [USBStreamTunnel startDiscovery];
+#endif
     
     DataManager* dataMan = [[DataManager alloc] init];
     TemporarySettings* tempSettings = [dataMan getSettings];
@@ -2575,6 +2612,11 @@ static NSMutableSet* hostList;
                                              selector: @selector(handleEnterBackground)
                                                  name: UIApplicationWillResignActiveNotification
                                                object: nil];
+#if !TARGET_OS_TV
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(usbTunnelOffersDidChange:)
+                                               name:[USBStreamTunnel offersDidChangeNotification] object:nil];
+    [self refreshUSBHostView];
+#endif
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAboutViewDismissal:)
@@ -2712,6 +2754,90 @@ static NSMutableSet* hostList;
         }
     });
 }
+
+- (NSArray<UIBarButtonItem *> *)hostPageRightBarButtonItems {
+#if TARGET_OS_TV
+    return @[];
+#else
+    NSArray<UIBarButtonItem *> *items = VLBarButtonItems(_helpButton, _addHostButton);
+    if ([GenericUtils hasTappedUSBWiredStreamingButton] && !_wiredStreamingTipVisible &&
+        [USBStreamTunnel detectedHosts].count == 0) return items;
+    if (!_usbHostsButton) {
+        _usbHostsButton = [[UIBarButtonItem alloc] initWithTitle:@"USB" style:UIBarButtonItemStylePlain
+                                                        target:self action:@selector(showDetectedUSBHosts)];
+    }
+    [self applyThemeToNavigationButton:_usbHostsButton];
+    return [items arrayByAddingObject:_usbHostsButton];
+#endif
+}
+
+#if !TARGET_OS_TV
+- (void)showWiredStreamingTip {
+    _wiredStreamingTipVisible = YES;
+    __weak typeof(self) weakSelf = self;
+    [GenericUtils handleWiredStreamingTipIn:self completion:^{
+        __strong typeof(weakSelf) self = weakSelf;
+        if (!self) return;
+        self->_wiredStreamingTipVisible = NO;
+        if (!self->_enteredAppView && ![self isStreaming]) {
+            self.navigationItem.rightBarButtonItems = [self hostPageRightBarButtonItems];
+        }
+    }];
+}
+
+- (void)usbTunnelOffersDidChange:(NSNotification *)notification {
+    [self refreshUSBHostView];
+}
+
+- (void)refreshUSBHostView {
+    if ([self isStreaming]) return;
+
+    if (_enteredAppView && _selectedHost.usesUSBStreamTunnel &&
+        ![USBStreamTunnel isActiveForHostID:_selectedHost.uuid]) {
+        [self switchToHostView];
+        [self hideLoadingFrame:nil];
+    } else if (!_enteredAppView) {
+        self.navigationItem.rightBarButtonItems = [self hostPageRightBarButtonItems];
+    }
+}
+
+- (void)showDetectedUSBHosts {
+    if (_wiredStreamingTipVisible) return;
+    if (![GenericUtils hasTappedUSBWiredStreamingButton]) {
+        [GenericUtils markUSBWiredStreamingButtonTapped];
+        [self showWiredStreamingTip];
+        return;
+    }
+
+    NSDictionary<NSString *, NSString *> *tunnels = [USBStreamTunnel detectedHosts];
+    if (tunnels.count == 0) return;
+
+    UIAlertController *chooser = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"USB Hosts"]
+                                                                    message:nil preferredStyle:UIAlertControllerStyleAlert];
+    for (NSString *hostID in tunnels) {
+        [chooser addAction:[UIAlertAction actionWithTitle:tunnels[hostID] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [USBStreamTunnel activateHostID:hostID completion:^(TemporaryHost *host) {
+                if (!host) {
+                    [self displayPairingFailureDialog:@"Could not open the USB streaming channels."];
+                    return;
+                }
+                @synchronized (hostList) {
+                    for (TemporaryHost *saved in hostList) {
+                        if ([saved.uuid caseInsensitiveCompare:host.uuid] == NSOrderedSame) {
+                            host.serverCert = saved.serverCert;
+                            break;
+                        }
+                    }
+                }
+                [self pairButtonTappedForHost:host];
+            }];
+        }]];
+    }
+    [chooser addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
+                                               style:UIAlertActionStyleCancel handler:nil]];
+    [[self activeViewController] presentViewController:chooser animated:YES completion:nil];
+}
+#endif
 
 - (void) updateAllHosts:(NSArray *)hosts {
     // We must copy the array here because it could be modified

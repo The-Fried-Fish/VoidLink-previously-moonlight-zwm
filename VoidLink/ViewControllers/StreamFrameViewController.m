@@ -1922,7 +1922,8 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
     Log(LOG_I, @"Connection terminated: %d", errorCode);
     
     unsigned int portFlags = LiGetPortFlagsFromTerminationErrorCode(errorCode);
-    unsigned int portTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
+    unsigned int portTestResults = self.streamConfig.usesUSBStreamTunnel ? ML_TEST_RESULT_INCONCLUSIVE
+        : LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // Allow the display to go to sleep now
@@ -2111,7 +2112,8 @@ static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil
 
     Log(LOG_I, @"Stage %s failed: %d", stageName, errorCode);
     
-    unsigned int portTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portTestFlags);
+    unsigned int portTestResults = self.streamConfig.usesUSBStreamTunnel ? ML_TEST_RESULT_INCONCLUSIVE
+        : LiTestClientConnectivity(CONN_TEST_SERVER, 443, portTestFlags);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         // Allow the display to go to sleep now

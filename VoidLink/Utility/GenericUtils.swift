@@ -771,6 +771,41 @@ import UIKit
         }
     }
     
+    private static let usbWiredStreamingButtonTappedKey = "hasTappedUSBWiredStreamingButton"
+
+    @objc public static func hasTappedUSBWiredStreamingButton() -> Bool {
+        UserDefaults.standard.bool(forKey: usbWiredStreamingButtonTappedKey)
+    }
+
+    @objc public static func markUSBWiredStreamingButtonTapped() {
+        UserDefaults.standard.set(true, forKey: usbWiredStreamingButtonTappedKey)
+    }
+
+    @objc public static func handleWiredStreamingTip(in vc: UIViewController?, completion: @escaping () -> Void) {
+        AlertControllerUtil.autoCompletion = false
+        AlertControllerUtil.cancelButtonString = "Go for wired streaming"
+        AlertControllerUtil.showAlert(
+            in: vc,
+            title: "Tips".localized,
+            message: "wiredStreamingTip".localized,
+            withCancel: true,
+            buttonTitle: "This tip won't be shown again".localized,
+            countdown: 6,
+            completion: {
+                let opensFoundationSunshine = AlertControllerUtil.actionCancelled
+                let alert = AlertControllerUtil.alertController
+                DispatchQueue.main.async {
+                    AlertControllerUtil.afterActionDismissal(of: alert) {
+                        completion()
+                        if opensFoundationSunshine {
+                            PublicUtils.openUrl("wiredStreamingSunshineLink".localized)
+                        }
+                    }
+                }
+            })
+    }
+
+    
     /// Returns false when external audio requires enabling redirection first.
     @objc public static func canActivatePushToTalk(in vc: UIViewController?, redirectMic: Bool) -> Bool {
 #if !os(tvOS)

@@ -9,9 +9,14 @@
 //  Copyright © 2024 True砖家 @ Bilibili. All rights reserved.
 //
 
+@class USBStreamVideoChannel;
+
 @interface StreamConfiguration : NSObject
 
 @property NSString* host;
+@property (copy) NSString *hostUUID;
+@property BOOL usesUSBStreamTunnel;
+@property (strong) USBStreamVideoChannel *directUSBVideoChannel;
 @property unsigned short httpsPort;
 @property NSString* appVersion;
 @property NSString* gfeVersion;

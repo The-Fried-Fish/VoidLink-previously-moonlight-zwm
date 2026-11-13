@@ -49,6 +49,7 @@
 - (id) initWithHost:(TemporaryHost*) host {
     self = [self initWithAddress:host.activeAddress httpsPort:host.httpsPort serverCert:host.serverCert];
     _host = host;
+    self.requiresPinnedServer = host.usesUSBStreamTunnel;
     return self;
 }
 
@@ -404,34 +405,42 @@
     return identityApp;
 }
 
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+    willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request
+    completionHandler:(void (^)(NSURLRequest *))completionHandler {
+    completionHandler(self.requiresPinnedServer ? nil : request);
+}
+
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(nonnull void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * __nullable))completionHandler {
     // Allow untrusted server certificates
     if([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
     {
-        if (SecTrustGetCertificateCount(challenge.protectionSpace.serverTrust) != 1) {
+        NSURLSessionAuthChallengeDisposition rejectDisposition = self.requiresPinnedServer
+            ? NSURLSessionAuthChallengeCancelAuthenticationChallenge : NSURLSessionAuthChallengePerformDefaultHandling;
+        if (!challenge.protectionSpace.serverTrust || SecTrustGetCertificateCount(challenge.protectionSpace.serverTrust) != 1) {
             Log(LOG_E, @"Server certificate count mismatch");
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
+            completionHandler(rejectDisposition, NULL);
             return;
         }
         
         SecCertificateRef actualCert = SecTrustGetCertificateAtIndex(challenge.protectionSpace.serverTrust, 0);
         if (actualCert == nil) {
             Log(LOG_E, @"Server certificate parsing error");
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
+            completionHandler(rejectDisposition, NULL);
             return;
         }
         
         CFDataRef actualCertData = SecCertificateCopyData(actualCert);
         if (actualCertData == nil) {
             Log(LOG_E, @"Server certificate data parsing error");
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
+            completionHandler(rejectDisposition, NULL);
             return;
         }
         
-        if (!CFEqual(actualCertData, (__bridge CFDataRef)_serverCert)) {
+        if (!_serverCert || !CFEqual(actualCertData, (__bridge CFDataRef)_serverCert)) {
             Log(LOG_E, @"Server certificate mismatch");
             CFRelease(actualCertData);
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
+            completionHandler(rejectDisposition, NULL);
             return;
         }
         

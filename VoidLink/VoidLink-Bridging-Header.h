@@ -6,6 +6,8 @@
 #include <moonlight_haptics/authored_haptics.h>
 #if !TARGET_OS_TV
 #import "CustomEdgeSlideGestureRecognizer.h"
+#import "HttpManager.h"
+#import "ServerInfoResponse.h"
 #endif
 #import "MainFrameViewController.h"
 #import "LoadingFrameViewController.h"

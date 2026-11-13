@@ -37,6 +37,9 @@
     char _appVersionString[32];
     char _gfeVersionString[32];
     char _rtspSessionUrl[128];
+#if !TARGET_OS_TV
+    USBStreamVideoChannel *_directUSBVideoChannel;
+#endif
 #if TARGET_OS_TV
     BOOL _audioPlaybackTerminated;
 #endif
@@ -857,6 +860,11 @@ void ClDs5HapticsIrV2(const LI_DS5_HAPTICS_IR_FRAME_V2* frame)
     // won't be able to acquire it if LiStartConnection is in
     // progress.
     LiInterruptConnection();
+#if !TARGET_OS_TV
+    if (_directUSBVideoChannel) {
+        [self cancel];
+    }
+#endif
     @synchronized (playbackQueueLock) {
         // Invalidate completions belonging to the terminated connection.
         playbackGeneration++;
@@ -872,6 +880,10 @@ void ClDs5HapticsIrV2(const LI_DS5_HAPTICS_IR_FRAME_V2* frame)
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [initLock lock];
         LiStopConnection();
+#if !TARGET_OS_TV
+        // The read callback borrows its Swift context until common-c joins the receive thread.
+        [self->_directUSBVideoChannel close];
+#endif
         [initLock unlock];
     });
 }
@@ -930,6 +942,9 @@ void ClDs5HapticsIrV2(const LI_DS5_HAPTICS_IR_FRAME_V2* frame)
 -(id) initWithConfig:(StreamConfiguration*)config renderer:(VideoDecoderRenderer*)myRenderer connectionCallbacks:(id<ConnectionCallbacks>)callbacks
 {
     self = [super init];
+#if !TARGET_OS_TV
+    _directUSBVideoChannel = config.directUSBVideoChannel;
+#endif
 
     // Use a lock to ensure that only one thread is initializing
     // or deinitializing a connection at a time.
@@ -993,7 +1008,11 @@ void ClDs5HapticsIrV2(const LI_DS5_HAPTICS_IR_FRAME_V2* frame)
     // need to check for that here.
     _streamConfig.encryptionFlags = ENCFLG_ALL;
     
-    if ([Utils isActiveNetworkVPN]) {
+    if (config.usesUSBStreamTunnel) {
+        _streamConfig.streamingRemotely = STREAM_CFG_LOCAL;
+        _streamConfig.packetSize = 1392;
+    }
+    else if ([Utils isActiveNetworkVPN]) {
         // Force remote streaming mode when a VPN is connected
         _streamConfig.streamingRemotely = STREAM_CFG_REMOTE;
         _streamConfig.packetSize = 1024;
@@ -1072,6 +1091,18 @@ void ClDs5HapticsIrV2(const LI_DS5_HAPTICS_IR_FRAME_V2* frame)
 -(void) main
 {
     [initLock lock];
+#if !TARGET_OS_TV
+    if (_directUSBVideoChannel) {
+        LI_VIDEO_TRANSPORT transport = [_directUSBVideoChannel videoTransport];
+        if (self.cancelled ||
+            LiStartConnectionWithVideoTransport(&_serverInfo, &_streamConfig, &_clCallbacks, &_drCallbacks,
+                                               &_arCallbacks, NULL, 0, NULL, 0, &transport) != 0) {
+            [_directUSBVideoChannel close];
+        }
+        [initLock unlock];
+        return;
+    }
+#endif
     LiStartConnection(&_serverInfo,
                       &_streamConfig,
                       &_clCallbacks,

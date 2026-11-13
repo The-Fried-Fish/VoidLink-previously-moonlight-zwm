@@ -87,6 +87,14 @@
 }
 
 - (void) propagateChangesToParent:(Host*)parentHost { // update persisted host data
+    if (self.usesUSBStreamTunnel) {
+        parentHost.name = self.name;
+        parentHost.uuid = self.uuid;
+        parentHost.serverCert = self.serverCert;
+        parentHost.pairState = @(self.pairState);
+        parentHost.serverCodecModeSupport = self.serverCodecModeSupport;
+        return;
+    }
     // Avoid overwriting existing data with nil if
     // we don't have everything populated in the temporary
     // host.

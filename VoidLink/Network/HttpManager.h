@@ -11,7 +11,9 @@
 #import "StreamConfiguration.h"
 #import "TemporaryHost.h"
 
-@interface HttpManager : NSObject <NSURLSessionDelegate>
+@interface HttpManager : NSObject <NSURLSessionTaskDelegate>
+
+@property (nonatomic) BOOL requiresPinnedServer;
 
 - (id) initWithHost:(TemporaryHost*) host;
 - (id) initWithAddress:(NSString*) hostAddressPortString httpsPort:(unsigned short) httpsPort serverCert:(NSData*) serverCert;

@@ -48,31 +48,59 @@
 }
 
 - (void)main {
+    if (![self startSession]) {
+#if !TARGET_OS_TV
+        [_config.directUSBVideoChannel close];
+#endif
+    }
+}
+
+- (BOOL)startSession {
+    if (self.cancelled) return NO;
     [CryptoManager generateKeyPairUsingSSL];
-    
-    HttpManager* hMan = [[HttpManager alloc] initWithAddress:_config.host httpsPort:_config.httpsPort
-                                                     serverCert:_config.serverCert];
-    
-    ServerInfoResponse* serverInfoResp = [[ServerInfoResponse alloc] init];
-    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
-                                       fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
+
+    HttpManager *hMan = [[HttpManager alloc] initWithAddress:_config.host httpsPort:_config.httpsPort serverCert:_config.serverCert];
+    ServerInfoResponse *serverInfoResp = [[ServerInfoResponse alloc] init];
+    if (_config.usesUSBStreamTunnel) {
+        hMan.requiresPinnedServer = YES;
+        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]]];
+    } else {
+        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
+                                           fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
+    }
+    if (self.cancelled) return NO;
     NSString* pairStatus = [serverInfoResp getStringTag:@"PairStatus"];
     NSString* appversion = [serverInfoResp getStringTag:@"appversion"];
     NSString* gfeVersion = [serverInfoResp getStringTag:@"GfeVersion"];
     NSString* serverState = [serverInfoResp getStringTag:@"state"];
     if (![serverInfoResp isStatusOk]) {
         [_callbacks launchFailed:serverInfoResp.statusMessage];
-        return;
+        return NO;
     }
     else if (pairStatus == NULL || appversion == NULL || serverState == NULL) {
         [_callbacks launchFailed:@"Failed to connect to PC"];
-        return;
+        return NO;
     }
     
     if (![pairStatus isEqualToString:@"1"]) {
         // Not paired
         [_callbacks launchFailed:@"Device not paired to PC"];
-        return;
+        return NO;
+    }
+    if (_config.usesUSBStreamTunnel) {
+        NSString *hostID = [serverInfoResp getStringTag:@"uniqueid"];
+        if (!hostID.length || [hostID caseInsensitiveCompare:_config.hostUUID] != NSOrderedSame) {
+            [_callbacks launchFailed:@"The USB host identity changed."];
+            return NO;
+        }
+#if !TARGET_OS_TV
+        _config.directUSBVideoChannel = [USBStreamTunnel openVideoForHostID:_config.hostUUID];
+        if (self.cancelled) return NO;
+        if (!_config.directUSBVideoChannel) {
+            [_callbacks launchFailed:@"Could not open the direct USB video channel."];
+            return NO;
+        }
+#endif
     }
     
     // Only perform this check on GFE (as indicated by MJOLNIR in state value)
@@ -82,7 +110,7 @@
         NSString* codecSupport = [serverInfoResp getStringTag:@"ServerCodecModeSupport"];
         if (codecSupport == nil || !([codecSupport intValue] & 0x200)) {
             [_callbacks launchFailed:@"Your host PC's GPU doesn't support streaming video resolutions over 4K."];
-            return;
+            return NO;
         }
     }
     
@@ -95,26 +123,34 @@
     if ([serverState hasSuffix:@"_SERVER_BUSY"]) {
         // App already running, resume it
         if (![self resumeApp:hMan receiveSessionUrl:&sessionUrl]) {
-            return;
+            return NO;
         }
     } else {
         // Start app
         if (![self launchApp:hMan receiveSessionUrl:&sessionUrl]) {
-            return;
+            return NO;
         }
     }
     
     // Populate RTSP session URL from launch/resume response
+    if (_config.usesUSBStreamTunnel) {
+        NSURLComponents *components = [NSURLComponents componentsWithString:sessionUrl ?: @""];
+        components.host = @"127.0.0.1";
+        sessionUrl = components.URL.absoluteString;
+    }
     _config.rtspSessionUrl = sessionUrl;
     
     // Initializing the renderer must be done on the main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        self->_videoRenderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height];
-
-        self->_connection = [[Connection alloc] initWithConfig:self->_config renderer:self->_videoRenderer connectionCallbacks:self->_callbacks];
-        NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
-        [opQueue addOperation:self->_connection];
+        @synchronized (self) {
+            if (self.cancelled) return;
+            self->_videoRenderer = [[VideoDecoderRenderer alloc] initWithView:self->_renderView callbacks:self->_callbacks streamAspectRatio:(float)self->_config.width / (float)self->_config.height];
+            self->_connection = [[Connection alloc] initWithConfig:self->_config renderer:self->_videoRenderer connectionCallbacks:self->_callbacks];
+            NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
+            [opQueue addOperation:self->_connection];
+        }
     });
+    return YES;
 }
 
 - (void) setNeedRequeuing:(bool)needRequeuing{
@@ -125,13 +161,37 @@
 
 - (void) stopStream
 {
-    [_connection terminate];
-    _callbacks = nil;
+    [self cancel];
+    @synchronized (self) {
+        if (_connection) {
+            [_connection terminate];
+        }
+#if !TARGET_OS_TV
+        else {
+            [_config.directUSBVideoChannel close];
+        }
+#endif
+        _callbacks = nil;
+    }
+}
+
+- (NSURLRequest *)launchRequest:(NSString *)verb manager:(HttpManager *)manager {
+    if (self.cancelled) return nil;
+    NSURLRequest *request = [manager newLaunchOrResumeRequest:verb config:_config];
+#if !TARGET_OS_TV
+    if (_config.directUSBVideoChannel) {
+        request = [_config.directUSBVideoChannel requestWithLaunchToken:request];
+        if (!request) [_callbacks launchFailed:@"The direct USB video channel closed before launch."];
+    }
+#endif
+    return request;
 }
 
 - (BOOL) launchApp:(HttpManager*)hMan receiveSessionUrl:(NSString**)sessionUrl {
+    NSURLRequest *request = [self launchRequest:@"launch" manager:hMan];
+    if (!request && (self.cancelled || _config.directUSBVideoChannel)) return NO;
     HttpResponse* launchResp = [[HttpResponse alloc] init];
-    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:launchResp withUrlRequest:[hMan newLaunchOrResumeRequest:@"launch" config:_config]]];
+    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:launchResp withUrlRequest:request]];
     NSString *gameSession = [launchResp getStringTag:@"gamesession"];
     if (![launchResp isStatusOk]) {
         [_callbacks launchFailed:launchResp.statusMessage];
@@ -148,8 +208,10 @@
 }
 
 - (BOOL) resumeApp:(HttpManager*)hMan receiveSessionUrl:(NSString**)sessionUrl {
+    NSURLRequest *request = [self launchRequest:@"resume" manager:hMan];
+    if (!request && (self.cancelled || _config.directUSBVideoChannel)) return NO;
     HttpResponse* resumeResp = [[HttpResponse alloc] init];
-    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:resumeResp withUrlRequest:[hMan newLaunchOrResumeRequest:@"resume" config:_config]]];
+    [hMan executeRequestSynchronously:[HttpRequest requestForResponse:resumeResp withUrlRequest:request]];
     NSString* resume = [resumeResp getStringTag:@"resume"];
     if (![resumeResp isStatusOk]) {
         [_callbacks launchFailed:resumeResp.statusMessage];
