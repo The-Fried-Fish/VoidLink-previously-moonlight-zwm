@@ -94,7 +94,7 @@
             return NO;
         }
 #if !TARGET_OS_TV
-        _config.directUSBVideoChannel = [USBStreamTunnel openVideoForHostID:_config.hostUUID];
+        _config.directUSBVideoChannel = [USBStreamTunnel openVideoForSessionID:_config.usbTunnelSessionID];
         if (self.cancelled) return NO;
         if (!_config.directUSBVideoChannel) {
             [_callbacks launchFailed:@"Could not open the direct USB video channel."];

@@ -38,6 +38,12 @@
     [_httpManager executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[_httpManager newServerInfoRequest:false]
                                                fallbackError:401 fallbackRequest:[_httpManager newHttpServerInfoRequest]]];
     if ([serverInfoResp isStatusOk]) {
+        NSString *hostUUID = [[serverInfoResp getStringTag:@"uniqueid"] trim];
+        if (self.expectedHostUUID.length &&
+            (!hostUUID.length || [hostUUID caseInsensitiveCompare:self.expectedHostUUID] != NSOrderedSame)) {
+            [_callback pairFailed:@"The USB host identity changed during pairing. Select the USB host again."];
+            return;
+        }
         if (![[serverInfoResp getStringTag:@"PairStatus"] isEqual:@"1"]) {
             NSString* appversion = [serverInfoResp getStringTag:@"appversion"];
             if (appversion == nil) {

@@ -16,6 +16,7 @@
 @property NSString* host;
 @property (copy) NSString *hostUUID;
 @property BOOL usesUSBStreamTunnel;
+@property (copy) NSString *usbTunnelSessionID;
 @property (strong) USBStreamVideoChannel *directUSBVideoChannel;
 @property unsigned short httpsPort;
 @property NSString* appVersion;

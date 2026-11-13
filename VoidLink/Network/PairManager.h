@@ -18,5 +18,6 @@
 @end
 
 @interface PairManager : NSOperation
+@property (copy) NSString *expectedHostUUID;
 - (id) initWithManager:(HttpManager*)httpManager clientCert:(NSData*)clientCert callback:(id<PairCallback>)callback;
 @end

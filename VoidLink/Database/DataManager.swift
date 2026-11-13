@@ -146,9 +146,34 @@ final class DataManager: NSObject {
         return uniqueId
     }
 
+    @objc(usbPairingCertificateForHostUUID:)
+    func usbPairingCertificate(forHostUUID hostUUID: String) -> Data? {
+        guard let uuid = UUID(uuidString: hostUUID) else { return nil }
+        var certificate: Data?
+        managedObjectContext.performAndWait {
+            let records: [Host] = fetchRecords("Host")
+            certificate = records.first {
+                $0.uuid.flatMap(UUID.init(uuidString:)) == uuid && $0.serverCert != nil
+            }?.serverCert
+        }
+        return certificate
+    }
+
     @objc(updateHost:)
     func update(_ host: TemporaryHost) {
         managedObjectContext.performAndWait {
+            if host.usesUSBStreamTunnel, let hostID = UUID(uuidString: host.uuid) {
+                let records: [Host] = fetchRecords("Host")
+                let matches = records.filter { $0.uuid.flatMap(UUID.init(uuidString:)) == hostID }
+                if !matches.isEmpty {
+                    for record in matches {
+                        record.serverCert = host.serverCert
+                        record.pairState = NSNumber(value: host.pairState.rawValue)
+                    }
+                    saveData()
+                    return
+                }
+            }
             let parent = findHost(host) ?? Host(
                 entity: NSEntityDescription.entity(forEntityName: "Host", in: managedObjectContext)!,
                 insertInto: managedObjectContext)

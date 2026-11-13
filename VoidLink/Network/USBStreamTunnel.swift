@@ -205,10 +205,10 @@ import UIKit
         }
     }
 
-    @objc(isActiveForHostID:)
-    static func isActive(forHostID hostID: String?) -> Bool {
-        guard let hostID, let uuid = UUID(uuidString: hostID) else { return false }
-        return queue.sync { active?.hostID == uuid }
+    @objc(isActiveForSessionID:)
+    static func isActive(forSessionID sessionID: String?) -> Bool {
+        guard let sessionID, let uuid = UUID(uuidString: sessionID) else { return false }
+        return queue.sync { active?.session == uuid }
     }
 
     @objc(activateHostID:completion:)
@@ -271,12 +271,12 @@ import UIKit
         }
     }
 
-    @objc(openVideoForHostID:)
-    static func openVideo(forHostID hostID: String) -> USBStreamVideoChannel? {
+    @objc(openVideoForSessionID:)
+    static func openVideo(forSessionID sessionID: String) -> USBStreamVideoChannel? {
         // Called from StreamManager's worker, never from the main or USB queue.
         let result = VideoOpenResult()
         queue.async {
-            guard let tunnel = active, !tunnel.closed, tunnel.hostID == UUID(uuidString: hostID),
+            guard let tunnel = active, !tunnel.closed, tunnel.session == UUID(uuidString: sessionID),
                   tunnel.pendingVideo == nil else {
                 result.finish(nil)
                 return
@@ -302,6 +302,7 @@ import UIKit
         host.activeAddress = "127.0.0.1:\(ports[0])"
         host.httpsPort = ports[1]
         host.usesUSBStreamTunnel = true
+        host.usbTunnelSessionID = session.uuidString
         host.state = .online
         DispatchQueue.main.async { completion(host) }
     }

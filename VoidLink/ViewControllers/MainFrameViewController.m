@@ -230,10 +230,23 @@ static NSMutableSet* hostList;
 
 - (void)pairSuccessful:(NSData*)serverCert {
     dispatch_async(dispatch_get_main_queue(), ^{
-        self->_selectedHost.serverCert = serverCert;
-        if (self->_selectedHost.usesUSBStreamTunnel) {
-            self->_selectedHost.pairState = PairStatePaired;
-            [[[DataManager alloc] init] updateHost:self->_selectedHost];
+        TemporaryHost *pairedHost = self->_selectedHost;
+        if (!pairedHost) return;
+        pairedHost.serverCert = serverCert;
+        pairedHost.pairState = PairStatePaired;
+        [[[DataManager alloc] init] updateHost:pairedHost];
+        if (pairedHost.usesUSBStreamTunnel) {
+            NSArray<TemporaryHost *> *savedHosts;
+            @synchronized (hostList) {
+                savedHosts = [hostList allObjects];
+            }
+            for (TemporaryHost *host in savedHosts) {
+                if (host.usesUSBStreamTunnel || !host.uuid.length ||
+                    [host.uuid caseInsensitiveCompare:pairedHost.uuid] != NSOrderedSame) continue;
+                host.serverCert = serverCert;
+                host.pairState = PairStatePaired;
+                [self.hostCollectionVC refreshHostCardForHost:host];
+            }
         }
         UIAlertController *pairAlert = self->_pairAlert;
         self->_pairAlert = nil;
@@ -363,6 +376,9 @@ static NSMutableSet* hostList;
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self updateApplist:[appListResp getAppList] forHost:host];
+                if (host.usesUSBStreamTunnel) {
+                    [self syncUSBAppListToNetworkHosts:host];
+                }
                 
                 if (host != self->_selectedHost) {
                     [self hideLoadingFrame: nil];
@@ -378,6 +394,29 @@ static NSMutableSet* hostList;
             });
         }
     });
+}
+
+- (void)syncUSBAppListToNetworkHosts:(TemporaryHost *)usbHost {
+    NSArray<TemporaryHost *> *savedHosts;
+    @synchronized (hostList) {
+        savedHosts = [hostList allObjects];
+    }
+    for (TemporaryHost *host in savedHosts) {
+        if (host.usesUSBStreamTunnel || !host.uuid.length ||
+            [host.uuid caseInsensitiveCompare:usbHost.uuid] != NSOrderedSame) continue;
+
+        NSMutableSet<TemporaryApp *> *apps = [NSMutableSet setWithCapacity:usbHost.appList.count];
+        for (TemporaryApp *usbApp in usbHost.appList) {
+            TemporaryApp *app = [[TemporaryApp alloc] init];
+            app.id = usbApp.id;
+            app.name = usbApp.name;
+            app.installPath = usbApp.installPath;
+            app.hdrSupported = usbApp.hdrSupported;
+            [apps addObject:app];
+        }
+        [self updateApplist:apps forHost:host];
+        [self.hostCollectionVC refreshHostCardForHost:host];
+    }
 }
 
 - (void) updateAppEntry:(TemporaryApp*)app forHost:(TemporaryHost*)host {
@@ -527,7 +566,7 @@ static NSMutableSet* hostList;
 
 - (void)switchToAppView{
 #if !TARGET_OS_TV
-    if (_selectedHost.usesUSBStreamTunnel && ![USBStreamTunnel isActiveForHostID:_selectedHost.uuid]) {
+    if (_selectedHost.usesUSBStreamTunnel && ![USBStreamTunnel isActiveForSessionID:_selectedHost.usbTunnelSessionID]) {
         [self switchToHostView];
         [self hideLoadingFrame:nil];
         return;
@@ -633,21 +672,63 @@ static NSMutableSet* hostList;
 
             // Exempt this host from discovery while handling the serverinfo request
             [self->_discMan pauseDiscoveryForHost:host];
-            [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
-                                                                fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
+            if (host.usesUSBStreamTunnel) {
+                DataManager *dataManager = [[DataManager alloc] init];
+                host.serverCert = [dataManager usbPairingCertificateForHostUUID:host.uuid];
+                [hMan setServerCert:host.serverCert];
+                [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]]];
+                NSString *replyID = [[serverInfoResp getStringTag:@"uniqueid"] trim];
+                BOOL canReusePairing = host.serverCert.length && [serverInfoResp isStatusOk] &&
+                    replyID.length && [replyID caseInsensitiveCompare:host.uuid] == NSOrderedSame &&
+                    [[serverInfoResp getStringTag:@"PairStatus"] isEqualToString:@"1"];
+                if (!canReusePairing) {
+                    if (host.serverCert.length) {
+                        serverInfoResp = [[ServerInfoResponse alloc] init];
+                        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newHttpServerInfoRequest]]];
+                    }
+                    host.serverCert = nil;
+                    [hMan setServerCert:nil];
+                    NSString *currentID = [[serverInfoResp getStringTag:@"uniqueid"] trim];
+                    if ([serverInfoResp isStatusOk] && currentID.length &&
+                        [currentID caseInsensitiveCompare:host.uuid] != NSOrderedSame) {
+                        NSData *certificate = [dataManager usbPairingCertificateForHostUUID:currentID];
+                        if (certificate.length) {
+                            [hMan setServerCert:certificate];
+                            ServerInfoResponse *verifiedInfo = [[ServerInfoResponse alloc] init];
+                            [hMan executeRequestSynchronously:[HttpRequest requestForResponse:verifiedInfo withUrlRequest:[hMan newServerInfoRequest:false]]];
+                            NSString *verifiedID = [[verifiedInfo getStringTag:@"uniqueid"] trim];
+                            if ([verifiedInfo isStatusOk] && verifiedID.length &&
+                                [verifiedID caseInsensitiveCompare:currentID] == NSOrderedSame &&
+                                [[verifiedInfo getStringTag:@"PairStatus"] isEqualToString:@"1"]) {
+                                host.serverCert = certificate;
+                                serverInfoResp = verifiedInfo;
+                            } else {
+                                [hMan setServerCert:nil];
+                            }
+                        }
+                    }
+                }
+            } else {
+                [hMan executeRequestSynchronously:[HttpRequest requestForResponse:serverInfoResp withUrlRequest:[hMan newServerInfoRequest:false]
+                                                                    fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
+            }
             [self->_discMan resumeDiscoveryForHost:host];
 
-            NSString *replyID = [serverInfoResp getStringTag:@"uniqueid"];
+            NSString *replyID = [[serverInfoResp getStringTag:@"uniqueid"] trim];
             if (host.usesUSBStreamTunnel && [serverInfoResp isStatusOk] &&
-                (!replyID.length || [replyID caseInsensitiveCompare:host.uuid] != NSOrderedSame)) {
+                ![[NSUUID alloc] initWithUUIDString:replyID ?: @""]) {
                 serverInfoResp.statusCode = 400;
-                serverInfoResp.statusMessage = @"The USB host identity changed.";
+                serverInfoResp.statusMessage = @"The USB host did not return a valid identity.";
             }
             if (![serverInfoResp isStatusOk]) {
                 Log(LOG_W, @"Failed to get server info: %@", serverInfoResp.statusMessage);
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (host != self->_selectedHost) {
                         [self hideLoadingFrame:nil];
+                        return;
+                    }
+                    if (host.usesUSBStreamTunnel) {
+                        [self displayPairingFailureDialog:serverInfoResp.statusMessage];
                         return;
                     }
 
@@ -669,7 +750,9 @@ static NSMutableSet* hostList;
                 });
             } else {
                 // Update the host object with this data
+                unsigned short usbHttpsPort = host.httpsPort;
                 [serverInfoResp populateHost:host];
+                if (host.usesUSBStreamTunnel) host.httpsPort = usbHttpsPort;
                 [self hostCardContentsDidChange:host];
                 if (host.usesUSBStreamTunnel && host.serverCert.length && host.pairState == PairStatePaired) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -682,6 +765,7 @@ static NSMutableSet* hostList;
                     // Polling the server while pairing causes the server to screw up
                     [self->_discMan stopDiscoveryBlocking];
                     PairManager* pMan = [[PairManager alloc] initWithManager:hMan clientCert:self->_clientCert callback:self];
+                    if (host.usesUSBStreamTunnel) pMan.expectedHostUUID = host.uuid;
                     [self->_opQueue addOperation:pMan];
 
             }
@@ -999,6 +1083,7 @@ static NSMutableSet* hostList;
     _streamConfig = [[StreamConfiguration alloc] init];
     _streamConfig.host = app.host.activeAddress;
     _streamConfig.hostUUID = app.host.uuid;
+    _streamConfig.usbTunnelSessionID = app.host.usbTunnelSessionID;
     _streamConfig.usesUSBStreamTunnel = app.host.usesUSBStreamTunnel;
     _streamConfig.httpsPort = app.host.httpsPort;
     _streamConfig.appID = app.id;
@@ -2793,7 +2878,7 @@ static NSMutableSet* hostList;
     if ([self isStreaming]) return;
 
     if (_enteredAppView && _selectedHost.usesUSBStreamTunnel &&
-        ![USBStreamTunnel isActiveForHostID:_selectedHost.uuid]) {
+        ![USBStreamTunnel isActiveForSessionID:_selectedHost.usbTunnelSessionID]) {
         [self switchToHostView];
         [self hideLoadingFrame:nil];
     } else if (!_enteredAppView) {
@@ -2809,33 +2894,16 @@ static NSMutableSet* hostList;
         return;
     }
 
-    NSDictionary<NSString *, NSString *> *tunnels = [USBStreamTunnel detectedHosts];
-    if (tunnels.count == 0) return;
+    NSString *hostID = [[[USBStreamTunnel detectedHosts] allKeys] sortedArrayUsingSelector:@selector(compare:)].firstObject;
+    if (!hostID) return;
 
-    UIAlertController *chooser = [UIAlertController alertControllerWithTitle:[LocalizationHelper localizedStringForKey:@"USB Hosts"]
-                                                                    message:nil preferredStyle:UIAlertControllerStyleAlert];
-    for (NSString *hostID in tunnels) {
-        [chooser addAction:[UIAlertAction actionWithTitle:tunnels[hostID] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [USBStreamTunnel activateHostID:hostID completion:^(TemporaryHost *host) {
-                if (!host) {
-                    [self displayPairingFailureDialog:@"Could not open the USB streaming channels."];
-                    return;
-                }
-                @synchronized (hostList) {
-                    for (TemporaryHost *saved in hostList) {
-                        if ([saved.uuid caseInsensitiveCompare:host.uuid] == NSOrderedSame) {
-                            host.serverCert = saved.serverCert;
-                            break;
-                        }
-                    }
-                }
-                [self pairButtonTappedForHost:host];
-            }];
-        }]];
-    }
-    [chooser addAction:[UIAlertAction actionWithTitle:[LocalizationHelper localizedStringForKey:@"Cancel"]
-                                               style:UIAlertActionStyleCancel handler:nil]];
-    [[self activeViewController] presentViewController:chooser animated:YES completion:nil];
+    [USBStreamTunnel activateHostID:hostID completion:^(TemporaryHost *host) {
+        if (!host) {
+            [self refreshUSBHostView];
+            return;
+        }
+        [self pairButtonTappedForHost:host];
+    }];
 }
 #endif
 
