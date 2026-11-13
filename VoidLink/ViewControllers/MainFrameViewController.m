@@ -2850,7 +2850,16 @@ static NSMutableSet* hostList;
     if (!_usbHostsButton) {
         _usbHostsButton = [[UIBarButtonItem alloc] initWithTitle:@"USB" style:UIBarButtonItemStylePlain
                                                         target:self action:@selector(showDetectedUSBHosts)];
+        _usbHostsButton.accessibilityLabel = @"USB";
     }
+    BOOL liquidGlassEnabled = PublicUtils.liquidGlassEnabled;
+    _usbHostsButton.title = liquidGlassEnabled ? @"USB" : @"USB ";
+    NSDictionary<NSAttributedStringKey, id> *titleAttributes = nil;
+    if (!liquidGlassEnabled) {
+        CGFloat pointSize = [UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize;
+        titleAttributes = @{ NSFontAttributeName: [UIFont systemFontOfSize:pointSize+1.5 weight:UIFontWeightSemibold] };
+    }
+    [_usbHostsButton setTitleTextAttributes:titleAttributes forState:UIControlStateNormal];
     [self applyThemeToNavigationButton:_usbHostsButton];
     return [items arrayByAddingObject:_usbHostsButton];
 #endif
