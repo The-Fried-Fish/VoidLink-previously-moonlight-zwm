@@ -24816,19 +24816,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "VoidLink now supports USB wired streaming with Foundation Sunshine (custom build).\nThe USB button will reappear in the navigation bar when a USB host is detected.\nYour host PC’s USB port may be unable to supply enough power to your iPad or iPhone. Keep an eye on your battery level while streaming over USB."
+            "value" : "VoidLink now supports USB wired streaming with Foundation Sunshine (custom build).\nThe USB button will reappear in the navigation bar when a USB host is detected.\nYour host PC’s USB port or your USB cable may not be able to supply power to your iPad or iPhone. Keep an eye on your battery level while streaming over USB."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "VoidLink 现已支持配合 Foundation Sunshine (定制版) 实现USB有线连接串流。\n检测到USB主机时， 导航栏将再次显示\"USB\"按钮。\n主机USB接口很可能不具备为 iPad/iPhone 供电的能力，有线串流时请注意电量消耗。"
+            "state" : "translated",
+            "value" : "VoidLink 现已支持配合 Foundation Sunshine (定制版) 实现USB有线连接串流。\n检测到 USB 主机时， 导航栏将再次显示 \"USB\" 按钮。\n主机 USB 接口或您的USB线缆可能不具备为 iPad/iPhone 供电的能力，有线串流时请注意电量消耗。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "VoidLink 現已支援搭配 Foundation Sunshine (客製版) 透過 USB 進行有線串流。\n偵測到 USB 主機時，導覽列會再次顯示「USB」按鈕。\n主機的 USB 連接埠可能無法為 iPad/iPhone 供電，有線串流時請留意電量消耗。"
+            "state" : "translated",
+            "value" : "VoidLink 現已支援搭配 Foundation Sunshine (客製版) 透過 USB 進行有線串流。\n偵測到 USB 主機時，導覽列會再次顯示「USB」按鈕。\n主機的 USB 連接埠或您的 USB 連接線可能無法為 iPad/iPhone 供電，有線串流時請留意電量消耗。"
           }
         }
       }
