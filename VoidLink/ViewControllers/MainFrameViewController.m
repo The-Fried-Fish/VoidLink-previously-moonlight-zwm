@@ -2857,7 +2857,7 @@ static NSMutableSet* hostList;
     NSDictionary<NSAttributedStringKey, id> *titleAttributes = nil;
     if (!liquidGlassEnabled) {
         CGFloat pointSize = [UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize;
-        titleAttributes = @{ NSFontAttributeName: [UIFont systemFontOfSize:pointSize+1.5 weight:UIFontWeightSemibold] };
+        titleAttributes = @{ NSFontAttributeName: [UIFont systemFontOfSize:pointSize+1 weight:UIFontWeightMedium] };
     }
     [_usbHostsButton setTitleTextAttributes:titleAttributes forState:UIControlStateNormal];
     [self applyThemeToNavigationButton:_usbHostsButton];
