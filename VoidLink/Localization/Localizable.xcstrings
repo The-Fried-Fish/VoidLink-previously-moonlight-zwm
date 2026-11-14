@@ -7473,6 +7473,12 @@
             "state" : "translated",
             "value" : "複製 DeepLink"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "複製 DeepLink"
+          }
         }
       }
     },
@@ -8077,6 +8083,12 @@
             "state" : "translated",
             "value" : "找不到 DeepLink 對應的應用程式。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到 DeepLink 對應的應用程式。"
+          }
         }
       }
     },
@@ -8094,6 +8106,12 @@
             "state" : "translated",
             "value" : "DeepLink 已複製到剪貼簿"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeepLink 已複製到剪貼簿"
+          }
         }
       }
     },
@@ -8107,6 +8125,12 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeepLink 對應的主機未上線。"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "DeepLink 對應的主機未上線。"
@@ -11930,19 +11954,25 @@
         }
       }
     },
-    "Go for wired streaming" : {
+    "Get Foundation Sunshine" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解有线串流"
+            "value" : "获取 Foundation Sunshine"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "了解有線串流"
+            "value" : "取得 Foundation Sunshine"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取得 Foundation Sunshine"
           }
         }
       }
@@ -21064,6 +21094,12 @@
             "state" : "translated",
             "value" : "顯示 DeepLink"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示 DeepLink"
+          }
         }
       }
     },
@@ -23858,6 +23894,12 @@
             "state" : "translated",
             "value" : "USB 主機"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "USB 主機"
+          }
         }
       }
     },
@@ -24423,7 +24465,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "聯絡開發者 True砖家"
           }
         },
@@ -24816,19 +24858,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "VoidLink now supports USB wired streaming with Foundation Sunshine (custom build).\nThe USB button will reappear in the navigation bar when a USB host is detected.\nYour host PC’s USB port or your USB cable may not be able to supply power to your iPad or iPhone. Keep an eye on your battery level while streaming over USB."
+            "value" : "VoidLink now supports USB wired streaming with Foundation Sunshine (custom build).\n- The USB button will reappear in the navigation bar when a USB host is detected.\n- Your host PC’s USB port or your USB cable may be unable to power your iPad or iPhone. Keep an eye on your battery level while streaming over USB.\n- A loose connection at the cable or port can cause more frequent streaming interruptions than a wireless connection.\n- VoidLink caps the requested USB streaming bitrate at 240 Mbps. If the picture is still unstable, lower the bitrate further."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "VoidLink 现已支持配合 Foundation Sunshine (定制版) 实现USB有线连接串流。\n检测到 USB 主机时， 导航栏将再次显示 \"USB\" 按钮。\n主机 USB 接口或您的USB线缆可能不具备为 iPad/iPhone 供电的能力，有线串流时请注意电量消耗。"
+            "value" : "VoidLink 现已支持配合 Foundation Sunshine (定制版) 实现USB有线连接串流。\n- 检测到 USB 主机时， 导航栏将再次显示 \"USB\" 按钮。\n- 主机 USB 接口或您的 USB 线缆可能无法为 iPad/iPhone 供电，有线串流时请注意电量消耗。\n- 线缆或端口接触不良时，甚至比无线连接更容易断流。\n- App已将 USB 串流请求的码率限制在 240Mbps。如果出现画面不稳定的情况，请继续降低码率。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "VoidLink 現已支援搭配 Foundation Sunshine (客製版) 透過 USB 進行有線串流。\n偵測到 USB 主機時，導覽列會再次顯示「USB」按鈕。\n主機的 USB 連接埠或您的 USB 連接線可能無法為 iPad/iPhone 供電，有線串流時請留意電量消耗。"
+            "value" : "VoidLink 現已支援搭配 Foundation Sunshine (客製版) 透過 USB 進行有線串流。\n- 偵測到 USB 主機時，導覽列會再次顯示「USB」按鈕。\n- 主機的 USB 連接埠或您的 USB 連接線可能無法為 iPad/iPhone 供電，有線串流時請留意電量消耗。\n- 連接線或連接埠接觸不良時，甚至比無線連線更容易中斷串流。\n- App 已將 USB 串流請求的位元率限制在 240 Mbps。如果畫面不穩定，請繼續降低位元率。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink 現已支援搭配 Foundation Sunshine (客製版) 透過 USB 進行有線串流。\n- 偵測到 USB 主機時，導覽列會再次顯示「USB」按鈕。\n- 主機的 USB 連接埠或您的 USB 連接線可能無法為 iPad/iPhone 供電，有線串流時請留意電量消耗。\n- 連接線或連接埠接觸不良時，甚至比無線連線更容易中斷串流。\n- App 已將 USB 串流請求的位元率限制在 240 Mbps。如果畫面不穩定，請繼續降低位元率。"
           }
         }
       }

@@ -783,7 +783,7 @@ import UIKit
 
     @objc public static func handleWiredStreamingTip(in vc: UIViewController?, completion: @escaping () -> Void) {
         AlertControllerUtil.autoCompletion = false
-        AlertControllerUtil.cancelButtonString = "Go for wired streaming"
+        AlertControllerUtil.cancelButtonString = "Get Foundation Sunshine"
         AlertControllerUtil.showAlert(
             in: vc,
             title: "Tips".localized,
