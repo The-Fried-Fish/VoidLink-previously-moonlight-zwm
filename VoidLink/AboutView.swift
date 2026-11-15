@@ -98,7 +98,7 @@ public struct AboutView: View {
                         if #available(iOS 16, *) {
                             let languageCode = Locale.current.language.languageCode?.identifier
                             if languageCode == "zh" {
-                                Link(LocalizationHelper.localizedString(forKey: "加入QQ群"), destination: URL(string: LocalizationHelper.localizedString(forKey: "https://qm.qq.com/q/uM51CYWLS2"))!)
+                                Link(LocalizationHelper.localizedString(forKey: "加入QQ群"), destination: URL(string: "https://voidlink.yuque.com/org-wiki-voidlink-znirha/biuzs1/qbnhtdnpwne0m83r")!)
                             }
                         }
                         if PublicUtils.isIPhone {
