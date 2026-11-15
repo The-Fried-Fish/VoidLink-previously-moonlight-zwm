@@ -2467,7 +2467,7 @@ final class SettingsSession: NSObject, ObservableObject {
     }
 
     var pipEnabled: Bool {
-        if #available(iOS 15.0, *) { return !isStreaming && !usesMetal }
+        if #available(iOS 15.0, *) { return !usesMetal }
         return false
     }
 
