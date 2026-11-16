@@ -292,6 +292,12 @@
             "state" : "new",
             "value" : "Highlight opacity"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "강조 불투명도"
+          }
         }
       }
     },
@@ -335,6 +341,12 @@
             "value" : "no"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끔"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -363,6 +375,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "yes"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "켬"
           }
         },
         "zh-Hans" : {
@@ -688,6 +706,12 @@
             "state" : "new",
             "value" : "Slide threshold"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밀기 기준"
+          }
         }
       }
     },
@@ -849,6 +873,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Label opacity"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름 불투명도"
           }
         }
       }
@@ -1282,6 +1312,12 @@
             "state" : "new",
             "value" : "Walkmode threshold"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "걷기 모드 기준"
+          }
         }
       }
     },
@@ -1545,6 +1581,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Roll factor"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "롤 계수"
           }
         }
       }
@@ -1948,6 +1990,12 @@
             "state" : "new",
             "value" : "Profiles"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필"
+          }
         }
       }
     },
@@ -1959,6 +2007,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Height"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "높이"
           }
         }
       }
@@ -2074,6 +2128,12 @@
             "state" : "new",
             "value" : "Pitch factor"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "피치 계수"
+          }
         }
       }
     },
@@ -2085,6 +2145,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "SensitivityX"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X 감도"
           }
         }
       }
@@ -2308,6 +2374,12 @@
             "state" : "new",
             "value" : "BorderWidth"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "테두리 두께"
+          }
         }
       }
     },
@@ -2349,6 +2421,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Border opacity"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "테두리 불투명도"
           }
         }
       }
@@ -2422,6 +2500,12 @@
             "state" : "new",
             "value" : "Auto dock timer"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자동 숨김 시간"
+          }
         }
       }
     },
@@ -2434,6 +2518,12 @@
             "state" : "new",
             "value" : "Profile:"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필:"
+          }
         }
       }
     },
@@ -2445,6 +2535,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Stick indicator"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스틱 표시"
           }
         }
       }
@@ -2489,6 +2585,12 @@
             "value" : "disabled"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "꺼짐"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2517,6 +2619,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "enabled"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "켜짐"
           }
         },
         "zh-Hans" : {
@@ -2637,6 +2745,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Repeats"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "반복 횟수"
           }
         },
         "zh-Hans" : {
@@ -2848,6 +2962,12 @@
             "state" : "new",
             "value" : "Highlight size"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "강조 크기"
+          }
         }
       }
     },
@@ -3040,6 +3160,12 @@
             "state" : "new",
             "value" : "Height"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "높이"
+          }
         }
       }
     },
@@ -3100,6 +3226,12 @@
             "state" : "new",
             "value" : "Autotap"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자동 연타"
+          }
         }
       }
     },
@@ -3111,6 +3243,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Profile:"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필:"
           }
         }
       }
@@ -3155,6 +3293,12 @@
             "value" : "hold"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "누르고 있기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3183,6 +3327,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "toggle"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전환"
           }
         },
         "zh-Hans" : {
@@ -3226,6 +3376,12 @@
             "state" : "new",
             "value" : "Component size"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구성 요소 크기"
+          }
         }
       }
     },
@@ -3237,6 +3393,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Collected Widgets   "
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "넣은 위젯   "
           }
         },
         "zh-Hans" : {
@@ -3281,6 +3443,12 @@
             "value" : "Walk key"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "걷기 키"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3310,6 +3478,12 @@
             "state" : "new",
             "value" : "Size"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "크기"
+          }
         }
       }
     },
@@ -3321,6 +3495,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Docked opacity"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "숨김 상태 불투명도"
           }
         }
       }
@@ -3345,6 +3525,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yaw factor"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요 계수"
           }
         }
       }
@@ -3388,6 +3574,12 @@
             "state" : "new",
             "value" : "Width"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "너비"
+          }
         }
       }
     },
@@ -3399,6 +3591,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Sprint key"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "달리기 키"
           }
         },
         "zh-Hans" : {
@@ -3549,6 +3747,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Alpha"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "투명도"
           }
         }
       }
@@ -3785,6 +3989,12 @@
             "value" : "Settings"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3814,6 +4024,12 @@
             "state" : "new",
             "value" : "Minimum offset"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소 기울기"
+          }
         }
       }
     },
@@ -3825,6 +4041,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "coexist"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동시 사용"
           }
         },
         "zh-Hans" : {
@@ -3855,6 +4077,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "exclusive"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단독 사용"
           }
         },
         "zh-Hans" : {
@@ -4035,6 +4263,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Anchor point"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기준점"
           }
         },
         "zh-Hans" : {
@@ -4247,6 +4481,12 @@
             "value" : "Animated"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애니메이션"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4275,6 +4515,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Button mode"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼 모드"
           }
         },
         "zh-Hans" : {
@@ -4367,6 +4613,12 @@
             "value" : "slide-toggle"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밀어서 전환"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -4395,6 +4647,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "slide-hold"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밀어서 누르기"
           }
         },
         "zh-Hans" : {
@@ -4427,6 +4685,12 @@
             "value" : "normal"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일반"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -4455,6 +4719,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "tap to toggle"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "눌러서 전환"
           }
         },
         "zh-Hans" : {
@@ -4487,6 +4757,12 @@
             "value" : "movable"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이동 가능"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4515,6 +4791,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "unfold"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "펼치기"
           }
         },
         "zh-Hans" : {
@@ -4547,6 +4829,12 @@
             "value" : "fold"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "접기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4575,6 +4863,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Button down"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼 누름"
           }
         },
         "zh-Hans" : {
@@ -4665,6 +4959,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "      Batch move     "
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "      일괄 이동     "
           }
         },
         "zh-Hans" : {
@@ -5146,6 +5446,12 @@
             "state" : "new",
             "value" : "Opacity"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "불투명도"
+          }
         }
       }
     },
@@ -5157,6 +5463,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "light"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "약하게"
           }
         },
         "zh-Hans" : {
@@ -5189,6 +5501,12 @@
             "value" : "medium"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보통"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5217,6 +5535,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "heavy"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "강하게"
           }
         },
         "zh-Hans" : {
@@ -5249,6 +5573,12 @@
             "value" : "soft"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "부드럽게"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5279,6 +5609,12 @@
             "value" : "rigid"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단단하게"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5307,6 +5643,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "off"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끔"
           }
         },
         "zh-Hans" : {
@@ -5367,6 +5709,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "SensitivityY"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Y 감도"
           }
         }
       }
@@ -5512,6 +5860,12 @@
             "state" : "new",
             "value" : "Slide threshold"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밀기 기준"
+          }
         }
       }
     },
@@ -5555,6 +5909,12 @@
             "value" : "hovering"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "호버"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5583,6 +5943,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "left btn"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "왼쪽 버튼"
           }
         },
         "zh-Hans" : {
@@ -5615,6 +5981,12 @@
             "value" : "middle btn"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가운데 버튼"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -5643,6 +6015,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "right btn"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오른쪽 버튼"
           }
         },
         "zh-Hans" : {
@@ -5675,6 +6053,12 @@
             "value" : "no click"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클릭 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5703,6 +6087,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Border width"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "테두리 두께"
           }
         }
       }
@@ -5795,6 +6185,12 @@
             "value" : "hold"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "누르고 있기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5823,6 +6219,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "toggle"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전환"
           }
         },
         "zh-Hans" : {
@@ -5943,6 +6345,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Vibration style"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "진동 방식"
           }
         },
         "zh-Hans" : {
@@ -6239,6 +6647,12 @@
             "value" : "center"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가운데"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6267,6 +6681,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "touch point"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "터치 지점"
           }
         },
         "zh-Hans" : {
@@ -6533,6 +6953,12 @@
             "value" : "    Reveal mode   "
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "    펼침 방식   "
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6561,6 +6987,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Slide threshold"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밀기 기준"
           }
         }
       }
@@ -6603,6 +7035,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Profile:"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필:"
           }
         }
       }
@@ -6705,6 +7143,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "DecelerationRate"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "감속률"
           }
         }
       }
