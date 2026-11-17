@@ -1339,6 +1339,7 @@
 				"zh-Hans",
 				"zh-Hant",
 				"zh-HK",
+				ko,
 			);
 			mainGroup = FB290CE519B2C406004C83CF;
 			packageReferences = (
