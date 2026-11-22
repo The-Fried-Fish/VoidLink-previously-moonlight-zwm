@@ -1,30 +1,66 @@
-name: Build VoidLink IPA
+name: Build VoidLink IPA (unsigned)
 
 on:
+  workflow_dispatch:        # ручной запуск: Actions -> Build VoidLink IPA -> Run workflow
   push:
-    branches: [ "feat/frame_pacing_metal" ]
+    branches: [ "Integration" ]
 
 jobs:
   build:
     name: Build VoidLink IPA
-    runs-on: macos-latest
+    runs-on: macos-26
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Checkout submodules
-        run: "git submodule update --init --recursive"
+      - name: Select latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
-      - name: Build VoidLink
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build (archive, no code signing)
         run: |
-          xcodebuild -verbose -scheme VoidLink -sdk iphoneos -configuration Debug archive -archivePath $PWD/build/VoidLink.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
-          mkdir -p ./build/IPA && mkdir -p ./build/IPA/Payload
-          cp -r ./build/VoidLink.xcarchive/Products/Applications/VoidLink.app ./build/IPA/Payload/VoidLink.app
-          cd ./build/IPA && zip -r ../../build/VoidLink.ipa ./Payload/* && cd ../..
+          set -o pipefail
+          xcodebuild archive \
+            -project VoidLink.xcodeproj \
+            -scheme VoidLink \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$PWD/build/VoidLink.xcarchive" \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS="" \
+            DEVELOPMENT_TEAM="" \
+            | tee build.log | grep -E "error:|warning: .*deprecated|\*\* ARCHIVE" || true
+          test -d "$PWD/build/VoidLink.xcarchive/Products/Applications/VoidLink.app" || { tail -200 build.log; exit 1; }
 
-      - name: Upload VoidLink IPA to Artifacts
+      - name: Package IPA
+        run: |
+          mkdir -p build/IPA/Payload
+          cp -R build/VoidLink.xcarchive/Products/Applications/VoidLink.app build/IPA/Payload/
+          cd build/IPA && zip -qry ../VoidLink.ipa Payload
+          ls -lh ../VoidLink.ipa
+
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: VoidLink.ipa
+          name: VoidLink-unsigned-ipa
           path: build/VoidLink.ipa
+
+      - name: Upload build log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
