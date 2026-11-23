@@ -401,6 +401,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
     case reverseMouseWheelDirection = "reverseMouseWheelDirectionStack"
     case citrixX1Mouse = "citrixX1MouseStack"
     case globeAsEscape = "globeAsEscapeStack"
+    case localKeyboardShortcuts = "localKeyboardShortcutsStack"
 
     // MARK: Audio
 
@@ -520,6 +521,7 @@ enum SettingsItemID: String, Hashable, Identifiable {
         case .reverseMouseWheelDirection: return "Physical Mouse Wheel Scroll"
         case .citrixX1Mouse: return "Citrix X1 Mouse"
         case .globeAsEscape: return "Globe Key as Escape"
+        case .localKeyboardShortcuts: return "Local Keyboard Shortcuts"
         case .audioOnPC: return "Play Audio on PC"
         case .localVolume: return "Local Volume"
         case .redirectMic: return "Redirect Mic"
@@ -572,6 +574,7 @@ enum SettingsSectionID: String, CaseIterable, Identifiable {
 }
 
 enum SettingsControlDescriptor {
+    case action((SettingsSession) -> Void)
     case picker(
         value: (SettingsSession) -> Int,
         setValue: (SettingsSession, Int) -> Void,
@@ -3371,8 +3374,21 @@ final class SettingsSession: NSObject, ObservableObject {
         ]
     }
 
+    private func openLocalKeyboardShortcuts() {
+#if !os(tvOS)
+        if #available(iOS 14.0, *), let presenter = presentingController {
+            LocalKeyboardShortcutsViewController.present(from: presenter)
+        }
+#endif
+    }
+
     var peripheralSettingsCatalog: [SettingsItemDescriptor] {
         [
+            SettingsItemDescriptor(
+                id: .localKeyboardShortcuts,
+                control: .action { $0.openLocalKeyboardShortcuts() },
+                isAvailable: !PublicUtils.isTVOS
+            ),
             pickerItem(
                 \.externalDisplayMode,
                 options: { $0.externalDisplayModeOptions },
@@ -6367,6 +6383,8 @@ final class SettingsSession: NSObject, ObservableObject {
             return
         }
         switch item.control {
+        case let .action(perform):
+            if forward { perform(self) }
         case let .picker(value, _, options, _):
             if operatePickerUsingUIKitControl(item, forward: forward) {
                 return
@@ -7037,6 +7055,28 @@ private struct SettingsCatalogItemView: View {
         let showsInfo = (item.hasInfo || item.isGameProfileSetting) && !suppressInfo
         let controlLayoutWidth = min(max(0, controlContainerWidth), layout.controlMaxWidth)
         switch item.control {
+        case let .action(perform):
+            Button(action: { perform(store) }) {
+                HStack {
+                    Text(item.id.titleKey.localized)
+                        .font(.system(size: layout.itemMainLabelFontSize))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
+            .disabled(!isEnabled || !isUserInteractionEnabled)
+            .settingRow(
+                id: item.id,
+                store: store,
+                enabled: isEnabled,
+                userInteractionEnabled: isUserInteractionEnabled,
+                participatesInControllerNavigation: participatesInControllerNavigation
+            )
         case let .picker(value, _, options, distribution):
             VStack(alignment: .leading, spacing: layout.itemVerticalSpacing) {
                 itemTitleLine(

@@ -114,6 +114,9 @@
 		A1F100012FFB000100000001 /* FrameInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F100002FFB000100000001 /* FrameInterpolator.swift */; };
 		A5E771022FFF100100000002 /* SettingsSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E771012FFF100100000001 /* SettingsSwiftUI.swift */; };
 		A5E771042FFF100100000004 /* SettingsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E771032FFF100100000003 /* SettingsControls.swift */; };
+		A90100000000000000000003 /* LocalKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90100000000000000000001 /* LocalKeyboardShortcuts.swift */; };
+		A90100000000000000000004 /* LocalKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90100000000000000000001 /* LocalKeyboardShortcuts.swift */; };
+		A90100000000000000000005 /* LocalKeyboardShortcutsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90100000000000000000002 /* LocalKeyboardShortcutsViewController.swift */; };
 		A70100000000000000000001 /* SettingsSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E771012FFF100100000001 /* SettingsSwiftUI.swift */; };
 		A70100000000000000000002 /* SettingsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E771032FFF100100000003 /* SettingsControls.swift */; };
 		A70100000000000000000003 /* authored_haptics_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1D500012FFC000100000001 /* authored_haptics_engine.cpp */; settings = {COMPILER_FLAGS = "-std=c++17"; }; };
@@ -513,6 +516,8 @@
 		A1F100002FFB000100000001 /* FrameInterpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameInterpolator.swift; sourceTree = "<group>"; };
 		A5E771012FFF100100000001 /* SettingsSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSwiftUI.swift; sourceTree = "<group>"; };
 		A5E771032FFF100100000003 /* SettingsControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControls.swift; sourceTree = "<group>"; };
+		A90100000000000000000001 /* LocalKeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalKeyboardShortcuts.swift; sourceTree = "<group>"; };
+		A90100000000000000000002 /* LocalKeyboardShortcutsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalKeyboardShortcutsViewController.swift; sourceTree = "<group>"; };
 		A7000000000000000002 /* VoidLink TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoidLink TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A76B00022FFCC00100000002 /* GameSirG8MFiRumbler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSirG8MFiRumbler.swift; sourceTree = "<group>"; };
 		A76B00042FFCC00100000004 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
@@ -990,6 +995,7 @@
 				FB4678EC1A50C40900377732 /* OnScreenControls.m */,
 				FB1A674B2131E65900507771 /* KeyboardSupport.h */,
 				FB1A674C2131E65900507771 /* KeyboardSupport.m */,
+				A90100000000000000000001 /* LocalKeyboardShortcuts.swift */,
 				9897B6A0221260EF00966419 /* VoidController.m */,
 				9897B6A32212610800966419 /* VoidController.h */,
 				9827E7A22514366900F25707 /* HapticContext.m */,
@@ -1108,6 +1114,7 @@
 				FB89462719F646E200339C8A /* StreamFrameViewController.m */,
 				A5E771012FFF100100000001 /* SettingsSwiftUI.swift */,
 				A5E771032FFF100100000003 /* SettingsControls.swift */,
+				A90100000000000000000002 /* LocalKeyboardShortcutsViewController.swift */,
 				FBD3494F19FF2174002D2A60 /* SettingsViewController.swift */,
 				2B7A10012FFB000100000001 /* SettingsTouchVelocityPreview.swift */,
 				2AC1EAFA2F922602004EDA80 /* UIStackExtension.swift */,
@@ -1440,6 +1447,7 @@
 			files = (
 				A70100000000000000000001 /* SettingsSwiftUI.swift in Sources */,
 				A70100000000000000000002 /* SettingsControls.swift in Sources */,
+				A90100000000000000000004 /* LocalKeyboardShortcuts.swift in Sources */,
 				A70100000000000000000003 /* authored_haptics_engine.cpp in Sources */,
 				A70100000000000000000004 /* Limelight.xcdatamodeld in Sources */,
 				A70100000000000000000005 /* KeyboardSupport.m in Sources */,
@@ -1560,6 +1568,8 @@
 			files = (
 				A5E771022FFF100100000002 /* SettingsSwiftUI.swift in Sources */,
 				A5E771042FFF100100000004 /* SettingsControls.swift in Sources */,
+				A90100000000000000000003 /* LocalKeyboardShortcuts.swift in Sources */,
+				A90100000000000000000005 /* LocalKeyboardShortcutsViewController.swift in Sources */,
 				A1D500022FFC000100000001 /* authored_haptics_engine.cpp in Sources */,
 				FB290D0719B2C406004C83CF /* Limelight.xcdatamodeld in Sources */,
 				9819CC22254F180F008A7C8E /* AbsoluteTouchHandler.m in Sources */,

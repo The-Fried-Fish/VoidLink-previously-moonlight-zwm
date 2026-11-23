@@ -101,8 +101,6 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     CGRect cursorKeyboardFrame; // latest keyboard end frame (screen coordinates) seen in that mode
     UILabel* keyboardToggleTip;
     
-    UIKeyModifierFlags comboKeyModifierFlags;
-    
     WidgetSizeTransition _widgetSizeTransition;
     OSCProfilesManager* oscProfileMan;
 }
@@ -156,8 +154,6 @@ static NSString * const KeyboardInputSentinel = @"\u200B";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tvOSRemotePlayPauseTapped:) name:VoidLinkTvOSRemotePlayPauseTappedNotification object:nil];
 #endif
     
-    self->comboKeyModifierFlags = (UIKeyModifierControl|UIKeyModifierAlternate|UIKeyModifierShift);
-
     self->_streamFrameTopLayerView = topLayerView;
     self->_interactionDelegate = interactionDelegate;
     // A settings/viewport reconfiguration must not restore the pre-resolution-change ratio.
@@ -1593,26 +1589,26 @@ static CGFloat previousRollAngle = 0;
 }
 
 - (void) handleKeyCombos:(UIPress*) press{
-    if(press.key.modifierFlags != comboKeyModifierFlags){
-        return;
-    }
-    switch (press.key.keyCode) {
-        case UIKeyboardHIDUsageKeyboardD:
+    UIKey *key = press.key;
+    if (key == nil) return;
+
+    switch ([LocalKeyboardShortcuts actionForKeyCode:key.keyCode modifierFlags:key.modifierFlags]) {
+        case LocalKeyboardShortcutActionDisconnect:
             [_interactionDelegate streamExitRequested];
             break;
-        case UIKeyboardHIDUsageKeyboardO:
+        case LocalKeyboardShortcutActionStatistics:
             [_interactionDelegate toggleStatsOverlay];
             break;
-        case UIKeyboardHIDUsageKeyboardS:
+        case LocalKeyboardShortcutActionSettings:
             [_interactionDelegate expandSettingsView];
             break;
-        case UIKeyboardHIDUsageKeyboardM:
+        case LocalKeyboardShortcutActionMouseCapture:
             [_interactionDelegate toggleMouseCapture];
             break;
-        case UIKeyboardHIDUsageKeyboardC:
+        case LocalKeyboardShortcutActionMouseVisibility:
             [_interactionDelegate toggleMouseVisible];
             break;
-        case UIKeyboardHIDUsageKeyboardQ:
+        case LocalKeyboardShortcutActionQuitHostApp:
             [_interactionDelegate disconnectAndQuitApp];
             break;
         default:
