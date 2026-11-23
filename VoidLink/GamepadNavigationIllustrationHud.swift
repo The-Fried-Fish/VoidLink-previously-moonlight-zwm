@@ -271,7 +271,10 @@ final class GamepadNavigationIllustrationHud: UIView {
     private func updateHints(with elements: [ControllerNavigationElement]) {
         let nextHints = hints(for: elements)
         hints = nextHints.isEmpty ? [] : nextHints
-        guard !hints.isEmpty else {return}
+        guard !hints.isEmpty else {
+            Self.finishHudDetach()
+            return
+        }
         reloadHintRows()
         updateTheme()
         isHidden = hints.isEmpty
