@@ -7,6 +7,8 @@
 # 代码 Coding
 - 代码提交在`Integration`分支。
 - For latest coding commits, go to branch `Integration`.
+- 本地键盘快捷键的用法与测试说明见 [Tests/KeyboardShortcuts.md](Tests/KeyboardShortcuts.md)。
+- For local keyboard shortcut usage and tests, see [Tests/KeyboardShortcuts.md](Tests/KeyboardShortcuts.md).
 
 <br>
 
